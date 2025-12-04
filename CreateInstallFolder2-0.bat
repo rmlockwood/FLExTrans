@@ -54,9 +54,24 @@ for %%d in (German-Swedish TemplateProject) do (
 rem TOFT
 xcopy /s %TOFT_DIR%\WorkProjs\*.* %workprojects%
 
-rem copy the FlexTrans.config file and force it to be overwritten.
-copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.config
-copy FlexTrans.config %workprojects%\TemplateProject\Config\FlexTrans.config
+rem copy the FlexTrans.config files
+
+rem copy and modify the original config file to have one different line for the German-Swedish folder
+set "SRC=FLExTrans.config"
+set "DST=%workprojects%\German-Swedish\Config\FLExTrans.config"
+
+rem copy the original config file to the template folder
+copy "%SRC%" "%workprojects%\TemplateProject\Config\%SRC%"
+
+rem Create the modified config file line by line
+(for /f "usebackq delims=" %%A in ("%SRC%") do (
+    echo %%A | findstr /b /c:"TransferRulesFile=transfer_rules.t1x" >nul
+    if errorlevel 1 (
+        echo %%A
+    ) else (
+        echo TransferRulesFile=transfer_rules-Swedish.t1x
+    )
+)) > "%DST%"
 
 rem build Python requirements file
 xcopy FlexTools_%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%

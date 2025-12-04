@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place. 
 #
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -31,8 +34,8 @@
 import os
 
 CONFIG_PATH = os.path.join(os.getcwd(), "flextools.ini")
-
 WORK_DIR    = os.path.dirname(os.path.dirname(CONFIG_PATH))
+WORK_PROJECTS_DIR = os.path.dirname(WORK_DIR)
 ROOT_DIR    = os.path.dirname(os.path.dirname(WORK_DIR))
 WORK_PROJECT= os.path.basename(WORK_DIR)
 

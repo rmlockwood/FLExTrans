@@ -5,6 +5,12 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/16/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -92,6 +98,7 @@ import FTPaths
 import Utils
 from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
+from DoSynthesis import docs as DoSynthesisDocs
 
 #----------------------------------------------------------------
 # Configurables:
@@ -101,7 +108,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ExportToParatext'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -112,19 +122,19 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
         FTM_Description: _translate("ExportToParatext", 
 """
-After chapters have been synthesized with the Synthesize Text module, the draft resides in the file specified
+After chapters have been synthesized with the {synthText} module, the draft resides in the file specified
 by the setting 'Target Output Synthesis File' (typically called 'target_text-syn.txt'). This module
-takes the draft in this file and copies the chapters into Paratext to the project specified.""")}
+takes the draft in this file and copies the chapters into Paratext to the project specified.""").format(synthText=DoSynthesisDocs[FTM_Name]),}
                  
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
@@ -232,7 +242,11 @@ def parseSourceTextName(report, sourceText, infoMap):
 def doExportToParatext(DB, configMap, report):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     # Find the desired text

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1033. Don't escape <> in literal strings in the rule file.
+#
 #   Version 3.14.3 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
@@ -299,6 +302,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # Don't list backslash here, it is handled in the functions that use the
 # reserved character list
 APERT_RESERVED = r'\[\]@/^${}<>*'
+APERT_RESERVED_NOT_ANGLE_BRACKETS = r'\[\]@/^${}*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
@@ -343,6 +347,7 @@ rePeriod = re.compile(r'\.')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
 reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
+reApertReservedNotAngles = re.compile(rf'(?<!\\)([{APERT_RESERVED_NOT_ANGLE_BRACKETS}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
 reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(?<!\\)(<)') # Use a negative lookbehind assertion to assure the < is not already escaped
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
@@ -663,7 +668,7 @@ def openProject(report, DBname):
         myDB.OpenProject(DBname, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error(_translate("Utils", "There was an error opening database: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(DBname=DBname))
+            report.Error(_translate("Utils", "There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(DBname=DBname))
         return None
 
     return myDB
@@ -680,14 +685,14 @@ def openTargetProject(configMap, report):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         if report:
-            report.Error(_translate("Utils", "The Target Database does not exist. Please check the configuration file."))
+            report.Error(_translate("Utils", "The target project does not exist. Please check the configuration file."))
         return
     
     try:
         TargetDB.OpenProject(targetProj, True)
     except:
         if report:
-            report.Error(_translate("Utils", "There was an error opening target database: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
+            report.Error(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
         raise
 
     return TargetDB
@@ -804,7 +809,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
                 if report:
                     report.Error(_translate("Utils", "The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+\
-                                            'please correct this {myType} in the {dbType} database.").format(posAbbrStr=posAbbrStr, myType=myType, posFullNameStr=posFullNameStr, charName=charName, dbType=dbType))                
+                                            'please correct this {myType} in the {dbType} project.").format(posAbbrStr=posAbbrStr, myType=myType, posFullNameStr=posFullNameStr, charName=charName, dbType=dbType))                
                     haveError = True
 
                 # show all fatal errors
@@ -819,7 +824,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if countList[i] < numCatErrorsToShow:
 
                 if report:
-                    report.Warning(_translate("Utils", "The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName} '+\
+                    report.Warning(_translate("Utils", "The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+\
                                               'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.").
                                               format(oldAbbrStr=oldAbbrStr, myType=myType, posFullNameStr=posFullNameStr, dbType=dbType, charName=charName, message=message, posAbbrStr=posAbbrStr))
 
@@ -977,7 +982,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     except:
         headWord = getHeadwordStr(entry)
         if report:
-            report.Error(_translate("Utils", "Invalid url link or url not found in the target database while processing source headword: {headWord}.").format(headWord=headWord),
+            report.Error(_translate("Utils", "Invalid url link or url not found in the target project while processing source headword: {headWord}.").format(headWord=headWord),
             DB.BuildGotoURL(entry))
         return retVal
 
@@ -1354,10 +1359,14 @@ def unescapeReservedApertChars(inStr):
 
     return reApertReservedEscaped.sub(r'\1', inStr)
 
-def escapeReservedApertChars(inStr):
+def escapeReservedApertChars(inStr, notAngleBrackets=False):
     
     # Escape special characters that are not already escaped
-    inStr = reApertReserved.sub(r'\\\1', inStr)
+    if notAngleBrackets:
+        # Escape all reserved characters except angle brackets
+        inStr = reApertReservedNotAngles.sub(r'\\\1', inStr)
+    else:
+        inStr = reApertReserved.sub(r'\\\1', inStr)
 
     # Now escape backslashes that are not already escaped and aren't being used to escape a special char
     inStr = re.sub(rf'(?<!\\)\\([^{APERT_RESERVED}\\]|$)', r'\\\\\1', inStr)

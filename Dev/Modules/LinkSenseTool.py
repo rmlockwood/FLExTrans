@@ -5,6 +5,21 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.8 - 11/24/25 - Ron Lockwood
+#    Fixes #1121. Give a better error message when no words matching morphtype roots is found.
+#
+#   Version 3.14.7 - 11/24/25 - Ron Lockwood
+#    Fixes #1106. Don't prompt the user the save changes twice.
+#
+#   Version 3.14.6 - 10/23/25 - Ron Lockwood
+#    Refixes #1031. Save font information also on close or cancel.
+#
+#   Version 3.14.5 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1031. Save and reload Font information.
+#
 #   Version 3.14.3 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
@@ -187,7 +202,7 @@
 
 import re
 import os
-import sys
+import json
 import unicodedata
 import xml.etree.ElementTree as ET
 import time
@@ -221,7 +236,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'LinkSenseTool'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -232,8 +250,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.14.3",
+docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
+        FTM_Version    : "3.14.8",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -257,13 +275,13 @@ a sense-level custom field in your source project. It should be simple text fiel
 The purpose of the custom field is to hold the link to a sense in the target project.
 Set which custom field is used for linking in the settings.""")}
                  
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
-
+LINKER_SETTINGS_FILE = "LinkerSettings.json"
 MAX_GLOSS_WARNINGS = 10
 
 # The minimum length a word should have before doing a fuzzy compare
@@ -806,9 +824,52 @@ class Main(QMainWindow):
                 self.__comboModel.setRTL(True)
                 break
     
+        self.loadFontSettings()
+
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def saveFontSettings(self):
+
+        settings = {}
+
+        font = self.__model.getFont()
+        font_data = {
+            "family": font.family(),
+            "size": font.pointSizeF(),
+            "bold": font.bold(),
+            "italic": font.italic(),
+            "underline": font.underline()
+        }
+        settings['font_info'] = font_data
+
+        with open(self.settingsPath, "w", encoding="utf-8") as f:
+
+            json.dump(settings, f)
+
+    def loadFontSettings(self):
+
+        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), LINKER_SETTINGS_FILE)
+
+        try:
+            with open(LINKER_SETTINGS_FILE, "r", encoding="utf-8") as f:
+
+                settings = json.load(f)
+
+            font_data = settings['font_info']
+
+            font = self.__model.getFont()
+            font.setFamily(font_data.get("family", font.family()))
+            font.setPointSizeF(font_data.get("size", font.pointSizeF()))
+            font.setBold(font_data.get("bold", font.bold()))
+            font.setItalic(font_data.get("italic", font.italic()))
+            font.setUnderline(font_data.get("underline", font.underline()))
+            self.__model.setFont(font)
+            self.ui.FontNameLabel.setText(font.family())
+
+        except Exception:
+            pass  # Ignore if file doesn't exist or is invalid
+
     def handleDoubleClick(self, index):
 
         if index.column() == COL_TGT_HEADWORD:
@@ -963,14 +1024,6 @@ class Main(QMainWindow):
         
         # Set the global variable
         FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
-        
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
         
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -1133,8 +1186,20 @@ class Main(QMainWindow):
         self.filter()
         
     def closeEvent(self, event):
+
+        # Always save font settings on close
+        self.saveFontSettings()   
+
         if self.retVal != 1:
-            self.CancelClicked()
+
+            # Check if the user did some linking or unlinking
+            if self.__model.didLinkingChange():
+                
+                # Check if the user wants to save changes
+                if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+            
+                    self.retVal = 1
+            
         elif self.rebuildBiling:
         
             # Show hourglass cursor 
@@ -1144,19 +1209,10 @@ class Main(QMainWindow):
             time.sleep(3)
 
             # Revert back to the default cursor 
-            QApplication.restoreOverrideCursor()       
+            QApplication.restoreOverrideCursor()    
 
     def CancelClicked(self):
         self.retVal = 0
-
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
-        
         self.close()
         
     def filter(self):
@@ -1392,6 +1448,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     saveMap = {}
     processedMap = {}
     myData = []
+    foundAtLeastOneValidMorphType = False
     
     report.ProgressStart(myText.getWordCount())
 
@@ -1429,7 +1486,11 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     
                         if morphType not in sourceMorphNames:
                             continue
-                            
+                        
+                        # We have at least one valid morph type. If we never get here and this remains false,
+                        # we will report an error later.
+                        foundAtLeastOneValidMorphType = True
+
                         # Get gloss
                         srcGloss = Utils.as_string(mySense.Gloss)    
                 
@@ -1500,6 +1561,10 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                         else:
                             addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
                 # wordIndex += 1
+
+    if not foundAtLeastOneValidMorphType:
+
+        report.Error(_translate("LinkSenseTool", "No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.")) 
 
     return myData, processedMap
 
@@ -1873,17 +1938,17 @@ def RunModule(DB, report, configMap, app):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
 
-        report.Error(_translate("LinkSenseTool", 'The Target Database does not exist. Please check the configuration file.'))
+        report.Error(_translate("LinkSenseTool", 'The target project does not exist. Please check the configuration file.'))
         return ERROR_HAPPENED
 
-    report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target database.').format(targetProj=targetProj))
+    report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target project.').format(targetProj=targetProj))
 
     try:
         TargetDB.OpenProject(targetProj, True)
 
     except: #FDA_DatabaseError, err:
 
-        report.Error(_translate("LinkSenseTool", 'Failed to open the target database.'))
+        report.Error(_translate("LinkSenseTool", 'Failed to open the target project.'))
         raise
 
     report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName),
@@ -1931,7 +1996,7 @@ def RunModule(DB, report, configMap, app):
     # Check to see if there is any data to link
     if len(myData) == 0:
                                         
-        report.Error(_translate("LinkSenseTool", 'There were no senses found for linking. Please check your text and approve some words.'))
+        report.Error(_translate("LinkSenseTool", 'There was an error finding senses to link.'))
     else:        
         myHeaderData = [_translate("LinkSenseTool", 'Link it!'), 
                                                     'V #', 
@@ -1988,7 +2053,11 @@ REBUILD_BILING = 3
 def MainFunction(DB, report, modify=False):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     if not modify:

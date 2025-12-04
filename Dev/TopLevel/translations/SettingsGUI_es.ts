@@ -752,6 +752,16 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1321"/>
+        <source>Production Mode Output Destination</source>
+        <translation>Destino de salida del modo de producción</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1321"/>
+        <source>In the production mode module 'Translate Text', where do you want the drafted text to go?</source>
+        <translation>En el módulo de modo de producción 'Traducir Texto', ¿dónde quieres que vaya el texto borrador?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1321"/>
         <source>FLExTrans Settings</source>
         <translation>Configuración de FLExTrans</translation>
     </message>

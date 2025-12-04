@@ -5,6 +5,16 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.3 - 10/2/25 - Ron Lockwood
+#    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
+#    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
+#
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -147,14 +157,17 @@ from PyQt5.QtCore import QCoreApplication, QTranslator
 import Mixpanel
 import ReadConfig
 import Utils
-import FTPaths
+from RunApertium import docs as RunApertDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ConvertTextToSTAMPformat'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -165,13 +178,13 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by Run Apertium into a text file in a Synthesizer format"),
+        FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
         FTM_Description: _translate("ConvertTextToSTAMPformat",
-"""This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
+"""This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable 
 for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
 synthesis program. 
@@ -180,11 +193,11 @@ HermitCrab synthesis. For STAMP, the file is what you specified by the Target Ou
 called target_text-ana.txt.
 For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
 target_words-HC.txt. Both files are usually in the Build folder.
-NOTE: messages and the task bar will show the SOURCE database as being used. Actually the target database 
-is being used.""")}
+NOTE: messages and the task bar will show the source project as being used. Actually the target project 
+is being used.""").format(runApert=RunApertDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
@@ -457,7 +470,7 @@ class ConversionData():
         try:
             TargetDB.OpenProject(targetProj, True)
         except: #FDA_DatabaseError, e:
-            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target database.'))
+            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
             raise
     
         self.project = TargetDB
@@ -1001,8 +1014,8 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
             # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
             myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         else:
-            # (We are intentionally not adding the sense number.)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot(), sfxs)
+            # Now we are adding the sense #
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
@@ -1161,7 +1174,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         fResults = open(outName, encoding='utf-8')
 
     except:
-        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the Run Apertium module?').format(fileName=outName), 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the {runApert} module?').format(fileName=outName, runApert=RunApertDocs[FTM_Name]), 2))
         return errorList, wordAnaInfoList
     
     resultsFileStr = fResults.read()
@@ -1463,7 +1476,11 @@ def convertToSynthesizerFormat(DB, configMap, report):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

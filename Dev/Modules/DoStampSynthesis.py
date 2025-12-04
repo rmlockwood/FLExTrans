@@ -5,6 +5,17 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.3 - 10/2/25 - Ron Lockwood
+#    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
+#    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
+#
+#   Version 3.14.2 - 9/3/25 - Ron Lockwood
+#    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
+#    See documentation added at the bottom of this comment block.
+#
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -102,12 +113,45 @@
 #   environment constraints. We have to order these properly and negate the environments
 #   of the previous allomorph(s).
 #
+#   User-defined STAMP tests and morpheme properties:
+#   FLEx as of version 9.3 or so supports morpheme properties for XAMPLE. These properties
+#   are tagged on either an entry or an allomorph via a custom field at that level.
+#   A new xml file called XAmpleAddonData.xml is placed in the SupportingFiles folder of the project.
+#   This file defines the names of the custom fields and the custom list contents. It also contains
+#   both user tests and synthesis test that XAMPLE and STAMP respectively will use. For this module we
+#   are only interested in the STAMP tests. The format of these tests are documented in the AMPLE and STAMP
+#   documentation. Three things have to be implemented to make STAMP use the new
+#   capabilities. 1) Morpheme properties and allomorph properties tagged on entries and allomorphs
+#   2) Definition of the morpheme properties in the declarations file (.dec) 3) Copying the Synthesis Test
+#   from the XAmpleAddonData.xml file into the Synthesis changes file used by STAMP.
+#
+#   Here's the logic for each of these:
+#   1) Tagging in the lexicons:
+#   If an entry has an XAMPLE property set in the pertinent custom field,
+#     If it's a stem,
+#       add an \mp field after the \m field for each property turned on
+#     If it's an affix,
+#       add an \mp field after the \g field for each property turned on
+#   If an allomorph has an XAMPLE property set in the pertinent custom field,
+#     add the property name after the \a <allomorph> for each property turned on. E.g.: \a form property1 property2 any_environments
+#   2) Definition in the .dec file:
+#   During 1) above, each unique morpheme property that was added to a dictionary gets added to a list and that list
+#   is used to generate the .dec file entries for those properties. \ap is used for each one.
+#   3) Copying synthesis tests:
+#   When no custom tests or morpheme properties are used, the Synthesis changes file for STAMP is blank.
+#   But when XAmpleAddonData.xml is found in the supporting files folder, the synthesis tests defined in that file are copied over
+#   to the changes file (<proj>_synt.chg)
+#
+#   Supporting code:
+#   Two new settings for FLExTrans are now available: TargetXampleCustomEntryField & TargetXampleCustomAllomorphField
+#   The user should select the custom field for each of these that is defined in the target FLEx project.
 
 import os
 import re 
 from subprocess import call
 from datetime import datetime
-
+import winreg
+import xml.etree.ElementTree as ET
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     IMoInflAffMsa,
@@ -117,6 +161,15 @@ from SIL.LCModel import ( # type: ignore
     IPhNCSegments,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString                     # type: ignore
+
+# TODO: temporary stuff until FlexTools implements LexiconGetAllomorphCustomFieldNamed
+from SIL.LCModel.Infrastructure import (# type: ignore
+    IFwMetaDataCacheManaged,
+    )
+from SIL.LCModel import MoFormTags# type: ignore
+from SIL.LCModel.Core.Cellar import (# type: ignore
+    CellarPropertyTypeFilter,
+    )
 
 from flextoolslib import *                                                  # type: ignore
 from flexlibs import FLExProject, AllProjectNames
@@ -134,7 +187,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'DoStampSynthesis'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -151,17 +207,17 @@ roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesi
 are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the 'Build' folder.
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
-NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.""")
+NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
-docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
-        FTM_Help       :"",
+        FTM_Help       : "",
         FTM_Description: description}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 DONT_CACHE = False
 CATEGORY_STR = 'category'
@@ -172,9 +228,14 @@ PREFIX_TYPE = 'prefixType'
 SUFFIX_TYPE = 'suffixType'
 INFIX_TYPE = 'infixType'
 STEM_TYPE = 'stemType'
+FW_REGISTRY_PATH = r"SOFTWARE\SIL\FieldWorks\9"
+FW_REGISTRY_PROJECTS_DIR = "ProjectsDir"
+SUPPORTING_FILES_DIR = "SupportingFiles"
+XAMPLE_ADD_ON_FILE = 'XAmpleAddonData.xml'
 
 stemNameList = []
 reqFeaturesMap = {}
+globalXAmplePropMap = {}
 
 #----------------------------------------------------------------
 
@@ -236,10 +297,15 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
 
     # We will only process inflectional affixes and stems (i.e. not derrivational affixes, etc.)
     if sense is None or sense.MorphoSyntaxAnalysisRA is None:
+
         return
+    
     if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+
         msa = IMoInflAffMsa(sense.MorphoSyntaxAnalysisRA)
+
     elif sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+        
         msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
     else:
         return
@@ -250,7 +316,40 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
         return
     
     if msa:
+
+        writeSpecialProperties(f_handle, msa, morphCategory)
+
+def processVariantForAllSenses(entry, f_rt, headWord, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID, xAmplePropList):
+
+    # Get to the main entry for this variant entry
+    mainEntry = Utils.GetEntryWithSense(entry)
+
+    # Loop through all the senses
+    for i, sense in enumerate(mainEntry.SensesOS):
+
+        # Write out morphname field (with sense number for variants)
+        f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
         
+        # Write out the XAMPLE properties
+        write_xample_properties(f_rt, xAmplePropList)
+
+        # Write out the variant marker
+        f_rt.write('\\c '+"_variant_"+'\n')
+
+        if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+            
+            msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
+        else:
+            return
+
+        writeSpecialProperties(f_rt, msa, STEM_TYPE)
+
+        # Process all allomorphs and their environments
+        process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+
+def writeSpecialProperties(f_handle, msa, morphCategory):        
+        
+        # Write out morpheme properties for stem names and required features
         if morphCategory != STEM_TYPE: # non-stems only
 
             # Deal with affix stem name stuff.
@@ -293,12 +392,24 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
                 inflClassStr = Utils.as_string(msa.PartOfSpeechRA.DefaultInflectionClassRA.Abbreviation)
                 f_handle.write(f'\\mp {inflClassStr}\n')
 
-def gather_allomorph_data(morph, masterAlloList, morphCategory):
+def gather_allomorph_data(morph, masterAlloList, morphCategory, TargetDB, custXampleAllomFieldID):
     
     stemName = ''
     environList = []
     inflClassList = []
-    
+    xAmplePropList = []
+
+    # See code comments at the beginning of this file that describe XAMPLE users tests and morpheme properties
+    # Get the custom list value
+    if custXampleAllomFieldID:
+
+        xAmplePropList = TargetDB.GetCustomFieldValue(morph.Hvo, custXampleAllomFieldID)
+
+        # Check if the value we got back is a list
+        if not isinstance(xAmplePropList, list):
+
+            xAmplePropList = []
+
     amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
     
     # If there is nothing for any WS we get ***
@@ -367,12 +478,12 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
             envStr = ITsString(env.StringRepresentation).Text
             environList.append(envStr)
 
-    masterAlloList.append((amorph, stemName, environList, inflClassList, morphCategory))
+    masterAlloList.append((amorph, stemName, environList, inflClassList, morphCategory, xAmplePropList))
 
 def output_all_allomorphs(masterAlloList, f_handle):
     
     # Loop through all the allomorphs we saved
-    for currAllomNum, (amorph, stemName, environList, inflClassList, morphCategory) in enumerate(masterAlloList):
+    for currAllomNum, (amorph, stemName, environList, inflClassList, morphCategory, xAmplePropList) in enumerate(masterAlloList):
         
         # Handle documented ways to do null morphemes in FLEx
         if amorph == '^0' or amorph == '&0' or amorph == '*0' or amorph == '\u2205':
@@ -383,6 +494,19 @@ def output_all_allomorphs(masterAlloList, f_handle):
         amorph = re.sub(r' ', r'_', amorph)
         f_handle.write('\\a '+amorph+' ')
         
+        # See code comments at the beginning of this file that describe XAMPLE users tests and morpheme properties
+        # Write out the XAMPLE properties
+        if xAmplePropList:
+
+            f_handle.write(' '.join(xAmplePropList)+' ')
+
+        # Save properties to the global property map
+        for prop in xAmplePropList:
+
+            if prop not in globalXAmplePropMap:
+
+                globalXAmplePropMap[prop] = True
+
         # Write out stem name stuff if we have a stem
         if stemName:
     
@@ -416,7 +540,7 @@ def output_all_allomorphs(masterAlloList, f_handle):
             didIt = False
             
             # Loop through all inflection classes for all allmorphs except the current ones
-            for j, (_, _, _, myInflClList, _) in enumerate(masterAlloList):
+            for j, (_, _, _, myInflClList, _, _) in enumerate(masterAlloList):
                 
                 if currAllomNum != j: 
                     
@@ -437,7 +561,7 @@ def output_all_allomorphs(masterAlloList, f_handle):
         elif len(stemName) > 0:
             
             # Loop through all stem names from previous allomorphs
-            for j, (_, myStemName, _, _, _) in enumerate(masterAlloList):
+            for j, (_, myStemName, _, _, _, _) in enumerate(masterAlloList):
                 
                 if currAllomNum != j:
                     
@@ -448,9 +572,8 @@ def output_all_allomorphs(masterAlloList, f_handle):
                         writeNegEnvironments(f_handle, currAllomNum, environList, masterAlloList)
                         break
         
-        # Otherwise if we don't have an current inflection class or stem name
+        # Otherwise if we don't have a current inflection class or stem name
         else:
-            
             # Generate negative environments
             writeNegEnvironments(f_handle, currAllomNum, environList, masterAlloList)
         
@@ -459,7 +582,7 @@ def output_all_allomorphs(masterAlloList, f_handle):
 def writeNegEnvironments(f_handle, currAllomNum, currEnvironList, masterAlloList):   
     
     # If the current environment string doesn't match an environment string from another allomorph negate that other environment
-    for n, (_, _, environList, _, _) in enumerate(masterAlloList):    
+    for n, (_, _, environList, _, _, _) in enumerate(masterAlloList):    
         
         # We only write negative environments for the previous allomorphs
         if n < currAllomNum:
@@ -474,7 +597,7 @@ def writeNegEnvironments(f_handle, currAllomNum, currEnvironList, masterAlloList
 # Write the 1st allomorph to the prefix file and the 2nd to the suffix file
 # Modify the glosses for each using the convention used in the module DoStampSynthesis
 # GLOSS_cfx_part_X where X is a or b
-def process_circumfix(e, f_pf, f_sf, myGloss, sense):
+def process_circumfix(e, f_pf, f_sf, myGloss, sense, TargetDB, custXampleAllomFieldID, custXampleEntryFieldID):
     
     # Convert dots to underscores in the gloss if it's not a root/stem
     myGloss = Utils.underscores(myGloss)
@@ -486,6 +609,8 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     else:
         f_pf.write('\\g \n')
     
+    write_field_level_xAmple_values(TargetDB, f_sf, sense, custXampleEntryFieldID)
+    
     masterAlloList = []
 
     # 1st allomorph for the prefix file
@@ -496,11 +621,10 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
             
         if morphGuidStr == affixGuidStr:
             
-            gather_allomorph_data(allomorph, masterAlloList, PREFIX_TYPE)
+            gather_allomorph_data(allomorph, masterAlloList, PREFIX_TYPE, TargetDB, custXampleAllomFieldID)
     
     # Write the data
     output_all_allomorphs(masterAlloList, f_pf)
-
     output_final_allomorph_info(f_pf, sense, PREFIX_TYPE)
     
     f_pf.write('\n')
@@ -511,6 +635,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     else:
         f_sf.write('\\g \n')
     
+    write_field_level_xAmple_values(TargetDB, f_sf, sense, custXampleEntryFieldID)
     
     masterAlloList = []
 
@@ -522,20 +647,30 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
             
         if morphGuidStr == affixGuidStr:
 
-            gather_allomorph_data(allomorph, masterAlloList, SUFFIX_TYPE)
+            gather_allomorph_data(allomorph, masterAlloList, SUFFIX_TYPE, TargetDB, custXampleAllomFieldID)
 
     # Write the data
     output_all_allomorphs(masterAlloList, f_sf)
-
     output_final_allomorph_info(f_sf, sense, SUFFIX_TYPE)
     
     f_sf.write('\n')
 
-def process_allomorphs(e, f_handle, myGloss, myType, sense):
+# See code comments at the beginning of this file that describe XAMPLE users tests and morpheme properties
+def write_field_level_xAmple_values(TargetDB, f_handle, sense, custXampleEntryFieldID):
+
+    # If we have custom XAmple field values, write them out.
+    if custXampleEntryFieldID:
+
+        xAmplePropList = TargetDB.GetCustomFieldValue(sense.Entry.Hvo, custXampleEntryFieldID)
+
+        # Write out the XAMPLE properties
+        write_xample_properties(f_handle, xAmplePropList)
+
+def process_allomorphs(e, f_handle, myGloss, myType, sense, TargetDB, custXampleAllomFieldID, custXampleEntryFieldID):
     
     # Convert dots to underscores in the gloss if it's not a root/stem
-    if (myType != STEM_TYPE):
-        
+    if myType != STEM_TYPE:
+
         myGloss = Utils.underscores(myGloss)
 
     # Output gloss
@@ -544,7 +679,11 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
         f_handle.write('\\g ' + myGloss + '\n')
     else:
         f_handle.write('\\g \n')
+
+    if myType != STEM_TYPE:
     
+        write_field_level_xAmple_values(TargetDB, f_handle, sense, custXampleEntryFieldID)
+
     # For infixes, we need to output the infix positions field
     if myType == INFIX_TYPE:
         
@@ -569,16 +708,15 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        gather_allomorph_data(allomorph, masterAlloList, myType)
+        gather_allomorph_data(allomorph, masterAlloList, myType, TargetDB, custXampleAllomFieldID)
     
     # Now process the lexeme form which is the default allomorph
-    gather_allomorph_data(e.LexemeFormOA, masterAlloList, myType)
+    gather_allomorph_data(e.LexemeFormOA, masterAlloList, myType, TargetDB, custXampleAllomFieldID)
 
     # Write the data
     output_all_allomorphs(masterAlloList, f_handle)
-    
     output_final_allomorph_info(f_handle, sense, myType)
-    
+
     f_handle.write('\n')
 
 def define_some_names(partPath):
@@ -611,21 +749,22 @@ def create_synthesis_files(partPath):
 
     (dicFileNameList, decFileName) = define_some_names(partPath)
 
-    blankFileNameList = [partPath+'_XXXtr.chg',partPath+'_synt.chg',partPath+'_outtx.ctl']
+    blankFileNameList = [partPath+'_XXXtr.chg', partPath+'_outtx.ctl']
     sycdFileName = partPath+'_sycd.chg'
     cmdFileName = partPath+'_ctrl_files.txt'
-    
+    syntFileName = partPath+'_synt.chg'
+
     # Command file
     f_cmd = open(cmdFileName, 'w', encoding="utf-8")
     f_cmd.write(decFileName+'\n')
     f_cmd.write(blankFileNameList[0]+'\n')
-    f_cmd.write(blankFileNameList[1]+'\n')
+    f_cmd.write(syntFileName+'\n')
     f_cmd.write(sycdFileName+'\n')
     f_cmd.write('\n') # need a blank line here
     for d in dicFileNameList:
         f_cmd.write(d+'\n')
     f_cmd.write('\n') # need a blank line here
-    f_cmd.write(blankFileNameList[2]+'\n')
+    f_cmd.write(blankFileNameList[1]+'\n')
     f_cmd.close()
     
     # Synthesis codes file
@@ -649,6 +788,9 @@ def create_synthesis_files(partPath):
             f_sycd.write(r'\ch "\l" "L"'+'\n') # This is the infix location field
     f_sycd.close()
 
+    # Write the Synthesis changes file.
+    write_synt_file(syntFileName)
+
     # Create the blank files we need
     for b in blankFileNameList:
         if not os.path.isfile(b):
@@ -657,6 +799,59 @@ def create_synthesis_files(partPath):
     
     return cmdFileName
 
+def write_synt_file(syntFileName):
+
+    # See code comments at the beginning of this file that describe XAMPLE users tests and morpheme properties
+
+    # The project name will be the part of the file name before the _
+    projectName = os.path.basename(syntFileName).split('_')[0]
+
+    # Get the Registry entry for FieldWorks\9 ProjectsDir which under on hkey local machine software SIL
+    FWProjectsDir = get_registry_value(winreg.HKEY_LOCAL_MACHINE, FW_REGISTRY_PATH, FW_REGISTRY_PROJECTS_DIR)
+
+    if not FWProjectsDir:
+        return
+    
+    # Build the path to the XAmpleAddonData.xml file. It's located in the SupportingFiles folder of the project's data folder.
+    xampleAddonDataPath = os.path.join(FWProjectsDir, projectName, SUPPORTING_FILES_DIR, XAMPLE_ADD_ON_FILE)
+
+    # Check if the path exists. If not, we don't have an XAMPLE file to worry about, so create a blank file.
+    if not os.path.isfile(xampleAddonDataPath):
+
+        with open(syntFileName, 'w', encoding="utf-8") as f:
+
+            f.write('\n')
+        return
+
+    try:
+        addOnTree = ET.parse(xampleAddonDataPath)
+        
+    except:
+        return
+
+    root = addOnTree.getroot()
+    tests = root.find('SynthesisTests')
+
+    if tests is not None:
+
+        with open(syntFileName, 'w', encoding="utf-8") as f:
+
+            # Get the text for this element
+            f.write(tests.text)
+            f.write('\n')
+    return
+
+def get_registry_value(root, path, name):
+
+    try:
+        key = winreg.OpenKey(root, path)
+        value, _ = winreg.QueryValueEx(key, name)
+        winreg.CloseKey(key)
+        return value
+    
+    except Exception as e:
+
+        return None
 
 def output_cat_info(TargetDB, f_dec):
     
@@ -703,7 +898,7 @@ def output_cat_info(TargetDB, f_dec):
     for myStemNameMap in stemNameList:
         
         f_dec.write(f'\\mp {myStemNameMap[STEM_STR]}{AFFIX_STR}\n')
-        
+
     # write inflection classes as \mp's (morpheme properties)
     for myInflClass in inflClassList:
         
@@ -713,7 +908,7 @@ def output_cat_info(TargetDB, f_dec):
     
     return
 
-def ouput_req_feature_info(f_dec):
+def output_req_feature_info(f_dec):
 
     # write required features names as \mp's (morpheme properties)
     for reqFeatures in reqFeaturesMap.values():
@@ -752,7 +947,19 @@ def output_nat_class_info(TargetDB, f_dec):
     
     return err_list
 
-def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report):
+def write_xample_properties(f_handle, xAmplePropList):
+
+    # Write out the XAMPLE properties
+    for prop in xAmplePropList:
+
+        # Save the property in a global map
+        if prop not in globalXAmplePropMap:
+
+            globalXAmplePropMap[prop] = True
+
+        f_handle.write('\\mp '+prop+'\n')
+
+def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report, custXampleEntryFieldID, custXampleAllomorphFieldID):
     err_list = []
     allAffixesList = []
 
@@ -762,8 +969,21 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
     pf_cnt = sf_cnt = if_cnt = rt_cnt = 0
     
     # Loop through all the entries
-    for i,entry in enumerate(TargetDB.LexiconAllEntries()):
-    
+    for i, entry in enumerate(TargetDB.LexiconAllEntries()):
+
+        xAmplePropList = []
+
+        # See code comments at the beginning of this file that describe XAMPLE users tests and morpheme properties
+        if custXampleEntryFieldID:
+
+            xAmplePropList = TargetDB.GetCustomFieldValue(entry.Hvo, custXampleEntryFieldID)
+
+            # Check if the value we got back is a list
+            if not isinstance(xAmplePropList, list):
+
+                err_list.append((_translate("DoStampSynthesis", "Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list."), 2))
+                return err_list
+            
         if report is not None:
             report.ProgressUpdate(i)
             
@@ -816,15 +1036,24 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 headWord = ITsString(entry.HeadWord).Text
                 headWord = Utils.add_one(headWord)
                 headWord = headWord.lower()
+
                 # change spaces to underscores
                 headWord = re.sub(r'\s', '_', headWord)
 
-                # Write out morphname field (no sense number for variants)
-                f_rt.write('\\m '+headWord+'\n')
-                f_rt.write('\\c '+"_variant_"+'\n')
+                processVariantForAllSenses(entry, f_rt, headWord, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID, xAmplePropList)
+                
+                # # Write out morphname field (no sense number for variants)
+                # f_rt.write('\\m '+headWord+'\n')
 
-                # Process all allomorphs and their environments
-                process_allomorphs(entry, f_rt, "", STEM_TYPE, sense=None)
+                # # Write out the XAMPLE properties
+                # write_xample_properties(f_rt, xAmplePropList)
+
+                # # Write out the variant marker
+                # f_rt.write('\\c '+"_variant_"+'\n')
+
+                # # Process all allomorphs and their environments
+                # process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+
                 rt_cnt +=1
 
         if entry.SensesOS.Count > 0: # Entry with senses
@@ -866,13 +1095,15 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
     
                     # Write out morphname field
                     f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
-                    
+
+                    # Write out the XAMPLE properties
+                    write_xample_properties(f_rt, xAmplePropList)
+
                     abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
-                    
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments 
-                    process_allomorphs(entry, f_rt, gloss, STEM_TYPE, mySense)
+                    process_allomorphs(entry, f_rt, gloss, STEM_TYPE, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
                     rt_cnt +=1
 
                 # Now process non-roots
@@ -905,19 +1136,19 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
 
                         if morphGuidStr == Utils.morphTypeReverseMap['proclitic']:
                             
-                            process_allomorphs(entry, f_pf, gloss, PREFIX_TYPE, mySense)
+                            process_allomorphs(entry, f_pf, gloss, PREFIX_TYPE, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
                             pf_cnt += 1
                             
                         elif morphGuidStr == Utils.morphTypeReverseMap['enclitic']:
-                            
-                            process_allomorphs(entry, f_sf, gloss, SUFFIX_TYPE, mySense)
+
+                            process_allomorphs(entry, f_sf, gloss, SUFFIX_TYPE, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
                             sf_cnt += 1
                         else:
                             err_list.append((_translate("DoStampSynthesis", "Skipping entry because the morph type is: {morphType}.").format(morphType=morphType), 1, TargetDB.BuildGotoURL(entry)))
 
     getRequiredFeaturesInfo(allAffixesList)   
 
-    pf_cnt, sf_cnt, if_cnt = outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt) 
+    pf_cnt, sf_cnt, if_cnt = outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt, custXampleAllomorphFieldID, custXampleEntryFieldID) 
 
     err_list.append((_translate("DoStampSynthesis", "STAMP dictionaries created. {roots} roots, {prefixes} prefixes, {suffixes} suffixes and {infixes} infixes.").format(roots=str(rt_cnt), prefixes=str(pf_cnt), suffixes=str(sf_cnt), infixes=str(if_cnt)), 0))
     
@@ -955,7 +1186,7 @@ def getRequiredFeaturesInfo(allAffixesList):
                 
                         reqFeaturesMap[tuple(myFeatAbbrList)] = requiredFeatInnerMap
 
-def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt):
+def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt, custXampleAllomorphFieldID, custXampleEntryFieldID):
 
     # Loop through all the affixes and process them
     for e, gloss, mySense, morphType in allAffixesList:
@@ -964,22 +1195,22 @@ def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cn
         
         if morphGuidStr in [Utils.morphTypeReverseMap['prefix'], Utils.morphTypeReverseMap['prefixing interfix']]:
             
-            process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
+            process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
             pf_cnt += 1
             
         elif morphGuidStr in [Utils.morphTypeReverseMap['suffix'], Utils.morphTypeReverseMap['suffixing interfix']]:
             
-            process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
+            process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
             sf_cnt += 1
             
         elif morphGuidStr in [Utils.morphTypeReverseMap['infix'], Utils.morphTypeReverseMap['infixing interfix']]:
             
-            process_allomorphs(e, f_if, gloss, INFIX_TYPE, mySense)
+            process_allomorphs(e, f_if, gloss, INFIX_TYPE, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
             if_cnt += 1
             
         elif morphGuidStr == Utils.morphTypeReverseMap['circumfix']:
             
-            process_circumfix(e, f_pf, f_sf, gloss, mySense)
+            process_circumfix(e, f_pf, f_sf, gloss, mySense, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
             pf_cnt += 1
             sf_cnt += 1
         else:
@@ -1025,24 +1256,41 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
 
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
-        error_list.append((_translate("DoStampSynthesis", "The Target Database does not exist. Please check the configuration file."), 2))
+        error_list.append((_translate("DoStampSynthesis", "The target project does not exist. Please check the configuration file."), 2))
         return error_list
     try:
-        # Open the target database
+        # Open the target project
         if not targetProj:
             error_list.append((_translate("DoStampSynthesis", 'Problem accessing the target project.'), 2))
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error(_translate("DoStampSynthesis", 'Failed to open the target database.'))
+            report.Error(_translate("DoStampSynthesis", 'Failed to open the target project.'))
         raise
 
-    # If the target database hasn't changed since we created the root databse file, don't do anything.
+    # If the target project hasn't changed since we created the root database file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
         TargetDB.CloseProject()
         error_list.append((_translate("DoStampSynthesis", "Target lexicon files are up to date."), 0))
         return error_list
+
+    entryLevelField = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_XAMPLE_CUSTOM_ENTRY_FIELD, report, giveError=False)
+    allomLevelField = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD, report, giveError=False)
+
+    if not entryLevelField:
+
+        custXampleEntryFieldID = None
+    else:
+        custXampleEntryFieldID = DB.LexiconGetEntryCustomFieldNamed(entryLevelField)
+
+    if not allomLevelField:
+        custXampleAllomorphFieldID = None
+    else:
+        custXampleAllomorphFieldID = tempLexiconGetAllomorphCustomFieldNamed(TargetDB, allomLevelField)
+
+        # TODO: turn this on and delete the above when FlexTools implements this
+        #custXampleAllomorphFieldID = LexiconGetAllomorphCustomFieldNamed(allomLevelField)
 
     # Create the dictionary files in a temp folder
     (f_pf, f_if, f_sf, f_rt, f_dec) = create_dictionary_files(partPath)
@@ -1055,13 +1303,17 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list.extend(err_list)
     
     # Put data into the STAMP dictionaries
-    err_list = create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report)
+    err_list = create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report,
+                                         custXampleEntryFieldID, custXampleAllomorphFieldID)
     error_list.extend(err_list)
 
     # Output required features info to the definition file
     # This info gets created in the create stamp dictionaries function
-    ouput_req_feature_info(f_dec)
-    
+    output_req_feature_info(f_dec)
+
+    # Output custom XAMPLE properties
+    output_custom_xample_properties(f_dec)
+
     f_pf.close() 
     f_if.close() 
     f_sf.close() 
@@ -1071,6 +1323,27 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     TargetDB.CloseProject()
     
     return error_list
+
+def tempLexiconGetAllomorphCustomFieldNamed(targetDB, allomLevelField): # returns a list
+
+    # code copied from __GetCustomFieldsOfType in FLExProject.py
+    mdc = IFwMetaDataCacheManaged(targetDB.project.MetaDataCacheAccessor)
+    
+    for flid in mdc.GetFields(MoFormTags.kClassId, False, int(CellarPropertyTypeFilter.All)):
+
+        if targetDB.project.GetIsCustomField(flid):
+
+            if mdc.GetFieldLabel(flid) == allomLevelField:
+
+                return flid
+    return None
+
+def output_custom_xample_properties(f_dec):
+
+    # Write xample properties. These have been gathered as we wrote entry and allomorph information.
+    for prop in globalXAmplePropMap.keys():
+
+        f_dec.write(f'\\ap {prop}\n')
 
 # Remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
 def fix_up_text(synFile, cleanUpText):
@@ -1108,6 +1381,7 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     global reqFeaturesMap
     stemNameList = []
     reqFeaturesMap = {}
+    globalXAmplePropMap = {}
 
     targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
@@ -1175,7 +1449,7 @@ def doStamp(DB, report, configMap=None):
 
         report.Error(_translate("DoStampSynthesis", "The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.").format(fileType=ReadConfig.TARGET_ANA_FILE, filePath=targetANA))
         return None
-    
+
     anaFile = Utils.build_path_default_to_temp(targetANA)
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
     error_list = extract_target_lex(DB, configMap, report, useCacheIfAvailable=True)
@@ -1191,7 +1465,11 @@ def doStamp(DB, report, configMap=None):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

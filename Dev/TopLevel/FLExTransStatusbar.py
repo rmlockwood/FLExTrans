@@ -1,6 +1,9 @@
 #
 #   Custom status bar callback for FLExTrans
 #
+#   Version 3.14.1 - 9/6/25 - Ron Lockwood
+#    Fixes #1064. Update status bar with whatever FTPaths.CURRENT_SRC_TEXT is set to every time.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -26,7 +29,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FLExTransStatusBar'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -40,17 +46,19 @@ if configMap is None:
 else:
     FTPaths.CURRENT_SRC_TEXT = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, None)
 
-try:
-    sourceText = FTPaths.CURRENT_SRC_TEXT 
-except AttributeError:
-    sourceText = ""
-
 # return a string that gets added to the status bar
-retStr = _translate("FLExTransStatusbar","  Work Project: {project}    Source Text: {source_text}").format(project=FTPaths.WORK_PROJECT, source_text=sourceText)
+retStr = _translate("FLExTransStatusbar","  Work Project: {project}    Source Text: ").format(project=FTPaths.WORK_PROJECT)
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def statusbarCallback():
 
-    return retStr
+    try:
+        sourceText = FTPaths.CURRENT_SRC_TEXT 
+
+    except AttributeError:
+
+        sourceText = ""
+
+    return retStr + sourceText

@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -85,7 +88,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'AdHocConstrForCluster'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -95,16 +101,16 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("AdHocConstrForCluster", "Add Ad Hoc Constraint for a Cluster"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),    
-        FTM_Help   : "",
+        FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),
+        FTM_Help       : "",
         FTM_Description: _translate("AdHocConstrForCluster",
 """Add an ad hoc constraint to multiple cluster projects.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 glossPOSMap = {}
 
@@ -870,7 +876,11 @@ class AdHocMain(QMainWindow):
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

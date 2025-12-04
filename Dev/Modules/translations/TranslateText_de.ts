@@ -4,6 +4,11 @@
 <context>
     <name>TranslateText</name>
     <message>
+      <location filename="../TranslateText.py" line="118"/>
+      <source>Translate Text</source>
+      <translation>Text übersetzen</translation>
+    </message>
+    <message>
         <location filename="../TranslateText.py" line="60"/>
         <source>Translate the current source text.</source>
         <translation>Den aktuellen Quelltext übersetzen.</translation>

@@ -5,6 +5,12 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.14.2 - 8/20/25 - Ron Lockwood
+#   Fixes crash in Import Paratext and missing OK button in other dialogs with cluster support.
+#
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects in TextInOut.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -22,9 +28,16 @@ from PyQt5.QtWidgets import QLabel, QComboBox
 IMP_EXP_WINDOW_HEIGHT = 260
 IMP_EXP_WINDOW_WIDTH = 626
 
-def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, comboWidth, specialProcessFunc=None, originalWinHeight=0):
+def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, comboWidth, specialProcessFunc=None, 
+                       originalWinHeight=0, noCancelButton=False, containerWidgetToMove=None):
 
-    self.originalOKyPos = self.ui.OKButton.y()
+    self.noCancelButton = noCancelButton
+    self.containerWidgetToMove = containerWidgetToMove
+
+    if not self.containerWidgetToMove:
+        self.originalOKyPos = self.ui.OKButton.y()
+    else:
+        self.originalOKyPos = self.containerWidgetToMove.y()
 
     if originalWinHeight > 0:
         self.originalMainWinHeight = originalWinHeight  
@@ -45,10 +58,10 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
         labelWidget.setText(self.clusterProjects[x])
         labelWidget.setVisible(False)
         
-        # Create the combo box
+        # Create the widget
         keyWidget = widgetClass(parentWin) 
         keyWidget.setGeometry(QtCore.QRect(210, 190, comboWidth, 22))
-        keyWidget.setObjectName(f"combo{x}")
+        keyWidget.setObjectName(f"widget{x}")
         keyWidget.setVisible(False)
 
         # Do special processing
@@ -130,10 +143,10 @@ def showClusterWidgets(self):
         self.topWidget1.setEnabled(True)
         self.topWidget2.setEnabled(True)
         
+    currentList = self.ui.clusterProjectsComboBox.currentData()
+
     # See which new widgets need to be shown
     for i, proj in enumerate(self.clusterProjects):
-
-        currentList = self.ui.clusterProjectsComboBox.currentData()
 
         if proj in currentList:
 
@@ -156,19 +169,31 @@ def showClusterWidgets(self):
             self.widgetList[i][1].setVisible(False)
 
     # Calculate how many pixels to move things
-    pixels = len(self.ui.clusterProjectsComboBox.currentData()) * WIDGET_SIZE_PLUS_SPACE
+    pixels = len(currentList) * WIDGET_SIZE_PLUS_SPACE
 
     if pixels > 0:
         pixels += WIDGET_SIZE_PLUS_SPACE
 
     # Move some widgets down
     widgetsToMove = [
-        self.ui.OKButton,
-        self.ui.CancelButton,
+        # self.ui.OKButton,
     ]
+
+    # Include the cancel button for the move if it exists
+    if not self.noCancelButton:
+
+        widgetsToMove.append(self.ui.CancelButton) 
+
+    # Include the container widget to move if it exists
+    if self.containerWidgetToMove:
+        
+        widgetsToMove.append(self.containerWidgetToMove)
+    else:
+        widgetsToMove.append(self.ui.OKButton)
+
     for wid in widgetsToMove:
 
         wid.setGeometry(wid.x(), self.originalOKyPos+pixels, wid.width(), wid.height())
 
     # Increase the height of the main window
-    self.resize(self.width(), self.originalMainWinHeight+pixels)
+    self.resize(self.width(), self.originalMainWinHeight+pixels)# + (self.containerWidgetToMove.height() if self.containerWidgetToMove else 0))

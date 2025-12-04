@@ -4,6 +4,11 @@
 <context>
     <name>LinkAllSensesAsDup</name>
     <message>
+      <location filename="../LinkAllSensesAsDup.py" line="118"/>
+      <source>Link All Senses As Duplicate</source>
+      <translation>Alle Sinne als Duplikat verknüpfen</translation>
+    </message>
+    <message>
         <location filename="../LinkAllSensesAsDup.py" line="68"/>
         <source>Link all senses to the same ID in the target.</source>
         <translation>Alle Bedeutungen mit derselben ID im Ziel verknüpfen.</translation>

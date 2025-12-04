@@ -5,6 +5,23 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.5 - 11/28/25 - Ron Lockwood
+#    Fixed #1062. When generating test data, if there is no compiled bilingual dictionary,
+#    compile it.
+#
+#   Version 3.14.4 - 10/10/25 - Ron Lockwood
+#    Better error messages when the Rule Assistant returns an error.
+#
+#   Version 3.14.3 - 8/19/25 - Ron Lockwood
+#    Fixes #1045. When creating a test data file that has an error message. Create it as utf-8
+#    because the error message may contain non-ASCII characters when translated.
+#
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -66,6 +83,7 @@ import Utils
 import ReadConfig
 import CreateApertiumRules
 import FTPaths
+from RunApertium import docs as RunApertDocs
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
@@ -76,7 +94,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RuleAssistant'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -87,15 +108,15 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
-docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
-        FTM_Help  : "",
+        FTM_Help       : "",
         FTM_Description:    descr}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # Element names in the rule assistant gui input file
 FLEXDATA          = "FLExData"
@@ -323,14 +344,15 @@ def ReadingToHTML(reading):
 def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    bidix = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
+    bidixDix = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not sourceText:
+    if not (sourceText or bidixDix):
         return False
 
-    if not os.path.isfile(bidix):
+    if not os.path.isfile(bidixDix):
 
-        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. Run the "Run Apertium" module to display test data in the Rule Assistant.'))
+        report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
 
     content = None
@@ -357,9 +379,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     with open(fsrc, 'w', encoding='utf-8') as fout:
         text.write(fout)
 
+    # Compile the bilingual dictionary
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-comp.exe'), 'lr', bidixDix, bidixBin], capture_output=True)
+
+    if not os.path.isfile(bidixBin):
+
+        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. There was an error compiling the bilingual dictionary.'))
+        return False
+
     ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
-    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'),
-                    '-b', bidix, fsrc, ftgt], capture_output=True)
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'), '-b', bidixBin, fsrc, ftgt], capture_output=True)
 
     try:
         with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
@@ -408,7 +437,7 @@ def GetTestDataFile(report, DB, configMap):
 
     if not GenerateTestDataFile(report, DB, configMap, fhtml):
 
-        with open(fhtml, 'w') as fout:
+        with open(fhtml, 'w', encoding='utf-8') as fout:
 
             fout.write(_translate('RuleAssistant', '<html><body><p>No test data available.</body></html>\n'))
 
@@ -430,6 +459,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         lrt = (not fromLRT) and ('LRT' in output)
 
         if not output or output[0] not in ['1', '2']:
+            
+            if len(output) > 1:
+
+                report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=' '.join(output), ruleAssistant=docs[FTM_Name]))
+            
             return (False, None, lrt)
         
         elif output[0] == '1':
@@ -440,7 +474,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
     except Exception as e:
 
-        report.Error(_translate('RuleAssistant', f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}'))
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=str(e), ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------
@@ -448,7 +482,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 def MainFunction(DB, report, modify=True, fromLRT=False):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

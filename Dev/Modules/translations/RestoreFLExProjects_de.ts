@@ -4,6 +4,11 @@
 <context>
     <name>RestoreFLExProjects</name>
     <message>
+      <location filename="../RestoreFLExProjects.py" line="118"/>
+      <source>Restore Multiple FLEx Projects</source>
+      <translation>Mehrere FLEx-Projekte wiederherstellen</translation>
+    </message>
+    <message>
         <location filename="../RestoreFLExProjects.py" line="60"/>
         <source>Select one or more FLEx backup files and automatically restore them one by one.</source>
         <translation>Wählen Sie eine oder mehrere FLEx-Sicherungsdateien aus und stellen Sie sie nacheinander automatisch wieder her.</translation>

@@ -5,6 +5,12 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -55,6 +61,7 @@ import ReadConfig
 import FTPaths
 import Mixpanel
 import Utils
+from LinkSenseTool import docs as LinkSenseToolDocs
 
 from ReplacementEditorWindow import Ui_ReplacementEditorWindow
 
@@ -63,7 +70,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ReplacementEditor'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -72,20 +82,20 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {
-    FTM_Name:        "Replacement Dictionary Editor",
-    FTM_Version:     "3.13.2",
+    FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
+    FTM_Version:     "3.14.2",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
     FTM_Help:        "",
     FTM_Description: _translate("ReplacementEditor", 
 """This module provides an interface for editing the replacement dictionary
-which allows you to override the links created by the Sense Linker Tool
+which allows you to override the links created by the {linkSenseToolModule}
 in the presence of particular affixes. For example, if you have a noun that
 is generally translated one way, but has a different translation in the
-vocative singular, you can specify that here.""")}
+vocative singular, you can specify that here.""").format(linkSenseToolModule=LinkSenseToolDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 class TableRow:
     def __init__(self, window, table):
@@ -591,7 +601,11 @@ class Main(QMainWindow):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

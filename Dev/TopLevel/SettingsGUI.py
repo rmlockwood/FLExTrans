@@ -3,6 +3,18 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.4 - 11/24/25 - Ron Lockwood
+#    Fixes #1108. Change the maxsize statement which enables the maximize button.
+#
+#   Version 3.14.3 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
+#   Version 3.14.2 - 9/3/25 - Ron Lockwood
+#    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
+#
+#   Version 3.14.1 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
 #   Version 3.14 - 5/17/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -134,6 +146,15 @@ import Utils
 import ReadConfig
 import FTPaths
 
+# TODO: temporary stuff until FlexTools implements LexiconGetAllomorphCustomFields
+from SIL.LCModel.Infrastructure import (# type: ignore
+    IFwMetaDataCacheManaged,
+    )
+from SIL.LCModel import MoFormTags# type: ignore
+from SIL.LCModel.Core.Cellar import (# type: ignore
+    CellarPropertyTypeFilter,
+    )
+
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'SettingsGUI'
@@ -261,12 +282,12 @@ def loadSourceTextListForSettings(widget, wind, settingName):
                 
                 widget.setCurrentIndex(i)
 
-def loadCustomEntry(widget, wind, settingName):
+def loadSourceSenseCustomField(widget, wind, settingName):
     
     # Get the custom field to link to target entry
-    customTarget = wind.read(settingName)
+    customLinkField = wind.read(settingName)
     
-    if customTarget is not None:
+    if customLinkField is not None:
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
@@ -274,7 +295,54 @@ def loadCustomEntry(widget, wind, settingName):
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customTarget:
+            if item[1] == customLinkField:
+                
+                widget.setCurrentIndex(i)
+
+def loadTargetEntryCustomField(widget, wind, settingName):
+    
+    # Get the custom field to link to target entry
+    customXampleProp = wind.read(settingName)
+    
+    if customXampleProp is not None:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, item in enumerate(wind.targetDB.LexiconGetEntryCustomFields()):
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customXampleProp:
+                
+                widget.setCurrentIndex(i)
+
+def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
+
+    # code copied from __GetCustomFieldsOfType in FLExProject.py
+    mdc = IFwMetaDataCacheManaged(targetDB.project.MetaDataCacheAccessor)
+    
+    for flid in mdc.GetFields(MoFormTags.kClassId, False, int(CellarPropertyTypeFilter.All)):
+
+        if targetDB.project.GetIsCustomField(flid):
+
+            yield ((flid, mdc.GetFieldLabel(flid)))
+
+def loadTargetAllomorphCustomField(widget, wind, settingName):
+    
+    # Get the custom field to link to target entry
+    customXampleProp = wind.read(settingName)
+    
+    if customXampleProp is not None:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, item in enumerate(tempLexiconGetAllomorphCustomFields(wind.targetDB)):
+
+        # TODO: for i, item in enumerate(wind.targetDB.LexiconGetAllomorphCustomFields()): #This eventually should be the FlexTools API call
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customXampleProp:
                 
                 widget.setCurrentIndex(i)
 
@@ -627,7 +695,7 @@ class Ui_MainWindow(object):
 
         MainWindow.setObjectName("SettingsGUI")
         MainWindow.resize(800, 630)
-        MainWindow.setMaximumSize(QtCore.QSize(910, 1000))
+        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -903,8 +971,13 @@ class Ui_MainWindow(object):
 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
-                widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
+                # Special radio buttons for production mode output. FLEx=Yes, Paratext=No
+                if widgInfo[WIDGET1_OBJ_NAME] == 'prod_mode_output_flex_yes':
+                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "FLEx"))
+                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "Paratext"))
+                else:
+                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
+                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
@@ -1113,7 +1186,13 @@ class Main(QMainWindow):
             
             widgInfo = widgetList[i]
             
-            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", "choose_inflection_first_element", "choose_inflection_second_element", "limit_pos"]:
+            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", 
+                                              "choose_inflection_first_element", 
+                                              "choose_inflection_second_element", 
+                                              "limit_pos",
+                                              "custom_field_entry",
+                                              "custom_field_allomorph",
+                                              ]:
                 
                 widgInfo[WIDGET1_OBJ].setEnabled(False)
                 
@@ -1309,13 +1388,17 @@ class Main(QMainWindow):
 
 def giveDBErrorMessageBox(myProj):
     
-    errMsg = _translate("SettingsGUI", "Failed to open the '{projectName}' database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File > Project Management > Fieldworks Project Properties on the menu.").format(projectName=myProj)
+    errMsg = _translate("SettingsGUI", "Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File > Project Management > Fieldworks Project Properties on the menu.").format(projectName=myProj)
     MessageBox.Show(errMsg, _translate("SettingsGUI", "FLExTrans Settings"), MessageBoxButtons.OK)
 
 def MainFunction(DB, report, modify=True): 
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     
@@ -1374,7 +1457,10 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -1391,15 +1477,15 @@ widgetList = [
    [_translate("SettingsGUI", "Project Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, MINI_VIEW],\
 
-   # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
-   [_translate("SettingsGUI", "Source Text Name"), "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
-   # tooltip text 
+   #                          label text           obj1 name             obj2 name        type       label   obj1    obj2    load function                  config key name            
+   [_translate("SettingsGUI", "Source Text Name"), "choose_source_text", "",              COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
+   #                          tooltip text 
     _translate("SettingsGUI", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
    
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     _translate("SettingsGUI", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
 
-   [_translate("SettingsGUI", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+   [_translate("SettingsGUI", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
    
    [_translate("SettingsGUI", "Category that Represents Proper Noun"), "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
@@ -1424,13 +1510,20 @@ widgetList = [
    [_translate("SettingsGUI", "Target Morpheme Types Counted As Roots"), "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
     _translate("SettingsGUI", "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."), GIVE_ERROR, FULL_VIEW],\
 
+   # The text of the Yes and No radio buttons is changed to FLEx and Paratext. See retranslateUI().
+   [_translate("SettingsGUI", "Production Mode Output Destination"), "prod_mode_output_flex_yes", "prod_mode_output_paratext_no", YES_NO, object, object, object, loadYesNo, ReadConfig.PROD_MODE_OUTPUT_FLEX, \
+    _translate("SettingsGUI", "In the production mode module 'Translate Text', where do you want the drafted text to go?"), DONT_GIVE_ERROR, BASIC_VIEW],\
+
 
 
    [_translate("SettingsGUI", "Complex Forms"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Source Complex Form Types"), "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."), GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Source Complex Form Types\nwith inflection on first Element"), "choose_source_complex_types1", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_FORMS_INFLECTION_1ST,\
+    _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Source Complex Form Types\nwith inflection on last Element"), "choose_source_complex_types2", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
+    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the last element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Source Discontiguous Complex Form Types"), "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
     _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."), GIVE_ERROR, FULL_VIEW],\
@@ -1438,11 +1531,11 @@ widgetList = [
    [_translate("SettingsGUI", "Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms"), "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
     _translate("SettingsGUI", "One or more grammatical categories that can intervene in the above complex types."), GIVE_ERROR, FULL_VIEW],\
     
-   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on 1st Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
+   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on first Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
     _translate("SettingsGUI", "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on 2nd Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the second element of the complex form."), GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on last Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
+    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the last element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
 
 
@@ -1525,6 +1618,12 @@ widgetList = [
    [_translate("SettingsGUI", "Text In Rules File"), "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
     _translate("SettingsGUI", "The file that holds the search/replace rules to fix up the Paratext import text."), DONT_GIVE_ERROR, FULL_VIEW],\
 
+   [_translate("SettingsGUI", "Target Custom Field for Entry-level XAMPLE Properties"), "custom_field_entry", "", COMBO_BOX, object, object, object, loadTargetEntryCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ENTRY_FIELD, \
+    _translate("SettingsGUI", "The name of the entry-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Target Custom Field for Allomorph-level XAMPLE Properties"), "custom_field_allomorph", "", COMBO_BOX, object, object, object, loadTargetAllomorphCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD, \
+    _translate("SettingsGUI", "The name of the allomorph-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests."), DONT_GIVE_ERROR, FULL_VIEW],\
+
 
    [_translate("SettingsGUI", "Synthesis Test Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
@@ -1599,10 +1698,12 @@ widgetList = [
 
    [_translate("SettingsGUI", "Usage Statistics Opt Out Question Asked"), "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
     _translate("SettingsGUI", "Opt out of sending usage statistics."), DONT_GIVE_ERROR, FULL_VIEW],
+
+
 ]
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # ----------------------------------------------------------------
 # The main processing function

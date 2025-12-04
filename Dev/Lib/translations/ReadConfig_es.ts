@@ -19,11 +19,6 @@
         <translation>Problema al leer el archivo: &quot;{file}&quot;. Se encontró una línea sin &quot;=&quot;.</translation>
     </message>
     <message>
-        <location filename="../ReadConfig.py" line="288"/>
-        <source>Problem reading the file: &quot;{file}&quot;. A line without more than one &quot;=&quot; was found.</source>
-        <translation type="obsolete">Problema al leer el archivo: &quot;{file}&quot;. Se encontró una línea sin más de un &quot;=&quot;.</translation>
-    </message>
-    <message>
         <location filename="../ReadConfig.py" line="318"/>
         <source>Error in the file: &quot;{file}&quot;. A value for &quot;{key}&quot; was not found.</source>
         <translation>Error en el archivo: &quot;{file}&quot;. No se encontró un valor para &quot;{key}&quot;.</translation>
@@ -36,7 +31,7 @@
     <message>
         <location filename="../ReadConfig.py" line="294"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line with more than one &quot;=&quot; was found.</source>
-        <translation>Problema al leer el archivo: &quot;{file}&quot;. Se encontró una línea con más de un &quot;=&quot;.</translation>
+        <translation>Problema al leer el archivo: &quot;{file}&quot;. Se encontró una línea sin &quot;=&quot;.</translation>
     </message>
 </context>
 </TS>

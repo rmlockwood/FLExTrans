@@ -39,11 +39,6 @@
         <translation>Andernfalls verwenden wir nur die Buchabkürzung.</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="131"/>
-        <source>Use full English book name for title</source>
-        <translation type="obsolete">Vollständigen englischen Buchnamen für den Titel verwenden</translation>
-    </message>
-    <message>
         <location filename="../ParatextChapSelectionDlg.py" line="132"/>
         <source>Include footnotes</source>
         <translation>Fußnoten einfügen</translation>

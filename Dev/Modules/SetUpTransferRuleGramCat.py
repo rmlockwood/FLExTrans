@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.14.2 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14.1 - 6/18/25 - Ron Lockwood
 #    Fixes #998. Use ElementTree to parse the transfer rules file.
 #
@@ -92,7 +95,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'SetUpTransferRuleGramCat'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -103,12 +109,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
         FTM_Description: _translate("SetUpTransferRuleGramCat", 
-"""This module first goes through both the source and target FLEx databases and extracts
+"""This module first goes through both the source and target FLEx projects and extracts
 the grammatical category lists. It will replace what is currently listed for the
 tags of the a_gram_cat attribute with the lists extracted. Duplicate categories
 will be discarded. Also naming conventions will be followed like in the bilingual
@@ -119,8 +125,8 @@ attributes in the transfer rule file from FLEx inflection features, inflection c
 and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
                  
 slot2AffixListMap = {}
 GRAM_CAT = 'a_gram_cat'
@@ -469,7 +475,11 @@ def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thi
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -72,7 +75,10 @@ import Utils
 _translate = QCoreApplication.translate
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['StartTestbed'], translators)
@@ -83,8 +89,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {
-    FTM_Name: "Start Testbed",
-    FTM_Version: "3.13",
+    FTM_Name: _translate("StartTestbed", "Start Testbed"),
+    FTM_Version: "3.14.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
     FTM_Help: "",
@@ -96,8 +102,8 @@ docs = {
     ),
 }
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def init_new_result(DB, report):
     # should this clean up result nodes that have no data?
@@ -132,7 +138,11 @@ def init_new_result(DB, report):
 def MainFunction(DB, report, modifyAllowed):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['StartTestbed'], 
                            translators, loadBase=True)
 

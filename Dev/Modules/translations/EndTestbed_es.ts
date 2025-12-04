@@ -4,6 +4,11 @@
 <context>
     <name>EndTestbed</name>
     <message>
+      <location filename="../EndTestbed.py" line="118"/>
+      <source>End Testbed</source>
+      <translation>Finalizar banco de pruebas</translation>
+    </message>
+    <message>
         <location filename="../EndTestbed.py" line="69"/>
         <source>Conclude a testbed log result.</source>
         <translation>Concluir un resultado del registro de prueba.</translation>

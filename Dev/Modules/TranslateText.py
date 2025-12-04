@@ -5,6 +5,12 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.14.2 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.13.1 - 3/20/25 - Ron Lockwood
 #    Modularized the main functions to make it easy to call from other modules.
 # 
@@ -41,7 +47,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TranslateText'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -52,24 +61,26 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Translate Text",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),    
-        FTM_Help   : "",
-        FTM_Description: _translate("TranslateText", 
+        FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),
+        FTM_Help       : "",
+        FTM_Description: _translate("TranslateText",
 """Translate the current source text.""")}
 
-app.quit()
-del app
-
-FINAL_MODULE_IS_EXPORT_TO_PARATEXT = True # Otherwise, the last module is Insert Target Text
+#app.quit()
+#del app
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
@@ -139,7 +150,9 @@ def MainFunction(DB, report, modify=True):
         if not DoStampSynthesis.doStamp(DB, report, configMap):
             return
     
-    if FINAL_MODULE_IS_EXPORT_TO_PARATEXT:
+    prodModeOutputToFlex = ReadConfig.getConfigVal(configMap, ReadConfig.PROD_MODE_OUTPUT_FLEX, report, giveError=True)
+
+    if prodModeOutputToFlex == 'n':
 
         ## Export to Paratext
         report.Blank()
@@ -154,7 +167,11 @@ def MainFunction(DB, report, modify=True):
         
         # Reload the translations after Export to Paratext
         translators = []
+        app = QApplication.instance()
+
+    if app is None:
         app = QApplication([])
+
         Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                                translators, loadBase=False)
     else:

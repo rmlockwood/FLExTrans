@@ -5,6 +5,18 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.4 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
+#   Version 3.14.3 - 9/3/25 - Ron Lockwood
+#    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
+#
+#   Version 3.14.2 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects in TextInOut.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -141,8 +153,10 @@ LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
 LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
+PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
-SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
+SOURCE_FORMS_INFLECTION_1ST = 'SourceComplexFormsWithInflectionOn1stElement'
+SOURCE_COMPLEX_TYPES = 'SourceComplexTypes' # This the setting for source complex forms with inflection on the second/last element, but for historical reasons it is named this way.
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
 SOURCE_CUSTOM_FIELD_SENSE_NUM = 'SourceCustomFieldForSenseNum'
 SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
@@ -165,6 +179,8 @@ TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TARGET_XAMPLE_CUSTOM_ENTRY_FIELD = 'TargetXampleCustomEntryField'
+TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD = 'TargetXampleCustomAllomorphField'
 TESTBED_FILE = 'TestbedFile'
 TESTBED_RESULTS_FILE = 'TestbedResultsFile'
 TEXT_OUT_RULES_FILE = 'TextOutRulesFile'
@@ -180,6 +196,7 @@ TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 # If you are adding a new property that will have multiple values, add it to this list variable
 PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_MORPHNAMES,
+                             SOURCE_FORMS_INFLECTION_1ST,
                              SOURCE_COMPLEX_TYPES,
                              SOURCE_DISCONTIG_TYPES,
                              SOURCE_DISCONTIG_SKIPPED,
@@ -260,8 +277,13 @@ def readConfig(report):
     f_handle = openConfigFile(report, 'r')
     
     if f_handle is None:
-        return 
+        
+        return None
     
+    return getConfigMap(f_handle, report)
+
+def getConfigMap(f_handle, report):
+
     my_map = {}
     for line in f_handle:
         
@@ -307,7 +329,7 @@ def readConfig(report):
 
     return my_map
 
-def getConfigVal(my_map, key, report, giveError=True):
+def getConfigVal(my_map, key, report, giveError=True, basePath=None):
 
     if key not in my_map:
 
@@ -328,7 +350,10 @@ def getConfigVal(my_map, key, report, giveError=True):
                 
                 # Return the parent folder of the Config folder + the relative file path.
                 # E.g. the resulting path would be something like ...\German-Swedish\Build\target_text.txt
-                return os.path.join(WORK_DIR, my_map[key])
+                if basePath:
+                    return os.path.join(basePath, my_map[key])
+                else:
+                    return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
 
