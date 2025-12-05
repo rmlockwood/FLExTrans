@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.14.2 - 12/3/25 - Ron Lockwood
+#    Refixes #1139. Reword the error message.
+#
 #   Version 3.14.1 - 12/3/25 - Ron Lockwood
 #    Fixes #1139. Give a better error message when Paratext path is not found in registry.
 #
@@ -435,7 +438,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     # If we get None, there was a registry problem
     if paratextPath is None:
         
-        QMessageBox.warning(self, _translate("ChapterSelection", "Registry Error"), _translate("ChapterSelection", "Could not find the Paratext installation path in the registry."))
+        QMessageBox.warning(self, _translate("ChapterSelection", "Registry Error"), _translate("ChapterSelection", "Could not find the Paratext data folder in the registry."))
         return
 
     # Check if Paratext path exists
