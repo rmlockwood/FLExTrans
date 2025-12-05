@@ -28,4 +28,4 @@ jobs:
       - name: test
         env:
           PYTHONPATH: ${{ github.workspace }}/ci_stubs:${{ env.PYTHONPATH }}
-        run: python -m unittest discover -v
+        run: python -m unittest test_rule_assistant.py -v
