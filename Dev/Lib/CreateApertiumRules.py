@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.5 - 12/5/25 - Ron Lockwood
+#    Check for the disjoint feature set under DisjointFeatureSets, not DisjointFeatureSet.
+#
 #   Version 3.14.4 - 12/1/25 - Ron Lockwood
 #    Fixes #1119. Give a better error message when the co-feature "number" is not found.
 #    Also give an error if the values "sg" and "pl" are not found.
@@ -52,8 +55,6 @@ from itertools import combinations, permutations
 import dataclasses
 
 from PyQt5.QtCore import QCoreApplication
-
-from flextoolslib import FTM_Name                                                 
 
 import Utils
 
@@ -1473,8 +1474,8 @@ class RuleGenerator:
         # disjoint features the UI gives us, but for now we're hardcoding this to expect a co-feature named "number" 
         # and we expect number to have values "sg" and "pl".
 
-        # First check if we have a disjoint feature set.
-        disjointFeatureSets = root.find('.//DisjointFeatureSets')
+        # First check if we have a disjoint feature set. At least one DisjointFeatureSet under DisjointFeatureSets
+        disjointFeatureSets = root.find('.//DisjointFeatureSet')
 
         if disjointFeatureSets is not None:
 
