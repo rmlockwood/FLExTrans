@@ -316,6 +316,23 @@ def loadTargetEntryCustomField(widget, wind, settingName):
                 
                 widget.setCurrentIndex(i)
 
+def loadCustomEntry(widget, wind, settingName):
+    
+    # Get the custom field to link to target entry
+    customTarget = wind.read(settingName)
+    
+    if customTarget is not None:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customTarget:
+                
+                widget.setCurrentIndex(i)
+
 def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
 
     # code copied from __GetCustomFieldsOfType in FLExProject.py
