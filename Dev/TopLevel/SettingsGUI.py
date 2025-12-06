@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.5 - 12/6/25 - Ron Lockwood
+#    Fixes #1132. Use (none) as an option for allomorph and entry custom fields.
+#    Also, when writing settings, (none) should translate to blank.
+#
 #   Version 3.14.4 - 11/24/25 - Ron Lockwood
 #    Fixes #1108. Change the maxsize statement which enables the maximize button.
 #
@@ -306,6 +310,9 @@ def loadTargetEntryCustomField(widget, wind, settingName):
     
     if customXampleProp is not None:
 
+        # Add (none) as the first option
+        widget.addItem(_translate("SettingsGUI", "(none)"))
+
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(wind.targetDB.LexiconGetEntryCustomFields()):
     
@@ -350,6 +357,9 @@ def loadTargetAllomorphCustomField(widget, wind, settingName):
     customXampleProp = wind.read(settingName)
     
     if customXampleProp is not None:
+
+        # Add (none) as the first option
+        widget.addItem(_translate("SettingsGUI", "(none)"))
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(tempLexiconGetAllomorphCustomFields(wind.targetDB)):
@@ -1344,13 +1354,19 @@ class Main(QMainWindow):
             
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
-                updatedConfigMap[widgInfo[CONFIG_NAME]] = widgInfo[WIDGET1_OBJ].currentText()
+                mySettingVal = widgInfo[WIDGET1_OBJ].currentText()
+
+                # If the user selected (none), set the value to blank
+                if mySettingVal == _translate("SettingsGUI", "(none)"):
+                    mySettingVal = ''
+
+                outStr = widgInfo[CONFIG_NAME]+'='+mySettingVal
+                updatedConfigMap[widgInfo[CONFIG_NAME]] = mySettingVal
                 
                 if widgInfo[CONFIG_NAME] == ReadConfig.SOURCE_TEXT_NAME:
                     
                     # Set the global variable
-                    FTPaths.CURRENT_SRC_TEXT = widgInfo[WIDGET1_OBJ].currentText()
+                    FTPaths.CURRENT_SRC_TEXT = mySettingVal
  
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
