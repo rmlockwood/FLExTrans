@@ -27,8 +27,28 @@ class Reporter:
     def Error(self, *args):
         self.errors.append(args)
 
-class BaseTest:
-    Data = {}
+class BaseTest(unittest.TestCase):
+    Data = {
+        None: {
+            'gender': {
+                'source_features': ['f', 'm'],
+            },
+        },
+        'adj': {
+            'gender': {
+                'target_affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+            },
+            'number': {
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+        'n': {
+            'number': {
+                'source_affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
     RuleFile = 'Ex3_Adj-Noun.xml'
     RuleNumber = None
     RuleCount = 1
@@ -46,12 +66,21 @@ class BaseTest:
             shutil.copy(os.path.join(DataFolder, self.TransferFile), self.t1xFile)
         CreateApertiumRules.Utils.DATA = self.Data
 
-        # Create rules
+        # Create rules (with debug output on failure)
         report = Reporter()
         path = os.path.join(DataFolder, self.RuleFile)
-        self.assertTrue(CreateApertiumRules.CreateRules(
+        result = CreateApertiumRules.CreateRules(
             'source', 'target', report, None, path, self.t1xFile, self.RuleNumber,
-        ))
+        )
+        if not result:
+            print('CreateRules returned falsy result:', result)
+            print('Reporter.infos:')
+            for i in report.infos:
+                print('  ', i)
+            print('Reporter.errors:')
+            for e in report.errors:
+                print('  ', e)
+        self.assertTrue(result)
         self.assertListEqual([], report.errors)
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)

@@ -5,6 +5,19 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.3 - 10/2/25 - Ron Lockwood
+#    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
+#    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
+#
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.3 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -138,20 +151,40 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString          # type: ignore
 from flextoolslib import *                                                 
 from flexlibs import FLExProject
 
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
+import Mixpanel
 import ReadConfig
 import Utils
+from RunApertium import docs as RunApertDocs
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ConvertTextToSTAMPformat'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.13.3",
+docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
+        FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
-        FTM_Description:  
-"""
-This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
+        FTM_Description: _translate("ConvertTextToSTAMPformat",
+"""This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable 
 for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
 synthesis program. 
@@ -160,9 +193,11 @@ HermitCrab synthesis. For STAMP, the file is what you specified by the Target Ou
 called target_text-ana.txt.
 For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
 target_words-HC.txt. Both files are usually in the Build folder.
-NOTE: messages and the task bar will show the SOURCE database as being used. Actually the target database 
-is being used.
-""" }
+NOTE: messages and the task bar will show the source project as being used. Actually the target project 
+is being used.""").format(runApert=RunApertDocs[FTM_Name])}
+
+#app.quit()
+#del app
 
 COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
@@ -397,7 +432,7 @@ class ConversionData():
         
         if not lexFolder:
             
-            errorList.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+            errorList.append((_translate("ConvertTextToSTAMPformat", 'Configuration file problem with {fileType}.').format(fileType=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
             self.haveError = True
             return 
                 
@@ -406,7 +441,7 @@ class ConversionData():
         # Check that we have a valid folder
         if os.path.isdir(lexFolder) == False:
             
-            errorList.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+            errorList.append((_translate("ConvertTextToSTAMPformat", 'Lexicon files folder: {fileType} does not exist.').format(fileType=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
             self.haveError = True
             return errorList
     
@@ -415,7 +450,7 @@ class ConversionData():
         
         if not cacheData:
             
-            errorList.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+            errorList.append((_translate("ConvertTextToSTAMPformat", 'Configuration file problem with {fileType}.').format(fileType=ReadConfig.CACHE_DATA), 2))
             self.haveError = True
             return errorList
     
@@ -435,7 +470,7 @@ class ConversionData():
         try:
             TargetDB.OpenProject(targetProj, True)
         except: #FDA_DatabaseError, e:
-            report.Error('Failed to open the target database.')
+            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
             raise
     
         self.project = TargetDB
@@ -629,14 +664,6 @@ class ConversionData():
 
             senseNum = str(i+1)
 
-            # # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
-            # senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
-            
-            # # No number found, so use sense 1
-            # if senseNum == '':
-                
-            #     senseNum = '1'
-            
         else: # entry
             
             compEntry = ILexEntry(Utils.GetEntryWithSense(compEntry))
@@ -987,8 +1014,8 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
             # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
             myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         else:
-            # (We are intentionally not adding the sense number.)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot(), sfxs)
+            # Now we are adding the sense #
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
@@ -1147,7 +1174,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         fResults = open(outName, encoding='utf-8')
 
     except:
-        errorList.append((f'The file: {outName} was not found. Did you run the Run Apertium module?', 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the {runApert} module?').format(fileName=outName, runApert=RunApertDocs[FTM_Name]), 2))
         return errorList, wordAnaInfoList
     
     resultsFileStr = fResults.read()
@@ -1233,8 +1260,7 @@ def calculatePrePostPunctuation(puncStr):
 def processLUparseError(cnt, tokList, morphs):
 
     prev2words, foll2words = getContextWords(cnt, tokList) # just pass the lexical units
-    errorList = [("Lemma or grammatical category missing for a target word near word "+str(cnt+1)+". Found only: "+",".join(morphs)+\
-                        f". The preceding two words were: {prev2words}. The following two words were: {foll2words}. Processing stopped.",2)]
+    errorList = [(_translate("ConvertTextToSTAMPformat", "Lemma or grammatical category missing for a target word near word {wordNum}. Found only: {morphs}. The preceding two words were: {prevWords}. The following two words were: {follWords}. Processing stopped.").format(wordNum=str(cnt+1), morphs=",".join(morphs), prevWords=prev2words, follWords=foll2words),2)]
     return errorList
 
 def processLU(lexUnitStr, affixMap):
@@ -1311,18 +1337,18 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
 
     if not (targetANAFile and affixFile and transferResultsFile and sentPunct):
         
-        errorList.append((f'Configuration file problem with targetANAFile or affixFile or transferResultsFile or sentPunct', 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Configuration file problem with targetANAFile or affixFile or transferResultsFile or sentPunct"), 2))
         return errorList
 
     # Check the validity of the complex forms lists
     if complexForms1st and not ReadConfig.configValIsList(configMap, ReadConfig.TARGET_FORMS_INFLECTION_1ST, report):
         
-        errorList.append((f'Configuration file problem with: {ReadConfig.TARGET_FORMS_INFLECTION_1ST}', 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Configuration file problem with: {property}.").format(property=ReadConfig.TARGET_FORMS_INFLECTION_1ST), 2))
         return errorList
     
     if complexForms2nd and not ReadConfig.configValIsList(configMap, ReadConfig.TARGET_FORMS_INFLECTION_2ND, report):
         
-        errorList.append((f'Configuration file problem with: {ReadConfig.TARGET_FORMS_INFLECTION_2ND}', 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Configuration file problem with: {property}.").format(property=ReadConfig.TARGET_FORMS_INFLECTION_2ND), 2))
         return errorList
 
     # Build the complex forms map
@@ -1372,7 +1398,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
             fOutput = open(HCmasterFile, 'w', encoding='utf-8')
     except:
 
-        errorList.append(('Error writing the output file.', 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Error writing the output file."), 2))
         return errorList
     
     count = 0
@@ -1399,11 +1425,11 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         count += 1
     
     if not doHermitCrabSynthesis:
-        errorList.append((f'Converted target words put in the file: {Utils.getPathRelativeToWorkProjectsDir(targetANAFile)}.', 0))
-        errorList.append((str(count)+' records exported in ANA format.', 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(targetANAFile)), 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "{count} records exported in ANA format.").format(count=str(count)), 0))
     else:
-        errorList.append((f'Converted target words put in the file: {Utils.getPathRelativeToWorkProjectsDir(HCmasterFile)}', 0))
-        errorList.append((str(count)+' records exported in HermitCrab format.', 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCmasterFile)), 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "{count} records exported in HermitCrab format.").format(count=str(count)), 0))
 
     fOutput.close()
     
@@ -1422,7 +1448,7 @@ def convertToSynthesizerFormat(DB, configMap, report):
     # Verify that the affix file exist.
     if not os.path.exists(affixFile):
         
-        report.Error(f'The Catalog Target Affixes module must be run before this module. The {ReadConfig.TARGET_AFFIX_GLOSS_FILE}: {affixFile} does not exist.')
+        report.Error(_translate("ConvertTextToSTAMPformat", "The Catalog Target Affixes module must be run before this module. The {fileType}: {filePath} does not exist.").format(fileType=ReadConfig.TARGET_AFFIX_GLOSS_FILE, filePath=affixFile))
         return None
     
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
@@ -1438,7 +1464,7 @@ def convertToSynthesizerFormat(DB, configMap, report):
 
         if not HCmasterFile:
 
-            report.Error(f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.')
+            report.Error(_translate("ConvertTextToSTAMPformat", "Configuration file problem with: {fileType}.").format(fileType=ReadConfig.HERMIT_CRAB_MASTER_FILE))
             return None 
     
     errorList = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
@@ -1449,16 +1475,26 @@ def convertToSynthesizerFormat(DB, configMap, report):
 
 def MainFunction(DB, report, modifyAllowed):
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     convertToSynthesizerFormat(DB, configMap, report)
+
+
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

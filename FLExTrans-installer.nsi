@@ -2,6 +2,8 @@
 !include "ReplaceInFile.nsh"
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
+!include "LangFile.nsh"
+
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "FLExTrans"
@@ -10,13 +12,13 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.13"
+!define PRODUCT_VERSION "3.14"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
-!define FLEX_TOOLS_WITH_VERSION "FLExTrans"
-!define WORKPROJECTSDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects"
-!define TEMPLATEDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
+!define FLEXTRANS_FOLDER "FLExTrans"
+!define WORKPROJECTSDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects"
+!define TEMPLATEDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject"
 !define RULEASSISTANT "FLExTrans.Rule Assistant"
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
@@ -29,12 +31,13 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey "LegalTrademarks" ""
-VIAddVersionKey "LegalCopyright" "Â© 2015-2025 SIL International"
+VIAddVersionKey "LegalCopyright" "? 2015-2025 SIL International"
 VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.13.0.${BUILD_NUM}
+; Always 4 numerals
+VIProductVersion 3.14.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -56,27 +59,7 @@ Var Label
 Var RadioYes
 Var RadioNo
 Var /GLOBAL PRODUCTION_MODE
-
-Function ProdModeDialog
-  nsDialogs::Create 1018
-  Pop $Dialog
-
-  ${NSD_CreateLabel} 0 0 450 40 "Do you want to set FLExTrans up for production use? If you choose Yes, the installer will set up a simpler interface for production use. For normal development work with FLExTrans leave this as 'No'."
-  Pop $Label
-
-  ${NSD_CreateRadioButton} 10 50 200 12 "Yes"
-  Pop $RadioYes
-
-  ${NSD_CreateRadioButton} 10 70 200 12 "No"
-  Pop $RadioNo
-  SendMessage $RadioNo ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
-
-  nsDialogs::Show
-FunctionEnd
-
-Function ProdModeDlgLeave
-  ${NSD_GetChecked} $RadioYes $PRODUCTION_MODE
-FunctionEnd
+Var /GLOBAL LANGCODE
 
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -89,6 +72,8 @@ FunctionEnd
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "German"
+!insertmacro MUI_LANGUAGE "Spanish"
 
 !macro _ReplaceInFile SOURCE_FILE SEARCH_TEXT REPLACEMENT
   Push "${SOURCE_FILE}"
@@ -107,13 +92,42 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
+# Set up variables to hold installation messages in different UI languages
+LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
+LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
+LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
+LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
+LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
+
+# English
+LangString Drafting       ${LANG_ENGLISH} "Drafting"
+LangString Run_Testbed    ${LANG_ENGLISH} "Run Testbed"
+LangString Tools          ${LANG_ENGLISH} "Tools"
+LangString Synthesis_Test ${LANG_ENGLISH} "Synthesis Test"
+LangString Clusters       ${LANG_ENGLISH} "Clusters"
+
+# German
+LangString Drafting       ${LANG_GERMAN} "Entwerfen"
+LangString Run_Testbed    ${LANG_GERMAN} "Tests durchführen"
+LangString Tools          ${LANG_GERMAN} "Werkzeuge"
+LangString Synthesis_Test ${LANG_GERMAN} "Synthesetest"
+LangString Clusters       ${LANG_GERMAN} "Clusters"
+
+# Spanish
+LangString Drafting       ${LANG_SPANISH} "Redacción"
+LangString Run_Testbed    ${LANG_SPANISH} "Ejecutar testbed"
+LangString Tools          ${LANG_SPANISH} "Herramientas"
+LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
+LangString Clusters       ${LANG_SPANISH} "Racimos"
+
 Section -Prerequisites
 InitPluginsDir
 
   SetOutPath "$INSTDIR\install_files"
 
   # Install python 
-  MessageBox MB_YESNO "Install Python 3.11.7? $\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
+  MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
         File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
         ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe PrependPath=1"
         Goto endPythonSync
@@ -126,45 +140,57 @@ InitPluginsDir
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
   # Create empty Output folders
-  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
-  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Output"
+  CreateDirectory "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Output"
+  CreateDirectory "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\Output"
   
+  ## Copy files only if they don't already exist. These are files users may change.
   SetOverwrite off
-
-  # Copy files users may change only if they don't already exist
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
-
+  
+  # Replacement dictionary  
+  ; German-Swedish project folder
+  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Output"
   File "${GIT_FOLDER}\replace.dix"
 
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
-  
-  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
-  
+  ; template project folder
   SetOutPath "${TEMPLATEDIR}\Output"
-
   File "${GIT_FOLDER}\replace.dix"
   
-  SetOutPath "${TEMPLATEDIR}"
-
+  # Transfer rule files for each language.
+  ; First copy them to the install folder
+  SetOutPath "$INSTDIR\install_files"
+  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Swedish_de.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Swedish_es.t1x"
+  
+  ; Then copy them to the right name, depending on install language.
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
+  ${Else}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
+  ${EndIf}
+  
+  # Sample transfer rule files for each language.
+  ; First copy them to the install folder
+  SetOutPath "$INSTDIR\install_files"
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Sample1_de.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Sample1_es.t1x"
   
-  # Copy and rename the file in the Template folder to not have -Swedish
-  File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
-  
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
+  ; Then copy them to the right name, depending on install language. We only copy the sample rules file to the template project folder.
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+  ${Else}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+  ${EndIf}
 
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
-
+  ## Now we overwrite the following files.
   SetOverwrite on
   
   # Find where FLEx is installed
@@ -176,12 +202,12 @@ InitPluginsDir
   nsisunz::Unzip "$INSTDIR\install_files\${HERMIT_CRAB_ZIP_FILE}" "$0"
 
   # Delete SettingGui.py from the Modules\FLExTrans folder, it now lives right under FlexTools
-  Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
+  Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
 
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
-  Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FTPaths.py"
+  Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\FTPaths.py"
   
-  # Fix up ini files, both collection ones and flextools.ini
+  # Fix up ini files, both collection ones and flextools.ini in all work project folders
   SetOutPath ${WORKPROJECTSDIR}
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
   loop1:
@@ -189,7 +215,7 @@ InitPluginsDir
     StrCmp $1 "." nextfolder
     StrCmp $1 ".." nextfolder
     
-    # Get two values from flextools.ini
+    # Get two values from flextools.ini to save for later after the new .ini file is installed.
     ReadIniStr $8 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject"
     ReadIniStr $9 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection"
 
@@ -199,10 +225,14 @@ InitPluginsDir
       StrCpy $9 "Tools"
     ${EndIf}
 
-    # Overwrite FlexTools.vbs
+    # Overwrite FLExTrans.vbs
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
+       ; Delete a old FlexTools.vbs file if it exists
+       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
+          Delete "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
+      ${EndIf}
       SetOutPath "${WORKPROJECTSDIR}\$1"
-      File "${GIT_FOLDER}\FlexTools.vbs"
+      File "${GIT_FOLDER}\FLExTrans.vbs"
     ${EndIf}
     
     # Overwrite flextools.ini
@@ -217,13 +247,13 @@ InitPluginsDir
       ${EndIf}
     ${EndIf}
     
-	  # Overwrite FLExTrans.ini - the production mode collection
+	# Overwrite FLExTrans.ini - the production mode collection
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
       File "${GIT_FOLDER}\FLExTrans.ini"
     ${EndIf}
 	
-	  # Overwrite Makefiles
+	# Overwrite Makefiles
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build"
       File "${GIT_FOLDER}\Makefile"
@@ -240,7 +270,7 @@ InitPluginsDir
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentproject = 'German-FLExTrans-Sample'" "currentproject = '$8'"
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
-    
+			
     # Find all collection ini files (e.g. tools.ini)
     skip:
     FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
@@ -259,30 +289,7 @@ InitPluginsDir
 		
 				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
 
-			skip3:
-			
-			# Delete extra section if needed. Mainly for MB.
-			DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}"
-			# Need to do this before we write EXPORTFROMFLEX below so that we don't get duplicate sections
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export FLEx Text to Paratext" "Export Text from Target FLEx to Paratext"
-
-			# Write new tools to the tools.ini file. For ones that already exist, X=Y gets added.
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${RULEASSISTANT}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${REPLACEMENTEDITOR}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTIN}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTOUT}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}" "X" "Y"
-
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export Translated Text to Paratext" "Export FLExTrans Draft to Paratext"
-			
-		${Else}
-			# Rename modules in the all the .ini files (for old installs)
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
-			# older module names
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text"
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Catalog Target Affixes"
+			skip3:      
 		${EndIf}
       ${EndIf}
       FindNext $3 $4
@@ -294,25 +301,114 @@ InitPluginsDir
     Goto loop1
   done1:
     FindClose $0
-    
+  
+  # if we are installing for the same language that is already there, skip adding/renaming files for the language
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+  
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Werkzeuge.ini"
+	
+	  Goto skip4
+    ${EndIf}
+  ${EndIf}
+	
+  ${If} $LANGUAGE == ${LANG_SPANISH}
+  
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Herramientas.ini"
+	
+	  Goto skip4
+    ${EndIf}
+  ${EndIf}
+	
+  # Install the collection .ini files if they don't exist already.
+  SetOverwrite off
+
+  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Config\Collections"
+  File "${GIT_FOLDER}\Drafting.ini"
+  File "${GIT_FOLDER}\Run Testbed.ini"
+  File "${GIT_FOLDER}\Tools.ini"
+  File "${GIT_FOLDER}\Synthesis Test.ini"
+  File "${GIT_FOLDER}\FLExTrans.ini"
+  File "${GIT_FOLDER}\Clusters.ini"
+
+  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\Config\Collections"
+  File "${GIT_FOLDER}\Drafting.ini"
+  File "${GIT_FOLDER}\Run Testbed.ini"
+  File "${GIT_FOLDER}\Tools.ini"
+  File "${GIT_FOLDER}\Synthesis Test.ini"
+  File "${GIT_FOLDER}\FLExTrans.ini"
+  File "${GIT_FOLDER}\Clusters.ini"
+
+  skip4:
+  
+  SetOverwrite on
+
+  # If we are not installing for English, rename the .ini files appropriately.
+  # We are only supporting renaming from English to something else. For other situations they must delete their .ini files
+  ${If} $LANGUAGE != ${LANG_ENGLISH}
+  
+    # Fix up ini files, for UI language chosen
+    SetOutPath ${WORKPROJECTSDIR}
+    FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
+    loop8:
+      StrCmp $1 "" done8
+      StrCmp $1 "." nextfolder8
+      StrCmp $1 ".." nextfolder8
+        
+      # Replace collection names that are in collectiontabs (or current) with the language equivalent
+      ${If} $LANGUAGE != ${LANG_ENGLISH}
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" "$(Drafting)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Run Testbed" "$(Run_Testbed)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "'Tools'" "'$(Tools)'"  # replace 'Tools' so we don't mistakenly match FlexTools
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Synthesis Test" "$(Synthesis_Test)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
+      ${EndIf}
+      
+	  # Change the interface language setting
+	  WriteINIStr "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "uilanguage" "'$LANGCODE'"
+	  
+      # Renaming
+      SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
+
+      StrCpy $R0 "$(Drafting)"
+      Rename "$OUTDIR\Drafting.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Run_Testbed)"
+      Rename "$OUTDIR\Run Testbed.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Tools)"
+      Rename "$OUTDIR\Tools.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Synthesis_Test)"
+      Rename "$OUTDIR\Synthesis Test.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Clusters)"
+      Rename "$OUTDIR\Clusters.ini" "$OUTDIR\$R0.ini" 
+
+      nextfolder8:  
+      FindNext $0 $1
+      Goto loop8
+    done8:
+      FindClose $0
+
+  ${EndIf}
+
+  # Set the folder permission to be writable by all in the Users group
+  # old that didn't seem to work as reported in issue 1125:      nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
+  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant Users:(OI)(CI)(M) /T /C'
+
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
+  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
+  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
   File "${GIT_FOLDER}\Command.bat"
   # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.
   ExecWait '${mycmd}'
   # if the above failed, call the command.bat to do the same thing, but if this was the first time run, pip won't be in the path.
   IfErrors 0 +2
-        Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
+        Exec '"$OUT_FOLDER\${FLEXTRANS_FOLDER}\Command.bat"'
 
   # Install Rule Assistant in silent mode
   SetOutPath "$INSTDIR\install_files"
   File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
   ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
   
-  # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
-  MessageBox MB_YESNO "Install XMLmind?" /SD IDYES IDNO endXXeSync
+  MessageBox MB_YESNO "$(InstallXMLmindMsg)" /SD IDYES IDNO endXXeSync 
         File "${RESOURCE_FOLDER}\xxe-perso-8_2_0-setup.exe"
         ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
         Goto endXXeSync
@@ -356,11 +452,28 @@ associate_extension:
   # Notify Windows of the change
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
+
+  # Retrieve all the XXE addons, including the language specific ones
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
+  File "${GIT_FOLDER}\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
+  File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
+  
+  # Install the English one first
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
-  SetOutPath "$APPDATA\XMLmind\XMLEditor8"
-  File "${GIT_FOLDER}\preferences.properties"
-  SetOutPath "$INSTDIR"
+  
+  # Now overwrite some of the files with the Language specific ones
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+  ${EndIf}
+  
+  # Update the XXE properties file
+  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+
+  # SetOutPath "$APPDATA\XMLmind\XMLEditor8"
+  # File "${GIT_FOLDER}\preferences.properties"
+  # SetOutPath "$INSTDIR"
 
   # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
@@ -380,7 +493,7 @@ Section -Post
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${FLEX_TOOLS_WITH_VERSION}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${FLEXTRANS_FOLDER}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
@@ -399,8 +512,8 @@ FunctionEnd
 Section Uninstall
 #Take a look here and make sure that you uninstall XXE, ask about git, python and the FLExTools folder.
   Delete "$INSTDIR\uninst.exe"
-  MessageBox MB_YESNO "Delete the ${FLEX_TOOLS_WITH_VERSION} folder?" /SD IDYES IDNO endFlexDel
-        RMDir /r "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
+  MessageBox MB_YESNO "Delete the ${FLEXTRANS_FOLDER} folder?" /SD IDYES IDNO endFlexDel
+        RMDir /r "$DOCUMENTS\${FLEXTRANS_FOLDER}"
         Goto endFlexDel
   endFlexDel:
 
@@ -418,6 +531,14 @@ Section Uninstall
   SetAutoClose true
 SectionEnd
 
+# Define the string in each language
+LangString ChooseFolderText ${LANG_ENGLISH} "Choose where to put FLExTrans folder."
+LangString ChooseFolderText ${LANG_GERMAN} "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
+LangString ChooseFolderText ${LANG_SPANISH} "Elija dónde colocar la carpeta FLExTrans."
+LangString BrowseText ${LANG_ENGLISH} "Browse"
+LangString BrowseText ${LANG_GERMAN} "Durchsuchen"
+LangString BrowseText ${LANG_SPANISH} "Navegar"
+
 #--Select folder function
 !include nsDialogs.nsh
 var /global BROWSEDEST
@@ -434,11 +555,11 @@ Function nsDialogsPage
         
         StrCpy $OUT_FOLDER $DOCUMENTS
 
-        ${NSD_CreateLabel} 0 60 100% 12u "Choose where to put FLExTrans folder."
+        ${NSD_CreateLabel} 0 60 100% 12u "$(ChooseFolderText)"
         ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
         pop $DESTTEXT
         SendMessage $DESTTEXT ${EM_SETREADONLY} 1 0
-        ${NSD_CreateBrowseButton} 320 80 20% 12u "Browse"
+        ${NSD_CreateBrowseButton} 320 80 20% 12u "$(BrowseText)"
         pop $BROWSEDEST
 
         ${NSD_OnClick} $BROWSEDEST Browsedest
@@ -446,8 +567,80 @@ Function nsDialogsPage
 nsDialogs::Show
 FunctionEnd
 
+# Set up the Browse step
 Function Browsedest
 nsDialogs::SelectFolderDialog "Select Destination Folder" $DOCUMENTS
 Pop $OUT_FOLDER
 ${NSD_SetText} $DESTTEXT $OUT_FOLDER
 FunctionEnd
+
+LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
+LangString ProdModeLabelText1 ${LANG_GERMAN}  "Produktivbetrieb?"
+LangString ProdModeLabelText1 ${LANG_SPANISH} "¿Uso en producción?"
+LangString ProdModeLabelText2 ${LANG_ENGLISH} "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
+LangString ProdModeLabelText2 ${LANG_GERMAN}  "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie „Ja“. Für die FLExTrans-Entwicklung wählen Sie „Nein“."
+LangString ProdModeLabelText2 ${LANG_SPANISH} "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No"
+LangString NoText ${LANG_ENGLISH} "No"
+LangString NoText ${LANG_GERMAN} "Nein"
+LangString NoText ${LANG_SPANISH} "No"
+
+LangString YesText ${LANG_ENGLISH} "Yes"
+LangString YesText ${LANG_GERMAN} "Ja"
+LangString YesText ${LANG_SPANISH} "Sí"
+
+# Set up the Production mode step
+Function ProdModeDialog
+  nsDialogs::Create 1018
+  Pop $Dialog
+
+  ${NSD_CreateLabel} 0 0 450 40 "$(ProdModeLabelText1)"
+  Pop $Label
+  ${NSD_CreateLabel} 0 30 450 40 "$(ProdModeLabelText2)"
+  Pop $Label
+
+  ${NSD_CreateRadioButton} 10 80 200 12 "$(YesText)"
+  Pop $RadioYes
+
+  ${NSD_CreateRadioButton} 10 100 200 12 "$(NoText)"
+  Pop $RadioNo
+  SendMessage $RadioNo ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
+
+  nsDialogs::Show
+FunctionEnd
+
+Function ProdModeDlgLeave
+  ${NSD_GetChecked} $RadioYes $PRODUCTION_MODE
+FunctionEnd
+
+Function .onInit
+
+	;Initial language selection dialog
+
+	Push ""
+	Push ${LANG_ENGLISH} 
+	Push English
+	Push ${LANG_SPANISH}
+	Push Español
+	Push ${LANG_GERMAN}
+	Push Deutsch
+	Push A ; A means auto count languages
+	       ; for the auto count to work the first empty push (Push "") must remain
+	LangDLL::LangDialog "Installer Language" "Please select the language to use with FLExTrans."
+
+	Pop $LANGUAGE
+	StrCmp $LANGUAGE "cancel" 0 +2
+		Abort
+		
+	; Assign two-character code for use elsewhere
+    ${If} $LANGUAGE == ${LANG_ENGLISH}
+        StrCpy $LANGCODE "en"
+    ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
+        StrCpy $LANGCODE "de"
+    ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+        StrCpy $LANGCODE "es"
+    ${Else}
+        StrCpy $LANGCODE "en" ; fallback
+    ${EndIf}
+	
+FunctionEnd
+

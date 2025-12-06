@@ -5,6 +5,19 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.14.1 - 7/2/25 - Ron Lockwood
+#    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
+#
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
+#   Version 3.13.3 - 5/15/25 - Ron Lockwood
+#    Fixes crash when no cluster projects are defined in the settings file and you
+#    attempt to add a new entry.
+#
+#   Version 3.13.2 - 4/28/25 - Ron Lockwood
+#    Fixes #975. Initialize the return value to False.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -24,10 +37,10 @@ import os
 
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMessageBox, QDialog, QLineEdit
+from PyQt5.QtCore import QCoreApplication
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
-from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from SIL.LCModel import ( # type: ignore
     ILexEntryFactory,
     IMoStemAllomorphFactory,
@@ -48,9 +61,12 @@ MORPHEME_TYPE = 'morphemeType'
 GRAMM_CAT = 'grammaticalCategory'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
 class NewEntryDlg(QDialog):
 
-    def __init__(self, TargetDB, report, targetMorphNames, clusterProjects):
+    def __init__(self, TargetDB, report, targetMorphNames, clusterProjects, lexemeForm):
         
         QDialog.__init__(self)
         self.ui = Ui_Dialog()
@@ -59,9 +75,10 @@ class NewEntryDlg(QDialog):
         self.TargetDB = TargetDB
         self.report = report
         self.sense = None
-        self.lexemeForm = ''
+        self.lexemeForm = lexemeForm
         self.POS = ''
         self.gloss = ''
+        self.retVal = False
         self.nonInitalLexemeFormChanged = False
         self.settingsMap = {}
 
@@ -72,15 +89,12 @@ class NewEntryDlg(QDialog):
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
 
-        header1TextStr = "Target FLEx project name"
-        header2TextStr = "Lexeme Form"
+        header1TextStr = _translate("NewEntryDlg", "Target FLEx project name")
+        header2TextStr = _translate("NewEntryDlg", "Lexeme Form")
 
-        # Set the top two widgets that need to be disabled
+        # Set the top two widgets that need to be disabled. The disabling is done in ClusterUtils.showClusterWidgets()
         self.topWidget1 = self.ui.lexemeFormEdit
         self.topWidget2 = self.ui.label
-
-        # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, 130)
 
         # Load saved settings
         try:
@@ -90,10 +104,21 @@ class NewEntryDlg(QDialog):
         except:
             pass
 
+        selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
+
+        # Start with the default lexeme form if it was passed in, if there are no cluster projects selected.
+        if not selectedClusterProjects and self.lexemeForm:
+
+            self.ui.lexemeFormEdit.setText(self.lexemeForm)
+            self.ui.lexemeFormEdit.selectAll()
+
+        # Create all the possible widgets we need for all the cluster projects
+        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setLexemeBoxText, originalWinHeight=self.height())
+
         # Load cluster projects
         if len(self.clusterProjects) > 0:
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, []), self) # load last used cluster projects here
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self) # load last used cluster projects here
         else:
             # Hide cluster project widgets
             widgetsToHide = [
@@ -145,6 +170,16 @@ class NewEntryDlg(QDialog):
 
             self.ui.gramCatCombo.setCurrentIndex(index)
 
+    def setLexemeBoxText(self, widget):
+        """
+        Set the lexeme form box to the current lexeme form if it exists and select it.
+        """
+        if self.lexemeForm:
+            widget.setText(self.lexemeForm)
+            widget.selectAll()
+        else:
+            widget.setText('')
+
     def updateAllForms(self):
 
         # If no changes were made to other forms, make all forms the same as the first
@@ -179,7 +214,7 @@ class NewEntryDlg(QDialog):
         # Give an error if they didn't give a gloss
         if not self.ui.glossEdit.text():
 
-            QMessageBox.warning(self, 'Error Check', "You must enter a Gloss.")
+            QMessageBox.warning(self, _translate("NewEntryDlg", 'Error Check'), _translate("NewEntryDlg", "You must enter a Gloss."))
         
             self.retVal = False
             return
@@ -193,15 +228,15 @@ class NewEntryDlg(QDialog):
         with open(self.settingsPath, 'w') as f:
             json.dump(self.settingsMap, f, indent=4)
 
-        if len(self.ui.clusterProjectsComboBox.currentData()) > 0:
+        if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
 
             save = False
 
             # Give an error if they didn't choose the default target proj
             if self.TargetDB.ProjectName() not in self.ui.clusterProjectsComboBox.currentData():
 
-                QMessageBox.warning(self, 'Cluster Project Selection Error', \
-                f"You must at least select the default target project, {self.TargetDB.ProjectName()}, among your cluster projects.")
+                QMessageBox.warning(self, _translate("NewEntryDlg", 'Cluster Project Selection Error'), \
+                _translate("NewEntryDlg", "You must at least select the default target project, {proj}, among your cluster projects.").format(proj=self.TargetDB.ProjectName()))
             
                 self.retVal = False
                 return
@@ -213,7 +248,7 @@ class NewEntryDlg(QDialog):
 
                 if not self.keyWidgetList[i].text():
 
-                    QMessageBox.warning(self, 'Error Check', "You must enter all the Lexeme Forms.")
+                    QMessageBox.warning(self, _translate("NewEntryDlg", 'Error Check'), _translate("NewEntryDlg", "You must enter all the Lexeme Forms."))
                 
                     self.retVal = False
                     return
@@ -233,7 +268,7 @@ class NewEntryDlg(QDialog):
 
                     if not myTargetDB:
 
-                        QMessageBox.warning(self, 'Not Found Error', "Failed to open the project: " + proj)
+                        QMessageBox.warning(self, _translate("NewEntryDlg", 'Not Found Error'), _translate("NewEntryDlg", "Failed to open the project: {proj}").format(proj=proj))
                         self.unsetCursor()
                         self.retVal = False
                         return
@@ -254,7 +289,7 @@ class NewEntryDlg(QDialog):
             # Give an error if they didn't give a lexeme form
             if not lexemeFormStr:
 
-                QMessageBox.warning(self, 'Error Check', "You must enter a Lexeme Form.")
+                QMessageBox.warning(self, _translate("NewEntryDlg", 'Error Check'), _translate("NewEntryDlg", "You must enter a Lexeme Form."))
             
                 self.retVal = False
                 return
@@ -308,6 +343,3 @@ class NewEntryDlg(QDialog):
 
             # Set the gloss
             mySense.Gloss.set_String(TargetDB.project.DefaultAnalWs, self.ui.glossEdit.text())
-
-            #self.retVal = True
-

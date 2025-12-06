@@ -5,6 +5,33 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.8 - 11/24/25 - Ron Lockwood
+#    Fixes #1121. Give a better error message when no words matching morphtype roots is found.
+#
+#   Version 3.14.7 - 11/24/25 - Ron Lockwood
+#    Fixes #1106. Don't prompt the user the save changes twice.
+#
+#   Version 3.14.6 - 10/23/25 - Ron Lockwood
+#    Refixes #1031. Save font information also on close or cancel.
+#
+#   Version 3.14.5 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1031. Save and reload Font information.
+#
+#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
+#   Version 3.14.2 - 7/2/25 - Ron Lockwood
+#    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
+#
+#   Version 3.14.1 - 7/2/25 - Ron Lockwood
+#    Fixes #1015. Don't allow the user to type in the target headword column.
+#
+#   Version 3.14 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.4 - 4/1/25 - Ron Lockwood
 #    Refactor the process interlinear function to make it easier to read.
 #
@@ -175,7 +202,7 @@
 
 import re
 import os
-import sys
+import json
 import unicodedata
 import xml.etree.ElementTree as ET
 import time
@@ -183,39 +210,53 @@ import time
 from fuzzywuzzy import fuzz
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QCoreApplication
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-import InterlinData
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     ILexEntry,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore     
-
 from flextoolslib import *                                                 
-
 from flexlibs import FLExProject, AllProjectNames
 
+import InterlinData
 import FTPaths
+import Mixpanel
 import ReadConfig
 import Utils
 import ExtractBilingualLexicon
 import NewEntryDlg
 
-from Linker import Ui_MainWindow
+from Linker import Ui_SenseLinkerWindow
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'LinkSenseTool'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDlg', 'NewEntry', 'ExtractBilingualLexicon', 'TextClasses', 'InterlinData'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.13.4",
+docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
+        FTM_Version    : "3.14.8",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Link source and target senses.",
+        FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
-        FTM_Description:  
-"""
-This module will create links 
+        FTM_Description: _translate("LinkSenseTool", 
+"""This module will create links 
 in the source project to senses in the target project. It will show a window
 with a list of all the senses in the text. White background rows indicate links that
 already exist. blue background rows indicate suggested links based on an exact match
@@ -232,13 +273,15 @@ is to indicate you may not want to link the two sense even though the glosses ma
 This module requires
 a sense-level custom field in your source project. It should be simple text field.
 The purpose of the custom field is to hold the link to a sense in the target project.
-Set which custom field is used for linking in the settings. 
-""" }
+Set which custom field is used for linking in the settings.""")}
                  
+#app.quit()
+#del app
+
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
-
+LINKER_SETTINGS_FILE = "LinkerSettings.json"
 MAX_GLOSS_WARNINGS = 10
 
 # The minimum length a word should have before doing a fuzzy compare
@@ -676,7 +719,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         # Add editable for the target headword column  
         elif index.column() == COL_TGT_HEADWORD:
             
-            val = val | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable 
+            val = val | QtCore.Qt.ItemIsEnabled #| QtCore.Qt.ItemIsEditable 
             
         return val
     
@@ -719,11 +762,12 @@ class Main(QMainWindow):
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
         self.exportUnlinked = False
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_SenseLinkerWindow()
         self.ui.setupUi(self)
         myFont = self.ui.tableView.font()
         self.__model = LinkerTable(myData, headerData, myFont, self.calculateRemainingLinks)
         self.__fullData = myData
+        self.headerData = headerData
         self.ui.tableView.setModel(self.__model)
         self.__comboData = comboData
         self.__comboModel = LinkerCombo(comboData)
@@ -765,6 +809,7 @@ class Main(QMainWindow):
         self.ui.RebuildBilingCheckBox.clicked.connect(self.RebuildBilingChecked)
         self.ui.SearchAnythingCheckBox.clicked.connect(self.SearchAnythingChecked)
         self.ui.AddEntryButton.clicked.connect(self.AddTargetEntry)
+        self.ui.tableView.doubleClicked.connect(self.handleDoubleClick)
         self.ComboClicked()
         
         myHPG = self.__comboModel.getCurrentHPG()
@@ -779,9 +824,64 @@ class Main(QMainWindow):
                 self.__comboModel.setRTL(True)
                 break
     
+        self.loadFontSettings()
+
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def saveFontSettings(self):
+
+        settings = {}
+
+        font = self.__model.getFont()
+        font_data = {
+            "family": font.family(),
+            "size": font.pointSizeF(),
+            "bold": font.bold(),
+            "italic": font.italic(),
+            "underline": font.underline()
+        }
+        settings['font_info'] = font_data
+
+        with open(self.settingsPath, "w", encoding="utf-8") as f:
+
+            json.dump(settings, f)
+
+    def loadFontSettings(self):
+
+        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), LINKER_SETTINGS_FILE)
+
+        try:
+            with open(LINKER_SETTINGS_FILE, "r", encoding="utf-8") as f:
+
+                settings = json.load(f)
+
+            font_data = settings['font_info']
+
+            font = self.__model.getFont()
+            font.setFamily(font_data.get("family", font.family()))
+            font.setPointSizeF(font_data.get("size", font.pointSizeF()))
+            font.setBold(font_data.get("bold", font.bold()))
+            font.setItalic(font_data.get("italic", font.italic()))
+            font.setUnderline(font_data.get("underline", font.underline()))
+            self.__model.setFont(font)
+            self.ui.FontNameLabel.setText(font.family())
+
+        except Exception:
+            pass  # Ignore if file doesn't exist or is invalid
+
+    def handleDoubleClick(self, index):
+
+        if index.column() == COL_TGT_HEADWORD:
+
+            self.__model.data(index, QtCore.Qt.EditRole)
+            
+            # Repaint the target headword, target POS, and target gloss columns
+            for col in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
+                
+                idx = self.__model.index(index.row(), col)
+                self.__model.dataChanged.emit(idx, idx)
+            
     def AddTargetEntry(self):
 
         # Get cluster projects from settings;
@@ -794,7 +894,14 @@ class Main(QMainWindow):
             # Remove blank ones
             clusterProjects = [x for x in clusterProjects if x]
 
-        dlg = NewEntryDlg.NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames, clusterProjects)
+        # Set the lexeme form to the string in the search box, if filtering isn't turned on.
+        if not self.ui.SearchAnythingCheckBox.isChecked():
+
+            lexemeForm = self.ui.searchTargetEdit.text()
+        else:
+            lexemeForm = ''
+
+        dlg = NewEntryDlg.NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames, clusterProjects, lexemeForm)
         dlg.exec_()
 
         if dlg.retVal == True:
@@ -886,7 +993,7 @@ class Main(QMainWindow):
         tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
 
     def FontClicked(self):
-        (font, ret) = QFontDialog.getFont()
+        (font, ret) = QFontDialog.getFont(self.__model.getFont(), parent=self)
         if ret:
             myFont = self.__model.getFont()
             myFont.setFamily(font.family())
@@ -917,14 +1024,6 @@ class Main(QMainWindow):
         
         # Set the global variable
         FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
-        
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
         
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -1004,48 +1103,57 @@ class Main(QMainWindow):
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         
-        # Stretch the table view to fit
-        self.ui.tableView.setGeometry(10, 50, self.width() - 20, self.height() - self.ui.OKButton.height() - 85)
+        # Get the default font metrics
+        font = self.ui.tableView.font()
+        metrics = QtGui.QFontMetrics(font)
+        expandedAmt = 0
         
-        # Move the OK and Cancel buttons up and down as the window gets resized
-        x = 10
-        if x < 0:
-            x = 0
-        
-        self.positionControl(self.ui.OKButton, x, self.ui.tableView.height() + 60)
-        self.positionControl(self.ui.CancelButton, x + self.ui.OKButton.width() + 10, self.ui.tableView.height() + 60)
-        
-        # Set position of other controls all the same height and 10 pixels between each other
-        startX = self.ui.CancelButton.x() + self.ui.CancelButton.width() + 10
-        
-        # Make a list of all the controls that need to move up or down
-        controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, 
-                       self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox, self.ui.exportUnlinkedCheckBox]
-
-        for myControl in controlList:
-            
-            self.positionControl(myControl, startX, self.ui.OKButton.y())
-            startX += myControl.width() + 10
-        
-        self.positionControl(self.ui.SensesToLinkLabel, 10, self.ui.OKButton.y() + 27)
-        self.positionControl(self.ui.SensesRemainingLabel, self.ui.SensesToLinkLabel.x() + self.ui.SensesToLinkLabel.width() + 5, self.ui.OKButton.y() + 27)
-        
-        
+        # LinkIt column width (first one)
         firstColWidth = 45
-        secondColWidth = 45
-        
-        # Set the column widths
-        colCount = self.cols # self.ui.tableView.columnCount()
-        colWidth = ((self.ui.tableView.width() - firstColWidth - secondColWidth) // (colCount - 2)) - 4 # don't include 1st 2 columns
-
-        if colWidth < 40:
-            colWidth = 40
-
+        headerText = self.headerData[COL_LINK_IT]
+        textWidth = metrics.width(headerText) + 20  # Adding padding
+        firstColWidth = textWidth
         self.ui.tableView.setColumnWidth(COL_LINK_IT, firstColWidth)
+        
+        # VerseNum column width (second one) - this is fixed width
+        secondColWidth = 45
         self.ui.tableView.setColumnWidth(COL_VERSE_NUM, secondColWidth)
 
-        for i in range(COL_SRC_HEADWORD, colCount):
-            self.ui.tableView.setColumnWidth(i, colWidth)
+        colWidth = ((self.width() - 20 - firstColWidth - secondColWidth) // (self.cols - 2)) - 4 # don't include 1st 2 columns
+
+        # Adjust column widths based on header text don't include 1st 2 columns
+        for col in range(2, self.cols):
+
+            headerText = self.headerData[col]
+            textWidth = metrics.width(headerText) + 20  # Adding padding
+
+            # See if our needed width for the text is less than our standard column width
+            if textWidth < colWidth:
+
+                # See if we should shrink a column
+                if expandedAmt:
+
+                    # Find out how much space is available
+                    extraAvail = colWidth - textWidth
+
+                    # If we have more shrink room than needed
+                    if extraAvail > expandedAmt:
+
+                        # Shrink the column and set the expandedAmt to 0 to show we don't need to do more shrinking
+                        textWidth = colWidth - expandedAmt
+                        expandedAmt = 0
+                    
+                    # Otherwise shrink as much as we can
+                    else:
+                        expandedAmt -= extraAvail
+                
+                # Otherwise use the standard column width
+                else:
+                    textWidth = colWidth
+            else:
+                expandedAmt += textWidth - colWidth
+
+            self.ui.tableView.setColumnWidth(col, textWidth)
 
     def ComboClicked(self):
         # Set the target HPG for the model  
@@ -1078,8 +1186,20 @@ class Main(QMainWindow):
         self.filter()
         
     def closeEvent(self, event):
+
+        # Always save font settings on close
+        self.saveFontSettings()   
+
         if self.retVal != 1:
-            self.CancelClicked()
+
+            # Check if the user did some linking or unlinking
+            if self.__model.didLinkingChange():
+                
+                # Check if the user wants to save changes
+                if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+            
+                    self.retVal = 1
+            
         elif self.rebuildBiling:
         
             # Show hourglass cursor 
@@ -1089,19 +1209,10 @@ class Main(QMainWindow):
             time.sleep(3)
 
             # Revert back to the default cursor 
-            QApplication.restoreOverrideCursor()       
+            QApplication.restoreOverrideCursor()    
 
     def CancelClicked(self):
         self.retVal = 0
-
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
-        
         self.close()
         
     def filter(self):
@@ -1206,7 +1317,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                     POS = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                 else:
                     POS = 'UNK'
-                    report.Warning('Empty grammatical category found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+                    report.Warning(_translate("LinkSenseTool", 'Empty grammatical category found for the target word: ')+ headword, TargetDB.BuildGotoURL(entryObj))
                     
                 gloss = Utils.as_string(mySense.Gloss)
                 
@@ -1230,12 +1341,12 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
 
                     if gloss == '***' and glossWarnings < MAX_GLOSS_WARNINGS:
 
-                        report.Warning('Empty gloss found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+                        report.Warning(_translate("LinkSenseTool", 'Empty gloss found for the target word: ')+ headword, TargetDB.BuildGotoURL(entryObj))
                         glossWarnings += 1
 
                     if glossWarnings == MAX_GLOSS_WARNINGS:
 
-                        report.Warning(f'More than {MAX_GLOSS_WARNINGS} empty glosses found. Suppressing further warnings for empty target glosses.')
+                        report.Warning(_translate("LinkSenseTool", 'More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.').format(num_warnings=MAX_GLOSS_WARNINGS))
                         glossWarnings += 1
     return True
 
@@ -1337,6 +1448,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     saveMap = {}
     processedMap = {}
     myData = []
+    foundAtLeastOneValidMorphType = False
     
     report.ProgressStart(myText.getWordCount())
 
@@ -1374,7 +1486,11 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     
                         if morphType not in sourceMorphNames:
                             continue
-                            
+                        
+                        # We have at least one valid morph type. If we never get here and this remains false,
+                        # we will report an error later.
+                        foundAtLeastOneValidMorphType = True
+
                         # Get gloss
                         srcGloss = Utils.as_string(mySense.Gloss)    
                 
@@ -1445,6 +1561,10 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                         else:
                             addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
                 # wordIndex += 1
+
+    if not foundAtLeastOneValidMorphType:
+
+        report.Error(_translate("LinkSenseTool", "No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.")) 
 
     return myData, processedMap
 
@@ -1551,17 +1671,17 @@ def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, se
     # Give feedback            
     if cnt == 1:
        
-        report.Info('1 link created.')
+        report.Info(_translate("LinkSenseTool", '1 link created.'))
     else:
-        report.Info(str(cnt)+' links created.')
+        report.Info(_translate("LinkSenseTool", '{num} links created.').format(num=str(cnt)))
 
     if unlinkCount == 1:
        
-        report.Info('1 link removed')
+        report.Info(_translate("LinkSenseTool", '1 link removed'))
        
     elif unlinkCount > 1:
        
-        report.Info(str(unlinkCount) + ' links removed')  
+        report.Info(_translate("LinkSenseTool", ' links removed').format(num=str(unlinkCount)))
                       
 def containsWord(sentHPGlist, word):
     
@@ -1629,10 +1749,10 @@ def addIntroHtmlStuff(tableObj, srcDBname, tgtDBname):
     # Make a row, add it to the table and add header cells
     row = ET.SubElement(tableObj, 'tr')
     ET.SubElement(row, 'th').text = srcDBname
-    ET.SubElement(row, 'th').text = 'Gloss'
-    ET.SubElement(row, 'th').text = 'Cat.'
+    ET.SubElement(row, 'th').text = _translate("LinkSenseTool", 'Gloss')
+    ET.SubElement(row, 'th').text = _translate("LinkSenseTool", 'Category')
     ET.SubElement(row, 'th').text = tgtDBname
-    ET.SubElement(row, 'th').text = 'Comment'
+    ET.SubElement(row, 'th').text = _translate("LinkSenseTool", 'Comment')
     
     return row
 
@@ -1731,20 +1851,20 @@ def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report
             etObj.write(htmlFileName)
             
         except PermissionError:
-            report.Error(f"Permission error writing {htmlFileName}. Perhaps the file is in use in another program?")
+            report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=htmlFileName))
             return
         
         except:
-            report.Error(f"Error writing {htmlFileName}.")
+            report.Error(_translate("LinkSenseTool", "Error writing {htmlFileName}.").format(htmlFileName=htmlFileName))
             return
         
         # Report how many words were dumped
-        report.Info(f"{str(cnt)} words written to the file: {os.path.basename(htmlFileName)}. You'll find it in the Output folder.")
+        report.Info(_translate("LinkSenseTool", "{cnt} words written to the file: {htmlFileName}. You'll find it in the Output folder.").format(cnt=str(cnt), htmlFileName=os.path.basename(htmlFileName)))
 
     else:
-        report.Info(f"No unlinked words. Nothing exported.")
+        report.Info(_translate("LinkSenseTool", "No unlinked words. Nothing exported."))
 
-def RunModule(DB, report, configMap):
+def RunModule(DB, report, configMap, app):
         
     haveConfigError = False
     
@@ -1757,39 +1877,41 @@ def RunModule(DB, report, configMap):
 
     if not sourceTextName:
         
-        report.Error('No Source Text Name has been set. Please go to Settings and fix this.')
+        report.Error(_translate("LinkSenseTool", 'No Source Text Name has been set. Please go to Settings and fix this.'))
         haveConfigError = True
     
     if not linkField:
         
-        report.Error('No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.')
+        report.Error(_translate("LinkSenseTool", 'No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.'))
         haveConfigError = True
     
     # Give an error if there are no morphnames
     if not sourceMorphNames or len(sourceMorphNames) < 1:
         
-        report.Error('No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.')
+        report.Error(_translate("LinkSenseTool", 'No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.'))
         haveConfigError = True
     
     if not targetMorphNames or len(targetMorphNames) < 1:
         
-        report.Error('No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.')
+        report.Error(_translate("LinkSenseTool", 'No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.'))
         haveConfigError = True
     
     if haveConfigError:
         return ERROR_HAPPENED
     
     matchingContentsObjList = []
+    textObjList = []
 
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList, textObjList)
     
     if sourceTextName not in sourceTextList:
         
-        report.Error('The text named: '+sourceTextName+' not found.')
+        report.Error(_translate("LinkSenseTool", 'The text named: {sourceTextName} not found.').format(sourceTextName=sourceTextName))
         return ERROR_HAPPENED
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
+        textObj = textObjList[sourceTextList.index(sourceTextName)]
     
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
 
@@ -1802,7 +1924,7 @@ def RunModule(DB, report, configMap):
     
     if not (senseEquivField):
 
-        report.Error(linkField + " field doesn't exist. Please read the instructions.")
+        report.Error(_translate("LinkSenseTool", "{linkField} field doesn't exist. Please read the instructions.").format(linkField=linkField))
         return ERROR_HAPPENED
 
     TargetDB = FLExProject()
@@ -1816,20 +1938,21 @@ def RunModule(DB, report, configMap):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
 
-        report.Error('The Target Database does not exist. Please check the configuration file.')
+        report.Error(_translate("LinkSenseTool", 'The target project does not exist. Please check the configuration file.'))
         return ERROR_HAPPENED
 
-    report.Info('Opening: '+targetProj+' as the target database.')
+    report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target project.').format(targetProj=targetProj))
 
     try:
         TargetDB.OpenProject(targetProj, True)
 
     except: #FDA_DatabaseError, err:
 
-        report.Error('Failed to open the target database.')
+        report.Error(_translate("LinkSenseTool", 'Failed to open the target project.'))
         raise
 
-    report.Info("Starting " + docs[FTM_Name] + " for text: " + sourceTextName + ".")
+    report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName),
+                DB.BuildGotoURL(textObj))
 
     preGuidStr = 'silfw://localhost/link?database%3d'
     preGuidStr += re.sub('\s','+', targetProj)
@@ -1857,7 +1980,7 @@ def RunModule(DB, report, configMap):
     # Check to see if there is any data to link
     if myText.getSentCount() == 0:
                                         
-        report.Error('There were no senses found for linking. Please check your text and approve some words.')
+        report.Error(_translate("LinkSenseTool", 'There were no senses found for linking. Please check your text and approve some words.'))
         TargetDB.CloseProject()
         return ERROR_HAPPENED
 
@@ -1873,12 +1996,16 @@ def RunModule(DB, report, configMap):
     # Check to see if there is any data to link
     if len(myData) == 0:
                                         
-        report.Error('There were no senses found for linking. Please check your text and approve some words.')
-    else:
-        # Show the window
-        app = QApplication(sys.argv)
-        
-        myHeaderData = ["Link It!", 'V #', 'Source Head Word', 'Source Cat.', 'Source Gloss', 'Target Head Word', 'Target Cat.', 'Target Gloss']
+        report.Error(_translate("LinkSenseTool", 'There was an error finding senses to link.'))
+    else:        
+        myHeaderData = [_translate("LinkSenseTool", 'Link it!'), 
+                                                    'V #', 
+                        _translate("LinkSenseTool", 'Source Head Word'), 
+                        _translate("LinkSenseTool", 'Source Category'), 
+                        _translate("LinkSenseTool", 'Source Gloss'), 
+                        _translate("LinkSenseTool", 'Target Head Word'), 
+                        _translate("LinkSenseTool", 'Target Category'), 
+                        _translate("LinkSenseTool", 'Target Gloss')]
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
         
@@ -1925,8 +2052,16 @@ REBUILD_BILING = 3
 
 def MainFunction(DB, report, modify=False):
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
     if not modify:
-        report.Error('You need to run this module in "modify mode."')
+        report.Error(_translate("LinkSenseTool", 'You need to run this module in "modify mode."'))
         return
     
     retVal = RESTART_MODULE
@@ -1943,11 +2078,10 @@ def MainFunction(DB, report, modify=False):
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.
-            import Mixpanel
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 
-        retVal = RunModule(DB, report, configMap)
+        retVal = RunModule(DB, report, configMap, app)
         
     if retVal == REBUILD_BILING:
         

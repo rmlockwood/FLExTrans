@@ -1,7 +1,11 @@
-SET FLEXTRANS_VERSION=3.13
+SET FLEXTRANS_VERSION=3.14
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
-SET INSTALL_FOLDER_VERSION=2.2.1
+SET INSTALL_FOLDER_VERSION=2.3.2
+
+rem User interface language codes
+set LANG_CODES=de es
+
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
@@ -17,12 +21,14 @@ set flextransfolder=Install%INSTALL_FOLDER_VERSION%\FLExTrans
   set flextoolsmodules=%flextoolsfolder%\Modules
    set modulesflextrans=%flextoolsmodules%\FLExTrans
     set flextranslib=    %modulesflextrans%\Lib
+    set translations=    %modulesflextrans%\translations
 
 rem Create the folder structure
 mkdir %toolsflextools%
 mkdir %flextransdoc%
 mkdir %sampleproject%
 mkdir %flextranslib%
+mkdir %translations%
 
 rem Create identical folder structures for two work project folders
 set workprojects=%flextransfolder%\WorkProjects
@@ -39,12 +45,27 @@ for %%d in (German-Swedish TemplateProject) do (
 	copy MakefileForLiveRuleTester.advanced %workprojects%\%%d\Build\LiveRuleTester\Makefile.advanced
 )
 
-rem copy the FlexTrans.config file and force it to be overwritten.
-copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.config
-copy FlexTrans.config %workprojects%\TemplateProject\Config\FlexTrans.config
+rem copy the FlexTrans.config files
+
+rem copy and modify the original config file to have one different line for the German-Swedish folder
+set "SRC=FLExTrans.config"
+set "DST=%workprojects%\German-Swedish\Config\FLExTrans.config"
+
+rem copy the original config file to the template folder
+copy "%SRC%" "%workprojects%\TemplateProject\Config\%SRC%"
+
+rem Create the modified config file line by line
+(for /f "usebackq delims=" %%A in ("%SRC%") do (
+    echo %%A | findstr /b /c:"TransferRulesFile=transfer_rules.t1x" >nul
+    if errorlevel 1 (
+        echo %%A
+    ) else (
+        echo TransferRulesFile=transfer_rules-Swedish.t1x
+    )
+)) > "%DST%"
 
 rem build Python requirements file
-xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
+xcopy FlexTools_%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo mixpanel >> %flextransfolder%\requirements.txt
@@ -68,6 +89,9 @@ copy Dev\Lib\*.py %flextranslib%
 rem copy all window ui code files
 copy Dev\Lib\Windows\*.py %flextranslib%
 
+rem copy compiled translation files
+copy Dev\CompiledTranslations\*.qm %translations%
+
 rem UI resources and supporting executables to Tools
 copy Tools\* %toolsflextools%
 
@@ -87,6 +111,7 @@ rem SampleProjects
 copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
 copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" %sampleproject%
 
+rem Zip XXE AddOns
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
 7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
@@ -100,8 +125,27 @@ cd XXEaddon
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
 del %ADD_ON_ZIP_FILE%
+
+setlocal enabledelayedexpansion
+
+rem List of language codes
+set LANG_CODES=de es
+
+for %%L in (%LANG_CODES%) do (
+
+    cd translations\%%L
+    set "ADD_ON_ZIP_FILE_LANG=AddOnsForXMLmind_%%L%FLEXTRANS_VERSION%.zip"
+    7z a "!ADD_ON_ZIP_FILE_LANG!" ApertiumTransferXMLmind
+
+    copy /Y "!ADD_ON_ZIP_FILE_LANG!" ..\..\..
+    copy /Y "!ADD_ON_ZIP_FILE_LANG!" ..\..\..\"previous versions"
+    del "!ADD_ON_ZIP_FILE_LANG!"
+    cd ..\..
+)
+endlocal
 cd ..
 
+rem Zip the FlexTools folder
 SET ZIP_FILE=FLExToolsWithFLExTrans%FLEXTRANS_VERSION%.zip
 cd Install%INSTALL_FOLDER_VERSION%
 7z a %ZIP_FILE% FLExTrans
@@ -110,6 +154,7 @@ copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
 cd ..
 
+rem Zip the HermitCrap tools
 SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
 cd HermitCrabSynthesis
 7z a %HC_ZIP_FILE% *

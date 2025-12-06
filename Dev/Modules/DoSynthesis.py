@@ -5,6 +5,12 @@
 #   SIL International
 #   7/19/23
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/20/25 - Ron Lockwood
 #    Move the Mixpanel logging to the main function. Callers should do it.
 # 
@@ -31,33 +37,66 @@
 
 from flextoolslib import *                                                 
 
+import Mixpanel
 import ReadConfig
+import Utils
 import DoHermitCrabSynthesis
 import DoStampSynthesis
 
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'DoSynthesis'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesis', 'DoStampSynthesis'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Synthesize Text",
-        FTM_Version    : "3.13.1",
+docs = {FTM_Name       : _translate("DoSynthesis", "Synthesize Text"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with either STAMP or HermitCrab.",
-        FTM_Help       :"",
-        FTM_Description:  
-f"""
-This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
-then the following information from the {DoHermitCrabSynthesis.docs[FTM_Name]} module applies:
-""" + DoHermitCrabSynthesis.description + f"""
+        FTM_Synopsis   : _translate("DoSynthesis", "Synthesizes the target text with either STAMP or HermitCrab."),
+        FTM_Help       : "",
+        FTM_Description: _translate("DoSynthesis", 
+"""This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
+then the following information from the {hermitCrabModule} module applies: {hermitCrabDescription}\n\n
 If in the settings you select 'No' for 'Use HermitCrab synthesis?',
-then the following information from the {DoStampSynthesis.docs[FTM_Name]} module applies:
-""" + DoStampSynthesis.description + """
-""" }
+then the following information from the {stampModule} module applies: {stampDescription}""").format(
+    hermitCrabModule=DoHermitCrabSynthesis.docs[FTM_Name],
+    hermitCrabDescription=DoHermitCrabSynthesis.description,
+    stampModule=DoStampSynthesis.docs[FTM_Name],
+    stampDescription=DoStampSynthesis.description)}
+
+#app.quit()
+#del app
 
 def MainFunction(DB, report, modifyAllowed):
+
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
+        report.Error(_translate("DoSynthesis", "Failed to read the configuration file."))
         return
 
     hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=True)
@@ -65,19 +104,17 @@ def MainFunction(DB, report, modifyAllowed):
     if hermitCrabSynthesisYesNo == 'y':
 
         # Log the start of this module on the analytics server if the user allows logging.
-        import Mixpanel
         Mixpanel.LogModuleStarted(configMap, report, DoHermitCrabSynthesis.docs[FTM_Name], DoHermitCrabSynthesis.docs[FTM_Version])
 
-        report.Info('Using HermitCrab for synthesis.')
+        report.Info(_translate("DoSynthesis", "Using HermitCrab for synthesis."))
         DoHermitCrabSynthesis.doHermitCrab(DB, report, configMap)
     else:
         # Log the start of this module on the analytics server if the user allows logging.
-        import Mixpanel
         Mixpanel.LogModuleStarted(configMap, report, DoStampSynthesis.docs[FTM_Name], DoStampSynthesis.docs[FTM_Version])
 
-        report.Info('Using STAMP for synthesis.')
+        report.Info(_translate("DoSynthesis", "Using STAMP for synthesis."))
         DoStampSynthesis.doStamp(DB, report, configMap)
-    
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

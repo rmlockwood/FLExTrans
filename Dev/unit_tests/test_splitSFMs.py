@@ -97,5 +97,11 @@ class TestSplitSFMs(unittest.TestCase):
         expected_output = ['chayarqan.', '\\f + ', '', '\\fr 1.5', ' ', '\\ft', ' Septuaginta ', '\\xt Hech. 7.14\\xt*', ' niykan.', '\\f*', ' Tsurin ', '\\x + ', '', '\\xo 1.1-5', ' ', '\\xt Gén. 46.8-27.\\x*', '']
         self.assertEqual(splitSFMs(input_str), expected_output)
 
+    def test_split_dashes_variants_between_digits(self): 
+                                   #m-dash,                  en-dash,                        wave dash,        figure dash
+        input_str = "z\\f + \\fr 1.5—6 \\ft z \\xt Hech. 7.14–15\\xt* z.\\f* z \\x + \\xo 1.1〜5 \\xt Gén. 46.8‒27.\\x*"
+        expected_output = ['z', '\\f + ', '', '\\fr 1.5—6', ' ', '\\ft', ' z ', '\\xt Hech. 7.14–15\\xt*', ' z.', '\\f*', ' z ', '\\x + ', '', '\\xo 1.1〜5', ' ', '\\xt Gén. 46.8‒27.\\x*', '']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
 if __name__ == "__main__":
     unittest.main()

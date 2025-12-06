@@ -5,6 +5,22 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.14.3 - 8/16/25 - Ron Lockwood
+#    Fixes #1040. Use lemma and category in our saved catalog for mapping capitalized
+#    words to lowercase words.
+#
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
+#   Version 3.13.3 - 6/2/25 - Ron Lockwood
+#    Improved exception handling around use of the HermitCrab DLL.
+# 
 #   Version 3.13.2 - 3/20/25 - Ron Lockwood
 #    Move the Mixpanel logging to the main function. Callers should do it.
 # 
@@ -85,65 +101,91 @@
 #
 # Basic Design:
 #
-# Create HermitCrabMaster.txt file - this file holds each word parse on a line the parse is in a couple different formats in the form X,Y. 
+# HermitCrabMaster.txt file - this file holds each word parse on a line the parse is in a couple different formats in the form X,Y. 
 #  This file is created in the Convert Text to Synthesizer Format module. It is a file that contains only unique parses. 
 #  X is the Apertium representation of the parse ^...$
 #  Y holds one or more parses in the form the HC needs. Y is in the form A|B...|C
 #  A is in the form Q;N where Q is the parse and N is the capitalization code N can be null
 #  Q is in the form <pfx1>...<pfxN>root<cat><sfx1>...<sfxN> the code goes from X form to Q form by consulting the affix list file
 #
-# The rest happens in the Do HermitCrab Synthesis module
-# Extract the HermitCrab config file - this config file is actually a full target lexicon in an XML format along with all rules and settings needed for HC. This takes a bit of time.
-# Create an internal map of the lowercase version of all lemmas in the HC config file to the original cased version.
-# Create the HC parses file - this is the file that we will send to HC for synthesizing.
+# The rest happens in the Do HermitCrab Synthesis module:
+# Extract the HermitCrab config file [extractHermitCrabConfig()]- this config file is actually a full target lexicon in an XML format 
+#  along with all rules and settings needed for HC. This takes a bit of time.
+# Create an internal map of the lowercase version of all lemmas in the HC config file + POSto the original cased version. [getCapitalLemmas()]
+# Create the HC parses file [createHermitCrabParsesFile()]- this is the file that we will send to HC for synthesizing.
 #  The parses are in HC order, like Q above.
 #  The file is created by iterating through the Master file. Lemmas are restored to their
-#   cased forms as in the HC config file using the internal map from above.
+#   cased forms as in the HC config file using the internal map from above. [capitalize()]
 #  Phrases of the form A|B in the master file come out as consecutive LUs, e.g. ^...$^...$
 #  The list of LUs gets saved for use below.
 # Now HC is called to convert the parses file into a surface forms file (using the HC config file info)
 #  In this surface forms file, multiple words are separated by commas (R,T)
-# Next we produce the synthesized text using the previous generated Apertium results file
-#  (which is the output from apply Apertium rules to the source file) and the surface forms and the saved LU list.
-#  The code iterates through the surface forms and using the original LU, substitutes every #   every LU in the Apertium results file with the matched surface form. 
-#   In the loop, the code applies the need capitalization for the word before substitution.
+# Next we produce the synthesized text using the previous generated Apertium results file [produceSynthesisFile()]
+#  The Apertium results file is the output from apply Apertium rules to the source file. We also use the surface forms and the saved LU list.
+#  The code iterates through the surface forms and using the original LU, substitutes every LU in the Apertium results file with the matched surface form. 
+#   In the loop, the code applies the needed capitalization for the word before substitution.
+#  Then we fix up the text if desired so there are not % @ signs.
 
 import os
 import re 
 import subprocess
 from datetime import datetime
+import xml.etree.ElementTree as ET
 
 from SIL.LCModel import *                                                    # type: ignore
 
 from flextoolslib import *                                                 
 from flexlibs import FLExProject, FWProjectsDir
 
+from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtWidgets import QApplication
+
+import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
+from RunApertium import docs as RunApertDocs
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'DoHermitCrabSynthesis'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-description = """
-This module runs HermitCrab to create the
+docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
+        FTM_Version    : "3.14.3",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
+        FTM_Help       :"",
+        FTM_Description: _translate("DoHermitCrabSynthesis", 
+"""This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
 configuration file. 
 It is named 'HermitCrab.config' and will be in the 'Build' folder. 
-NOTE: Messages will say the SOURCE database
-is being used. Actually the target database is being used.
+NOTE: Messages will say the source project
+is being used. Actually the target project is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
 produce surface forms ('target_words-surface.txt'). 
-These forms are then used to create the target text.
-"""
+These forms are then used to create the target text.""")}
 
-docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.13.2",
-        FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
-        FTM_Help       :"",
-        FTM_Description: description}
+description = docs[FTM_Description]
+
+#app.quit()
+#del app
 
 SUCCESS = 'Success!'
 
@@ -179,7 +221,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
     if not targetProj:
-        errorList.append(('Configuration file problem with TargetProject.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "Configuration file problem with TargetProject."), 2))
         return errorList
     
     TargetDB = FLExProject()
@@ -190,7 +232,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
 
     except: #FDA_DatabaseError, e:
 
-        errorList.append((f'Failed to open the target database: {targetProj}', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target project: {targetProj}.").format(targetProj=targetProj), 2))
         return errorList
 
     # Get fwdata file path
@@ -199,7 +241,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
 
     if not cacheData:
-        errorList.append((f'A value for {ReadConfig.CACHE_DATA} not found in the configuration file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "A value for {cacheData} not found in the configuration file.").format(cacheData=ReadConfig.CACHE_DATA), 2))
         return errorList
     
     if cacheData == 'y':
@@ -211,13 +253,34 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     # If the target FLEx project hasn't changed and useCache is true than don't run HermitCrab, just return
     if not DONT_CACHE and useCacheIfAvailable and not configFileOutOfDate(TargetDB, HCconfigPath):
 
-        if DLLobj and (xmlFile := DLLobj.get_HcXmlFile()) == '':
+        if DLLobj:
+            
+            try:
+                xmlFile = DLLobj.get_HcXmlFile()
 
-            if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+
+                    errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)"), 2))
+            
+            except Exception as e:
+
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}').format(e=e), 2))
                 return errorList
 
-        errorList.append(("The HermitCrab configuration file is up to date.", 0))
+            if xmlFile == '':
+
+                try:
+                    if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+
+                        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)'), 2))
+                        return errorList
+    
+                except Exception as e:
+
+                    errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}').format(e=e), 2))
+                    return errorList
+
+        errorList.append((_translate("DoHermitCrabSynthesis", "The HermitCrab configuration file is up to date."), 0))
         return errorList
     else:
         # Run the HermitCrab config generator
@@ -227,15 +290,15 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             if result.returncode == 0:
 
                 gatherWarnings(result, errorList)
-                errorList.append((f'Generated the HermitCrab config. file: {Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)}', 0))
+                errorList.append((_translate("DoHermitCrabSynthesis", "Generated the HermitCrab config. file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)), 0))
             else:
-                errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
                 
                 # Check for KeyNotFoundException from FLEx
                 if re.search('KeyNotFoundException', result.stderr.decode()):
 
-                    errorList.append((f'The error contains a "KeyNotFoundException" and this often indicates that the FLEx Find and Fix utility should be run on the {TargetDB.ProjectName()} database.', 2))
-                    errorList.append(('The full error message is:', 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.").format(projectName=TargetDB.ProjectName()), 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "The full error message is:"), 2))
 
                 errorList.append((result.stderr.decode(), 2))
                 return errorList
@@ -243,13 +306,20 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             # Reload the config file into the dll object.
             if DLLobj:
 
-                if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                    errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)', 2))
+                try:
+                    if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+
+                        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)'), 2))
+                        return errorList
+                
+                except Exception as e:
+
+                    errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}').format(e=e), 2))
                     return errorList
 
         except subprocess.CalledProcessError as e:
 
-            errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
+            errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
             errorList.append((e.stderr.decode(), 2))
 
     return errorList
@@ -279,16 +349,16 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab surface forms file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab surface forms file.'), 2))
         return errorList
-    
+
    # Open the transfer results file
     try:
         fResults = open(transferResultsFile, encoding='utf-8')
 
     except:
 
-        errorList.append((f'The file: {transferResultsFile} was not found. Did you run the Run Apertium module?', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the {runApertium} module?').format(transferResultsFile=transferResultsFile, runApertium=RunApertDocs[FTM_Name]), 2))
         return errorList
     
     # Read the results file into a string
@@ -303,7 +373,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
     # Do a sanity check to see if the number of surface forms matches the number of Lexical unit strings
     if len(surfaceFormsList) != len(luInfoList):
 
-        errorList.append((f'The number of surface forms does not match the number of Lexical Units.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The number of surface forms does not match the number of Lexical Units.'), 2))
         return errorList
 
     # Loop through the surface forms file. Some lines will have multiple surface forms
@@ -333,7 +403,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
                 if errStr.strip() == '':
 
-                    errStr = f'Synthesis failed. ({saveStr})'
+                    errStr = _translate("DoHermitCrabSynthesis", 'Synthesis failed. ({saveStr})').format(saveStr=saveStr)
 
                 errorList.append((errStr, 1))
                 surfaceStr = saveStr
@@ -357,14 +427,14 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((f'Error writing the file: {synFile}.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Error writing the file: {synFile}.').format(synFile=synFile), 2))
 
     fSyn.close()
     fSurfaceForms.close()
     fResults.close()
     return errorList
 
-def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap):
+def createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap):
 
     errorList = []
 
@@ -374,7 +444,7 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}').format(parsesFile=parsesFile), 2))
         return errorList
 
     # Open parses file
@@ -383,7 +453,7 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab parses file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab parses file.'), 2))
         return errorList
 
     # Parse each line - format: LU,HCparse1;capitalizationCode|HCparse2;capitalizationCode|...
@@ -429,22 +499,77 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
 
 def capitalize(hcParse, HCcapitalLemmasMap):
 
-    # Get the root - non > characters before a <
-    match = re.search(r'(.*?)([^>]+?)(<.*)', hcParse)
-    before = match.group(1)
-    root   = match.group(2)
-    after  = match.group(3)
+    root, posName = extractRootAndFirstTag(hcParse)
 
-    # Get the capitalized form if the lemma is capitalized in the target lexicon (it's in the capitalized lemmas map)
-    # This is a map of lowercase forms to the original capitalized form.
-    # The root could be a phrase with multiple words capitalized such as 'Arangga Nanuno'
-    root = HCcapitalLemmasMap.get(root, root)
+    if root is None or posName is None:
 
-    return before+root+after
+        return hcParse  # fallback
+
+    key = root.lower() + (posName if posName else "")
+    rootCap = HCcapitalLemmasMap.get(key, root)
+
+    # Replace only the first occurrence of root with rootCap
+    rebuilt = hcParse.replace(root, rootCap, 1)
+    return rebuilt
+
+import re
+
+def extractRootAndFirstTag(hcParse):
+    """
+    Returns (root, firstTagAfterRoot) from a HermitCrab parse string.
+    Example: <2s.S2>tang1.1<v><3sg><obj> -> ('tang1.1', 'v')
+    """
+
+    # Find all tags. There should be at least one tag - the POS
+    tagMatches = list(re.finditer(r'<([^>]+)>', hcParse))
+    root = None
+    firstTagAfterRoot = None
+
+    # If there are no tags, the whole string is the root
+    if not tagMatches:
+
+        return hcParse, None
+
+    # Find the root: the text between the last '>' and the next '<'
+    for i, match in enumerate(tagMatches):
+
+        # No tags before the root
+        if i == 0 and match.start() > 0:
+
+            root = hcParse[0:match.start()]
+
+            # The first tag will this 0th match
+            firstTagAfterRoot = match.group(1)
+            return root, firstTagAfterRoot
+        
+        # Root must be after a prefix
+        elif i > 0:
+
+            prev = tagMatches[i-1]
+
+            # The root will be found where there is a gap between tags
+            if prev.end() < match.start():
+
+                root = hcParse[prev.end():match.start()]
+
+                # The first tag will be the ith match (the one after the gap)
+                firstTagAfterRoot = match.group(1)
+                return root, firstTagAfterRoot
+
+    # If no root found in the loop, check after the last tag
+    lastTag = tagMatches[-1]
+
+    if lastTag.end() < len(hcParse):
+
+        root = hcParse[lastTag.end():]
+        return root, None
+
+    # Fallback: no root found
+    return None, None
 
 # Remove @ signs at the beginning of words and N.N at the end of words if so desired in the settings.
 # Also symbols and ^%0%...%$
-def fix_up_text(synFile, cleanUpText):
+def fixUpText(synFile, cleanUpText):
     
     # Read the contents
     f_s = open(synFile, encoding="utf-8")
@@ -481,22 +606,47 @@ def getCapitalLemmas(HCconfigPath):
 
     # Read the contents of the file
     try:
-        with open(HCconfigPath, 'r', encoding='utf-8') as file:
-
-            contents = file.read()
+        # Parse the HermitCrab.config XML file
+        tree = ET.parse(HCconfigPath)
+        root = tree.getroot()
     except:
         return None
 
-    # Use regex to find all strings between <Gloss> tags
-    lemmas = re.findall(r'<Gloss>(.*?)</Gloss>', contents)
+    # Find the PartsOfSpeech element
+    partsOfSpeechElem = root.find('.//PartsOfSpeech')
 
-    # Iterate through the extracted lemmas
-    for lemStr in lemmas:
+    # Build a dictionary mapping part of speech id to name
+    partOfSpeechMap = {}
 
-        # Check any letter is capitalized
-        if any(char.isupper() for char in lemStr):
+    if partsOfSpeechElem is not None:
 
-            HCcapitalLemmasMap[lemStr.lower()] = lemStr
+        for posElem in partsOfSpeechElem.findall('PartOfSpeech'):
+
+            posId = posElem.get('id')
+            nameElem = posElem.find('Name')
+
+            if posId and nameElem is not None and nameElem.text:
+
+                partOfSpeechMap[posId] = nameElem.text
+
+    # Iterate over all LexicalEntry elements
+    for lexEntry in root.findall('.//LexicalEntry'):
+        
+        glossElem = lexEntry.find('Gloss')
+        posId = lexEntry.get('partOfSpeech')
+        
+        # Only proceed if both gloss and partOfSpeech are present and valid
+        if glossElem is not None and glossElem.text and posId in partOfSpeechMap:
+
+            glossText = glossElem.text
+            posName = partOfSpeechMap[posId]
+            
+            # Only add if any letter in the gloss is uppercase
+            if any(char.isupper() for char in glossText):
+
+                # Build a key for the map of gloss name + POS
+                key = (glossText.lower() + posName)
+                HCcapitalLemmasMap[key] = glossText
 
     return HCcapitalLemmasMap
 
@@ -509,10 +659,10 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     if HCcapitalLemmasMap is None:
 
-        errorList.append(('Unable to open the HC master file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Unable to open the HC master file.'), 2))
         return errorList
 
-    errorList = createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap)
+    errorList = createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap)
 
     for triplet in errorList:
 
@@ -532,14 +682,26 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
                 DLLobj.DoTracing = False
                 DLLobj.ShowTracing = False
 
-            if (ret := DLLobj.SetGlossFile(parsesFile)) != SUCCESS:
+            try:
+                if (ret := DLLobj.SetGlossFile(parsesFile)) != SUCCESS:
 
-                errorList.append((f'An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).'), 2))
+                    return errorList
+
+            except Exception as e:
+
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}').format(e=e), 2))
                 return errorList
+            
+            try:
+                if (ret := DLLobj.Process()) != SUCCESS:
 
-            if (ret := DLLobj.Process()) != SUCCESS:
+                    errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).'), 2))
+                    return errorList
+            
+            except Exception as e:
 
-                errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}').format(e=e), 2))
                 return errorList
         else:
             params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
@@ -552,13 +714,14 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
             result = subprocess.run(params, capture_output=True, check=True)
 
             if result.returncode != 0:
-                errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+                
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when running the HermitCrab Synthesize By Gloss tool.'), 2))
                 errorList.append((result.stderr.decode(), 2))
                 return errorList
 
     except subprocess.CalledProcessError as e:
 
-        errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when running the HermitCrab Synthesize By Gloss tool.'), 2))
         errorList.append((e.stderr.decode(), 2))
         return errorList
 
@@ -570,10 +733,11 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
             nonEmptyLines = [line for line in lines if line.strip()]
             LUsCount = len(nonEmptyLines)
     except:
-        errorList.append((f'An error happened when trying to open the file: {parsesFile}', 2))
+
+        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when trying to open the file: {parsesFile}').format(parsesFile=parsesFile), 2))
         return errorList
     
-    errorList.append((f'Processing {LUsCount} unique lexical units.', 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'Processing {LUsCount} unique lexical units.').format(LUsCount=LUsCount), 0))
 
     # Produce synthesis file
     errList = produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synFile)
@@ -588,7 +752,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
 
     if not clean: 
-        errorList.append((f'Configuration file problem with the value: {ReadConfig.CLEANUP_UNKNOWN_WORDS}.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Configuration file problem with the value: {val}.').format(val=ReadConfig.CLEANUP_UNKNOWN_WORDS), 2))
         return errorList
     
     if clean[0].lower() == 'y':
@@ -600,11 +764,11 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     if overrideClean:
         cleanUpText = False
 
-    fix_up_text(synFile, cleanUpText)
+    fixUpText(synFile, cleanUpText)
 
     # Tell the user which file was created
-    errorList.append((f'The synthesized target text is in the file: {Utils.getPathRelativeToWorkProjectsDir(synFile)}.', 0))
-    errorList.append(('Synthesis complete.', 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'The synthesized target text is in the file: {file}.').format(file=Utils.getPathRelativeToWorkProjectsDir(synFile)), 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'Synthesis complete.'), 0))
     
     return errorList
 
@@ -642,8 +806,13 @@ def doHermitCrab(DB, report, configMap=None):
 
     if not (parsesFile and surfaceFormsFile and surfaceFormsFile and transferResultsFile):
 
-        errorList.append((f'{ReadConfig.HERMIT_CRAB_MASTER_FILE} or {ReadConfig.HERMIT_CRAB_PARSES_FILE} \
-                         or {ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE} or {ReadConfig.TRANSFER_RESULTS_FILE} not found in the configuration file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis",
+        '{master} or {parses} or {surface} or {transfer} not found in the configuration file.').format(
+            master=ReadConfig.HERMIT_CRAB_MASTER_FILE,
+            parses=ReadConfig.HERMIT_CRAB_PARSES_FILE,
+            surface=ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,
+            transfer=ReadConfig.TRANSFER_RESULTS_FILE
+        ), 2))
         return None
 
     # Synthesize the new target text
@@ -658,16 +827,26 @@ def doHermitCrab(DB, report, configMap=None):
     
 def MainFunction(DB, report, modifyAllowed):
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return 
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     doHermitCrab(DB, report, configMap)
+
+
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

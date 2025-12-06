@@ -12,8 +12,13 @@ REM This path must not have any spaces in it (in order for the symbolic linking 
 REM You will probably need to run this .bat file "as Administrator"
 REM This script now deletes all symbolic links in each folder before recreating them.
 
-set testing_folder=C:\Users\dmcke\Documents\FLExTrans
-set git_repo=C:\Users\dmcke\Documents\GitHub\FLExTrans
+REM To get the translation binaries, create a translations folder under FlexTools\Modules\FLExTrans
+REM Then run this script to get links to all the translation binary files.
+
+REM set testing_folder=C:\Users\<user>\Documents\FLExTrans
+REM set git_repo=C:\Users\<user>\Documents\GitHub\FLExTrans
+set testing_folder="C:\Data\FLExTrans\Dev\Active Projects"
+set git_repo=c:\users\rlboo\GitHub\flextrans
 
 REM add to the paths
 set modules_ft=%testing_folder%\FlexTools\Modules\FLExTrans
@@ -21,11 +26,11 @@ set git_dev=%git_repo%\Dev
 
 cd /d %modules_ft%
 
-REM List of current directories relative to %modules_ft%
-set current_dirs=.;Lib;Lib;..\..
+REM List of current directories relative to %batch_dir%
+set current_dirs=.;Lib;Lib;..\..;translations
 
 REM List of target directories relative to %git_dev%
-set target_dirs=Modules;Lib;Lib\Windows;TopLevel
+set target_dirs=Modules;Lib;Lib\Windows;TopLevel;CompiledTranslations
 
 REM Convert the lists to arrays
 set i=0
@@ -62,13 +67,22 @@ for /L %%j in (0, 1, %array_size%) do (
         )
     )
 
-    REM Loop through each file in the target directory
+    REM Loop through Python files in the target directory
     for %%f in ("%git_dev%\!target_dir!\*.py") do (
         REM Extract just the file name
         set file_name=%%~nf
         REM Create the symbolic link in the current directory
-        echo Creating symbolic link
+        echo Creating symbolic link for Python file: %%~nxf
         mklink "!file_name!.py" "%%f"
+    )
+    
+    REM Loop through QM files in the target directory
+    for %%f in ("%git_dev%\!target_dir!\*.qm") do (
+        REM Extract just the file name
+        set file_name=%%~nf
+        REM Create the symbolic link in the current directory
+        echo Creating symbolic link for QM file: %%~nxf
+        mklink "!file_name!.qm" "%%f"
     )
     
     REM Update last_dir to the current directory

@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Use abbreviated path when telling user what file was used.
 #    Updated module description.
@@ -50,34 +56,55 @@
 
 import os
 import re
+import sys
 from datetime import datetime
 
+from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtWidgets import QApplication
+
 from SIL.LCModel import * # type: ignore
-from SIL.LCModel.Core.KernelInterfaces import ITsString    # type: ignore
 
 from flextoolslib import *
 from flexlibs import FLExProject
 
+import Mixpanel
 import ReadConfig
 import Utils
+import FTPaths
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'CatalogTargetAffixes'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.13.1",        
+docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
+        FTM_Version    : "3.14.1",        
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
+        FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",
-        FTM_Description:
-"""
-This module creates a file which has a list of all the affix glosses and morpheme types in the target database. 
+        FTM_Description: _translate("CatalogTargetAffixes", 
+"""This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.
 The catalog will be created in the file specified by the Target Affix Gloss List File setting.
-This is typically called target_affix_glosses.txt and is usually in the Build folder.
-""" }
+This is typically called target_affix_glosses.txt and is usually in the Build folder.""")}
+
+#app.quit()
+#del app
 
 
 #----------------------------------------------------------------
@@ -114,7 +141,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
 
     if not morphNames:
-        error_list.append((f'Problem reading the configuration file for the property: {ReadConfig.TARGET_MORPHNAMES}', 2))
+        error_list.append((_translate("CatalogTargetAffixes", "Problem reading the configuration file for the property: {property}").format(property=ReadConfig.TARGET_MORPHNAMES), 2))
         return error_list
     
     TargetDB = FLExProject()
@@ -123,11 +150,11 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
         if not targetProj:
-            error_list.append(('Problem accessing the target project.', 2))
+            error_list.append((_translate("CatalogTargetAffixes", "Problem accessing the target project."), 2))
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: 
-        error_list.append(('Problem opening the target project.', 2))
+        error_list.append((_translate("CatalogTargetAffixes", "Problem opening the target project."), 2))
         raise
     
     # Allow the affix file to not be in the temp folder if a slash is present
@@ -136,14 +163,14 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     # Get cache data setting
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
-        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+        error_list.append((_translate("CatalogTargetAffixes", "Configuration file problem with {property}.").format(property=ReadConfig.CACHE_DATA), 2))
         TargetDB.CloseProject()
         return error_list
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_affix_file_out_of_date(TargetDB, myPath) == False:
         TargetDB.CloseProject()
-        error_list.append(('Affix list is up to date.', 0))
+        error_list.append((_translate("CatalogTargetAffixes", "Affix list is up to date."), 0))
         return error_list
     
     # Open the file for writing.
@@ -151,7 +178,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         f_out = open(myPath, 'w', encoding='utf-8') 
     except IOError as e:
         TargetDB.CloseProject()
-        error_list.append(('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.', 2))# 0=info,1=warn.,2=error
+        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=myPath), 2))# 0=info,1=warn.,2=error
         TargetDB.CloseProject()
         return error_list
     
@@ -216,7 +243,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                     if Utils.containsInvalidLemmaChars(myGloss):
 
                         if report:
-                            report.Error(f'Invalid characters in the affix: {myGloss}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(entry))
+                            report.Error(_translate("CatalogTargetAffixes", "Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}").format(gloss=myGloss, invalidChars=Utils.RAW_INVALID_LEMMA_CHARS), DB.BuildGotoURL(entry))
 
                     # Convert dots to underscores in the affix gloss
                     myGloss = Utils.underscores(myGloss)
@@ -242,14 +269,23 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 
             seen.add(tupGloss)
         else:
-            error_list.append((f'Found duplicate affix/clitic with gloss: {re.sub("_", ".", tupGloss)}. Use of this affix/clitic could produce unexpected results.', 1))
+            error_list.append((_translate("CatalogTargetAffixes", "Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.").format(gloss=re.sub("_", ".", tupGloss)), 1))
 
-    error_list.append((f'Catalog created in the file: {Utils.getPathRelativeToWorkProjectsDir(filePath)}.', 0))
-    error_list.append((str(count)+' affixes/clitics exported to the catalog.', 0))
+    error_list.append((_translate("CatalogTargetAffixes", "Catalog created in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(filePath)), 0))
+    error_list.append((_translate("CatalogTargetAffixes", "{count} affixes/clitics exported to the catalog.").format(count=str(count)), 0))
 
     return error_list
 
 def MainFunction(DB, report, modifyAllowed):
+
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -257,7 +293,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Build an output path using the system temp directory.
@@ -275,6 +310,8 @@ def MainFunction(DB, report, modifyAllowed):
     
     # output info, warnings, errors and url links
     Utils.processErrorList(error_list, report)
+
+
                  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -7,6 +7,12 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -44,23 +50,45 @@ import os
 from pathlib import Path
 import tempfile
 import re
+
 from flextoolslib import *
+
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
+import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'CleanFiles'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = "Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders."
-docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.13",
+docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Remove generated files to force each FLExTrans module to regenerate everything",
-        FTM_Help  : "",  
-        FTM_Description:    descr}     
-#----------------------------------------------------------------
+        FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
+        FTM_Help       : "",  
+        FTM_Description: _translate("CleanFiles",
+"""Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.""")}
 
-OUTPUT = "Output\\"
+#app.quit()
+#del app
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -74,7 +102,6 @@ def MainFunction(DB, report, modify=True):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report, giveError=False)
@@ -280,14 +307,10 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
 
-
-
 #----------------------------------------------------------------
 # define the FlexToolsModule
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
 
 #----------------------------------------------------------------
 if __name__ == '__main__':

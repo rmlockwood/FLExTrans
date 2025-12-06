@@ -5,6 +5,26 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.5 - 11/28/25 - Ron Lockwood
+#    Fixed #1062. When generating test data, if there is no compiled bilingual dictionary,
+#    compile it.
+#
+#   Version 3.14.4 - 10/10/25 - Ron Lockwood
+#    Better error messages when the Rule Assistant returns an error.
+#
+#   Version 3.14.3 - 8/19/25 - Ron Lockwood
+#    Fixes #1045. When creating a test data file that has an error message. Create it as utf-8
+#    because the error message may contain non-ASCII characters when translated.
+#
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
+#   Version 3.14 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -46,33 +66,57 @@
 #   Runs the Rule Assistant to create Apertium transfer rules.
 #
 
+import os
+import subprocess
+import re
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+
+from flextoolslib import *
+
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication
+
+import Mixpanel
 import InterlinData
 import Utils
 import ReadConfig
 import CreateApertiumRules
-import os
-import subprocess
-import re
-from flextoolslib import *
 import FTPaths
-import xml.etree.ElementTree as ET
-from dataclasses import dataclass
+from RunApertium import docs as RunApertDocs
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'RuleAssistant'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
-"""
-docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.13.1",
+descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
+docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Runs the Rule Assistant tool.",
-        FTM_Help  : "",
+        FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
+        FTM_Help       : "",
         FTM_Description:    descr}
+
+#app.quit()
+#del app
 
 # Element names in the rule assistant gui input file
 FLEXDATA          = "FLExData"
@@ -300,14 +344,15 @@ def ReadingToHTML(reading):
 def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    bidix = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
+    bidixDix = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not sourceText:
+    if not (sourceText or bidixDix):
         return False
 
-    if not os.path.isfile(bidix):
+    if not os.path.isfile(bidixDix):
 
-        report.Warning('Compiled bilingual dictionary not found. Run the "Run Apertium" module to display test data in the Rule Assistant.')
+        report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
 
     content = None
@@ -319,7 +364,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
             content = text.ContentsOA
             break
     else:
-        report.Error("The text named '%s' was not found." % sourceText)
+        report.Error(_translate('RuleAssistant', "The text named '%s' was not found.") % sourceText)
         return False
 
     params = InterlinData.initInterlinParams(configMap, report, content)
@@ -334,9 +379,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     with open(fsrc, 'w', encoding='utf-8') as fout:
         text.write(fout)
 
+    # Compile the bilingual dictionary
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-comp.exe'), 'lr', bidixDix, bidixBin], capture_output=True)
+
+    if not os.path.isfile(bidixBin):
+
+        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. There was an error compiling the bilingual dictionary.'))
+        return False
+
     ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
-    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'),
-                    '-b', bidix, fsrc, ftgt], capture_output=True)
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'), '-b', bidixBin, fsrc, ftgt], capture_output=True)
 
     try:
         with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
@@ -348,7 +400,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 .num { vertical-align: sub; font-size: 50%; }
 </style></head><body>
 ''')
-            fout.write('<p><b>Source Text:</b> '+sourceText+'</p>\n')
+            fout.write(_translate('RuleAssistant', '<p><b>Source Text:</b> ')+sourceText+'</p>\n')
             line_count = 0
 
             for line in fin:
@@ -385,9 +437,9 @@ def GetTestDataFile(report, DB, configMap):
 
     if not GenerateTestDataFile(report, DB, configMap, fhtml):
 
-        with open(fhtml, 'w') as fout:
+        with open(fhtml, 'w', encoding='utf-8') as fout:
 
-            fout.write('<html><body><p>No test data available.</body></html>\n')
+            fout.write(_translate('RuleAssistant', '<html><body><p>No test data available.</body></html>\n'))
 
     return fhtml
 
@@ -399,7 +451,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         fullRApath = os.path.join(os.environ['PROGRAMFILES'], FTPaths.RULE_ASSISTANT_DIR, FTPaths.RULE_ASSISTANT)
 
         params = [fullRApath, ruleAssistantFile, ruleAssistGUIinputfile,
-                  testDataFile, 'y' if fromLRT else 'n']
+                  testDataFile, 'y' if fromLRT else 'n', Utils.getInterfaceLangCode()]
 
         result = subprocess.run(params, capture_output=True)
 
@@ -407,6 +459,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         lrt = (not fromLRT) and ('LRT' in output)
 
         if not output or output[0] not in ['1', '2']:
+            
+            if len(output) > 1:
+
+                report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=' '.join(output), ruleAssistant=docs[FTM_Name]))
+            
             return (False, None, lrt)
         
         elif output[0] == '1':
@@ -417,21 +474,27 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
     except Exception as e:
 
-        report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=str(e), ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
-
-    return (False, None, False)
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True, fromLRT=False):
+
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the path to the rule assistant rules file
@@ -469,7 +532,7 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     if saved:
         ruleCount = CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
     else:
-        report.Info('No rules created.')
+        report.Info(_translate('RuleAssistant', 'No rules created.'))
 
     if lrt:
         from LiveRuleTesterTool import MainFunction as LRT

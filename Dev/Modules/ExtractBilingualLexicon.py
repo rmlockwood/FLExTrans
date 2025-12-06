@@ -5,6 +5,15 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
+#   Version 3.14 - 5/16/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.2 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -130,14 +139,13 @@
 
 import re
 import os
-import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
 import unicodedata
 import io
 
-from System import Guid # type: ignore
-from System import String # type: ignore
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
 
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
@@ -149,35 +157,51 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString  # type: ignore
 
 from flextoolslib import *
 
+import Mixpanel
 import ReadConfig
 import Utils
+from ReplacementEditor import docs as ReplEditorDocs
 
 DONT_CACHE = True
 
 DICTIONARY = 'dictionary'
 REPLDICTIONARY = 'repldictionary'
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['ExtractBilingualLexicon'], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.13.2",
+docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
+        FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
-        FTM_Description:
-"""
-This module will build a bilingual lexicon for two projects. The
+        FTM_Description: _translate("ExtractBilingualLexicon", 
+"""This module will build a bilingual lexicon for two projects. The
 project that FlexTools is set to is your source project. Set the Target Project
 in Settings to the name of your target project.
 This module builds the bilingual lexicon based on the links from source senses to target senses
 that are in your source project. Use the Sense Linker Module to create these links.
 The bilingual lexicon will be stored in the file specified by the Bilingual Dictionary Output File setting.
-This is typically called bilingual.dix and is usually in the Output folder.
+This is typically called bilingual.dix and is usually in the Output folder.\n
+You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
+document for more details.""").format(replEditorModule=ReplEditorDocs[FTM_Name])}
 
-You can make custom changes to the bilingual lexicon by using a replacement file. See the help
-document for more details.
-""" }
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 
@@ -283,13 +307,13 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not linkField:
-        errorList.append((f"Custom field for linking doesn't exist. Please read the instructions.", 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "Custom field for linking doesn't exist. Please read the instructions."), 2))
 
     if not sourceMorphNames:
-        errorList.append((f"No Source Morphnames to count as root found. Review your Settings.", 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "No Source Morphnames to count as root found. Review your Settings."), 2))
 
     if not sentPunct:
-        errorList.append((f"No Sentence Punctuation found. Review your Settings.", 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "No Sentence Punctuation found. Review your Settings."), 2))
 
     if len(errorList) > 0:
         return errorList
@@ -298,7 +322,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     catSubDict = {}
     if catSub:
         if len(catSub) % 2 != 0:
-            errorList.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))
+            errorList.append((_translate("ExtractBilingualLexicon", 'Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.'), 2))
             return errorList
         for i in range(0,len(catSub),2):
             catSubDict[catSub[i]] = catSub[i+1]
@@ -308,26 +332,26 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     custSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
 
     if not (custSenseEquivField):
-        errorList.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "Custom field: {linkField} doesn't exist. Please read the instructions.").format(linkField=linkField), 2))
         return errorList
 
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not bilingFile:
-        errorList.append((f'A value for {ReadConfig.BILINGUAL_DICTIONARY_FILE} not found in the configuration file.', 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "A value for {key} not found in the configuration file.").format(key=ReadConfig.BILINGUAL_DICTIONARY_FILE), 2))
         return errorList
 
     fullPathBilingFile = bilingFile
 
     replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replFile:
-        errorList.append((f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.', 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "A value for {key} not found in the configuration file.").format(key=ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE), 2))
         return errorList
 
     TargetDB = Utils.openTargetProject(configMap, report)
 
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
-        errorList.append((f'A value for {ReadConfig.CACHE_DATA} not found in the configuration file.', 2))
+        errorList.append((_translate("ExtractBilingualLexicon", "A value for {key} not found in the configuration file.").format(key=ReadConfig.CACHE_DATA), 2))
         return errorList
 
     if cacheData == 'y':
@@ -336,10 +360,10 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     else:
         DONT_CACHE = True
 
-    # If the target database hasn't changed since we created the affix file, don't do anything.
+    # If the target project hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and useCacheIfAvailable and bilingFileOutOfDate(DB, TargetDB, bilingFile) == False and replFileOutOfDate(bilingFile, replFile) == False:
 
-        errorList.append(("The bilingual dictionary is up to date.", 0))
+        errorList.append((_translate("ExtractBilingualLexicon", "The bilingual dictionary is up to date."), 0))
         pass
 
     else: # build the file
@@ -357,7 +381,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         # Get all source and target categories along with inflection classes
         if Utils.get_categories(DB, report, posMap, TargetDB, numCatErrorsToShow=1, addInflectionClasses=True) == True:
 
-            errorList.append(('Error retrieving categories.'), 2)
+            errorList.append((_translate("ExtractBilingualLexicon", "Error retrieving categories."), 2))
             TargetDB.CloseProject()
             return errorList
 
@@ -393,10 +417,10 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 headWord = Utils.add_one(headWord)
 
                 if headWord != headWord.strip():
-                    errorList.append((f'Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
+                    errorList.append((_translate("ExtractBilingualLexicon", "Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.").format(rawHeadWord=rawHeadWord), 1, sourceURL))
 
                 if Utils.containsInvalidLemmaChars(headWord):
-                    errorList.append((f'Found a headword with one of the following invalid characters: {Utils.RAW_INVALID_LEMMA_CHARS} in {rawHeadWord}. Please correct this in the lexicon before continuing.', 1, sourceURL))
+                    errorList.append((_translate("ExtractBilingualLexicon", "Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.").format(chars=Utils.RAW_INVALID_LEMMA_CHARS, rawHeadWord=rawHeadWord), 1, sourceURL))
 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
@@ -423,16 +447,14 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 sourcePOSabbrev = sourceTags[0]
 
                             else:
-                                errorList.append(('Encountered a sense that has unknown POS'+\
-                                                  ' while processing source headword: '+rawHeadWord, 1, sourceURL))
+                                errorList.append((_translate("ExtractBilingualLexicon", "Encountered a sense that has unknown POS while processing source headword: {rawHeadWord}").format(rawHeadWord=rawHeadWord), 1, sourceURL))
                                 sourceTags = ['UNK']
                                 sourcePOSabbrev = 'UNK'
 
                             # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
                             if checkForDuplicateHeadword(senseHeadWord, sourcePOSabbrev, sourceEntry.Hvo, duplicateHeadwordPOSmap):
 
-                                errorList.append((f'Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense.'+\
-                                                  'Source headword: '+rawHeadWord, 1, sourceURL))
+                                errorList.append((_translate("ExtractBilingualLexicon", "Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}").format(sourcePOSabbrev=sourcePOSabbrev, rawHeadWord=rawHeadWord), 1, sourceURL))
                                 continue
 
                             entryElem = ET.SubElement(mainSection, 'e', w='1')
@@ -483,13 +505,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                             recordsDumpedCount += 1
 
                                         else:
-                                            errorList.append(('Skipping sense because the target POS is undefined '+\
-                                                            ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
-                                                            ' while processing source headword: '+rawHeadWord, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
+                                            errorList.append((_translate("ExtractBilingualLexicon", "Skipping sense because the target POS is undefined for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}").format(targetHeadWord=ITsString(ILexEntry(targetSense.Entry).HeadWord).Text, rawHeadWord=rawHeadWord), 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                     else:
-                                        errorList.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
-                                                        ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
-                                                        ' while processing source headword: '+rawHeadWord, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
+                                        errorList.append((_translate("ExtractBilingualLexicon", "Skipping sense because it is of this class: {className} for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}").format(className=targetMsa.ClassName, targetHeadWord=ITsString(ILexEntry(targetSense.Entry).HeadWord).Text, rawHeadWord=rawHeadWord), 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                 else:
                                     # Error already reported
                                     pass
@@ -497,11 +515,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 # Don't report this. Most of the time the equivalent field will be empty.
                                 pass
                         else:
-                            errorList.append(('Skipping sense that is of class: '+sourceSense.MorphoSyntaxAnalysisRA.ClassName+\
-                                              ' for headword: '+rawHeadWord, 1, sourceURL))
+                            errorList.append((_translate("ExtractBilingualLexicon", "Skipping sense that is of class: {className} for headword: {rawHeadWord}").format(className=sourceSense.MorphoSyntaxAnalysisRA.ClassName, rawHeadWord=rawHeadWord), 1, sourceURL))
                     else:
-                        errorList.append(('Skipping sense, no analysis object'\
-                                           ' for headword: '+rawHeadWord, 1, sourceURL))
+                        errorList.append((_translate("ExtractBilingualLexicon", "Skipping sense, no analysis object for headword: {rawHeadWord}").format(rawHeadWord=rawHeadWord), 1, sourceURL))
                     if not targetFound:
                         # output the bilingual dictionary line -- source and target are the same
 
@@ -524,7 +540,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             else:
                 if sourceEntry.LexemeFormOA == None:
 
-                    errorList.append(('No lexeme form. Skipping. Headword: '+rawHeadWord, 1, sourceURL))
+                    errorList.append((_translate("ExtractBilingualLexicon", "No lexeme form. Skipping. Headword: {rawHeadWord}").format(rawHeadWord=rawHeadWord), 1, sourceURL))
 
                 elif sourceEntry.LexemeFormOA.ClassName != 'MoStemAllomorph':
 
@@ -533,7 +549,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                 elif sourceEntry.LexemeFormOA.MorphTypeRA == None:
 
-                    errorList.append(('No Morph Type. Skipping.'+rawHeadWord+' Best Vern: '+Utils.as_vern_string(sourceEntry.LexemeFormOA.Form), 1, sourceURL))
+                    errorList.append((_translate("ExtractBilingualLexicon", "No Morph Type. Skipping. {rawHeadWord} Best Vern: {vernString}").format(rawHeadWord=rawHeadWord, vernString=Utils.as_vern_string(sourceEntry.LexemeFormOA.Form)), 1, sourceURL))
 
         mainSection.append(ET.Comment(' SECTION: Punctuation '))
 
@@ -559,7 +575,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 text = unicodedata.normalize('NFD', text)
                 replTree = ET.parse(io.StringIO(text)).getroot()
         except:
-            errorList.append((f'There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.', 2))
+            errorList.append((_translate("ExtractBilingualLexicon", "There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.").format(replFile=replFile), 2))
 
         if replTree:
             # get rid of <leftdata> and <rightdata> (if present)
@@ -586,17 +602,26 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
                 fout.write(ET.tostring(outputTree, encoding='utf-8'))
         except IOError as err:
-            errorList.append((f'There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.', 2))
+            errorList.append((_translate("ExtractBilingualLexicon", "There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.").format(fullPathBilingFile=fullPathBilingFile), 2))
             TargetDB.CloseProject()
             return errorList
 
-        errorList.append((f'Creation complete to the file: {Utils.getPathRelativeToWorkProjectsDir(fullPathBilingFile)}.', 0))
-        errorList.append((f'{recordsDumpedCount} records created.', 0))
+        errorList.append((_translate("ExtractBilingualLexicon", "Creation complete to the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(fullPathBilingFile)), 0))
+        errorList.append((_translate("ExtractBilingualLexicon", "{recordsDumpedCount} records created.").format(recordsDumpedCount=recordsDumpedCount), 0))
 
     TargetDB.CloseProject()
     return errorList
 
 def MainFunction(DB, report, modifyAllowed):
+
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + ['ExtractBilingualLexicon'], 
+                           translators, loadBase=True)
 
     # Read the configuration file
     configMap = ReadConfig.readConfig(report)
@@ -604,7 +629,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Call the main function

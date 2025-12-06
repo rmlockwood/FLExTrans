@@ -16,6 +16,7 @@ class Ui_Dialog(object):
         Dialog.setObjectName("Dialog")
         Dialog.setWindowModality(QtCore.Qt.ApplicationModal)
         Dialog.resize(438, 199)
+        Dialog.setWindowTitle("Add New Target Entry")
         Dialog.setWhatsThis("")
         Dialog.setInputMethodHints(QtCore.Qt.ImhNone)
         Dialog.setModal(True)
@@ -62,7 +63,7 @@ class Ui_Dialog(object):
         self.gramCatCombo.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.gramCatCombo.setObjectName("gramCatCombo")
         self.clusterProjectsLabel = QtWidgets.QLabel(Dialog)
-        self.clusterProjectsLabel.setGeometry(QtCore.QRect(0, 130, 191, 21))
+        self.clusterProjectsLabel.setGeometry(QtCore.QRect(10, 130, 191, 21))
         self.clusterProjectsLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.clusterProjectsLabel.setObjectName("clusterProjectsLabel")
         self.clusterProjectsComboBox = QtWidgets.QComboBox(Dialog)
@@ -79,7 +80,6 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Add New Target Entry"))
         self.label.setText(_translate("Dialog", "Lexeme Form"))
         self.label_4.setText(_translate("Dialog", "Morpheme Type"))
         self.label_5.setText(_translate("Dialog", "Grammatical Category"))

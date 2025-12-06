@@ -4,6 +4,9 @@
 #   SIL International
 #   9/6/2024
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -18,8 +21,16 @@
 #
 #   Usage statistics logging with the online service Mixpanel
 #
-import ReadConfig
 import functools
+import mixpanel
+
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QMessageBox, QApplication
+
+import ReadConfig
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 # Only retrieve the IP address once per session
 @functools.cache
@@ -35,14 +46,17 @@ def GetUserID(configMap, report):
                                           None, giveError=False)
     if opt_out_asked == 'n' or opt_out_asked is None:
 
-        from System.Windows.Forms import (MessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult)
-
-        result = MessageBox.Show("FLExTrans would like to send usage statistics to FLExTrans developers. "+\
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setText(_translate('Mixpanel', "FLExTrans would like to send usage statistics to FLExTrans developers. "+\
                                     "No personally identifiable information is sent. These anonymous statistics will help with future development. "+\
-                                    "Do you want to opt out of sending usage statistics?", "FLExTrans Usage",
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    "Do you want to opt out of sending usage statistics?"))
+        msgBox.setWindowTitle("FLExTrans Usage")
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
-        if result == DialogResult.Yes:
+        result = msgBox.exec_()
+        
+        if result == QMessageBox.Yes:
 
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'n', createIfMissing=True)
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y', createIfMissing=True)
@@ -76,7 +90,6 @@ def LogModuleStarted(configMap, report, module_name, module_version):
         if userid is None:
             return
 
-        import mixpanel
         mp = mixpanel.Mixpanel(TOKEN)
 
         import Version

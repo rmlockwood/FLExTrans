@@ -5,8 +5,14 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Dump an interlinear text into Apertium format so that it can be
-#   used by the Apertium transfer engine.
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
+#   Version 3.14 - 5/16/25 - Ron Lockwood
+#    Added localization capability.
 #
 #   Version 3.13.3 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
@@ -60,33 +66,47 @@
 #
 #   earlier version history removed on 3/10/25
 #
+#   Dump an interlinear text into Apertium format so that it can be
+#   used by the Apertium transfer engine.
+#
+
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
 
 import InterlinData
 from SIL.LCModel import * # type: ignore
 from flextoolslib import *
 
+import Mixpanel
 import ReadConfig
 import Utils
 
 NGRAM_SIZE = 5
 
-#----------------------------------------------------------------
-# Configurables:
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
-# Debugging for this module
-DEBUG = False
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['ExtractSourceText'], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'TextClasses'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.13.3",
+docs = {FTM_Name       : _translate("ExtractSourceText", "Extract Source Text"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB: False,
-        FTM_Synopsis  : "Exports an Analyzed FLEx text into Apertium format.",
+        FTM_Synopsis   : _translate("ExtractSourceText", "Exports an Analyzed FLEx text into Apertium format."),
         FTM_Help : '',
-        FTM_Description :
-"""
-This module will use the Source Text Name set in the Settings. It will first check 
+        FTM_Description: _translate("ExtractSourceText", 
+"""This module will use the Source Text Name set in the Settings. It will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
 fully analyzed you will get warnings.
@@ -97,11 +117,10 @@ as head_word<pos><feat1>...<featN><class1>...<classN>. Where feat1 to featN are 
 inflection features that may be present for the root/stem 
 and class1 to classN are inflection classes that may be present on the stem.
 The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
-This is typically called source_text-aper.txt and is usually in the Build folder.
-""" }
+This is typically called source_text-aper.txt and is usually in the Build folder.""")}
 
-#----------------------------------------------------------------
-# The main processing function
+#app.quit()
+#del app
 
 def punctuationEval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap):
 
@@ -242,6 +261,7 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
                     # we can't use a list as the map value, a tuple works, why not make a hash of it
                     wrdGramMap[hash(tuple(keyList))] = 1
                     
+
 def doExtractSourceText(DB, configMap, report):
 
     # Build an output path using the system temp directory.
@@ -254,7 +274,7 @@ def doExtractSourceText(DB, configMap, report):
     try:
         f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
-        report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
+        report.Error(_translate("ExtractSourceText", "There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.").format(path=fullPathTextOutputFile))
         return None
     
     # Find the desired text
@@ -263,16 +283,18 @@ def doExtractSourceText(DB, configMap, report):
         return None
     
     matchingContentsObjList = []
+    textObjList = []
 
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList, textObjList)
     
     if sourceTextName not in sourceTextList:
         
-        report.Error('The text named: '+sourceTextName+' not found.')
+        report.Error(_translate("ExtractSourceText", "The text named: {textName} not found.").format(textName=sourceTextName))
         return None
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
+        textObj = textObjList[sourceTextList.index(sourceTextName)]
     
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
@@ -301,7 +323,7 @@ def doExtractSourceText(DB, configMap, report):
             f_treeTranResultFile = open(treeTranResultFile)
             f_treeTranResultFile.close()
         except:
-            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+            report.Error(_translate("ExtractSourceText", "There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.").format(path=treeTranResultFile))
             return None
         
         # get the list of guids from the TreeTran results file
@@ -349,7 +371,7 @@ def doExtractSourceText(DB, configMap, report):
                 isLastSent = myText.isLastSentInParagraph(sentNum)
                 
                 if myFLExSent is None:
-                    report.Error('Sentence ' + str(sentNum+1) + ' from TreeTran not found')
+                    report.Error(_translate("ExtractSourceText", "Sentence {sentNum} from TreeTran not found").format(sentNum=str(sentNum + 1)))
                     return None
                 
                 beforeAfterMap = {}
@@ -370,7 +392,7 @@ def doExtractSourceText(DB, configMap, report):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
                     if len(str(myGuid)) == 0:
-                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                        report.Error(_translate("ExtractSourceText", "Null Guid in sentence {sentNum}, word {wordNum}").format(sentNum=str(sentNum + 1), wordNum=str(wrdNum + 1)))
                         break
                     
                     # If we couldn't find the guid, see if there's a reason
@@ -378,7 +400,7 @@ def doExtractSourceText(DB, configMap, report):
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
                         if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
-                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                            report.Warning(_translate("ExtractSourceText", "Could not find the desired Guid in sentence {sentNum}, word {wordNum}").format(sentNum=str(sentNum + 1), wordNum=str(wrdNum + 1)))
                     
                     # We want the punctuation to be at the same points as in the original sentence. This won't always come out right, but maybe close.
                     else:
@@ -435,7 +457,7 @@ def doExtractSourceText(DB, configMap, report):
                 
                 if myFLExSent == None:
                     
-                    report.Error('Sentence: ' + str(sentNum+1) + ' not found. Check that the right parses are present.')
+                    report.Error(_translate("ExtractSourceText", "Sentence: {sentNum} not found. Check that the right parses are present.").format(sentNum=str(sentNum + 1)))
                     continue 
                 
                 myFLExSent.write(f_out)
@@ -443,32 +465,40 @@ def doExtractSourceText(DB, configMap, report):
                 if myText.isLastSentInParagraph(sentNum):
                     f_out.write('\n')
                 
-        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        report.Info(_translate("ExtractSourceText", "Exported: {count} sentence(s) using TreeTran results.").format(count=str(len(logInfo))))
         
         if noParseSentCount > 0:
-            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
+            report.Warning(_translate("ExtractSourceText", "No parses found for {count} sentence(s).").format(count=str(noParseSentCount)))
 
     else:
         # Write out all the words
         myText.write(f_out)
         totalStr = str(myText.getSentCount())
         #endstr = 's' if totalStr != '1' else ''
-        report.Info(f"Exported {totalStr} sentence(s) to {abbrPath}.")
+        report.Info(_translate("ExtractSourceText", "Exported {count} sentence(s) to {path}.").format(count=totalStr, path=abbrPath))
         
     f_out.close()
 
-    report.Info("Export of " + sourceTextName + " complete.")
+    report.Info(_translate("ExtractSourceText", "Export of {textName} complete.").format(textName=sourceTextName), DB.BuildGotoURL(textObj))
     return 1
 
 def MainFunction(DB, report, modifyAllowed):
     
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + ['ExtractSourceText'], 
+                           translators, loadBase=True)
+
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     doExtractSourceText(DB, configMap, report)

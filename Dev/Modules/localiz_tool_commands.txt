@@ -1,0 +1,3 @@
+pylupdate5 -verbose DoSynthesis.py -ts translations\DoSynthesis_de.ts
+
+lrelease translations\DoSynthesis_es.ts -qm "C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans\translations\DoSynthesis_es.qm"

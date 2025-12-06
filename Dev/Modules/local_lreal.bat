@@ -1,0 +1,2 @@
+lrelease translations\%1_de.ts -qm "C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans\translations\%1_de.qm"
+lrelease translations\%1_es.ts -qm "C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans\translations\%1_es.qm"

@@ -5,6 +5,15 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/16/25 - Ron Lockwood
+#    Added localization capability.
+#
+#   Version 3.13.1 - 4/25/25 - Ron Lockwood
+#    Fixes #971. Change the window title based on which projects are selected for export.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -42,30 +51,46 @@ from SIL.LCModel import ( # type: ignore
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox
+from PyQt5.QtCore import QCoreApplication
 
+import Mixpanel
 import ReadConfig
 import FTPaths
 import Utils
-from ParatextChapSelectionDlg import Ui_MainWindow
+from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
 
-#----------------------------------------------------------------
-# Configurables:
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ExportFlexToParatext'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Export Text from Target FLEx to Paratext",
-        FTM_Version    : "3.13",
+docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Export one or more texts that contain scripture from the target FLEx project to Paratext.",
+        FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
-        FTM_Description:
-"""
-Export one or more texts that contain scripture from the target FLEx project to Paratext. The list of possible texts to choose
+        FTM_Description: _translate("ExportFlexToParatext",
+"""Export one or more texts that contain scripture from the target FLEx project to Paratext. The list of possible texts to choose
 from will be filtered according to texts that have a scripture book name or abbreviation in the title plus
-a chapter number or a range of chapter numbers.""" }
-                 
+a chapter number or a range of chapter numbers.""")}
+
+#app.quit()
+#del app
+
 #----------------------------------------------------------------
 # The main processing function
 
@@ -74,17 +99,18 @@ class Main(QMainWindow):
     def __init__(self, targetDB, clusterProjects, scriptureTitles):
         QMainWindow.__init__(self)
 
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_ParatextChapSelectionWindow()
+        self.targetDB = targetDB
         self.clusterProjects = clusterProjects
         self.scriptureTitles = scriptureTitles
         self.selectedTitles = []
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        self.setWindowTitle(f"Export from {targetDB.ProjectName()} to Paratext")
+        self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {projectName} to Paratext").format(projectName=targetDB.ProjectName()))
 
-        header1TextStr = "FLEx project name"
-        header2TextStr = "Paratext project abbrev."
+        header1TextStr = _translate("ExportFlexToParatext", "FLEx project name")
+        header2TextStr = _translate("ExportFlexToParatext", "Paratext project abbrev.")
         self.ptxProjs = ChapterSelection.getParatextProjects()
 
         # Set the top two widgets that need to be disabled
@@ -107,6 +133,19 @@ class Main(QMainWindow):
         comboWidget.addItems(['...'] + self.ptxProjs)
     
     def clusterSelectionChanged(self):
+
+        # Set the window title based on the selected project(s)
+        if len(selProjs := self.ui.clusterProjectsComboBox.currentData()) == 1:
+
+            self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {selProj} to Paratext").format(selProj=selProjs[0]))
+
+        elif len(selProjs) > 1:
+
+            self.setWindowTitle(_translate("ExportFlexToParatext", "Export from multiple FLEx projects to Paratext"))
+        
+        # Otherwise, use the default title
+        else:
+            self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {DB} to Paratext").format(DB=self.targetDB.ProjectName()))
 
         ClusterUtils.showClusterWidgets(self)
 
@@ -148,79 +187,6 @@ class Main(QMainWindow):
 
                     checkFunc(title)
 
-def MainFunction(DB, report, modify):
-    
-    ## Read the SourceName from the config file
-    
-    # Read the configuration file 
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
-
-    # Get the cluster projects
-    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
-    if not clusterProjects:
-        clusterProjects = []
-    else:
-        # Remove blank ones
-        clusterProjects = [x for x in clusterProjects if x]
-
-    # Open the Target DB
-    targetDB = Utils.openTargetProject(configMap, report)
-
-    # Get a list of the text titles
-    textTitles = Utils.getSourceTextList(targetDB)
-
-    # Filter these down to the ones that match a scripture book name or abbreviation and a chapter number
-    scriptureTitles = ChapterSelection.getScriptureText(report, textTitles)
-    
-    # Show the window
-    app = QApplication(sys.argv)
-
-    window = Main(targetDB, clusterProjects, scriptureTitles)
-    
-    window.show()
-    
-    app.exec_()
-    
-    if window.retVal == True:
-        
-        if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
-
-            for i, proj in enumerate(window.chapSel.clusterProjects):
-
-                if window.chapSel.ptxProjList[i] == '...':
-                    continue
-
-                # Open the project (if it's not the main project or the target project)
-                if proj == DB.ProjectName():
-
-                    myDB = DB
-
-                elif proj == targetDB.ProjectName():
-
-                    myDB = targetDB
-                else:
-                    myDB = Utils.openProject(report, proj)
-
-                report.Blank()
-                report.Info(f'Exporting from the {proj} project...')
-
-                exportAllSelectedTitles(myDB, report, window, proj, window.chapSel.ptxProjList[i])
-                
-                # Close the project (if not the main)
-                if proj != DB.ProjectName() and proj != targetDB.ProjectName():
-
-                    myDB.CloseProject()
-        else:
-            exportAllSelectedTitles(targetDB, report, window, targetDB.ProjectName())
-
-    targetDB.CloseProject()
-
 def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
 
     matchingContentsObjList = []
@@ -232,7 +198,7 @@ def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
             contents = matchingContentsObjList[textTitles.index(title)]
 
         except ValueError:
-            report.Error(f'{title} not found in the {proj} project.')
+            report.Error(_translate("ExportFlexToParatext", "{title} not found in the {proj} project.").format(title=title, proj=proj))
             continue
 
         textStr = makeTextStr(contents)
@@ -264,7 +230,8 @@ def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
 
         if not ChapterSelection.doExport(textStr, report, window.chapSel, window):
            
-            report.Error(f'There was a problem exporting {title} from the {proj} project to {window.chapSel.exportProjectAbbrev}.') 
+            report.Error(_translate("ExportFlexToParatext", "There was a problem exporting {title} from the {proj} project to {exportProjectAbbrev}.").format(
+                title=title, proj=proj, exportProjectAbbrev=window.chapSel.exportProjectAbbrev)) 
             break
 
 def makeTextStr(contentsObj):
@@ -278,6 +245,81 @@ def makeTextStr(contentsObj):
             paraList.append(para)
 
     return '\n'.join(paraList)
+
+def MainFunction(DB, report, modify):
+    
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
+    # Read the configuration file 
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+    else:
+        # Remove blank ones
+        clusterProjects = [x for x in clusterProjects if x]
+
+    # Open the Target DB
+    targetDB = Utils.openTargetProject(configMap, report)
+
+    # Get a list of the text titles
+    textTitles = Utils.getSourceTextList(targetDB)
+
+    # Filter these down to the ones that match a scripture book name or abbreviation and a chapter number
+    scriptureTitles = ChapterSelection.getScriptureText(report, textTitles)
+    
+    window = Main(targetDB, clusterProjects, scriptureTitles)
+    window.show()
+    app.exec_()
+    
+    if window.retVal == True:
+        
+        if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
+
+            for i, proj in enumerate(window.chapSel.clusterProjects):
+
+                if window.chapSel.ptxProjList[i] == '...':
+                    continue
+
+                # Open the project (if it's not the main project or the target project)
+                if proj == DB.ProjectName():
+
+                    myDB = DB
+
+                elif proj == targetDB.ProjectName():
+
+                    myDB = targetDB
+                else:
+                    myDB = Utils.openProject(report, proj)
+
+                report.Blank()
+                report.Info(_translate("ExportFlexToParatext", "Exporting from the {proj} project...").format(proj=proj))
+
+                exportAllSelectedTitles(myDB, report, window, proj, window.chapSel.ptxProjList[i])
+                
+                # Close the project (if not the main)
+                if proj != DB.ProjectName() and proj != targetDB.ProjectName():
+
+                    myDB.CloseProject()
+        else:
+            exportAllSelectedTitles(targetDB, report, window, targetDB.ProjectName())
+
+    targetDB.CloseProject()
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

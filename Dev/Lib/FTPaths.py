@@ -3,11 +3,11 @@
 #
 #   Define all the paths used by FlexTrans in one place. 
 #
-#   Version 3.13 - 3/10/25 - Ron Lockwood
-#    Bumped to 3.13.
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects.
 #
-#   Version 3.12 - 11/2/24 - Ron Lockwood
-#    Bumped to 3.12.
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
 #
 #   Version 3.11.2 - 6/3/24 - Ron Lockwood
 #    RA folder and exe names now have no spaces.
@@ -34,8 +34,8 @@
 import os
 
 CONFIG_PATH = os.path.join(os.getcwd(), "flextools.ini")
-
 WORK_DIR    = os.path.dirname(os.path.dirname(CONFIG_PATH))
+WORK_PROJECTS_DIR = os.path.dirname(WORK_DIR)
 ROOT_DIR    = os.path.dirname(os.path.dirname(WORK_DIR))
 WORK_PROJECT= os.path.basename(WORK_DIR)
 
@@ -44,6 +44,8 @@ BUILD_DIR   = os.path.join(WORK_DIR, "Build")
 OUTPUT_DIR  = os.path.join(WORK_DIR, "Output")
 
 TOOLS_DIR   = os.path.join(ROOT_DIR, "FlexTools", "Tools")
+MODUL_FT_DIR= os.path.join(ROOT_DIR, "FlexTools", "Modules", "FLExTrans")
+TRANSL_DIR  = os.path.join(MODUL_FT_DIR, "translations")
 HELP_DIR    = os.path.join(ROOT_DIR, "FLExTrans Documentation")
 SAMPLE_PROJECTS_DIR  = os.path.join(ROOT_DIR, "SampleFLExProjects")
 

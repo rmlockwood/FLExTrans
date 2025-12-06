@@ -5,6 +5,21 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.4 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
+#   Version 3.14.3 - 9/3/25 - Ron Lockwood
+#    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
+#
+#   Version 3.14.2 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects in TextInOut.
+#
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -114,7 +129,7 @@ import re
 import os
 import unicodedata
 
-from FTPaths import CONFIG_PATH, WORK_DIR
+from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
@@ -138,8 +153,10 @@ LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
 LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
+PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
-SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
+SOURCE_FORMS_INFLECTION_1ST = 'SourceComplexFormsWithInflectionOn1stElement'
+SOURCE_COMPLEX_TYPES = 'SourceComplexTypes' # This the setting for source complex forms with inflection on the second/last element, but for historical reasons it is named this way.
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
 SOURCE_CUSTOM_FIELD_SENSE_NUM = 'SourceCustomFieldForSenseNum'
 SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
@@ -162,6 +179,8 @@ TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TARGET_XAMPLE_CUSTOM_ENTRY_FIELD = 'TargetXampleCustomEntryField'
+TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD = 'TargetXampleCustomAllomorphField'
 TESTBED_FILE = 'TestbedFile'
 TESTBED_RESULTS_FILE = 'TestbedResultsFile'
 TEXT_OUT_RULES_FILE = 'TextOutRulesFile'
@@ -196,6 +215,7 @@ GEN_STC_LIMIT_SEMANTIC_DOMAIN_2 = 'GenStcLimitSemDomain2'
 # If you are adding a new property that will have multiple values, add it to this list variable
 PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_MORPHNAMES,
+                             SOURCE_FORMS_INFLECTION_1ST,
                              SOURCE_COMPLEX_TYPES,
                              SOURCE_DISCONTIG_TYPES,
                              SOURCE_DISCONTIG_SKIPPED,
@@ -214,6 +234,15 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
 #                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_1,
 #                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_2,
 
+
+from PyQt5.QtCore import QCoreApplication
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+def getInterfaceLangCode():
+    return 'de'
+
 def openConfigFile(report, info):
     
     try:
@@ -226,7 +255,7 @@ def openConfigFile(report, info):
     except:
         if report is not None:
             
-            report.Error('Error reading the file: "' + CONFIG_PATH+ '/' + CONFIG_FILE + '". Check that it exists.')
+            report.Error(_translate("ReadConfig", 'Error reading the file: "{path}/{file}". Check that it exists.').format(path=os.path.dirname(CONFIG_PATH), file=CONFIG_FILE))
             
         return None
 
@@ -263,7 +292,7 @@ def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
         else:
             if report is not None:
                 
-                report.Error(f'Setting: {settingName} not found in the configuration file.')
+                report.Error(_translate("ReadConfig", 'Setting: "{setting}" not found in the configuration file.').format(setting=settingName))
             
             f_outHandle.close()
             return False
@@ -276,8 +305,13 @@ def readConfig(report):
     f_handle = openConfigFile(report, 'r')
     
     if f_handle is None:
-        return 
+        
+        return None
     
+    return getConfigMap(f_handle, report)
+
+def getConfigMap(f_handle, report):
+
     my_map = {}
     for line in f_handle:
         
@@ -296,20 +330,26 @@ def readConfig(report):
         if not re.search('=', line):
 
             if report is not None:
-                report.Warning('Problem reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
+
+                report.Warning(_translate("ReadConfig", 'Problem reading the file: "{file}". A line without "=" was found.').format(file=CONFIG_FILE))
+
             continue
         
         try:
             (prop, value) = line.split('=')
+
         except:
             if report is not None:
-                report.Warning('Problem reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
+
+                report.Warning(_translate("ReadConfig", 'Problem reading the file: "{file}". A line with more than one "=" was found.').format(file=CONFIG_FILE))
+
             continue
         
         value = value.rstrip()
         
         # if the value has commas and it is in the set of properties that can have multiple values, save it as a list
         if re.search(',', value) and prop in PROPERTIES_THAT_ARE_LISTS:
+
             my_list = value.split(',')
             my_map[prop] = my_list
         else:
@@ -317,11 +357,16 @@ def readConfig(report):
 
     return my_map
 
-def getConfigVal(my_map, key, report, giveError=True):
+def getConfigVal(my_map, key, report, giveError=True, basePath=None):
+
     if key not in my_map:
+
         if report is not None:
+
             if giveError:
-                report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
+
+                report.Error(_translate("ReadConfig", 'Error in the file: "{file}". A value for "{key}" was not found.').format(file=CONFIG_FILE, key=key))
+        
         return None
     else:
         # If the key value has the word 'File' or 'Folder then change the path accordingly.
@@ -333,14 +378,21 @@ def getConfigVal(my_map, key, report, giveError=True):
                 
                 # Return the parent folder of the Config folder + the relative file path.
                 # E.g. the resulting path would be something like ...\German-Swedish\Build\target_text.txt
-                return os.path.join(WORK_DIR, my_map[key])
+                if basePath:
+                    return os.path.join(basePath, my_map[key])
+                else:
+                    return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
 
 def configValIsList(my_map, key, report):
+
     if isinstance(my_map[key], list) is False:
+
         if report is not None:
-            report.Error('Error in the file: "' + CONFIG_FILE + '". The value for "'+key+'" is supposed to be a comma separated list. For a single value, end it with a comma.')
+
+            report.Error(_translate("ReadConfig", 'Error in the file: "{file}". The value for "{key}" is supposed to be a comma separated list. For a single value, end it with a comma.').format(file=CONFIG_FILE, key=key))
+        
         return False
     else:
         return True

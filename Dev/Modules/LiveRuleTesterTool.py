@@ -5,6 +5,54 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.13 - 11/28/25 - Ron Lockwood
+#    Fixes #1103. Respond to arrow up and down in the sentence list box.
+#
+#   Version 3.14.12 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.11 - 7/31/25 - Ron Lockwood
+#    Fixes #1032. Space between lexical units in the Execution Log.
+#
+#   Version 3.14.10 - 7/25/25 - Ron Lockwood
+#    Fixes #1022. Use improved Apertium execution log.
+#
+#   Version 3.14.9 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
+#   Version 3.14.8 - 7/23/25 - Ron Lockwood
+#    Fixes #1013. Show duplicate affix gloss warnings.
+#
+#   Version 3.14.7 - 7/5/25 - Ron Lockwood
+#    Save the height and width in advanced and standard mode and restore them.
+#
+#   Version 3.14.6 - 7/5/25 - Ron Lockwood
+#    Fixes #1012. Connect a Refresh Source Lexicon button to the source text combo box.
+#    When clicked, the same source text will be reloaded.
+#
+#   Version 3.14.5 - 7/4/25 - Ron Lockwood
+#    Fixes #1018. Use a tri-state checkbox above the Rule checkboxes to check or uncheck all.
+#
+#   Version 3.14.4 - 7/2/25 - Ron Lockwood
+#    Show a tooltip when hovering over a source sentence. This will help the user see the full sentence, if the
+#    combo box or list box is too narrow.
+#
+#   Version 3.14.3 - 7/1/25 - Ron Lockwood
+#    Further fixes to elimnate blank space below checkboxes that caused a scroll bar to appear.
+#    Add checkboxes to the custom layout each time we display it.
+#
+#   Version 3.14.2 - 6/25/25 - Ron Lockwood
+#    Fix problem of check box scroll area not showing a scroll bar.
+#
+#   Version 3.14.1 - 6/19/25 - Ron Lockwood
+#    Don't allow synthesis if the target text is empty or no words are selected.
+#
+#   Version 3.14 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
+#   Version 3.13.3 - 6/2/25 - Ron Lockwood
+#    Improved exception handling around use of the HermitCrab DLL.
+# 
 #   Version 3.13.2 - 4/9/25 - Ron Lockwood
 #    Delete non-sentence-ending punctuation from the synthesis result before adding it to the testbed.
 #    Also, apply Text Out rules to the sentence-ending punctuation if necessary.
@@ -197,15 +245,12 @@
 import os
 import re
 import regex
-import sys
 import unicodedata
 import copy
 import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
-import InterlinData
-from Modules.FLExTrans.Lib import TextInOutUtils
 from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
@@ -214,8 +259,12 @@ from flexlibs import FLExProject
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout
 
+import Mixpanel
+import InterlinData
+import TextInOutUtils
 from Testbed import *
 import RunApertium
 import Utils
@@ -227,23 +276,35 @@ import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
 import TestbedLogViewer
 
-from LiveRuleTester import Ui_MainWindow
+from LiveRuleTester import Ui_LRTWindow
 import FTPaths
 
-#----------------------------------------------------------------
-# Configurables:
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'LiveRuleTesterTool'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'TextClasses', 'InterlinData', 'TextInOutUtils', 'Testbed', 'CatalogTargetAffixes', 
+                        'ConvertTextToSTAMPformat', 'DoStampSynthesis', 'DoHermitCrabSynthesis', 'ExtractBilingualLexicon', 'TestbedLogViewer'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.13.2",
+docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
+        FTM_Version    : "3.14.13",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
-        FTM_Help   : "",
-        FTM_Description:
-"""
-The Live Rule Tester Tool is a tool that allows you to test source words or
+        FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
+        FTM_Help       : "", 
+        FTM_Description: _translate("LiveRuleTesterTool", 
+"""The Live Rule Tester Tool is a tool that allows you to test source words or
 sentences live against transfer rules. This tool is especially helpful for
 finding out why transfer rules are not doing what you expect them to do.
 You can zero in on the problem by selecting just one source word and applying
@@ -251,12 +312,16 @@ the pertinent transfer rule. In this way you don't have to run the whole system
 against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
-You can run the testbed to check that you are getting the results you expect.
-""" }
+You can run the testbed to check that you are getting the results you expect.""")}
+
+#app.quit()
+#del app
 
 ZOOM_INCREASE_FACTOR = 1.15
+ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
+STANDARD_MODE_DEFAULT_DIMENSIONS = (628, 656)
 SAMPLE_LOGIC = 'Sample logic'
-MAX_CHECKBOXES = 80
+MAX_CHECKBOXES = 100
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
 TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
 ANA_FILE = 'myText.ana'
@@ -288,6 +353,102 @@ def firstLower(myStr):
     else:
         return myStr
 
+class FlowLayout(QLayout):
+    def __init__(self, parent=None, margin=1, spacing=3):
+        super().__init__(parent)
+        self.setContentsMargins(margin, margin, margin, margin)
+        self.setSpacing(spacing)
+        self.item_list = []
+
+    def addItem(self, item):
+        self.item_list.append(item)
+
+    def count(self):
+        return len(self.item_list)
+
+    def itemAt(self, index):
+        return self.item_list[index] if 0 <= index < len(self.item_list) else None
+
+    def takeAt(self, index):
+        return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
+
+    def expandingDirections(self):
+        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        x, y, line_height = 0, 0, 0
+        for item in self.item_list:
+            w = item.widget().sizeHint().width()
+            h = item.widget().sizeHint().height()
+
+            if x + w > width and x > 0:
+                x = 0
+                y += line_height + self.spacing()
+                line_height = 0
+
+            x += w + self.spacing()
+            line_height = max(line_height, h)
+
+        return y + line_height
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        is_rtl = self.parentWidget().layoutDirection() == QtCore.Qt.RightToLeft
+
+        x = rect.width() if is_rtl else 0
+        y = 0
+        line_height = 0
+
+        for item in self.item_list:
+            widget = item.widget()
+            hint = widget.sizeHint()
+
+            if is_rtl:
+                next_x = x - hint.width() - self.spacing()
+                if next_x < 0:
+                    x = rect.width()
+                    y += line_height + self.spacing()
+                    next_x = x - hint.width() - self.spacing()
+                    line_height = 0
+                item.setGeometry(QtCore.QRect(QtCore.QPoint(next_x, y), hint))
+                x = next_x
+            else:
+                next_x = x + hint.width() + self.spacing()
+                if next_x > rect.width():
+                    x = 0
+                    y += line_height + self.spacing()
+                    next_x = x + hint.width() + self.spacing()
+                    line_height = 0
+                item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), hint))
+                x = next_x
+
+            line_height = max(line_height, hint.height())
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        return QtCore.QSize(20, self.heightForWidth(40))
+
+class FlowContainer(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout = FlowLayout()
+        self.setLayout(self.layout)
+
+    def sizeHint(self):
+        width = self.parent().width() if self.parent() else 40
+        height = self.layout.heightForWidth(width)
+        return QtCore.QSize(width, height)
+
+    def minimumSizeHint(self):
+        width = self.parent().width() if self.parent() else 40
+        height = self.layout.heightForWidth(width)
+        return QtCore.QSize(width, height)
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
 
@@ -306,12 +467,14 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        mySent = self.__localData[index.row()]
+        
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.ToolTipRole:
 
-        if role == QtCore.Qt.DisplayRole:
-            value = self.joinTupParts(mySent, 0)
+            value = self.joinTupParts(self.__localData[index.row()], 0)
 
             if self.getRTL():
+
+                # Add a Unicode Right-to-Left mark to the beginning and end of the string
                 value = '\u200F' + value + '\u200F'
 
             return value
@@ -334,7 +497,7 @@ class Main(QMainWindow):
 
     def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
         QMainWindow.__init__(self)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_LRTWindow()
         self.ui.setupUi(self)
 
         self.__biling_file = biling_file
@@ -353,6 +516,7 @@ class Main(QMainWindow):
         self.rulesChanged = True
         self.fixBilingLex = True
         self.__bilingMap = {}
+        self.nothingSelectedMsg = _translate('LiveRuleTesterTool', 'Nothing selected. Select at least one word or sentence.')
 
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
@@ -386,7 +550,28 @@ class Main(QMainWindow):
         self.startRuleAssistant = False
         self.startReplacementEditor = False
         self.HCdllObj = None
+        self.lastSelectAllState = QtCore.Qt.Unchecked
+        self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
+        self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
+        self.advancedWidgetsList = [
+            self.ui.rebuildBilingLexButton,
+            self.ui.startRuleAssistant,
+            self.ui.viewBilingualLexiconButton,
+            self.ui.editReplacementButton,
+            # self.ui.selectAllButton,
+            # self.ui.unselectAllButton,
+            self.ui.upButton,
+            self.ui.downButton,
+            self.ui.editTransferRulesButton,
+            self.ui.traceHermitCrabSynthesisCheckBox,
+            self.ui.startRuleAssistant,
+            self.ui.applyTextOutRulesCheckbox,
+            self.ui.DoNotCleanupCheckbox,
+            self.ui.addMultipleCheckBox,
+            self.ui.editTestbedButton,
+            self.ui.viewTestbedLogButton,
+        ]
 
         # Reset icon images
         icon = QtGui.QIcon()
@@ -407,8 +592,6 @@ class Main(QMainWindow):
         self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
         self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
-        self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
-        self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
@@ -426,6 +609,12 @@ class Main(QMainWindow):
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
         self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
+        self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
+        self.ui.selectAllCheckBox.clicked.connect(self.SelectAllCheckBoxClicked)
+        self.ui.refreshSourceLexiconButton.clicked.connect(self.sourceTextComboChanged)
+
+        # Align selectAllCheckBox to the bottom
+        self.ui.horizontalLayout_9.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -444,18 +633,21 @@ class Main(QMainWindow):
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
 
+        self.content_widget = FlowContainer()
+
         for i in range(0, MAX_CHECKBOXES):
 
             myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
-            myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
 
             # connect to a function
             myCheck.clicked.connect(self.SourceCheckBoxClicked)
 
             # add it to the list
             self.__checkBoxList.append(myCheck)
+
+        self.ui.scrollArea.setWidget(self.content_widget)
 
         # Make sure we are on right tabs
         ruleTab = 0
@@ -503,6 +695,28 @@ class Main(QMainWindow):
                     # Set the checkboxes based on the values in the list
                     self.ui.applyTextOutRulesCheckbox.setChecked(checkBoxStateStr[0] == '1')
                     self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
+
+                # Read the 6th line which is the state of the advanced options checkbox
+                advancedOptionsStr = f.readline().strip()
+
+                if len(advancedOptionsStr) > 0:
+
+                    self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
+
+                # Read the 7th and 8th lines which are the width and height of standard and advanced modes
+                dimensionsStr = f.readline().strip()
+
+                if len(dimensionsStr) > 0:
+
+                    standardWidth, standardHeight = dimensionsStr.split('|')
+                    self.standardModeDimensions = (int(standardWidth), int(standardHeight))
+
+                dimensionsStr = f.readline().strip()
+
+                if len(dimensionsStr) > 0:
+
+                    advancedWidth, advancedHeight = dimensionsStr.split('|')
+                    self.advancedModeDimensions = (int(advancedWidth), int(advancedHeight))
         except:
             pass
 
@@ -513,16 +727,9 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
-        # Show the Do not clean up... checkbox if the applicable setting is 'y'
-        if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
-
-            self.ui.DoNotCleanupCheckbox.setVisible(True) 
-        else:
-            self.ui.DoNotCleanupCheckbox.setVisible(False) 
-            self.ui.DoNotCleanupCheckbox.setChecked(False)
-
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
+
             self.__transfer_rules_file = self.buildFolder + '\\..\\transfer_rules.t1x'
 
         # Parse the xml rules file and load the rules
@@ -536,12 +743,18 @@ class Main(QMainWindow):
 
         # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
+
         for i,mySent in enumerate(sentence_list):
+
             if found_rtl == True or i >= 5:
                 break
+
             for myWordBundle in mySent:
+
                 surface_form = myWordBundle[0]
+
                 if self.hasRTLdata(surface_form):
+
                     self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.__sent_model.setRTL(True)
@@ -554,6 +767,7 @@ class Main(QMainWindow):
 
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         if self.ReadBilingualLexicon() == False:
+
             self.retVal = False
             self.close()
             return
@@ -569,7 +783,8 @@ class Main(QMainWindow):
 
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
-
+        self.ui.listSentences.selectionModel().selectionChanged.connect(self.listSentClicked)
+        
         # Only use the sentence number from saved values if the text is the same one that was last saved
         if savedSourceTextName != sourceText:
 
@@ -591,7 +806,7 @@ class Main(QMainWindow):
             # always name the local version bilingual.dix which is what the Makefile has
             shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
         except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
             return
 
@@ -660,30 +875,153 @@ class Main(QMainWindow):
 
         self.textOutElemTree = None
 
-        # Start out hiding this checkbox
-        self.ui.applyTextOutRulesCheckbox.setVisible(False)
+        self.manualTabText = self.ui.tabSource.tabText(2)
+        self.interChunkTabText = self.ui.tabRules.tabText(1)
+        self.postChunkTabText = self.ui.tabRules.tabText(2)
 
-        # Save the checkstate (above it was read from the window_settings) and uncheck it initially
-        myState = self.ui.applyTextOutRulesCheckbox.isChecked()
-        self.ui.applyTextOutRulesCheckbox.setChecked(False)
+        # Hide the advanced widgets if needed
+        self.AdvancedOptionsCheckboxClicked()
 
-        # See if we have a Text Out Rules file. 
-        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
-
-        if textOutRulesFile:
-            
-            # Check if the file exists.
-            if os.path.exists(textOutRulesFile):
-
-                try:
-                    self.textOutElemTree = ET.parse(textOutRulesFile)
-                    self.ui.applyTextOutRulesCheckbox.setVisible(True) 
-                    self.ui.applyTextOutRulesCheckbox.setChecked(myState)
-                except:
-                    pass 
-
+        self.setMinimumHeight(500)
+        # self.ui.transferRuleButtonsHorizLayout.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
         self.retVal = True
 
+    def AdvancedOptionsCheckboxClicked(self):
+
+        # Show or hide the advanced widgets and tabs
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            for widget in self.advancedWidgetsList:
+
+                widget.show()
+            
+            # Move the log edit edit box beside the rules if needed
+            if self.ui.horizLayoutTransferRules.count() < 2:
+
+                # Remove LogEdit from its current layout
+                self.ui.verticalLayout.removeWidget(self.ui.LogEdit)
+
+                # Add LogEdit to horizLayoutTransferRules at the desired position
+                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
+
+                # Align ruleExecutionLabel to the right.
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+
+                # Move ruleExecutionLabel from horizontalLayout_4 to horizontalLayout_9.
+                self.ui.horizontalLayout_4.removeWidget(self.ui.ruleExecutionLabel)
+
+                # Add it at the end.
+                self.ui.horizontalLayout_9.addWidget(self.ui.ruleExecutionLabel)
+
+                # Remove the targetTextLabel from verticalLayout
+                self.ui.verticalLayout.removeWidget(self.ui.targetTextLabel)
+
+                # Add it to horizontalLayout_4 at the beginning.
+                self.ui.horizontalLayout_4.insertWidget(0, self.ui.targetTextLabel)
+
+            # Add advanced tabs
+            self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
+            self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
+            self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
+
+            # Force a resize
+            self.adjustSize()
+
+            self.resize(self.advancedModeDimensions[0], self.advancedModeDimensions[1])
+
+            # If we are doing HermitCrab synthesis, show the checkbox
+            if not self.doHermitCrabSynthesisBool:
+
+                self.ui.traceHermitCrabSynthesisCheckBox.hide()
+
+            # See if we have a Text Out Rules file so we know whether to show the text out checkbox
+            self.ui.applyTextOutRulesCheckbox.hide()
+            textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
+
+            if textOutRulesFile:
+                
+                # Check if the file exists.
+                if os.path.exists(textOutRulesFile):
+
+                    try:
+                        self.textOutElemTree = ET.parse(textOutRulesFile)
+                        self.ui.applyTextOutRulesCheckbox.show() 
+                    except:
+                        pass 
+
+            # Show the Do not clean up... checkbox if the applicable setting is not 'y'
+            if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
+
+                self.ui.DoNotCleanupCheckbox.hide()
+        
+        # Not advanced options, hide the widgets and tabs
+        else:
+            for widget in self.advancedWidgetsList:
+
+                widget.hide()
+
+            # Move the log edit edit box below the rules if needed
+            if self.ui.horizLayoutTransferRules.count() > 1:
+
+                # Remove LogEdit from its current layout
+                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
+
+                # Add LogEdit to verticalLayout at the desired position
+                count = self.ui.verticalLayout.count()
+                insert_position = count - 4  # 4th from the bottom
+                self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
+
+                # Align ruleExecutionLabel to the left.
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+
+                # Move ruleExecutionLabel from horizontalLayout_9 to horizontalLayout_4.
+                self.ui.horizontalLayout_9.removeWidget(self.ui.ruleExecutionLabel)
+
+                # Add it at the beginning.
+                self.ui.horizontalLayout_4.insertWidget(0, self.ui.ruleExecutionLabel)
+
+                # Remove the targetTextLabel from horizontalLayout_4
+                self.ui.horizontalLayout_4.removeWidget(self.ui.targetTextLabel)
+
+                # Add it to the verticalLayout above the LogEdit
+                self.ui.verticalLayout.insertWidget(insert_position+1, self.ui.targetTextLabel)
+
+            # Set window width half the size
+            self.resize(self.standardModeDimensions[0], self.standardModeDimensions[1])
+
+            # Remove advanced tabs
+            self.ui.tabSource.removeTab(2) # Remove Manual tab
+            self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
+            self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            # Save the dimensions of the advanced mode
+            self.advancedModeDimensions = (self.width(), self.height())
+        else:
+
+            # Save the dimensions of the standard mode
+            self.standardModeDimensions = (self.width(), self.height()) 
+
+        self.positionZoomWidgets()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.positionZoomWidgets()
+
+    def positionZoomWidgets(self):
+
+        mainWidth = self.width()
+        tabSourceGeom = self.ui.tabSource.geometry()
+        x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
+        y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
+        self.ui.ZoomDecreaseSource.move(x, y)
+        self.ui.ZoomIncreaseSource.move(x-23, y)
+        self.ui.ZoomLabel_2.move(x-23-184, y)
+        
     def sourceTextComboChanged(self):
 
         self.restartTester = True
@@ -698,7 +1036,6 @@ class Main(QMainWindow):
         refreshStatusbar()
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     # Read the bilingual lexicon and make a map from source entries to one or more target entries
@@ -723,7 +1060,7 @@ class Main(QMainWindow):
 
         except IOError:
 
-            QMessageBox.warning(self, 'Read Error', f'Bilingual file: {self.__biling_file} could not be read.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Read Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} could not be read.').format(self.__biling_file))
             return False
 
         # Get the root node
@@ -769,7 +1106,7 @@ class Main(QMainWindow):
 
         if os.path.exists(self.__biling_file) == False:
 
-            QMessageBox.warning(self, 'Not Found Error', f'Bilingual file: {self.__biling_file} does not exist.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__biling_file))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -782,7 +1119,7 @@ class Main(QMainWindow):
 
         if os.path.exists(self.__transfer_rules_file) == False:
 
-            QMessageBox.warning(self, 'Not Found Error', f'Transfer rule file: {self.__transfer_rules_file} does not exist.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -796,7 +1133,6 @@ class Main(QMainWindow):
         self.startReplacementEditor = True
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     def checkThemAll(self):
@@ -804,15 +1140,15 @@ class Main(QMainWindow):
             if self.advancedTransfer:
                 self.__ruleModel = self.__interChunkModel
                 self.__rulesElement = self.__interchunkRulesElement
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
                 self.__ruleModel = self.__transferModel
                 self.__rulesElement = self.__transferRulesElement
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
             else:
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
 
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
@@ -820,7 +1156,7 @@ class Main(QMainWindow):
 
         # Check for badly formed lexical units
         if lexParser.isWellFormed() == False:
-            QMessageBox.warning(self, 'Lexical unit error', 'The lexical unit(s) is/are incorrectly formed.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Lexical unit error'), _translate('LiveRuleTesterTool', 'The lexical unit(s) is/are incorrectly formed.'))
             return None
 
         # Get the lexical units from the parser
@@ -845,10 +1181,10 @@ class Main(QMainWindow):
         fatal, msg = Utils.checkForFatalError(errorList, None)
 
         if fatal:
-            QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', f'{msg}\nRun the Extract Bilingual Lexicon module separately for more details.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Extract Bilingual Lexicon Error'), _translate('LiveRuleTesterTool', '{0}\nRun the Extract Bilingual Lexicon module separately for more details.').format(msg))
             return False
 
-        self.__report.Info('Built the bilingual lexicon.')
+        self.__report.Info(_translate('LiveRuleTesterTool', 'Built the bilingual lexicon.'))
         return True
 
     def RebuildBilingLexButtonClicked(self):
@@ -894,7 +1230,7 @@ class Main(QMainWindow):
             # always name the local version bilingual.dix which is what the Makefile has
             shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
             return
 
@@ -915,19 +1251,17 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = True
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     def OpenRuleAssistantClicked(self):
         self.startRuleAssistant = True
-        self.closeEvent(None)
         self.close()
 
     def EditTestbedLogButtonClicked(self):
 
         if os.path.exists(self.__testbedPath) == False:
 
-            QMessageBox.warning(self, 'Not Found Error', f'Testbed file: {self.__testbedPath} does not exist.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -939,8 +1273,8 @@ class Main(QMainWindow):
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
         msgBox = QMessageBox(self)
-        msgBox.setWindowTitle("Test Exists")
-        msgBox.setText(f'There is a test that already exists in the testbed that matches the lexical unit:\n\n{luStr}\n\nDo you want to overwrite it?')
+        msgBox.setWindowTitle(_translate('LiveRuleTesterTool', 'Test Exists'))
+        msgBox.setText(_translate('LiveRuleTesterTool', 'There is a test that already exists in the testbed that matches the lexical unit:\n\n{0}\n\nDo you want to overwrite it?').format(luStr))
         
         # Add custom buttons based on the parameter
         if showAllButtons:
@@ -999,7 +1333,15 @@ class Main(QMainWindow):
             return inputStr, errMsg
 
     def AddTestbedButtonClicked(self):
+        
         self.ui.TestsAddedLabel.setText('')
+        activeLexicalUnitsStr = self.getActiveLexicalUnits()
+
+        # If there are no lexical units, warn the user and return
+        if not activeLexicalUnitsStr.strip():
+
+            self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
+            return
 
         # Set the direction attribute
         if self.__sent_model.getRTL():
@@ -1010,7 +1352,7 @@ class Main(QMainWindow):
         try:
             fileObj = FlexTransTestbedFile(direction, self.__report)
         except:
-            QMessageBox.warning(self, 'Not Found Error', f'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml'))
             return
 
         testbedObj = fileObj.getFLExTransTestbedXMLObject()
@@ -1034,7 +1376,7 @@ class Main(QMainWindow):
         synResult, errMsg = self.removeNonSentencePunctuation(synResult, self.__sentPunc)
 
         if errMsg:
-            QMessageBox.warning(self, 'Testbed Error', errMsg)
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Testbed Error'), errMsg)
             return
         
         cnt = 0
@@ -1042,7 +1384,7 @@ class Main(QMainWindow):
         # Check if add-multiple was selected
         if self.ui.addMultipleCheckBox.isChecked():
 
-            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
             if luObjList == None:
                 return
 
@@ -1056,7 +1398,7 @@ class Main(QMainWindow):
 
             # Check for an equal amount of lexical units as synthesis results
             if len(luObjList) != len(resultList):
-                QMessageBox.warning(self, 'Testbed Error', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Testbed Error'), _translate('LiveRuleTesterTool', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.'))
                 return
 
             retVal = None
@@ -1100,7 +1442,7 @@ class Main(QMainWindow):
                         cnt += 1
 
         else:
-            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
 
             if luObjList == None:
                 return
@@ -1138,9 +1480,9 @@ class Main(QMainWindow):
         # Tell the user how many tests were added.
         if cnt == 1:
 
-            feedbackStr = str(cnt) + ' test added.'
+            feedbackStr = _translate('LiveRuleTesterTool', '{0} test added.').format(str(cnt))
         else:
-            feedbackStr = str(cnt) + ' tests added.'
+            feedbackStr = _translate('LiveRuleTesterTool', '{0} tests added.').format(str(cnt))
 
         self.ui.TestsAddedLabel.setText(feedbackStr)
 
@@ -1174,6 +1516,18 @@ class Main(QMainWindow):
         self.ui.TestsAddedLabel.setText('')
         errorList = []
 
+        # Check if the target text is empty give a warning
+        if not self.ui.TargetTextEdit.toPlainText().strip() or self.ui.TargetTextEdit.toPlainText() == self.nothingSelectedMsg:
+
+            self.ui.SynthTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'There are no target text morphemes. Click the Transfer button first.'))
+            return
+
+        # If there are no lexical units, warn the user and return
+        if not self.getActiveLexicalUnits().strip():
+
+            self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
+            return        
+
         self.setCursor(QtCore.Qt.WaitCursor)
 
         # Make the text box blank to start out.
@@ -1185,7 +1539,8 @@ class Main(QMainWindow):
 
             if not HCconfigPath:
 
-                QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Configuration Error'), _translate('LiveRuleTesterTool', 'HermitCrab settings not found.'))
+                self.unsetCursor()
                 return
             
             useHCsynthDll = True
@@ -1193,7 +1548,15 @@ class Main(QMainWindow):
 
                 # Change to the Fieldworks folder for doing the dll operations
                 fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
-                os.chdir(fieldworksDir)
+
+                try:
+                    os.chdir(fieldworksDir)
+
+                except OSError as e:
+
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format)
+                    self.unsetCursor()
+                    return
 
                 # Import the clr module from pythonnet
                 import clr 
@@ -1203,7 +1566,14 @@ class Main(QMainWindow):
                 from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
 
                 # Initialize the object with the output file name
-                self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
+                try:
+                    self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
+
+                except Exception as e:
+
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
+                    self.unsetCursor()
+                    return
 
         ## CATALOG
         # Catalog all the target affixes
@@ -1213,8 +1583,8 @@ class Main(QMainWindow):
             try:
                 errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
-                QMessageBox.warning(self, 'Locked DB?', 'The database could be locked. Check if sharing is checked for the target project. \
-                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Locked DB?'), _translate('LiveRuleTesterTool', 'The project could be locked. Check if sharing is checked for the target project. \
+                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.'))
                 self.unsetCursor()
                 return
 
@@ -1222,9 +1592,15 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, 'Catalog Prefix Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Catalog Prefix Error'), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
                 self.unsetCursor()
                 return
+
+            # Check for warnings. This should only be duplicate affix warnings.
+            warn, msgList = Utils.checkForWarning(errorList, None)
+
+            if warn:
+                self.ui.warningLabel.setText(msgList)
 
             self.__doCatalog = False
 
@@ -1239,7 +1615,7 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, 'Convert to STAMP Error', f'{msg}\nRun the Convert to {ConvertTextToSTAMPformat.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Convert to STAMP Error'), _translate('LiveRuleTesterTool', '{0}\nRun the Convert to {1} module separately for more details.').format(msg, ConvertTextToSTAMPformat.docs[FTM_Name]))
                 self.unsetCursor()
                 return
 
@@ -1261,8 +1637,8 @@ class Main(QMainWindow):
                 if fatal:
                     errorStr = msg
                     if not self.HCdllObj:
-                        errorStr += f'\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.'
-                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', errorStr)
+                        errorStr += _translate('LiveRuleTesterTool', '\nRun the {0} module separately for more details.').format(DoHermitCrabSynthesis.docs[FTM_Name])
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoHermitCrabSynthesis.docs[FTM_Name]), errorStr)
                     self.unsetCursor()
                     return
             else:
@@ -1275,7 +1651,7 @@ class Main(QMainWindow):
                     fatal, msg = Utils.checkForFatalError(errorList, None)
 
                     if fatal:
-                        QMessageBox.warning(self, f'{CatalogTargetAffixes.docs[FTM_Name]} Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                        QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(CatalogTargetAffixes.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
                         self.unsetCursor()
                         return
 
@@ -1286,9 +1662,9 @@ class Main(QMainWindow):
                 fatal, msg = Utils.checkForFatalError(errorList, None)
 
                 if fatal:
-                        QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
-                        self.unsetCursor()
-                        return
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoStampSynthesis.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, DoStampSynthesis.docs[FTM_Name]))
+                    self.unsetCursor()
+                    return
 
         ## SYNTHESIZE
         # We have two possible syntheses, one for STAMP and one for HermitCrab
@@ -1306,8 +1682,8 @@ class Main(QMainWindow):
             if fatal:
                 errorStr = msg
                 if not self.HCdllObj:
-                    errorStr += f'\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.'
-                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', errorStr)
+                    errorStr += _translate('LiveRuleTesterTool', '\nRun the {0} module separately for more details.').format(DoHermitCrabSynthesis.docs[FTM_Name])
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoHermitCrabSynthesis.docs[FTM_Name]), errorStr)
                 self.unsetCursor()
                 return
         else:
@@ -1317,7 +1693,8 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{moduleName} Error').format(moduleName=DoStampSynthesis.docs[FTM_Name]), 
+                     _translate('LiveRuleTesterTool', f'{msg}\n' + 'Run the {moduleName} module separately for more details.').format(moduleName=DoStampSynthesis.docs[FTM_Name]))
                 self.unsetCursor()
                 return
 
@@ -1411,20 +1788,35 @@ class Main(QMainWindow):
             # redo the display
             self.rulesListClicked(myIndex)
 
-    def SelectAllClicked(self):
+    def SelectAllCheckBoxClicked(self):
+        
+        state = self.ui.selectAllCheckBox.checkState()
+
+        if state == QtCore.Qt.Checked:
+
+            newState = state
+
+        elif state == QtCore.Qt.Unchecked:
+
+            newState = QtCore.Qt.Unchecked
+
+        else: #state == QtCore.Qt.PartiallyChecked:
+            
+            newState = QtCore.Qt.Checked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+
+        if self.lastSelectAllState == QtCore.Qt.PartiallyChecked:
+
+            newState = QtCore.Qt.Unchecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+
         # Loop through all the items in the rule list model
         for i in range(0, self.__ruleModel.rowCount()):
-            # Check each box
-            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Checked)
 
-        # Redo the numbering
-        self.rulesListClicked(self.TRIndex)
+            # change each box
+            self.__ruleModel.item(i).setCheckState(newState)
 
-    def UnselectAllClicked(self):
-        # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
-            # Check each box
-            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Unchecked)
+        # self.lastSelectAllState = newState
 
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
@@ -1603,10 +1995,6 @@ class Main(QMainWindow):
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
 
-    def resizeEvent(self, event):
-
-        QMainWindow.resizeEvent(self, event)
-
     def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
             ret = self.__lexicalUnits
@@ -1638,14 +2026,6 @@ class Main(QMainWindow):
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
 
-    def __CopyStuff(self):
-
-        # copy text from results to the source boxes
-        self.ui.SelectedWordsEdit.setText(self.ui.TargetTextEdit.toHtml())
-        self.ui.SelectedSentencesEdit.setText(self.ui.TargetTextEdit.toHtml())
-        self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
-        self.__ClearStuff()
-
     def __ClearStuff(self):
 
         self.ui.TestsAddedLabel.setText('')
@@ -1665,7 +2045,7 @@ class Main(QMainWindow):
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
 
-            self.ui.selectWordsHintLabel.setVisible(True)
+            # self.ui.selectWordsHintLabel.setVisible(True)
 
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
 
@@ -1676,11 +2056,11 @@ class Main(QMainWindow):
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
-            self.ui.selectWordsHintLabel.setVisible(False)
+            # self.ui.selectWordsHintLabel.setVisible(False)
 
         else: # manual entry
-
-            self.ui.selectWordsHintLabel.setVisible(False)
+            pass
+            # self.ui.selectWordsHintLabel.setVisible(False)
 
     def rulesTabClicked(self):
 
@@ -1749,11 +2129,6 @@ class Main(QMainWindow):
 
         self.lastSentNum = self.ui.SentCombo.currentIndex()
         mySent = self.__sent_model.getSent(self.lastSentNum)
-        space_val = 10
-        y_spacing = 30
-        x_margin = 2
-        x = x_margin
-        y = 2
 
         # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
@@ -1761,7 +2136,18 @@ class Main(QMainWindow):
         self.__lexicalUnits = ''
         self.ui.ManualEdit.setPlainText('')
 
-        i=0
+        if self.__sent_model.getRTL():
+
+            self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
+
+        # Remove all widgets from self.content_widget
+        layout = self.content_widget.layout
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)  # Detach from parent (removes from UI)
+
         # Position a check box for each "word" in the sentence
         for i, wrdTup in enumerate(mySent):
 
@@ -1772,32 +2158,12 @@ class Main(QMainWindow):
             # Get the ith checkbox
             myCheck = self.__checkBoxList[i]
 
-            # Make it visible
-            myCheck.setVisible(True)
+            # Add widget to the content widget of the scroll area
+            self.content_widget.layout.addWidget(myCheck)
+            myCheck.show()
 
-            # set the text of the check box from the first tuple element
-            # this will be the surface form
+            # Set the text of the check box from the first tuple element. This will be the surface form.
             myCheck.setText(wrdTup[0])
-
-            # get the width of the box and text (maybe have to add icon size)
-            width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5
-
-            # set the position, if it's too wide to fit make a new row
-            if width + x > self.ui.scrollArea.width():
-
-                y += y_spacing
-                x = x_margin
-
-            if self.__sent_model.getRTL():
-
-                xval = self.ui.scrollArea.width() - x - width
-                myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
-
-            else:
-                xval = x
-
-            myCheck.setGeometry(QtCore.QRect(xval, y, width, 27))
-            x += width + space_val
 
             # If this word has a target(s) in the bilingual lexicon, show as a tooltip
             srcTrgPairsList = self.getTargetsInBilingMap(wrdTup)
@@ -1809,11 +2175,6 @@ class Main(QMainWindow):
                 tipText = '---'
 
             self.__checkBoxList[i].setToolTip(tipText)
-
-        # Make the rest of the unused check boxes invisible
-        for j in range(i+1,len(self.__checkBoxList)):
-
-            self.__checkBoxList[j].setVisible(False)
 
     def getTargetsInBilingMap(self, wrdTup):
 
@@ -1904,7 +2265,11 @@ class Main(QMainWindow):
         # Get checkbox values
         checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
         checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
+        checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
 
+        standardDimensionsStr = f'{self.standardModeDimensions[0]}|{self.standardModeDimensions[1]}'
+        advancedDimensionsStr = f'{self.advancedModeDimensions[0]}|{self.advancedModeDimensions[1]}'
+        
         with open(self.windowsSettingsFile, 'w') as f:
 
             # Save current rules tab, current source tab, last sentence # selected and the last source text
@@ -1913,6 +2278,9 @@ class Main(QMainWindow):
             f.write(f'{checkedWordsState}\n')
             f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
             f.write(f'{checkboxStr1}{checkboxStr2}\n')
+            f.write(f'{checkboxStr3}\n')
+            f.write(f'{standardDimensionsStr}\n')
+            f.write(f'{advancedDimensionsStr}\n')   
 
         if self.HCdllObj:
 
@@ -1951,8 +2319,8 @@ class Main(QMainWindow):
             self.ui.listTransferRules.setModel(self.__transferModel)
 
         else:
-            QMessageBox.warning(self, 'Invalid Rules File', \
-            'The transfer file has no transfer element or no section-rules element')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Rules File'), \
+            _translate('LiveRuleTesterTool', 'The transfer file has no transfer element or no section-rules element'))
             return False
 
         # Check if the interchunk file exists. If it does, we assume we have advanced transfer going on
@@ -1975,8 +2343,8 @@ class Main(QMainWindow):
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
             else:
-                QMessageBox.warning(self, 'Invalid Interchunk Rules File', \
-                'The interchunk transfer file has no transfer element or no section-rules element')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Interchunk Rules File'), \
+                _translate('LiveRuleTesterTool', 'The interchunk transfer file has no transfer element or no section-rules element'))
                 return False
 
             postchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE3, self.__report, giveError=False)
@@ -1999,8 +2367,8 @@ class Main(QMainWindow):
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
                 else:
-                    QMessageBox.warning(self, 'Invalid postchunk Rules File', \
-                    'The postchunk transfer file has no transfer element or no section-rules element')
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid postchunk Rules File'), \
+                    _translate('LiveRuleTesterTool', 'The postchunk transfer file has no transfer element or no section-rules element'))
                     return False
 
                 # if we have interchunk and postchunk transfer rules files we are in advanced mode
@@ -2034,21 +2402,40 @@ class Main(QMainWindow):
 
         self.TRIndex = index
         active_rules = 1
-
+        oneBoxChecked = False
+        oneBoxUnchecked = False
+        
         self.rulesChanged = True
 
         for i, el in enumerate(self.__rulesElement):
             ruleText = el.get('comment')
 
             if ruleText == None:
-                ruleText = 'missing comment'
+                ruleText = _translate('LiveRuleTesterTool', 'missing comment')
 
             # If active add text with the active rule #
             if self.__ruleModel.item(i).checkState():
-                self.__ruleModel.item(i).setText(ruleText + ' - Active Rule ' + str(active_rules))
+
+                oneBoxChecked = True
+                self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
                 active_rules += 1
             else:
+                oneBoxUnchecked = True
                 self.__ruleModel.item(i).setText(ruleText)
+
+        # If we have a mix of checked and unchecked boxes, set the select All CheckBox to partially checked
+        if oneBoxChecked and oneBoxUnchecked:
+
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.PartiallyChecked)
+            self.lastSelectAllState = QtCore.Qt.PartiallyChecked
+
+        elif oneBoxChecked:
+
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.lastSelectAllState = QtCore.Qt.Checked
+        else:
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            self.lastSelectAllState = QtCore.Qt.Unchecked
 
     def displayRules(self, rules_element, ruleModel):
 
@@ -2059,7 +2446,7 @@ class Main(QMainWindow):
             comment = rule_el.get('comment')
 
             if comment == None:
-                comment = 'missing comment'
+                comment = _translate('LiveRuleTesterTool', 'missing comment')
 
             # Create an item object
             item = QStandardItem(comment)
@@ -2139,7 +2526,7 @@ class Main(QMainWindow):
 
         if len(myStr) < 1:
 
-            self.ui.TargetTextEdit.setPlainText('Nothing selected. Select at least one word or sentence.')
+            self.ui.TargetTextEdit.setPlainText(self.nothingSelectedMsg)
             self.unsetCursor()
             return
 
@@ -2238,7 +2625,7 @@ class Main(QMainWindow):
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
         if ret:
-            self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
+            self.ui.TargetTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'An error happened when running the Apertium tools.'))
             self.unsetCursor()
             return
 
@@ -2255,7 +2642,7 @@ class Main(QMainWindow):
         except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
 
             tgt_file = re.sub('\.txt', '.aper', tgt_file)
-            err_msg = f'Cannot find file: {tgt_file}.'
+            err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=tgt_file)
 
             try:
                 tgtf = open(tgt_file, encoding='utf-8')
@@ -2304,7 +2691,7 @@ class Main(QMainWindow):
         # If we only have a paragraph element, we got no output.
         if htmlVal == '<p />':
 
-            htmlVal = 'The rules produced no output.'
+            htmlVal = _translate('LiveRuleTesterTool', 'The rules produced no output.')
 
         self.ui.TargetTextEdit.setText(htmlVal)
 
@@ -2355,15 +2742,20 @@ class Main(QMainWindow):
         for line in inputLines:
 
             # A typical line may look like this:
-            # apertium-transfer: Rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            # apertium-transfer: Applied rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            # or
+            # apertium-transfer: Matched rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
 
-            # If we have Rule N, process it
-            if re.search(r'Rule \d+', line):
+            # If we have a line matching 'Applied rule N', process it
+            if re.search(r'Applied rule \d+', line):
 
                 # Extract the rule # and the lexical units
-                matchObj = re.search(r'(.+)(Rule )(\d+)( line \d+ )(.+)', line)
+                matchObj = re.search(r'(.+)(Applied rule )(\d+)( line \d+ )(.+)', line)
                 ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
                 lexUnitsStr = matchObj.group(5).strip()
+
+                # Translate the word 'Rule' to the localized version
+                ruleStr = re.sub('Applied rule ', _translate('LiveRuleTesterTool', 'Applied rule '), ruleStr)
 
                 # Put a delimeter between multiple lexical units
                 lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
@@ -2384,7 +2776,7 @@ class Main(QMainWindow):
                 for lexUnit in lexUnitList:
 
                     # Mark up the lexical unit with color, etc.
-                    processFunc(lexUnit, paragraphEl, self.__sent_model.getRTL(), True)
+                    processFunc(lexUnit+' ', paragraphEl, self.__sent_model.getRTL(), True)
 
                 # Convert the ET element to an html string
                 coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
@@ -2458,7 +2850,7 @@ START_LOG_VIEWER = 3
 START_RULE_ASSISTANT = 4
 START_REPLACEMENT_EDITOR = 5
 
-def RunModule(DB, report, configMap, ruleCount=None):
+def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
     # Get needed configuration file properties
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -2470,16 +2862,18 @@ def RunModule(DB, report, configMap, ruleCount=None):
         return ERROR_HAPPENED
 
     matchingContentsObjList = []
+    textObjList = []
 
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList, textObjList)
 
     if sourceText not in sourceTextList:
 
-        report.Error('The text named: '+sourceText+' not found.')
+        report.Error(_translate('LiveRuleTesterTool', 'The text named: {name} not found.').format(name=sourceText))
         return ERROR_HAPPENED
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceText)]
+        textObj = textObjList[sourceTextList.index(sourceText)]
 
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
@@ -2508,7 +2902,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
             f_treeTranResultFile = open(treeTranResultFile, encoding='utf-8')
             f_treeTranResultFile.close()
         except:
-            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+            report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=treeTranResultFile))
             return ERROR_HAPPENED
 
         # get the list of guids from the TreeTran results file
@@ -2556,7 +2950,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
 
                 myFLExSent = myText.getSent(sentNum)
                 if myFLExSent is None:
-                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    report.Error(_translate('LiveRuleTesterTool', 'Sentence {sentNum} from TreeTran not found').format(sentNum=sentNum))
                     return ERROR_HAPPENED
 
                 # Output any punctuation preceding the sentence.
@@ -2568,7 +2962,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
 
                     if not myGuid:
-                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                        report.Error(_translate('LiveRuleTesterTool', 'Null Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
 
                     # If we couldn't find the guid, see if there's a reason
@@ -2576,7 +2970,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
                         if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
-                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                            report.Warning(_translate('LiveRuleTesterTool', 'Could not find the desired Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     else:
                         surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
                         tupList.append((surface,data))
@@ -2596,26 +2990,27 @@ def RunModule(DB, report, configMap, ruleCount=None):
 
                 if myFLExSent == None:
 
-                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    report.Error(_translate('LiveRuleTesterTool', 'Sentence: {sentNum} not found. Check that the right parses are present.').format(sentNum=sentNum))
                     continue
 
                 myFLExSent.getSurfaceAndDataTupleList(tupList)
 
             segment_list.append(tupList)
 
-        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        report.Info(_translate('LiveRuleTesterTool', "Exported: {num} sentence(s) using TreeTran results.").format(num=str(len(logInfo))))
 
         if noParseSentCount > 0:
-            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
+            report.Warning(_translate('LiveRuleTesterTool', 'No parses found for {num} sentence(s).')).format(num=str(noParseSentCount))
 
     else:
         # Normal, non-TreeTran processing
         if myText.haveData() == True:
             segment_list = myText.getSurfaceAndDataTupleListBySent()
 
+    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText),
+                DB.BuildGotoURL(textObj))
+
     if len(segment_list) > 0:
-        # Create the qt app
-        app = QApplication(sys.argv)
 
         # if the bilingual file path is relative, add on the current directory
         if re.search(':', bilingFile):
@@ -2628,7 +3023,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
         window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount, sentPunc=sentPunc)
 
         if window.retVal == False:
-            report.Error('An error occurred getting things initialized.')
+            report.Error(_translate('LiveRuleTesterTool', 'An error occurred getting things initialized.'))
             return ERROR_HAPPENED
 
         window.show()
@@ -2651,12 +3046,21 @@ def RunModule(DB, report, configMap, ruleCount=None):
 
             return START_REPLACEMENT_EDITOR
     else:
-        report.Error('This text has no data.')
+        report.Error(_translate('LiveRuleTesterTool', 'This text has no data.'))
         return ERROR_HAPPENED
 
     return NO_ERRORS
 
 def MainFunction(DB, report, modify=False, ruleCount=None):
+
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     retVal = RESTART_MODULE
     loggedStart = False
@@ -2672,21 +3076,20 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.
-            import Mixpanel
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 
-        retVal = RunModule(DB, report, configMap, ruleCount)
+        retVal = RunModule(DB, report, configMap, ruleCount, app)
 
         if retVal == START_RULE_ASSISTANT:
 
             from RuleAssistant import MainFunction as RA
             from RuleAssistant import docs as RA_docs
-            report.Info(f'Running {RA_docs[FTM_Name]} (version {RA_docs[FTM_Version]})...')
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RA_docs[FTM_Name], version=RA_docs[FTM_Version]))
             ruleCount = RA(DB, report, modify, fromLRT=True)
 
             # Show we are re-running the LRT
-            report.Info(f'Running {docs[FTM_Name]} (version {docs[FTM_Version]})...')
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
             retVal = RESTART_MODULE
         else:
             ruleCount = None

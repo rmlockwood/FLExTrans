@@ -5,6 +5,21 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.4 - 9/10/25 - Sara Mason
+#    Added missing end quote mark in report message for created text.
+#
+#   Version 3.14.3 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.2 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
+#   Version 3.14.1 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
+#   Version 3.14 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -45,7 +60,9 @@
 #   give it a new unique name.
 #
 
-import ChapterSelection
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication
+
 from SIL.LCModel import ( # type: ignore
     ITextFactory,
     IStTextFactory,
@@ -56,31 +73,45 @@ from SIL.LCModel.Core.Text import TsStringUtils  # type: ignore
 from flextoolslib import *                                                 
 from flexlibs import FLExProject
 
+import ChapterSelection
+import Mixpanel
 import ReadConfig
 import Utils
+from DoSynthesis import docs as DoSynthesisDocs
 
-#----------------------------------------------------------------
-# Configurables:
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'InsertTargetText'
 
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.13.1",
+docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
+        FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
-        FTM_Description:
-"""
-The target database set in the configuration file will be used. This module will take
-the results of the synthesis process (Create Target Dictionaries and Synthesize module)
-and insert the text into the target FLEx project. The SourceTextName property in 
-the FlexTrans.config file will be used for the text name in the target project. NOTE: A message window
-will be displayed asking if you want to make changes to the SOURCE project. This is not true. This module
-will only change the target database as specified in the configuration file.
-""" }
-                 
+        FTM_Description: _translate("InsertTargetText", 
+"""The target project specified in the settings will be used. This module will take
+the results of the {doSynthModule} module
+and insert the text into the target FLEx project. The Source Text Name setting
+will be used for the text name in the target project. An existing text of the 
+same name will not be overwritten. A copy will be created.""").format(doSynthModule=DoSynthesisDocs[FTM_Name])}
+
+#app.quit()
+#del app
+
 #----------------------------------------------------------------
 # The main processing function
 
@@ -95,10 +126,10 @@ def insertTargetText(DB, configMap, report):
             return None
         TargetDB.OpenProject(targetProj, True)
     except: 
-        report.Error('Failed to open the target database.')
+        report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
         raise
 
-    report.Info('Using: '+targetProj+' as the target database.')
+    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target project.').format(targetProj=targetProj))
 
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
@@ -116,7 +147,7 @@ def insertTargetText(DB, configMap, report):
             fullText = f.read()
     except:
         TargetDB.CloseProject()
-        report.Error('The Synthesize Text module must be run before this one. Could not open the synthesis file: "'+synFile+'".')
+        report.Error(_translate("InsertTargetText", 'The Synthesize Text module must be run before this one. Could not open the synthesis file: "') + synFile + '".')
         return
 
     # Figure out the naming of the text file. Use the source text name by default,
@@ -145,7 +176,8 @@ def insertTargetText(DB, configMap, report):
     # Set metadata for the text
     ChapterSelection.setTextMetaData(DB, text)
 
-    report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
+    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName}" created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
+                TargetDB.BuildGotoURL(text))
     TargetDB.CloseProject()
 
     return 1
@@ -153,16 +185,24 @@ def insertTargetText(DB, configMap, report):
 def MainFunction(DB, report, modify=True):
     
     if not modify:
-        report.Error('You need to run this module in "modify mode."')
+        report.Error(_translate("InsertTargetText", 'You need to run this module in "modify mode."'))
         return
     
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     insertTargetText(DB, configMap, report)

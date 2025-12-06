@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -57,6 +60,11 @@ import ReadConfig
 import Testbed 
 import Utils as MyUtils
 
+from PyQt5.QtCore import QCoreApplication
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
 from SIL.LCModel import (  # type: ignore
     IMoStemMsa,
     IMoInflClassRepository,
@@ -97,22 +105,25 @@ class TestbedValidator():
             return True
         elif wordSense.lower() in self.mapWordSenses:
             return True
-        self.__invalidReason = 'Word Sense: ' + wordSense + ' not found.'
+        self.__invalidReason = _translate("TestbedValidator", "Word Sense: {wordSense} not found.").format(wordSense=wordSense)
         return False
+
     def isGramCatValid(self, gramCat):
         if gramCat in self.mapCats:
             return True
-        self.__invalidReason = 'Grammatical Category: ' + gramCat + ' not found.'
+        self.__invalidReason = _translate("TestbedValidator", "Grammatical Category: {gramCat} not found.").format(gramCat=gramCat)
         return False
+
     def isTagValid(self, tag):
         if tag in self.mapTags:
             return True
-        self.__invalidReason = 'Tag: ' + tag + ' not found.'
+        self.__invalidReason = _translate("TestbedValidator", "Tag: {tag} not found.").format(tag=tag)
         return False
+
     def isValid(self, lexUnit):
         valid = True
         self.__invalidReason = ''
-        
+
         # Sentence punctuation is always valid
         if lexUnit.getGramCat() == Testbed.SENT:
             return valid
@@ -218,7 +229,7 @@ class TestbedValidator():
         morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, self.report)
         
         if not morphNames: 
-            self.report.Warning('Configuration File Problem. Morphnames not found.')
+            self.report.Warning(_translate('TestbedValidator', 'Configuration File Problem. Morphnames not found.'))
             return 
 
         # Loop through all the entries

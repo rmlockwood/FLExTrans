@@ -5,7 +5,13 @@
 #   SIL International
 #   2/20/2025
 #
-#   Version 3.13 - 3/12/25 - Ron Lockwood
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/18/25 - Ron Lockwood
+#    Added localization capability.
+#
+#   Version 3.13.1 - 3/12/25 - Ron Lockwood
 #    Add Mixpanel logging.
 #
 #   Version 3.13 - 3/10/25 - Ron Lockwood
@@ -23,26 +29,45 @@ import sys
 import time
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
+from PyQt5.QtCore import QCoreApplication
 import pygetwindow as gw
 
 from flextoolslib import *
 from flexlibs import AllProjectNames
 
+import Mixpanel
 import FTPaths
 import ReadConfig
+import Utils
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'OpenFLExProjects'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Open Multiple FLEx Projects",
-        FTM_Version    : "3.13.1",
+docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Select one or more FLEx project and automatically open them one by one.",
+        FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",
-        FTM_Description:  
-f"""
-Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.
-""" }
+        FTM_Description: _translate("OpenFLExProjects", 
+f"""Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.""")}
+
+#app.quit()
+#del app
 
 LIMIT_SECS = 40
 
@@ -63,7 +88,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(centralWidget)
 
         # Create a label and list widget for project names
-        projectLabel = QLabel('FLEx project names (multi-select):')
+        projectLabel = QLabel(_translate("OpenFLExProjects", "FLEx project names (multi-select):"))
         layout.addWidget(projectLabel)
 
         self.listWidget = QListWidget()
@@ -73,8 +98,8 @@ class MainWindow(QMainWindow):
 
         # Create OK and Cancel buttons
         buttonLayout = QHBoxLayout()
-        self.okButton = QPushButton('OK')
-        self.cancelButton = QPushButton('Cancel')
+        self.okButton = QPushButton(_translate("OpenFLExProjects", "OK"))
+        self.cancelButton = QPushButton(_translate("OpenFLExProjects", "Cancel"))
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
         layout.addLayout(buttonLayout)
@@ -102,16 +127,23 @@ def isFLExOpen(projName):
 
 def MainFunction(DB, report, modifyAllowed):
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    app = QApplication(sys.argv)
     mainWindow = MainWindow(AllProjectNames())
     mainWindow.show()
     app.exec_()
@@ -127,7 +159,7 @@ def MainFunction(DB, report, modifyAllowed):
 
             if isFLExOpen(proj):
 
-                report.Info(f"The {proj} project is already open. Skipping.")
+                report.Info(_translate("OpenFLExProjects", "The {proj} project is already open. Skipping.").format(proj=proj))
                 continue
 
             process = Popen([flexExe, '-db', proj], creationflags=DETACHED_PROCESS)
@@ -139,14 +171,12 @@ def MainFunction(DB, report, modifyAllowed):
                 secs += 1
 
                 if secs >= LIMIT_SECS:
-
-                    report.Info(f"Couldn't detect the {proj} project as open after {str(secs)} seconds. Skipping.")
+                    report.Info(_translate("OpenFLExProjects", "Couldn't detect the {proj} project as open after {secs} seconds. Skipping.").format(proj=proj, secs=str(secs)))
                     break
 
             if secs < LIMIT_SECS:
-
-                report.Info(f'The {proj} project took about {str(secs)} seconds to open.')
-                time.sleep(2) # Give a little more time to finish opening.
+                report.Info(_translate("OpenFLExProjects", "The {proj} project took about {secs} seconds to open.").format(proj=proj, secs=str(secs)))
+                time.sleep(2)  # Give a little more time to finish opening.
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

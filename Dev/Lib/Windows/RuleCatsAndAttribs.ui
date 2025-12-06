@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>CatsAndAttribsWindow</class>
+ <widget class="QMainWindow" name="CatsAndAttribsWindow">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Set Up Transfer Rule Categories &amp; Attributes</string>
+   <string notr="true">Set Up Transfer Rule Categories &amp; Attributes</string>
   </property>
   <property name="animated">
    <bool>false</bool>
@@ -28,7 +28,7 @@
      <rect>
       <x>80</x>
       <y>53</y>
-      <width>241</width>
+      <width>331</width>
       <height>17</height>
      </rect>
     </property>
@@ -47,7 +47,7 @@
      <rect>
       <x>60</x>
       <y>30</y>
-      <width>231</width>
+      <width>351</width>
       <height>17</height>
      </rect>
     </property>
@@ -92,7 +92,7 @@
      <rect>
       <x>80</x>
       <y>103</y>
-      <width>241</width>
+      <width>331</width>
       <height>17</height>
      </rect>
     </property>
@@ -111,7 +111,7 @@
      <rect>
       <x>60</x>
       <y>80</y>
-      <width>231</width>
+      <width>351</width>
       <height>17</height>
      </rect>
     </property>
@@ -127,7 +127,7 @@
      <rect>
       <x>60</x>
       <y>127</y>
-      <width>231</width>
+      <width>351</width>
       <height>17</height>
      </rect>
     </property>
@@ -143,7 +143,7 @@
      <rect>
       <x>80</x>
       <y>150</y>
-      <width>241</width>
+      <width>331</width>
       <height>17</height>
      </rect>
     </property>

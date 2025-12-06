@@ -5,6 +5,12 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/18/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/12/25 - Ron Lockwood
 #    Fixes #929. Changed to list all FLEx projects.
 #
@@ -19,7 +25,6 @@
 #
 
 import os.path
-import sys
 import clr
 
 from flextoolslib import *
@@ -39,24 +44,43 @@ from SIL.LCModel.Utils import IProgress  # type: ignore
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
 from PyQt5 import QtGui
+from PyQt5.QtCore import QCoreApplication
 
+import Mixpanel
 import ReadConfig
 import FTPaths
+import Utils
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'FixFLExProjects'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation for the user:
-
-docs = {FTM_Name       : "Fix FLEx Projects",
-        FTM_Version    : "3.13.1",
+docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Run the Find and Fix utility on the FLEx projects you choose.",
+        FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,
-        FTM_Description: 
-"""
-Run the Find and Fix utility on the FLEx projects you choose. This the same utility that is available in FLEx. 
+        FTM_Description:_translate("FixFLExProjects", 
+"""Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
-it is not open. Fixed errors are logged to the report pane.
-""" }
+it is not open. Fixed errors are logged to the report pane.""")}
+
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # Dummy progress class to pass to FwDataFixer(). 
@@ -176,7 +200,7 @@ class Main(QMainWindow):
         layout = QVBoxLayout(centralWidget)
 
         # Create a label and list widget for project names
-        projectLabel = QLabel('FLEx project names (multi-select):')
+        projectLabel = QLabel(_translate("FixFLExProjects", "FLEx project names (multi-select):"))
         layout.addWidget(projectLabel)
 
         self.listWidget = QListWidget()
@@ -186,8 +210,8 @@ class Main(QMainWindow):
 
         # Create OK and Cancel buttons
         buttonLayout = QHBoxLayout()
-        self.okButton = QPushButton('OK')
-        self.cancelButton = QPushButton('Cancel')
+        self.okButton = QPushButton(_translate("FixFLExProjects", "OK"))
+        self.cancelButton = QPushButton(_translate("FixFLExProjects", "Cancel"))
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
         layout.addLayout(buttonLayout)
@@ -227,17 +251,24 @@ def MainFunction(DB, report, modifyAllowed=True):
         global errorCount
         return errorCount
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Show the window to get the options the user wants
-    app = QApplication(sys.argv)
     window = Main(AllProjectNames())
     window.show()
     app.exec_()
@@ -249,7 +280,7 @@ def MainFunction(DB, report, modifyAllowed=True):
 
             errorsOccurred = False
             errorCount     = 0
-            report.Info(f"Fixing {projName}...")
+            report.Info(_translate("FixFLExProjects", "Fixing {projName}...").format(projName=projName))
             progress = NullProgress()
         
             # Build a file name
@@ -260,21 +291,19 @@ def MainFunction(DB, report, modifyAllowed=True):
 
             # Check if the project is open (has a lock file)
             if os.path.exists(lockFileName):
-
-                report.Warning(f"{projName}: Project is open. Skipping.")
+                report.Warning(_translate("FixFLExProjects", "{projName}: Project is open. Skipping.").format(projName=projName))
                 continue
             try:
                 df = FwDataFixer(projectFileName, progress, FwDataFixer.ErrorLogger(__logger), FwDataFixer.ErrorCounter(__counter))
                 df.FixErrorsAndSave()
 
             except Exception as e:
-
-                report.Error(f"{projName}: Skipping. {str(e)}")
+                report.Error(_translate("FixFLExProjects", "{projName}: Skipping. {error}").format(projName=projName, error=str(e)))
 
             if errorsOccurred:
-                report.Warning(f"{projName}: {errorCount} errors fixed.")
+                report.Warning(_translate("FixFLExProjects", "{projName}: {errorCount} errors fixed.").format(projName=projName, errorCount=errorCount))
             else:
-                report.Info(f"{projName}: No errors found")
+                report.Info(_translate("FixFLExProjects", "{projName}: No errors found").format(projName=projName))
 
 #----------------------------------------------------------------
 

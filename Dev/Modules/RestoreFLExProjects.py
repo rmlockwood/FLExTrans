@@ -5,6 +5,12 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14 - 5/18/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/12/25 - Ron Lockwood
 #    Add Mixpanel logging.
 #
@@ -23,29 +29,49 @@ from pathlib import Path
 from subprocess import Popen, DETACHED_PROCESS
 import sys
 import time
+import pygetwindow as gw
+
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
-import pygetwindow as gw
+from PyQt5.QtCore import QCoreApplication
 
 from flextoolslib import *
 
+import Mixpanel
 import FTPaths
 import ReadConfig
+import Utils
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'RestoreFLExProjects'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Restore Multiple FLEx Projects",
-        FTM_Version    : "3.13.1",
+docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Select one or more FLEx backup files and automatically restore them one by one.",
-        FTM_Help       :"",
-        FTM_Description:  
-f"""
-Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
+        FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
+        FTM_Help       : "",
+        FTM_Description: _translate("RestoreFLExProjects",
+f"""Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
 window that comes up to complete the restore. 
-The tool waits until one project is open before restoring the next.
-""" }
+The tool waits until one project is open before restoring the next.""")}
+
+#app.quit()
+#del app
 
 # Maximum time to wait for a project to open before exiting
 LIMIT_SECS = 45
@@ -70,14 +96,14 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(centralWidget)
 
         # Create a label to show the selected folder
-        self.folderLabel = QLabel(f'Backup Folder: {os.path.normpath(self.selectedFolder)}')
+        self.folderLabel = QLabel(_translate("RestoreFLExProjects", "Backup Folder: ") + os.path.normpath(self.selectedFolder))
         layout.addWidget(self.folderLabel)
 
         # Create a horizontal layout for the browse button
         browseLayout = QHBoxLayout()
         spacer1 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         spacer2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.browseButton = QPushButton('Browse for Folder')
+        self.browseButton = QPushButton(_translate("RestoreFLExProjects", "Browse for Folder"))
         self.browseButton.setFixedWidth(int(self.width() * BROWSE_BUT_PCT))  # Set the button width to X% of the window width
         browseLayout.addItem(spacer1)
         browseLayout.addWidget(self.browseButton)
@@ -88,7 +114,7 @@ class MainWindow(QMainWindow):
         layout.addSpacing(20)
 
         # Create a label and list widget for project names
-        projectLabel = QLabel('FLEx project backup files (multi-select):')
+        projectLabel = QLabel(_translate("RestoreFLExProjects", "FLEx project backup files (multi-select):"))
         layout.addWidget(projectLabel)
 
         self.listWidget = QListWidget()
@@ -97,8 +123,8 @@ class MainWindow(QMainWindow):
 
         # Create OK and Cancel buttons
         buttonLayout = QHBoxLayout()
-        self.okButton = QPushButton('OK')
-        self.cancelButton = QPushButton('Cancel')
+        self.okButton = QPushButton(_translate("RestoreFLExProjects", "OK"))
+        self.cancelButton = QPushButton(_translate("RestoreFLExProjects", "Cancel"))
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
         layout.addLayout(buttonLayout)
@@ -120,17 +146,17 @@ class MainWindow(QMainWindow):
                 self.listWidget.addItem(fileName)
 
     def browseForFolder(self):
-        folder = QFileDialog.getExistingDirectory(self, 'Select Folder', self.selectedFolder)
+        folder = QFileDialog.getExistingDirectory(self, _translate("RestoreFLExProjects", "Select Folder"), self.selectedFolder)
         if folder:
             self.selectedFolder = folder  # Update the selected folder
-            self.folderLabel.setText(f'Selected Folder: {folder}')
+            self.folderLabel.setText(_translate("RestoreFLExProjects", "Selected Folder: ") + folder)
             self.adjustWindowWidth(folder)
             self.populateListWidget(folder)
 
     def adjustWindowWidth(self, folder):
         # Calculate the required width based on the folder path length
         fontMetrics = self.fontMetrics()
-        textWidth = fontMetrics.horizontalAdvance(f'Selected Folder: {folder}')
+        textWidth = fontMetrics.horizontalAdvance(_translate("RestoreFLExProjects", "Selected Folder: ") + folder)
         margin = 20  # Add some margin
         newWidth = textWidth + margin
 
@@ -166,22 +192,29 @@ def extractProjName(backupName):
 
 def mainFunction(DB, report, modifyAllowed):
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     defaultFolder = FTPaths.SAMPLE_PROJECTS_DIR
 
     if not Path(defaultFolder).is_dir():
-        report.Error(f"Could not find the sample projects folder: {defaultFolder}.")
+        report.Error(_translate("RestoreFLExProjects", "Could not find the sample projects folder: {defaultFolder}.").format(defaultFolder=defaultFolder))
         return
 
-    app = QApplication(sys.argv)
     mainWindow = MainWindow(defaultFolder)
     mainWindow.show()
     app.exec_()
@@ -197,11 +230,11 @@ def mainFunction(DB, report, modifyAllowed):
 
             proj = extractProjName(backupName)
             if not proj:
-                report.Info(f"Could not extract project name from {backupName}. Skipping.")
+                report.Info(_translate("RestoreFLExProjects", "Could not extract project name from {backupName}. Skipping.").format(backupName=backupName))
                 continue
             
             if isFlexOpen(proj):
-                report.Info(f"The {proj} project is already open. Skipping. Close the project and try again.")
+                report.Info(_translate("RestoreFLExProjects", "The {proj} project is already open. Skipping. Close the project and try again.").format(proj=proj))
                 continue
 
             backupPath = os.path.join(mainWindow.selectedFolder, backupName)  # Append backupName to the selected folder path
@@ -213,16 +246,16 @@ def mainFunction(DB, report, modifyAllowed):
                 secs += 1
 
                 if secs >= LIMIT_SECS:
-                    report.Info(f"Couldn't detect the {proj} project as open after {str(secs)} seconds. Skipping.")
+                    report.Info(_translate("RestoreFLExProjects", "Couldn't detect the {proj} project as open after {secs} seconds. Skipping.").format(proj=proj, secs=str(secs)))
                     break
 
             if secs < LIMIT_SECS:
-                report.Info(f'The {proj} project took about {str(secs)} seconds to open.')
+                report.Info(_translate("RestoreFLExProjects", "The {proj} project took about {secs} seconds to open.").format(proj=proj, secs=str(secs)))
                 time.sleep(2)  # Give a little more time to finish opening.
         
-        report.Info(f'{str(i+1)} projects processed.')
+        report.Info(_translate("RestoreFLExProjects", "{count} projects processed.").format(count=str(i+1)))
     else:
-        report.Info('No projects selected or window cancelled.')
+        report.Info(_translate("RestoreFLExProjects", "No projects selected or window cancelled."))
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -5,6 +5,21 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.14.4 - 10/10/25 - Ron Lockwood
+#    Fixes #1075. Give an error if the transfer rules file doesn't exist.
+#
+#   Version 3.14.3 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.2 - 7/31/25 - Ron Lockwood
+#    Fixes #1033. Don't escape <> in literal strings in the rule file.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
+#   Version 3.14 - 5/27/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.2 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -56,25 +71,51 @@ import xml.etree.ElementTree as ET
 import re
 import unicodedata
 
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication
+
+from flextoolslib import *
+
+import Mixpanel
 import Utils
 import ReadConfig
-from flextoolslib import *
 import FTPaths
+from ExtractBilingualLexicon import docs as ExtrBilingDocs
+from ExtractSourceText import docs as ExtrSourceDocs
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'RunApertium'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = """This module executes lexical transfer based on links from source to target sense 
+descr = _translate("RunApertium", """This module executes lexical transfer based on links from source to target sense 
 you have established and then executes structural transfer which
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 The results of this module are found in the file you specified in the Target Transfer Results File.
-This is typically called target_text-aper.txt and is usually in the Build folder.
-"""
-docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.13.2",
+This is typically called target_text-aper.txt and is usually in the Build folder.""")
+
+docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Run the Apertium transfer engine.",
-        FTM_Help  : "",  
+        FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
+        FTM_Help       : "",  
         FTM_Description:    descr}     
+
+#app.quit()
+#del app
 
 STRIPPED_RULES  = 'tr.t1x'
 STRIPPED_RULES2 = 'tr.t2x'
@@ -191,7 +232,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         # of apertium-transfer)
         tree = ET.parse(transferRulePath).getroot()
     except:
-        report.Error(f'Error in opening the file: "{transferRulePath}", check that it exists and that it is valid.')
+        report.Error(_translate("RunApertium", 'Error in opening the file: "{file}", check that it exists and that it is valid.').format(file=transferRulePath))
         return True
 
     # Lemmas in <cat-item> are not compared for string equality,
@@ -211,7 +252,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
     for tag in ['lit', 'list-item']:
         for node in tree.findall('.//test//'+tag):
             if 'v' in node.attrib:
-                node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'])
+                node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'], notAngleBrackets=True)
 
     outPath = os.path.join(buildFolder, strippedRulesFileName)
     with open(outPath, 'w', encoding='utf-8') as fout:
@@ -230,7 +271,7 @@ def checkRuleAttributes(tranferRulePath):
     try:
         rulesTree = ET.parse(tranferRulePath)
     except:
-        error_list.append(('Invalid File', f'The transfer file: {tranferRulePath} is invalid.', 2))
+        error_list.append((_translate("RunApertium", 'Invalid File'), _translate("RunApertium", 'The transfer file: {file} is invalid.').format(file=tranferRulePath), 2))
         return error_list
 
     # Find the attributes element
@@ -280,12 +321,12 @@ def checkRuleAttributesXML(myRoot):
 
                     if attribStr in gramCatSet:
 
-                        error_list.append((f'The attribute: "{attribStr}" in "{def_attr_el.attrib["n"]}" is the same as a gramm. cat. Your rules may not work as expected.', 1))
+                        error_list.append((_translate("RunApertium", 'The attribute: "{attribStr}" in "{attrName}" is the same as a gramm. cat. Your rules may not work as expected.').format(attribStr=attribStr, attrName=def_attr_el.attrib["n"]), 1))
 
                 # Make sure there are no periods in the attribute, if there are give a warning
                 if attribStr and re.search(r'\.', attribStr):
 
-                    error_list.append((f'The attribute: "{attribStr}" in "{def_attr_el.attrib["n"]}" has a period in it. It needs to be an underscore. Your rules may not work as expected.', 1))
+                    error_list.append((_translate("RunApertium", 'The attribute: "{attribStr}" in "{attrName}" has a period in it. It needs to be an underscore. Your rules may not work as expected.').format(attribStr=attribStr, attrName=def_attr_el.attrib["n"]), 1))
     return error_list
 
 # Get relative path to the given build folder and file
@@ -384,7 +425,7 @@ def runApertium(DB, configMap, report):
     
     # See if the dictionary file exists.
     if not os.path.exists(dictionaryPath):
-        report.Error('The bilingual dictionary file does not exist. You may need to run the Build Bilingual Lexicon module. The file should be: ' + dictionaryPath)
+        report.Error(_translate("RunApertium", 'The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}').format(file=dictionaryPath, buildLex=ExtrBilingDocs[FTM_Name]))
         return True
     
     # Get the path to the analyzed text
@@ -394,7 +435,7 @@ def runApertium(DB, configMap, report):
     
     # See if the source text file exists.
     if not os.path.exists(analyzedTextPath):
-        report.Error('The analyzed text file does not exist. You may need to run the Extract Source Text module. The file should be: ' + analyzedTextPath)
+        report.Error(_translate("RunApertium", 'The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}').format(file=analyzedTextPath, extrSource=ExtrSourceDocs[FTM_Name]))
         return True
     
     # Get the path to the target apertium file
@@ -407,6 +448,11 @@ def runApertium(DB, configMap, report):
     if not tranferRulePath:
         return None
 
+    # See if the transfer rules file exists.
+    if not os.path.exists(tranferRulePath):
+        report.Error(_translate("RunApertium", 'The transfer rules file does not exist. The file should be at: {file}').format(file=tranferRulePath))
+        return True
+    
     # Get the modification date of the transfer rule file.
     statResult = os.stat(tranferRulePath)
 
@@ -451,34 +497,43 @@ def runApertium(DB, configMap, report):
     ret = run_makefile(buildFolder, report)
     
     if ret:
-        report.Error('An error happened when running the Apertium tools. The contents of apertium_error.txt is:')
+        report.Error(_translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:'))
         try:
-            f = open(os.path.join(buildFolder, Utils.APERTIUM_ERROR_FILE), encoding='utf-8')
+            f = open(os.path.join(buildFolder, APERTIUM_ERROR_FILE), encoding='utf-8')
             lines = f.readlines()
-            report.Error('\n'.join(lines))
+            [report.Error(line) for line in lines]
         except:
             pass
 
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
     unfixProblemCharsRuleFile(transferResultsPath)
     unfixProblemCharsDict(dictionaryPath)
-    report.Info(f'Transferred text put in the file: {Utils.getPathRelativeToWorkProjectsDir(transferResultsPath)}.')
-    report.Info('Apertium transfer complete.')
+    report.Info(_translate("RunApertium", 'Transferred text put in the file: {file}.').format(file=Utils.getPathRelativeToWorkProjectsDir(transferResultsPath)))
+    report.Info(_translate("RunApertium", 'Apertium transfer complete.'))
     
     return 1
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
 
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     runApertium(DB, configMap, report)
+
     
 #----------------------------------------------------------------
 # define the FlexToolsModule
