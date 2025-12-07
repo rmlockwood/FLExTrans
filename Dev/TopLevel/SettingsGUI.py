@@ -3,6 +3,11 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.6 - 12/6/25 - Beth Bryson
+#    Fixes #1132. Adjust name of setting for "Custom field for sense link".
+#    Generalize labels in the functions for fetching custom field names.
+#    Fix bug with index for displayed value when (none) is added as a possible value.
+#
 #   Version 3.14.5 - 12/6/25 - Ron Lockwood
 #    Fixes #1132. Use (none) as an option for allomorph and entry custom fields.
 #    Also, when writing settings, (none) should translate to blank.
@@ -288,40 +293,42 @@ def loadSourceTextListForSettings(widget, wind, settingName):
 
 def loadSourceSenseCustomField(widget, wind, settingName):
     
-    # Get the custom field to link to target entry
-    customLinkField = wind.read(settingName)
+    # Get the name of a sense-level custom field to find in the source project
+    customSenseField = wind.read(settingName)
     
-    if customLinkField is not None:
+    if customSenseField is not None:
 
-        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        # Add items and when we find the one that matches the config file, set that one to be displayed.
         for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
     
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customLinkField:
+            if item[1] == customSenseField:
                 
                 widget.setCurrentIndex(i)
 
 def loadTargetEntryCustomField(widget, wind, settingName):
     
-    # Get the custom field to link to target entry
-    customXampleProp = wind.read(settingName)
+    # Get the name of an entry-level custom field to find in the target project
+    customEntryField = wind.read(settingName)
     
-    if customXampleProp is not None:
+    if customEntryField is not None:
 
         # Add (none) as the first option
         widget.addItem(_translate("SettingsGUI", "(none)"))
 
-        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        # Add items and when we find the one that matches the config file, set that one to be displayed.
+        # Displays (none) if setting is blank.
         for i, item in enumerate(wind.targetDB.LexiconGetEntryCustomFields()):
     
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customXampleProp:
+            if item[1] == customEntryField:
                 
-                widget.setCurrentIndex(i)
+                # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
+                widget.setCurrentIndex(i+1)
 
 def loadCustomEntry(widget, wind, settingName):
     
@@ -353,10 +360,10 @@ def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
 
 def loadTargetAllomorphCustomField(widget, wind, settingName):
     
-    # Get the custom field to link to target entry
-    customXampleProp = wind.read(settingName)
+    # Get the name of an allomorph-level custom field to find in the target project
+    customAlloField = wind.read(settingName)
     
-    if customXampleProp is not None:
+    if customAlloField is not None:
 
         # Add (none) as the first option
         widget.addItem(_translate("SettingsGUI", "(none)"))
@@ -369,9 +376,10 @@ def loadTargetAllomorphCustomField(widget, wind, settingName):
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customXampleProp:
+            if item[1] == customAlloField:
                 
-                widget.setCurrentIndex(i)
+                # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
+                widget.setCurrentIndex(i+1)
 
 def loadAllProjects(widget, wind, settingName):
 
@@ -1518,8 +1526,8 @@ widgetList = [
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     _translate("SettingsGUI", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
 
-   [_translate("SettingsGUI", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
+   [_translate("SettingsGUI", "Source Custom Field for Sense Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+    _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to senses in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
    
    [_translate("SettingsGUI", "Category that Represents Proper Noun"), "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
     _translate("SettingsGUI", "The name of the grammatical category that you use for proper nouns in your\nsource FLEx project. It is possible to choose not to translate proper nouns."), DONT_GIVE_ERROR, BASIC_VIEW],\
