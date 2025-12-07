@@ -226,13 +226,12 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              GEN_STC_LIMIT_POS_N,
                              GEN_STC_LIMIT_POS_1,
                              GEN_STC_LIMIT_POS_2, 
-                             CATEGORY_ABBREV_SUB_LIST,
+                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_N,
+                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_1,
+                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_2,
                              CLUSTER_PROJECTS,
                              ]
 
-#                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_N,
-#                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_1,
-#                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_2,
 
 
 from PyQt5.QtCore import QCoreApplication
