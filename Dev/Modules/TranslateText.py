@@ -69,9 +69,6 @@ docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
         FTM_Description: _translate("TranslateText",
 """Translate the current source text.""")}
 
-#app.quit()
-#del app
-
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
@@ -86,6 +83,7 @@ def MainFunction(DB, report, modify=True):
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
+
     if not configMap:
         return
     
@@ -95,6 +93,7 @@ def MainFunction(DB, report, modify=True):
     ## Extract the source text
     report.Blank()
     report.Info(_translate("TranslateText", 'Exporting source text...'))
+
     if not ExtractSourceText.doExtractSourceText(DB, configMap, report):
         return
 
@@ -110,6 +109,7 @@ def MainFunction(DB, report, modify=True):
     ## Run Apertium
     report.Blank()
     report.Info(_translate("TranslateText", 'Running the Apertium transfer engine...'))
+
     if not RunApertium.runApertium(DB, configMap, report):
         return
     
@@ -132,6 +132,7 @@ def MainFunction(DB, report, modify=True):
     ## Convert to Synthesizer Format
     report.Blank()
     report.Info(_translate("TranslateText", 'Converting target words to synthesizer format...'))
+
     if not ConvertTextToSTAMPformat.convertToSynthesizerFormat(DB, configMap, report):
         return
     
@@ -140,6 +141,7 @@ def MainFunction(DB, report, modify=True):
 
     report.Blank()
     report.Info(_translate("TranslateText", 'Synthesizing target text...'))
+
     if hermitCrabSynthesisYesNo == 'y':
 
         report.Info(_translate("TranslateText", 'Using HermitCrab for synthesis.'))
@@ -158,26 +160,13 @@ def MainFunction(DB, report, modify=True):
         report.Blank()
         report.Info(_translate("TranslateText", 'Exporting to Paratext...'))
 
-        # Delete the app so that we can export to Paratext without any issues. Export to Paratext creates a new app.
-        app.quit()
-        del app
-
         if not ExportToParatext.doExportToParatext(DB, configMap, report):
             return
-        
-        # Reload the translations after Export to Paratext
-        translators = []
-        app = QApplication.instance()
-
-    if app is None:
-        app = QApplication([])
-
-        Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
-                               translators, loadBase=False)
     else:
         ## Insert Target Text
         report.Blank()
         report.Info(_translate("TranslateText", 'Inserting text into the target project...'))
+
         if not InsertTargetText.insertTargetText(DB, configMap, report):
             return
     
