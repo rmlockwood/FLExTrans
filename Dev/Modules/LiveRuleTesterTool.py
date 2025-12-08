@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.14 - 11/28/25 - Ron Lockwood
+#    Use a text edit for warnings so multiple lines can be shown with a scroll bar.
+#
 #   Version 3.14.13 - 11/28/25 - Ron Lockwood
 #    Fixes #1103. Respond to arrow up and down in the sentence list box.
 #
@@ -299,7 +302,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.14.13",
+        FTM_Version    : "3.14.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1600,7 +1603,7 @@ class Main(QMainWindow):
             warn, msgList = Utils.checkForWarning(errorList, None)
 
             if warn:
-                self.ui.warningLabel.setText(msgList)
+                self.ui.warningTextEdit.setPlainText(msgList)
 
             self.__doCatalog = False
 
@@ -2032,7 +2035,7 @@ class Main(QMainWindow):
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
-        self.ui.warningLabel.setText('')
+        self.ui.warningTextEdit.setPlainText('')
 
     def sourceTabClicked(self):
 
@@ -2615,9 +2618,9 @@ class Main(QMainWindow):
 
             for i, triplet in enumerate(errorList):
                 if i == 0:
-                    self.ui.warningLabel.setText(triplet[0])
+                    self.ui.warningTextEdit.setPlainText(triplet[0])
                 else:
-                    self.ui.warningLabel.setText(self.ui.warningLabel.text()+'\n'+triplet[0])
+                    self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
 
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
