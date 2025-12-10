@@ -669,6 +669,16 @@ side="tl"
 v=""
 ></lit
 ></let
+><let
+><!--First give the thing you want deleted. In this case a sample suffix (any of the things defined by a_sample).--><clip
+part="a_case_feature"
+pos="1"
+side="tl"
+></clip
+><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><lit
+v=""
+></lit
+></let
 ></def-macro
 ><def-macro
 n="m_delete_v_tags"
@@ -793,6 +803,31 @@ comment="det"
 ><!--Rule Assistant Description: Rule for setting NP agreement when mapping from Spanish to Spanish (and we might be using a source string that had a different gender).--><pattern
 ><pattern-item
 n="c_det"
+></pattern-item
+></pattern
+><action
+><call-macro
+n="m_delete_det_features"
+><with-param
+pos="1"
+></with-param
+></call-macro
+><!--Generate and output def--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+></lu
+></out
+></action
+></rule
+><rule
+comment="pro"
+><!--Rule Assistant Description: Rule for setting NP agreement when mapping from Spanish to Spanish (and we might be using a source string that had a different gender).--><pattern
+><pattern-item
+n="c_pro"
 ></pattern-item
 ></pattern
 ><action
