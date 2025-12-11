@@ -576,7 +576,20 @@ class Main(QMainWindow):
             self.ui.viewTestbedLogButton,
         ]
 
-        # Reset icon images
+        # Add horizontal padding for all buttons in this window
+        self.setStyleSheet("""
+            QPushButton {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            /* optional: keep small icon buttons compact */
+            QPushButton#ZoomIncreaseTarget, QPushButton#ZoomDecreaseTarget,
+            QPushButton#ZoomIncreaseSource, QPushButton#ZoomDecreaseSource  {
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+        """)
+        
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.upButton.setIcon(icon)
