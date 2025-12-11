@@ -478,7 +478,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
                 fileList = glob.glob(bookPathPattern)
 
             if checkBookPath and not fileList:
-                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file at: {bookPath}.").format(bookPath=bookPathPattern))
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=bookPathPattern))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():
