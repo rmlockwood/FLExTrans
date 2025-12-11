@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.15 - 12/11/25 - Ron Lockwood
+#    Add a stylesheet to pad all but a few buttons with space left and right.
+#    This makes the buttons look less cramped when the window is resized.
+#
 #   Version 3.14.14 - 11/28/25 - Ron Lockwood
 #    Use a text edit for warnings so multiple lines can be shown with a scroll bar.
 #
@@ -302,7 +306,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.14.14",
+        FTM_Version    : "3.14.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
