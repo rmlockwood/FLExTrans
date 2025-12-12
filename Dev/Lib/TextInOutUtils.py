@@ -336,6 +336,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.validFolders = False
         self.lastSelectAllState = QtCore.Qt.Checked
         self.retVal = True
+        self.keyWidgetList = []
 
         # Wildebeest widgets
         self.WBcontrols = [
@@ -416,13 +417,13 @@ class TextInOutRulesWindow(QMainWindow):
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
         # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QComboBox, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_7, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
                                         originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
 
         # Load cluster projects
         if len(self.clusterProjects) > 0:
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self) # load last used cluster projects here
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self.ui.horizontalLayout_7) # load last used cluster projects here
 
             # Make work project selections in all visible combo boxes
             savedWorkProjList = self.settingsMap.get(WORK_PROJECTS, [])
@@ -1424,15 +1425,17 @@ class TextInOutRulesWindow(QMainWindow):
         except:
             self.report.Error(_translate("TextInOutUtils", "Error saving settings."))
 
-        for i in range(len(self.selectedWorkProjects)+1): # +1 for the default project
+        if len(self.selectedWorkProjects) > 0:
 
-            # Get all the wildebeest info. and save it in the element tree
-            self.saveWBinfo(self.xmlRootList[i])
+            for i in range(len(self.selectedWorkProjects)+1): # +1 for the default project
 
-            # Indent the xml to make it pretty then write it to a file.
-            ET.indent(self.xmlTreeList[i])
-            self.xmlTreeList[i].write(self.filePathList[i], encoding='utf-8', xml_declaration=True)
+                # Get all the wildebeest info. and save it in the element tree
+                self.saveWBinfo(self.xmlRootList[i])
 
-            # We are done after the 0th project, if it is the default project so break out of the loop
-            if len(self.clusterProjects) == 0:
-                break
+                # Indent the xml to make it pretty then write it to a file.
+                ET.indent(self.xmlTreeList[i])
+                self.xmlTreeList[i].write(self.filePathList[i], encoding='utf-8', xml_declaration=True)
+
+                # We are done after the 0th project, if it is the default project so break out of the loop
+                if len(self.clusterProjects) == 0:
+                    break
