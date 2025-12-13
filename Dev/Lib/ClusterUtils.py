@@ -5,6 +5,11 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.14.3 - 12/13/25 - Ron Lockwood
+#   Fixes #1157 Use resizeable window and widgets.
+#   For this code it means doing stuff differently when in layout mode vs absolute geometry mode.
+#   Layout mode is when the parentWin passed in is a QLayout -- so the window is resizeable.
+#
 #   Version 3.14.2 - 8/20/25 - Ron Lockwood
 #   Fixes crash in Import Paratext and missing OK button in other dialogs with cluster support.
 #
@@ -23,7 +28,7 @@
 
 from ComboBox import CheckableComboBox
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QLabel, QComboBox, QLayout, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QSizePolicy
+from PyQt5.QtWidgets import QLabel, QLayout, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QSizePolicy
 
 IMP_EXP_WINDOW_HEIGHT = 260
 IMP_EXP_WINDOW_WIDTH = 626
@@ -50,43 +55,58 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
     use_layout = isinstance(parentWin, QLayout)
     self.clusterUseLayout = use_layout
 
+    # create header font & widgets unconditionally so showClusterWidgets can always reference them
+    font = QtGui.QFont()
+    font.setUnderline(True)
+    # parent will be set/used when in absolute mode; in layout mode we create without parent and add to grid
+    head_parent = parentWin if not use_layout else None
+    self.headWidg1 = QLabel(head_parent)
+    self.headWidg1.setGeometry(QtCore.QRect(10, 190, self.ui.clusterProjectsLabel.width(), 22))
+    self.headWidg1.setObjectName("headerLabel1")
+    self.headWidg1.setText(header1TextStr)
+    self.headWidg1.setVisible(False)
+    self.headWidg1.setFont(font)
+    self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+
+    self.headWidg2 = QLabel(head_parent)
+    self.headWidg2.setGeometry(QtCore.QRect(210, 190, 221, 22))
+    self.headWidg2.setObjectName("headerLabel2")
+    self.headWidg2.setText(header2TextStr)
+    self.headWidg2.setVisible(False)
+    self.headWidg2.setFont(font)
+
     # If parent is a layout, create a container widget with a grid layout so headers align with columns
     if use_layout:
         self.clusterContainer = QWidget()
         self.clusterContainer.setVisible(False)
+
+        # If initClusterProjects created a composite container (row+grid), add clusterContainer into it,
+        # otherwise put clusterContainer directly into parentWin (right side for HBox)
         self.clusterVLayout = QVBoxLayout(self.clusterContainer)
         self.clusterVLayout.setContentsMargins(0, 0, 0, 0)
         self.clusterVLayout.setSpacing(4)
-        # Insert the container into the provided parent layout and place it on the right for horizontal layouts
-        if isinstance(parentWin, QHBoxLayout):
-            parentWin.addStretch()
-            parentWin.addWidget(self.clusterContainer)
+
+        if hasattr(self, 'clusterProjectsContainer') and isinstance(self.clusterProjectsContainer, QWidget):
+            # composite container created by initClusterProjects; add below the top row
+            outer_layout = self.clusterProjectsContainer.layout()
+            if outer_layout is not None:
+                outer_layout.addWidget(self.clusterContainer)
+            else:
+                parentWin.addWidget(self.clusterContainer)
         else:
-            parentWin.addWidget(self.clusterContainer)
+            if isinstance(parentWin, QHBoxLayout):
+                parentWin.addStretch()
+                parentWin.addWidget(self.clusterContainer)
+            else:
+                parentWin.addWidget(self.clusterContainer)
 
         # Create a grid layout so header widgets occupy the same columns as label/key widgets
         self.clusterGrid = QGridLayout()
         self.clusterGrid.setContentsMargins(0, 0, 0, 0)
         self.clusterGrid.setSpacing(6)
 
-        # Header widgets in row 0, columns 0 and 1
-        font = QtGui.QFont()
-        font.setUnderline(True)
-
-        self.headWidg1 = QLabel()
-        self.headWidg1.setObjectName("headerLabel1")
-        self.headWidg1.setText(header1TextStr)
-        self.headWidg1.setVisible(False)
-        self.headWidg1.setFont(font)
-        self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        # Header widgets in row 0, columns 0 and 1 (use the previously created labels)
         self.clusterGrid.addWidget(self.headWidg1, 0, 0, alignment=QtCore.Qt.AlignRight)
-
-        self.headWidg2 = QLabel()
-        self.headWidg2.setObjectName("headerLabel2")
-        self.headWidg2.setText(header2TextStr)
-        self.headWidg2.setVisible(False)
-        self.headWidg2.setFont(font)
-        self.headWidg2.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.clusterGrid.addWidget(self.headWidg2, 0, 1, alignment=QtCore.Qt.AlignLeft)
 
         # Make column 1 take remaining space so key widgets can expand
@@ -138,24 +158,8 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
 
         self.widgetList.append((labelWidget, keyWidget))
 
-    # If not using layout, create header widgets in old absolute-position style (kept for compatibility)
-    if not use_layout and len(self.clusterProjects) > 0:
-
-        font = QtGui.QFont()
-        font.setUnderline(True)
-        self.headWidg1 = QLabel(parentWin)
-        self.headWidg1.setGeometry(QtCore.QRect(10, 190, self.ui.clusterProjectsLabel.width(), 22))
-        self.headWidg1.setObjectName("headerLabel1")
-        self.headWidg1.setText(header1TextStr)
-        self.headWidg1.setVisible(False)
-        self.headWidg1.setFont(font)
-
-        self.headWidg2 = QLabel(parentWin)
-        self.headWidg2.setGeometry(QtCore.QRect(210, 190, 221, 22))
-        self.headWidg2.setObjectName("headerLabel2")
-        self.headWidg2.setText(header2TextStr)
-        self.headWidg2.setVisible(False)
-        self.headWidg2.setFont(font)
+    # In non-layout (absolute) mode, head widgets were already parented at top of function.
+    # Ensure their fonts/visibility are already set above.
 
 def initClusterProjects(self, allClusterProjects, savedClusterProjects, parentWin):
 
@@ -165,30 +169,50 @@ def initClusterProjects(self, allClusterProjects, savedClusterProjects, parentWi
     # hide the designer widget; we'll reparent/insert it either into a layout or keep geometry
     self.ui.clusterProjectsComboBox.hide()
     # create the new checkable combo as a child of parentWin (or same parent for geometry mode)
+    geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
     combo_parent = None if use_layout else parentWin
     self.ui.clusterProjectsComboBox = CheckableComboBox(combo_parent)
     self.ui.clusterProjectsComboBox.setObjectName("clusterProjectsComboBox")
     self.ui.clusterProjectsComboBox.addItems([proj for proj in allClusterProjects if proj])
 
     if use_layout:
-        # Put the label and the new combo into a small horizontal row aligned to the right
-        row_widget = QWidget()
-        row_layout = QHBoxLayout(row_widget)
-        row_layout.setContentsMargins(0, 0, 0, 0)
-        row_layout.setSpacing(6)
-        # push the pair to the right
-        row_layout.addStretch()
+        # Create a full-width row (label + combo) that sits above the cluster grid.
+        # For horizontal parent layouts we create a composite right-side container so the row can be above the cluster grid.
+        # row_widget = QWidget()
+        # row_layout = QHBoxLayout(row_widget)
+        # row_layout.setContentsMargins(0, 0, 0, 0)
+        # row_layout.setSpacing(6)
 
-        # Reparent the designer label into the row layout (keeps its text/style)
-        self.ui.clusterProjectsLabel.setParent(row_widget)
-        row_layout.addWidget(self.ui.clusterProjectsLabel)
-        row_layout.addWidget(self.ui.clusterProjectsComboBox)
+        # label then expanding combo so combo can use full width
+        # ensure the designer label is reparented into the row widget
+        # self.ui.clusterProjectsLabel.setParent(row_widget)
+        # row_layout.addWidget(self.ui.clusterProjectsLabel)
+        # self.ui.clusterProjectsComboBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.ui.horizontalLayout_7.addWidget(self.ui.clusterProjectsComboBox)
 
-        # Add the composed row to the parent layout (appears at top/right)
-        parentWin.addWidget(row_widget)
+        # If parent is an HBox, create a composite right-side container so the row can be above the cluster grid
+        if isinstance(parentWin, QHBoxLayout):
+            pass
+            # self.clusterProjectsContainer = QWidget()
+            # outer_layout = QVBoxLayout(self.clusterProjectsContainer)
+            # outer_layout.setContentsMargins(0, 0, 0, 0)
+            # outer_layout.setSpacing(6)
+            # outer_layout.addWidget(row_widget)
+            # ensure the container expands horizontally so combo can use full width
+            # self.clusterProjectsContainer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            # clusterContainer will be added into this same composite in initClusterWidgets
+            # self.ui.horizontalLayout_7.addStretch()
+            # self.ui.horizontalLayout_7.insertWidget(1, self.clusterProjectsContainer)
+        # else:
+        #     # Parent is already a vertical/column layout; insert the row at the top so it sits above the cluster grid
+        #     # use insertWidget(0, ...) where available to guarantee it's the first row
+        #     try:
+        #         parentWin.insertWidget(0, row_widget)
+        #     except Exception:
+        #         parentWin.addWidget(row_widget)
     else:
         # Preserve old geometry-based placement for dialogs that are not layout-based
-        geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
+        # geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
         self.ui.clusterProjectsComboBox.setGeometry(geom)
         # ensure the designer label keeps its geometry too (no change)
         # (designer label already has its geometry; nothing else to do)
@@ -256,7 +280,6 @@ def showClusterWidgets(self):
 
         # Show the header labels if we have cluster projects selected
         if len(self.ui.clusterProjectsComboBox.currentData()) > 0:
-
             self.headWidg1.setGeometry(labelStartXpos, startYpos+10, self.headWidg1.width(), self.headWidg1.height())
             self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
             self.headWidg1.setVisible(True)
@@ -323,3 +346,4 @@ def showClusterWidgets(self):
 
         # Increase the height of the main window
         self.resize(self.width(), self.originalMainWinHeight+pixels)
+

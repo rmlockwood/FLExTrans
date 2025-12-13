@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.14.2 - 12/13/25 - Ron Lockwood
+#   Fixes #1157 Use resizeable window and widgets.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects.
 #
@@ -417,13 +420,13 @@ class TextInOutRulesWindow(QMainWindow):
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
         # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_7, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_4, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
                                         originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
 
         # Load cluster projects
         if len(self.clusterProjects) > 0:
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self.ui.horizontalLayout_7) # load last used cluster projects here
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self.ui.horizontalLayout_4) # load last used cluster projects here
 
             # Make work project selections in all visible combo boxes
             savedWorkProjList = self.settingsMap.get(WORK_PROJECTS, [])
