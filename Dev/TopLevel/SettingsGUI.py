@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.7 - 12/15/25 - Ron Lockwood
+#    Fixes #1149. Support alternate Paratext folder setting.
+#
 #   Version 3.14.6 - 12/6/25 - Beth Bryson
 #    Fixes #1132. Adjust name of setting for "Custom field for sense link".
 #    Generalize labels in the functions for fetching custom field names.
@@ -685,7 +688,7 @@ def doFolderBrowse(wind, myWidgInfo):
     # if folder exists for the current setting, use it. set the starting directory for the open dialog 
     startDir = wind.read(myWidgInfo[CONFIG_NAME])
     
-    if not os.path.isdir(startDir):
+    if startDir is None or not os.path.isdir(startDir):
         
         startDir = ""
                    
@@ -699,6 +702,14 @@ def doFolderBrowse(wind, myWidgInfo):
         setPaths(myWidgInfo[WIDGET1_OBJ], dirName)
 
 def setPaths(widget, myPath):
+    
+    # For certain settings, don't use a relative path
+    if widget.objectName() in ["ptx_alt_path"]:
+        
+        myPath = os.path.normpath(myPath)
+        widget.setText(myPath)
+        widget.setToolTip(myPath)
+        return
     
     # start the rel path relative to the project folder which is the parent of the config folder
     startPath = FTPaths.WORK_DIR
@@ -1311,7 +1322,9 @@ class Main(QMainWindow):
                     
                     labelsList.append(self.getLabelForName(key))
             else:
-                labelsList.append(self.getLabelForName(key))
+                if not self.userChangedThisSetting(key):
+
+                    labelsList.append(self.getLabelForName(key))
 
         if labelsList:
             flexTransChanges = _translate("SettingsGUI", "FLExTrans made these changes for you:\n") + '\n'.join(labelsList)
@@ -1680,6 +1693,14 @@ widgetList = [
 
    [_translate("SettingsGUI", "Testbed Results Log File"), "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     _translate("SettingsGUI", "The path and name of the testbed results log file."), GIVE_ERROR, FULL_VIEW],\
+
+
+
+   [_translate("SettingsGUI", "Import Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Alternate Location for Paratext Files"), "ptx_alt_path", "", FOLDER, object, object, object, loadFile, ReadConfig.ALT_PARATEXT_FOLDER, \
+    _translate("SettingsGUI", "The path to the folder where Paratext files are located.\nThe .sfm or .usfm files should be found here."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 

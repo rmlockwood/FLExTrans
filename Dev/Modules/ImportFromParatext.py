@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.14.3 - 12/15/25 - Ron Lockwood
+#    Fixes #1149. Support alternate Paratext folder setting.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -187,7 +190,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -214,7 +217,7 @@ replaceList = [\
 
 class Main(QMainWindow):
 
-    def __init__(self, clusterProjects):
+    def __init__(self, clusterProjects, altParatextFolder):
         QMainWindow.__init__(self)
 
         self.ui = Ui_ParatextChapSelectionWindow()
@@ -222,6 +225,7 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
         self.toChap = 0
         self.fromChap = 0
+        self.altParatextFolder = altParatextFolder
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         self.setWindowTitle("Import Paratext Chapters")
@@ -310,7 +314,7 @@ class Main(QMainWindow):
 
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self, export=False)
+        ChapterSelection.doOKbuttonValidation(self, export=False, checkBookAbbrev=True, checkBookPath=True, fromFLEx=False, altParatextFolder=self.altParatextFolder)
         
 def setSourceNameInConfigFile(report, title):
         
@@ -594,8 +598,11 @@ def MainFunction(DB, report, modify=True):
     else:
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
-        
-    window = Main(clusterProjects)
+
+    # Get the path to the alternate Paratext folder
+    altParatextFolder = ReadConfig.getConfigVal(configMap, ReadConfig.ALT_PARATEXT_FOLDER, report, giveError=False)
+
+    window = Main(clusterProjects, altParatextFolder)
     window.show()
     app.exec_()
     

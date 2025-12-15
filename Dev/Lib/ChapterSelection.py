@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.14.3 - 12/15/25 - Ron Lockwood
+#    Fixes #1149. Support alternate Paratext folder setting.
+#
 #   Version 3.14.3 - 12/10/25 - Ron Lockwood
 #    Fixes #1143. Allow .USFM files as well as .SFM files.
 #
@@ -104,7 +107,7 @@ bookChapterPattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\
 class ChapterSelection(object):
         
     def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                 makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
+                 makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False, altParatextFolder=None):
     
         self.export = export
         self.dontShowWarning = False
@@ -119,7 +122,8 @@ class ChapterSelection(object):
             self.exportProjectAbbrev = otherProj   
 
         self.bookAbbrev         = bookAbbrev  
-        self.paratextPath       = paratextPath     
+        self.paratextPath       = paratextPath   
+        self.altParatextFolder  = altParatextFolder  
         self.fromChap           = fromChap        
         self.toChap             = toChap          
         self.includeFootnotes   = includeFootnotes
@@ -159,15 +163,21 @@ class ChapterSelection(object):
         else:
             projectAbbrev = self.importProjectAbbrev  
 
+        if self.altParatextFolder:
+
+            ptxFolder = self.altParatextFolder
+        else:
+            ptxFolder = os.path.join(self.paratextPath, projectAbbrev)
+
         # First try .SFM
         pattern = '*' + self.bookAbbrev + projectAbbrev + '.SFM'
-        path = os.path.join(self.paratextPath, projectAbbrev, pattern)
+        path = os.path.join(ptxFolder, pattern)
         fileList = glob.glob(path)
 
         # If none found, try .USFM
         if not fileList:
             pattern = '*' + self.bookAbbrev + projectAbbrev + '.USFM'
-            path = os.path.join(self.paratextPath, projectAbbrev, pattern)
+            path = os.path.join(ptxFolder, pattern)
             fileList = glob.glob(path)
 
         return fileList[0] if fileList else ''
@@ -408,7 +418,7 @@ def getParatextPath():
     except Exception as e:
         return None
     
-def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True, fromFLEx=False):
+def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True, fromFLEx=False, altParatextFolder=None):
     
     # Get values from the 'dialog' window
     projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
@@ -440,26 +450,36 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         QMessageBox.warning(self, _translate("ChapterSelection", "Invalid Book Error"), _translate("ChapterSelection", "The book abbreviation: {bookAbbrev} is invalid.").format(bookAbbrev=bookAbbrev))
         return
     
-    # Get the Paratext path
-    paratextPath = getParatextPath()
+    paratextPath = ""
 
-    # If we get None, there was a registry problem
-    if paratextPath is None:
-        
-        QMessageBox.warning(self, _translate("ChapterSelection", "Registry Error"), _translate("ChapterSelection", "Could not find the Paratext data folder in the registry."))
-        return
+    # Check if we need to use the alternate Paratext folder
+    if not altParatextFolder:
 
-    # Check if Paratext path exists
-    if not os.path.exists(paratextPath): 
+        # Get the Paratext path
+        paratextPath = getParatextPath()
 
-        QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=paratextPath))
-        return
+        # If we get None, there was a registry problem
+        if paratextPath is None:
+            
+            QMessageBox.warning(self, _translate("ChapterSelection", "Registry Error"), _translate("ChapterSelection", "Could not find the Paratext data folder in the registry."))
+            return
+
+        # Check if Paratext path exists
+        if not os.path.exists(paratextPath): 
+
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=paratextPath))
+            return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
     if export or self.ui.clusterProjectsComboBox.isHidden() or len(self.ui.clusterProjectsComboBox.currentData()) == 0:
 
         # Check if project path exists under Paratext
-        projPath = os.path.join(paratextPath, projectAbbrev)
+        if not altParatextFolder:
+
+            projPath = os.path.join(paratextPath, projectAbbrev)
+        else:
+            projPath = altParatextFolder
+
         if not os.path.exists(projPath): 
             
             QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=projPath))
@@ -487,7 +507,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         clustProjs = self.ui.clusterProjectsComboBox.currentData()
 
     self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                                    makeActive, useFullBookName, overwriteText, clustProjs, ptxProjList, oneTextPerChapter, includeIntro)
+                                    makeActive, useFullBookName, overwriteText, clustProjs, ptxProjList, oneTextPerChapter, includeIntro, altParatextFolder)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')
