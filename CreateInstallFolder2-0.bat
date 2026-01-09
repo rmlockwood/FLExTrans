@@ -46,23 +46,32 @@ for %%d in (German-Swedish TemplateProject) do (
 )
 
 rem copy the FlexTrans.config files
+@echo off
+setlocal DisableDelayedExpansion
 
-rem copy and modify the original config file to have one different line for the German-Swedish folder
 set "SRC=FLExTrans.config"
-set "DST=%workprojects%\German-Swedish\Config\FLExTrans.config"
+set "DST=%workprojects%\German-Swedish\Config\%SRC%"
 
 rem copy the original config file to the template folder
 copy "%SRC%" "%workprojects%\TemplateProject\Config\%SRC%"
 
 rem Create the modified config file line by line
 (for /f "usebackq delims=" %%A in ("%SRC%") do (
-    echo %%A | findstr /b /c:"TransferRulesFile=transfer_rules.t1x" >nul
+    set "line=%%A"
+    setlocal EnableDelayedExpansion
+    
+    rem Check if the line matches the target string
+    echo(!line!| findstr /b /c:"TransferRulesFile=transfer_rules.t1x" >nul
+    
     if errorlevel 1 (
-        echo %%A
+        echo(!line!
     ) else (
         echo TransferRulesFile=transfer_rules-Swedish.t1x
     )
+    endlocal
 )) > "%DST%"
+
+@echo on
 
 rem build Python requirements file
 xcopy FlexTools_%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
@@ -154,7 +163,7 @@ copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
 cd ..
 
-rem Zip the HermitCrap tools
+rem Zip the HermitCrab tools
 SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
 cd HermitCrabSynthesis
 7z a %HC_ZIP_FILE% *
