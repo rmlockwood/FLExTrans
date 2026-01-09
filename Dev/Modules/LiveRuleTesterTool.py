@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.17 - 1/9/26 - Ron Lockwood
+#    Fixes #1165. Set default buttons to a minimum size so they are not too small. 
+#
 #   Version 3.14.16 - 1/9/26 - Ron Lockwood
 #    Fixes #1162. Only initialize the lexical units from the source sentences list if 
 #    that 2nd tab has been selected. This avoids initializing lexical units unnecessarily which
@@ -313,7 +316,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.14.16",
+        FTM_Version    : "3.14.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1317,6 +1320,11 @@ class Main(QMainWindow):
         
         msgBox.setDefaultButton(QMessageBox.Yes)
         
+        # Find the buttons and set a minimum width/height
+        for button in msgBox.buttons():
+
+            button.setMinimumSize(75, 23)
+
         # Show the dialog and get the user's response
         result = msgBox.exec_()
         return result
