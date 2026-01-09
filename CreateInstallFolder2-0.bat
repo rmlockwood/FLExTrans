@@ -163,7 +163,7 @@ copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
 cd ..
 
-rem Zip the HermitCrap tools
+rem Zip the HermitCrab tools
 SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
 cd HermitCrabSynthesis
 7z a %HC_ZIP_FILE% *
