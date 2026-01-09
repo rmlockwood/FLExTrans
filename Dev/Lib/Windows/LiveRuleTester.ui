@@ -1444,7 +1444,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
         </property>
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>21</width>
           <height>23</height>
          </size>
         </property>
@@ -1463,7 +1463,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <widget class="QPushButton" name="ZoomDecreaseTarget">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>21</width>
           <height>23</height>
          </size>
         </property>
