@@ -15,6 +15,8 @@ REM This script now deletes all symbolic links in each folder before recreating 
 REM To get the translation binaries, create a translations folder under FlexTools\Modules\FLExTrans
 REM Then run this script to get links to all the translation binary files.
 
+REM set testing_folder=C:\Users\<user>\Documents\FLExTrans
+REM set git_repo=C:\Users\<user>\Documents\GitHub\FLExTrans
 set testing_folder="C:\Data\FLExTrans\Dev\Active Projects"
 set git_repo=c:\users\rlboo\GitHub\flextrans
 
