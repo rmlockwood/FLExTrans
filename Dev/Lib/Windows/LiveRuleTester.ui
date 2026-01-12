@@ -922,7 +922,7 @@
       <item>
        <widget class="QPushButton" name="TestButton">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>2</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -930,13 +930,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>0</height>
+          <height>23</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>250</width>
-          <height>16777215</height>
+          <height>23</height>
          </size>
         </property>
         <property name="text">
@@ -945,73 +945,31 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="warningLabel">
+       <widget class="QPlainTextEdit" name="warningTextEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>3</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>46</height>
+          <height>28</height>
          </size>
         </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>120</red>
-              <green>120</green>
-              <blue>120</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
+        <property name="styleSheet">
+         <string notr="true">border: none; background-color: transparent;
+color: rgb(255, 0, 0);</string>
         </property>
-        <property name="text">
-         <string notr="true">This is warning text.</string>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::AutoText</enum>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="wordWrap">
+        <property name="readOnly">
          <bool>true</bool>
+        </property>
+        <property name="plainText">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string/>
         </property>
        </widget>
       </item>
@@ -1369,7 +1327,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
         </property>
         <property name="maximumSize">
          <size>
-          <width>250</width>
+          <width>150</width>
           <height>23</height>
          </size>
         </property>
@@ -1478,16 +1436,22 @@ this keeps the clean up from happening so you can more easily see errors.</strin
       </item>
       <item>
        <widget class="QPushButton" name="ZoomIncreaseTarget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>21</width>
           <height>23</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>21</width>
-          <height>23</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -1499,14 +1463,14 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <widget class="QPushButton" name="ZoomDecreaseTarget">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>21</width>
           <height>23</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>21</width>
-          <height>23</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -1548,6 +1512,12 @@ this keeps the clean up from happening so you can more easily see errors.</strin
       <height>23</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>23</height>
+     </size>
+    </property>
     <property name="maximumSize">
      <size>
       <width>21</width>
@@ -1566,6 +1536,12 @@ this keeps the clean up from happening so you can more easily see errors.</strin
       <width>21</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>23</height>
+     </size>
     </property>
     <property name="maximumSize">
      <size>

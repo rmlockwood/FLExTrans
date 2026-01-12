@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.14.3 - 12/10/25 - Ron Lockwood
+#    Fixes #1143. Allow .USFM files as well as .SFM files.
+#
 #   Version 3.14.2 - 12/3/25 - Ron Lockwood
 #    Refixes #1139. Reword the error message.
 #
@@ -156,13 +159,18 @@ class ChapterSelection(object):
         else:
             projectAbbrev = self.importProjectAbbrev  
 
-        path = os.path.join(self.paratextPath, projectAbbrev, '*' + self.bookAbbrev + projectAbbrev + '.SFM')
+        # First try .SFM
+        pattern = '*' + self.bookAbbrev + projectAbbrev + '.SFM'
+        path = os.path.join(self.paratextPath, projectAbbrev, pattern)
         fileList = glob.glob(path)
 
-        if len(fileList) < 1:
-            return ''
-        else:
-            return fileList[0]
+        # If none found, try .USFM
+        if not fileList:
+            pattern = '*' + self.bookAbbrev + projectAbbrev + '.USFM'
+            path = os.path.join(self.paratextPath, projectAbbrev, pattern)
+            fileList = glob.glob(path)
+
+        return fileList[0] if fileList else ''
 
 # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
 # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
@@ -459,14 +467,18 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
         if not fromFLEx:
 
-            # Check if the book exists
-            bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
-            
-            fileList = glob.glob(bookPath)
-            
-            if checkBookPath and len(fileList) < 1:
-                
-                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file at: {bookPath}.").format(bookPath=bookPath))
+            # Check if the book exists: try .SFM first, then .USFM
+            pattern = '*' + bookAbbrev + projectAbbrev + '.SFM'
+            bookPathPattern = os.path.join(projPath, pattern)
+            fileList = glob.glob(bookPathPattern)
+
+            if not fileList:
+                pattern = '*' + bookAbbrev + projectAbbrev + '.USFM'
+                bookPathPattern = os.path.join(projPath, pattern)
+                fileList = glob.glob(bookPathPattern)
+
+            if checkBookPath and not fileList:
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=bookPathPattern))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():

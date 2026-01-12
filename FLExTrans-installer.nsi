@@ -82,6 +82,17 @@ Var /GLOBAL LANGCODE
   Call RIF
 !macroend
 
+; Define a macro for copying transfer rules files based on language
+!macro InstallLocalizedRulesFile DEST_NAME SRC_BASE
+    ${If} $LANGUAGE == ${LANG_GERMAN}
+        File /oname=${DEST_NAME} "${GIT_FOLDER}\${SRC_BASE}_de.t1x"
+    ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+        File /oname=${DEST_NAME} "${GIT_FOLDER}\${SRC_BASE}_es.t1x"
+    ${Else}
+        File /oname=${DEST_NAME} "${GIT_FOLDER}\${SRC_BASE}.t1x"
+    ${EndIf}
+!macroend
+
 ; MUI end ------
 Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
 Name "${PRODUCT_NAME}"
@@ -154,41 +165,51 @@ InitPluginsDir
   ; template project folder
   SetOutPath "${TEMPLATEDIR}\Output"
   File "${GIT_FOLDER}\replace.dix"
-  
+    
+# Transfer rule files for German-Swedish folder
+SetOutPath "${WORKPROJECTSDIR}\German-Swedish"
+; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+!insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
+
+# Transfer rule files for TemplateProject folder
+SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
+; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+!insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
+!insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
+    
+;old
   # Transfer rule files for each language.
   ; First copy them to the install folder
-  SetOutPath "$INSTDIR\install_files"
-  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Swedish_de.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Swedish_es.t1x"
-  
-  ; Then copy them to the right name, depending on install language.
-  ${If} $LANGUAGE == ${LANG_GERMAN}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
-  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
-  ${Else}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
-  ${EndIf}
+;  SetOutPath "$INSTDIR\install_files"
+;  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
+;  File "${GIT_FOLDER}\transfer_rules-Swedish_de.t1x"
+;  File "${GIT_FOLDER}\transfer_rules-Swedish_es.t1x"
+;  ${If} $LANGUAGE == ${LANG_GERMAN}
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
+;  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
+;  ${Else}
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
+;  ${EndIf}
   
   # Sample transfer rule files for each language.
   ; First copy them to the install folder
-  SetOutPath "$INSTDIR\install_files"
-  File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Sample1_de.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Sample1_es.t1x"
+;  SetOutPath "$INSTDIR\install_files"
+;  File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
+;  File "${GIT_FOLDER}\transfer_rules-Sample1_de.t1x"
+;  File "${GIT_FOLDER}\transfer_rules-Sample1_es.t1x"
   
   ; Then copy them to the right name, depending on install language. We only copy the sample rules file to the template project folder.
-  ${If} $LANGUAGE == ${LANG_GERMAN}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
-  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
-  ${Else}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
-  ${EndIf}
+;  ${If} $LANGUAGE == ${LANG_GERMAN}
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+;  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+;  ${Else}
+;    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+;  ${EndIf}
 
   ## Now we overwrite the following files.
   SetOverwrite on
@@ -340,6 +361,11 @@ InitPluginsDir
 
   skip4:
   
+  # Set the folder permission to be writable by all in the Users group
+  # old that didn't seem to work as reported in issue 1125:      nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
+  # version that purported to fix 1125 had 'grant Users', but 'grant "Authenticated Users"' includes 'Users' and is a system managed group
+  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant "Authenticated Users":(OI)(CI)(M) /T /C'
+
   SetOverwrite on
 
   # If we are not installing for English, rename the .ini files appropriately.
@@ -387,10 +413,6 @@ InitPluginsDir
       FindClose $0
 
   ${EndIf}
-
-  # Set the folder permission to be writable by all in the Users group
-  # old that didn't seem to work as reported in issue 1125:      nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
-  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant Users:(OI)(CI)(M) /T /C'
 
   # Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'

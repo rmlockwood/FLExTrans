@@ -5,6 +5,11 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.14.2 - 12/8/25 - Ron Lockwood
+#    Don't save complex form map items that have a zero-length list. This was 
+#    causing problems for phrasal verbs with inflection on the last element. The items
+#    were already in the map from processing for inflection on the first element, but the lists were empty.
+#
 #   Version 3.14.1 - 9/19/25 - Ron Lockwood
 #    Fixes #1074. Support inflection on the first element of a complex form.
 #
@@ -366,29 +371,38 @@ class TextSentence():
     ### Long methods - in alphabetical order
     
     def findComplexForms(self, cmplxFormMap, typesList):
+
         # Loop through the word list
         for wrd in self.__wordList:
+
             if wrd.hasEntries() and wrd.notCompound():
+
                 # Check if we have already found complex forms for this word and cached them
                 if wrd.getEntryHandle() not in cmplxFormMap:
+
                     cmplxEntryTupList = []
 
                     # Loop through the complex entries for this word
                     for cmplxEntry in wrd.getComplexFormEntries():
+
                         # Make sure we have entry references of the right type
                         if cmplxEntry.EntryRefsOS:
+
                             # find the complex entry ref (there could be one or more variant entry refs listed along side the complex entry)
                             for entryRef in cmplxEntry.EntryRefsOS:
+
                                 if entryRef.RefType == 1 and entryRef.ComplexEntryTypesRS: # 1=complex form, 0=variant
 
                                     # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
                                     # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
                                     for complexType in entryRef.ComplexEntryTypesRS:
+
                                         if (typeName := Utils.as_string(complexType.Name)) in typesList:
                                             
                                             # get the component entries
                                             componentEs = []
                                             for cE in entryRef.ComponentLexemesRS:
+
                                                 componentEs.append(cE)
                                             
                                             # Figure out if this type has inflection on the first or second element
@@ -401,8 +415,10 @@ class TextSentence():
                                             # add the complex entry and its components to the list
                                             cmplxEntryTupList.append((cmplxEntry, componentEs, inflectionOnFirstElement))
                     
-                    # Map from an entry's handle # to the complex entry/components tuple                        
-                    cmplxFormMap[wrd.getEntryHandle()] = list(cmplxEntryTupList) # Create a new list in memory
+                    if len(cmplxEntryTupList) > 0:
+
+                        # Map from an entry's handle # to the complex entry/components tuple                        
+                        cmplxFormMap[wrd.getEntryHandle()] = list(cmplxEntryTupList) # Create a new list in memory
                                             
     def modifyList(self, myIndex, count, complexEn, inflectionOnFirstElement):
         componentList = []
