@@ -361,11 +361,6 @@ SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
 
   skip4:
   
-  # Set the folder permission to be writable by all in the Users group
-  # old that didn't seem to work as reported in issue 1125:      nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
-  # version that purported to fix 1125 had 'grant Users', but 'grant "Authenticated Users"' includes 'Users' and is a system managed group
-  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant "Authenticated Users":(OI)(CI)(M) /T /C'
-
   SetOverwrite on
 
   # If we are not installing for English, rename the .ini files appropriately.
@@ -413,6 +408,11 @@ SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
       FindClose $0
 
   ${EndIf}
+
+  # Set the folder permission to be writable by all in the Users group
+  # old that didn't seem to work as reported in issue 1125:      nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
+  # version that purported to fix 1125 had 'grant Users', but 'grant "Authenticated Users"' includes 'Users' and is a system managed group
+  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant "Authenticated Users":(OI)(CI)(M) /T /C'
 
   # Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
