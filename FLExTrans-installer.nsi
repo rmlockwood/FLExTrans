@@ -1,5 +1,5 @@
 !include "StrRep.nsh"
-!include "ReplaceInFile.nsh"
+#!include "ReplaceInFile.nsh"
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
 !include "LangFile.nsh"
@@ -75,12 +75,12 @@ Var /GLOBAL LANGCODE
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "Spanish"
 
-!macro _ReplaceInFile SOURCE_FILE SEARCH_TEXT REPLACEMENT
-  Push "${SOURCE_FILE}"
-  Push "${SEARCH_TEXT}"
-  Push "${REPLACEMENT}"
-  Call RIF
-!macroend
+#!macro _ReplaceInFile SOURCE_FILE SEARCH_TEXT REPLACEMENT
+#  Push "${SOURCE_FILE}"
+#  Push "${SEARCH_TEXT}"
+#  Push "${REPLACEMENT}"
+#  Call RIF
+#!macroend
 
 ; Define a macro for copying transfer rules files based on language
 !macro InstallLocalizedRulesFile DEST_NAME SRC_BASE
@@ -166,16 +166,16 @@ InitPluginsDir
   SetOutPath "${TEMPLATEDIR}\Output"
   File "${GIT_FOLDER}\replace.dix"
     
-# Transfer rule files for German-Swedish folder
-SetOutPath "${WORKPROJECTSDIR}\German-Swedish"
-; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
-!insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
-
-# Transfer rule files for TemplateProject folder
-SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
-; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
-!insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
-!insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
+  # Transfer rule files for German-Swedish folder
+  SetOutPath "${WORKPROJECTSDIR}\German-Swedish"
+  ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+  !insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
+  
+  # Transfer rule files for TemplateProject folder
+  SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
+  ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+  !insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
+  !insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
     
 ;old
   # Transfer rule files for each language.
@@ -289,34 +289,38 @@ SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
 	
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentproject = 'German-FLExTrans-Sample'" "currentproject = '$8'"
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
+    # We use WriteINIStr instead of _ReplaceInFile for better non-admin compatibility
+    WriteINIStr "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject" "'$8'"
+    WriteINIStr "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection" "'$9'"
+#    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentproject = 'German-FLExTrans-Sample'" "currentproject = '$8'"
+#    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
 			
     # Find all collection ini files (e.g. tools.ini)
     skip:
-    FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
-    loop2:
-      StrCmp $4 "" done2
-      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
-      
-		# If the Tools collection doesn't have disablerunall set yet, set it to True
-		${If} $4 == "Tools.ini" 
-		
-			# Get the current disablerunall setting
-			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
-			
-			# If we have no value, set disablerunall to True
-			StrCmp $5 "" 0 skip3
-		
-				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
-
-			skip3:      
-		${EndIf}
-      ${EndIf}
-      FindNext $3 $4
-      Goto loop2
-    done2:
-      FindClose $3
+# Nowadays all projects should have disablerunall set
+#    FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+#    loop2:
+#      StrCmp $4 "" done2
+#      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
+#      
+#		# If the Tools collection doesn't have disablerunall set yet, set it to True
+#		${If} $4 == "Tools.ini" 
+#		
+#			# Get the current disablerunall setting
+#			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
+#			
+#			# If we have no value, set disablerunall to True
+#			StrCmp $5 "" 0 skip3
+#		
+#				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
+#
+#			skip3:      
+#		${EndIf}
+#      ${EndIf}
+#      FindNext $3 $4
+#      Goto loop2
+#    done2:
+#      FindClose $3
     nextfolder:  
     FindNext $0 $1
     Goto loop1
@@ -382,11 +386,34 @@ SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
         
       # Replace collection names that are in collectiontabs (or current) with the language equivalent
       ${If} $LANGUAGE != ${LANG_ENGLISH}
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" "$(Drafting)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Run Testbed" "$(Run_Testbed)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "'Tools'" "'$(Tools)'"  # replace 'Tools' so we don't mistakenly match FlexTools
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Synthesis Test" "$(Synthesis_Test)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
+
+		; 1. Define the file path
+		StrCpy $R0 "${WORKPROJECTSDIR}\$1\Config\flextools.ini"
+
+		; 2. Read the current list from the INI
+		; Format: ['Drafting', 'Run Testbed', 'Tools']
+		ReadINIStr $R1 "$R0" "DEFAULT" "collectiontabs"
+
+		; If the key doesn't exist, $R1 will be empty. 
+		StrCmp $R1 "" done4
+
+		# 3. Perform replacements using the macro 
+		${StrRep} $R1 "$R1" "Drafting" "$(Drafting)"
+		${StrRep} $R1 "$R1" "Run Testbed" "$(Run_Testbed)"
+		${StrRep} $R1 "$R1" "Tools" "$(Tools)"
+		${StrRep} $R1 "$R1" "Synthesis Test" "$(Synthesis_Test)"
+		${StrRep} $R1 "$R1" "Clusters" "$(Clusters)"
+
+		; 4. Write the final modified string back to the file
+		WriteINIStr "$R0" "DEFAULT" "collectiontabs" "$R1"
+
+		done4:
+
+ #       !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" "$(Drafting)"
+ #       !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Run Testbed" "$(Run_Testbed)"
+ #       !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "'Tools'" "'$(Tools)'"  # replace 'Tools' so we don't mistakenly match FlexTools
+ #       !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Synthesis Test" "$(Synthesis_Test)"
+ #       !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
       ${EndIf}
       
 	  # Change the interface language setting
@@ -497,11 +524,35 @@ associate_extension:
   ${EndIf}
   
   # Update the XXE properties file
-  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+  # Define paths
+  StrCpy $R0 "$APPDATA\XMLmind\XMLEditor8\preferences.properties"
+  StrCpy $R1 "$APPDATA\XMLmind\XMLEditor8\prefs_temp.properties"
 
-  # SetOutPath "$APPDATA\XMLmind\XMLEditor8"
-  # File "${GIT_FOLDER}\preferences.properties"
-  # SetOutPath "$INSTDIR"
+  ${If} ${FileExists} "$R0"
+    FileOpen $R2 "$R0" "r"               ; Open original for reading
+    FileOpen $R3 $R1 "w"                 ; Open temp for writing
+    
+    loop_lines:
+      FileRead $R2 $R4                   ; Read one line (up to 1024 chars)
+      IfErrors done_lines
+      
+      # Check if this line contains our target string
+      # If so, replace it using the macro
+      ${StrRep} $R4 "$R4" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+      
+      FileWrite $R3 "$R4"                ; Write the (potentially modified) line
+      Goto loop_lines
+
+    done_lines:
+    FileClose $R3
+    FileClose $R2
+
+    # Copy the temp file back to the original location
+    # This is safer than 'Rename' for non-admins as it only requires Write permission
+    CopyFiles /SILENT "$R1" "$R0"
+    Delete "$R1"
+  ${EndIf}
+#  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
 
   # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
