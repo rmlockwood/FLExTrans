@@ -49,6 +49,7 @@
 #    Initial version.
 #
 #   Classes that model objects for the testbed.
+#   See design diagrams here: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb 
 
 import re
 import os
