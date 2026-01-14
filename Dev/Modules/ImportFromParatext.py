@@ -235,7 +235,7 @@ class Main(QMainWindow):
         self.topWidget2 = self.ui.label
 
         # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.centralwidget, header1TextStr, header2TextStr, 100, self.fillPtxCombo)
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_7, header1TextStr, header2TextStr, 100, self.fillPtxCombo)
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)

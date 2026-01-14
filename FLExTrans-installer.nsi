@@ -346,22 +346,27 @@ SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
   # Install the collection .ini files if they don't exist already.
   SetOverwrite off
 
-  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
-  File "${GIT_FOLDER}\Clusters.ini"
+  FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
+  loop3:
+    StrCmp $1 "" done3
+    StrCmp $1 "." nextfolder3
+    StrCmp $1 ".." nextfolder3
+    
+	SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
 
-  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
-  File "${GIT_FOLDER}\Clusters.ini"
-
+	File "${GIT_FOLDER}\Drafting.ini"
+	File "${GIT_FOLDER}\Run Testbed.ini"
+	File "${GIT_FOLDER}\Tools.ini"
+	File "${GIT_FOLDER}\Synthesis Test.ini"
+	File "${GIT_FOLDER}\FLExTrans.ini"
+	File "${GIT_FOLDER}\Clusters.ini"
+	
+    nextfolder3:  
+    FindNext $0 $1
+    Goto loop3
+  done3:
+    FindClose $0
+	
   skip4:
   
   SetOverwrite on
