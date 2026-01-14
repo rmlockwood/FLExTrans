@@ -166,16 +166,16 @@ InitPluginsDir
   SetOutPath "${TEMPLATEDIR}\Output"
   File "${GIT_FOLDER}\replace.dix"
     
-# Transfer rule files for German-Swedish folder
-SetOutPath "${WORKPROJECTSDIR}\German-Swedish"
-; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
-!insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
-
-# Transfer rule files for TemplateProject folder
-SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
-; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
-!insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
-!insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
+  # Transfer rule files for German-Swedish folder
+  SetOutPath "${WORKPROJECTSDIR}\German-Swedish"
+  ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+  !insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
+  
+  # Transfer rule files for TemplateProject folder
+  SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
+  ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+  !insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
+  !insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
     
 ;old
   # Transfer rule files for each language.
@@ -297,29 +297,30 @@ SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
 			
     # Find all collection ini files (e.g. tools.ini)
     skip:
-    FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
-    loop2:
-      StrCmp $4 "" done2
-      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
-      
-		# If the Tools collection doesn't have disablerunall set yet, set it to True
-		${If} $4 == "Tools.ini" 
-		
-			# Get the current disablerunall setting
-			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
-			
-			# If we have no value, set disablerunall to True
-			StrCmp $5 "" 0 skip3
-		
-				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
-
-			skip3:      
-		${EndIf}
-      ${EndIf}
-      FindNext $3 $4
-      Goto loop2
-    done2:
-      FindClose $3
+# Nowadays all projects should have disablerunall set
+#    FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+#    loop2:
+#      StrCmp $4 "" done2
+#      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
+#      
+#		# If the Tools collection doesn't have disablerunall set yet, set it to True
+#		${If} $4 == "Tools.ini" 
+#		
+#			# Get the current disablerunall setting
+#			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
+#			
+#			# If we have no value, set disablerunall to True
+#			StrCmp $5 "" 0 skip3
+#		
+#				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
+#
+#			skip3:      
+#		${EndIf}
+#      ${EndIf}
+#      FindNext $3 $4
+#      Goto loop2
+#    done2:
+#      FindClose $3
     nextfolder:  
     FindNext $0 $1
     Goto loop1
