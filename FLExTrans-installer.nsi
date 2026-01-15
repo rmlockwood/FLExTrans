@@ -140,7 +140,7 @@ InitPluginsDir
   # Install python 
   MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
         File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe PrependPath=1"
+        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe InstallAllUsers=1 PrependPath=1"
         Goto endPythonSync
   endPythonSync:
   
