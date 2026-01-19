@@ -11,7 +11,6 @@
 !define PRODUCT_WEB_SITE "https://software.sil.org/flextrans"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_VERSION "3.14"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -41,8 +40,8 @@ VIProductVersion 3.14.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_ICON "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
+!define MUI_UNICON "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -505,24 +504,25 @@ Section -AdditionalIcons
 SectionEnd
 
 Section -Post
+  SetRegView 64
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR"
   
   # NEW: Save the FLExTrans data path so the uninstaller can find it
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" "$OUT_FOLDER"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
   
   # Store the identity of the user for the uninstaller
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserSID" "$REAL_USER_SID"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData" "$REAL_USER_APPDATA"
 
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
   
   # Update DisplayIcon to point to the actual folder
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\uninst.exe"
   
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
 Function un.onUninstSuccess
@@ -537,6 +537,8 @@ FunctionEnd
 
 Section Uninstall
 #Take a look here and make sure that you uninstall XXE, ask about git, python and the FLExTools folder.
+  SetRegView 64
+  
   # Read back the saved user info
   ReadRegStr $8 HKLM "${PRODUCT_DIR_REGKEY}" "UserSID"
   ReadRegStr $9 HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData"
@@ -545,6 +547,8 @@ Section Uninstall
   
   # 1. Get the path where we actually installed FLExTrans from the registry
   ReadRegStr $R0 HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" 
+  
+  SetRegView 32
   
   # Note: You'll need to write this "InstallPath" during installation in the Post section
   MessageBox MB_YESNO "Delete the FLExTrans data folder at $R0?" IDNO endFlexDel
@@ -564,8 +568,39 @@ Section Uninstall
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
   MessageBox MB_YESNO "Remove FLExTrans add-ons and preferences from XMLmind?" IDNO skip_xmlmind
-	RMDir /r "$9\XMLmind\XMLEditor8\addon\Apertium*"
-    RMDir /r "$9\XMLmind\XMLEditor8\addon\FLExTrans*"    
+    # Define the base search path
+    StrCpy $R1 "$9\XMLmind\XMLEditor8\addon"
+
+    # Start searching for folders in the addon directory
+    FindFirst $0 $1 "$R1\*.*"
+    loop_addons:
+      StrCmp $1 "" done_addons ; End of folder list
+      
+      # Skip the . and .. directory markers
+      StrCmp $1 "." next_addon
+      StrCmp $1 ".." next_addon
+
+      # Check if the folder name starts with "Apertium"
+      StrCpy $2 $1 8 ; Get first 8 characters
+      StrCmp $2 "Apertium" found_target
+      
+      # Check if the folder name starts with "FLExTrans"
+      StrCpy $2 $1 9 ; Get first 9 characters
+      StrCmp $2 "FLExTrans" found_target
+      
+      Goto next_addon
+
+    found_target:
+      # If we reach here, $1 is a folder name we want to delete.
+      # We combine the base path ($R1) and the folder name ($1) for a full path.
+      RMDir /r "$R1\$1"
+
+    next_addon:
+      FindNext $0 $1
+      Goto loop_addons
+
+    done_addons:
+      FindClose $0
   skip_xmlmind:
 
   # Remove Admin/System level files
@@ -574,7 +609,7 @@ Section Uninstall
   RMDir /r "$INSTDIR"
 
   # Clean up Registry
-  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   
   MessageBox MB_OK "Note: Python, XMLmind XML Editor and the FLExTrans Rule Assistant were installed separately. If you wish to remove them, please use the Windows 'Apps & Features' settings."
@@ -756,4 +791,3 @@ Function .onInit
     ${EndIf}
 	
 FunctionEnd
-
