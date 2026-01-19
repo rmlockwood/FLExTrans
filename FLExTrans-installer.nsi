@@ -514,6 +514,7 @@ Section -Post
   # Store the identity of the user for the uninstaller
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserSID" "$REAL_USER_SID"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData" "$REAL_USER_APPDATA"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserDesktop" "$DESKTOP_FOLDER"
 
   WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -540,6 +541,7 @@ Section Uninstall
   SetRegView 64
   
   # Read back the saved user info
+  ReadRegStr $7 HKLM "${PRODUCT_DIR_REGKEY}" "UserDesktop"
   ReadRegStr $8 HKLM "${PRODUCT_DIR_REGKEY}" "UserSID"
   ReadRegStr $9 HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData"
   
@@ -550,13 +552,19 @@ Section Uninstall
   
   SetRegView 32
   
+  # Check if the requirements file exists before trying to do pip uninstall
+  ${If} ${FileExists} "$R0\requirements.txt"
+    # Use the -y flag to skip the "Are you sure?" confirmation prompt from pip
+    ExecWait 'py -3.11 -m pip uninstall -r "$R0\requirements.txt" -y'
+  ${EndIf}
+  
   # Note: You'll need to write this "InstallPath" during installation in the Post section
   MessageBox MB_YESNO "Delete the FLExTrans data folder at $R0?" IDNO endFlexDel
     RMDir /r "$R0"
   endFlexDel:
 
   # 2. Delete the user-specific shortcut
-  Delete "$DESKTOP_FOLDER\FLExTrans.lnk"
+  Delete "$7\FLExTrans.lnk"
 
   # Remove file associations from the user's registry hive
   DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t1x"
