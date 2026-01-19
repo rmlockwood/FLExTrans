@@ -60,6 +60,9 @@ Var RadioYes
 Var RadioNo
 Var /GLOBAL PRODUCTION_MODE
 Var /GLOBAL LANGCODE
+Var /GLOBAL REAL_USER_APPDATA
+Var /GLOBAL REAL_USER_SID
+Var /GLOBAL DESKTOP_FOLDER
 
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -409,9 +412,6 @@ Section "MainSection" SEC01
   endXXeSync:
     
   # Associate file extensions with XMLmind XML Editor
-  # IMPORTANT: Switch to the logged-in user's context so HKCU points to them
-  SetShellVarContext current
-  
   # Start extension association loop
   StrCpy $R1 ".t1x"
   Goto associate_extension
@@ -429,12 +429,9 @@ next_dix:
   Goto associate_extension
   
 associate_extension:
-  # Create OpenWithList entry
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "a" "xxe.exe"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "MRUList" "a"
-  
-  # Create OpenWithProgids entry
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithProgids" "XXE_XML_File" ""
+  WriteRegStr HKEY_USERS "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "a" "xxe.exe"
+  WriteRegStr HKEY_USERS "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "MRUList" "a"
+  WriteRegStr HKEY_USERS "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithProgids" "XXE_XML_File" ""
   
   # Check which extension we just processed and jump to next one
   ${If} $R1 == ".t1x"
@@ -455,19 +452,19 @@ associate_extension:
   File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
   
   # Install the English one first
-  nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
+  nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   
   # Now overwrite some of the files with the Language specific ones
   ${If} $LANGUAGE == ${LANG_GERMAN}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   ${EndIf}
   
   # Update the XXE properties file
   # Define paths
-  StrCpy $R0 "$APPDATA\XMLmind\XMLEditor8\preferences.properties"
-  StrCpy $R1 "$APPDATA\XMLmind\XMLEditor8\prefs_temp.properties"
+  StrCpy $R0 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\preferences.properties"
+  StrCpy $R1 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\prefs_temp.properties"
 
   ${If} ${FileExists} "$R0"
     FileOpen $R2 "$R0" "r"               ; Open original for reading
@@ -498,11 +495,7 @@ associate_extension:
   # --- Create Desktop Shortcut ---
   
   # Syntax: CreateShortcut "Path\To\Shortcut.lnk" "Path\To\Target.exe" "Parameters" "IconFile" IconIndex
-  CreateShortcut "$DESKTOP\FLExTrans.lnk" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FLExTrans.pyw" "" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FLExTrans.ico"
-
-  # Switch back to all users for other admin tasks
-  SetShellVarContext all
-
+  CreateShortcut "$DESKTOP_FOLDER\FLExTrans.lnk" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" "" "" 0
   # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
 SectionEnd
@@ -518,6 +511,10 @@ Section -Post
   # NEW: Save the FLExTrans data path so the uninstaller can find it
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" "$OUT_FOLDER"
   
+  # Store the identity of the user for the uninstaller
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserSID" "$REAL_USER_SID"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData" "$REAL_USER_APPDATA"
+
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
   
@@ -540,6 +537,10 @@ FunctionEnd
 
 Section Uninstall
 #Take a look here and make sure that you uninstall XXE, ask about git, python and the FLExTools folder.
+  # Read back the saved user info
+  ReadRegStr $8 HKLM "${PRODUCT_DIR_REGKEY}" "UserSID"
+  ReadRegStr $9 HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData"
+  
   Delete "$INSTDIR\uninst.exe"
   
   # 1. Get the path where we actually installed FLExTrans from the registry
@@ -551,9 +552,21 @@ Section Uninstall
   endFlexDel:
 
   # 2. Delete the user-specific shortcut
-  SetShellVarContext current
-  Delete "$DESKTOP\FLExTrans.lnk"
-  SetShellVarContext all
+  Delete "$DESKTOP_FOLDER\FLExTrans.lnk"
+
+  # Remove file associations from the user's registry hive
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t1x"
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t2x"
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t3x"
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.dix"
+  
+  # Notify Windows that icons/associations have changed
+  System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+
+  MessageBox MB_YESNO "Remove FLExTrans add-ons and preferences from XMLmind?" IDNO skip_xmlmind
+	RMDir /r "$9\XMLmind\XMLEditor8\addon\Apertium*"
+    RMDir /r "$9\XMLmind\XMLEditor8\addon\FLExTrans*"    
+  skip_xmlmind:
 
   # Remove Admin/System level files
   Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Uninstall.lnk"
@@ -563,6 +576,9 @@ Section Uninstall
   # Clean up Registry
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  
+  MessageBox MB_OK "Note: Python, XMLmind XML Editor and the FLExTrans Rule Assistant were installed separately. If you wish to remove them, please use the Windows 'Apps & Features' settings."
+  
   SetAutoClose true
 SectionEnd
 
@@ -583,16 +599,24 @@ Function nsDialogsPage
     Var /GLOBAL REAL_USERNAME
     Var /GLOBAL USER_PROFILE_PATH
     Var /GLOBAL DOCS_FOLDER_NAME
+    Var /GLOBAL DESKTOP_FOLDER_NAME
     
     # 1. Get the username of the person who owns explorer.exe (the real logged-in user)
 	nsExec::ExecToStack 'powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p = Get-Process explorer | Select-Object -First 1; (Get-WmiObject Win32_Process -Filter \"ProcessId=$$($$p.Id)\").GetOwner().User"'
     Pop $0  # Return code
     Pop $REAL_USERNAME  # The actual username
     
+	# REMOVE NEWLINE/CARRIAGE RETURN
+	${StrRep} $REAL_USERNAME $REAL_USERNAME "$\r" ""
+	${StrRep} $REAL_USERNAME $REAL_USERNAME "$\n" ""
+  
     ${If} $REAL_USERNAME != ""
         # 2. Build the user profile path
         StrCpy $USER_PROFILE_PATH "C:\Users\$REAL_USERNAME"
-        
+
+		# Get the local appdata path
+        StrCpy $REAL_USER_APPDATA "$USER_PROFILE_PATH\AppData\Roaming"
+
         # 3. Get the full localized path (e.g., C:\Users\Name\Documentos)
 		# Even if redirected to OneDrive, this gives us the "correct" name
 		StrCpy $1 $DOCUMENTS
@@ -601,43 +625,39 @@ Function nsDialogsPage
         ${If} $1 != ""
             ${GetFileName} "$1" $DOCS_FOLDER_NAME
             StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\$DOCS_FOLDER_NAME"
-        ${Else}
-            # Fallback: check which localized folder exists
-            ${If} ${FileExists} "$USER_PROFILE_PATH\Documents\*.*"
-                StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Documents"
-            ${ElseIf} ${FileExists} "$USER_PROFILE_PATH\Documentos\*.*"
-                StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Documentos"
-            ${ElseIf} ${FileExists} "$USER_PROFILE_PATH\Dokumente\*.*"
-                StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Dokumente"
-            ${ElseIf} ${FileExists} "$USER_PROFILE_PATH\Mes documents\*.*"
-                StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Mes documents"
-            ${Else}
-                # Default to Documents
-                StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Documents"
-            ${EndIf}
+		${Else}
+			# Default to Documents
+			StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Documents"
+        ${EndIf}
+		
+        # 3. Get the full localized path (e.g., C:\Users\Name\Schreibtisch)
+		# Even if redirected to OneDrive, this gives us the "correct" name
+		StrCpy $1 $DESKTOP
+        
+        # 4. Extract just the folder name (e.g., "Desktop", "Schreibtisch")
+        ${If} $1 != ""
+            ${GetFileName} "$1" $DESKTOP_FOLDER_NAME
+            StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\$DESKTOP_FOLDER_NAME"
+		${Else}
+			# Default to Documents
+			StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\Desktop"
         ${EndIf}
     ${Else}
-        # Complete fallback if PowerShell failed
-        # Try the registry approach as last resort
-        SetShellVarContext current
-        ReadRegStr $1 HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" "Personal"
-        ReadRegStr $3 HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" "AppData"
-        SetShellVarContext all
-        
-        ${If} $1 != ""
-        ${AndIf} $3 != ""
-            ${GetFileName} "$1" $2
-            GetFullPathName $4 "$3\..\.."
-            StrCpy $OUT_FOLDER "$4\$2"
-        ${Else}
-            # Ultimate fallback
-            StrCpy $OUT_FOLDER "C:\FLExTrans"
-        ${EndIf}
+		# Ultimate fallback
+		StrCpy $OUT_FOLDER "C:\FLExTrans"
     ${EndIf}
-    
+	
     # 5. Create the folder
     CreateDirectory "$OUT_FOLDER"
     
+	# get the SID of the local user for registry work
+	nsExec::ExecToStack 'powershell -NoProfile -ExecutionPolicy Bypass -Command "$$objUser = New-Object System.Security.Principal.NTAccount(\"$REAL_USERNAME\"); $$strSID = $$objUser.Translate([System.Security.Principal.SecurityIdentifier]); $$strSID.Value"'
+	Pop $0
+	Pop $REAL_USER_SID
+
+	${StrRep} $REAL_USER_SID $REAL_USER_SID "$\r" ""
+	${StrRep} $REAL_USER_SID $REAL_USER_SID "$\n" ""
+  
     nsDialogs::Create 1018
     Pop $Dialog
     ${If} $Dialog == error
@@ -657,9 +677,6 @@ FunctionEnd
 
 # Set up the Browse step
 Function Browsedest
-	# 1. Switch to the local user context right before opening the dialog
-	SetShellVarContext current 
-
 	# Use the $OUT_FOLDER we calculated in nsDialogsPage
 	nsDialogs::SelectFolderDialog "Select Destination Folder" "$OUT_FOLDER"
 	Pop $R0
@@ -668,9 +685,6 @@ Function Browsedest
 		StrCpy $OUT_FOLDER $R0
 		${NSD_SetText} $DESTTEXT $OUT_FOLDER
 	${EndIf}
-	
-  # 3. Switch back to 'all' so the rest of the installer stays in Admin mode
-  SetShellVarContext all
 FunctionEnd
 
 LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
