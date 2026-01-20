@@ -4,7 +4,7 @@
 #   3/28/22
 #
 #   Version 3.14.7 - 12/7/25 - Beth Bryson
-#    Adjust GenStc work to use custom list fields.
+#    Adjust sentence generation work to use custom list fields.
 #    Added new functions loadTargetSenseCustomField and loadTargetSenseCustomList
 #    Populate the widget for choosing the Semantic Domains from the values for that
 #    custom list field.  Leaving the call to this function commented out for now because
@@ -1073,8 +1073,8 @@ class Ui_MainWindow(object):
                 
                 # Special radio buttons for production mode output. FLEx=Yes, Paratext=No
                 if widgInfo[WIDGET1_OBJ_NAME] == 'prod_mode_output_flex_yes':
-                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "FLEx"))
-                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "Paratext"))
+                    widgInfo[WIDGET1_OBJ].setText("FLEx")
+                    widgInfo[WIDGET2_OBJ].setText("Paratext")
                 else:
                     widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
                     widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
@@ -1772,48 +1772,48 @@ widgetList = [
     _translate("SettingsGUI", "The path and name of the rule assistant rule definition file."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
-    # DM: testing a GenStc settings module (limit POS, limit stem count)
-    [_translate("SettingsGUI", "GenSentences Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    # DM: testing settings module (limit POS, limit stem count)
+    [_translate("SettingsGUI", "Generate Sentences Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
     [_translate("SettingsGUI", "Gloss Text Output File"), "gloss_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE,\
     _translate("SettingsGUI", "The path and name of the file which holds\nthe extracted text in the source language."), DONT_GIVE_ERROR, FULL_VIEW],\
 
     [_translate("SettingsGUI", "Custom Field for semantic domain"), "genstc_customfield", "", COMBO_BOX, object, object, object, loadTargetSenseCustomField, ReadConfig.GEN_STC_SEM_CUSTOMFIELD,\
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+    "The custom field used to store the semantic domain category.", DONT_GIVE_ERROR, FULL_VIEW],\
     
     [_translate("SettingsGUI", "Limit number of stems generated against"), "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
     _translate("SettingsGUI", "Limit the generation to a specified number of stems.\nStems chosen may seem random."), DONT_GIVE_ERROR, FULL_VIEW],\
 
     [_translate("SettingsGUI", "Limit to specific lemmas in head word"), "genstc_limit_lemma_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_N, \
-    _translate("SettingsGUI", "Limit GenStc word replacememnt to specific lemmas in head word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "Limit sentence generation word replacememnt to specific lemmas in head word."), DONT_GIVE_ERROR, FULL_VIEW],\
     
     [_translate("SettingsGUI", "  Limit to specific POS values in head word"), "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
-    _translate("SettingsGUI", "One or more grammatical categories. GenStc word replacement in head word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in head word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
     
 #    [_translate("SettingsGUI", "  Limit to specific semantic domains in head word"), "genstc_limit_semdomain_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetSenseCustomList, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
 #    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
 #    
     [_translate("SettingsGUI", "  Limit to specific semantic domains in head word"), "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+    "Limit sentence generation to specific semantic domains in head word", DONT_GIVE_ERROR, FULL_VIEW],\
     
     [_translate("SettingsGUI", "Limit to specific lemmas in dependent word 1"), "genstc_limit_lemma_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_1, \
-    _translate("SettingsGUI", "Limit GenStc word replacement to specific lemmas in first dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "Limit sentence generation word replacement to specific lemmas in first dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
     
     [_translate("SettingsGUI", "  Limit to specific POS values in dependent word"), "genstc_limit_pos_1", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_1,\
-    _translate("SettingsGUI", "One or more grammatical categories. GenStc word replacement in dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
     
     [_translate("SettingsGUI", "  Limit to specific semantic domains in dependent word 1"), "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+    "Limit sentence generation to specific semantic domains in dependent word 1", DONT_GIVE_ERROR, FULL_VIEW],\
     
     [_translate("SettingsGUI", "Limit to specific lemmas in dependent word 2"), "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
-    _translate("SettingsGUI", "Limit GenStc word replacememnt to specific lemmas in second dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "Limit sentence generation word replacememnt to specific lemmas in second dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
 
     [_translate("SettingsGUI", "  Limit to specific POS values in second dependent word"), "genstc_limit_pos_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_2,\
-    _translate("SettingsGUI", "One or more grammatical categories. GenStc word replacement in second dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in second dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
 
     [_translate("SettingsGUI", "  Limit to specific semantic domains in dependent word 2"), "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+    "Limit sentence generation to specific semantic domains in dependent word 2", DONT_GIVE_ERROR, FULL_VIEW],\
     #################
 
    [_translate("SettingsGUI", "TreeTran Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
