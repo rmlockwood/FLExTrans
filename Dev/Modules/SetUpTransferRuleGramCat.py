@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.14.3 - 1/20/26 - Ron Lockwood
+#    Added missing transl() around module name.
+#
 #   Version 3.14.2 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -108,8 +111,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.14.2",
+docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
