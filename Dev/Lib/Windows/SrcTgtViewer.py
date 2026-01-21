@@ -15,7 +15,6 @@ class Ui_SrcTgtWindow(object):
     def setupUi(self, SrcTgtWindow):
         SrcTgtWindow.setObjectName("SrcTgtWindow")
         SrcTgtWindow.resize(891, 670)
-        SrcTgtWindow.setWindowTitle("Source/Target Viewer")
         self.centralwidget = QtWidgets.QWidget(SrcTgtWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -145,6 +144,7 @@ class Ui_SrcTgtWindow(object):
 
     def retranslateUi(self, SrcTgtWindow):
         _translate = QtCore.QCoreApplication.translate
+        SrcTgtWindow.setWindowTitle(_translate("SrcTgtWindow", "Source/Target Viewer"))
         self.FontButton.setText(_translate("SrcTgtWindow", "Font"))
         self.SourceRadio.setText(_translate("SrcTgtWindow", "Source"))
         self.TargetRadio.setText(_translate("SrcTgtWindow", "Target"))

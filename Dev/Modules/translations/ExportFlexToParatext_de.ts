@@ -4,17 +4,17 @@
 <context>
     <name>ExportFlexToParatext</name>
     <message>
-      <location filename="../ExportFlexToParatext.py" line="118"/>
-      <source>Export Text from Target FLEx to Paratext</source>
-      <translation>Text aus Ziel-FLEx nach Paratext exportieren</translation>
+        <location filename="../ExportFlexToParatext.py" line="81"/>
+        <source>Export Text from Target FLEx to Paratext</source>
+        <translation>Text aus Ziel-FLEx nach Paratext exportieren</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="78"/>
+        <location filename="../ExportFlexToParatext.py" line="84"/>
         <source>Export one or more texts that contain scripture from the target FLEx project to Paratext.</source>
         <translation>Exportieren Sie einen oder mehrere Texte, die Schrift enthalten, aus dem Ziel-FLEx-Projekt nach Paratext.</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="80"/>
+        <location filename="../ExportFlexToParatext.py" line="86"/>
         <source>Export one or more texts that contain scripture from the target FLEx project to Paratext. The list of possible texts to choose
 from will be filtered according to texts that have a scripture book name or abbreviation in the title plus
 a chapter number or a range of chapter numbers.</source>
@@ -23,47 +23,47 @@ wird nach Texten gefiltert, die einen Namen oder eine Abkürzung eines Schriftbu
 eine Kapitelnummer oder einen Bereich von Kapitelnummern enthalten.</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="104"/>
+        <location filename="../ExportFlexToParatext.py" line="110"/>
         <source>Export from {projectName} to Paratext</source>
         <translation>Exportieren von {projectName} nach Paratext</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="106"/>
+        <location filename="../ExportFlexToParatext.py" line="112"/>
         <source>FLEx project name</source>
         <translation>FLEx-Projektname</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="107"/>
+        <location filename="../ExportFlexToParatext.py" line="113"/>
         <source>Paratext project abbrev.</source>
         <translation>Paratext-Projektabkürzung</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="195"/>
+        <location filename="../ExportFlexToParatext.py" line="201"/>
         <source>{title} not found in the {proj} project.</source>
         <translation>{title} wurde im Projekt {proj} nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="227"/>
+        <location filename="../ExportFlexToParatext.py" line="233"/>
         <source>There was a problem exporting {title} from the {proj} project to {exportProjectAbbrev}.</source>
         <translation>Es gab ein Problem beim Exportieren von {title} aus dem Projekt {proj} nach {exportProjectAbbrev}.</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="300"/>
+        <location filename="../ExportFlexToParatext.py" line="310"/>
         <source>Exporting from the {proj} project...</source>
         <translation>Exportieren aus dem Projekt {proj}...</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="134"/>
+        <location filename="../ExportFlexToParatext.py" line="140"/>
         <source>Export from {selProj} to Paratext</source>
         <translation>Exportiere von {selProj} nach Paratext</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="138"/>
+        <location filename="../ExportFlexToParatext.py" line="144"/>
         <source>Export from multiple FLEx projects to Paratext</source>
         <translation>Exportiere von mehreren FLEx-Projekten nach Paratext</translation>
     </message>
     <message>
-        <location filename="../ExportFlexToParatext.py" line="142"/>
+        <location filename="../ExportFlexToParatext.py" line="148"/>
         <source>Export from {DB} to Paratext</source>
         <translation>Exportiere von {DB} nach Paratext</translation>
     </message>
