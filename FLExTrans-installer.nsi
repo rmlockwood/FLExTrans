@@ -673,18 +673,6 @@ Function nsDialogsPage
 			StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Documents"
         ${EndIf}
 		
-        # 3. Get the full localized path (e.g., C:\Users\Name\Schreibtisch)
-		# Even if redirected to OneDrive, this gives us the "correct" name
-		StrCpy $1 $DESKTOP
-        
-        # 4. Extract just the folder name (e.g., "Desktop", "Schreibtisch")
-        ${If} $1 != ""
-            ${GetFileName} "$1" $DESKTOP_FOLDER_NAME
-            StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\$DESKTOP_FOLDER_NAME"
-		${Else}
-			# Default to Documents
-			StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\Desktop"
-        ${EndIf}
     ${Else}
 		# Ultimate fallback
 		StrCpy $OUT_FOLDER "C:\FLExTrans"
@@ -701,6 +689,47 @@ Function nsDialogsPage
 	${StrRep} $REAL_USER_SID $REAL_USER_SID "$\r" ""
 	${StrRep} $REAL_USER_SID $REAL_USER_SID "$\n" ""
   
+	# 3. Get the full localized path (e.g., C:\Users\Name\Schreibtisch)
+	# Even if redirected to OneDrive, this gives us the "correct" name
+	SetRegView 64
+	ReadRegStr $5 HKU "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" "Desktop"
+	SetRegView 32
+	
+	StrCpy $1 $5
+	StrCpy $DESKTOP_FOLDER $5
+	
+	# 4. Extract just the folder name (e.g., "Desktop", "Schreibtisch")
+	${If} $1 != ""
+		${GetFileName} "$1" $DESKTOP_FOLDER_NAME
+		
+		Push $DESKTOP_FOLDER
+		Push "%USERPROFILE%"
+		Call StrStr
+		Pop $0
+
+		# If the shellfolder path contains USERPROFILE, build the string with our user profile variable
+		${If} $0 != ""
+			StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\$DESKTOP_FOLDER_NAME"
+		${Else}
+			# No %USERPROFILE%, now check for OneDrive
+			Push $DESKTOP_FOLDER
+			Push "OneDrive"
+			Call StrStr
+			Pop $0
+			
+			# No OneDrive
+			${If} $0 == ""
+				# default to Desktop
+				StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\Desktop"
+			${EndIf}
+				
+			# otherwise the whole path is already in the variable $DESKTOP_FOLDER
+		${EndIf}
+	${Else}
+		# default to Desktop
+		StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\Desktop"
+	${EndIf}
+
     nsDialogs::Create 1018
     Pop $Dialog
     ${If} $Dialog == error
@@ -798,4 +827,34 @@ Function .onInit
         StrCpy $LANGCODE "en" ; fallback
     ${EndIf}
 	
+FunctionEnd
+
+; ==========================================================
+; StrStr - Searches for a string within another string
+; Input: Top of stack = string to search for
+;        Second on stack = string to search in
+; Output: Top of stack = result (string from start of match)
+; ==========================================================
+Function StrStr
+  Exch $R1 ; string to search for
+  Exch
+  Exch $R2 ; string to search in
+  Push $R3
+  Push $R4
+  Push $R5
+  StrLen $R3 $R1
+  StrCpy $R4 0
+  loop:
+    StrCpy $R5 $R2 $R3 $R4
+    StrCmp $R5 $R1 done
+    StrCmp $R5 "" done
+    IntOp $R4 $R4 + 1
+    Goto loop
+  done:
+  StrCpy $R1 $R2 "" $R4
+  Pop $R5
+  Pop $R4
+  Pop $R3
+  Pop $R2
+  Exch $R1
 FunctionEnd
