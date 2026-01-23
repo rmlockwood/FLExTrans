@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.10 - 1/23/26 - Ron Lockwood
+#    Fixes #1193. Fixed missing value in message saying how many links were removed.
+#
 #   Version 3.14.9 - 12/15/25 - Ron Lockwood
 #    Fixes #1140. Reduce the unlinked list when a word is checked via the checkbox.
 #
@@ -254,7 +257,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.9",
+        FTM_Version    : "3.14.10",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1684,7 +1687,7 @@ def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, se
        
     elif unlinkCount > 1:
        
-        report.Info(_translate("LinkSenseTool", ' links removed').format(num=str(unlinkCount)))
+        report.Info(_translate("LinkSenseTool", '{num} links removed').format(num=str(unlinkCount)))
                       
 def containsWord(sentHPGlist, word):
     
