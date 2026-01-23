@@ -575,7 +575,7 @@ Section Uninstall
   # Notify Windows that icons/associations have changed
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
-  MessageBox MB_YESNO "Remove FLExTrans add-ons and preferences from XMLmind?" IDNO skip_xmlmind
+  MessageBox MB_YESNO "Remove FLExTrans add-ons and preferences from XMLmind? The XMLmind program itself will remain." IDNO skip_xmlmind
     # Define the base search path
     StrCpy $R1 "$9\XMLmind\XMLEditor8\addon"
 
@@ -620,7 +620,7 @@ Section Uninstall
   DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   
-  MessageBox MB_OK "Note: Python, XMLmind XML Editor and the FLExTrans Rule Assistant were installed separately. If you wish to remove them, please use the Windows 'Apps & Features' settings."
+  MessageBox MB_OK "Note: Python, XMLmind XML Editor and the FLExTrans Rule Assistant were installed separately. If you wish to remove them, please use the Windows 'Installed apps' setting."
   
   SetAutoClose true
 SectionEnd
