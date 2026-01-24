@@ -4,19 +4,24 @@
 <context>
     <name>TestbedLogWindow</name>
     <message>
-      <location filename="../TestbedLog.py" line="77"/>
-      <source>OK</source>
-      <translation>OK</translation>
+        <location filename="../TestbedLog.py" line="77"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
     <message>
-      <location filename="../TestbedLog.py" line="78"/>
-      <source>Edit Testbed</source>
-      <translation>Editar banco de pruebas</translation>
+        <location filename="../TestbedLog.py" line="78"/>
+        <source>Edit Testbed</source>
+        <translation>Editar banco de pruebas</translation>
     </message>
     <message>
-      <location filename="../TestbedLog.py" line="79"/>
-      <source>Font Size:</source>
-      <translation>Tamaño de fuente:</translation>
+        <location filename="../TestbedLog.py" line="79"/>
+        <source>Font Size:</source>
+        <translation>Tamaño de fuente:</translation>
     </message>
-  </context>
+    <message>
+        <location filename="../TestbedLog.py" line="76"/>
+        <source>Testbed Log</source>
+        <translation>Registro del banco de pruebas</translation>
+    </message>
+</context>
 </TS>
