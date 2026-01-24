@@ -4,44 +4,49 @@
 <context>
     <name>Dialog</name>
     <message>
-      <location filename="../NewEntry.py" line="83"/>
-      <source>Lexeme Form</source>
-      <translation>Lexemform</translation>
+        <location filename="../NewEntry.py" line="83"/>
+        <source>Lexeme Form</source>
+        <translation>Lexemform</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="84"/>
-      <source>Morpheme Type</source>
-      <translation>Morphemtyp</translation>
+        <location filename="../NewEntry.py" line="84"/>
+        <source>Morpheme Type</source>
+        <translation>Morphemtyp</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="85"/>
-      <source>Grammatical Category</source>
-      <translation>Grammatische Kategorie</translation>
+        <location filename="../NewEntry.py" line="85"/>
+        <source>Grammatical Category</source>
+        <translation>Grammatische Kategorie</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="92"/>
-      <source>Add an entry to the target lexicon.</source>
-      <translation>Einen Eintrag zum Ziellexikon hinzufügen.</translation>
+        <location filename="../NewEntry.py" line="92"/>
+        <source>Add an entry to the target lexicon.</source>
+        <translation>Einen Eintrag zum Ziellexikon hinzufügen.</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="88"/>
-      <source>OK</source>
-      <translation>OK</translation>
+        <location filename="../NewEntry.py" line="88"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="90"/>
-      <source>Cancel</source>
-      <translation>Abbrechen</translation>
+        <location filename="../NewEntry.py" line="90"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="91"/>
-      <source>Gloss</source>
-      <translation>Glosse</translation>
+        <location filename="../NewEntry.py" line="91"/>
+        <source>Gloss</source>
+        <translation>Glosse</translation>
     </message>
     <message>
-      <location filename="../NewEntry.py" line="93"/>
-      <source>Cluster Projects to Apply to</source>
-      <translation>Cluster-Projekte, auf die angewendet werden soll</translation>
+        <location filename="../NewEntry.py" line="93"/>
+        <source>Cluster Projects to Apply to</source>
+        <translation>Cluster-Projekte, auf die angewendet werden soll</translation>
     </message>
-  </context>
+    <message>
+        <location filename="../NewEntry.py" line="82"/>
+        <source>Add New Target Entry</source>
+        <translation>Neuen Ziel-Eintrag hinzufügen</translation>
+    </message>
+</context>
 </TS>

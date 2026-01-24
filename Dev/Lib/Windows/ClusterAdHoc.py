@@ -16,7 +16,6 @@ class Ui_AdHocMainWindow(object):
         AdHocMainWindow.setObjectName("AdHocMainWindow")
         AdHocMainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
         AdHocMainWindow.resize(472, 433)
-        AdHocMainWindow.setWindowTitle("Add Cluster Ad Hoc Rules")
         AdHocMainWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(AdHocMainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -120,6 +119,7 @@ class Ui_AdHocMainWindow(object):
 
     def retranslateUi(self, AdHocMainWindow):
         _translate = QtCore.QCoreApplication.translate
+        AdHocMainWindow.setWindowTitle(_translate("AdHocMainWindow", "Add Cluster Ad Hoc Rules"))
         self.sourceProjectLabel.setText(_translate("AdHocMainWindow", "Source Project"))
         self.addButton.setText(_translate("AdHocMainWindow", "Add"))
         self.closeButton.setText(_translate("AdHocMainWindow", "Close"))

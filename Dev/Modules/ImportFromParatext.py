@@ -227,10 +227,10 @@ class Main(QMainWindow):
         self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        self.setWindowTitle("Import Paratext Chapters")
+        self.setWindowTitle(_translate("ImportFromParatext", "Import Paratext Chapters"))
 
-        header1TextStr = "FLEx project name"
-        header2TextStr = "Paratext project abbrev."
+        header1TextStr = _translate("ImportFromParatext", "FLEx project name")
+        header2TextStr = _translate("ImportFromParatext", "Paratext project abbrev.")
         self.ptxProjs = ChapterSelection.getParatextProjects()
 
         # Set the top two widgets that need to be disabled
