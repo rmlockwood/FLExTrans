@@ -361,7 +361,7 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2798"/>
         <source>Applied rule </source>
-        <translation>Regla aplicada</translation>
+        <translation>Regla aplicada </translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="3050"/>
