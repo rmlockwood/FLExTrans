@@ -4,6 +4,8 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   26 Jan 2026 rl made it localizable. 
+#
 #   06 Aug 2025 dm generation can now take the same POS in the head and dependent slots. 
 #
 #   15 Jul 2025 dm generation in LWC and target language can now be limited to specific semantic domains. 
@@ -32,32 +34,45 @@
 #    31 May 2023
 #
 
-import re
-import os
-from datetime import datetime
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
+
 from SIL.LCModel import *
 from SIL.LCModel import ICmPossibilityRepository
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from flextoolslib import *
-from flexlibs import FLExProject
 from SIL.LCModel import IMoStemMsa
-from TextClasses import TextSentence, TextWord
 from dataclasses import dataclass
 import ReadConfig
 import Utils
 import InterlinData
 import random
-import itertools
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'GenStc'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'InterlinData', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {
-    FTM_Name: "Generate sentences from model",
-    FTM_Version: "3.10.12",
+    FTM_Name: _translate("GenStc", "Generate Sentences from Model"),
+    FTM_Version: "3.14.1",
     FTM_ModifiesDB: False,
-    FTM_Synopsis: "Iterate over certain POS in a model sentence to produce variations.",
+    FTM_Synopsis: _translate("GenStc", "Iterate over certain grammatical categories in a model sentence to produce variations."),
     FTM_Help: "",
-    FTM_Description: "Put a better description here."
+    FTM_Description: _translate("GenStc", "Iterate over certain grammatical categories in a model sentence to produce variations.")
 }
 #----------------------------------------------------------------
 
@@ -154,7 +169,7 @@ def initializeOutputFile(configMap, report, configKey):
     try:
         return open(filePath, 'w', encoding='utf-8')
     except IOError:
-        report.Error(f'Problem with output file path: {filePath}. Please check configuration.')
+        report.Error(_translate("GenStc", 'Problem with output file path: {filePath}. Please check configuration.').format(filePath=filePath))
         return None
 
 #----------------------------------------------------------------
@@ -170,7 +185,7 @@ def getSourceText(DB, report, configMap):
     sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
     
     if sourceTextName not in sourceTextList:
-        report.Error(f'Text not found: {sourceTextName}')
+        report.Error(_translate("GenStc", 'Text not found: {sourceTextName}').format(sourceTextName=sourceTextName))
         return None
         
     return matchingContentsObjList[sourceTextList.index(sourceTextName)]
@@ -182,7 +197,7 @@ def extractLanguageVariablesOLD(myText, posFocusN, posFocus1, posFocus2, report)
     match_2_lem, match_2_pos = [], []
 
     stcCount = myText.getSentCount()
-    report.Info(f"Found {stcCount} sentences in the text")
+    report.Info(_translate("GenStc", "Found {stcCount} sentences in the text").format(stcCount=stcCount))
 
     for stc in (myText.getSent(i) for i in range(stcCount)):
         wrdList = stc.getWords()
@@ -256,7 +271,7 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
     report.Info(f'match_1_pos: {match_1_pos}')
     report.Info(f'match_2_pos: {match_2_pos}')
     valid_pos = {*match_n_pos, *match_1_pos, *match_2_pos}
-    report.Info(f'valid pos: {valid_pos}')
+    report.Info(_translate("GenStc", "valid pos: {valid_pos}").format(valid_pos=valid_pos))
 
     for entry in DB.LexiconAllEntries():
         lex = (DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)) + '1.1'
@@ -547,14 +562,14 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Initialize settings and files
     posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, customField, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit = setupSettings(configMap, report)
-    report.Info(f"custom field: {customField}")
+    report.Info(_translate("GenStc", "custom field: {customField}").format(customField=customField))
     f_out = initializeOutputFile(configMap, report, ReadConfig.ANALYZED_TEXT_FILE)
     if not f_out:
         return
         
     f_out2 = initializeOutputFile(configMap, report, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE)
     translationFile = bool(f_out2)
-    report.Info(f"Translation file check: {translationFile}")
+    report.Info(_translate("GenStc", "Translation file check: {translationFile}").format(translationFile=translationFile))
 
     # Get source text data
     contents = getSourceText(DB, report, configMap)
@@ -627,7 +642,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Process each sentence
     stcCount = myText.getSentCount()
-    #report.Info(f"Found {stcCount} sentences in the text")
+    report.Info(_translate("GenStc", "Found {stcCount} sentences in the text").format(stcCount=stcCount))
 
     for i in range(stcCount):
         
@@ -713,7 +728,7 @@ def MainFunction(DB, report, modifyAllowed):
     if f_out2:
         f_out2.close()
 
-    report.Info(f"Export of {ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)} complete.")
+    report.Info(_translate("GenStc", "Export of {sourceName} complete.").format(sourceName=ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)))
 
 #----------------------------------------------------------------
 # FlexTools Module Setup
