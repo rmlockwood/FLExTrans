@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->07 October 2025</date
+>27 January 2026</date
 ><version
 >3.14</version
 ><contents
@@ -364,7 +364,7 @@ type="tFilename"
 ><li
 >Double-click on the file <object
 type="tBold"
->FlexTools.vbs</object
+>FLExTrans.vbs</object
 > (a Visual Basic script file).</li
 ><li
 >It should look like <exampleRef
@@ -1604,13 +1604,13 @@ id="sExportUnlinked"
 ><secTitle
 >Export Unlinked Senses</secTitle
 ><p
->Use this check box to export a list of unlinked senses to a file (after clicking OK) that may be useful when asking a colleague to provide the correct target words for the given source word. The results pane will tell you where the file is and its name. The file is in HTML format.  To save it as a file that a colleague can edit, open it in a word processor (e.g., Word or LibreOffice) and save it as a document.  After the colleague returns the completed file, it may be necessary to create new <object
+>Use this check box to export a list of unlinked senses to a file (after clicking OK) that may be useful when asking a colleague to provide the correct target words for the given source word. The results pane will tell you where the file is and its name. The file is in HTML format. To save it as a file that a colleague can edit, open it in a word processor (e.g., Word or LibreOffice) and save it as a document. After the colleague returns the completed file, it may be necessary to create new <object
 type="tFlexx"
 ></object
 > entries and use the <object
 type="tSenseLinker"
 ></object
->. If Proper nouns don't need to be included, check the box Hide Proper Nouns before exporting. </p
+>. If Proper nouns don't need to be included, check the box Hide Proper Nouns before exporting.</p
 ></section3
 ><section3
 id="sSenses2Link"
@@ -7929,7 +7929,7 @@ type="tFilename"
 ><li
 >Double-click on the file <object
 type="tBold"
->FlexTools.vbs</object
+>FLExTrans.vbs</object
 > (a Visual Basic script file).</li
 ><li
 >The <object
