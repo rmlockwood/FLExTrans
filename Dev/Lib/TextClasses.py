@@ -28,6 +28,9 @@
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
+#   Version 3.12.2.1 - 2/18/25 - David McKean
+#    Edit TextWord class to function with GenStc.py
+#
 #   Version 3.12.2 - 2/17/25 - Ron Lockwood
 #    Better handling of angle brackets. Improved escaping reserved Apertium characters
 #    by making sure the character is not already escaped. This avoids double-escaping.
@@ -640,6 +643,10 @@ class TextWord():
         self.__stemFeatAbbrList = []
         self.firstElemTypesList = []
         self.secondElemTypesList = []
+        # For GenStc work
+        self.__ignoreInflClass = True
+        self.__ignoreStemFeatures = True
+        self.__inflClassList = []
     def addAffix(self, myObj):
         self.addPlainTextAffix(Utils.as_string(myObj))
     def addAffixesFromList(self, strList):
@@ -651,6 +658,8 @@ class TextWord():
         self.__inflFeatAbbrevsList.append([]) # create an empty list
     def addFinalPunc(self, myStr):
         self.__finalPunc += self.escapeReservedApertChars(myStr)
+    def addInflClass(self, inflClasses):
+        self.__inflClassList.append(inflClasses)
     def addInflFeatures(self, inflFeatAbbrevs):
         self.__inflFeatAbbrevsList[-1] = inflFeatAbbrevs # add to last slot
     def addInitialPunc(self, myStr):
@@ -707,6 +716,7 @@ class TextWord():
         # Start with POS. <sent> words are special, no POS
         if not self.isSentPunctutationWord():
             symbols = [self.getPOS(i)]
+
         # Then inflection class
         symbols += self.getInflClass(i)
         # Then stem features
@@ -743,12 +753,15 @@ class TextWord():
                 return Utils.getHeadwordStr(self.__eList[-1])
         return ""
     def getInflClass(self, i):
-        if self.hasSenses() and i < len(self.__senseList):
-            if mySense := self.__senseList[i]:
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                if msa.InflectionClassRA:
-                    return [Utils.as_string(msa.InflectionClassRA.Abbreviation)]
-        return []
+        if self.__ignoreInflClass:
+            if self.hasSenses() and i < len(self.__senseList):
+                if mySense := self.__senseList[i]:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                    if msa.InflectionClassRA:
+                        return [Utils.as_string(msa.InflectionClassRA.Abbreviation)]
+            return []
+        
+        return self.__inflClassList
     def getInflFeatures(self, i):
         # Get any features that come from irregularly inflected forms   
         if i < len(self.__inflFeatAbbrevsList):
@@ -772,16 +785,18 @@ class TextWord():
             return self.__senseList[i]
         return None
     def getStemFeatures(self, i):
-        if self.hasSenses() and i < len(self.__senseList):
-            if mySense := self.__senseList[i]:
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                if msa.MsFeaturesOA:
-                    # if we already have a populated list, we don't need to do it again.
-                    if len(self.__stemFeatAbbrList) == 0:
-                        # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
-                        Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
-                    return self.getFeatures(self.__stemFeatAbbrList)
-        return []
+        if self.__ignoreStemFeatures:
+            if self.hasSenses() and i < len(self.__senseList):
+                if mySense := self.__senseList[i]:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                    if msa.MsFeaturesOA:
+                        # if we already have a populated list, we don't need to do it again.
+                        if len(self.__stemFeatAbbrList) == 0:
+                            # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
+                            Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+                        return self.getFeatures(self.__stemFeatAbbrList)
+            return []
+        return self.getFeatures(self.__stemFeatAbbrList)
     def getSurfaceForm(self):
         return self.__surfaceForm
     def getSurfaceFormWithVerseNum(self):
@@ -943,6 +958,14 @@ class TextWord():
         self.__componentList = cList
     def setGuid(self, myGuid):
         self.__guid = myGuid
+    def setInflClass(self, inflClass): 
+        self.__inflClassList = [inflClass]
+    def setIgnoreInflectionClass(self, flag):
+        self.__ignoreInflClass = flag
+    def setIgnoreStemFeatures(self, flag):
+        self.__ignoreStemFeatures = flag
+    def setStemFeatAbbrevList(self, stemList):
+        self.__stemFeatAbbrList = stemList
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):

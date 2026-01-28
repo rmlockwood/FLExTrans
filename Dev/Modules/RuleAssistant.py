@@ -107,11 +107,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
+descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
         FTM_Version    : "3.14.5",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
+        FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
         FTM_Description:    descr}
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.14.3 - 1/21/26 - Ron Lockwood
+#    Fixes #1186. Fix parent window passed into init Cluster Widgets.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -187,7 +190,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -224,10 +227,10 @@ class Main(QMainWindow):
         self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        self.setWindowTitle("Import Paratext Chapters")
+        self.setWindowTitle(_translate("ImportFromParatext", "Import Paratext Chapters"))
 
-        header1TextStr = "FLEx project name"
-        header2TextStr = "Paratext project abbrev."
+        header1TextStr = _translate("ImportFromParatext", "FLEx project name")
+        header2TextStr = _translate("ImportFromParatext", "Paratext project abbrev.")
         self.ptxProjs = ChapterSelection.getParatextProjects()
 
         # Set the top two widgets that need to be disabled

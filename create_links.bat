@@ -20,10 +20,6 @@ REM Under this you would see folders like FlexTools, WorkProjects, etc.
 REM The symbolic links (that point back to the repo files) will be created here.
 set testing_folder=C:\Users\<User>\Documents\FLExTrans
 
-REM Ron's paths
-REM set testing_folder="C:\Data\FLExTrans\Dev\Active Projects"
-REM set git_repo=c:\users\rlboo\GitHub\flextrans
-
 REM add to the paths
 set modules_ft=%testing_folder%\FlexTools\Modules\FLExTrans
 set git_dev=%git_repo%\Dev

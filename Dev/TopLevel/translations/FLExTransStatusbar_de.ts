@@ -5,8 +5,8 @@
     <name>FLExTransStatusbar</name>
     <message>
         <location filename="../FLExTransStatusbar.py" line="49"/>
-        <source>  Work Project: {project}    Source Text: {source_text}</source>
-        <translation>  Arbeitsprojekt: {project}    Quelltext: {source_text}</translation>
+        <source>  Work Project: {project}    Source Text: </source>
+        <translation>  Arbeitsprojekt: {project}    Quelltext: </translation>
     </message>
 </context>
 </TS>

@@ -16,7 +16,6 @@ class Ui_CatsAndAttribsWindow(object):
         CatsAndAttribsWindow.setObjectName("CatsAndAttribsWindow")
         CatsAndAttribsWindow.setWindowModality(QtCore.Qt.ApplicationModal)
         CatsAndAttribsWindow.resize(414, 262)
-        CatsAndAttribsWindow.setWindowTitle("Set Up Transfer Rule Categories & Attributes")
         CatsAndAttribsWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(CatsAndAttribsWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -74,6 +73,7 @@ class Ui_CatsAndAttribsWindow(object):
 
     def retranslateUi(self, CatsAndAttribsWindow):
         _translate = QtCore.QCoreApplication.translate
+        CatsAndAttribsWindow.setWindowTitle(_translate("CatsAndAttribsWindow", "Set Up Transfer Rule Categories & Attributes"))
         self.overrideFeaturesCheckbox.setText(_translate("CatsAndAttribsWindow", "Overwrite existing inflection feature attributes"))
         self.PopulateFeaturesCheckbox.setText(_translate("CatsAndAttribsWindow", "Populate inflection features as attributes"))
         self.OKButton.setText(_translate("CatsAndAttribsWindow", "OK"))
