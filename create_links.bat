@@ -1,24 +1,24 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Set the variables testing_folder and git_repo to the appropriate directories on your machine.
-
-REM testing_folder points to a folder inside of where you have FLExTrans installed for testing your development work.
-REM Under this you would see folders like FlexTools, Workprojects, etc.
-
-REM git_repo points to the FLExTrans github repo folder. Under this you would see folders like Apertium4Windows, Dev, Doc, etc.
-REM This path must not have any spaces in it (in order for the symbolic linking to work).
+REM Set the variables git_repo  and testing_folder (below) to the appropriate directories on your machine.
+REM If the path has spaces in it (e.g., in one of the folder names), the linking will fail, and you'll 
+REM need to put your files into a path that doesn't have spaces in it.
 
 REM You will probably need to run this .bat file "as Administrator"
 REM This script now deletes all symbolic links in each folder before recreating them.
 
-REM To get the translation binaries, create a translations folder under FlexTools\Modules\FLExTrans
+REM To get the localized binaries, create a translations folder under FlexTools\Modules\FLExTrans
 REM Then run this script to get links to all the translation binary files.
 
-REM set testing_folder=C:\Users\<user>\Documents\FLExTrans
-REM set git_repo=C:\Users\<user>\Documents\GitHub\FLExTrans
-set testing_folder="C:\Data\FLExTrans\Dev\Active Projects"
-set git_repo=c:\users\rlboo\GitHub\flextrans
+REM This is your GitHub repo, where your source files are
+REM Under this you would see folders like Apertium4Windows, Dev, Doc, etc.
+set git_repo=C:\Users\<User>\Documents\GitHub\FLExTrans
+
+REM This is the folder where you have your installation for testing.
+REM Under this you would see folders like FlexTools, WorkProjects, etc.
+REM The symbolic links (that point back to the repo files) will be created here.
+set testing_folder=C:\Users\<User>\Documents\FLExTrans
 
 REM add to the paths
 set modules_ft=%testing_folder%\FlexTools\Modules\FLExTrans
