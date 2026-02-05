@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.15 - 2/5/26 - Ron Lockwood
+#    Fixes #1071. Change drives before the cd command in the make batch file.
+#
 #   Version 3.14.4 - 10/10/25 - Ron Lockwood
 #    Fixes #1075. Give an error if the transfer rules file doesn't exist.
 #
@@ -108,7 +111,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -400,10 +403,14 @@ def run_makefile(absPathToBuildFolder, report):
     # set path to nothing
     outStr += f'set PATH=""\n'
 
+    # Extract drive letter and switch to it if the path is on a different drive
+    drive_letter = os.path.splitdrive(absPathToBuildFolder)[0]
+    if drive_letter:
+        outStr += f'{drive_letter}\n'
+
     # Put quotes around the path in case there's a space
     outStr += f'cd "{absPathToBuildFolder}"\n'
 
-    #fullPathErrFile = os.path.join(absPathToBuildFolder, APERTIUM_ERROR_FILE)
     outStr += f'"{FTPaths.MAKE_EXE}" 2>"{APERTIUM_ERROR_FILE}"\n'
 
     f.write(outStr)
