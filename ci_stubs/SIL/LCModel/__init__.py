@@ -63,3 +63,7 @@ class ITextRepository(ILcmObject):
 
 class IMoInflClassRepository(ILcmObject):
     pass
+
+class FsClosedFeatureTags:
+    """Mock FsClosedFeatureTags - contains constants for closed feature tags"""
+    pass
