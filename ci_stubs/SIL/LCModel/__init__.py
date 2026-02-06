@@ -40,6 +40,9 @@ class IFsComplexValue(ILcmObject):
 class IFsClosedValue(ILcmObject):
     pass
 
+class IFsClosedFeature(ILcmObject):
+    pass
+
 class IFsClosedFeatureRepository(ILcmObject):
     pass
 
