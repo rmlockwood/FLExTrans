@@ -11,3 +11,7 @@ class FLExProject:
 def AllProjectNames():
     # Return empty list for CI/tests
     return []
+
+def FWProjectsDir():
+    # Return empty string for CI/tests
+    return ""

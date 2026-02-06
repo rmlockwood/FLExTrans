@@ -57,3 +57,6 @@ class ICmObjectRepository(ILcmObject):
 
 class ITextRepository(ILcmObject):
     pass
+
+class IMoInflClassRepository(ILcmObject):
+    pass
