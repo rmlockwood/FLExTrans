@@ -7,7 +7,18 @@ class QWidget:
 
 class QApplication(QWidget):
     """Mock QApplication"""
-    pass
+    _instance = None
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        QApplication._instance = self
+    
+    @staticmethod
+    def instance():
+        """Return singleton instance - create one if needed for CI/tests"""
+        if QApplication._instance is None:
+            QApplication._instance = QApplication()
+        return QApplication._instance
 
 class QMainWindow(QWidget):
     """Mock QMainWindow"""
