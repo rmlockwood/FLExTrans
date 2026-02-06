@@ -19,7 +19,7 @@ Do these things when making a new release (when a beta release is not already se
 -Test the install
 
 Do these things when you are going live with the release
-========================================================
+=========================================================
 -Make a new .download_info file changing the relevant data. 3 changes.
 -Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
 -Create the release in Git with the new version string. 
