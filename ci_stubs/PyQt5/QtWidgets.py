@@ -110,3 +110,12 @@ class QToolTip:
 class QStyledItemDelegate:
     """Mock QStyledItemDelegate"""
     pass
+
+class QGridLayout(QLayout):
+    """Mock QGridLayout"""
+    pass
+
+class QSizePolicy:
+    """Mock QSizePolicy"""
+    def __init__(self, horizontal=None, vertical=None):
+        pass
