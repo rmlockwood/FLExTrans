@@ -110,32 +110,7 @@
 #   Version 3.10 - 1/4/24 - Ron Lockwood
 #    Fixes #536. support . for chapter verse separator. Make all between \xt and \x* the analysis WS.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.2 - 5/3/23 - Ron Lockwood
-#    Refresh the status bar if they chose to use the new text as the active text.
-#
-#   Version 3.8.1 - 5/3/23 - Ron Lockwood
-#    Put the paragraph mark after section markers and quote markes that have a number (e.g. q1)
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.7.5 - 3/1/23 - Ron Lockwood
-#    Determine uppercase for the section mark feature by looking for the first
-#    non-blank vernacular segment.
-#
-#   Version 3.7.4 - 2/28/23 - Ron Lockwood
-#    Put section marks after verses and quote markers
-#
-#   Version 3.7.3 - 1/30/23 - Ron Lockwood
-#    Restructured to put common init and exit code into ChapterSelection.py
-#    Store export project and import project as separate settings.
-#
-#   Version 3.7.2 - 1/25/23 - Ron Lockwood
-#    Fixes #173 and #190. Give user choice to exclude \x..\x* and \r... Handle
-#    verse bridges like \v 3-4. Handle \vp 3-4 or \vp 2
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 1/13/25
 #

@@ -72,33 +72,7 @@
 #    Fixes #531. When replacing sentence punctuation lexical units with only the punctuation,
 #    account for the fact that failed synthesis words will also have ^ in the string. Fixed the regex.
 #
-#   Version 3.9.3 - 7/26/23 - Ron Lockwood
-#    Give warnings from GenerateHCConfig. 
-#
-#   Version 3.9.2 - 7/19/23 - Ron Lockwood
-#    Fixes #464. Support a new module that does either kind of synthesis by calling 
-#    the appropriate module. 
-#
-#   Version 3.9.1 - 6/26/23 - Ron Lockwood
-#    Updated module description. Also output the name of the created synthesis file.
-#
-#   Version 3.9 - 6/2/23 - Ron Lockwood
-#    Support tracing of HermitCrab synthesis
-#
-#   Version 3.8.4 - 5/3/23 - Ron Lockwood
-#    Better error handling.
-#
-#   Version 3.8.3 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.2 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8.1 - 4/8/23 - Ron Lockwood
-#    Handle synthesis errors in multi-word results.
-#
-#   Version 3.8 - 3/8/23 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Synthesize using Hermit Crab.
 #

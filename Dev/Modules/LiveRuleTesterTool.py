@@ -183,64 +183,7 @@
 #   Version 3.10.1 - 1/6/2024 - Ron Lockwood
 #    Fixes #533. Recheck the words that were checked on closing the tester.
 #
-#   Version 3.10 - 12/28/23 - Ron Lockwood
-#    Fixes #518. Show the data stream for the checked boxes after rebuilding the
-#    bilingual lexicon.
-#
-#   Version 3.9.1 - 6/3/23 - Ron Lockwood
-#    Fixes #442. Force the rules to be renumbered when restoring checked rules.
-#
-#   Version 3.9 - 6/2/23 - Ron Lockwood
-#    Support tracing of HermitCrab synthesis
-#
-#   Version 3.8.8 - 4/28/23 - Ron Lockwood
-#    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
-#
-#   Version 3.8.7 - 4/25/23 - Ron Lockwood
-#    Handle blank HermitCrab config path in settings.
-#
-#   Version 3.8.6 - 4/21/23 - Ron Lockwood
-#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
-#    collects all the interlinear text names. Removed fallback to use scripture text names.
-#
-#   Version 3.8.5 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.4 - 4/20/23 - Ron Lockwood
-#    Use Status Bar callback function
-#
-#   Version 3.8.3 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8.2 - 4/15/23 - Ron Lockwood
-#    Fixes #391. Save/restore which transfer rules were checked.
-#
-#   Version 3.8.1 - 4/14/23 - Ron Lockwood
-#    Save/restore which words were checked on the Select Words tab when Rebuild Bil. Lex. button is pushed.
-#
-#   Version 3.8 - 4/4/23 - Ron Lockwood
-#    Support HermitCrab Synthesis.
-#
-#   Version 3.7.16 - 2/25/23 - Ron Lockwood
-#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
-#
-#   Version 3.7.15 - 2/7/23 - Ron Lockwood
-#    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
-#    dictionary. This allows them to be deleted by default, or they can be overridden by
-#    replacement file entries.
-#    Handle a target word that is now empty. We now show **none** on the tooltip.
-#
-#   Version 3.7.14 - 1/10/23 - Ron Lockwood
-#    Show log file output in colored format. Also filter out unneeded information.
-#    Fixes #162 and #320. Also widened yellow log output area.
-#
-#   Version 3.7.13 - 1/9/23 - Ron Lockwood
-#    Fix to bug introduce in last version. Default last sentence # to -1 so no
-#    indexes get set initially.
-#
-#   Version 3.7.12 - 1/7/23 - Ron Lockwood
-#    Change the way we save the last sentence # selected. Use a class variable to
-#    keep track of it. Fixes #370.
+#   2023 version history removed on 2/6/26
 #
 #   Earlier version history removed on 2/4/25.
 #

@@ -54,18 +54,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9.1 - 8/17/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.1 - 4/21/23 - Ron Lockwood
-#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
-#    collects all the interlinear text names. Removed fallback to use scripture text names.
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/10/25
 #

@@ -32,20 +32,7 @@
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
-#   Version 3.10 - 12/28/23 - Ron Lockwood
-#    Fixes #513. Use text edit control instead of web view to prevent crashing.
-#
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.7.4 - 1/10/23 - Ron Lockwood
-#    Renamed some functions to be camel case.
-#
-#   Version 3.7.3 - 1/8/23 - Ron Lockwood
-#    Fixed bug in last fix. Don't require advance transfer file to be there.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/10/25
 #

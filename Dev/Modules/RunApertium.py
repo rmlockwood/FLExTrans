@@ -48,19 +48,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.1 - 5/1/23 - Ron Lockwood
-#    Set the modified date of the internally used tr1.t1x file to be the same as
-#    the transfer_rules.t1x (or whatever the user specified) so that the transfer rules are
-#    only recompiled when the rules are out of date.
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.7.1 - 2/25/23 - Ron Lockwood
-#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/5/25
 #

@@ -71,45 +71,7 @@
 #   Version 3.10 - 1/1/24 - Ron Lockwood
 #    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
 #
-#   Version 3.9.4 - 12/9/23 - Ron Lockwood
-#    Use Utils version of get_feat_abbr_list. Re-indent some code.
-#
-#   Version 3.9.3 - 12/6/23 - Ron Lockwood
-#    Fixes #517. Transfer \\nd and similar instead of interpreting as a newline.
-#
-#   Version 3.9.2 - 9/1/23 - Ron Lockwood
-#    Fixes #492. Gracefully fail when HC master file setting is blank.
-#
-#   Version 3.9.1 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.6 - 5/9/23 - Ron Lockwood
-#    Put out the sense # for variants when doing HermitCrab synthesis.
-#
-#   Version 3.8.5 - 5/3/23 - Ron Lockwood
-#    Fixed bug in convert function where 'punctuation' at the end of a line wasn't carrying over
-#    to the next line to become pre-punctuation for the first word.
-#
-#   Version 3.8.4 - 4/28/23 - Ron Lockwood
-#    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
-#
-#   Version 3.8.3 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.2 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8.1 - 4/7/23 - Ron Lockwood
-#    Change module name from ...STAMP... to ...Synthesizer...
-#
-#   Version 3.8 - 4/4/23 - Ron Lockwood
-#    Support HermitCrab Synthesis.
-#
-#   Version 3.7.2 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/10/25
 #

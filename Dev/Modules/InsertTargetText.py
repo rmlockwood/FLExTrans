@@ -50,11 +50,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/5/25
 #

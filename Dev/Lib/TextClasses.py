@@ -67,29 +67,7 @@
 #   Version 3.10 - 1/1/24 - Ron Lockwood
 #    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
 #
-#   Version 3.9.2 - 8/17/23 - Ron Lockwood
-#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.1 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.8.3 - 5/5/23 - Ron Lockwood
-#    Add a column to the table to show the verse number if it precedes a word. To do this a new class was added
-#    which encapsulates the Link class and adds the verse number attribute.
-#
-#   Version 3.8.2 - 5/3/23 - Ron Lockwood
-#    Don't substitute problem characters if it's a punctuation word.
-#
-#   Version 3.8.1 - 4/27/23 - Ron Lockwood
-#    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
-#    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
-#    for the gloss map and once for the building of the linking objects.
-#
-#   Version 3.8 - 4/18/23 - Ron Lockwood
-#    Allow more than 1 word between complex form components. For now allow up to 4.
-#
-#   Version 3.7 - 12/24/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Classes that model text objects from whole text down to word.
 
