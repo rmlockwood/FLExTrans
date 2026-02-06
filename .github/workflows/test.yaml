@@ -25,6 +25,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: pip install regex
       - name: test
         env:
           PYTHONPATH: ${{ github.workspace }}\ci_stubs;${{ env.PYTHONPATH }}
