@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -88,13 +91,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {
-    FTM_Name: _translate("StartTestbed", "Start Testbed"),
-    FTM_Version: "3.14.1",
-    FTM_ModifiesDB: False,
-    FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
-    FTM_Help: "",
-    FTM_Description: _translate(
+docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
+        FTM_Version: "3.15",
+        FTM_ModifiesDB: False,
+        FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
+        FTM_Help: "",
+        FTM_Description: _translate(
         "StartTestbed",
         """
         Initialize the testbed log and create source text from the testbed.

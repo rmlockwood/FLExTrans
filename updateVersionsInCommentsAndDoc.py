@@ -5,11 +5,11 @@ import re
 
 # Define the new version comment and version string
 new_version_comment = \
-"""#   Version 3.13 - 3/10/25 - Ron Lockwood
-#    Bumped to 3.13.
+"""#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
 #
 """
-new_version_string = 'FTM_Version    : "3.13",'
+new_version_string = 'FTM_Version    : "3.15",'
 
 # Define the regex patterns to match the version comment and FTM_Version line
 version_comment_pattern = re.compile(r'#\s+Version\s+.*\n#\s+.*\n#')

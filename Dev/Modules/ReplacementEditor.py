@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -81,13 +84,12 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 # libraries that we will load down in the main function
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
-docs = {
-    FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
-    FTM_Version:     "3.14.2",
-    FTM_ModifiesDB:  False,
-    FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
-    FTM_Help:        "",
-    FTM_Description: _translate("ReplacementEditor", 
+docs = {FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
+        FTM_Version:     "3.15",
+        FTM_ModifiesDB:  False,
+        FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
+        FTM_Help:        "",
+        FTM_Description: _translate("ReplacementEditor", 
 """This module provides an interface for editing the replacement dictionary
 which allows you to override the links created by the {linkSenseToolModule}
 in the presence of particular affixes. For example, if you have a noun that
