@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -69,7 +72,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",

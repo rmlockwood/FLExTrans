@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.3 - 10/2/25 - Ron Lockwood
 #    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
 #    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
@@ -65,41 +68,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9.4 - 11/22/23 - Ron Lockwood
-#    Ignore allomorphs marked as abstract. Also big changes to support required
-#    features which are treated kind of like stem names. Look through all affixes to
-#    see if required features are used and save unique sets of them. For each affix allomoprh
-#    that matches a required features set, label with a morpheme property. Lastly,
-#    affix allomoprhs that have the required features get environments with the morpheme property.
-#    this change also required saving all affixes to a list for later processing after the rest of
-#    the entries. Fixes #507 and #516.
-#
-#   Version 3.9.3 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.2 - 7/19/23 - Ron Lockwood
-#    Fixes #464. Support a new module that does either kind of synthesis by calling 
-#    the appropriate module. 
-#
-#   Version 3.9.1 - 6/26/23 - Ron Lockwood
-#    Updated module description. Also output the name of the created synthesis file.
-#
-#   Version 3.9 - 6/19/23 - Ron Lockwood
-#    Fixes #444. Skip Affix Process 'allomorphs'. They are only for HermitCrab.
-#
-#   Version 3.8.1 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.7.4 - 2/6/23 - Ron Lockwood
-#    Handle inflection sub-classes. List them all in the .dec file and add all sub-classes
-#    as environments for an affix when the parent class applies.
-#
-#   Version 3.7.3 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#    Also fix for circumfix - needed to check for 'suffix' not SUFFIX_TYPE
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/1/25
 #
@@ -210,7 +179,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",

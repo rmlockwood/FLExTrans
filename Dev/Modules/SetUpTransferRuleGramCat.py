@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.3 - 1/20/26 - Ron Lockwood
 #    Added missing transl() around module name.
 #
@@ -38,25 +41,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9.1 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.2 - 5/9/23 - Ron Lockwood
-#    Don't warn if a category name has a space. When writing the corresponding
-#    inflection class, convert the spaces to underscores.
-#
-#   Version 3.8.1 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8 - 4/18/23 - Ron Lockwood
-#    Description grammatical correction.
-#
-#   Version 3.7.2 - 1/5/23 - Ron Lockwood
-#    Fixes #229. Slots, features and classes now converted to attributes in the
-#    transfer rule file. The user can choose which one and whether to override.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/10/25
 #
@@ -112,7 +97,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",

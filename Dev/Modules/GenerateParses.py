@@ -14,6 +14,9 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -95,7 +98,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("GenerateParses", "Generate All Parses"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
         FTM_Help       : "",

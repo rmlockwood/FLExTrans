@@ -36,17 +36,7 @@
 #   Version 3.10.5 - 7/13/24 - Ron Lockwood
 #    Fixes #668. The N.N wasn't being shown in the tooltip. Show it always.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Fixes #476. Remove the EOL stuff we get from HermitCrab.
-#
-#   Version 3.7.2 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#
-#   Version 3.7.1 - 1/10/23 - Ron Lockwood
-#    Renamed some functions to be camel case. Also added common function processAdvancedResults.
-#
-#   Version 3.7 - 12/24/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Classes that model objects for the testbed.
 #   See design diagrams here: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb 

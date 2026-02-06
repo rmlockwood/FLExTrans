@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.2 - 8/17/25 - Ron Lockwood
 #    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
 #
@@ -62,7 +65,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),
         FTM_Help       : "",

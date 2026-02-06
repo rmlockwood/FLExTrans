@@ -60,18 +60,7 @@
 #   Version 3.10 - 3/13/24 - Ron Lockwood
 #    Support Paratext lexicon import.
 #
-#   Version 3.9.1 - 12/21/23 - Ron Lockwood
-#    Added apocryphal/deuterocanonical and extra books into the list.
-#
-#   Version 3.7.1 - 1/30/23 - Ron Lockwood
-#    Restructured to put common init and exit code into ChapterSelection.py
-#    Store export project and import project as separate settings.
-#
-#   Version 3.7 - 1/25/23 - Ron Lockwood
-#    Added cross-references to the selection class.
-#
-#   Version 3.5 - 5/3/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   ChapterSelection Class which is for data associated with import and export
 #   from and to Paratext. 

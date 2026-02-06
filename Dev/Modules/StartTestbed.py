@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -14,47 +17,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5 - 6/21/22 - Ron Lockwood
-#    Bump version number for FlexTools 3.5
-#
-#   Version 3.4.1 - 3/17/22 - Ron Lockwood
-#    Allow for a user configurable Testbed location. Issue #70.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0 - 1/25/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.0 - 6/15/18 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Initialize the testbed log and create a source text from the testbed. The
 #   source text can be fed into the normal FLExTrans process.
@@ -88,13 +51,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {
-    FTM_Name: _translate("StartTestbed", "Start Testbed"),
-    FTM_Version: "3.14.1",
-    FTM_ModifiesDB: False,
-    FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
-    FTM_Help: "",
-    FTM_Description: _translate(
+docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
+        FTM_Version: "3.15",
+        FTM_ModifiesDB: False,
+        FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
+        FTM_Help: "",
+        FTM_Description: _translate(
         "StartTestbed",
         """
         Initialize the testbed log and create source text from the testbed.

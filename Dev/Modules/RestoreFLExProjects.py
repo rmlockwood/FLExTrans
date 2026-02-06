@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -61,7 +64,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",

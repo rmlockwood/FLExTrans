@@ -4,6 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   26 Jan 2026 rl made it localizable. 
 #
 #   06 Aug 2025 dm generation can now take the same POS in the head and dependent slots. 
