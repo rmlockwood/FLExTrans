@@ -559,7 +559,7 @@ def fixUpText(synFile, cleanUpText):
     if cleanUpText:
 
         # Remove n.n on lemmas
-synFileContents = re.sub(r'\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
+        synFileContents = re.sub(r'\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
         
         # Remove at signs
         synFileContents = re.sub('@', '', synFileContents)
