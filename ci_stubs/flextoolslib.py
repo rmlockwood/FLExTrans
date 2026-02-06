@@ -7,5 +7,10 @@ class FTConfig:
     def setUILanguage(lang_code: str):
         FTConfig.UILanguage = lang_code
 
+class FlexToolsModuleClass:
+    """Mock FlexToolsModuleClass - base class for FlexTools modules"""
+    def __init__(self):
+        pass
+
 # Export for convenience
 FTM_Name = 'FTM'
