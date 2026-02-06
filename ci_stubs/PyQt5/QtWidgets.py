@@ -130,3 +130,16 @@ class QSizePolicy:
     """Mock QSizePolicy"""
     def __init__(self, horizontal=None, vertical=None):
         pass
+
+class QTableWidget(QWidget):
+    """Mock QTableWidget"""
+    pass
+
+class QTableWidgetItem:
+    """Mock QTableWidgetItem"""
+    def __init__(self, text=""):
+        self.text_value = text
+
+class QItemDelegate:
+    """Mock QItemDelegate"""
+    pass
