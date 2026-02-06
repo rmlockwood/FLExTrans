@@ -106,3 +106,7 @@ class QDialogButtonBox(QWidget):
 class QToolTip:
     """Mock QToolTip"""
     pass
+
+class QStyledItemDelegate:
+    """Mock QStyledItemDelegate"""
+    pass
