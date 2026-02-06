@@ -50,4 +50,29 @@ Do these things when you are going live with the release
 -Send out the FLExTrans newsletter
 -Setup things for the next release (so that new builds don't overwrite the just released one.)
  -See steps at the top
+
+Do these things for a maintenance release
+=========================================
+-Checkout the version you want (hopefully it was tagged and shows the v3.14 tag or such)
+-Create a new branch for the headless commit from above. E.g. v3.14.1
+-Go to the Master branch and cherry pick the commits you want to bring over to the new branch
+-Update the version #s in various places as above
+-Copy and create a new TeamCity Build config
+ -Click on FLExTrans under PROJECTS
+ -On the row of the config you want to copy, click the 3 bullets icon dropdown
+ -Select Copy Configurations
+ -Give a new name and ID
+ -Change the Artifact paths to match the new version. E.g. 3.14.1*
+ -Go to the Version Control tab
+ -Edit the VCS root name and ID
+ -Click Edit next to the github paths
+ -Change the default branch to your new branch from above
+ -Below, click Apply to Build FT Installer..newbranch only
+ -Go to the Triggers tab
+ -Click Edit for VCS Triggers
+ -Change the branch filter
+ -You may or may not want to enable/disable the Upload documentation two steps
+-Publish the release and it should end up on the website
+-Follow the .download_info file instructions above
+-Follow the tag instructions above
  
