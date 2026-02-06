@@ -29,3 +29,8 @@ class QPixmap:
 class QPalette:
     """Mock QPalette"""
     pass
+
+class QFontMetrics:
+    """Mock QFontMetrics"""
+    def __init__(self, font=None):
+        pass
