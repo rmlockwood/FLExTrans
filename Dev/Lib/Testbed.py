@@ -1310,7 +1310,7 @@ def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuation
         # Split off the advanced stuff that precedes the brace {
         # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
         # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
-        tokens = re.split('{|}', targetOutput)
+        tokens = re.split(r'{|}', targetOutput)
         
         # process pairs of tokens
         for i in range(0, len(tokens)-1): # skip the last one for now
