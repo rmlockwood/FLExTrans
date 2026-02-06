@@ -74,5 +74,4 @@ Do these things for a maintenance release
  -You may or may not want to enable/disable the Upload documentation two steps
 -Publish the release and it should end up on the website
 -Follow the .download_info file instructions above
--Follow the tag instructions above
- 
+-Follow the tag instructions above 
