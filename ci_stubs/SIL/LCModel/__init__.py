@@ -21,3 +21,39 @@ class IMoForm(ILcmObject):
 
 class IMoMorphData(ILcmObject):
     pass
+
+class ILexSense(ILcmObject):
+    pass
+
+class IMoStemMsa(ILcmObject):
+    pass
+
+class IFsFeatStruc(ILcmObject):
+    pass
+
+class IFsComplexFeature(ILcmObject):
+    pass
+
+class IFsComplexValue(ILcmObject):
+    pass
+
+class IFsClosedValue(ILcmObject):
+    pass
+
+class IFsClosedFeatureRepository(ILcmObject):
+    pass
+
+class IStStyleRepository(ILcmObject):
+    pass
+
+class ILexEntryInflType(ILcmObject):
+    pass
+
+class IMoInflAffMsa(ILcmObject):
+    pass
+
+class ICmObjectRepository(ILcmObject):
+    pass
+
+class ITextRepository(ILcmObject):
+    pass
