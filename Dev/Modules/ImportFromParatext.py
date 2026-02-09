@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.15.1 - 2/9/26 - Ron Lockwood
+#    Fixes #1232. Call function in Chapter Selection to convert \fig syntax to the new USFM 3.0 format.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -168,7 +171,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -389,7 +392,7 @@ def do_import(DB, report, chapSelectObj, tree):
         
         reStr += '$'
 
-    # Otherwise the expression ends at the toChapter
+    # Otherwise the expression ends at the toChapter # TODO: don't assume \s immediately follows the chapter number
     else:
         reStr += fr'\\c {str(chapSelectObj.toChap+1)}\s'
 
@@ -417,9 +420,7 @@ def do_import(DB, report, chapSelectObj, tree):
             report.Info(_translate("ImportFromParatext", "{numRules} 'Text In' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
             
     # Convert old USFM 1.0 or 2.0 \fig syntax to 3.0
-    # old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
-    # new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
-    importText = re.sub(r'\\fig ([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\\fig\*', r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
+    importText = ChapterSelection.convertFigSyntax(importText)
 
     # Remove footnotes if necessary
     if chapSelectObj.includeFootnotes == False:
