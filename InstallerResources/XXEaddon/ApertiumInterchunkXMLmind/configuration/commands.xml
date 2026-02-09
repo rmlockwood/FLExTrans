@@ -1,0 +1,83 @@
+<cfg:configuration name="Apertium Interchunk Rules Document" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:cfg="http://www.xmlmind.com/xmleditor/schema/configuration">
+
+    <cfg:binding>
+        <cfg:keyPressed code="F11"/>
+        <cfg:command name="setReference"/>
+    </cfg:binding>
+
+    <cfg:command name="setReference">
+        <cfg:macro trace="false">
+            <cfg:sequence>
+                <cfg:choice>
+                    <cfg:command name="setCategory"/>
+                    <cfg:command name="setAttribute"/>
+                    <cfg:command name="setVariable"/>
+                    <cfg:command name="setMacro"/>
+                    <cfg:command name="setList"/>
+                </cfg:choice>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+
+    <cfg:command name="setAttribute">
+        <cfg:macro trace="false">
+            <cfg:sequence>
+                <cfg:pass>
+                    <cfg:command name="selectNode" parameter="self[implicitElement] clip"/>
+                </cfg:pass>
+                <cfg:get expression="join(//def-attr/@n, ' ')"/>
+                <cfg:command name="pick" parameter="Attribute false %_ lem whole lemh lemq tags chcontent"/>
+                <cfg:command name="putAttribute" parameter="[implicitElement] part %_"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+    <cfg:command name="setCategory">
+        <cfg:macro trace="false">
+            <cfg:sequence>
+                <cfg:pass>
+                    <cfg:command name="selectNode" parameter="self[implicitElement] pattern-item"/>
+                </cfg:pass>
+                <cfg:get expression="join(//def-cat/@n, ' ')"/>
+                <cfg:command name="pick" parameter="Category false %_"/>
+                <cfg:command name="putAttribute" parameter="[implicitElement] n %_"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+    <cfg:command name="setList">
+        <cfg:macro trace="false">
+            <cfg:sequence>
+                <cfg:pass>
+                    <cfg:command name="selectNode" parameter="self[implicitElement] list"/>
+                </cfg:pass>
+                <cfg:get expression="join(//def-list/@n, ' ')"/>
+                <cfg:command name="pick" parameter="List false %_"/>
+                <cfg:command name="putAttribute" parameter="[implicitElement] n %_"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+    <cfg:command name="setMacro">
+        <cfg:macro trace="false">
+            <cfg:sequence>
+                <cfg:pass>
+                    <cfg:command name="selectNode" parameter="self[implicitElement] call-macro"/>
+                </cfg:pass>
+                <cfg:get expression="join(//def-macro/@n, ' ')"/>
+                <cfg:command name="pick" parameter="Macro false %_"/>
+                <cfg:command name="putAttribute" parameter="[implicitElement] n %_"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+    <cfg:command name="setVariable">
+        <cfg:macro trace="false">
+            <cfg:sequence>
+                <cfg:pass>
+                    <cfg:command name="selectNode" parameter="self[implicitElement] append var namefrom"/>
+                </cfg:pass>
+                <cfg:get expression="join(//def-var/@n, ' ')"/>
+                <cfg:command name="pick" parameter="Variable false %_"/>
+                <cfg:command name="putAttribute" parameter="[implicitElement] n %_"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+</cfg:configuration>

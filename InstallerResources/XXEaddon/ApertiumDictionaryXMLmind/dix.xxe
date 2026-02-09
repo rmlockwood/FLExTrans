@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<configuration name="Apertium Dictionary Rule File" xmlns="http://www.xmlmind.com/xmleditor/schema/configuration" xmlns:cfg="http://www.xmlmind.com/xmleditor/schema/configuration">
+
+	<detect>
+		<dtdPublicId>-//XMLmind//DTD dictionary//EN</dtdPublicId>
+	</detect>
+	<inclusionScheme name="XInclude">
+		<class>com.xmlmind.xml.xinclude.XIncludeScheme</class>
+	</inclusionScheme>
+	<include location="configuration/templates.xml"/>
+	<include location="configuration/elementTemplates.xml"/>
+	<include location="configuration/menus.xml"/>
+	<include location="configuration/commands.xml"/>
+	<css name="ApertiumDictionary" location="css/dix.css"/>
+	<!-- Following is not right, but we'll need to do something to get spell checker to ignore certain elements -->
+	<spellCheckOptions languageAttribute="lang" skippedElements="langData tree url" useAutomaticSpellChecker="true"/>
+	<schematron location="dix.sch" />
+	<saveOptions saveCharsAsEntityRefs="false" indent="none"/>
+</configuration>
