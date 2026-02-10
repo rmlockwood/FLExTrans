@@ -88,7 +88,7 @@ rem special flextrans stub files for flextools plus settings tool to top FlexToo
 copy Dev\TopLevel\*.py %flextoolsfolder%
 
 rem sub directory paths file to Modules
-copy /Y subdirs.pth %flextoolsmodules%
+copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 
 rem copy all module code files
 copy Dev\Modules\*.py %modulesflextrans%
