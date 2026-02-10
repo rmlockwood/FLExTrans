@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_def">
+      <cat-item tags="def" />
+      <cat-item tags="def.*" />
+    </def-cat>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="def" />
+      <attr-item tags="n" />
+    </def-attr>
+    <def-attr n="a_n_number_affixes">
+      <attr-item tags="ACC_PL" />
+      <attr-item tags="DAT_PL" />
+      <attr-item tags="GEN_PL" />
+      <attr-item tags="PL" />
+    </def-attr>
+    <def-attr n="a_n_case_affixes">
+      <attr-item tags="ACC" />
+      <attr-item tags="ACC_PL" />
+      <attr-item tags="DAT" />
+      <attr-item tags="DAT_PL" />
+      <attr-item tags="GEN" />
+      <attr-item tags="GEN_PL" />
+    </def-attr>
+    <def-attr n="a_gender_feature">
+      <attr-item tags="f" />
+      <attr-item tags="m" />
+      <attr-item tags="nt" />
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <!--Used by macro m_def_lemma_from_n-->
+    <def-var n="v_def_lemma_from_n" />
+    <!--Used by macro m_n_affix_from_n-->
+    <def-var n="v_n_affix_from_n" />
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_def_lemma_from_n" npar="1" c="FTM v_def_lemma_from_n def n">
+      <!--Item 1 is part-of-speech n.-->
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_def_lemma_from_n" />
+        <lit v="" />
+      </let>
+      <!--Narrow the set of possible values based on number (pl).-->
+      <choose>
+        <!--Set v_def_lemma_from_n based on number = pl.-->
+        <when>
+          <test>
+            <or>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="ACC_PL" />
+              </equal>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="DAT_PL" />
+              </equal>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="GEN_PL" />
+              </equal>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="PL" />
+              </equal>
+            </or>
+          </test>
+          <!--Narrow the set of possible values based on case (acc, dat, gen) given number = pl.-->
+          <choose>
+            <!--Set v_def_lemma_from_n based on case = acc.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="den1.1" />
+              </let>
+            </when>
+            <!--Set v_def_lemma_from_n based on case = dat.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="die1.4" />
+              </let>
+            </when>
+            <!--Set v_def_lemma_from_n based on case = gen.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="der1.4" />
+              </let>
+            </when>
+            <otherwise>
+              <!--Set v_def_lemma_from_n based on case = nom.-->
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="die1.1" />
+              </let>
+            </otherwise>
+          </choose>
+        </when>
+        <otherwise>
+          <!--Set v_def_lemma_from_n based on number = sg.-->
+          <!--Narrow the set of possible values based on case (acc, dat, gen) given number = sg.-->
+          <choose>
+            <!--Set v_def_lemma_from_n based on case = acc.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC_PL" />
+                  </equal>
+                </or>
+              </test>
+              <!--Narrow the set of possible values based on gender (f, m, nt) given number = sg, case = acc.-->
+              <choose>
+                <!--Set v_def_lemma_from_n based on gender = f.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="f" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="die1.3" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = m.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="m" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="den1.2" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = nt.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="nt" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="das1.2" />
+                  </let>
+                </when>
+                <otherwise>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="no-lemma-for-sg-acc" />
+                  </let>
+                </otherwise>
+              </choose>
+            </when>
+            <!--Set v_def_lemma_from_n based on case = dat.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT_PL" />
+                  </equal>
+                </or>
+              </test>
+              <!--Narrow the set of possible values based on gender (f, m, nt) given number = sg, case = dat.-->
+              <choose>
+                <!--Set v_def_lemma_from_n based on gender = f.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="f" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="der1.2" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = m.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="m" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="dem1.1" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = nt.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="nt" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="dem1.2" />
+                  </let>
+                </when>
+                <otherwise>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="no-lemma-for-sg-dat" />
+                  </let>
+                </otherwise>
+              </choose>
+            </when>
+            <!--Set v_def_lemma_from_n based on case = gen.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN_PL" />
+                  </equal>
+                </or>
+              </test>
+              <!--Narrow the set of possible values based on gender (f, m, nt) given number = sg, case = gen.-->
+              <choose>
+                <!--Set v_def_lemma_from_n based on gender = f.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="f" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="der1.3" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = m.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="m" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="des1.2" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = nt.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="nt" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="des1.1" />
+                  </let>
+                </when>
+                <otherwise>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="no-lemma-for-sg-gen" />
+                  </let>
+                </otherwise>
+              </choose>
+            </when>
+            <otherwise>
+              <!--Set v_def_lemma_from_n based on case = nom.-->
+              <!--Narrow the set of possible values based on gender (f, m, nt) given number = sg, case = nom.-->
+              <choose>
+                <!--Set v_def_lemma_from_n based on gender = f.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="f" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="die1.2" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = m.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="m" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="der1.1" />
+                  </let>
+                </when>
+                <!--Set v_def_lemma_from_n based on gender = nt.-->
+                <when>
+                  <test>
+                    <equal>
+                      <clip pos="1" side="tl" part="a_gender_feature" />
+                      <lit-tag v="nt" />
+                    </equal>
+                  </test>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="das1.1" />
+                  </let>
+                </when>
+                <otherwise>
+                  <let>
+                    <var n="v_def_lemma_from_n" />
+                    <lit v="no-lemma-for-sg-nom" />
+                  </let>
+                </otherwise>
+              </choose>
+            </otherwise>
+          </choose>
+        </otherwise>
+      </choose>
+    </def-macro>
+    <def-macro n="m_n_affix_from_n" npar="1" c="FTM v_n_affix_from_n n n">
+      <!--Item 1 is part-of-speech n.-->
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_n_affix_from_n" />
+        <lit v="" />
+      </let>
+      <!--Narrow the set of possible values based on number (pl).-->
+      <choose>
+        <!--Set v_n_affix_from_n based on number = pl.-->
+        <when>
+          <test>
+            <or>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="ACC_PL" />
+              </equal>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="DAT_PL" />
+              </equal>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="GEN_PL" />
+              </equal>
+              <equal>
+                <clip pos="1" side="tl" part="a_n_number_affixes" />
+                <lit-tag v="PL" />
+              </equal>
+            </or>
+          </test>
+          <!--Narrow the set of possible values based on case (acc, dat, gen) given number = pl.-->
+          <choose>
+            <!--Set v_n_affix_from_n based on case = acc.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="ACC_PL" />
+              </let>
+            </when>
+            <!--Set v_n_affix_from_n based on case = dat.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="DAT_PL" />
+              </let>
+            </when>
+            <!--Set v_n_affix_from_n based on case = gen.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="GEN_PL" />
+              </let>
+            </when>
+            <otherwise>
+              <!--Set v_n_affix_from_n based on case = nom.-->
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="PL" />
+              </let>
+            </otherwise>
+          </choose>
+        </when>
+        <otherwise>
+          <!--Set v_n_affix_from_n based on number = sg.-->
+          <!--Narrow the set of possible values based on case (acc, dat, gen) given number = sg.-->
+          <choose>
+            <!--Set v_n_affix_from_n based on case = acc.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="ACC_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="ACC" />
+              </let>
+            </when>
+            <!--Set v_n_affix_from_n based on case = dat.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="DAT_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="DAT" />
+              </let>
+            </when>
+            <!--Set v_n_affix_from_n based on case = gen.-->
+            <when>
+              <test>
+                <or>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN" />
+                  </equal>
+                  <equal>
+                    <clip pos="1" side="tl" part="a_n_case_affixes" />
+                    <lit-tag v="GEN_PL" />
+                  </equal>
+                </or>
+              </test>
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit-tag v="GEN" />
+              </let>
+            </when>
+            <otherwise>
+              <!--Set v_n_affix_from_n based on case = nom.-->
+              <let>
+                <var n="v_n_affix_from_n" />
+                <lit v="" />
+              </let>
+            </otherwise>
+          </choose>
+        </otherwise>
+      </choose>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="def n simple">
+      <!--Rule Assistant Description: number is rank 1 because die (pl) is used often for all genders
+case is rank 2 because for a case often the form is the same for all genders-->
+      <pattern>
+        <pattern-item n="c_def" />
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <!--Generate and output def-->
+        <!--Determine the appropriate lemma for def and store it in a variable named v_def_lemma_from_n.-->
+        <call-macro n="m_def_lemma_from_n">
+          <with-param pos="2" />
+        </call-macro>
+        <out>
+          <lu>
+            <get-case-from pos="1">
+              <var n="v_def_lemma_from_n" />
+            </get-case-from>
+            <clip pos="1" side="tl" part="a_gram_cat" />
+          </lu>
+        </out>
+        <!--Generate and output n-->
+        <!--Determine the appropriate affix for n and store it in a variable named v_n_affix_from_n.-->
+        <call-macro n="m_n_affix_from_n">
+          <with-param pos="2" />
+        </call-macro>
+        <out>
+          <b />
+          <lu>
+            <clip pos="2" side="tl" part="lem" />
+            <clip pos="2" side="tl" part="a_gram_cat" />
+            <var n="v_n_affix_from_n" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>
