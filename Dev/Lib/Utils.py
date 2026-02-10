@@ -968,7 +968,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
 def remove1dot1(lem):
 
-    return re.sub('1\.1', '', lem)
+    return re.sub(r'1\.1', '', lem)
 
 def fixupLemma(entry, senseNum, remove1dot1Bool=False):
 

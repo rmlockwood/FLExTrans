@@ -5,6 +5,10 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15 - 2/9/26 - Ron Lockwood
+#    Fixes #1232. Change regex for attributes to stop matching on a backslash. This prevents
+#    it from matching across multiple figures in a book.
+#
 #   Version 3.14.3 - 12/10/25 - Ron Lockwood
 #    Fixes #1143. Allow .USFM files as well as .SFM files.
 #
@@ -192,6 +196,14 @@ def splitSFMs(inputStr):
                     r'\\\w+)',              # any other marker
                     inputStr) 
     return segs
+
+# Convert old USFM 1.0 or 2.0 \fig syntax to 3.0. 
+# old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
+# new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
+def convertFigSyntax(importText):
+
+    return re.sub(r'\\fig ([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\\fig\*', 
+                  r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
 
 def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
 
