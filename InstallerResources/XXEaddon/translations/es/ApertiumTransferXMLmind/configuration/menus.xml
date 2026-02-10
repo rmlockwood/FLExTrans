@@ -1,0 +1,19 @@
+<cfg:configuration name="Apertium Transfer Rules Document" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:cfg="http://www.xmlmind.com/xmleditor/schema/configuration">
+    
+    <cfg:menu label="_Apertium Transfer">
+        <cfg:item command="setReference" 
+            label="Establecer referencia" 
+            icon="xxe-config:common/icons/link.png">
+            <cfg:accelerator code="F11"/>
+        </cfg:item>
+
+       <cfg:item command="showFTDocumentation"
+         label="Mostrar _documentación del usuario de FLExTrans"/>
+		 
+       <cfg:item command="openSampleRules"
+         label="Abrir archivo de reglas de muestra"/>
+		 
+    </cfg:menu>
+    </cfg:configuration>

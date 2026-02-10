@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC "-//XMLmind//DTD FLExTransRuleGenerator//EN" "FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator>
+  <FLExTransRules>
+    <FLExTransRule name="Adjective - Noun (2 Feature agreements)">
+      <Source>
+        <Phrase>
+          <Words>
+            <Word category="adj" id="1">
+            </Word>
+            <Word category="n" id="2">
+            </Word>
+          </Words>
+        </Phrase>
+      </Source>
+      <Target>
+        <Phrase>
+          <Words>
+            <Word head="yes" id="2">
+              <Features>
+                <Feature label="gender" match="α" unmarked_default="m">
+                </Feature>
+              </Features>
+              <Affixes>
+                <Affix type="suffix">
+                  <Features>
+                    <Feature label="number" match="β" unmarked_default="sg">
+                    </Feature>
+                  </Features>
+                </Affix>
+              </Affixes>
+            </Word>
+            <Word head="no" id="1">
+              <Affixes>
+                <Affix type="suffix">
+                  <Features>
+                    <Feature label="gender" match="α">
+                    </Feature>
+                  </Features>
+                </Affix>
+                <Affix type="suffix">
+                  <Features>
+                    <Feature label="number" match="β">
+                    </Feature>
+                  </Features>
+                </Affix>
+              </Affixes>
+            </Word>
+          </Words>
+        </Phrase>
+      </Target>
+    </FLExTransRule>
+  </FLExTransRules>
+</FLExTransRuleGenerator>

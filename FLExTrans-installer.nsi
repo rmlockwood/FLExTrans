@@ -1,5 +1,4 @@
-!include "StrRep.nsh"
-#!include "ReplaceInFile.nsh"
+!include "StrRep.nsh"   # local file
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
 !include "LangFile.nsh"
@@ -17,12 +16,20 @@
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
 !define FLEXTRANS_FOLDER "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects"
+!define GERMAN_SWEDISHDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
 !define TEMPLATEDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject"
 !define RULEASSISTANT "FLExTrans.Rule Assistant"
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
 !define EXPORTFROMFLEX "FLExTrans.Export Text from Target FLEx to Paratext"
+!define INSTALLER_RESOURCES "InstallerResources"
+!define GIT_RESOURCES "${GIT_FOLDER}\${INSTALLER_RESOURCES}"
+!define MAKEFILESDIR "${GIT_RESOURCES}\Makefiles"
+!define TRANSFER_RULESDIR "${GIT_RESOURCES}\TransferRules"
+!define VBSDIR "${GIT_RESOURCES}\VBS"
+!define INIDIR "${GIT_RESOURCES}\INI"
+!define REPLACEMENT_FILE "${GIT_RESOURCES}\replace.dix"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -40,8 +47,8 @@ VIProductVersion 3.15.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
-!define MUI_UNICON "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
+!define MUI_ICON "${GIT_RESOURCES}\DialogImages\FLExTransWindowIcon.ico"
+!define MUI_UNICON "${GIT_RESOURCES}\DialogImages\FLExTransWindowIcon.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -77,26 +84,19 @@ Var /GLOBAL DESKTOP_FOLDER
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "Spanish"
 
-#!macro _ReplaceInFile SOURCE_FILE SEARCH_TEXT REPLACEMENT
-#  Push "${SOURCE_FILE}"
-#  Push "${SEARCH_TEXT}"
-#  Push "${REPLACEMENT}"
-#  Call RIF
-#!macroend
-
 ; Define a macro for copying transfer rules files based on language
 !macro InstallLocalizedRulesFile DEST_NAME SRC_BASE
     ${If} $LANGUAGE == ${LANG_GERMAN}
-        File /oname=${DEST_NAME} "${GIT_FOLDER}\${SRC_BASE}_de.t1x"
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_de.t1x"
     ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-        File /oname=${DEST_NAME} "${GIT_FOLDER}\${SRC_BASE}_es.t1x"
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_es.t1x"
     ${Else}
-        File /oname=${DEST_NAME} "${GIT_FOLDER}\${SRC_BASE}.t1x"
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}.t1x"
     ${EndIf}
 !macroend
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
+Icon "${MUI_ICON}"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
@@ -161,20 +161,20 @@ Section "MainSection" SEC01
   
   # Replacement dictionary  
   ; German-Swedish project folder
-  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Output"
-  File "${GIT_FOLDER}\replace.dix"
+  SetOutPath "${GERMAN_SWEDISHDIR}\Output"
+  File "${REPLACEMENT_FILE}"
 
   ; template project folder
   SetOutPath "${TEMPLATEDIR}\Output"
-  File "${GIT_FOLDER}\replace.dix"
+  File "${REPLACEMENT_FILE}"
     
   # Transfer rule files for German-Swedish folder
-  SetOutPath "${WORKPROJECTSDIR}\German-Swedish"
+  SetOutPath "${GERMAN_SWEDISHDIR}"
   ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
   !insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
   
   # Transfer rule files for TemplateProject folder
-  SetOutPath "${WORKPROJECTSDIR}\TemplateProject"
+  SetOutPath "${TEMPLATEDIR}"
   ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
   !insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
   !insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
@@ -190,7 +190,7 @@ Section "MainSection" SEC01
   File "${GIT_FOLDER}\${HERMIT_CRAB_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${HERMIT_CRAB_ZIP_FILE}" "$0"
 
-  # Delete SettingGui.py from the Modules\FLExTrans folder, it now lives right under FlexTools
+  # Delete SettingGui.py from the Modules\FLExTrans folder (for old installs), it now lives right under FlexTools
   Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
 
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
@@ -221,7 +221,7 @@ Section "MainSection" SEC01
           Delete "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
       ${EndIf}
       SetOutPath "${WORKPROJECTSDIR}\$1"
-      File "${GIT_FOLDER}\FLExTrans.vbs"
+      File "${VBSDIR}\FLExTrans.vbs"
     ${EndIf}
     
     # Overwrite flextools.ini
@@ -230,29 +230,29 @@ Section "MainSection" SEC01
       
       # Use a production mode ini file if the user chose that
       ${If} $PRODUCTION_MODE <> ${BST_UNCHECKED}
-        File "/oname=${WORKPROJECTSDIR}\$1\Config\flextools.ini" "${GIT_FOLDER}\flextools_basic.ini"
+        File "/oname=${WORKPROJECTSDIR}\$1\Config\flextools.ini" "${INIDIR}\flextools_basic.ini"
       ${Else}
-        File "${GIT_FOLDER}\flextools.ini"
+        File "${INIDIR}\flextools.ini"
       ${EndIf}
     ${EndIf}
     
 	# Overwrite FLExTrans.ini - the production mode collection
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
-      File "${GIT_FOLDER}\FLExTrans.ini"
+      File "${INIDIR}\FLExTrans.ini"
     ${EndIf}
 	
 	# Overwrite Makefiles
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build"
-      File "${GIT_FOLDER}\Makefile"
-      File "${GIT_FOLDER}\Makefile.advanced"
+      File "${MAKEFILESDIR}\Makefile"
+      File "${MAKEFILESDIR}\Makefile.advanced"
     ${EndIf}
 	
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester"
-      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${GIT_FOLDER}\MakefileForLiveRuleTester"
-      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${GIT_FOLDER}\MakefileForLiveRuleTester.advanced"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${MAKEFILESDIR}\MakefileForLiveRuleTester"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${MAKEFILESDIR}\MakefileForLiveRuleTester.advanced"
     ${EndIf}
 	
     # Replace the default currentproject and currentcollection values with what we read above
@@ -296,12 +296,12 @@ Section "MainSection" SEC01
     
 	SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
 
-	File "${GIT_FOLDER}\Drafting.ini"
-	File "${GIT_FOLDER}\Run Testbed.ini"
-	File "${GIT_FOLDER}\Tools.ini"
-	File "${GIT_FOLDER}\Synthesis Test.ini"
-	File "${GIT_FOLDER}\FLExTrans.ini"
-	File "${GIT_FOLDER}\Clusters.ini"
+	File "${INIDIR}\Drafting.ini"
+	File "${INIDIR}\Run Testbed.ini"
+	File "${INIDIR}\Tools.ini"
+	File "${INIDIR}\Synthesis Test.ini"
+	File "${INIDIR}\FLExTrans.ini"
+	File "${INIDIR}\Clusters.ini"
 	
     nextfolder3:  
     FindNext $0 $1
@@ -387,7 +387,7 @@ Section "MainSection" SEC01
   #  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
   
   SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
-  File "${GIT_FOLDER}\Command.bat"
+  File "${GIT_RESOURCES}\Command.bat"
   ExecWait '${mycmd}'
   # if the above failed, call the command.bat to do the same thing, but if this was the first time run, pip might not be in the path.
   # Capture the exit code in $0
@@ -400,6 +400,7 @@ Section "MainSection" SEC01
   
   # Install Rule Assistant in silent mode
   SetOutPath "$INSTDIR\install_files"
+  # RESOURCE_FOLDER is a variable like GIT_FOLDER that is passed to the makensis program when compiling the installer
   File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
   ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
   

@@ -1,3 +1,0 @@
-<cfg:configuration name="FLExTransRuleGenerator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cfg="http://www.xmlmind.com/xmleditor/schema/configuration">
-    <cfg:template location="../templates/minimalRuleGenerator.xml" name="Minimal RuleGenerator" category="FLExTransRuleGenerator" order="1010"/>
-    </cfg:configuration>

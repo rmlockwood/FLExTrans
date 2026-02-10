@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN"
+"dix.dtd">
+<dictionary>
+	<alphabet/>
+  <sdefs>
+  	<sdef n="sent" c="Sentence"/>
+  	<sdef n="v" c="Verb"/>
+  </sdefs>
+  <section id="main" type="standard">
+    <e><p><l>srcword1.1<s n="v"/></l><r>tgtword1.1<s n="v"/></r></p></e>
+    <e><re>[.;:"']+</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>
+  </section>
+</dictionary>

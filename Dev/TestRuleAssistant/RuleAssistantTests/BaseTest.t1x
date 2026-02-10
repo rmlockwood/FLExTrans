@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_adj">
+      <cat-item tags="adj" />
+      <cat-item tags="adj.*" />
+    </def-cat>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="adj" />
+      <attr-item tags="n" />
+    </def-attr>
+    <def-attr n="a_n_number_affixes">
+      <attr-item tags="PL" />
+      <attr-item tags="SG" />
+    </def-attr>
+    <def-attr n="a_gender_feature">
+      <attr-item tags="f" />
+      <attr-item tags="m" />
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <!--Used by macro m_n_gender-to-adj_gender-->
+    <def-var n="v_adj_gender" />
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_n_gender-to-adj_gender" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_adj_gender" />
+        <lit v="" />
+      </let>
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="f" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_gender" />
+            <lit-tag v="FEM_a" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="m" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_gender" />
+            <lit-tag v="MASC_a" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_adj_gender" />
+            <lit-tag v="gender-UNK" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="Adjective - Noun (2 Feature agreements)">
+      <pattern>
+        <pattern-item n="c_adj" />
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <!--Generate and output n-->
+        <out>
+          <lu>
+            <get-case-from pos="1">
+              <clip pos="2" side="tl" part="lem" />
+            </get-case-from>
+            <clip pos="2" side="tl" part="a_gram_cat" />
+            <clip pos="2" side="tl" part="a_n_number_affixes" />
+          </lu>
+        </out>
+        <!--Generate and output adj-->
+        <!--Determine the appropriate gender tag for adj and store it in a variable named v_adj_gender.-->
+        <call-macro n="m_n_gender-to-adj_gender">
+          <with-param pos="2" />
+        </call-macro>
+        <out>
+          <b />
+          <lu>
+            <get-case-from pos="2">
+              <clip pos="1" side="tl" part="lem" />
+            </get-case-from>
+            <clip pos="1" side="tl" part="a_gram_cat" />
+            <var n="v_adj_gender" />
+            <clip pos="2" side="tl" part="a_n_number_affixes" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>
