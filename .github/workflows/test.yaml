@@ -33,4 +33,4 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}\ci_stubs;${{ env.PYTHONPATH }}
         run: |
           python -m unittest test_rule_assistant.py -v
-          python -m unittest discover -s Dev/unit_tests -v
+          python -m unittest discover -s ${{ github.workspace }}\Dev\unit_tests -v
