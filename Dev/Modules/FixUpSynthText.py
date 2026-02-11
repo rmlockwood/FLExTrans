@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -77,11 +80,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("FixUpSynthText", "Fix Up Synthesis Text"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
-        FTM_Description: _translate("FixUpSynthText", 
+        FTM_Description: "THIS MODULE IS DEPRECATED. " + _translate("FixUpSynthText", 
 """This module will run a set of search and replace operations to fix up the text that comes out of 
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
 Fix Up Synthesis Text Rules File as specified in the Settings.""").format(textOutRulesModule=TextInOutUtils.TEXTOUT_MODULENAME)}

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
 #   Version 3.15 - 2/11/26 - Ron Lockwood
 #    Fixes #1239. When writing, don't check for a positive number of selected work projects.
 #    Zero is ok because we will always have the default project.
@@ -317,6 +320,41 @@ def runWildebeest(root, inputStr):
         newStr = wb.norm_clean_string(newStr, ht, lang_code=langCode)
 
     return newStr
+
+def applyTextOutRulesFromConfig(inputStr, configMap, report, textOutModuleName):
+    """Load the TEXT_OUT_RULES_FILE from config, apply rules if present.
+
+    Returns the updated string, or None on fatal error (and reports the error).
+    """
+
+    tree = None
+    textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+    if textOutRulesFile is not None:
+
+        # Check if the file exists.
+        if os.path.exists(textOutRulesFile) == True:
+
+            # Verify we have a valid rules XML file.
+            try:
+                tree = ET.parse(textOutRulesFile)
+            except:
+                report.Error(_translate("TextInOutUtils", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
+                return None
+
+    # Do user-defined search/replace rules if needed
+    if tree:
+
+        newStr, errMsg = applySearchReplaceRules(inputStr, tree)
+
+        if newStr is None:
+            report.Error(errMsg)
+            return None
+        else:
+            report.Info(_translate("TextInOutUtils", "{numRules} {moduleName} rules applied.").format(numRules=str(numRules(tree)), moduleName=textOutModuleName))
+            return newStr
+
+    return inputStr
 
 class TextInOutRulesWindow(QMainWindow):
 

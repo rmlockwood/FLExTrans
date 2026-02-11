@@ -4,12 +4,12 @@
 <context>
     <name>ExportToParatext</name>
     <message>
-        <location filename="../ExportToParatext.py" line="125"/>
+        <location filename="../ExportToParatext.py" line="116"/>
         <source>Export FLExTrans Draft to Paratext</source>
         <translation>FLExTrans-Entwurf nach Paratext exportieren</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="128"/>
+        <location filename="../ExportToParatext.py" line="119"/>
         <source>Export the draft that has been translated with FLExTrans to Paratext.</source>
         <translation>Exportieren Sie den Entwurf, der mit FLExTrans übersetzt wurde, nach Paratext.</translation>
     </message>
@@ -25,37 +25,37 @@ Nachdem Kapitel mit dem Modul &quot;Text synthetisieren&quot; erstellt wurden, b
 nimmt den Entwurf aus dieser Datei und kopiert die Kapitel in das angegebene Paratext-Projekt.</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="182"/>
+        <location filename="../ExportToParatext.py" line="173"/>
         <source>The text name &quot;{sourceText}&quot; is invalid it should be of the form GEN 01 or Genesis 23-38</source>
         <translation>Der Textname &quot;{sourceText}&quot; ist ungültig. Er sollte die Form GEN 01 oder Genesis 23-38 haben.</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="205"/>
+        <location filename="../ExportToParatext.py" line="196"/>
         <source>The book name or abbreviation {book} is invalid. It should match a Paratext book.</source>
         <translation>Der Buchname oder die Abkürzung {book} ist ungültig. Es sollte mit einem Paratext-Buch übereinstimmen.</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="284"/>
+        <location filename="../ExportToParatext.py" line="275"/>
         <source>Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.</source>
         <translation>Die Synthesedatei konnte nicht gefunden werden. Haben Sie das Modul &quot;Text synthetisieren&quot; ausgeführt? Fehlende Datei: {synFile}.</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="294"/>
+        <location filename="../ExportToParatext.py" line="291"/>
         <source>Export cancelled.</source>
         <translation>Export abgebrochen.</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="153"/>
+        <location filename="../ExportToParatext.py" line="144"/>
         <source>Export Chapters to Paratext</source>
         <translation>Kapitel nach Paratext exportieren</translation>
     </message>
     <message>
-        <location filename="../ExportToParatext.py" line="130"/>
+        <location filename="../ExportToParatext.py" line="121"/>
         <source>
 After chapters have been synthesized with the {synthText} module, the draft resides in the file specified
 by the setting &apos;Target Output Synthesis File&apos; (typically called &apos;target_text-syn.txt&apos;). This module
 takes the draft in this file and copies the chapters into Paratext to the project specified.</source>
-        <translation>Dieses Modul exportiert den Entwurf, der mit FLExTrans übersetzt wurde, nach Paratext. Nachdem Kapitel mit dem {synthText}-Modul synthetisiert wurden, befindet sich der Entwurf in der Datei, die durch die Einstellung &apos;Zieldatei für die Ausgabe der Synthese&apos; angegeben ist (typischerweise &apos;target_text-syn.txt&apos; genannt). Dieses Modul nimmt den Entwurf aus dieser Datei und kopiert die Kapitel in das angegebene Paratext-Projekt.</translation>
+        <translation>Dieses Modul exportiert den Entwurf, der mit FLExTrans übersetzt wurde, nach Paratext. Nachdem Kapitel mit dem {synthText}-Modul synthetisiert wurden, befindet sich der Entwurf in der Datei, die durch die Einstellung 'Zieldatei für die Ausgabe der Synthese' angegeben ist (typischerweise 'target_text-syn.txt' genannt). Dieses Modul nimmt den Entwurf aus dieser Datei und kopiert die Kapitel in das angegebene Paratext-Projekt.</translation>
     </message>
 </context>
 </TS>

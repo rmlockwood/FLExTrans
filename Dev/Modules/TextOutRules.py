@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -76,15 +79,13 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TextOutRules", "Text Out Rules"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help       : "",
         FTM_Description: _translate("TextOutRules",
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the {fixUpSynthTextModule} module.
-This module is not in the Drafting collection of modules by default. You need to add {fixUpSynthTextModule} to the Drafting collection 
-and move it to be after the {synthModule} Text module.""").format(fixUpSynthTextModule=FixUpSynthTextDocs[FTM_Name], synthModule=DoSynthesisDocs[FTM_Name])}
+synthesis. Regular expressions can be used if desired.""")}
 
 #app.quit()
 #del app
