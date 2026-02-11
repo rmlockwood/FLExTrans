@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.5 - 12/15/25 - Ron Lockwood
+#    Fixes #1149. Support alternate Paratext folder setting.
+#    Also check for absolute paths using pathlib. Instead of looking for ':'.
+#
 #   Version 3.14.4 - 9/19/25 - Ron Lockwood
 #    Fixes #1074. Support inflection on the first element of a complex form.
 #
@@ -57,6 +61,7 @@
 
 import re
 import os
+import pathlib
 import unicodedata
 
 from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
@@ -65,6 +70,7 @@ CONFIG_FILE = 'FlexTrans.config'
 
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
 ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
+ALT_PARATEXT_FOLDER = 'AlternateParatextFolder'
 BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
 BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
@@ -303,7 +309,7 @@ def getConfigVal(my_map, key, report, giveError=True, basePath=None):
         if (re.search('File', key) or re.search('Folder', key)) and key in my_map and my_map[key]:
             
             # if we don't have an absolute path (e.g. c:\...) we need to fix up the path. FLExTrans is shipped with relative paths to the work project subfolder ('e.g. German-Swedish')
-            if not re.search(':', my_map[key]):
+            if not pathlib.Path(my_map[key]).is_absolute():
                 
                 # Return the parent folder of the Config folder + the relative file path.
                 # E.g. the resulting path would be something like ...\German-Swedish\Build\target_text.txt
