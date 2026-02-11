@@ -4,7 +4,7 @@
 #   3/28/22
 #
 #   Version 3.15 - 2/11/26 - Ron Lockwood
-#    Fixes #1149. Support alternate Paratext folder setting.
+#    Fixes #1149. Support alternate Paratext folder setting. 
 #
 #   Version 3.14.7 - 12/7/25 - Beth Bryson
 #    Adjust sentence generation work to use custom list fields.
