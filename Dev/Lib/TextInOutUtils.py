@@ -5,6 +5,16 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
+#   Version 3.15 - 2/11/26 - Ron Lockwood
+#    Fixes #1239. When writing, don't check for a positive number of selected work projects.
+#    Zero is ok because we will always have the default project.
+#
+#   Version 3.14.2 - 12/13/25 - Ron Lockwood
+#   Fixes #1157 Use resizeable window and widgets.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects.
 #
@@ -311,6 +321,41 @@ def runWildebeest(root, inputStr):
 
     return newStr
 
+def applyTextOutRulesFromConfig(inputStr, configMap, report, textOutModuleName):
+    """Load the TEXT_OUT_RULES_FILE from config, apply rules if present.
+
+    Returns the updated string, or None on fatal error (and reports the error).
+    """
+
+    tree = None
+    textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+    if textOutRulesFile is not None:
+
+        # Check if the file exists.
+        if os.path.exists(textOutRulesFile) == True:
+
+            # Verify we have a valid rules XML file.
+            try:
+                tree = ET.parse(textOutRulesFile)
+            except:
+                report.Error(_translate("TextInOutUtils", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
+                return None
+
+    # Do user-defined search/replace rules if needed
+    if tree:
+
+        newStr, errMsg = applySearchReplaceRules(inputStr, tree)
+
+        if newStr is None:
+            report.Error(errMsg)
+            return None
+        else:
+            report.Info(_translate("TextInOutUtils", "{numRules} {moduleName} rules applied.").format(numRules=str(numRules(tree)), moduleName=textOutModuleName))
+            return newStr
+
+    return inputStr
+
 class TextInOutRulesWindow(QMainWindow):
 
     def __init__(self, DB, report, configMap, settingName, textIn, winTitle):
@@ -336,6 +381,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.validFolders = False
         self.lastSelectAllState = QtCore.Qt.Checked
         self.retVal = True
+        self.keyWidgetList = []
 
         # Wildebeest widgets
         self.WBcontrols = [
@@ -416,13 +462,13 @@ class TextInOutRulesWindow(QMainWindow):
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
         # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QComboBox, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_4, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
                                         originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
 
         # Load cluster projects
         if len(self.clusterProjects) > 0:
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self) # load last used cluster projects here
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self.ui.horizontalLayout_4) # load last used cluster projects here
 
             # Make work project selections in all visible combo boxes
             savedWorkProjList = self.settingsMap.get(WORK_PROJECTS, [])

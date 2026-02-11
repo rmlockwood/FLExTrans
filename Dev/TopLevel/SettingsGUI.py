@@ -3,8 +3,15 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
-#   Version 3.14.7 - 12/15/25 - Ron Lockwood
+#   Version 3.15 - 2/11/26 - Ron Lockwood
 #    Fixes #1149. Support alternate Paratext folder setting.
+#
+#   Version 3.14.7 - 12/7/25 - Beth Bryson
+#    Adjust sentence generation work to use custom list fields.
+#    Added new functions loadTargetSenseCustomField and loadTargetSenseCustomList
+#    Populate the widget for choosing the Semantic Domains from the values for that
+#    custom list field.  Leaving the call to this function commented out for now because
+#    it doesn't yet handle hierarchy in the custom list, and the TextBox functionality was working.
 #
 #   Version 3.14.6 - 12/6/25 - Beth Bryson
 #    Fixes #1132. Adjust name of setting for "Custom field for sense link".
@@ -333,6 +340,28 @@ def loadTargetEntryCustomField(widget, wind, settingName):
                 # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
                 widget.setCurrentIndex(i+1)
 
+def loadTargetSenseCustomField(widget, wind, settingName):
+    
+    # Get the name of a sense-level custom field to find in the target project
+    customSenseFieldTarget = wind.read(settingName)
+    
+    if customSenseFieldTarget is not None:
+
+        # Add (none) as the first option
+        widget.addItem(_translate("SettingsGUI", "(none)"))
+
+        # Add items and when we find the one that matches the config file, set that one to be displayed.
+        # Displays (none) if setting is blank.
+        for i, item in enumerate(wind.targetDB.LexiconGetSenseCustomFields()):
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customSenseFieldTarget:
+                
+                # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
+                widget.setCurrentIndex(i+1)
+
 def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
 
     # code copied from __GetCustomFieldsOfType in FLExProject.py
@@ -366,6 +395,59 @@ def loadTargetAllomorphCustomField(widget, wind, settingName):
                 
                 # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
                 widget.setCurrentIndex(i+1)
+
+def loadTargetSenseCustomList(widget, wind, settingName):
+        
+    fieldName = ""
+    vocList = []
+
+    try:
+        fieldName = wind.read(ReadConfig.GEN_STC_SEM_CUSTOMFIELD)
+        
+        if not fieldName:
+            multiID = None
+
+        else:
+            print(f"Looking for possible values for {fieldName} field")
+            # Get the possible values for this custom list field
+            multiID = wind.targetDB.LexiconGetSenseCustomFieldNamed(fieldName)
+            if multiID:
+                print(f"multi list found: {multiID}")
+
+                # Just get some entry, any entry
+                for e in wind.targetDB.LexiconAllEntries():
+                    print(f"{e.ShortName}:")
+                    break
+                
+                print(f"About to retrieve list")
+                if wind.targetDB:    
+                    for item in wind.targetDB.ListFieldPossibilities(e, multiID):
+                        vocList.append(str(item))
+                print(f"Retrieved list\n")
+                 
+            else:
+
+                print(f"Failed to load custom list for [{fieldName}]")
+                # Set some place holder values so we can keep testing other code
+                vocList = [ 'Animate', 'Animals' ]    
+                print(f"Constructed fake list\n")
+        
+    except:
+        # Give a more reasonable error message than this, in a place the user can read it
+        print(f"Failed to get name of custom list [{fieldName}]")
+        multiID = None
+
+    widget.addItems(vocList)
+
+    vocDomains = wind.read(settingName)
+    
+    if vocDomains:
+
+        for voc in vocDomains:
+
+            if voc in vocList:
+                
+                widget.check(voc)
 
 def loadAllProjects(widget, wind, settingName):
 
@@ -1002,8 +1084,8 @@ class Ui_MainWindow(object):
                 
                 # Special radio buttons for production mode output. FLEx=Yes, Paratext=No
                 if widgInfo[WIDGET1_OBJ_NAME] == 'prod_mode_output_flex_yes':
-                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "FLEx"))
-                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "Paratext"))
+                    widgInfo[WIDGET1_OBJ].setText("FLEx")
+                    widgInfo[WIDGET2_OBJ].setText("Paratext")
                 else:
                     widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
                     widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
@@ -1711,6 +1793,49 @@ widgetList = [
     _translate("SettingsGUI", "The path and name of the rule assistant rule definition file."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
+    # DM: testing settings module (limit POS, limit stem count)
+    [_translate("SettingsGUI", "Generate Sentences Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "Gloss Text Output File"), "gloss_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE,\
+    _translate("SettingsGUI", "The path and name of the file which holds\nthe extracted text in the source language."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "Custom Field for semantic domain"), "genstc_customfield", "", COMBO_BOX, object, object, object, loadTargetSenseCustomField, ReadConfig.GEN_STC_SEM_CUSTOMFIELD,\
+    "The custom field used to store the semantic domain category.", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "Limit number of stems generated against"), "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
+    _translate("SettingsGUI", "Limit the generation to a specified number of stems.\nStems chosen may seem random."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "Limit to specific lemmas in head word"), "genstc_limit_lemma_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_N, \
+    _translate("SettingsGUI", "Limit sentence generation word replacememnt to specific lemmas in head word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "  Limit to specific POS values in head word"), "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in head word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+#    [_translate("SettingsGUI", "  Limit to specific semantic domains in head word"), "genstc_limit_semdomain_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetSenseCustomList, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+#    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+#    
+    [_translate("SettingsGUI", "  Limit to specific semantic domains in head word"), "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+    "Limit sentence generation to specific semantic domains in head word", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "Limit to specific lemmas in dependent word 1"), "genstc_limit_lemma_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_1, \
+    _translate("SettingsGUI", "Limit sentence generation word replacement to specific lemmas in first dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "  Limit to specific POS values in dependent word"), "genstc_limit_pos_1", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_1,\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "  Limit to specific semantic domains in dependent word 1"), "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
+    "Limit sentence generation to specific semantic domains in dependent word 1", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "Limit to specific lemmas in dependent word 2"), "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
+    _translate("SettingsGUI", "Limit sentence generation word replacememnt to specific lemmas in second dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "  Limit to specific POS values in second dependent word"), "genstc_limit_pos_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_2,\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in second dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "  Limit to specific semantic domains in dependent word 2"), "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
+    "Limit sentence generation to specific semantic domains in dependent word 2", DONT_GIVE_ERROR, FULL_VIEW],\
+    #################
 
    [_translate("SettingsGUI", "TreeTran Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\

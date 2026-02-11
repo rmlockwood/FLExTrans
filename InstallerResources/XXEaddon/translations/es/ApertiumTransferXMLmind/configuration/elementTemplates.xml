@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfg:configuration name="Apertium Transfer Rules Document" xmlns:xslt="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:cfg="http://www.xmlmind.com/xmleditor/schema/configuration">
+  <!--
+========================================
+   Element templates 
+========================================
+-->
+  <cfg:elementTemplate name="y_igual_2">
+    <and>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+    </and>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="y_igual_3">
+    <and>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+    </and>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="anexar_recorte">
+    <append n="v_">
+      <clip pos="1" side="tl" part="a_"/>
+    </append>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="etiquetas">
+    <attr-item tags="aaa"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="atributo">
+    <def-attr n="a_">
+      <attr-item tags="aaa"/>
+    </def-attr>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="atributo_2">
+    <def-attr n="a_">
+      <attr-item tags="aaa"/>
+      <attr-item tags="bbb"/>
+    </def-attr>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="atributo_3">
+    <def-attr n="a_">
+      <attr-item tags="aaa"/>
+      <attr-item tags="bbb"/>
+      <attr-item tags="ccc"/>
+    </def-attr>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="comienza-con_literal">
+    <begins-with>
+      <clip pos="1" side="tl" part="lem"/>
+      <lit v="x1.1"/>
+    </begins-with>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="comienza-con-lista">
+    <begins-with-list>
+      <clip pos="1" side="tl" part="lem"/>
+      <list n="l_"/>
+    </begins-with-list>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="espacio_blanco">
+    <b/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="llamar-macro_1">
+    <call-macro n="m_">
+      <with-param pos="1"/>
+    </call-macro>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="llamar-macro_2">
+    <call-macro n="m_">
+      <with-param pos="1"/>
+      <with-param pos="2"/>
+    </call-macro>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="caso-de_idioma-fuente">
+    <case-of pos="1" side="sl" part="lem"/>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="caso-de_idioma-destino">
+    <case-of pos="1" side="tl" part="lem"/>
+  </cfg:elementTemplate>
+  
+  <cfg:elementTemplate name="categoría">
+    <def-cat n="c_">
+      <cat-item tags="n"/>
+    </def-cat>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="categoría_2">
+    <def-cat n="c_">
+      <cat-item tags="n"/>
+      <cat-item tags="n.*"/>
+    </def-cat>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="categoría_3">
+    <def-cat n="c_">
+      <cat-item tags="n"/>
+      <cat-item tags="n.*"/>
+      <cat-item tags="n.f.*"/>
+    </def-cat>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="recorte_idioma-fuente">
+    <clip pos="1" side="sl" part="a_"/>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="recorte_idioma-destino">
+    <clip pos="1" side="tl" part="a_"/>
+  </cfg:elementTemplate>
+  
+  <cfg:elementTemplate name="elegir_y">
+    <choose>
+      <when>
+        <test>
+          <and>
+            <equal>
+              <clip pos="1" side="tl" part="a_"/>
+              <lit-tag v="pl"/>
+            </equal>
+            <equal>
+              <clip pos="1" side="tl" part="a_"/>
+              <lit-tag v="pl"/>
+            </equal>
+          </and>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_comienza-con">
+    <choose>
+      <when>
+        <test>
+          <begins-with>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </begins-with>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_comienza-con-lista">
+    <choose>
+      <when>
+        <test>
+          <begins-with-list>
+            <clip pos="1" side="tl" part="a_"/>
+            <list n="l_"/>
+          </begins-with-list>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_contiene-subcadena">
+    <choose>
+      <when>
+        <test>
+          <contains-substring>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </contains-substring>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_termina-con">
+    <choose>
+      <when>
+        <test>
+          <ends-with>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="ly1.1"/>
+          </ends-with>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_termina-con-lista">
+    <choose>
+      <when>
+        <test>
+          <ends-with-list>
+            <clip pos="1" side="tl" part="a_"/>
+            <list n="l_"/>
+          </ends-with-list>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_igual">
+    <choose>
+      <when>
+        <test>
+          <equal>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </equal>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_en">
+    <choose>
+      <when>
+        <test>
+          <in>
+            <clip pos="1" side="tl" part="a_"/>
+            <list n="l_"/>
+          </in>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_no_igual">
+    <choose>
+      <when>
+        <test>
+          <not>
+            <equal>
+              <clip pos="1" side="tl" part="a_"/>
+              <lit-tag v="pl"/>
+            </equal>
+          </not>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elegir_o">
+    <choose>
+      <when>
+        <test>
+          <or>
+            <equal>
+              <clip pos="1" side="tl" part="a_"/>
+              <lit-tag v="pl"/>
+            </equal>
+            <equal>
+              <clip pos="1" side="tl" part="a_"/>
+              <lit-tag v="pl"/>
+            </equal>
+          </or>
+        </test>
+      </when>
+    </choose>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="fragmento">
+    <chunk name="ch">
+      <tags>
+        <tag>
+          <lit-tag v="???"/>
+        </tag>
+        <tag>
+          <clip pos="1" side="tl" part="a_"/>
+        </tag>
+      </tags>
+      <lu>
+        <clip pos="1" side="tl" part="a_"/>
+      </lu>
+    </chunk>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="concatenar_2">
+    <concat>
+      <lit v="x1.1"/>
+      <lit v="x1.1"/>
+    </concat>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="contiene-subcadena">
+    <contains-substring>
+      <clip pos="1" side="tl" part="lem"/>
+      <lit v="x1.1"/>
+    </contains-substring>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="termina-con_literal">
+    <ends-with>
+      <clip pos="1" side="tl" part="lem"/>
+      <lit v="x1.1"/>
+    </ends-with>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="termina-con-lista">
+    <ends-with-list>
+      <clip pos="1" side="tl" part="a_"/>
+      <list n="l_"/>
+    </ends-with-list>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="igual_recorte_cadena-literal">
+    <equal>
+      <clip pos="1" side="tl" part="lem"/>
+      <lit v="x1.1"/>
+    </equal>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="igual_recorte_etiqueta-literal">
+    <equal>
+      <clip pos="1" side="tl" part="a_"/>
+      <lit-tag v="pl"/>
+    </equal>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="en_lista">
+    <in>
+      <clip pos="1" side="tl" part="a_"/>
+      <list n="l_"/>
+    </in>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="elemento">
+    <pattern-item n="c_" />
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="asignar_recorte_etiqueta-literal">
+    <let>
+      <clip pos="1" side="tl" part="a_"/>
+      <lit-tag v="pl"/>
+    </let>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="asignar_recorte_cadena-literal">
+    <let>
+      <clip pos="1" side="tl" part="lem"/>
+      <lit v="x1.1"/>
+    </let>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="asignar_var_recorte">
+    <let>
+      <var n="v_"/>
+      <clip pos="1" side="tl" part="a_"/>
+    </let>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="asignar_recorte_var">
+    <let>
+      <clip pos="1" side="tl" part="a_"/>
+      <var n="v_"/>
+    </let>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="asignar_var_etiqueta-literal">
+    <let>
+      <var n="v_"/>
+      <lit-tag v="n"/>
+    </let>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="asignar_var_cadena-literal">
+    <let>
+      <var n="v_"/>
+      <lit v="x1.1"/>
+    </let>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="unidad_lexica_recorte">
+    <lu>
+      <clip pos="1" side="tl" part="a_"/>
+    </lu>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="unidad_lexica_recorte_2">
+    <lu>
+      <clip pos="1" side="tl" part="a_"/>
+      <clip pos="1" side="tl" part="a_"/>
+    </lu>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="unidad_lexica_recorte_3">
+    <lu>
+      <clip pos="1" side="tl" part="a_"/>
+      <clip pos="1" side="tl" part="a_"/>
+      <clip pos="1" side="tl" part="a_"/>
+    </lu>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="unidad_lexica_cadena-literal-etiqueta">
+    <lu>
+      <lit v="x1.1"/>
+      <lit-tag v="n"/>
+    </lu>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="lista_3">
+    <def-list n="l_">
+      <list-item v="x1.1"/>
+      <list-item v="y1.1"/>
+      <list-item v="z1.1"/>
+    </def-list>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cadena-literal">
+    <lit v="x1.1"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="etiqueta_literal">
+    <lit-tag v="n"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="macro_elegir">
+    <def-macro n="m_" npar="1">
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_"/>
+              <lit-tag v="pl"/>
+            </equal>
+          </test>
+        </when>
+        <otherwise/>
+      </choose>
+    </def-macro>
+  </cfg:elementTemplate>
+  
+  <cfg:elementTemplate name="mlu">
+    <mlu>
+      <lu>
+        <clip pos="1" side="tl" part="a_"/>
+      </lu>
+      <lu>
+        <clip pos="1" side="tl" part="a_"/>
+      </lu>
+    </mlu>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="no_igual">
+    <not>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+    </not>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="o_igual_2">
+    <or>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+    </or>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="o_igual_3">
+    <or>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+      <equal>
+        <clip pos="1" side="tl" part="a_"/>
+        <lit-tag v="pl"/>
+      </equal>
+    </or>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="sino_asignar">
+    <otherwise>
+      <let>
+        <var n="v_"/>
+        <lit-tag v="n"/>
+      </let>
+    </otherwise>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="salida_fragmento">
+    <out>
+      <chunk name="ch">
+        <tags>
+          <tag>
+            <lit-tag v="???"/>
+            <clip pos="1" side="tl" part="a_"/>
+          </tag>
+        </tags>
+        <lu>
+          <clip pos="1" side="tl" part="a_"/>
+        </lu>
+      </chunk>
+    </out>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="etiqueta">
+    <tag>
+      <lit-tag v="pl"/>
+      <clip pos="1" side="tl" part="a_"/>
+    </tag>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="etiquetas">
+    <cat-item tags="n.*"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="salida_unidad_lexica">
+    <out>
+      <lu>
+        <clip pos="1" side="tl" part="a_"/>
+      </lu>
+    </out>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="regla">
+    <rule comment="???">
+      <pattern>
+        <pattern-item n="c_"/>
+      </pattern>
+      <action>
+        <out>
+          <lu>
+            <clip pos="1" side="tl" part="a_"/>
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="variable_def">
+    <def-var n="v_"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="variable">
+    <var n="v_"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_y">
+    <when>
+      <test>
+        <and>
+          <equal>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </equal>
+          <equal>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </equal>
+        </and>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_comienza-con">
+    <when>
+      <test>
+        <begins-with>
+          <clip pos="1" side="tl" part="a_"/>
+          <lit-tag v="pl"/>
+        </begins-with>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_comienza-con-lista">
+    <when>
+      <test>
+        <begins-with-list>
+          <clip pos="1" side="tl" part="a_"/>
+          <list n="l_"/>
+        </begins-with-list>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_contiene-subcadena">
+    <when>
+      <test>
+        <contains-substring>
+          <clip pos="1" side="tl" part="a_"/>
+          <lit-tag v="pl"/>
+        </contains-substring>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_termina-con">
+    <when>
+      <test>
+        <ends-with>
+          <clip pos="1" side="tl" part="a_"/>
+          <lit-tag v="ly1.1"/>
+        </ends-with>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_termina-con-lista">
+    <when>
+      <test>
+        <ends-with-list>
+          <clip pos="1" side="tl" part="a_"/>
+          <list n="l_"/>
+        </ends-with-list>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_igual">
+    <when>
+      <test>
+        <equal>
+          <clip pos="1" side="tl" part="a_"/>
+          <lit-tag v="pl"/>
+        </equal>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_en">
+    <when>
+      <test>
+        <in>
+          <clip pos="1" side="tl" part="a_"/>
+          <list n="l_"/>
+        </in>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_no_igual">
+    <when>
+      <test>
+        <not>
+          <equal>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </equal>
+        </not>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="cuando_o">
+    <when>
+      <test>
+        <or>
+          <equal>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </equal>
+          <equal>
+            <clip pos="1" side="tl" part="a_"/>
+            <lit-tag v="pl"/>
+          </equal>
+        </or>
+      </test>
+    </when>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="con_elemento">
+    <with-param pos="?"/>
+  </cfg:elementTemplate>
+</cfg:configuration>

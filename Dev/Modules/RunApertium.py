@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.15 - 2/5/26 - Ron Lockwood
+#    Fixes #1071. Change drives before the cd command in the make batch file.
+#
 #   Version 3.14.4 - 10/10/25 - Ron Lockwood
 #    Fixes #1075. Give an error if the transfer rules file doesn't exist.
 #
@@ -45,19 +48,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.1 - 5/1/23 - Ron Lockwood
-#    Set the modified date of the internally used tr1.t1x file to be the same as
-#    the transfer_rules.t1x (or whatever the user specified) so that the transfer rules are
-#    only recompiled when the rules are out of date.
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.7.1 - 2/25/23 - Ron Lockwood
-#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/5/25
 #
@@ -108,7 +99,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -400,10 +391,14 @@ def run_makefile(absPathToBuildFolder, report):
     # set path to nothing
     outStr += f'set PATH=""\n'
 
+    # Extract drive letter and switch to it if the path is on a different drive
+    drive_letter = os.path.splitdrive(absPathToBuildFolder)[0]
+    if drive_letter:
+        outStr += f'{drive_letter}\n'
+
     # Put quotes around the path in case there's a space
     outStr += f'cd "{absPathToBuildFolder}"\n'
 
-    #fullPathErrFile = os.path.join(absPathToBuildFolder, APERTIUM_ERROR_FILE)
     outStr += f'"{FTPaths.MAKE_EXE}" 2>"{APERTIUM_ERROR_FILE}"\n'
 
     f.write(outStr)

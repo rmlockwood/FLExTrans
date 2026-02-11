@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.4 - 9/10/25 - Sara Mason
 #    Added missing end quote mark in report message for created text.
 #
@@ -47,11 +53,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/5/25
 #
@@ -59,6 +61,9 @@
 #   in the target database. If the name of the text already exists
 #   give it a new unique name.
 #
+
+import os
+import xml.etree.ElementTree as ET
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QApplication
@@ -76,6 +81,8 @@ from flexlibs import FLExProject
 import ChapterSelection
 import Mixpanel
 import ReadConfig
+import TextInOutUtils
+import TextOutRules
 import Utils
 from DoSynthesis import docs as DoSynthesisDocs
 
@@ -98,7 +105,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
@@ -118,6 +125,7 @@ same name will not be overwritten. A copy will be created.""").format(doSynthMod
 def insertTargetText(DB, configMap, report):
 
     TargetDB = FLExProject()
+    tree = None
 
     try:
         # Open the target database
@@ -148,6 +156,12 @@ def insertTargetText(DB, configMap, report):
     except:
         TargetDB.CloseProject()
         report.Error(_translate("InsertTargetText", 'The Synthesize Text module must be run before this one. Could not open the synthesis file: "') + synFile + '".')
+        return
+
+    # Apply user-defined search/replace rules from config if present
+    fullText = TextInOutUtils.applyTextOutRulesFromConfig(fullText, configMap, report, TextOutRules.docs[FTM_Name])
+
+    if fullText is None:
         return
 
     # Figure out the naming of the text file. Use the source text name by default,

@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.5 - 11/28/25 - Ron Lockwood
 #    Fixed #1062. When generating test data, if there is no compiled bilingual dictionary,
 #    compile it.
@@ -50,18 +53,7 @@
 #    Connect to the now functioning CreateRules routine.
 #    Rearrange the logic for the return code from the GUI program. Pretty print the GUIinput xml.
 #
-#   Version 3.9.3 - 12/20/23 - Ron Lockwood
-#    Use data classes to pass around category and feature lists.
-#
-#   Version 3.9.2 - 12/19/23 - Ron Lockwood
-#    Add a function to start the Rule Assistant program.
-#
-#   Version 3.9.1 - 12/6/23 - Ron Lockwood
-#    Build an XML file with category and feature data for source and target databases
-#    which will be used by the rule assistant GUI.
-#
-#   Version 3.9 - 9/11/23 - Ron Lockwood
-#    Initial version
+#   2023 version history removed on 2/6/26
 #
 #   Runs the Rule Assistant to create Apertium transfer rules.
 #
@@ -107,11 +99,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
+descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.14.5",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
+        FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
         FTM_Description:    descr}
 

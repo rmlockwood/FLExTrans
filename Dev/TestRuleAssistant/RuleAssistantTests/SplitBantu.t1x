@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+    <def-cat n="c_adj">
+      <cat-item tags="adj" />
+      <cat-item tags="adj.*" />
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="adj" />
+      <attr-item tags="n" />
+    </def-attr>
+    <def-attr n="a_n_singular_class_affixes">
+      <attr-item tags="14P" />
+      <attr-item tags="1P" />
+      <attr-item tags="3P" />
+      <attr-item tags="5P" />
+      <attr-item tags="7P" />
+    </def-attr>
+    <def-attr n="a_n_plural_class_affixes">
+      <attr-item tags="2P" />
+      <attr-item tags="4P" />
+      <attr-item tags="6P" />
+      <attr-item tags="8P" />
+    </def-attr>
+    <def-attr n="a_n_singular_class_feature">
+      <attr-item tags="1" />
+      <attr-item tags="14" />
+      <attr-item tags="3" />
+      <attr-item tags="5" />
+      <attr-item tags="7" />
+    </def-attr>
+    <def-attr n="a_n_plural_class_feature">
+      <attr-item tags="2" />
+      <attr-item tags="4" />
+      <attr-item tags="6" />
+      <attr-item tags="8" />
+      <attr-item tags="NApl" />
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <def-var n="v_Bantu_noun_class_from_n" />
+    <!--Used by macro m_n_BantuNounClass-to-adj_BantuNounClass-->
+    <def-var n="v_adj_BantuNounClass" />
+    <!--Used by macro m_n_BantuNounClass-to-n_BantuNounClass-->
+    <def-var n="v_n_BantuNounClass" />
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_Bantu_noun_class_from_n" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_Bantu_noun_class_from_n" />
+        <lit v="" />
+      </let>
+      <choose>
+        <when>
+          <test>
+            <and>
+              <!--We should check for the appropriate singular noun class if one of the following is true:-->
+              <or>
+                <!--The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)-->
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_affixes" side="tl" />
+                  <lit v="" />
+                </equal>
+                <!--The target noun doesn't take plural agreement (marked as such).-->
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                  <lit-tag v="NApl" />
+                </equal>
+              </or>
+              <!--But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.-->
+              <not>
+                <equal>
+                  <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                  <lit-tag v="NAsg" />
+                </equal>
+              </not>
+            </and>
+          </test>
+          <choose>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                  <lit-tag v="1" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="1" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                  <lit-tag v="14" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="14" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                  <lit-tag v="5" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="5" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                  <lit-tag v="7" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="7" />
+              </let>
+            </when>
+            <otherwise>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="sg" />
+              </let>
+            </otherwise>
+          </choose>
+        </when>
+        <otherwise>
+          <!--Check for the appropriate plural noun class.-->
+          <choose>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                  <lit-tag v="2" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="2" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                  <lit-tag v="6" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="6" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                  <lit-tag v="8" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="8" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                  <lit-tag v="NApl" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="NApl" />
+              </let>
+            </when>
+            <otherwise>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="pl" />
+              </let>
+            </otherwise>
+          </choose>
+        </otherwise>
+      </choose>
+    </def-macro>
+    <def-macro n="m_n_BantuNounClass-to-n_BantuNounClass" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_n_BantuNounClass" />
+        <lit v="" />
+      </let>
+      <!--Determine the appropriate noun class-->
+      <call-macro n="m_Bantu_noun_class_from_n">
+        <with-param pos="1" />
+      </call-macro>
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="2" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="2P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="14" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="14P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="NApl" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="NApl-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="pl" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="pl-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="8" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="8P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="sg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="sg-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="1" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="1P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="6" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="6P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="5" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="5P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="7" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="7P" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="BantuNounClass-UNK" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+    <def-macro n="m_n_BantuNounClass-to-adj_BantuNounClass" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_adj_BantuNounClass" />
+        <lit v="" />
+      </let>
+      <!--Determine the appropriate noun class-->
+      <call-macro n="m_Bantu_noun_class_from_n">
+        <with-param pos="1" />
+      </call-macro>
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="2" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="2A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="14" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="14A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="NApl" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="NApl-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="pl" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="pl-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="8" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="8A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="sg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="sg-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="1" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="1A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="6" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="6A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="5" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="5A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="7" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="7A" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="BantuNounClass-UNK" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="Noun">
+      <pattern>
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <!--Generate and output n-->
+        <!--Determine the appropriate BantuNounClass tag for n and store it in a variable named v_n_BantuNounClass.-->
+        <call-macro n="m_n_BantuNounClass-to-n_BantuNounClass">
+          <with-param pos="1" />
+        </call-macro>
+        <out>
+          <lu>
+            <clip pos="1" side="tl" part="lem" />
+            <clip pos="1" side="tl" part="a_gram_cat" />
+            <var n="v_n_BantuNounClass" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+    <rule comment="Noun Adj">
+      <pattern>
+        <pattern-item n="c_n" />
+        <pattern-item n="c_adj" />
+      </pattern>
+      <action>
+        <!--Generate and output n-->
+        <!--Determine the appropriate BantuNounClass tag for n and store it in a variable named v_n_BantuNounClass.-->
+        <call-macro n="m_n_BantuNounClass-to-n_BantuNounClass">
+          <with-param pos="1" />
+        </call-macro>
+        <out>
+          <lu>
+            <clip pos="1" side="tl" part="lem" />
+            <clip pos="1" side="tl" part="a_gram_cat" />
+            <var n="v_n_BantuNounClass" />
+          </lu>
+        </out>
+        <!--Generate and output adj-->
+        <!--Determine the appropriate BantuNounClass tag for adj and store it in a variable named v_adj_BantuNounClass.-->
+        <call-macro n="m_n_BantuNounClass-to-adj_BantuNounClass">
+          <with-param pos="1" />
+        </call-macro>
+        <out>
+          <b />
+          <lu>
+            <clip pos="2" side="tl" part="lem" />
+            <clip pos="2" side="tl" part="a_gram_cat" />
+            <var n="v_adj_BantuNounClass" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

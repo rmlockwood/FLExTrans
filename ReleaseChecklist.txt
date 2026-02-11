@@ -16,12 +16,10 @@ Do these things when making a new release (when a beta release is not already se
 -Build and test the install locally
 -Do another commit that has the install changes
 -Finish merging all pull requests
--Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
--Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
 -Test the install
 
 Do these things when you are going live with the release
-========================================================
+=========================================================
 -Make a new .download_info file changing the relevant data. 3 changes.
 -Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
 -Create the release in Git with the new version string. 
@@ -42,8 +40,10 @@ Do these things when you are going live with the release
 -If just doing a minor release without release notes and want to create a tag
  -Go to tags, switch to Releases
  -Click draft new release
- -Choose a tag (dropdown) and give new vx.x.x and click Create new tag xxx on publish
+ -Choose a tag (dropdown) and give new vx.x.xtag and click Create new tag xxx on publish
  -Publish, then delete the release, the tag will remain
+-Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
+-Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
 -Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
 -Update the instructions on the download and installation web pages as necessary.
 -announce the new release on the FLEx list

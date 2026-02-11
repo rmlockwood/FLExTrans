@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="n" />
+    </def-attr>
+    <def-attr n="a_gender_feature">
+      <attr-item tags="f" />
+      <attr-item tags="m" />
+    </def-attr>
+    <def-attr n="a_n_number_affixes">
+      <attr-item tags="DEF_PL" />
+      <attr-item tags="DEF_SG" />
+      <attr-item tags="PL" />
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <!--Used by macro m_def_lemma_from_n-->
+    <def-var n="v_def_lemma_from_n" />
+    <!--Used by macro m_n_number_or_sg-to-n_number-->
+    <def-var n="v_n_number" />
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_def_lemma_from_n" npar="1" c="FTM v_def_lemma_from_n def n">
+      <!--Item 1 is part-of-speech n.-->
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_def_lemma_from_n" />
+        <lit v="" />
+      </let>
+      <!--Narrow the set of possible values based on gender (f, m) given definiteness = defid.-->
+      <choose>
+        <!--Set v_def_lemma_from_n based on gender = f.-->
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="f" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_def_lemma_from_n" />
+            <lit v="la" />
+          </let>
+        </when>
+        <!--Set v_def_lemma_from_n based on gender = m.-->
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="m" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_def_lemma_from_n" />
+            <lit v="lo" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_def_lemma_from_n" />
+            <lit v="no-lemma-for-defid" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+    <def-macro n="m_n_number_or_sg-to-n_number" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_n_number" />
+        <lit v="" />
+      </let>
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_n_number_affixes" />
+              <lit-tag v="DEF_PL" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_number" />
+            <lit-tag v="PL" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_n_number" />
+            <lit v="" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="Def (remove src word 1)">
+      <pattern>
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <!--Generate and output def-->
+        <!--Determine the appropriate lemma for def and store it in a variable named v_def_lemma_from_n.-->
+        <call-macro n="m_def_lemma_from_n">
+          <with-param pos="1" />
+        </call-macro>
+        <out>
+          <lu>
+            <get-case-from pos="1">
+              <var n="v_def_lemma_from_n" />
+            </get-case-from>
+            <lit-tag v="def" />
+          </lu>
+        </out>
+        <!--Generate and output n-->
+        <!--Determine the appropriate number tag for n and store it in a variable named v_n_number.-->
+        <call-macro n="m_n_number_or_sg-to-n_number">
+          <with-param pos="1" />
+        </call-macro>
+        <out>
+          <b />
+          <lu>
+            <clip pos="1" side="tl" part="lem" />
+            <clip pos="1" side="tl" part="a_gram_cat" />
+            <var n="v_n_number" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

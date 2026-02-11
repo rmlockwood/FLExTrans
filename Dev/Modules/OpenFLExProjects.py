@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -59,7 +62,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",
@@ -79,7 +82,7 @@ class MainWindow(QMainWindow):
         self.returnVal = False
 
     def initUI(self, project_names):
-        self.setWindowTitle('Open Multiple FLEx Projects')
+        self.setWindowTitle(_translate("OpenFLExProjects", 'Open Multiple FLEx Projects'))
         self.setGeometry(100, 100, 400, 300)
 
         # Create a central widget and set a layout

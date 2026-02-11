@@ -36,19 +36,10 @@
 #   Version 3.10.5 - 7/13/24 - Ron Lockwood
 #    Fixes #668. The N.N wasn't being shown in the tooltip. Show it always.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Fixes #476. Remove the EOL stuff we get from HermitCrab.
-#
-#   Version 3.7.2 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#
-#   Version 3.7.1 - 1/10/23 - Ron Lockwood
-#    Renamed some functions to be camel case. Also added common function processAdvancedResults.
-#
-#   Version 3.7 - 12/24/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Classes that model objects for the testbed.
+#   See design diagrams here: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb 
 
 import re
 import os
@@ -219,7 +210,7 @@ class LexicalUnit():
             p = ET.Element('span')
             
             # Split off the homograph_num (if present; sent punctuation won't have it)
-            lemma_parts = re.split('(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
+            lemma_parts = re.split(r'(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
             
             # Output the lexeme
             span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
@@ -363,7 +354,7 @@ class LexicalUnitParser():
         
         luStr = Utils.split_compounds(myStr)
         
-        tokens = re.split('\^|\$', luStr)
+        tokens = re.split(r'\^|\$', luStr)
         
         # If we have less than 2 tokens, there is something wrong. It may mean there are no ^$ delimiters
         if len(tokens) < 2:
@@ -385,7 +376,7 @@ class LexicalUnitParser():
         
         # Split on the . that's between homograph # and sense #
         # We'll get something like: ['ich1', '1 pro lieben2', '2 v 1/3SG dich3', '44 pro suf1 suf2']
-        tokens = re.split('\.', myStr)
+        tokens = re.split(r'\.', myStr)
         
         # Go through the tokens
         for i, tok in enumerate(tokens):
@@ -664,10 +655,10 @@ class TestbedTestXMLObject():
         line = re.sub(r' @*EOL', '', line)
         
         # Remove the dummy EOL lexical unit at the end. HermitCrab results.
-        line = re.sub(' %0%\^@EOL<EOL>\$%', '', line)
+        line = re.sub(r' %0%\^@EOL<EOL>\$%', '', line)
         
         # Remove multiple spaces
-        line = re.sub('\s{2,}', ' ', line)
+        line = re.sub(r'\s{2,}', ' ', line)
         line = line.rstrip()
 
         # Convert to decomposed unicode for comparison. When we read in the file testbed
@@ -1150,7 +1141,7 @@ def addSubscript(span, num):
 def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
 
     # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
-    lemma_parts = re.split('(\d+\.\d+)', lemma, flags=re.RegexFlag.A) # last item is empty, re.RegexFlag.A=ASCII only match
+    lemma_parts = re.split(r'(\d+\.\d+)', lemma, flags=re.RegexFlag.A) # last item is empty, re.RegexFlag.A=ASCII only match
     
     # Check for an @
     if lemma_parts[0] and lemma_parts[0][0] == '@':
@@ -1199,7 +1190,7 @@ def parseString(inputStr):
     """
     Parse a string into main part and symbols using regex.
     Symbols are defined as content between < and > at the end of the string.
-    The main part can contain escaped brackets \< and \>.
+    The main part can contain escaped brackets \\< and \\>.
     
     Args:
         inputStr (str): Input string to parse
@@ -1319,7 +1310,7 @@ def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuation
         # Split off the advanced stuff that precedes the brace {
         # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
         # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
-        tokens = re.split('{|}', targetOutput)
+        tokens = re.split(r'{|}', targetOutput)
         
         # process pairs of tokens
         for i in range(0, len(tokens)-1): # skip the last one for now
@@ -1334,10 +1325,10 @@ def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuation
                 if punctuationPresent:
                     
                     # remove the $ from the advanced part
-                    tok = re.sub('\$', '', tok)
+                    tok = re.sub(r'\$', '', tok)
                     
                     # split on ^ and output any punctuation
-                    [punc, chunk] = re.split('\^', tok)
+                    [punc, chunk] = re.split(r'\^', tok)
                 
                     # don't put out anything when it's a default chunk
                     if re.search('^default', chunk):
@@ -1366,7 +1357,7 @@ def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuation
                 # parse the lexical units. This will give us tokens before, between 
                 # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
                 #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
-                subTokens = re.split('\^|\$', tok)
+                subTokens = re.split(r'\^|\$', tok)
                 
                 # process pairs of tokens (punctuation and lexical unit)
                 for j in range(0, len(subTokens)-1, 2):

@@ -5,8 +5,12 @@
 #   SIL International
 #   5/3/22
 #
-#   Version 3.14.3 - 12/15/25 - Ron Lockwood
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
 #    Fixes #1149. Support alternate Paratext folder setting.
+#
+#   Version 3.15 - 2/9/26 - Ron Lockwood
+#    Fixes #1232. Change regex for attributes to stop matching on a backslash. This prevents
+#    it from matching across multiple figures in a book.
 #
 #   Version 3.14.3 - 12/10/25 - Ron Lockwood
 #    Fixes #1143. Allow .USFM files as well as .SFM files.
@@ -63,18 +67,7 @@
 #   Version 3.10 - 3/13/24 - Ron Lockwood
 #    Support Paratext lexicon import.
 #
-#   Version 3.9.1 - 12/21/23 - Ron Lockwood
-#    Added apocryphal/deuterocanonical and extra books into the list.
-#
-#   Version 3.7.1 - 1/30/23 - Ron Lockwood
-#    Restructured to put common init and exit code into ChapterSelection.py
-#    Store export project and import project as separate settings.
-#
-#   Version 3.7 - 1/25/23 - Ron Lockwood
-#    Added cross-references to the selection class.
-#
-#   Version 3.5 - 5/3/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   ChapterSelection Class which is for data associated with import and export
 #   from and to Paratext. 
@@ -213,6 +206,14 @@ def splitSFMs(inputStr):
                     r'\\\w+)',              # any other marker
                     inputStr) 
     return segs
+
+# Convert old USFM 1.0 or 2.0 \fig syntax to 3.0. 
+# old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
+# new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
+def convertFigSyntax(importText):
+
+    return re.sub(r'\\fig ([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\\fig\*', 
+                  r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
 
 def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
 

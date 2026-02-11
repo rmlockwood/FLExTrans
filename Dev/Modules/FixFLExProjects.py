@@ -5,6 +5,9 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -70,7 +73,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation for the user:
 docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,
@@ -191,7 +194,7 @@ class Main(QMainWindow):
         self.returnVal = False
 
     def initUI(self, project_names):
-        self.setWindowTitle('Fix FLEx Projects')
+        self.setWindowTitle(_translate("FixFLExProjects", 'Fix FLEx Projects'))
         self.setGeometry(100, 100, 400, 300)
 
         # Create a central widget and set a layout

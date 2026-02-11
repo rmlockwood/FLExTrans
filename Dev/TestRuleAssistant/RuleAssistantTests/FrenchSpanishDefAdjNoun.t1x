@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_def">
+      <cat-item tags="def" />
+      <cat-item tags="def.*" />
+    </def-cat>
+    <def-cat n="c_adj">
+      <cat-item tags="adj" />
+      <cat-item tags="adj.*" />
+    </def-cat>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="adj" />
+      <attr-item tags="def" />
+      <attr-item tags="n" />
+    </def-attr>
+    <def-attr n="a_gender_feature">
+      <attr-item tags="f" />
+      <attr-item tags="m" />
+    </def-attr>
+    <def-attr n="a_n_number_affixes">
+      <attr-item tags="PL" />
+      <attr-item tags="SG" />
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <!--Used by macro m_n_gender-to-adj_gender-->
+    <def-var n="v_adj_gender" />
+    <!--Used by macro m_def_lemma_from_n-->
+    <def-var n="v_def_lemma_from_n" />
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_def_lemma_from_n" npar="1" c="FTM v_def_lemma_from_n def n">
+      <!--Item 1 is part-of-speech n.-->
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_def_lemma_from_n" />
+        <lit v="" />
+      </let>
+      <!--Narrow the set of possible values based on gender (f, m).-->
+      <choose>
+        <!--Set v_def_lemma_from_n based on gender = f.-->
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="f" />
+            </equal>
+          </test>
+          <!--Narrow the set of possible values based on number (pl, sg) given gender = f.-->
+          <choose>
+            <!--Set v_def_lemma_from_n based on number = pl.-->
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" side="tl" part="a_n_number_affixes" />
+                  <lit-tag v="PL" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="las1.1" />
+              </let>
+            </when>
+            <!--Set v_def_lemma_from_n based on number = sg.-->
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" side="tl" part="a_n_number_affixes" />
+                  <lit-tag v="SG" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="la1.1" />
+              </let>
+            </when>
+            <otherwise>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="no-lemma-for-f" />
+              </let>
+            </otherwise>
+          </choose>
+        </when>
+        <!--Set v_def_lemma_from_n based on gender = m.-->
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="m" />
+            </equal>
+          </test>
+          <!--Narrow the set of possible values based on number (pl, sg) given gender = m.-->
+          <choose>
+            <!--Set v_def_lemma_from_n based on number = pl.-->
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" side="tl" part="a_n_number_affixes" />
+                  <lit-tag v="PL" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="los1.1" />
+              </let>
+            </when>
+            <!--Set v_def_lemma_from_n based on number = sg.-->
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" side="tl" part="a_n_number_affixes" />
+                  <lit-tag v="SG" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="el1.1" />
+              </let>
+            </when>
+            <otherwise>
+              <let>
+                <var n="v_def_lemma_from_n" />
+                <lit v="no-lemma-for-m" />
+              </let>
+            </otherwise>
+          </choose>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_def_lemma_from_n" />
+            <lit v="no-lemma-for-" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+    <def-macro n="m_n_gender-to-adj_gender" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_adj_gender" />
+        <lit v="" />
+      </let>
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="f" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_gender" />
+            <lit-tag v="FEM_a" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_gender_feature" />
+              <lit-tag v="m" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_gender" />
+            <lit-tag v="MASC_a" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_adj_gender" />
+            <lit-tag v="gender-UNK" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="Definite - Adjective - Noun">
+      <pattern>
+        <pattern-item n="c_def" />
+        <pattern-item n="c_adj" />
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <!--Generate and output def-->
+        <!--Determine the appropriate lemma for def and store it in a variable named v_def_lemma_from_n.-->
+        <call-macro n="m_def_lemma_from_n">
+          <with-param pos="3" />
+        </call-macro>
+        <out>
+          <lu>
+            <get-case-from pos="1">
+              <var n="v_def_lemma_from_n" />
+            </get-case-from>
+            <clip pos="1" side="tl" part="a_gram_cat" />
+          </lu>
+        </out>
+        <!--Generate and output n-->
+        <out>
+          <b />
+          <lu>
+            <clip pos="3" side="tl" part="lem" />
+            <clip pos="3" side="tl" part="a_gram_cat" />
+            <clip pos="3" side="tl" part="a_n_number_affixes" />
+          </lu>
+        </out>
+        <!--Generate and output adj-->
+        <!--Determine the appropriate gender tag for adj and store it in a variable named v_adj_gender.-->
+        <call-macro n="m_n_gender-to-adj_gender">
+          <with-param pos="3" />
+        </call-macro>
+        <out>
+          <b />
+          <lu>
+            <clip pos="2" side="tl" part="lem" />
+            <clip pos="2" side="tl" part="a_gram_cat" />
+            <var n="v_adj_gender" />
+            <clip pos="3" side="tl" part="a_n_number_affixes" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>
