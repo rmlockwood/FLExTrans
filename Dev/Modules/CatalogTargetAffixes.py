@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -77,7 +80,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'CatalogTargetAffixes'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -88,7 +94,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
-        FTM_Version    : "3.14.1",        
+        FTM_Version    : "3.15",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",
@@ -100,8 +106,8 @@ as being used. Actually the target project is being used.
 The catalog will be created in the file specified by the Target Affix Gloss List File setting.
 This is typically called target_affix_glosses.txt and is usually in the Build folder.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 
 #----------------------------------------------------------------
@@ -276,7 +282,11 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

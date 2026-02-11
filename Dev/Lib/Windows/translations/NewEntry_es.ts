@@ -43,5 +43,10 @@
         <source>Cluster Projects to Apply to</source>
         <translation>Proyectos de clúster a los que aplicar</translation>
     </message>
+    <message>
+        <location filename="../NewEntry.py" line="82"/>
+        <source>Add New Target Entry</source>
+        <translation>Agregar nueva entrada objetivo</translation>
+    </message>
 </context>
 </TS>

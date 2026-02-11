@@ -182,72 +182,7 @@
 #   Version 3.10.2 - 1/12/24 - Ron Lockwood
 #    Fixes #538. Escape brackets in the pre or post punctuation.
 #
-#   Version 3.9.9 - 12/9/23 - Ron Lockwood
-#    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
-#
-#   Version 3.9.9 - 9/11/23 - Ron Lockwood
-#    Two functions added to support creating apertium rules.
-#
-#   Version 3.9.8 - 8/18/23 - Ron Lockwood
-#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.7 - 8/17/23 - Ron Lockwood
-#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.6 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.5 - 7/21/23 - Ron Lockwood
-#    Fixed error message when target project fails to open.
-#
-#   Version 3.9.4 - 7/19/23 - Ron Lockwood
-#    Fixes #469. Don't show guid to the user on errors.
-#
-#   Version 3.9.3 - 7/17/23 - Ron Lockwood
-#    Fixes #470. Re-write entry urls as sense urls when loading the sense linker.
-#    Also clear the sense num field for such entries.
-#
-#   Version 3.9.2 - 7/17/23 - Ron Lockwood
-#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
-#
-#   Version 3.9.1 - 7/3/23 - Ron Lockwood
-#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
-#
-#   Version 3.8.4 - 5/3/23 - Ron Lockwood
-#    When extracting the interlinear info., instead of checking if one punctuation symbol of
-#    a cluster is in the list of sentence-ending punctuation, require all of the cluster to be
-#    in the list before we consider it a <sent> block. Otherwise consider the whole cluster to be
-#    non-sentence ending punctuation. This might create issues in places where we are looking for
-#    sentence breaks in the transfer rules. This fix was for places where a footnote ended right
-#    before a period, so we got \f*. The *. was a cluster that was being allowed to be sentence
-#    punctuation, but this caused problems elsewhere (convert to ana I think) where * wasn't recognized.
-#    Also fixed was adding saved pre punctuation when the next word is sentence punctuation. Before
-#    this fix, some punctuation was being lost.
-#
-#   Version 3.8.3 - 4/21/23 - Ron Lockwood
-#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
-#    collects all the interlinear text names.
-#
-#   Version 3.8.2 - 4/20/23 - Ron Lockwood
-#    Reworked import statements. Fixed duplicate processErrorList.
-#
-#   Version 3.8.1 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8 - 4/4/23 - Ron Lockwood
-#    Support HermitCrab Synthesis.
-#
-#   Version 3.7.12 - 2/25/23 - Ron Lockwood
-#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
-#
-#   Version 3.7.11 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#
-#   Version 3.7.10 - 1/30/23 - Ron Lockwood
-#    New function to determine if a string has RTL characters.
-#
-#   Version 3.7.9 - 1/5/23 - Ron Lockwood
-#    Support fixes to issue 229 by adding a parameter to check_for_cat_errors.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 1/15/25
 #
@@ -1033,7 +968,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
 def remove1dot1(lem):
 
-    return re.sub('1\.1', '', lem)
+    return re.sub(r'1\.1', '', lem)
 
 def fixupLemma(entry, senseNum, remove1dot1Bool=False):
 

@@ -53,5 +53,10 @@
         <source>New Group</source>
         <translation>Nuevo grupo</translation>
     </message>
+    <message>
+        <location filename="../ClusterAdHoc.py" line="122"/>
+        <source>Add Cluster Ad Hoc Rules</source>
+        <translation>Agregar reglas ad hoc de clúster</translation>
+    </message>
 </context>
 </TS>

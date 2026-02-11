@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -54,7 +57,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'EndTestbed'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -65,22 +71,26 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",
         FTM_Description: _translate("EndTestbed",  
 """Conclude a testbed log result.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['EndTestbed'], 
                            translators, loadBase=True)
 

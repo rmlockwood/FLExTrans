@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_def">
+      <cat-item tags="def" />
+      <cat-item tags="def.*" />
+    </def-cat>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+    <def-cat n="c_def_defid">
+      <cat-item tags="def.defid" />
+      <cat-item tags="def.defid.*" />
+      <cat-item tags="def.*.defid" />
+      <cat-item tags="def.*.defid.*" />
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="def" />
+      <attr-item tags="n" />
+    </def-attr>
+    <def-attr n="a_number_feature">
+      <attr-item tags="pl" />
+      <attr-item tags="sg" />
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <!--Used by macro m_def_number-to-n_number-->
+    <def-var n="v_n_number" />
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_def_number-to-n_number" npar="1">
+      <!--Clear the variable to be sure we don't accidentally retain a prior value-->
+      <let>
+        <var n="v_n_number" />
+        <lit v="" />
+      </let>
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_number_feature" />
+              <lit-tag v="sg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_number" />
+            <lit-tag v="SG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <clip pos="1" side="tl" part="a_number_feature" />
+              <lit-tag v="pl" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_number" />
+            <lit-tag v="PL" />
+          </let>
+        </when>
+        <otherwise>
+          <let>
+            <var n="v_n_number" />
+            <lit-tag v="number-UNK" />
+          </let>
+        </otherwise>
+      </choose>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="Def">
+      <pattern>
+        <pattern-item n="c_def_defid" />
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <!--Generate and output n-->
+        <!--Determine the appropriate number tag for n and store it in a variable named v_n_number.-->
+        <call-macro n="m_def_number-to-n_number">
+          <with-param pos="1" />
+        </call-macro>
+        <out>
+          <lu>
+            <get-case-from pos="1">
+              <clip pos="2" side="tl" part="lem" />
+            </get-case-from>
+            <clip pos="2" side="tl" part="a_gram_cat" />
+            <var n="v_n_number" />
+            <lit-tag v="DEF" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

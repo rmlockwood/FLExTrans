@@ -5,6 +5,19 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15 - 2/9/26 - Ron Lockwood
+#    Fixes #1232. Change regex for attributes to stop matching on a backslash. This prevents
+#    it from matching across multiple figures in a book.
+#
+#   Version 3.14.3 - 12/10/25 - Ron Lockwood
+#    Fixes #1143. Allow .USFM files as well as .SFM files.
+#
+#   Version 3.14.2 - 12/3/25 - Ron Lockwood
+#    Refixes #1139. Reword the error message.
+#
+#   Version 3.14.1 - 12/3/25 - Ron Lockwood
+#    Fixes #1139. Give a better error message when Paratext path is not found in registry.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -51,18 +64,7 @@
 #   Version 3.10 - 3/13/24 - Ron Lockwood
 #    Support Paratext lexicon import.
 #
-#   Version 3.9.1 - 12/21/23 - Ron Lockwood
-#    Added apocryphal/deuterocanonical and extra books into the list.
-#
-#   Version 3.7.1 - 1/30/23 - Ron Lockwood
-#    Restructured to put common init and exit code into ChapterSelection.py
-#    Store export project and import project as separate settings.
-#
-#   Version 3.7 - 1/25/23 - Ron Lockwood
-#    Added cross-references to the selection class.
-#
-#   Version 3.5 - 5/3/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   ChapterSelection Class which is for data associated with import and export
 #   from and to Paratext. 
@@ -150,13 +152,18 @@ class ChapterSelection(object):
         else:
             projectAbbrev = self.importProjectAbbrev  
 
-        path = os.path.join(self.paratextPath, projectAbbrev, '*' + self.bookAbbrev + projectAbbrev + '.SFM')
+        # First try .SFM
+        pattern = '*' + self.bookAbbrev + projectAbbrev + '.SFM'
+        path = os.path.join(self.paratextPath, projectAbbrev, pattern)
         fileList = glob.glob(path)
 
-        if len(fileList) < 1:
-            return ''
-        else:
-            return fileList[0]
+        # If none found, try .USFM
+        if not fileList:
+            pattern = '*' + self.bookAbbrev + projectAbbrev + '.USFM'
+            path = os.path.join(self.paratextPath, projectAbbrev, pattern)
+            fileList = glob.glob(path)
+
+        return fileList[0] if fileList else ''
 
 # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
 # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
@@ -189,6 +196,14 @@ def splitSFMs(inputStr):
                     r'\\\w+)',              # any other marker
                     inputStr) 
     return segs
+
+# Convert old USFM 1.0 or 2.0 \fig syntax to 3.0. 
+# old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
+# new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
+def convertFigSyntax(importText):
+
+    return re.sub(r'\\fig ([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\\fig\*', 
+                  r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
 
 def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
 
@@ -384,12 +399,15 @@ def InitControls(self, export=True, fromFLEx=False):
 def getParatextPath():
 
     # Get the Paratext path from the registry
-    aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
-    aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-    aKey = winreg.OpenKey(aReg, aKey)
-    paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
-    return paratextPathTuple[0]
+    try:
+        aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
+        aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+        aKey = winreg.OpenKey(aReg, aKey)
+        paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
+        return paratextPathTuple[0]
     
+    except Exception as e:
+        return None
     
 def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True, fromFLEx=False):
     
@@ -426,6 +444,12 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     # Get the Paratext path
     paratextPath = getParatextPath()
 
+    # If we get None, there was a registry problem
+    if paratextPath is None:
+        
+        QMessageBox.warning(self, _translate("ChapterSelection", "Registry Error"), _translate("ChapterSelection", "Could not find the Paratext data folder in the registry."))
+        return
+
     # Check if Paratext path exists
     if not os.path.exists(paratextPath): 
 
@@ -444,14 +468,18 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
         if not fromFLEx:
 
-            # Check if the book exists
-            bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
-            
-            fileList = glob.glob(bookPath)
-            
-            if checkBookPath and len(fileList) < 1:
-                
-                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file at: {bookPath}.").format(bookPath=bookPath))
+            # Check if the book exists: try .SFM first, then .USFM
+            pattern = '*' + bookAbbrev + projectAbbrev + '.SFM'
+            bookPathPattern = os.path.join(projPath, pattern)
+            fileList = glob.glob(bookPathPattern)
+
+            if not fileList:
+                pattern = '*' + bookAbbrev + projectAbbrev + '.USFM'
+                bookPathPattern = os.path.join(projPath, pattern)
+                fileList = glob.glob(bookPathPattern)
+
+            if checkBookPath and not fileList:
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=bookPathPattern))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():
@@ -479,6 +507,10 @@ def getFilteredSubdirectories(rootDir, excludeList):
     those that start with '_' or 'UserSettings'.
     """
     subdirectories = []
+    
+    if rootDir is None:
+
+        return subdirectories
     
     for dirname in os.listdir(rootDir):
 
@@ -671,7 +703,10 @@ def doExport(textContents, report, chapSelectObj, parent):
     return 1
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 Utils.loadTranslations(['ChapterSelection'], translators)
 
@@ -786,5 +821,5 @@ bookMap = {
     'GLO': _translate("ChapterSelection", "Glossary"),
 }
 
-app.quit()
-del app
+#app.quit()
+#del app

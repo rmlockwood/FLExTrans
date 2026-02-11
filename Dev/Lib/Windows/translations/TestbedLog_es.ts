@@ -18,5 +18,10 @@
         <source>Font Size:</source>
         <translation>Tamaño de fuente:</translation>
     </message>
+    <message>
+        <location filename="../TestbedLog.py" line="76"/>
+        <source>Testbed Log</source>
+        <translation>Registro del banco de pruebas</translation>
+    </message>
 </context>
 </TS>

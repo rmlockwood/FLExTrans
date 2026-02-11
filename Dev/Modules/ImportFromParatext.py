@@ -5,6 +5,15 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.15.1 - 2/9/26 - Ron Lockwood
+#    Fixes #1232. Call function in Chapter Selection to convert \fig syntax to the new USFM 3.0 format.
+#
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
+#   Version 3.14.3 - 1/21/26 - Ron Lockwood
+#    Fixes #1186. Fix parent window passed into init Cluster Widgets.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -104,32 +113,7 @@
 #   Version 3.10 - 1/4/24 - Ron Lockwood
 #    Fixes #536. support . for chapter verse separator. Make all between \xt and \x* the analysis WS.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.2 - 5/3/23 - Ron Lockwood
-#    Refresh the status bar if they chose to use the new text as the active text.
-#
-#   Version 3.8.1 - 5/3/23 - Ron Lockwood
-#    Put the paragraph mark after section markers and quote markes that have a number (e.g. q1)
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.7.5 - 3/1/23 - Ron Lockwood
-#    Determine uppercase for the section mark feature by looking for the first
-#    non-blank vernacular segment.
-#
-#   Version 3.7.4 - 2/28/23 - Ron Lockwood
-#    Put section marks after verses and quote markers
-#
-#   Version 3.7.3 - 1/30/23 - Ron Lockwood
-#    Restructured to put common init and exit code into ChapterSelection.py
-#    Store export project and import project as separate settings.
-#
-#   Version 3.7.2 - 1/25/23 - Ron Lockwood
-#    Fixes #173 and #190. Give user choice to exclude \x..\x* and \r... Handle
-#    verse bridges like \v 3-4. Handle \vp 3-4 or \vp 2
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 1/13/25
 #
@@ -172,7 +156,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ImportFromParatext'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -184,7 +171,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -198,8 +185,8 @@ If you want to make the newly imported text, the active text in FLExTrans click 
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
 cluster projects in the main FLExTrans Settings, then come back to this module.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
@@ -221,10 +208,10 @@ class Main(QMainWindow):
         self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        self.setWindowTitle("Import Paratext Chapters")
+        self.setWindowTitle(_translate("ImportFromParatext", "Import Paratext Chapters"))
 
-        header1TextStr = "FLEx project name"
-        header2TextStr = "Paratext project abbrev."
+        header1TextStr = _translate("ImportFromParatext", "FLEx project name")
+        header2TextStr = _translate("ImportFromParatext", "Paratext project abbrev.")
         self.ptxProjs = ChapterSelection.getParatextProjects()
 
         # Set the top two widgets that need to be disabled
@@ -405,7 +392,7 @@ def do_import(DB, report, chapSelectObj, tree):
         
         reStr += '$'
 
-    # Otherwise the expression ends at the toChapter
+    # Otherwise the expression ends at the toChapter # TODO: don't assume \s immediately follows the chapter number
     else:
         reStr += fr'\\c {str(chapSelectObj.toChap+1)}\s'
 
@@ -433,9 +420,7 @@ def do_import(DB, report, chapSelectObj, tree):
             report.Info(_translate("ImportFromParatext", "{numRules} 'Text In' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
             
     # Convert old USFM 1.0 or 2.0 \fig syntax to 3.0
-    # old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
-    # new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
-    importText = re.sub(r'\\fig ([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\\fig\*', r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
+    importText = ChapterSelection.convertFigSyntax(importText)
 
     # Remove footnotes if necessary
     if chapSelectObj.includeFootnotes == False:
@@ -552,7 +537,11 @@ def do_import(DB, report, chapSelectObj, tree):
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     tree = None

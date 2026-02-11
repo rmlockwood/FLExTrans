@@ -96,5 +96,10 @@ und doppelklicken Sie dann in der Spalte &quot;Ziel-Stichwort&quot; auf die gew√
         <source>Senses to link:</source>
         <translation>Zu verkn√ºpfende Bedeutungen:</translation>
     </message>
+    <message>
+        <location filename="../Linker.py" line="245"/>
+        <source>FLExTrans Sense Linker Tool</source>
+        <translation>FLExTrans Sense-Linker-Werkzeug</translation>
+    </message>
 </context>
 </TS>

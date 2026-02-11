@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
+#   Version 3.14.4 - 9/10/25 - Sara Mason
+#    Added missing end quote mark in report message for created text.
+#
 #   Version 3.14.3 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -44,11 +50,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/5/25
 #
@@ -85,7 +87,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'InsertTargetText'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -96,7 +101,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
@@ -107,8 +112,8 @@ and insert the text into the target FLEx project. The Source Text Name setting
 will be used for the text name in the target project. An existing text of the 
 same name will not be overwritten. A copy will be created.""").format(doSynthModule=DoSynthesisDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
@@ -202,7 +207,7 @@ def insertTargetText(DB, configMap, report):
     # Set metadata for the text
     ChapterSelection.setTextMetaData(DB, text)
 
-    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName} created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
+    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName}" created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
                 TargetDB.BuildGotoURL(text))
     TargetDB.CloseProject()
 
@@ -215,7 +220,11 @@ def MainFunction(DB, report, modify=True):
         return
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

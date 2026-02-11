@@ -3,6 +3,28 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.7 - 12/7/25 - Beth Bryson
+#    Adjust sentence generation work to use custom list fields.
+#    Added new functions loadTargetSenseCustomField and loadTargetSenseCustomList
+#    Populate the widget for choosing the Semantic Domains from the values for that
+#    custom list field.  Leaving the call to this function commented out for now because
+#    it doesn't yet handle hierarchy in the custom list, and the TextBox functionality was working.
+#
+#   Version 3.14.6 - 12/6/25 - Beth Bryson
+#    Fixes #1132. Adjust name of setting for "Custom field for sense link".
+#    Generalize labels in the functions for fetching custom field names.
+#    Fix bug with index for displayed value when (none) is added as a possible value.
+#
+#   Version 3.14.5 - 12/6/25 - Ron Lockwood
+#    Fixes #1132. Use (none) as an option for allomorph and entry custom fields.
+#    Also, when writing settings, (none) should translate to blank.
+#
+#   Version 3.14.4 - 11/24/25 - Ron Lockwood
+#    Fixes #1108. Change the maxsize statement which enables the maximize button.
+#
+#   Version 3.14.3 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
 #   Version 3.14.2 - 9/3/25 - Ron Lockwood
 #    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
 #
@@ -278,37 +300,64 @@ def loadSourceTextListForSettings(widget, wind, settingName):
 
 def loadSourceSenseCustomField(widget, wind, settingName):
     
-    # Get the custom field to link to target entry
-    customLinkField = wind.read(settingName)
+    # Get the name of a sense-level custom field to find in the source project
+    customSenseField = wind.read(settingName)
     
-    if customLinkField is not None:
+    if customSenseField is not None:
 
-        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        # Add items and when we find the one that matches the config file, set that one to be displayed.
         for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
     
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customLinkField:
+            if item[1] == customSenseField:
                 
                 widget.setCurrentIndex(i)
 
 def loadTargetEntryCustomField(widget, wind, settingName):
     
-    # Get the custom field to link to target entry
-    customXampleProp = wind.read(settingName)
+    # Get the name of an entry-level custom field to find in the target project
+    customEntryField = wind.read(settingName)
     
-    if customXampleProp is not None:
+    if customEntryField is not None:
 
-        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        # Add (none) as the first option
+        widget.addItem(_translate("SettingsGUI", "(none)"))
+
+        # Add items and when we find the one that matches the config file, set that one to be displayed.
+        # Displays (none) if setting is blank.
         for i, item in enumerate(wind.targetDB.LexiconGetEntryCustomFields()):
     
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customXampleProp:
+            if item[1] == customEntryField:
                 
-                widget.setCurrentIndex(i)
+                # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
+                widget.setCurrentIndex(i+1)
+
+def loadTargetSenseCustomField(widget, wind, settingName):
+    
+    # Get the name of a sense-level custom field to find in the target project
+    customSenseFieldTarget = wind.read(settingName)
+    
+    if customSenseFieldTarget is not None:
+
+        # Add (none) as the first option
+        widget.addItem(_translate("SettingsGUI", "(none)"))
+
+        # Add items and when we find the one that matches the config file, set that one to be displayed.
+        # Displays (none) if setting is blank.
+        for i, item in enumerate(wind.targetDB.LexiconGetSenseCustomFields()):
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customSenseFieldTarget:
+                
+                # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
+                widget.setCurrentIndex(i+1)
 
 def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
 
@@ -323,10 +372,13 @@ def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
 
 def loadTargetAllomorphCustomField(widget, wind, settingName):
     
-    # Get the custom field to link to target entry
-    customXampleProp = wind.read(settingName)
+    # Get the name of an allomorph-level custom field to find in the target project
+    customAlloField = wind.read(settingName)
     
-    if customXampleProp is not None:
+    if customAlloField is not None:
+
+        # Add (none) as the first option
+        widget.addItem(_translate("SettingsGUI", "(none)"))
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(tempLexiconGetAllomorphCustomFields(wind.targetDB)):
@@ -336,9 +388,63 @@ def loadTargetAllomorphCustomField(widget, wind, settingName):
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customXampleProp:
+            if item[1] == customAlloField:
                 
-                widget.setCurrentIndex(i)
+                # Needs to be i+1 to account for (none) being added before item zero in the enumerate command
+                widget.setCurrentIndex(i+1)
+
+def loadTargetSenseCustomList(widget, wind, settingName):
+        
+    fieldName = ""
+    vocList = []
+
+    try:
+        fieldName = wind.read(ReadConfig.GEN_STC_SEM_CUSTOMFIELD)
+        
+        if not fieldName:
+            multiID = None
+
+        else:
+            print(f"Looking for possible values for {fieldName} field")
+            # Get the possible values for this custom list field
+            multiID = wind.targetDB.LexiconGetSenseCustomFieldNamed(fieldName)
+            if multiID:
+                print(f"multi list found: {multiID}")
+
+                # Just get some entry, any entry
+                for e in wind.targetDB.LexiconAllEntries():
+                    print(f"{e.ShortName}:")
+                    break
+                
+                print(f"About to retrieve list")
+                if wind.targetDB:    
+                    for item in wind.targetDB.ListFieldPossibilities(e, multiID):
+                        vocList.append(str(item))
+                print(f"Retrieved list\n")
+                 
+            else:
+
+                print(f"Failed to load custom list for [{fieldName}]")
+                # Set some place holder values so we can keep testing other code
+                vocList = [ 'Animate', 'Animals' ]    
+                print(f"Constructed fake list\n")
+        
+    except:
+        # Give a more reasonable error message than this, in a place the user can read it
+        print(f"Failed to get name of custom list [{fieldName}]")
+        multiID = None
+
+    widget.addItems(vocList)
+
+    vocDomains = wind.read(settingName)
+    
+    if vocDomains:
+
+        for voc in vocDomains:
+
+            if voc in vocList:
+                
+                widget.check(voc)
 
 def loadAllProjects(widget, wind, settingName):
 
@@ -689,7 +795,7 @@ class Ui_MainWindow(object):
 
         MainWindow.setObjectName("SettingsGUI")
         MainWindow.resize(800, 630)
-        MainWindow.setMaximumSize(QtCore.QSize(910, 1000))
+        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -967,8 +1073,8 @@ class Ui_MainWindow(object):
                 
                 # Special radio buttons for production mode output. FLEx=Yes, Paratext=No
                 if widgInfo[WIDGET1_OBJ_NAME] == 'prod_mode_output_flex_yes':
-                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "FLEx"))
-                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "Paratext"))
+                    widgInfo[WIDGET1_OBJ].setText("FLEx")
+                    widgInfo[WIDGET2_OBJ].setText("Paratext")
                 else:
                     widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
                     widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
@@ -1321,13 +1427,19 @@ class Main(QMainWindow):
             
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
-                updatedConfigMap[widgInfo[CONFIG_NAME]] = widgInfo[WIDGET1_OBJ].currentText()
+                mySettingVal = widgInfo[WIDGET1_OBJ].currentText()
+
+                # If the user selected (none), set the value to blank
+                if mySettingVal == _translate("SettingsGUI", "(none)"):
+                    mySettingVal = ''
+
+                outStr = widgInfo[CONFIG_NAME]+'='+mySettingVal
+                updatedConfigMap[widgInfo[CONFIG_NAME]] = mySettingVal
                 
                 if widgInfo[CONFIG_NAME] == ReadConfig.SOURCE_TEXT_NAME:
                     
                     # Set the global variable
-                    FTPaths.CURRENT_SRC_TEXT = widgInfo[WIDGET1_OBJ].currentText()
+                    FTPaths.CURRENT_SRC_TEXT = mySettingVal
  
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
@@ -1388,7 +1500,11 @@ def giveDBErrorMessageBox(myProj):
 def MainFunction(DB, report, modify=True): 
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     
@@ -1447,7 +1563,10 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -1472,8 +1591,8 @@ widgetList = [
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     _translate("SettingsGUI", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
 
-   [_translate("SettingsGUI", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
+   [_translate("SettingsGUI", "Source Custom Field for Sense Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+    _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to senses in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
    
    [_translate("SettingsGUI", "Category that Represents Proper Noun"), "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
     _translate("SettingsGUI", "The name of the grammatical category that you use for proper nouns in your\nsource FLEx project. It is possible to choose not to translate proper nouns."), DONT_GIVE_ERROR, BASIC_VIEW],\
@@ -1506,8 +1625,11 @@ widgetList = [
    [_translate("SettingsGUI", "Complex Forms"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Source Complex Form Types"), "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."), GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Source Complex Form Types\nwith inflection on first Element"), "choose_source_complex_types1", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_FORMS_INFLECTION_1ST,\
+    _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Source Complex Form Types\nwith inflection on last Element"), "choose_source_complex_types2", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
+    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the last element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Source Discontiguous Complex Form Types"), "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
     _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."), GIVE_ERROR, FULL_VIEW],\
@@ -1515,11 +1637,11 @@ widgetList = [
    [_translate("SettingsGUI", "Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms"), "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
     _translate("SettingsGUI", "One or more grammatical categories that can intervene in the above complex types."), GIVE_ERROR, FULL_VIEW],\
     
-   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on 1st Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
+   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on first Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
     _translate("SettingsGUI", "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on 2nd Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the second element of the complex form."), GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on last Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
+    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the last element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
 
 
@@ -1650,6 +1772,49 @@ widgetList = [
     _translate("SettingsGUI", "The path and name of the rule assistant rule definition file."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
+    # DM: testing settings module (limit POS, limit stem count)
+    [_translate("SettingsGUI", "Generate Sentences Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "Gloss Text Output File"), "gloss_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE,\
+    _translate("SettingsGUI", "The path and name of the file which holds\nthe extracted text in the source language."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "Custom Field for semantic domain"), "genstc_customfield", "", COMBO_BOX, object, object, object, loadTargetSenseCustomField, ReadConfig.GEN_STC_SEM_CUSTOMFIELD,\
+    "The custom field used to store the semantic domain category.", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "Limit number of stems generated against"), "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
+    _translate("SettingsGUI", "Limit the generation to a specified number of stems.\nStems chosen may seem random."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "Limit to specific lemmas in head word"), "genstc_limit_lemma_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_N, \
+    _translate("SettingsGUI", "Limit sentence generation word replacememnt to specific lemmas in head word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "  Limit to specific POS values in head word"), "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in head word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+#    [_translate("SettingsGUI", "  Limit to specific semantic domains in head word"), "genstc_limit_semdomain_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetSenseCustomList, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+#    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+#    
+    [_translate("SettingsGUI", "  Limit to specific semantic domains in head word"), "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+    "Limit sentence generation to specific semantic domains in head word", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "Limit to specific lemmas in dependent word 1"), "genstc_limit_lemma_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_1, \
+    _translate("SettingsGUI", "Limit sentence generation word replacement to specific lemmas in first dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "  Limit to specific POS values in dependent word"), "genstc_limit_pos_1", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_1,\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "  Limit to specific semantic domains in dependent word 1"), "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
+    "Limit sentence generation to specific semantic domains in dependent word 1", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    [_translate("SettingsGUI", "Limit to specific lemmas in dependent word 2"), "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
+    _translate("SettingsGUI", "Limit sentence generation word replacememnt to specific lemmas in second dependent word."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "  Limit to specific POS values in second dependent word"), "genstc_limit_pos_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_2,\
+    _translate("SettingsGUI", "One or more grammatical categories. sentence generation word replacement in second dependent word will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+    [_translate("SettingsGUI", "  Limit to specific semantic domains in dependent word 2"), "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
+    "Limit sentence generation to specific semantic domains in dependent word 2", DONT_GIVE_ERROR, FULL_VIEW],\
+    #################
 
    [_translate("SettingsGUI", "TreeTran Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
@@ -1686,8 +1851,8 @@ widgetList = [
 
 ]
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # ----------------------------------------------------------------
 # The main processing function

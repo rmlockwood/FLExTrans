@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.2 - 8/17/25 - Ron Lockwood
 #    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
 #
@@ -47,7 +50,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TranslateText'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -59,26 +65,28 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),
         FTM_Help       : "",
         FTM_Description: _translate("TranslateText",
 """Translate the current source text.""")}
 
-app.quit()
-del app
-
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
+
     if not configMap:
         return
     
@@ -88,6 +96,7 @@ def MainFunction(DB, report, modify=True):
     ## Extract the source text
     report.Blank()
     report.Info(_translate("TranslateText", 'Exporting source text...'))
+
     if not ExtractSourceText.doExtractSourceText(DB, configMap, report):
         return
 
@@ -103,6 +112,7 @@ def MainFunction(DB, report, modify=True):
     ## Run Apertium
     report.Blank()
     report.Info(_translate("TranslateText", 'Running the Apertium transfer engine...'))
+
     if not RunApertium.runApertium(DB, configMap, report):
         return
     
@@ -125,6 +135,7 @@ def MainFunction(DB, report, modify=True):
     ## Convert to Synthesizer Format
     report.Blank()
     report.Info(_translate("TranslateText", 'Converting target words to synthesizer format...'))
+
     if not ConvertTextToSTAMPformat.convertToSynthesizerFormat(DB, configMap, report):
         return
     
@@ -133,6 +144,7 @@ def MainFunction(DB, report, modify=True):
 
     report.Blank()
     report.Info(_translate("TranslateText", 'Synthesizing target text...'))
+
     if hermitCrabSynthesisYesNo == 'y':
 
         report.Info(_translate("TranslateText", 'Using HermitCrab for synthesis.'))
@@ -151,22 +163,13 @@ def MainFunction(DB, report, modify=True):
         report.Blank()
         report.Info(_translate("TranslateText", 'Exporting to Paratext...'))
 
-        # Delete the app so that we can export to Paratext without any issues. Export to Paratext creates a new app.
-        app.quit()
-        del app
-
         if not ExportToParatext.doExportToParatext(DB, configMap, report):
             return
-        
-        # Reload the translations after Export to Paratext
-        translators = []
-        app = QApplication([])
-        Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
-                               translators, loadBase=False)
     else:
         ## Insert Target Text
         report.Blank()
         report.Info(_translate("TranslateText", 'Inserting text into the target project...'))
+
         if not InsertTargetText.insertTargetText(DB, configMap, report):
             return
     

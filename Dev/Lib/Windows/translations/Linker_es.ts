@@ -26,7 +26,7 @@
     <message>
         <location filename="../Linker.py" line="259"/>
         <source>Zoom:</source>
-        <translation>Zoom:</translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <location filename="../Linker.py" line="260"/>
@@ -95,6 +95,11 @@ luego haga doble clic en la columna &quot;Palabra principal objetivo&quot; para 
         <location filename="../Linker.py" line="254"/>
         <source> Add Entry </source>
         <translation> Agregar entrada </translation>
+    </message>
+    <message>
+        <location filename="../Linker.py" line="245"/>
+        <source>FLExTrans Sense Linker Tool</source>
+        <translation>FLExTrans Herramienta de enlace de sentidos</translation>
     </message>
 </context>
 </TS>

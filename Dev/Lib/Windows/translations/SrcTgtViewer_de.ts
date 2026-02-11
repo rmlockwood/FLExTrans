@@ -33,5 +33,10 @@
         <source>OK</source>
         <translation>OK</translation>
     </message>
+    <message>
+        <location filename="../SrcTgtViewer.py" line="147"/>
+        <source>Source/Target Viewer</source>
+        <translation>Quell-/Zielviewer</translation>
+    </message>
 </context>
 </TS>

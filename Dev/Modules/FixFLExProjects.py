@@ -5,6 +5,9 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -56,7 +59,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FixFLExProjects'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -67,7 +73,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation for the user:
 docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,
@@ -76,8 +82,8 @@ docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # Dummy progress class to pass to FwDataFixer(). 
@@ -188,7 +194,7 @@ class Main(QMainWindow):
         self.returnVal = False
 
     def initUI(self, project_names):
-        self.setWindowTitle('Fix FLEx Projects')
+        self.setWindowTitle(_translate("FixFLExProjects", 'Fix FLEx Projects'))
         self.setGeometry(100, 100, 400, 300)
 
         # Create a central widget and set a layout
@@ -249,7 +255,11 @@ def MainFunction(DB, report, modifyAllowed=True):
         return errorCount
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

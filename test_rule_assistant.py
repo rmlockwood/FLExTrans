@@ -9,8 +9,8 @@ import subprocess
 ParentFolder = os.path.dirname(__file__)
 DataFolder = os.path.join(ParentFolder, 'Rule Assistant')
 TestFolder = os.path.join(ParentFolder, 'RuleAssistantTests')
-DevFolder = os.path.join(ParentFolder, 'Dev')
-LibFolder = os.path.join(DevFolder, 'Lib')
+DevFolder = os.path.join(ParentFolder, '..')
+LibFolder = os.path.join(DevFolder, '..\\Lib')
 script = 'CreateApertiumRules.py'
 with open(os.path.join(LibFolder, script)) as fin:
     with open(os.path.join(TestFolder, script), 'w') as fout:
@@ -27,8 +27,28 @@ class Reporter:
     def Error(self, *args):
         self.errors.append(args)
 
-class BaseTest:
-    Data = {}
+class BaseTest(unittest.TestCase):
+    Data = {
+        None: {
+            'gender': {
+                'source_features': ['f', 'm'],
+            },
+        },
+        'adj': {
+            'gender': {
+                'target_affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+            },
+            'number': {
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+        'n': {
+            'number': {
+                'source_affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
     RuleFile = 'Ex3_Adj-Noun.xml'
     RuleNumber = None
     RuleCount = 1
@@ -46,12 +66,21 @@ class BaseTest:
             shutil.copy(os.path.join(DataFolder, self.TransferFile), self.t1xFile)
         CreateApertiumRules.Utils.DATA = self.Data
 
-        # Create rules
+        # Create rules (with debug output on failure)
         report = Reporter()
         path = os.path.join(DataFolder, self.RuleFile)
-        self.assertTrue(CreateApertiumRules.CreateRules(
+        result = CreateApertiumRules.CreateRules(
             'source', 'target', report, None, path, self.t1xFile, self.RuleNumber,
-        ))
+        )
+        if not result:
+            print('CreateRules returned falsy result:', result)
+            print('Reporter.infos:')
+            for i in report.infos:
+                print('  ', i)
+            print('Reporter.errors:')
+            for e in report.errors:
+                print('  ', e)
+        self.assertTrue(result)
         self.assertListEqual([], report.errors)
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)
@@ -69,8 +98,8 @@ class BaseTest:
         comp_cmd = 'apertium-preprocess-transfer'
         run_cmd = 'apertium-transfer'
         if os.name == 'nt':
-            comp_cmd = f'Apertium4Windows\\{comp_cmd}.exe'
-            run_cmd = f'Apertium4Windows\\{run_cmd}.exe'
+            comp_cmd = f'InstallerResources\\Apertium4Windows\\{comp_cmd}.exe'
+            run_cmd = f'InstallerResources\\Apertium4Windows\\{run_cmd}.exe'
 
         # Compile rules
         preproc = subprocess.run(

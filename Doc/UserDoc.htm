@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>24 July 2025</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>27 January 2026</small></center>
       <center><small>Version: 3.14</small></center>
       <hr>
       <div>
@@ -218,7 +218,12 @@
                </ul>
                <li><a href="#sChangingXXELanguage">10.2&nbsp;Change User Interface Language of XMLmind XML Editor</a></li>
             </ul>
-            <li><a href="#sReferenceDocs">11&nbsp;Reference documents</a></li>
+            <li><a href="#sProductionMode">11&nbsp;Production Mode</a></li>
+            <ul>
+               <li><a href="#sProductionModeInstallation">11.1&nbsp;Installation for Production Mode</a></li>
+               <li><a href="#sAddingCollections">11.2&nbsp;Changing from Production Mode to Normal Development Mode</a></li>
+            </ul>
+            <li><a href="#sReferenceDocs">12&nbsp;Reference documents</a></li>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
                   <li><a href="#sStartFlextools">A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></a></li>
                   <li><a href="#sDataStreamFormat">A.2&nbsp;Data Stream Format</a></li>
@@ -230,7 +235,7 @@
       </div><br><hr>
       <center><b><big><big><a name="rXLingPapAbstract0">Abstract</a></big></big></b></center>
       <div style="margin-left: 0.5in; margin-right: 0.5in">
-         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">11</a> for other documentation.
+         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">12</a> for other documentation.
          </p>
          <p></p>
          <p></p>
@@ -325,7 +330,7 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Navigate to the folder for your project (typically <span style="font-style:italic; ">Documents\FLExTrans\WorkProjects\[YourProject]</span>).
                </li>
-               <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file).
+               <li>Double-click on the file <span style="font-weight:bold; ">FLExTrans.vbs</span> (a Visual Basic script file).
                </li>
                <li>It should look like <a href="#xFirstStart">(1)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -813,6 +818,8 @@
       </p>
       <p>When you are finished making your collection, click the <span style="font-style:normal; font-weight:bold; ">Select</span> button on the toolbar.
       </p>
+      <p>To remove a collection from the main display, right-click on the collection name, as seen below:</p>
+      <p><img style=" height:25%" src="Images/CollectionsCloseTab.png"></p>
       <h1 style=""><a name="sTools"></a>4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Tools
       </h1>
       <h2 style=""><a name="sLinker"></a>4.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h2>
@@ -951,10 +958,10 @@
       </p>
       <h3 style=""><a name="sExportUnlinked"></a>4.1.10&nbsp;Export Unlinked Senses
       </h3>
-      <p>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper
-         Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send
-         to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to
-         open this in a word processor and save it as a document. After the completed file is returned for use in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, it may be necessary to create new <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> entries and use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>.
+      <p>Use this check box to export a list of unlinked senses to a file (after clicking OK) that may be useful when asking a colleague
+         to provide the correct target words for the given source word. The results pane will tell you where the file is and its name.
+         The file is in HTML format. To save it as a file that a colleague can edit, open it in a word processor (e.g., Word or LibreOffice)
+         and save it as a document. After the colleague returns the completed file, it may be necessary to create new <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> entries and use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>. If Proper nouns don't need to be included, check the box Hide Proper Nouns before exporting.
       </p>
       <h3 style=""><a name="sSenses2Link"></a>4.1.11&nbsp;Senses to link
       </h3>
@@ -1250,13 +1257,25 @@
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
       <h2 style=""><a name="sSynthTest"></a>4.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Synthesis Test Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses Tool</span> provides a way to test whether your Target Project is ready for the Synthesis stage of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. It allows you to choose a specific inflectional template from your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure
-         they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. It does not attempt to generate for any category without a template, and it does not attempt to generate with derivational
-         affixes.
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses Tool</span> provides a way to test whether your Target Project is ready for the Synthesis stage of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. It allows you to choose a specific inflectional template from your Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure
+         they are all valid forms. If not, that is an indication of further work needed on the morphological description in the Target
+         <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. It does not attempt to generate forms for any category without a template, and it does not attempt to generate with
+         derivational affixes.
       </p>
       <p>The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is
-         a good idea to limit the output when starting out, because it can easily become quite large.
+         a good idea to limit the output when starting out, because it can easily become quite large. If you have not set any POS values
+         in the setting <span style="font-weight:bold; color:#964B00; ">Limit to Specific POS Values</span>, there will be an error message.
       </p>
+      <p>To adjust the settings for the Synthesis Test,</p>
+      <ol style="list-style-type:decimal; ">
+         <li>Select <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the menu.
+         </li>
+         <li>You should see the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> window.
+         </li>
+         <li>Scroll down until you get the the section <span style="font-weight:bold; color:#964B00; ">Synthesis Test Settings</span>.
+         </li>
+         <li>Here you can adjust the various parameters, as well as the names and locations of the output files.</li>
+      </ol>
       <p>Note that for this test, any active template must have at least one affix in each of its slots. If you have any slots with
          no affixes in them, it is recommended to set that template to "inactive" for this test. (Untick the box labeled "Active" in
          the description of the template in Category Edit in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.)
@@ -3657,7 +3676,29 @@
       </p>
       <p>Note that for <span style="font-family:Courier New; font-weight:bold; color:navy; ">XLingPaper</span>, which is a separate add-on to <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>, there are only translations available in English, French and Spanish.
       </p>
-      <h1 style=""><a name="sReferenceDocs"></a>11&nbsp;Reference documents
+      <h1 style=""><a name="sProductionMode"></a>11&nbsp;Production Mode
+      </h1>
+      <p><span style="color:#000066; font-weight:bold; ">Production Mode</span> is intended to be used after <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has the transfer rules set up. The interface is intentionally more simple, with only one collection that contains three modules.
+         The modules cover importing the text from <span style="color:#000066; font-weight:bold; ">Paratext</span>, linking the senses between the two <span style="color:#000066; font-weight:bold; ">Fieldworks</span> databases, and translating the text.
+      </p>
+      <p>The 'Translate Text' module contains the following modules: 'Extract Source Text', 'Build Bilingual Lexicon', 'Run Apertium',
+         'Catalog Target Affixes', 'Convert to Synthesizer Format', 'Synthesize Text (HermitCrab or STAMP)', and either 'Export to
+         Paratext' or 'Insert Target Text' depending on the 'Production Mode Output Destination' setting in the FLExTrans Settings
+         dialog.
+      </p>
+      <p>The <span style="color:#000066; font-weight:bold; ">Production Mode</span> interface looks like this:
+      </p>
+      <p><img style=" height:40%" src="Images/ProductionMode.png"></p>
+      <h2 style=""><a name="sProductionModeInstallation"></a>11.1&nbsp;Installation for Production Mode
+      </h2>
+      <p>When installing <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use <span style="color:#000066; font-weight:bold; ">Production Mode</span>, ensure to choose the correct option:
+      </p>
+      <p><img style="height:40%" src="Images/ProductionModeInstall.png" border="1pt solid;"></p>
+      <h2 style=""><a name="sAddingCollections"></a>11.2&nbsp;Changing from Production Mode to Normal Development Mode
+      </h2>
+      <p>It may be required to change from <span style="color:#000066; font-weight:bold; ">Production Mode</span> to Normal Development Mode. In order to do this, the user should add the default <span style="font-family:Courier New; font-weight:bold; color:navy; ">Collections</span> of Drafting, Run Testbed and Tools, see section&nbsp;<a href="#sCollections">3.3</a>. Other <span style="font-family:Courier New; font-weight:bold; color:navy; ">Collections</span> may be added, as required.
+      </p>
+      <h1 style=""><a name="sReferenceDocs"></a>12&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.
       </p>
@@ -3670,7 +3711,7 @@
       <ol style="list-style-type:decimal; ">
          <li>Navigate to the installation folder (typically <span style="font-style:italic; ">Documents\FLExTrans\WorkProjects\[YourProject]</span>).
          </li>
-         <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file).
+         <li>Double-click on the file <span style="font-weight:bold; ">FLExTrans.vbs</span> (a Visual Basic script file).
          </li>
          <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> window should appear which will look something like <a href="#xFirstStart">(1)</a>.
          </li>

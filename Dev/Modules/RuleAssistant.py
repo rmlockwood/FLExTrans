@@ -5,6 +5,16 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
+#   Version 3.14.5 - 11/28/25 - Ron Lockwood
+#    Fixed #1062. When generating test data, if there is no compiled bilingual dictionary,
+#    compile it.
+#
+#   Version 3.14.4 - 10/10/25 - Ron Lockwood
+#    Better error messages when the Rule Assistant returns an error.
+#
 #   Version 3.14.3 - 8/19/25 - Ron Lockwood
 #    Fixes #1045. When creating a test data file that has an error message. Create it as utf-8
 #    because the error message may contain non-ASCII characters when translated.
@@ -43,18 +53,7 @@
 #    Connect to the now functioning CreateRules routine.
 #    Rearrange the logic for the return code from the GUI program. Pretty print the GUIinput xml.
 #
-#   Version 3.9.3 - 12/20/23 - Ron Lockwood
-#    Use data classes to pass around category and feature lists.
-#
-#   Version 3.9.2 - 12/19/23 - Ron Lockwood
-#    Add a function to start the Rule Assistant program.
-#
-#   Version 3.9.1 - 12/6/23 - Ron Lockwood
-#    Build an XML file with category and feature data for source and target databases
-#    which will be used by the rule assistant GUI.
-#
-#   Version 3.9 - 9/11/23 - Ron Lockwood
-#    Initial version
+#   2023 version history removed on 2/6/26
 #
 #   Runs the Rule Assistant to create Apertium transfer rules.
 #
@@ -87,7 +86,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RuleAssistant'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -97,16 +99,16 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
+descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
+        FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
         FTM_Description:    descr}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # Element names in the rule assistant gui input file
 FLEXDATA          = "FLExData"
@@ -334,14 +336,15 @@ def ReadingToHTML(reading):
 def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    bidix = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
+    bidixDix = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not sourceText:
+    if not (sourceText or bidixDix):
         return False
 
-    if not os.path.isfile(bidix):
+    if not os.path.isfile(bidixDix):
 
-        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. Run the "{runApert}" module to display test data in the {ruleAssistant}.').format(runApert=RunApertDocs[FTM_Name], ruleAssistant=docs[FTM_Name]))
+        report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
 
     content = None
@@ -368,9 +371,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     with open(fsrc, 'w', encoding='utf-8') as fout:
         text.write(fout)
 
+    # Compile the bilingual dictionary
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-comp.exe'), 'lr', bidixDix, bidixBin], capture_output=True)
+
+    if not os.path.isfile(bidixBin):
+
+        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. There was an error compiling the bilingual dictionary.'))
+        return False
+
     ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
-    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'),
-                    '-b', bidix, fsrc, ftgt], capture_output=True)
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'), '-b', bidixBin, fsrc, ftgt], capture_output=True)
 
     try:
         with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
@@ -441,6 +451,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         lrt = (not fromLRT) and ('LRT' in output)
 
         if not output or output[0] not in ['1', '2']:
+            
+            if len(output) > 1:
+
+                report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=' '.join(output), ruleAssistant=docs[FTM_Name]))
+            
             return (False, None, lrt)
         
         elif output[0] == '1':
@@ -451,7 +466,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
     except Exception as e:
 
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=e.output.decode("utf-8"), ruleAssistant=docs[FTM_Name]))
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=str(e), ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------
@@ -459,7 +474,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 def MainFunction(DB, report, modify=True, fromLRT=False):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

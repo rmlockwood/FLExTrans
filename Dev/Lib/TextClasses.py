@@ -5,6 +5,14 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.14.2 - 12/8/25 - Ron Lockwood
+#    Don't save complex form map items that have a zero-length list. This was 
+#    causing problems for phrasal verbs with inflection on the last element. The items
+#    were already in the map from processing for inflection on the first element, but the lists were empty.
+#
+#   Version 3.14.1 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -19,6 +27,9 @@
 #
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
+#
+#   Version 3.12.2.1 - 2/18/25 - David McKean
+#    Edit TextWord class to function with GenStc.py
 #
 #   Version 3.12.2 - 2/17/25 - Ron Lockwood
 #    Better handling of angle brackets. Improved escaping reserved Apertium characters
@@ -56,29 +67,7 @@
 #   Version 3.10 - 1/1/24 - Ron Lockwood
 #    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
 #
-#   Version 3.9.2 - 8/17/23 - Ron Lockwood
-#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.1 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.8.3 - 5/5/23 - Ron Lockwood
-#    Add a column to the table to show the verse number if it precedes a word. To do this a new class was added
-#    which encapsulates the Link class and adds the verse number attribute.
-#
-#   Version 3.8.2 - 5/3/23 - Ron Lockwood
-#    Don't substitute problem characters if it's a punctuation word.
-#
-#   Version 3.8.1 - 4/27/23 - Ron Lockwood
-#    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
-#    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
-#    for the gloss map and once for the building of the linking objects.
-#
-#   Version 3.8 - 4/18/23 - Ron Lockwood
-#    Allow more than 1 word between complex form components. For now allow up to 4.
-#
-#   Version 3.7 - 12/24/22 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Classes that model text objects from whole text down to word.
 
@@ -162,13 +151,16 @@ class TextEntirety():
         if sentNum == count-1:
             return True
         return False
-    def processComplexForms(self, typesList):
+    def processComplexForms(self, typesInfl1stList, typesInfl2ndList):
         for par in self.__parList:
-            par.findComplexForms(self.__cmplxFormMap, typesList)
+            par.setFirstElemTypesList(typesInfl1stList)
+            par.setSecondElemTypesList(typesInfl2ndList)
+            par.findComplexForms(self.__cmplxFormMap, typesInfl1stList)
+            par.findComplexForms(self.__cmplxFormMap, typesInfl2ndList)
         for par in self.__parList:
             par.substituteComplexForms(self.__cmplxFormMap)
-    def processDiscontiguousComplexForms(self, typesList, discontigTypesList, discontigPOSList): 
-        if typesList == discontigTypesList:
+    def processDiscontiguousComplexForms(self, typesInfl1stList, typesInfl2ndList, discontigTypesList, discontigPOSList): 
+        if typesInfl1stList == discontigTypesList:
             self.__discontigCmplxFormMap = self.__cmplxFormMap
         else:
             # findDiscontig... method not coded yet !!!!
@@ -213,6 +205,12 @@ class TextParagraph():
             tupList = []
             sent.getSurfaceAndDataTupleList(tupList)
             tupBySentList.append(tupList)
+    def setFirstElemTypesList(self, typesList):
+        for sent in self.__sentList:
+            sent.firstElemTypesList = typesList
+    def setSecondElemTypesList(self, typesList):
+        for sent in self.__sentList:
+            sent.secondElemTypesList = typesList
     def substituteComplexForms(self, cmplxFormMap):
         for sent in self.__sentList:
             sent.substituteComplexForms(cmplxFormMap)
@@ -351,38 +349,56 @@ class TextSentence():
     ### Long methods - in alphabetical order
     
     def findComplexForms(self, cmplxFormMap, typesList):
+
         # Loop through the word list
         for wrd in self.__wordList:
+
             if wrd.hasEntries() and wrd.notCompound():
+
                 # Check if we have already found complex forms for this word and cached them
                 if wrd.getEntryHandle() not in cmplxFormMap:
+
                     cmplxEntryTupList = []
 
                     # Loop through the complex entries for this word
                     for cmplxEntry in wrd.getComplexFormEntries():
+
                         # Make sure we have entry references of the right type
                         if cmplxEntry.EntryRefsOS:
+
                             # find the complex entry ref (there could be one or more variant entry refs listed along side the complex entry)
                             for entryRef in cmplxEntry.EntryRefsOS:
+
                                 if entryRef.RefType == 1 and entryRef.ComplexEntryTypesRS: # 1=complex form, 0=variant
 
                                     # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
                                     # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
                                     for complexType in entryRef.ComplexEntryTypesRS:
-                                        if Utils.as_string(complexType.Name) in typesList:
+
+                                        if (typeName := Utils.as_string(complexType.Name)) in typesList:
                                             
                                             # get the component entries
                                             componentEs = []
                                             for cE in entryRef.ComponentLexemesRS:
+
                                                 componentEs.append(cE)
                                             
+                                            # Figure out if this type has inflection on the first or second element
+                                            if typeName in self.firstElemTypesList:
+
+                                                inflectionOnFirstElement = True
+                                            else:
+                                                inflectionOnFirstElement = False
+
                                             # add the complex entry and its components to the list
-                                            cmplxEntryTupList.append((cmplxEntry, componentEs))
+                                            cmplxEntryTupList.append((cmplxEntry, componentEs, inflectionOnFirstElement))
                     
-                    # Map from an entry's handle # to the complex entry/components tuple                        
-                    cmplxFormMap[wrd.getEntryHandle()] = list(cmplxEntryTupList) # Create a new list in memory
+                    if len(cmplxEntryTupList) > 0:
+
+                        # Map from an entry's handle # to the complex entry/components tuple                        
+                        cmplxFormMap[wrd.getEntryHandle()] = list(cmplxEntryTupList) # Create a new list in memory
                                             
-    def modifyList(self, myIndex, count, complexEn):
+    def modifyList(self, myIndex, count, complexEn, inflectionOnFirstElement):
         componentList = []
         
         # Loop through the part of the word list that we will remove. Save the components in a list that we will add to the new word.
@@ -394,7 +410,7 @@ class TextSentence():
         
         # Initialize it with the complex entry being the main entry of the word. Other attributes are drawn from the last
         # matching component. Tags will also transferred as needed
-        newWord.initWithComplex(complexEn, componentList)
+        newWord.initWithComplex(complexEn, componentList, inflectionOnFirstElement)
         
         # Insert the new word into the word list
         self.__wordList.insert(myIndex, newWord)
@@ -402,7 +418,7 @@ class TextSentence():
         # Update the guid map
         self.__guidMap[newWord.getGuid()] = newWord
         
-    def modifyDiscontiguousList(self, myIndex, skippedWordsCount, complexEn):
+    def modifyDiscontiguousList(self, myIndex, skippedWordsCount, complexEn, inflectionOnFirstElement):
         componentList = []
         
         # We want to pop the ith word and the i+skippedWordsCount+1 word, after the first pop everything moved up so pop i+skippedWordsCount the 2nd time
@@ -414,7 +430,7 @@ class TextSentence():
         
         # Initialize it with the complex entry being the main entry of the word. Other attributes are drawn from the last
         # matching component. Tags will also transferred as needed
-        newWord.initWithComplex(complexEn, componentList)
+        newWord.initWithComplex(complexEn, componentList, inflectionOnFirstElement)
         
         # Insert the new word into the word list after the skipped word
         self.__wordList.insert(myIndex+skippedWordsCount, newWord)
@@ -459,7 +475,7 @@ class TextSentence():
                     cmplxEnList.sort(key=lambda x: len(x[1]), reverse=True)
                     
                     # Loop through the complex entries tuples (cmplxEntry, componentEntryList)
-                    for cmplxEn, componentEList in cmplxEnList:
+                    for cmplxEn, componentEList, inflectionOnFirstElement in cmplxEnList:
                         match = False
                         
                         count = len(componentEList)
@@ -483,7 +499,7 @@ class TextSentence():
                                     break
                     if match == True:
                         # pop the matching words from the list and insert the complex word
-                        self.modifyList(myIndex, count, cmplxEn)
+                        self.modifyList(myIndex, count, cmplxEn, inflectionOnFirstElement)
             myIndex += 1
             
     def substituteDiscontiguousComplexForms(self, cmplxFormMap, discontigPOSList):
@@ -510,7 +526,7 @@ class TextSentence():
                     match = False
 
                     # Loop through the complex entries tuples (cmplxEntry, componentEntryList)
-                    for cmplxEn, componentEList in cmplxEnList:
+                    for cmplxEn, componentEList, inflectionOnFirstElement in cmplxEnList:
                         
                         count = len(componentEList)
 
@@ -548,7 +564,7 @@ class TextSentence():
                     if match == True:
 
                         # pop the matching words from the list and insert the complex word
-                        self.modifyDiscontiguousList(myIndex, skippedCount, cmplxEn)
+                        self.modifyDiscontiguousList(myIndex, skippedCount, cmplxEn, inflectionOnFirstElement)
                         increment = skippedCount + 2 - 1 # 2 components, -1 because we popped off one component that didn't get replaced
 
             myIndex += increment
@@ -603,6 +619,12 @@ class TextWord():
         self.__senseList = []
         self.__inflFeatAbbrevsList = [] # a list of lists
         self.__stemFeatAbbrList = []
+        self.firstElemTypesList = []
+        self.secondElemTypesList = []
+        # For GenStc work
+        self.__ignoreInflClass = True
+        self.__ignoreStemFeatures = True
+        self.__inflClassList = []
     def addAffix(self, myObj):
         self.addPlainTextAffix(Utils.as_string(myObj))
     def addAffixesFromList(self, strList):
@@ -614,6 +636,8 @@ class TextWord():
         self.__inflFeatAbbrevsList.append([]) # create an empty list
     def addFinalPunc(self, myStr):
         self.__finalPunc += self.escapeReservedApertChars(myStr)
+    def addInflClass(self, inflClasses):
+        self.__inflClassList.append(inflClasses)
     def addInflFeatures(self, inflFeatAbbrevs):
         self.__inflFeatAbbrevsList[-1] = inflFeatAbbrevs # add to last slot
     def addInitialPunc(self, myStr):
@@ -670,6 +694,7 @@ class TextWord():
         # Start with POS. <sent> words are special, no POS
         if not self.isSentPunctutationWord():
             symbols = [self.getPOS(i)]
+
         # Then inflection class
         symbols += self.getInflClass(i)
         # Then stem features
@@ -706,12 +731,15 @@ class TextWord():
                 return Utils.getHeadwordStr(self.__eList[-1])
         return ""
     def getInflClass(self, i):
-        if self.hasSenses() and i < len(self.__senseList):
-            if mySense := self.__senseList[i]:
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                if msa.InflectionClassRA:
-                    return [Utils.as_string(msa.InflectionClassRA.Abbreviation)]
-        return []
+        if self.__ignoreInflClass:
+            if self.hasSenses() and i < len(self.__senseList):
+                if mySense := self.__senseList[i]:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                    if msa.InflectionClassRA:
+                        return [Utils.as_string(msa.InflectionClassRA.Abbreviation)]
+            return []
+        
+        return self.__inflClassList
     def getInflFeatures(self, i):
         # Get any features that come from irregularly inflected forms   
         if i < len(self.__inflFeatAbbrevsList):
@@ -735,16 +763,18 @@ class TextWord():
             return self.__senseList[i]
         return None
     def getStemFeatures(self, i):
-        if self.hasSenses() and i < len(self.__senseList):
-            if mySense := self.__senseList[i]:
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                if msa.MsFeaturesOA:
-                    # if we already have a populated list, we don't need to do it again.
-                    if len(self.__stemFeatAbbrList) == 0:
-                        # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
-                        Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
-                    return self.getFeatures(self.__stemFeatAbbrList)
-        return []
+        if self.__ignoreStemFeatures:
+            if self.hasSenses() and i < len(self.__senseList):
+                if mySense := self.__senseList[i]:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                    if msa.MsFeaturesOA:
+                        # if we already have a populated list, we don't need to do it again.
+                        if len(self.__stemFeatAbbrList) == 0:
+                            # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
+                            Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+                        return self.getFeatures(self.__stemFeatAbbrList)
+            return []
+        return self.getFeatures(self.__stemFeatAbbrList)
     def getSurfaceForm(self):
         return self.__surfaceForm
     def getSurfaceFormWithVerseNum(self):
@@ -830,7 +860,7 @@ class TextWord():
         if self.hasSenses() == False and len(self.__affixLists) == 0:
             return False
         return True
-    def initWithComplex(self, cmplxE, componentList):
+    def initWithComplex(self, cmplxE, componentList, inflectionOnFirstElement):
         self.addEntry(cmplxE)
         self.setComponentList(componentList)
         
@@ -843,17 +873,23 @@ class TextWord():
         # add the sense
         self.addSense(cmplxE.SensesOS.ToArray()[0])
         
-        # use the bundle guid from the last component as this word's guid
+        firstComponent = componentList[0]
         lastComponent = componentList[-1]
+
+        # use the bundle guid from the last component as this word's guid
         self.setGuid(lastComponent.getGuid())
         
-        # Transfer tags from one component to our new word
-        # TODO: allow the user to specify taking affixes and features from first or last element
-        affixList = lastComponent.getAffixSymbols()
+        # Transfer tags from one component to our new word depending on where the inflection is
+        # If the inflection is on the first element, take tags from the first element,  
+        # otherwise take them from the last element
+        if inflectionOnFirstElement:
+            affixList = firstComponent.getAffixSymbols()
+        else:
+            affixList = lastComponent.getAffixSymbols()
+
         self.addAffixesFromList(affixList)
         
         # Transfer begin punctuation from the first component
-        firstComponent = componentList[0]
         self.addInitialPunc(firstComponent.getInitialPunc())
         
         # Transfer end punctuation from the last component
@@ -900,6 +936,14 @@ class TextWord():
         self.__componentList = cList
     def setGuid(self, myGuid):
         self.__guid = myGuid
+    def setInflClass(self, inflClass): 
+        self.__inflClassList = [inflClass]
+    def setIgnoreInflectionClass(self, flag):
+        self.__ignoreInflClass = flag
+    def setIgnoreStemFeatures(self, flag):
+        self.__ignoreStemFeatures = flag
+    def setStemFeatAbbrevList(self, stemList):
+        self.__stemFeatAbbrList = stemList
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):

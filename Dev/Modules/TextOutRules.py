@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -59,7 +62,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TextOutRules'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -70,7 +76,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TextOutRules", "Text Out Rules"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help       : "",
@@ -80,15 +86,19 @@ synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined 
 This module is not in the Drafting collection of modules by default. You need to add {fixUpSynthTextModule} to the Drafting collection 
 and move it to be after the {synthModule} Text module.""").format(fixUpSynthTextModule=FixUpSynthTextDocs[FTM_Name], synthModule=DoSynthesisDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

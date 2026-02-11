@@ -20,7 +20,6 @@ class Ui_SenseLinkerWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(SenseLinkerWindow.sizePolicy().hasHeightForWidth())
         SenseLinkerWindow.setSizePolicy(sizePolicy)
-        SenseLinkerWindow.setWindowTitle("FLExTrans Sense Linker Tool")
         self.centralwidget = QtWidgets.QWidget(SenseLinkerWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -243,6 +242,7 @@ class Ui_SenseLinkerWindow(object):
 
     def retranslateUi(self, SenseLinkerWindow):
         _translate = QtCore.QCoreApplication.translate
+        SenseLinkerWindow.setWindowTitle(_translate("SenseLinkerWindow", "FLExTrans Sense Linker Tool"))
         self.label_4.setText(_translate("SenseLinkerWindow", "Source Text:"))
         self.label.setText(_translate("SenseLinkerWindow", "All Target Senses:"))
         self.targetLexCombo.setToolTip(_translate("SenseLinkerWindow", "After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it."))

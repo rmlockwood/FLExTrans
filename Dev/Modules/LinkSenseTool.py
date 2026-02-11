@@ -5,6 +5,24 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
+#   Version 3.14.10 - 1/23/26 - Ron Lockwood
+#    Fixes #1193. Fixed missing value in message saying how many links were removed.
+#
+#   Version 3.14.9 - 12/15/25 - Ron Lockwood
+#    Fixes #1140. Reduce the unlinked list when a word is checked via the checkbox.
+#
+#   Version 3.14.8 - 11/24/25 - Ron Lockwood
+#    Fixes #1121. Give a better error message when no words matching morphtype roots is found.
+#
+#   Version 3.14.7 - 11/24/25 - Ron Lockwood
+#    Fixes #1106. Don't prompt the user the save changes twice.
+#
+#   Version 3.14.6 - 10/23/25 - Ron Lockwood
+#    Refixes #1031. Save font information also on close or cancel.
+#
 #   Version 3.14.5 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -102,71 +120,7 @@
 #   Version 3.10 - 1/6/24 - Ron Lockwood
 #    Output the target DB name in the sense link text.
 #
-#   Version 3.9.8 - 12/26/23 - Ron Lockwood
-#    Fixes #501. Fixed typo that returned source headword instead of source gloss.
-#
-#   Version 3.9.7 - 8/18/23 - Ron Lockwood
-#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.6 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.5 - 7/22/23 - Ron Lockwood
-#    Writing **None** wasn't being handled.
-#
-#   Version 3.9.4 - 7/17/23 - Ron Lockwood
-#    Fixes #470. Re-write entry urls as sense urls when loading the sense linker. 
-#    Also clear the sense num field for such entries.
-#
-#   Version 3.9.3 - 7/17/23 - Ron Lockwood
-#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
-#
-#   Version 3.9.2 - 7/4/23 - Ron Lockwood
-#    Don't give an error if the sense custom field link setting is not there.
-#
-#   Version 3.9.1 - 7/3/23 - Ron Lockwood
-#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
-#
-#   Version 3.9 - 6/19/23 - Ron Lockwood
-#    Fixes #440. Don't capitalize source headwords if they aren't capitalized in the entry.
-#
-#   Version 3.8.5 - 5/5/23 - Ron Lockwood
-#    Add a column to the table to show the verse number if it precedes a word. To do this a new class was added
-#    which encapsulates the Link class and adds the verse number attribute.
-#
-#   Version 3.8.4 - 4/27/23 - Ron Lockwood
-#    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
-#    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
-#    for the gloss map and once for the building of the linking objects.
-#
-#   Version 3.8.3 - 4/21/23 - Ron Lockwood
-#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
-#    collects all the interlinear text names.
-#
-#   Version 3.8.2 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.1 - 4/20/23 - Ron Lockwood
-#    Use Status Bar callback function
-#
-#   Version 3.8 - 4/8/23 - Ron Lockwood
-#    Fixed #397. Fixed crash when exporting 0 unlinked senses.
-#
-#   Version 3.7.10 - 2/24/23 - Ron Lockwood
-#    Make the vocab headwords lowercase (unless they're proper nouns).
-#
-#   Version 3.7.9 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#
-#   Version 3.7.8 - 1/30/23 - Ron Lockwood
-#    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
-#    with a table containing source headword, gloss and category plus blank cells for the target
-#    language and a comment. Also below this info. is the sentence where the sense was found with the
-#    word marked in bold type. A new setting for ProperNoun abbrev. added.
-#
-#   Version 3.7.7 - 1/18/23 - Ron Lockwood
-#    Fixed bug where report was None in the do_replacements function and a warning was
-#    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 1/10/25
 #
@@ -227,7 +181,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'LinkSenseTool'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -239,7 +196,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.5",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -263,8 +220,8 @@ a sense-level custom field in your source project. It should be simple text fiel
 The purpose of the custom field is to hold the link to a sense in the target project.
 Set which custom field is used for linking in the settings.""")}
                  
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # Configurables:
@@ -753,7 +710,7 @@ class Main(QMainWindow):
         self.ui = Ui_SenseLinkerWindow()
         self.ui.setupUi(self)
         myFont = self.ui.tableView.font()
-        self.__model = LinkerTable(myData, headerData, myFont, self.calculateRemainingLinks)
+        self.__model = LinkerTable(myData, headerData, myFont, self.filter)
         self.__fullData = myData
         self.headerData = headerData
         self.ui.tableView.setModel(self.__model)
@@ -1013,14 +970,6 @@ class Main(QMainWindow):
         # Set the global variable
         FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
         
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
-        
         # Have FlexTools refresh the status bar
         refreshStatusbar()
 
@@ -1158,8 +1107,6 @@ class Main(QMainWindow):
         
     def OKClicked(self):
         self.retVal = 1
-        self.saveFontSettings()   
-
         self.close()
         
     def ShowOnlyUnlinkedClicked(self):
@@ -1184,8 +1131,20 @@ class Main(QMainWindow):
         self.filter()
         
     def closeEvent(self, event):
+
+        # Always save font settings on close
+        self.saveFontSettings()   
+
         if self.retVal != 1:
-            self.CancelClicked()
+
+            # Check if the user did some linking or unlinking
+            if self.__model.didLinkingChange():
+                
+                # Check if the user wants to save changes
+                if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+            
+                    self.retVal = 1
+            
         elif self.rebuildBiling:
         
             # Show hourglass cursor 
@@ -1194,22 +1153,11 @@ class Main(QMainWindow):
             # Pause for 3 seconds to let FLEx write out the links before the bilingual lexicon gets rebuilt
             time.sleep(3)
 
-            self.saveFontSettings()   
-
             # Revert back to the default cursor 
             QApplication.restoreOverrideCursor()    
 
     def CancelClicked(self):
         self.retVal = 0
-
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
-        
         self.close()
         
     def filter(self):
@@ -1445,6 +1393,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     saveMap = {}
     processedMap = {}
     myData = []
+    foundAtLeastOneValidMorphType = False
     
     report.ProgressStart(myText.getWordCount())
 
@@ -1482,7 +1431,11 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     
                         if morphType not in sourceMorphNames:
                             continue
-                            
+                        
+                        # We have at least one valid morph type. If we never get here and this remains false,
+                        # we will report an error later.
+                        foundAtLeastOneValidMorphType = True
+
                         # Get gloss
                         srcGloss = Utils.as_string(mySense.Gloss)    
                 
@@ -1553,6 +1506,10 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                         else:
                             addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
                 # wordIndex += 1
+
+    if not foundAtLeastOneValidMorphType:
+
+        report.Error(_translate("LinkSenseTool", "No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.")) 
 
     return myData, processedMap
 
@@ -1669,7 +1626,7 @@ def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, se
        
     elif unlinkCount > 1:
        
-        report.Info(_translate("LinkSenseTool", ' links removed').format(num=str(unlinkCount)))
+        report.Info(_translate("LinkSenseTool", '{num} links removed').format(num=str(unlinkCount)))
                       
 def containsWord(sentHPGlist, word):
     
@@ -1984,7 +1941,7 @@ def RunModule(DB, report, configMap, app):
     # Check to see if there is any data to link
     if len(myData) == 0:
                                         
-        report.Error(_translate("LinkSenseTool", 'There were no senses found for linking. Please check your text and approve some words.'))
+        report.Error(_translate("LinkSenseTool", 'There was an error finding senses to link.'))
     else:        
         myHeaderData = [_translate("LinkSenseTool", 'Link it!'), 
                                                     'V #', 
@@ -2041,7 +1998,11 @@ REBUILD_BILING = 3
 def MainFunction(DB, report, modify=False):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     if not modify:

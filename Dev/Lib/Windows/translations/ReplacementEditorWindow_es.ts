@@ -58,5 +58,10 @@
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
+    <message>
+        <location filename="../ReplacementEditorWindow.py" line="108"/>
+        <source>Replacement Dictionary Editor</source>
+        <translation>Editor de diccionario de reemplazo</translation>
+    </message>
 </context>
 </TS>

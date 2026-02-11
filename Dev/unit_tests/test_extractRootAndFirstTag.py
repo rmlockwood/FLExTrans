@@ -16,50 +16,52 @@ clr.AddReference("SIL.LCModel")
 clr.AddReference("SIL.LCModel.Core")
 
 import Utils
-import DoHermitCrabSynthesis
+from DoHermitCrabSynthesis import extractRootAndFirstTag as extract_root_and_first_tag_func
 
 class extractRootAndFirstTag(unittest.TestCase):
+    # Alias the function so test methods can use it
+    _func = staticmethod(extract_root_and_first_tag_func)
 
     def test_prefix_and_suffix(self):
         input_str = "<2s.S2>tang1.1<v><3sg><obj>"
         expected_result = ('tang1.1', 'v')
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
     def test_prefix_only(self):
         input_str = "<2s.S2>tang1.1<v>"
         expected_result = ('tang1.1', 'v')
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
     def test_suffix_only(self):
         input_str = "tang1.1<v><3sg>"
         expected_result = ('tang1.1', 'v')
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
     def test_suffix_longer_cat(self):
         input_str = "tang1.1<v_intr><3sg>"
         expected_result = ('tang1.1', 'v_intr')
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
     def test_no_tag(self):
         input_str = "tang1.1"
         expected_result = ('tang1.1', None)
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
     def test_no_last_tag(self):
         input_str = "<impv>tang1.1"
         expected_result = ('tang1.1', None)
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
     def test_no_root(self):
         input_str = "<impv><v><obj>"
         expected_result = (None, None)
-        result = DoHermitCrabSynthesis.extractRootAndFirstTag(input_str)
+        result = self._func(input_str)
         self.assertEqual(result, expected_result)
 
 if __name__ == "__main__":

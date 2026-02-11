@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -51,65 +54,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9.9 - 11/24/23 - Ron Lockwood
-#    Add a new check when building the lexicon to see if there are headwords that only differ
-#    in case and have the same part of speech. In such cases give a warning and skip the sense.
-#
-#   Version 3.9.8 - 8/18/23 - Ron Lockwood
-#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.7 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.6 - 7/17/23 - Ron Lockwood
-#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
-#
-#   Version 3.9.5 - 7/4/23 - Ron Lockwood
-#    Don't give an error if the sense custom field link setting is not there.
-#
-#   Version 3.9.4 - 7/3/23 - Ron Lockwood
-#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
-#
-#   Version 3.9.3 - 6/19/23 - Ron Lockwood
-#    Fixes #439. Error check after searching for the id 'replacement' or 'append'
-#
-#   Version 3.9.2 - 6/19/23 - Ron Lockwood
-#    Fixes #387. If a replacement entry has a space, turn that into a </b> in the bilingual lexicon.
-#    It's expected the user will use a normal space when needed for a lemma in the replacement file.
-#
-#   Version 3.9.1 - 6/3/23 - Ron Lockwood
-#    Fixes #441. Catch a exception when writing the bilingual lexicon with ElementTree.
-#
-#   Version 3.8.4 - 5/5/23 - Ron Lockwood
-#    Change Fatal error to Warning.
-#
-#   Version 3.8.3 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.2 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8.1 - 4/7/23 - Ron Lockwood
-#    Change module name from Extract... to Build...
-#
-#   Version 3.8 - 4/7/23 - Ron Lockwood
-#    Don't give the full path of the replacement file in the xml comment of the bilingual lexicon file.
-#
-#   Version 3.7.5 - 2/7/23 - Ron Lockwood
-#    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
-#    dictionary. This allows them to be deleted by default, or they can be overridden by
-#    replacement file entries.
-#
-#   Version 3.7.4 - 2/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#
-#   Version 3.7.3 - 1/18/23 - Ron Lockwood
-#    Fixed bug where report was None in the doReplacements function and a warning was
-#    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
-#
-#   Version 3.7.2 - 1/7/23 - Ron Lockwood
-#    Fixes #214. Give a warning for replacement file entries that couldn't be
-#    found in the bilingual lexicon.
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/1/25
 #
@@ -171,7 +116,10 @@ REPLDICTIONARY = 'repldictionary'
 _translate = QCoreApplication.translate
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['ExtractBilingualLexicon'], translators)
@@ -182,7 +130,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -197,8 +145,8 @@ This is typically called bilingual.dix and is usually in the Output folder.\n
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.""").format(replEditorModule=ReplEditorDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 
@@ -612,7 +560,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['ExtractBilingualLexicon'], 
                            translators, loadBase=True)
 

@@ -1,5 +1,4 @@
-!include "StrRep.nsh"
-!include "ReplaceInFile.nsh"
+!include "StrRep.nsh"   # local file
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
 !include "LangFile.nsh"
@@ -11,19 +10,26 @@
 !define PRODUCT_WEB_SITE "https://software.sil.org/flextrans"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.14"
+!define PRODUCT_VERSION "3.15"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
 !define FLEXTRANS_FOLDER "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects"
+!define GERMAN_SWEDISHDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
 !define TEMPLATEDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject"
 !define RULEASSISTANT "FLExTrans.Rule Assistant"
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
 !define EXPORTFROMFLEX "FLExTrans.Export Text from Target FLEx to Paratext"
+!define INSTALLER_RESOURCES "InstallerResources"
+!define GIT_RESOURCES "${GIT_FOLDER}\${INSTALLER_RESOURCES}"
+!define MAKEFILESDIR "${GIT_RESOURCES}\Makefiles"
+!define TRANSFER_RULESDIR "${GIT_RESOURCES}\TransferRules"
+!define VBSDIR "${GIT_RESOURCES}\VBS"
+!define INIDIR "${GIT_RESOURCES}\INI"
+!define REPLACEMENT_FILE "${GIT_RESOURCES}\replace.dix"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -31,18 +37,18 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey "LegalTrademarks" ""
-VIAddVersionKey "LegalCopyright" "? 2015-2025 SIL International"
+VIAddVersionKey "LegalCopyright" "? 2015-2026 SIL International"
 VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
 ; Always 4 numerals
-VIProductVersion 3.14.0.${BUILD_NUM}
+VIProductVersion 3.15.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_ICON "${GIT_RESOURCES}\DialogImages\FLExTransWindowIcon.ico"
+!define MUI_UNICON "${GIT_RESOURCES}\DialogImages\FLExTransWindowIcon.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -60,6 +66,9 @@ Var RadioYes
 Var RadioNo
 Var /GLOBAL PRODUCTION_MODE
 Var /GLOBAL LANGCODE
+Var /GLOBAL REAL_USER_APPDATA
+Var /GLOBAL REAL_USER_SID
+Var /GLOBAL DESKTOP_FOLDER
 
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -75,15 +84,19 @@ Var /GLOBAL LANGCODE
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "Spanish"
 
-!macro _ReplaceInFile SOURCE_FILE SEARCH_TEXT REPLACEMENT
-  Push "${SOURCE_FILE}"
-  Push "${SEARCH_TEXT}"
-  Push "${REPLACEMENT}"
-  Call RIF
+; Define a macro for copying transfer rules files based on language
+!macro InstallLocalizedRulesFile DEST_NAME SRC_BASE
+    ${If} $LANGUAGE == ${LANG_GERMAN}
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_de.t1x"
+    ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_es.t1x"
+    ${Else}
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}.t1x"
+    ${EndIf}
 !macroend
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
+Icon "${MUI_ICON}"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
@@ -121,15 +134,15 @@ LangString Tools          ${LANG_SPANISH} "Herramientas"
 LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
 LangString Clusters       ${LANG_SPANISH} "Racimos"
 
-Section -Prerequisites
-InitPluginsDir
+Section "MainSection" SEC01
+  InitPluginsDir
 
   SetOutPath "$INSTDIR\install_files"
 
   # Install python 
   MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
         File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe PrependPath=1"
+        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe InstallAllUsers=1 PrependPath=1"
         Goto endPythonSync
   endPythonSync:
   
@@ -148,48 +161,24 @@ InitPluginsDir
   
   # Replacement dictionary  
   ; German-Swedish project folder
-  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Output"
-  File "${GIT_FOLDER}\replace.dix"
+  SetOutPath "${GERMAN_SWEDISHDIR}\Output"
+  File "${REPLACEMENT_FILE}"
 
   ; template project folder
   SetOutPath "${TEMPLATEDIR}\Output"
-  File "${GIT_FOLDER}\replace.dix"
+  File "${REPLACEMENT_FILE}"
+    
+  # Transfer rule files for German-Swedish folder
+  SetOutPath "${GERMAN_SWEDISHDIR}"
+  ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+  !insertmacro InstallLocalizedRulesFile "transfer_rules-Swedish.t1x" "transfer_rules-Swedish"
   
-  # Transfer rule files for each language.
-  ; First copy them to the install folder
-  SetOutPath "$INSTDIR\install_files"
-  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Swedish_de.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Swedish_es.t1x"
-  
-  ; Then copy them to the right name, depending on install language.
-  ${If} $LANGUAGE == ${LANG_GERMAN}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
-  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
-  ${Else}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
-  ${EndIf}
-  
-  # Sample transfer rule files for each language.
-  ; First copy them to the install folder
-  SetOutPath "$INSTDIR\install_files"
-  File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Sample1_de.t1x"
-  File "${GIT_FOLDER}\transfer_rules-Sample1_es.t1x"
-  
-  ; Then copy them to the right name, depending on install language. We only copy the sample rules file to the template project folder.
-  ${If} $LANGUAGE == ${LANG_GERMAN}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
-  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_es.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
-  ${Else}
-    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
-  ${EndIf}
-
+  # Transfer rule files for TemplateProject folder
+  SetOutPath "${TEMPLATEDIR}"
+  ; Pass the file name that it should be called in the destination folder and the starting part of the original filename in GIT (without _de, etc.)
+  !insertmacro InstallLocalizedRulesFile "transfer_rules.t1x" "transfer_rules-Swedish"
+  !insertmacro InstallLocalizedRulesFile "transfer_rules-Sample1.t1x" "transfer_rules-Sample1"
+    
   ## Now we overwrite the following files.
   SetOverwrite on
   
@@ -201,7 +190,7 @@ InitPluginsDir
   File "${GIT_FOLDER}\${HERMIT_CRAB_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${HERMIT_CRAB_ZIP_FILE}" "$0"
 
-  # Delete SettingGui.py from the Modules\FLExTrans folder, it now lives right under FlexTools
+  # Delete SettingGui.py from the Modules\FLExTrans folder (for old installs), it now lives right under FlexTools
   Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
 
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
@@ -225,10 +214,14 @@ InitPluginsDir
       StrCpy $9 "Tools"
     ${EndIf}
 
-    # Overwrite FlexTools.vbs
+    # Overwrite FLExTrans.vbs
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
+       ; Delete a old FlexTools.vbs file if it exists
+       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
+          Delete "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
+      ${EndIf}
       SetOutPath "${WORKPROJECTSDIR}\$1"
-      File "${GIT_FOLDER}\FlexTools.vbs"
+      File "${VBSDIR}\FLExTrans.vbs"
     ${EndIf}
     
     # Overwrite flextools.ini
@@ -237,61 +230,38 @@ InitPluginsDir
       
       # Use a production mode ini file if the user chose that
       ${If} $PRODUCTION_MODE <> ${BST_UNCHECKED}
-        File "/oname=${WORKPROJECTSDIR}\$1\Config\flextools.ini" "${GIT_FOLDER}\flextools_basic.ini"
+        File "/oname=${WORKPROJECTSDIR}\$1\Config\flextools.ini" "${INIDIR}\flextools_basic.ini"
       ${Else}
-        File "${GIT_FOLDER}\flextools.ini"
+        File "${INIDIR}\flextools.ini"
       ${EndIf}
     ${EndIf}
     
 	# Overwrite FLExTrans.ini - the production mode collection
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
-      File "${GIT_FOLDER}\FLExTrans.ini"
+      File "${INIDIR}\FLExTrans.ini"
     ${EndIf}
 	
 	# Overwrite Makefiles
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build"
-      File "${GIT_FOLDER}\Makefile"
-      File "${GIT_FOLDER}\Makefile.advanced"
+      File "${MAKEFILESDIR}\Makefile"
+      File "${MAKEFILESDIR}\Makefile.advanced"
     ${EndIf}
 	
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester"
-      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${GIT_FOLDER}\MakefileForLiveRuleTester"
-      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${GIT_FOLDER}\MakefileForLiveRuleTester.advanced"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${MAKEFILESDIR}\MakefileForLiveRuleTester"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${MAKEFILESDIR}\MakefileForLiveRuleTester.advanced"
     ${EndIf}
 	
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentproject = 'German-FLExTrans-Sample'" "currentproject = '$8'"
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
-			
-    # Find all collection ini files (e.g. tools.ini)
-    skip:
-    FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
-    loop2:
-      StrCmp $4 "" done2
-      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
-      
-		# If the Tools collection doesn't have disablerunall set yet, set it to True
-		${If} $4 == "Tools.ini" 
-		
-			# Get the current disablerunall setting
-			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
-			
-			# If we have no value, set disablerunall to True
-			StrCmp $5 "" 0 skip3
-		
-				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
+    # We use WriteINIStr instead of _ReplaceInFile for better non-admin compatibility
+    WriteINIStr "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject" "'$8'"
+    WriteINIStr "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection" "'$9'"
 
-			skip3:      
-		${EndIf}
-      ${EndIf}
-      FindNext $3 $4
-      Goto loop2
-    done2:
-      FindClose $3
+    skip:
     nextfolder:  
     FindNext $0 $1
     Goto loop1
@@ -318,22 +288,27 @@ InitPluginsDir
   # Install the collection .ini files if they don't exist already.
   SetOverwrite off
 
-  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
-  File "${GIT_FOLDER}\Clusters.ini"
+  FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
+  loop3:
+    StrCmp $1 "" done3
+    StrCmp $1 "." nextfolder3
+    StrCmp $1 ".." nextfolder3
+    
+	SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
 
-  SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
-  File "${GIT_FOLDER}\Clusters.ini"
-
+	File "${INIDIR}\Drafting.ini"
+	File "${INIDIR}\Run Testbed.ini"
+	File "${INIDIR}\Tools.ini"
+	File "${INIDIR}\Synthesis Test.ini"
+	File "${INIDIR}\FLExTrans.ini"
+	File "${INIDIR}\Clusters.ini"
+	
+    nextfolder3:  
+    FindNext $0 $1
+    Goto loop3
+  done3:
+    FindClose $0
+	
   skip4:
   
   SetOverwrite on
@@ -352,11 +327,28 @@ InitPluginsDir
         
       # Replace collection names that are in collectiontabs (or current) with the language equivalent
       ${If} $LANGUAGE != ${LANG_ENGLISH}
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" "$(Drafting)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Run Testbed" "$(Run_Testbed)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "'Tools'" "'$(Tools)'"  # replace 'Tools' so we don't mistakenly match FlexTools
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Synthesis Test" "$(Synthesis_Test)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
+
+		; 1. Define the file path
+		StrCpy $R0 "${WORKPROJECTSDIR}\$1\Config\flextools.ini"
+
+		; 2. Read the current list from the INI
+		; Format: ['Drafting', 'Run Testbed', 'Tools']
+		ReadINIStr $R1 "$R0" "DEFAULT" "collectiontabs"
+
+		; If the key doesn't exist, $R1 will be empty. 
+		StrCmp $R1 "" done4
+
+		# 3. Perform replacements using the macro 
+		${StrRep} $R1 "$R1" "Drafting" "$(Drafting)"
+		${StrRep} $R1 "$R1" "Run Testbed" "$(Run_Testbed)"
+		${StrRep} $R1 "$R1" "Tools" "$(Tools)"
+		${StrRep} $R1 "$R1" "Synthesis Test" "$(Synthesis_Test)"
+		${StrRep} $R1 "$R1" "Clusters" "$(Clusters)"
+
+		; 4. Write the final modified string back to the file
+		WriteINIStr "$R0" "DEFAULT" "collectiontabs" "$R1"
+
+		done4:
       ${EndIf}
       
 	  # Change the interface language setting
@@ -384,21 +376,31 @@ InitPluginsDir
 
   ${EndIf}
 
-  # Set the folder permission to be writable by all
-  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
-
+  # Set the folder permission to be writable by all in the Users group
+  # old that didn't seem to work as reported in issue 1125:      nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
+  # version that purported to fix 1125 had 'grant Users', but 'grant "Authenticated Users"' includes 'Users' and is a system managed group
+  #nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant "Authenticated Users":(OI)(CI)(M) /T /C'
+  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-5-11:(OI)(CI)(M) /T /C'
+  
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
+  !define mycmd 'py -3.11 -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
+  #  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
+  
   SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
-  File "${GIT_FOLDER}\Command.bat"
-  # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.
+  File "${GIT_RESOURCES}\Command.bat"
   ExecWait '${mycmd}'
-  # if the above failed, call the command.bat to do the same thing, but if this was the first time run, pip won't be in the path.
-  IfErrors 0 +2
-        Exec '"$OUT_FOLDER\${FLEXTRANS_FOLDER}\Command.bat"'
-
+  # if the above failed, call the command.bat to do the same thing, but if this was the first time run, pip might not be in the path.
+  # Capture the exit code in $0
+  nsExec::ExecToStack '${mycmd}'
+  Pop $0 ; Get exit code
+  
+  ${If} $0 != 0
+    ExecWait '"$OUT_FOLDER\${FLEXTRANS_FOLDER}\Command.bat"'
+  ${EndIf}
+  
   # Install Rule Assistant in silent mode
   SetOutPath "$INSTDIR\install_files"
+  # RESOURCE_FOLDER is a variable like GIT_FOLDER that is passed to the makensis program when compiling the installer
   File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
   ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
   
@@ -410,7 +412,6 @@ InitPluginsDir
   endXXeSync:
     
   # Associate file extensions with XMLmind XML Editor
-  
   # Start extension association loop
   StrCpy $R1 ".t1x"
   Goto associate_extension
@@ -428,12 +429,9 @@ next_dix:
   Goto associate_extension
   
 associate_extension:
-  # Create OpenWithList entry
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "a" "xxe.exe"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "MRUList" "a"
-  
-  # Create OpenWithProgids entry
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithProgids" "XXE_XML_File" ""
+  WriteRegStr HKEY_USERS "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "a" "xxe.exe"
+  WriteRegStr HKEY_USERS "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "MRUList" "a"
+  WriteRegStr HKEY_USERS "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithProgids" "XXE_XML_File" ""
   
   # Check which extension we just processed and jump to next one
   ${If} $R1 == ".t1x"
@@ -454,29 +452,52 @@ associate_extension:
   File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
   
   # Install the English one first
-  nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
+  nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   
   # Now overwrite some of the files with the Language specific ones
   ${If} $LANGUAGE == ${LANG_GERMAN}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   ${EndIf}
   
   # Update the XXE properties file
-  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+  # Define paths
+  StrCpy $R0 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\preferences.properties"
+  StrCpy $R1 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\prefs_temp.properties"
 
-  # SetOutPath "$APPDATA\XMLmind\XMLEditor8"
-  # File "${GIT_FOLDER}\preferences.properties"
-  # SetOutPath "$INSTDIR"
+  ${If} ${FileExists} "$R0"
+    FileOpen $R2 "$R0" "r"               ; Open original for reading
+    FileOpen $R3 $R1 "w"                 ; Open temp for writing
+    
+    loop_lines:
+      FileRead $R2 $R4                   ; Read one line (up to 1024 chars)
+      IfErrors done_lines
+      
+      # Check if this line contains our target string
+      # If so, replace it using the macro
+      ${StrRep} $R4 "$R4" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+      
+      FileWrite $R3 "$R4"                ; Write the (potentially modified) line
+      Goto loop_lines
 
+    done_lines:
+    FileClose $R3
+    FileClose $R2
+
+    # Copy the temp file back to the original location
+    # This is safer than 'Rename' for non-admins as it only requires Write permission
+    CopyFiles /SILENT "$R1" "$R0"
+    Delete "$R1"
+  ${EndIf}
+#  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+
+  # --- Create Desktop Shortcut ---
+  
+  # Syntax: CreateShortcut "Path\To\Shortcut.lnk" "Path\To\Target.exe" "Parameters" "IconFile" IconIndex
+  CreateShortcut "$DESKTOP_FOLDER\FLExTrans.lnk" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" "" "" 0
   # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
-SectionEnd
-
-
-Section "MainSection" SEC01
-
 SectionEnd
 
 Section -AdditionalIcons
@@ -484,15 +505,27 @@ Section -AdditionalIcons
 SectionEnd
 
 Section -Post
+  SetRegView 64
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${FLEXTRANS_FOLDER}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-SectionEnd
+  
+  # NEW: Save the FLExTrans data path so the uninstaller can find it
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
+  
+  # Store the identity of the user for the uninstaller
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserSID" "$REAL_USER_SID"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData" "$REAL_USER_APPDATA"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "UserDesktop" "$DESKTOP_FOLDER"
 
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  
+  # Update DisplayIcon to point to the actual folder
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\uninst.exe"
+  
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
@@ -506,23 +539,90 @@ FunctionEnd
 
 Section Uninstall
 #Take a look here and make sure that you uninstall XXE, ask about git, python and the FLExTools folder.
+  SetRegView 64
+  
+  # Read back the saved user info
+  ReadRegStr $7 HKLM "${PRODUCT_DIR_REGKEY}" "UserDesktop"
+  ReadRegStr $8 HKLM "${PRODUCT_DIR_REGKEY}" "UserSID"
+  ReadRegStr $9 HKLM "${PRODUCT_DIR_REGKEY}" "UserAppData"
+  
   Delete "$INSTDIR\uninst.exe"
-  MessageBox MB_YESNO "Delete the ${FLEXTRANS_FOLDER} folder?" /SD IDYES IDNO endFlexDel
-        RMDir /r "$DOCUMENTS\${FLEXTRANS_FOLDER}"
-        Goto endFlexDel
+  
+  # 1. Get the path where we actually installed FLExTrans from the registry
+  ReadRegStr $R0 HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" 
+  
+  SetRegView 32
+  
+  # Check if the requirements file exists before trying to do pip uninstall
+  ${If} ${FileExists} "$R0\requirements.txt"
+    # Use the -y flag to skip the "Are you sure?" confirmation prompt from pip
+    ExecWait 'py -3.11 -m pip uninstall -r "$R0\requirements.txt" -y'
+  ${EndIf}
+  
+  # Note: You'll need to write this "InstallPath" during installation in the Post section
+  MessageBox MB_YESNO "Delete the FLExTrans data folder at $R0?" IDNO endFlexDel
+    RMDir /r "$R0"
   endFlexDel:
 
-  # Not sure what this does - RL 10Jan2022
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Uninstall.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Website.lnk"
-  Delete "$DESKTOP\${PRODUCT_NAME}${PRODUCT_VERSION}.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\${PRODUCT_NAME}${PRODUCT_VERSION}.lnk"
+  # 2. Delete the user-specific shortcut
+  Delete "$7\FLExTrans.lnk"
 
+  # Remove file associations from the user's registry hive
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t1x"
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t2x"
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.t3x"
+  DeleteRegKey HKEY_USERS "$8\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.dix"
+  
+  # Notify Windows that icons/associations have changed
+  System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+
+  MessageBox MB_YESNO "Remove FLExTrans add-ons and preferences from XMLmind? The XMLmind program itself will remain." IDNO skip_xmlmind
+    # Define the base search path
+    StrCpy $R1 "$9\XMLmind\XMLEditor8\addon"
+
+    # Start searching for folders in the addon directory
+    FindFirst $0 $1 "$R1\*.*"
+    loop_addons:
+      StrCmp $1 "" done_addons ; End of folder list
+      
+      # Skip the . and .. directory markers
+      StrCmp $1 "." next_addon
+      StrCmp $1 ".." next_addon
+
+      # Check if the folder name starts with "Apertium"
+      StrCpy $2 $1 8 ; Get first 8 characters
+      StrCmp $2 "Apertium" found_target
+      
+      # Check if the folder name starts with "FLExTrans"
+      StrCpy $2 $1 9 ; Get first 9 characters
+      StrCmp $2 "FLExTrans" found_target
+      
+      Goto next_addon
+
+    found_target:
+      # If we reach here, $1 is a folder name we want to delete.
+      # We combine the base path ($R1) and the folder name ($1) for a full path.
+      RMDir /r "$R1\$1"
+
+    next_addon:
+      FindNext $0 $1
+      Goto loop_addons
+
+    done_addons:
+      FindClose $0
+  skip_xmlmind:
+
+  # Remove Admin/System level files
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Uninstall.lnk"
   RMDir "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}"
   RMDir /r "$INSTDIR"
 
-  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  # Clean up Registry
+  DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  
+  MessageBox MB_OK "Note: Python, XMLmind XML Editor and the FLExTrans Rule Assistant were installed separately. If you wish to remove them, please use the Windows 'Installed apps' setting."
+  
   SetAutoClose true
 SectionEnd
 
@@ -540,33 +640,124 @@ var /global BROWSEDEST
 var /global DESTTEXT
 ;Var Dialog
 Function nsDialogsPage
+    Var /GLOBAL REAL_USERNAME
+    Var /GLOBAL USER_PROFILE_PATH
+    Var /GLOBAL DOCS_FOLDER_NAME
+    Var /GLOBAL DESKTOP_FOLDER_NAME
+    
+    # 1. Get the username of the person who owns explorer.exe (the real logged-in user)
+	nsExec::ExecToStack 'powershell -NoProfile -ExecutionPolicy Bypass -Command "$$p = Get-Process explorer | Select-Object -First 1; (Get-WmiObject Win32_Process -Filter \"ProcessId=$$($$p.Id)\").GetOwner().User"'
+    Pop $0  # Return code
+    Pop $REAL_USERNAME  # The actual username
+    
+	# REMOVE NEWLINE/CARRIAGE RETURN
+	${StrRep} $REAL_USERNAME $REAL_USERNAME "$\r" ""
+	${StrRep} $REAL_USERNAME $REAL_USERNAME "$\n" ""
+  
+    ${If} $REAL_USERNAME != ""
+        # 2. Build the user profile path
+        StrCpy $USER_PROFILE_PATH "C:\Users\$REAL_USERNAME"
 
-        #Create Dialog and quit if error
-        nsDialogs::Create 1018
-        Pop $Dialog
-        ${If} $Dialog == error
-                Abort
-        ${EndIf}
+		# Get the local appdata path
+        StrCpy $REAL_USER_APPDATA "$USER_PROFILE_PATH\AppData\Roaming"
+
+        # 3. Get the full localized path (e.g., C:\Users\Name\Documentos)
+		# Even if redirected to OneDrive, this gives us the "correct" name
+		StrCpy $1 $DOCUMENTS
         
-        StrCpy $OUT_FOLDER $DOCUMENTS
+        # 4. Extract just the folder name (e.g., "Documents", "Documentos", "Dokumente")
+        ${If} $1 != ""
+            ${GetFileName} "$1" $DOCS_FOLDER_NAME
+            StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\$DOCS_FOLDER_NAME"
+		${Else}
+			# Default to Documents
+			StrCpy $OUT_FOLDER "$USER_PROFILE_PATH\Documents"
+        ${EndIf}
+		
+    ${Else}
+		# Ultimate fallback
+		StrCpy $OUT_FOLDER "C:\FLExTrans"
+    ${EndIf}
+	
+    # 5. Create the folder
+    CreateDirectory "$OUT_FOLDER"
+    
+	# get the SID of the local user for registry work
+	nsExec::ExecToStack 'powershell -NoProfile -ExecutionPolicy Bypass -Command "$$objUser = New-Object System.Security.Principal.NTAccount(\"$REAL_USERNAME\"); $$strSID = $$objUser.Translate([System.Security.Principal.SecurityIdentifier]); $$strSID.Value"'
+	Pop $0
+	Pop $REAL_USER_SID
 
-        ${NSD_CreateLabel} 0 60 100% 12u "$(ChooseFolderText)"
-        ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
-        pop $DESTTEXT
-        SendMessage $DESTTEXT ${EM_SETREADONLY} 1 0
-        ${NSD_CreateBrowseButton} 320 80 20% 12u "$(BrowseText)"
-        pop $BROWSEDEST
+	${StrRep} $REAL_USER_SID $REAL_USER_SID "$\r" ""
+	${StrRep} $REAL_USER_SID $REAL_USER_SID "$\n" ""
+  
+	# 3. Get the full localized path (e.g., C:\Users\Name\Schreibtisch)
+	# Even if redirected to OneDrive, this gives us the "correct" name
+	SetRegView 64
+	ReadRegStr $5 HKU "$REAL_USER_SID\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" "Desktop"
+	SetRegView 32
+	
+	StrCpy $1 $5
+	StrCpy $DESKTOP_FOLDER $5
+	
+	# 4. Extract just the folder name (e.g., "Desktop", "Schreibtisch")
+	${If} $1 != ""
+		${GetFileName} "$1" $DESKTOP_FOLDER_NAME
+		
+		Push $DESKTOP_FOLDER
+		Push "%USERPROFILE%"
+		Call StrStr
+		Pop $0
 
-        ${NSD_OnClick} $BROWSEDEST Browsedest
+		# If the shellfolder path contains USERPROFILE, build the string with our user profile variable
+		${If} $0 != ""
+			StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\$DESKTOP_FOLDER_NAME"
+		${Else}
+			# No %USERPROFILE%, now check for OneDrive
+			Push $DESKTOP_FOLDER
+			Push "OneDrive"
+			Call StrStr
+			Pop $0
+			
+			# No OneDrive
+			${If} $0 == ""
+				# default to Desktop
+				StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\Desktop"
+			${EndIf}
+				
+			# otherwise the whole path is already in the variable $DESKTOP_FOLDER
+		${EndIf}
+	${Else}
+		# default to Desktop
+		StrCpy $DESKTOP_FOLDER "$USER_PROFILE_PATH\Desktop"
+	${EndIf}
 
-nsDialogs::Show
+    nsDialogs::Create 1018
+    Pop $Dialog
+    ${If} $Dialog == error
+        Abort
+    ${EndIf}
+    
+    ${NSD_CreateLabel} 0 60 100% 12u "$(ChooseFolderText)"
+    ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
+    pop $DESTTEXT
+    SendMessage $DESTTEXT ${EM_SETREADONLY} 1 0
+    ${NSD_CreateBrowseButton} 320 80 20% 12u "$(BrowseText)"
+    pop $BROWSEDEST
+    ${NSD_OnClick} $BROWSEDEST Browsedest
+    
+    nsDialogs::Show
 FunctionEnd
 
 # Set up the Browse step
 Function Browsedest
-nsDialogs::SelectFolderDialog "Select Destination Folder" $DOCUMENTS
-Pop $OUT_FOLDER
-${NSD_SetText} $DESTTEXT $OUT_FOLDER
+	# Use the $OUT_FOLDER we calculated in nsDialogsPage
+	nsDialogs::SelectFolderDialog "Select Destination Folder" "$OUT_FOLDER"
+	Pop $R0
+
+	${If} $R0 != "error"
+		StrCpy $OUT_FOLDER $R0
+		${NSD_SetText} $DESTTEXT $OUT_FOLDER
+	${EndIf}
 FunctionEnd
 
 LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
@@ -639,3 +830,32 @@ Function .onInit
 	
 FunctionEnd
 
+; ==========================================================
+; StrStr - Searches for a string within another string
+; Input: Top of stack = string to search for
+;        Second on stack = string to search in
+; Output: Top of stack = result (string from start of match)
+; ==========================================================
+Function StrStr
+  Exch $R1 ; string to search for
+  Exch
+  Exch $R2 ; string to search in
+  Push $R3
+  Push $R4
+  Push $R5
+  StrLen $R3 $R1
+  StrCpy $R4 0
+  loop:
+    StrCpy $R5 $R2 $R3 $R4
+    StrCmp $R5 $R1 done
+    StrCmp $R5 "" done
+    IntOp $R4 $R4 + 1
+    Goto loop
+  done:
+  StrCpy $R1 $R2 "" $R4
+  Pop $R5
+  Pop $R4
+  Pop $R3
+  Pop $R2
+  Exch $R1
+FunctionEnd

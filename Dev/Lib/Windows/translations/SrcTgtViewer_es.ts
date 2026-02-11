@@ -26,12 +26,17 @@
     <message>
         <location filename="../SrcTgtViewer.py" line="152"/>
         <source>Zoom:</source>
-        <translation>Zoom:</translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <location filename="../SrcTgtViewer.py" line="153"/>
         <source>OK</source>
         <translation>OK</translation>
+    </message>
+    <message>
+        <location filename="../SrcTgtViewer.py" line="147"/>
+        <source>Source/Target Viewer</source>
+        <translation>Visor de origen/objetivo</translation>
     </message>
 </context>
 </TS>

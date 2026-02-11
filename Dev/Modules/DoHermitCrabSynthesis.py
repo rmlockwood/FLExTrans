@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.3 - 8/16/25 - Ron Lockwood
 #    Fixes #1040. Use lemma and category in our saved catalog for mapping capitalized
 #    words to lowercase words.
@@ -69,33 +72,7 @@
 #    Fixes #531. When replacing sentence punctuation lexical units with only the punctuation,
 #    account for the fact that failed synthesis words will also have ^ in the string. Fixed the regex.
 #
-#   Version 3.9.3 - 7/26/23 - Ron Lockwood
-#    Give warnings from GenerateHCConfig. 
-#
-#   Version 3.9.2 - 7/19/23 - Ron Lockwood
-#    Fixes #464. Support a new module that does either kind of synthesis by calling 
-#    the appropriate module. 
-#
-#   Version 3.9.1 - 6/26/23 - Ron Lockwood
-#    Updated module description. Also output the name of the created synthesis file.
-#
-#   Version 3.9 - 6/2/23 - Ron Lockwood
-#    Support tracing of HermitCrab synthesis
-#
-#   Version 3.8.4 - 5/3/23 - Ron Lockwood
-#    Better error handling.
-#
-#   Version 3.8.3 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.2 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8.1 - 4/8/23 - Ron Lockwood
-#    Handle synthesis errors in multi-word results.
-#
-#   Version 3.8 - 3/8/23 - Ron Lockwood
-#    Initial version.
+#   2023 version history removed on 2/6/26
 #
 #   Synthesize using Hermit Crab.
 #
@@ -151,7 +128,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'DoHermitCrabSynthesis'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -162,7 +142,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -181,8 +161,8 @@ These forms are then used to create the target text.""")}
 
 description = docs[FTM_Description]
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 SUCCESS = 'Success!'
 
@@ -471,7 +451,7 @@ def createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemm
             continue
 
         # Get the parses
-        HCparsesList = re.split('\|', HCparseStr)
+        HCparsesList = re.split(r'\|', HCparseStr)
         capCodeList = []
 
         # Get the parse and capitalization code pair
@@ -579,7 +559,7 @@ def fixUpText(synFile, cleanUpText):
     if cleanUpText:
 
         # Remove n.n on lemmas
-        synFileContents = re.sub('\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
+        synFileContents = re.sub(r'\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
         
         # Remove at signs
         synFileContents = re.sub('@', '', synFileContents)
@@ -825,7 +805,11 @@ def doHermitCrab(DB, report, configMap=None):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

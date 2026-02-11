@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
+#   Version 3.14.3 - 10/2/25 - Ron Lockwood
+#    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
+#    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
+#
 #   Version 3.14.2 - 9/3/25 - Ron Lockwood
 #    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
 #    See documentation added at the bottom of this comment block.
@@ -61,41 +68,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9.4 - 11/22/23 - Ron Lockwood
-#    Ignore allomorphs marked as abstract. Also big changes to support required
-#    features which are treated kind of like stem names. Look through all affixes to
-#    see if required features are used and save unique sets of them. For each affix allomoprh
-#    that matches a required features set, label with a morpheme property. Lastly,
-#    affix allomoprhs that have the required features get environments with the morpheme property.
-#    this change also required saving all affixes to a list for later processing after the rest of
-#    the entries. Fixes #507 and #516.
-#
-#   Version 3.9.3 - 8/12/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9.2 - 7/19/23 - Ron Lockwood
-#    Fixes #464. Support a new module that does either kind of synthesis by calling 
-#    the appropriate module. 
-#
-#   Version 3.9.1 - 6/26/23 - Ron Lockwood
-#    Updated module description. Also output the name of the created synthesis file.
-#
-#   Version 3.9 - 6/19/23 - Ron Lockwood
-#    Fixes #444. Skip Affix Process 'allomorphs'. They are only for HermitCrab.
-#
-#   Version 3.8.1 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.7.4 - 2/6/23 - Ron Lockwood
-#    Handle inflection sub-classes. List them all in the .dec file and add all sub-classes
-#    as environments for an affix when the parent class applies.
-#
-#   Version 3.7.3 - 1/6/23 - Ron Lockwood
-#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
-#    Also fix for circumfix - needed to check for 'suffix' not SUFFIX_TYPE
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/1/25
 #
@@ -183,7 +156,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'DoStampSynthesis'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -203,14 +179,14 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
         FTM_Description: description}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 DONT_CACHE = False
 CATEGORY_STR = 'category'
@@ -309,7 +285,40 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
         return
     
     if msa:
+
+        writeSpecialProperties(f_handle, msa, morphCategory)
+
+def processVariantForAllSenses(entry, f_rt, headWord, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID, xAmplePropList):
+
+    # Get to the main entry for this variant entry
+    mainEntry = Utils.GetEntryWithSense(entry)
+
+    # Loop through all the senses
+    for i, sense in enumerate(mainEntry.SensesOS):
+
+        # Write out morphname field (with sense number for variants)
+        f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
         
+        # Write out the XAMPLE properties
+        write_xample_properties(f_rt, xAmplePropList)
+
+        # Write out the variant marker
+        f_rt.write('\\c '+"_variant_"+'\n')
+
+        if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+            
+            msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
+        else:
+            return
+
+        writeSpecialProperties(f_rt, msa, STEM_TYPE)
+
+        # Process all allomorphs and their environments
+        process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+
+def writeSpecialProperties(f_handle, msa, morphCategory):        
+        
+        # Write out morpheme properties for stem names and required features
         if morphCategory != STEM_TYPE: # non-stems only
 
             # Deal with affix stem name stuff.
@@ -996,20 +1005,24 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 headWord = ITsString(entry.HeadWord).Text
                 headWord = Utils.add_one(headWord)
                 headWord = headWord.lower()
+
                 # change spaces to underscores
                 headWord = re.sub(r'\s', '_', headWord)
 
-                # Write out morphname field (no sense number for variants)
-                f_rt.write('\\m '+headWord+'\n')
+                processVariantForAllSenses(entry, f_rt, headWord, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID, xAmplePropList)
+                
+                # # Write out morphname field (no sense number for variants)
+                # f_rt.write('\\m '+headWord+'\n')
 
-                # Write out the XAMPLE properties
-                write_xample_properties(f_rt, xAmplePropList)
+                # # Write out the XAMPLE properties
+                # write_xample_properties(f_rt, xAmplePropList)
 
-                # Write out the variant marker
-                f_rt.write('\\c '+"_variant_"+'\n')
+                # # Write out the variant marker
+                # f_rt.write('\\c '+"_variant_"+'\n')
 
-                # Process all allomorphs and their environments
-                process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+                # # Process all allomorphs and their environments
+                # process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+
                 rt_cnt +=1
 
         if entry.SensesOS.Count > 0: # Entry with senses
@@ -1421,7 +1434,11 @@ def doStamp(DB, report, configMap=None):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

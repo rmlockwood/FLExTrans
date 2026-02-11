@@ -29,7 +29,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FLExTransStatusBar'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -46,8 +49,8 @@ else:
 # return a string that gets added to the status bar
 retStr = _translate("FLExTransStatusbar","  Work Project: {project}    Source Text: ").format(project=FTPaths.WORK_PROJECT)
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def statusbarCallback():
 

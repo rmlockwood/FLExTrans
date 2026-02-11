@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Fixes #1207. Bring the main form back to the foreground after closing the settings dialog.
+#
 #   Version 3.14.1 - 7/11/25 - Ron Lockwood
 #    Use new shortcuts system.
 #
@@ -20,7 +23,7 @@
 #    Settings are now launched from the menu
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 from System.Windows.Forms import (  # type: ignore
     Keys,
     MessageBox,
@@ -36,6 +39,9 @@ import Version
 import ReadConfig
 import Utils
 
+import ctypes
+user32 = ctypes.windll.user32
+
 def RunSettings(sender, event):
     form = sender.OwnerItem.Owner.Parent
 
@@ -43,12 +49,21 @@ def RunSettings(sender, event):
     SettingsGUI.MainFunction(None, None)
     form.Enabled = True
 
+    # Bring the form back to the foreground after the settings dialog is closed
+    # Same code as in Flexlibs - UIMain.py
+    user32.keybd_event(0,0,0,0)
+    hwnd = form.Handle.ToInt32()
+    user32.SetForegroundWindow(hwnd)
+    
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FLExTransMenu'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -59,7 +74,11 @@ librariesToTranslate = ['ReadConfig']
 def RunEditTransferRules(sender, event):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
     
@@ -90,7 +109,11 @@ def RunHelp(sender, event):
 def RunAbout(sender, event):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
     
@@ -111,6 +134,6 @@ customMenu = (
     ],
 )
 
-app.quit()
-del app
+#app.quit()
+#del app
 

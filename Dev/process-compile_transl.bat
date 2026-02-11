@@ -35,7 +35,7 @@ for %%D in (%directories%) do (
 		
 			for %%L in (%lang_codes%) do (
 			
-				pylupdate5 -verbose %%F -ts translations\!filename!_%%L.ts
+				pylupdate5 -verbose -noobsolete %%F -ts translations\!filename!_%%L.ts
 				lrelease translations\!filename!_%%L.ts -qm %destination%\translations\!filename!_%%L.qm
 			)
         )

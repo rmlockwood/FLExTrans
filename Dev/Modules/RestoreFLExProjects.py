@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -47,7 +50,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RestoreFLExProjects'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -58,7 +64,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",
@@ -67,8 +73,8 @@ f"""Select one or more FLEx backup files and automatically restore them one by o
 window that comes up to complete the restore. 
 The tool waits until one project is open before restoring the next.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # Maximum time to wait for a project to open before exiting
 LIMIT_SECS = 45
@@ -84,7 +90,7 @@ class MainWindow(QMainWindow):
         self.returnVal = False
 
     def initUI(self):
-        self.setWindowTitle('Restore Multiple FLEx Projects')
+        self.setWindowTitle(_translate("RestoreFLExProjects", 'Restore Multiple FLEx Projects'))
         self.setGeometry(100, 100, 400, 300)  # Set the initial window width
 
         # Create a central widget and set a layout
@@ -190,7 +196,11 @@ def extractProjName(backupName):
 def mainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

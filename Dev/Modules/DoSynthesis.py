@@ -5,6 +5,9 @@
 #   SIL International
 #   7/19/23
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -51,7 +54,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'DoSynthesis'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -62,7 +68,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoSynthesis", "Synthesize Text"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoSynthesis", "Synthesizes the target text with either STAMP or HermitCrab."),
         FTM_Help       : "",
@@ -76,13 +82,17 @@ then the following information from the {stampModule} module applies: {stampDesc
     stampModule=DoStampSynthesis.docs[FTM_Name],
     stampDescription=DoStampSynthesis.description)}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

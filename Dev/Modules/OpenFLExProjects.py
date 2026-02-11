@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -45,7 +48,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'OpenFLExProjects'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -56,15 +62,15 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",
         FTM_Description: _translate("OpenFLExProjects", 
 f"""Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 LIMIT_SECS = 40
 
@@ -76,7 +82,7 @@ class MainWindow(QMainWindow):
         self.returnVal = False
 
     def initUI(self, project_names):
-        self.setWindowTitle('Open Multiple FLEx Projects')
+        self.setWindowTitle(_translate("OpenFLExProjects", 'Open Multiple FLEx Projects'))
         self.setGeometry(100, 100, 400, 300)
 
         # Create a central widget and set a layout
@@ -125,7 +131,11 @@ def isFLExOpen(projName):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

@@ -48,5 +48,10 @@
         <source>Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten.</source>
         <translation>Quellkategorien und das Attribut a_gram_cat werden automatisch ausgefüllt. Vorhandene Quellkategorien werden nicht überschrieben.</translation>
     </message>
+    <message>
+        <location filename="../RuleCatsAndAttribs.py" line="76"/>
+        <source>Set Up Transfer Rule Categories &amp; Attributes</source>
+        <translation>Transferregeln-Kategorien und -Attribute einrichten</translation>
+    </message>
 </context>
 </TS>

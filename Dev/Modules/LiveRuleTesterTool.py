@@ -5,20 +5,69 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.14.5 - 8/13/25 - Ron Lockwood
+#   Version 3.15 - 2/4/26 - Ron Lockwood
+#    Fixes #1204. Do a delayed scroll to the selected source sentence in the list box 
+#    so it gets centered in the viewable area. This is needed because the scroll was 
+#    happening before the layout was done and so it was not scrolling to the right place.
+#
+#   Version 3.14.17 - 1/9/26 - Ron Lockwood
+#    Fixes #1165. Set default buttons to a minimum size so they are not too small. 
+#
+#   Version 3.14.16 - 1/9/26 - Ron Lockwood
+#    Fixes #1162. Only initialize the lexical units from the source sentences list if 
+#    that 2nd tab has been selected. This avoids initializing lexical units unnecessarily which
+#    allowed transfer to work on a fresh or cleaned install without checking word check boxes.
+#    Also, default to selecting all rule checkboxes if none were saved. This means the tri-state
+#    checkbox needs to be checked initially.
+#
+#   Version 3.14.15 - 12/11/25 - Ron Lockwood
+#    Add a stylesheet to pad all but a few buttons with space left and right.
+#    This makes the buttons look less cramped when the window is resized.
+#
+#   Version 3.14.14 - 11/28/25 - Ron Lockwood
+#    Use a text edit for warnings so multiple lines can be shown with a scroll bar.
+#
+#   Version 3.14.13 - 11/28/25 - Ron Lockwood
+#    Fixes #1103. Respond to arrow up and down in the sentence list box.
+#
+#   Version 3.14.12 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
-#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#   Version 3.14.11 - 7/31/25 - Ron Lockwood
 #    Fixes #1032. Space between lexical units in the Execution Log.
 #
-#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#   Version 3.14.10 - 7/25/25 - Ron Lockwood
 #    Fixes #1022. Use improved Apertium execution log.
 #
-#   Version 3.14.2 - 7/25/25 - Ron Lockwood
+#   Version 3.14.9 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
-#   Version 3.14.1 - 7/23/25 - Ron Lockwood
+#   Version 3.14.8 - 7/23/25 - Ron Lockwood
 #    Fixes #1013. Show duplicate affix gloss warnings.
+#
+#   Version 3.14.7 - 7/5/25 - Ron Lockwood
+#    Save the height and width in advanced and standard mode and restore them.
+#
+#   Version 3.14.6 - 7/5/25 - Ron Lockwood
+#    Fixes #1012. Connect a Refresh Source Lexicon button to the source text combo box.
+#    When clicked, the same source text will be reloaded.
+#
+#   Version 3.14.5 - 7/4/25 - Ron Lockwood
+#    Fixes #1018. Use a tri-state checkbox above the Rule checkboxes to check or uncheck all.
+#
+#   Version 3.14.4 - 7/2/25 - Ron Lockwood
+#    Show a tooltip when hovering over a source sentence. This will help the user see the full sentence, if the
+#    combo box or list box is too narrow.
+#
+#   Version 3.14.3 - 7/1/25 - Ron Lockwood
+#    Further fixes to elimnate blank space below checkboxes that caused a scroll bar to appear.
+#    Add checkboxes to the custom layout each time we display it.
+#
+#   Version 3.14.2 - 6/25/25 - Ron Lockwood
+#    Fix problem of check box scroll area not showing a scroll bar.
+#
+#   Version 3.14.1 - 6/19/25 - Ron Lockwood
+#    Don't allow synthesis if the target text is empty or no words are selected.
 #
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
@@ -134,64 +183,7 @@
 #   Version 3.10.1 - 1/6/2024 - Ron Lockwood
 #    Fixes #533. Recheck the words that were checked on closing the tester.
 #
-#   Version 3.10 - 12/28/23 - Ron Lockwood
-#    Fixes #518. Show the data stream for the checked boxes after rebuilding the
-#    bilingual lexicon.
-#
-#   Version 3.9.1 - 6/3/23 - Ron Lockwood
-#    Fixes #442. Force the rules to be renumbered when restoring checked rules.
-#
-#   Version 3.9 - 6/2/23 - Ron Lockwood
-#    Support tracing of HermitCrab synthesis
-#
-#   Version 3.8.8 - 4/28/23 - Ron Lockwood
-#    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
-#
-#   Version 3.8.7 - 4/25/23 - Ron Lockwood
-#    Handle blank HermitCrab config path in settings.
-#
-#   Version 3.8.6 - 4/21/23 - Ron Lockwood
-#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
-#    collects all the interlinear text names. Removed fallback to use scripture text names.
-#
-#   Version 3.8.5 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8.4 - 4/20/23 - Ron Lockwood
-#    Use Status Bar callback function
-#
-#   Version 3.8.3 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.8.2 - 4/15/23 - Ron Lockwood
-#    Fixes #391. Save/restore which transfer rules were checked.
-#
-#   Version 3.8.1 - 4/14/23 - Ron Lockwood
-#    Save/restore which words were checked on the Select Words tab when Rebuild Bil. Lex. button is pushed.
-#
-#   Version 3.8 - 4/4/23 - Ron Lockwood
-#    Support HermitCrab Synthesis.
-#
-#   Version 3.7.16 - 2/25/23 - Ron Lockwood
-#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
-#
-#   Version 3.7.15 - 2/7/23 - Ron Lockwood
-#    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
-#    dictionary. This allows them to be deleted by default, or they can be overridden by
-#    replacement file entries.
-#    Handle a target word that is now empty. We now show **none** on the tooltip.
-#
-#   Version 3.7.14 - 1/10/23 - Ron Lockwood
-#    Show log file output in colored format. Also filter out unneeded information.
-#    Fixes #162 and #320. Also widened yellow log output area.
-#
-#   Version 3.7.13 - 1/9/23 - Ron Lockwood
-#    Fix to bug introduce in last version. Default last sentence # to -1 so no
-#    indexes get set initially.
-#
-#   Version 3.7.12 - 1/7/23 - Ron Lockwood
-#    Change the way we save the last sentence # selected. Use a class variable to
-#    keep track of it. Fixes #370.
+#   2023 version history removed on 2/6/26
 #
 #   Earlier version history removed on 2/4/25.
 #
@@ -218,7 +210,6 @@
 import os
 import re
 import regex
-import sys
 import unicodedata
 import copy
 import xml.etree.ElementTree as ET
@@ -234,7 +225,7 @@ from flexlibs import FLExProject
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView
 
 import Mixpanel
 import InterlinData
@@ -258,7 +249,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'LiveRuleTesterTool'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -270,7 +264,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.14.5",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -285,12 +279,14 @@ transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 ZOOM_INCREASE_FACTOR = 1.15
+ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
+STANDARD_MODE_DEFAULT_DIMENSIONS = (628, 656)
 SAMPLE_LOGIC = 'Sample logic'
-MAX_CHECKBOXES = 80
+MAX_CHECKBOXES = 100
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
 TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
 ANA_FILE = 'myText.ana'
@@ -322,6 +318,102 @@ def firstLower(myStr):
     else:
         return myStr
 
+class FlowLayout(QLayout):
+    def __init__(self, parent=None, margin=1, spacing=3):
+        super().__init__(parent)
+        self.setContentsMargins(margin, margin, margin, margin)
+        self.setSpacing(spacing)
+        self.item_list = []
+
+    def addItem(self, item):
+        self.item_list.append(item)
+
+    def count(self):
+        return len(self.item_list)
+
+    def itemAt(self, index):
+        return self.item_list[index] if 0 <= index < len(self.item_list) else None
+
+    def takeAt(self, index):
+        return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
+
+    def expandingDirections(self):
+        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        x, y, line_height = 0, 0, 0
+        for item in self.item_list:
+            w = item.widget().sizeHint().width()
+            h = item.widget().sizeHint().height()
+
+            if x + w > width and x > 0:
+                x = 0
+                y += line_height + self.spacing()
+                line_height = 0
+
+            x += w + self.spacing()
+            line_height = max(line_height, h)
+
+        return y + line_height
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        is_rtl = self.parentWidget().layoutDirection() == QtCore.Qt.RightToLeft
+
+        x = rect.width() if is_rtl else 0
+        y = 0
+        line_height = 0
+
+        for item in self.item_list:
+            widget = item.widget()
+            hint = widget.sizeHint()
+
+            if is_rtl:
+                next_x = x - hint.width() - self.spacing()
+                if next_x < 0:
+                    x = rect.width()
+                    y += line_height + self.spacing()
+                    next_x = x - hint.width() - self.spacing()
+                    line_height = 0
+                item.setGeometry(QtCore.QRect(QtCore.QPoint(next_x, y), hint))
+                x = next_x
+            else:
+                next_x = x + hint.width() + self.spacing()
+                if next_x > rect.width():
+                    x = 0
+                    y += line_height + self.spacing()
+                    next_x = x + hint.width() + self.spacing()
+                    line_height = 0
+                item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), hint))
+                x = next_x
+
+            line_height = max(line_height, hint.height())
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        return QtCore.QSize(20, self.heightForWidth(40))
+
+class FlowContainer(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout = FlowLayout()
+        self.setLayout(self.layout)
+
+    def sizeHint(self):
+        width = self.parent().width() if self.parent() else 40
+        height = self.layout.heightForWidth(width)
+        return QtCore.QSize(width, height)
+
+    def minimumSizeHint(self):
+        width = self.parent().width() if self.parent() else 40
+        height = self.layout.heightForWidth(width)
+        return QtCore.QSize(width, height)
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
 
@@ -340,12 +432,14 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        mySent = self.__localData[index.row()]
+        
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.ToolTipRole:
 
-        if role == QtCore.Qt.DisplayRole:
-            value = self.joinTupParts(mySent, 0)
+            value = self.joinTupParts(self.__localData[index.row()], 0)
 
             if self.getRTL():
+
+                # Add a Unicode Right-to-Left mark to the beginning and end of the string
                 value = '\u200F' + value + '\u200F'
 
             return value
@@ -387,6 +481,7 @@ class Main(QMainWindow):
         self.rulesChanged = True
         self.fixBilingLex = True
         self.__bilingMap = {}
+        self.nothingSelectedMsg = _translate('LiveRuleTesterTool', 'Nothing selected. Select at least one word or sentence.')
 
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
@@ -420,8 +515,43 @@ class Main(QMainWindow):
         self.startRuleAssistant = False
         self.startReplacementEditor = False
         self.HCdllObj = None
+        self.lastSelectAllState = QtCore.Qt.Unchecked
+        self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
+        self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
-        # Reset icon images
+        self.advancedWidgetsList = [
+            self.ui.rebuildBilingLexButton,
+            self.ui.startRuleAssistant,
+            self.ui.viewBilingualLexiconButton,
+            self.ui.editReplacementButton,
+            # self.ui.selectAllButton,
+            # self.ui.unselectAllButton,
+            self.ui.upButton,
+            self.ui.downButton,
+            self.ui.editTransferRulesButton,
+            self.ui.traceHermitCrabSynthesisCheckBox,
+            self.ui.startRuleAssistant,
+            self.ui.applyTextOutRulesCheckbox,
+            self.ui.DoNotCleanupCheckbox,
+            self.ui.addMultipleCheckBox,
+            self.ui.editTestbedButton,
+            self.ui.viewTestbedLogButton,
+        ]
+
+        # Add horizontal padding for all buttons in this window
+        self.setStyleSheet("""
+            QPushButton {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            /* optional: keep small icon buttons compact */
+            QPushButton#ZoomIncreaseTarget, QPushButton#ZoomDecreaseTarget,
+            QPushButton#ZoomIncreaseSource, QPushButton#ZoomDecreaseSource  {
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+        """)
+        
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.upButton.setIcon(icon)
@@ -440,8 +570,6 @@ class Main(QMainWindow):
         self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
         self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
-        self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
-        self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
@@ -459,6 +587,12 @@ class Main(QMainWindow):
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
         self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
+        self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
+        self.ui.selectAllCheckBox.clicked.connect(self.SelectAllCheckBoxClicked)
+        self.ui.refreshSourceLexiconButton.clicked.connect(self.sourceTextComboChanged)
+
+        # Align selectAllCheckBox to the bottom
+        self.ui.horizontalLayout_9.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -477,12 +611,13 @@ class Main(QMainWindow):
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
 
+        self.content_widget = FlowContainer()
+
         for i in range(0, MAX_CHECKBOXES):
 
             myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
-            myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
 
             # connect to a function
             myCheck.clicked.connect(self.SourceCheckBoxClicked)
@@ -490,10 +625,12 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        self.ui.scrollArea.setWidget(self.content_widget)
+
         # Make sure we are on right tabs
-        ruleTab = 0
-        sourceTab = 0
-        selectWordsSentNum = 0
+        ruleTab = 0            # default to transfer rules tab
+        sourceTab = 0          # default to source text tab
+        selectWordsSentNum = 0 # default to first sentence
         savedSourceTextName = ''
         sourceFontSizeStr = ''
         targetFontSizeStr = ''
@@ -536,6 +673,28 @@ class Main(QMainWindow):
                     # Set the checkboxes based on the values in the list
                     self.ui.applyTextOutRulesCheckbox.setChecked(checkBoxStateStr[0] == '1')
                     self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
+
+                # Read the 6th line which is the state of the advanced options checkbox
+                advancedOptionsStr = f.readline().strip()
+
+                if len(advancedOptionsStr) > 0:
+
+                    self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
+
+                # Read the 7th and 8th lines which are the width and height of standard and advanced modes
+                dimensionsStr = f.readline().strip()
+
+                if len(dimensionsStr) > 0:
+
+                    standardWidth, standardHeight = dimensionsStr.split('|')
+                    self.standardModeDimensions = (int(standardWidth), int(standardHeight))
+
+                dimensionsStr = f.readline().strip()
+
+                if len(dimensionsStr) > 0:
+
+                    advancedWidth, advancedHeight = dimensionsStr.split('|')
+                    self.advancedModeDimensions = (int(advancedWidth), int(advancedHeight))
         except:
             pass
 
@@ -546,16 +705,9 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
-        # Show the Do not clean up... checkbox if the applicable setting is 'y'
-        if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
-
-            self.ui.DoNotCleanupCheckbox.setVisible(True) 
-        else:
-            self.ui.DoNotCleanupCheckbox.setVisible(False) 
-            self.ui.DoNotCleanupCheckbox.setChecked(False)
-
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
+
             self.__transfer_rules_file = self.buildFolder + '\\..\\transfer_rules.t1x'
 
         # Parse the xml rules file and load the rules
@@ -569,12 +721,18 @@ class Main(QMainWindow):
 
         # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
+
         for i,mySent in enumerate(sentence_list):
+
             if found_rtl == True or i >= 5:
                 break
+
             for myWordBundle in mySent:
+
                 surface_form = myWordBundle[0]
+
                 if self.hasRTLdata(surface_form):
+
                     self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.__sent_model.setRTL(True)
@@ -587,6 +745,7 @@ class Main(QMainWindow):
 
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         if self.ReadBilingualLexicon() == False:
+
             self.retVal = False
             self.close()
             return
@@ -602,17 +761,25 @@ class Main(QMainWindow):
 
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
+        self.ui.listSentences.selectionModel().selectionChanged.connect(self.listSentClicked)
+        
+        # Do some initialization if we are on the list sentences tab
+        if sourceTab == 1:
 
-        # Only use the sentence number from saved values if the text is the same one that was last saved
-        if savedSourceTextName != sourceText:
+            # Only use the sentence number from saved values if the text is the same one that was last saved
+            if savedSourceTextName != sourceText:
 
-            selectWordsSentNum = 0
+                selectWordsSentNum = 0
 
-        # Set the index of the combo box and sentence list to what was saved before
-        self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
-        qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
-        self.ui.listSentences.setCurrentIndex(qIndex)
-        self.listSentClicked()
+            # Set the index of the combo box and sentence list to what was saved before
+            self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
+            qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
+            self.ui.listSentences.setCurrentIndex(qIndex)
+
+            # Scroll to the selected item and center it in the viewable area
+            # Use a timer to delay the scroll so the view has time to layout properly
+            QtCore.QTimer.singleShot(0, lambda: self.ui.listSentences.scrollTo(qIndex, QAbstractItemView.PositionAtCenter))
+            self.listSentClicked()
 
         if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
 
@@ -693,30 +860,153 @@ class Main(QMainWindow):
 
         self.textOutElemTree = None
 
-        # Start out hiding this checkbox
-        self.ui.applyTextOutRulesCheckbox.setVisible(False)
+        self.manualTabText = self.ui.tabSource.tabText(2)
+        self.interChunkTabText = self.ui.tabRules.tabText(1)
+        self.postChunkTabText = self.ui.tabRules.tabText(2)
 
-        # Save the checkstate (above it was read from the window_settings) and uncheck it initially
-        myState = self.ui.applyTextOutRulesCheckbox.isChecked()
-        self.ui.applyTextOutRulesCheckbox.setChecked(False)
+        # Hide the advanced widgets if needed
+        self.AdvancedOptionsCheckboxClicked()
 
-        # See if we have a Text Out Rules file. 
-        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
-
-        if textOutRulesFile:
-            
-            # Check if the file exists.
-            if os.path.exists(textOutRulesFile):
-
-                try:
-                    self.textOutElemTree = ET.parse(textOutRulesFile)
-                    self.ui.applyTextOutRulesCheckbox.setVisible(True) 
-                    self.ui.applyTextOutRulesCheckbox.setChecked(myState)
-                except:
-                    pass 
-
+        self.setMinimumHeight(500)
+        # self.ui.transferRuleButtonsHorizLayout.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
         self.retVal = True
 
+    def AdvancedOptionsCheckboxClicked(self):
+
+        # Show or hide the advanced widgets and tabs
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            for widget in self.advancedWidgetsList:
+
+                widget.show()
+            
+            # Move the log edit edit box beside the rules if needed
+            if self.ui.horizLayoutTransferRules.count() < 2:
+
+                # Remove LogEdit from its current layout
+                self.ui.verticalLayout.removeWidget(self.ui.LogEdit)
+
+                # Add LogEdit to horizLayoutTransferRules at the desired position
+                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
+
+                # Align ruleExecutionLabel to the right.
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+
+                # Move ruleExecutionLabel from horizontalLayout_4 to horizontalLayout_9.
+                self.ui.horizontalLayout_4.removeWidget(self.ui.ruleExecutionLabel)
+
+                # Add it at the end.
+                self.ui.horizontalLayout_9.addWidget(self.ui.ruleExecutionLabel)
+
+                # Remove the targetTextLabel from verticalLayout
+                self.ui.verticalLayout.removeWidget(self.ui.targetTextLabel)
+
+                # Add it to horizontalLayout_4 at the beginning.
+                self.ui.horizontalLayout_4.insertWidget(0, self.ui.targetTextLabel)
+
+            # Add advanced tabs
+            self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
+            self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
+            self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
+
+            # Force a resize
+            self.adjustSize()
+
+            self.resize(self.advancedModeDimensions[0], self.advancedModeDimensions[1])
+
+            # If we are doing HermitCrab synthesis, show the checkbox
+            if not self.doHermitCrabSynthesisBool:
+
+                self.ui.traceHermitCrabSynthesisCheckBox.hide()
+
+            # See if we have a Text Out Rules file so we know whether to show the text out checkbox
+            self.ui.applyTextOutRulesCheckbox.hide()
+            textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
+
+            if textOutRulesFile:
+                
+                # Check if the file exists.
+                if os.path.exists(textOutRulesFile):
+
+                    try:
+                        self.textOutElemTree = ET.parse(textOutRulesFile)
+                        self.ui.applyTextOutRulesCheckbox.show() 
+                    except:
+                        pass 
+
+            # Show the Do not clean up... checkbox if the applicable setting is not 'y'
+            if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
+
+                self.ui.DoNotCleanupCheckbox.hide()
+        
+        # Not advanced options, hide the widgets and tabs
+        else:
+            for widget in self.advancedWidgetsList:
+
+                widget.hide()
+
+            # Move the log edit edit box below the rules if needed
+            if self.ui.horizLayoutTransferRules.count() > 1:
+
+                # Remove LogEdit from its current layout
+                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
+
+                # Add LogEdit to verticalLayout at the desired position
+                count = self.ui.verticalLayout.count()
+                insert_position = count - 4  # 4th from the bottom
+                self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
+
+                # Align ruleExecutionLabel to the left.
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+
+                # Move ruleExecutionLabel from horizontalLayout_9 to horizontalLayout_4.
+                self.ui.horizontalLayout_9.removeWidget(self.ui.ruleExecutionLabel)
+
+                # Add it at the beginning.
+                self.ui.horizontalLayout_4.insertWidget(0, self.ui.ruleExecutionLabel)
+
+                # Remove the targetTextLabel from horizontalLayout_4
+                self.ui.horizontalLayout_4.removeWidget(self.ui.targetTextLabel)
+
+                # Add it to the verticalLayout above the LogEdit
+                self.ui.verticalLayout.insertWidget(insert_position+1, self.ui.targetTextLabel)
+
+            # Set window width half the size
+            self.resize(self.standardModeDimensions[0], self.standardModeDimensions[1])
+
+            # Remove advanced tabs
+            self.ui.tabSource.removeTab(2) # Remove Manual tab
+            self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
+            self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            # Save the dimensions of the advanced mode
+            self.advancedModeDimensions = (self.width(), self.height())
+        else:
+
+            # Save the dimensions of the standard mode
+            self.standardModeDimensions = (self.width(), self.height()) 
+
+        self.positionZoomWidgets()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.positionZoomWidgets()
+
+    def positionZoomWidgets(self):
+
+        mainWidth = self.width()
+        tabSourceGeom = self.ui.tabSource.geometry()
+        x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
+        y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
+        self.ui.ZoomDecreaseSource.move(x, y)
+        self.ui.ZoomIncreaseSource.move(x-23, y)
+        self.ui.ZoomLabel_2.move(x-23-184, y)
+        
     def sourceTextComboChanged(self):
 
         self.restartTester = True
@@ -731,7 +1021,6 @@ class Main(QMainWindow):
         refreshStatusbar()
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     # Read the bilingual lexicon and make a map from source entries to one or more target entries
@@ -829,23 +1118,24 @@ class Main(QMainWindow):
         self.startReplacementEditor = True
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     def checkThemAll(self):
 
-            if self.advancedTransfer:
-                self.__ruleModel = self.__interChunkModel
-                self.__rulesElement = self.__interchunkRulesElement
-                self.SelectAllClicked()
-                self.__ruleModel = self.__postChunkModel
-                self.__rulesElement = self.__postchunkRulesElement
-                self.SelectAllClicked()
-                self.__ruleModel = self.__transferModel
-                self.__rulesElement = self.__transferRulesElement
-                self.SelectAllClicked()
-            else:
-                self.SelectAllClicked()
+        self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+
+        if self.advancedTransfer:
+            self.__ruleModel = self.__interChunkModel
+            self.__rulesElement = self.__interchunkRulesElement
+            self.SelectAllCheckBoxClicked()
+            self.__ruleModel = self.__postChunkModel
+            self.__rulesElement = self.__postchunkRulesElement
+            self.SelectAllCheckBoxClicked()
+            self.__ruleModel = self.__transferModel
+            self.__rulesElement = self.__transferRulesElement
+            self.SelectAllCheckBoxClicked()
+        else:
+            self.SelectAllCheckBoxClicked()
 
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
@@ -948,12 +1238,10 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = True
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     def OpenRuleAssistantClicked(self):
         self.startRuleAssistant = True
-        self.closeEvent(None)
         self.close()
 
     def EditTestbedLogButtonClicked(self):
@@ -984,6 +1272,11 @@ class Main(QMainWindow):
         
         msgBox.setDefaultButton(QMessageBox.Yes)
         
+        # Find the buttons and set a minimum width/height
+        for button in msgBox.buttons():
+
+            button.setMinimumSize(75, 23)
+
         # Show the dialog and get the user's response
         result = msgBox.exec_()
         return result
@@ -1032,7 +1325,15 @@ class Main(QMainWindow):
             return inputStr, errMsg
 
     def AddTestbedButtonClicked(self):
+        
         self.ui.TestsAddedLabel.setText('')
+        activeLexicalUnitsStr = self.getActiveLexicalUnits()
+
+        # If there are no lexical units, warn the user and return
+        if not activeLexicalUnitsStr.strip():
+
+            self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
+            return
 
         # Set the direction attribute
         if self.__sent_model.getRTL():
@@ -1075,7 +1376,7 @@ class Main(QMainWindow):
         # Check if add-multiple was selected
         if self.ui.addMultipleCheckBox.isChecked():
 
-            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
             if luObjList == None:
                 return
 
@@ -1133,7 +1434,7 @@ class Main(QMainWindow):
                         cnt += 1
 
         else:
-            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
 
             if luObjList == None:
                 return
@@ -1207,6 +1508,18 @@ class Main(QMainWindow):
         self.ui.TestsAddedLabel.setText('')
         errorList = []
 
+        # Check if the target text is empty give a warning
+        if not self.ui.TargetTextEdit.toPlainText().strip() or self.ui.TargetTextEdit.toPlainText() == self.nothingSelectedMsg:
+
+            self.ui.SynthTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'There are no target text morphemes. Click the Transfer button first.'))
+            return
+
+        # If there are no lexical units, warn the user and return
+        if not self.getActiveLexicalUnits().strip():
+
+            self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
+            return        
+
         self.setCursor(QtCore.Qt.WaitCursor)
 
         # Make the text box blank to start out.
@@ -1219,6 +1532,7 @@ class Main(QMainWindow):
             if not HCconfigPath:
 
                 QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Configuration Error'), _translate('LiveRuleTesterTool', 'HermitCrab settings not found.'))
+                self.unsetCursor()
                 return
             
             useHCsynthDll = True
@@ -1278,7 +1592,7 @@ class Main(QMainWindow):
             warn, msgList = Utils.checkForWarning(errorList, None)
 
             if warn:
-                self.ui.warningLabel.setText(msgList)
+                self.ui.warningTextEdit.setPlainText(msgList)
 
             self.__doCatalog = False
 
@@ -1466,20 +1780,35 @@ class Main(QMainWindow):
             # redo the display
             self.rulesListClicked(myIndex)
 
-    def SelectAllClicked(self):
+    def SelectAllCheckBoxClicked(self):
+        
+        state = self.ui.selectAllCheckBox.checkState()
+
+        if state == QtCore.Qt.Checked:
+
+            newState = state
+
+        elif state == QtCore.Qt.Unchecked:
+
+            newState = QtCore.Qt.Unchecked
+
+        else: #state == QtCore.Qt.PartiallyChecked:
+            
+            newState = QtCore.Qt.Checked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+
+        if self.lastSelectAllState == QtCore.Qt.PartiallyChecked:
+
+            newState = QtCore.Qt.Unchecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+
         # Loop through all the items in the rule list model
         for i in range(0, self.__ruleModel.rowCount()):
-            # Check each box
-            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Checked)
 
-        # Redo the numbering
-        self.rulesListClicked(self.TRIndex)
+            # change each box
+            self.__ruleModel.item(i).setCheckState(newState)
 
-    def UnselectAllClicked(self):
-        # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
-            # Check each box
-            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Unchecked)
+        # self.lastSelectAllState = newState
 
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
@@ -1658,10 +1987,6 @@ class Main(QMainWindow):
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
 
-    def resizeEvent(self, event):
-
-        QMainWindow.resizeEvent(self, event)
-
     def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
             ret = self.__lexicalUnits
@@ -1693,21 +2018,13 @@ class Main(QMainWindow):
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
 
-    def __CopyStuff(self):
-
-        # copy text from results to the source boxes
-        self.ui.SelectedWordsEdit.setText(self.ui.TargetTextEdit.toHtml())
-        self.ui.SelectedSentencesEdit.setText(self.ui.TargetTextEdit.toHtml())
-        self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
-        self.__ClearStuff()
-
     def __ClearStuff(self):
 
         self.ui.TestsAddedLabel.setText('')
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
-        self.ui.warningLabel.setText('')
+        self.ui.warningTextEdit.setPlainText('')
 
     def sourceTabClicked(self):
 
@@ -1720,7 +2037,7 @@ class Main(QMainWindow):
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
 
-            self.ui.selectWordsHintLabel.setVisible(True)
+            # self.ui.selectWordsHintLabel.setVisible(True)
 
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
 
@@ -1731,11 +2048,11 @@ class Main(QMainWindow):
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
-            self.ui.selectWordsHintLabel.setVisible(False)
+            # self.ui.selectWordsHintLabel.setVisible(False)
 
         else: # manual entry
-
-            self.ui.selectWordsHintLabel.setVisible(False)
+            pass
+            # self.ui.selectWordsHintLabel.setVisible(False)
 
     def rulesTabClicked(self):
 
@@ -1804,11 +2121,6 @@ class Main(QMainWindow):
 
         self.lastSentNum = self.ui.SentCombo.currentIndex()
         mySent = self.__sent_model.getSent(self.lastSentNum)
-        space_val = 10
-        y_spacing = 30
-        x_margin = 2
-        x = x_margin
-        y = 2
 
         # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
@@ -1816,7 +2128,18 @@ class Main(QMainWindow):
         self.__lexicalUnits = ''
         self.ui.ManualEdit.setPlainText('')
 
-        i=0
+        if self.__sent_model.getRTL():
+
+            self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
+
+        # Remove all widgets from self.content_widget
+        layout = self.content_widget.layout
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)  # Detach from parent (removes from UI)
+
         # Position a check box for each "word" in the sentence
         for i, wrdTup in enumerate(mySent):
 
@@ -1827,32 +2150,12 @@ class Main(QMainWindow):
             # Get the ith checkbox
             myCheck = self.__checkBoxList[i]
 
-            # Make it visible
-            myCheck.setVisible(True)
+            # Add widget to the content widget of the scroll area
+            self.content_widget.layout.addWidget(myCheck)
+            myCheck.show()
 
-            # set the text of the check box from the first tuple element
-            # this will be the surface form
+            # Set the text of the check box from the first tuple element. This will be the surface form.
             myCheck.setText(wrdTup[0])
-
-            # get the width of the box and text (maybe have to add icon size)
-            width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5
-
-            # set the position, if it's too wide to fit make a new row
-            if width + x > self.ui.scrollArea.width():
-
-                y += y_spacing
-                x = x_margin
-
-            if self.__sent_model.getRTL():
-
-                xval = self.ui.scrollArea.width() - x - width
-                myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
-
-            else:
-                xval = x
-
-            myCheck.setGeometry(QtCore.QRect(xval, y, width, 27))
-            x += width + space_val
 
             # If this word has a target(s) in the bilingual lexicon, show as a tooltip
             srcTrgPairsList = self.getTargetsInBilingMap(wrdTup)
@@ -1864,11 +2167,6 @@ class Main(QMainWindow):
                 tipText = '---'
 
             self.__checkBoxList[i].setToolTip(tipText)
-
-        # Make the rest of the unused check boxes invisible
-        for j in range(i+1,len(self.__checkBoxList)):
-
-            self.__checkBoxList[j].setVisible(False)
 
     def getTargetsInBilingMap(self, wrdTup):
 
@@ -1959,7 +2257,11 @@ class Main(QMainWindow):
         # Get checkbox values
         checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
         checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
+        checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
 
+        standardDimensionsStr = f'{self.standardModeDimensions[0]}|{self.standardModeDimensions[1]}'
+        advancedDimensionsStr = f'{self.advancedModeDimensions[0]}|{self.advancedModeDimensions[1]}'
+        
         with open(self.windowsSettingsFile, 'w') as f:
 
             # Save current rules tab, current source tab, last sentence # selected and the last source text
@@ -1968,6 +2270,9 @@ class Main(QMainWindow):
             f.write(f'{checkedWordsState}\n')
             f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
             f.write(f'{checkboxStr1}{checkboxStr2}\n')
+            f.write(f'{checkboxStr3}\n')
+            f.write(f'{standardDimensionsStr}\n')
+            f.write(f'{advancedDimensionsStr}\n')   
 
         if self.HCdllObj:
 
@@ -2089,7 +2394,9 @@ class Main(QMainWindow):
 
         self.TRIndex = index
         active_rules = 1
-
+        oneBoxChecked = False
+        oneBoxUnchecked = False
+        
         self.rulesChanged = True
 
         for i, el in enumerate(self.__rulesElement):
@@ -2100,10 +2407,27 @@ class Main(QMainWindow):
 
             # If active add text with the active rule #
             if self.__ruleModel.item(i).checkState():
+
+                oneBoxChecked = True
                 self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
                 active_rules += 1
             else:
+                oneBoxUnchecked = True
                 self.__ruleModel.item(i).setText(ruleText)
+
+        # If we have a mix of checked and unchecked boxes, set the select All CheckBox to partially checked
+        if oneBoxChecked and oneBoxUnchecked:
+
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.PartiallyChecked)
+            self.lastSelectAllState = QtCore.Qt.PartiallyChecked
+
+        elif oneBoxChecked:
+
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.lastSelectAllState = QtCore.Qt.Checked
+        else:
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            self.lastSelectAllState = QtCore.Qt.Unchecked
 
     def displayRules(self, rules_element, ruleModel):
 
@@ -2194,7 +2518,7 @@ class Main(QMainWindow):
 
         if len(myStr) < 1:
 
-            self.ui.TargetTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'Nothing selected. Select at least one word or sentence.'))
+            self.ui.TargetTextEdit.setPlainText(self.nothingSelectedMsg)
             self.unsetCursor()
             return
 
@@ -2283,9 +2607,9 @@ class Main(QMainWindow):
 
             for i, triplet in enumerate(errorList):
                 if i == 0:
-                    self.ui.warningLabel.setText(triplet[0])
+                    self.ui.warningTextEdit.setPlainText(triplet[0])
                 else:
-                    self.ui.warningLabel.setText(self.ui.warningLabel.text()+'\n'+triplet[0])
+                    self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
 
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
@@ -2722,7 +3046,11 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 def MainFunction(DB, report, modify=False, ruleCount=None):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

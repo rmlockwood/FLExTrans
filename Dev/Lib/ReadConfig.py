@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.4 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
 #   Version 3.14.3 - 9/3/25 - Ron Lockwood
 #    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
 #
@@ -48,77 +51,7 @@
 #   Version 3.10 - 2/29/24 - Ron Lockwood
 #    Fixes #571. Setting to determine if filter by all fields is checked.
 #
-#   Version 3.9.2 - 7/19/23 - Ron Lockwood
-#    Fixes #465. Ignore blank lines. Also, just warn and continue if no = or multiple =s.
-#
-#   Version 3.9.1 - 6/20/23 - Ron Lockwood
-#    Removed LOOKUP/lookup from constants to match SettingsGUI.
-#
-#   Version 3.9 - 6/2/23 - Ron Lockwood
-#    Fixes #443. Synthesis test settings added. 
-#
-#   Version 3.8.1 - 4/8/23 - Ron Lockwood
-#    Use WORK_DIR in paths.
-#
-#   Version 3.8 - 4/4/23 - Ron Lockwood
-#    Support HermitCrab Synthesis.
-#
-#   Version 3.7.2 - 1/30/23 - Ron Lockwood
-#    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
-#    with a table containing source headword, gloss and category plus blank cells for the target
-#    language and a comment. Also below this info. is the sentence where the sense was found with the
-#    word marked in bold type. A new setting for ProperNoun abbrev. added.
-#
-#   Version 3.7.1 - 11/7/22 - Ron Lockwood
-#    Treat a setting as a file or folder if it's anywhere in the description.
-#    Not just at the end.
-#
-#   Version 3.7 - 11/5/22 - Ron Lockwood
-#    New function writeConfigValue to write one config value change. The rest of
-#    the lines don't change.
-#
-#   Version 3.5.3 - 8/8/22 - Ron Lockwood
-#    Don't allow two equals signs in the config file.
-#
-#   Version 3.5.2 - 7/14/22 - Ron Lockwood
-#    New constants for cacheing data, treetran rules file and lexicon folder. Fixes #184
-#    Also check for Folder at the end of the setting name and if so return a path.
-#
-#   Version 3.5.1 - 6/22/22 - Ron Lockwood
-#    Error message fix.
-#
-#   Version 3.5 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.4.3 - 3/17/22 - Ron Lockwood
-#    Allow for a user configurable Testbed location. Issue #70.
-#
-#   Version 3.4.2 - 3/5/22 - Ron Lockwood
-#    Use a config file setting for the transfer rules file.
-#
-#   Version 3.4.1 - 3/3/22 - Ron Lockwood
-#    Find the config file one level up, i.e. top the top installed folder.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use defined config file constants for key values
-#
-#   Version 3.3.1 - 1/27/22 - Ron Lockwood
-#    Convert config file values to decomposed Unicode.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.6 - 5/23/18 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.1 - 3/7/18 - Ron Lockwood
-#    Give an error only if the report object is not None
+#   2023 version history removed on 2/6/26
 #
 #   Functions for reading a configuration file
 
@@ -152,7 +85,8 @@ NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
-SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
+SOURCE_FORMS_INFLECTION_1ST = 'SourceComplexFormsWithInflectionOn1stElement'
+SOURCE_COMPLEX_TYPES = 'SourceComplexTypes' # This the setting for source complex forms with inflection on the second/last element, but for historical reasons it is named this way.
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
 SOURCE_CUSTOM_FIELD_SENSE_NUM = 'SourceCustomFieldForSenseNum'
 SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
@@ -188,19 +122,47 @@ TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 
+# DM: ADDING NEW CONFIGS FOR GENSTC
+GENSTC_ANALYZED_GLOSS_TEXT_FILE = 'AnalyzedTextOutputFileForGloss'
+
+GEN_STC_SEM_CUSTOMFIELD = 'GenStcCustomField'
+GEN_STC_LIMIT_STEM_COUNT = 'GenStcLimitStemCount'
+
+GEN_STC_LIMIT_LEMMA_N = 'GenStcLimitLemmaN'
+GEN_STC_LIMIT_POS_N = 'GenStcLimitPosN'
+GEN_STC_LIMIT_SEMANTIC_DOMAIN_N = 'GenStcLimitSemDomainN'
+
+GEN_STC_LIMIT_LEMMA_1 = 'GenStcLimitLemma1'
+GEN_STC_LIMIT_POS_1 = 'GenStcLimitPos1'
+GEN_STC_LIMIT_SEMANTIC_DOMAIN_1 = 'GenStcLimitSemDomain1'
+
+GEN_STC_LIMIT_LEMMA_2 = 'GenStcLimitLemma2'
+GEN_STC_LIMIT_POS_2 = 'GenStcLimitPos2'
+GEN_STC_LIMIT_SEMANTIC_DOMAIN_2 = 'GenStcLimitSemDomain2'
+
+
 ##### IMPORTANT #####
 # If you are adding a new property that will have multiple values, add it to this list variable
 PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_MORPHNAMES,
+                             SOURCE_FORMS_INFLECTION_1ST,
                              SOURCE_COMPLEX_TYPES,
                              SOURCE_DISCONTIG_TYPES,
                              SOURCE_DISCONTIG_SKIPPED,
                              TARGET_FORMS_INFLECTION_1ST,
                              TARGET_FORMS_INFLECTION_2ND,
                              SYNTHESIS_TEST_LIMIT_POS,
-                             CATEGORY_ABBREV_SUB_LIST,
+                             CATEGORY_ABBREV_SUB_LIST, 
+                             GEN_STC_LIMIT_POS_N,
+                             GEN_STC_LIMIT_POS_1,
+                             GEN_STC_LIMIT_POS_2, 
+                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_N,
+                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_1,
+                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_2,
                              CLUSTER_PROJECTS,
                              ]
+
+
 
 from PyQt5.QtCore import QCoreApplication
 

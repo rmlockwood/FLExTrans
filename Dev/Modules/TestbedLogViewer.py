@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -72,7 +75,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TestbedLogViewer'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -83,15 +89,15 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
         FTM_Description: _translate("TestbedLogViewer", 
 """View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.""")}
                  
-app.quit()
-del app
+#app.quit()
+#del app
 
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
@@ -612,7 +618,11 @@ class LogViewerMain(QMainWindow):
 def RunTestbedLogViewer(report):
         
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

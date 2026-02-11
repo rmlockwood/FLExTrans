@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Bumped to 3.15.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -51,18 +54,7 @@
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
-#   Version 3.9.1 - 8/17/23 - Ron Lockwood
-#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
-#
-#   Version 3.9 - 7/19/23 - Ron Lockwood
-#    Bumped version to 3.9
-#
-#   Version 3.8.1 - 4/21/23 - Ron Lockwood
-#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
-#    collects all the interlinear text names. Removed fallback to use scripture text names.
-#
-#   Version 3.8 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
+#   2023 version history removed on 2/6/26
 #
 #   earlier version history removed on 3/10/25
 #
@@ -87,7 +79,10 @@ NGRAM_SIZE = 5
 _translate = QCoreApplication.translate
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['ExtractSourceText'], translators)
@@ -98,7 +93,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'Text
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractSourceText", "Extract Source Text"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB: False,
         FTM_Synopsis   : _translate("ExtractSourceText", "Exports an Analyzed FLEx text into Apertium format."),
         FTM_Help : '',
@@ -116,8 +111,8 @@ and class1 to classN are inflection classes that may be present on the stem.
 The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
 This is typically called source_text-aper.txt and is usually in the Build folder.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def punctuationEval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap):
 
@@ -482,7 +477,11 @@ def doExtractSourceText(DB, configMap, report):
 def MainFunction(DB, report, modifyAllowed):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['ExtractSourceText'], 
                            translators, loadBase=True)
 
