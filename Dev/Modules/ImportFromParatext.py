@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.15.3 - 2/11/26 - Ron Lockwood
+#    Fixes #1231. Link the report message for the created text to the text in FLEx so the user can double click to go to it.
+#
 #   Version 3.15.2 - 2/11/26 - Ron Lockwood
 #    Fixes #1149. Support alternate Paratext folder setting.
 #
@@ -525,7 +528,7 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set metadata for the text
         ChapterSelection.setTextMetaData(DB, text)
 
-        report.Info(_translate("ImportFromParatext", "Text: \"{title}\" created in the {projectName} project.").format(title=title, projectName=DB.ProjectName()))
+        report.Info(_translate("ImportFromParatext", "Text: \"{title}\" created in the {projectName} project.").format(title=title, projectName=DB.ProjectName()), DB.BuildGotoURL(text))
 
         titleChapNum += 1
         
