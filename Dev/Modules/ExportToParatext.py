@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -82,6 +85,7 @@ import Mixpanel
 import ReadConfig
 import FTPaths
 import TextInOutUtils
+import TextOutRules
 import Utils
 from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
@@ -110,7 +114,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -274,32 +278,11 @@ def doExportToParatext(DB, configMap, report):
         synFileContents = f.read()
         f.close()
         
-        # Get the path to the search-replace rules file
-        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+        # Apply user-defined search/replace rules from config if present
+        synFileContents = TextInOutUtils.applyTextOutRulesFromConfig(synFileContents, configMap, report, TextOutRules.docs[FTM_Name])
 
-        if textOutRulesFile is not None:
-        
-            # Check if the file exists.
-            if os.path.exists(textOutRulesFile) == True:
-
-                # Verify we have a valid transfer file.
-                try:
-                    tree = ET.parse(textOutRulesFile)
-                except:
-                    report.Error(_translate("ExportToParatext", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
-                    return
-
-        # Do user-defined search/replace rules if needed
-        if tree:
-
-            synFileContents, errMsg = TextInOutUtils.applySearchReplaceRules(synFileContents, tree)
-
-            if synFileContents is None:
-
-                report.Error(errMsg)
-                return
-            else:
-                report.Info(_translate("InsertTargetText", "{numRules} 'Text Out' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
+        if synFileContents is None:
+            return
 
         ChapterSelection.doExport(synFileContents, report, window.chapSel, window)
 

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -79,6 +82,7 @@ import ChapterSelection
 import Mixpanel
 import ReadConfig
 import TextInOutUtils
+import TextOutRules
 import Utils
 from DoSynthesis import docs as DoSynthesisDocs
 
@@ -101,7 +105,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
@@ -154,32 +158,11 @@ def insertTargetText(DB, configMap, report):
         report.Error(_translate("InsertTargetText", 'The Synthesize Text module must be run before this one. Could not open the synthesis file: "') + synFile + '".')
         return
 
-    # Get the path to the search-replace rules file
-    textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+    # Apply user-defined search/replace rules from config if present
+    fullText = TextInOutUtils.applyTextOutRulesFromConfig(fullText, configMap, report, TextOutRules.docs[FTM_Name])
 
-    if textOutRulesFile is not None:
-    
-        # Check if the file exists.
-        if os.path.exists(textOutRulesFile) == True:
-
-            # Verify we have a valid transfer file.
-            try:
-                tree = ET.parse(textOutRulesFile)
-            except:
-                report.Error(_translate("InsertTargetText", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
-                return
-
-    # Do user-defined search/replace rules if needed
-    if tree:
-
-        fullText, errMsg = TextInOutUtils.applySearchReplaceRules(fullText, tree)
-
-        if fullText is None:
-
-            report.Error(errMsg)
-            return
-        else:
-            report.Info(_translate("InsertTargetText", "{numRules} 'Text Out' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
+    if fullText is None:
+        return
 
     # Figure out the naming of the text file. Use the source text name by default,
     # but if it exists create a different name. E.g. War & Peace, War & Peace - Copy, War & Peace - Copy (2)

@@ -4,17 +4,17 @@
 <context>
     <name>InsertTargetText</name>
     <message>
-        <location filename="../InsertTargetText.py" line="100"/>
+        <location filename="../InsertTargetText.py" line="107"/>
         <source>Insert Target Text</source>
         <translation>Insertar texto objetivo</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="103"/>
+        <location filename="../InsertTargetText.py" line="110"/>
         <source>Insert a translated text into the target FLEx project.</source>
         <translation>Insertar un texto traducido en el proyecto FLEx de destino.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="150"/>
+        <location filename="../InsertTargetText.py" line="158"/>
         <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
         <translation>El módulo &quot;Sintetizar texto&quot; debe ejecutarse antes que este. No se pudo abrir el archivo de síntesis: &quot;</translation>
     </message>
@@ -24,7 +24,7 @@
         <translation type="obsolete">Texto: &quot;{sourceTextName} creado en el proyecto {targetProj}.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="188"/>
+        <location filename="../InsertTargetText.py" line="202"/>
         <source>You need to run this module in &quot;modify mode.&quot;</source>
         <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
     </message>
@@ -39,17 +39,17 @@ will only change the target project as specified in the configuration file.</sou
         <translation type="obsolete">Se utilizará el proyecto de destino establecido en el archivo de configuración. Este módulo tomará los resultados del proceso de síntesis (módulo Crear diccionarios de destino y Sintetizar) e insertará el texto en el proyecto FLEx de destino. La propiedad SourceTextName en el archivo FlexTrans.config se usará como nombre del texto en el proyecto de destino. NOTA: Se mostrará una ventana de mensaje preguntando si desea hacer cambios en el proyecto FUENTE. Esto no es cierto. Este módulo solo cambiará el proyecto de destino según lo especificado en el archivo de configuración.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="129"/>
+        <location filename="../InsertTargetText.py" line="137"/>
         <source>Failed to open the target project.</source>
         <translation>No se pudo abrir el proyecto de destino.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="132"/>
+        <location filename="../InsertTargetText.py" line="140"/>
         <source>Using: {targetProj} as the target project.</source>
         <translation>Usando: {targetProj} como el proyecto de destino.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="105"/>
+        <location filename="../InsertTargetText.py" line="112"/>
         <source>The target project specified in the settings will be used. This module will take
 the results of the {doSynthModule} module
 and insert the text into the target FLEx project. The Source Text Name setting
@@ -62,7 +62,7 @@ se utilizará para el nombre del texto en el proyecto de destino. Un texto exist
 no será sobrescrito. Se creará una copia.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="179"/>
+        <location filename="../InsertTargetText.py" line="193"/>
         <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</source>
         <translation>Texto: &quot;{sourceTextName}&quot; creado en el proyecto {targetProj}.</translation>
     </message>
