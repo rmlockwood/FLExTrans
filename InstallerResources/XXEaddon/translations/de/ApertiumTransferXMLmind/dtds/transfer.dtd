@@ -27,6 +27,7 @@
 <!ENTITY % container "(var|clip)">
 <!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append)">
 <!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat|lu|mlu|chunk)">
+<!ENTITY % valueNoLu "(clip|lit|lit-tag|var|get-case-from|case-of|concat)">
 <!ENTITY % stringvalue "(clip|lit|var|get-case-from|case-of)">
 
 <!ELEMENT transfer (section-def-cats, section-def-attrs?, section-def-vars?, section-def-lists?, section-def-macros?, section-rules)>
@@ -448,7 +449,7 @@ get-case-from -->
 <!ELEMENT mlu (lu+)>
 <!-- Encloses a multiword -->
 
-<!ELEMENT lu (%value;)+>
+<!ELEMENT lu (%valueNoLu;)+>
 <!-- Encloses a word inside an 'out' element. -->
 
 <!ELEMENT chunk (tags,(mlu|lu|b|var)+)>
