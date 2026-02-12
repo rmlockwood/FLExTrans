@@ -5,6 +5,10 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.15.1 - 2/11/26 - Ron Lockwood
+#    Fixes #1199. Add error handling around the call to produce the synthesis file 
+#    so if there is an error we can report it instead of crashing.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -142,7 +146,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -441,8 +445,13 @@ def createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemm
         if len(line) == 0:
             continue
 
-        # Get the lexical unit
-        luStr, HCparseStr = re.split(',', line)
+        # Get the lexical unit (expect exactly one comma separating LU and parses)
+        parts = re.split(',', line)
+
+        if len(parts) != 2:
+            errorList.append((_translate("DoHermitCrabSynthesis", 'Malformed Lexical Unit in HermitCrab master file skipping this line: {line}').format(line=line), 2))
+            continue
+        luStr, HCparseStr = parts
 
         # skip @ words. They have the form: ^@...
         if HCparseStr[1] == '@':
