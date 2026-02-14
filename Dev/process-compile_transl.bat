@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 REM Define language codes
-set lang_codes=de es
+set lang_codes=de es fr
 
 REM Define directories to process
 set directories=TopLevel Modules Lib Lib\Windows

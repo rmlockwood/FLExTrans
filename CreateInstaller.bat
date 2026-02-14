@@ -4,7 +4,7 @@ rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.3.2
 
 rem User interface language codes
-set LANG_CODES=de es
+set LANG_CODES=de es fr
 
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%

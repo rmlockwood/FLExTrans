@@ -74,20 +74,20 @@ tags="pro.*"
 ></def-cat
 ><def-cat
 n="c_sample"
-><!--This tags element will match words (lexical units) that have 'samp' for the grammatical category (always the first tag) and no other tags, i.e. 'samp' alone.--><cat-item
+><!--Cet élément tags correspondra aux mots (unités lexicales) qui ont 'samp' comme catégorie grammaticale (toujours la première étiquette) et aucune autre étiquette, c'est-à-dire 'samp' seul.--><cat-item
 tags="samp"
 ></cat-item
-><!--This tags element will match words (lexical units) that have 'word1.2' for the lemma and 'samp' for the grammatical category (no other tags.)--><cat-item
+><!--Cet élément tags correspondra aux mots (unités lexicales) qui ont 'word1.2' comme lemme et 'samp' comme catégorie grammaticale (pas d'autres étiquettes).--><cat-item
 lemma="word1.2"
 tags="samp"
 ></cat-item
-><!--This tags element will match words that have 'samp' for the grammatical category and any number of further tags (which could be affixes, features, classes, etc.)--><!--For example the following would be matched: 'samp pst', 'samp pst inf', etc.--><cat-item
+><!--Cet élément tags correspondra aux mots qui ont 'samp' comme catégorie grammaticale et n'importe quel nombre d'étiquettes supplémentaires (qui pourraient être des affixes, des caractéristiques, des classes, etc.)--><!--Par exemple, les éléments suivants correspondraient : 'samp pst', 'samp pst inf', etc.--><cat-item
 tags="samp.*"
 ></cat-item
-><!--This tags element will match words that have 'samp' for the grammatical category, 'pst' for the next tag and any number of further tags.--><cat-item
+><!--Cet élément tags correspondra aux mots qui ont 'samp' comme catégorie grammaticale, 'pst' comme étiquette suivante et n'importe quel nombre d'étiquettes supplémentaires.--><cat-item
 tags="samp.pst.*"
 ></cat-item
-><!--This tags element will match words that have 'samp' for the grammatical category, and 'pst' somewhere in the subsequent tags. i.e. any tags before 'pst' and any tags after it.--><cat-item
+><!--Cet élément tags correspondra aux mots qui ont 'samp' comme catégorie grammaticale, et 'pst' quelque part dans les étiquettes suivantes. c'est-à-dire n'importe quelles étiquettes avant 'pst' et n'importe quelles étiquettes après.--><cat-item
 tags="samp.*.pst.*"
 ></cat-item
 ></def-cat
@@ -129,31 +129,31 @@ tags="m"
 ><def-attr
 n="a_gram_cat"
 ><attr-item
-c="Adverb"
+c="Adverbe"
 tags="adv"
 ></attr-item
 ><attr-item
-c="Demonstrative"
+c="Démonstratif"
 tags="def"
 ></attr-item
 ><attr-item
-c="Demonstrative"
+c="Démonstratif"
 tags="dem"
 ></attr-item
 ><attr-item
-c="Noun"
+c="Nom"
 tags="n"
 ></attr-item
 ><attr-item
-c="Pronoun"
+c="Pronom"
 tags="pro"
 ></attr-item
 ><attr-item
-c="Pro-form"
+c="Proforme"
 tags="pro-form"
 ></attr-item
 ><attr-item
-c="Verb"
+c="Verbe"
 tags="v"
 ></attr-item
 ></def-attr
@@ -195,7 +195,7 @@ tags="IR"
 ></def-attr
 ><def-attr
 n="a_sample"
-><!--The attribute a_sample is defined as the collection of the following tags (symbols): 'abc', 'uvw', 'xyz'. You can use this attribute to refer to any tag in this set of tags.--><attr-item
+><!--L'attribut a_sample est défini comme la collection des étiquettes (symboles) suivantes : 'abc', 'uvw', 'xyz'. Vous pouvez utiliser cet attribut pour faire référence à n'importe quelle étiquette de cet ensemble d'étiquettes.--><attr-item
 tags="abc"
 ></attr-item
 ><attr-item
@@ -207,7 +207,7 @@ tags="xyz"
 ></def-attr
 ><def-attr
 n="a_sample2"
-><!--The attribute a_sample2 is defined as the collection of the following tags (symbols): 'agr1', 'agr2', 'agr3'. You can use this attribute to refer to any tag in this set of tags.--><attr-item
+><!--L'attribut a_sample2 est défini comme la collection des étiquettes (symboles) suivantes : 'agr1', 'agr2', 'agr3'. Vous pouvez utiliser cet attribut pour faire référence à n'importe quelle étiquette de cet ensemble d'étiquettes.--><attr-item
 tags="agr1"
 ></attr-item
 ><attr-item
@@ -272,27 +272,27 @@ side="tl"
 ></section-def-macros
 ><section-rules
 ><rule
-comment="Sample - Delete affix or feature with let"
+comment="Exemple - Supprimer l'affixe ou la caractéristique avec let"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Delete an affix from a lexical unit using a let element.--><let
-><!--First give the thing you want deleted. In this case a sample suffix (any of the things defined by a_sample).--><clip
+><!--Supprimer un affixe d'une unité lexicale en utilisant un élément let.--><let
+><!--Donnez d'abord la chose que vous voulez supprimer. Dans ce cas, un suffixe d'exemple (l'une des choses définies par a_sample).--><clip
 part="a_sample"
 pos="1"
 side="tl"
 ></clip
-><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><!--Note using an empty literal tag would still add the < and > that surround tags, and hence literal string should be used to delete a tag--><lit
+><!--Ensuite, donnez la 'valeur' que vous voulez attribuer à la chose. Dans ce cas, une chaîne vide qui la supprime de la sortie.--><!--Notez que l'utilisation d'une étiquette littérale vide ajouterait toujours les < et > qui entourent les étiquettes, et donc une chaîne littérale devrait être utilisée pour supprimer une étiquette--><lit
 v=""
 ></lit
 ></let
 ></action
 ></rule
 ><rule
-comment="Verb - Spanish (delete feature)"
+comment="Verbe - Espagnol (supprimer la caractéristique)"
 ><pattern
 ><pattern-item
 n="c_v"
@@ -321,36 +321,36 @@ side="tl"
 ></action
 ></rule
 ><rule
-comment="Sample - Set attribute value"
+comment="Exemple - Définir la valeur de l'attribut"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Set an attribute to a certain value.--><let
-><!--First give the thing you want changed. In this case the sample attribute.--><clip
+><!--Définir un attribut à une certaine valeur.--><let
+><!--Donnez d'abord la chose que vous voulez changer. Dans ce cas, l'attribut d'exemple.--><clip
 part="a_sample"
 pos="1"
 side="tl"
 ></clip
-><!--Then give the value you want to give the thing. In this case 'abc'. IMPORTANT: the value in literal tag must be one of the valid things in the set defined by a_sample.--><!--Also IMPORTANT: if one of the set of attributes defined by a_sample is not present on the word (target word in this case), trying to change it to something will have no effect.--><lit-tag
+><!--Ensuite, donnez la valeur que vous voulez attribuer à la chose. Dans ce cas 'abc'. IMPORTANT : la valeur dans l'étiquette littérale doit être l'une des choses valides dans l'ensemble défini par a_sample.--><!--Également IMPORTANT : si l'un des ensembles d'attributs définis par a_sample n'est pas présent sur le mot (mot cible dans ce cas), essayer de le changer en quelque chose n'aura aucun effet.--><lit-tag
 v="abc"
 ></lit-tag
 ></let
 ></action
 ></rule
 ><rule
-comment="Sample - Output target word by whole"
+comment="Exemple - Sortir le mot cible en entier"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Output a whole target word--><out
+><!--Sortir un mot cible en entier--><out
 ><lu
-><!--'whole' means the lemma plus all tags that are present with it.--><clip
+><!--'whole' signifie le lemme plus toutes les étiquettes qui sont présentes avec lui.--><clip
 part="whole"
 pos="1"
 side="tl"
@@ -360,7 +360,7 @@ side="tl"
 ></action
 ></rule
 ><rule
-comment="Sample - Output two target words by whole"
+comment="Exemple - Sortir deux mots cibles en entier"
 ><pattern
 ><pattern-item
 n="c_sample"
@@ -370,7 +370,7 @@ n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Output two whole target words--><out
+><!--Sortir deux mots cibles en entier--><out
 ><lu
 ><clip
 part="whole"
@@ -378,10 +378,10 @@ pos="1"
 side="tl"
 ></clip
 ></lu
-><!--You normally will want to output a space between lexical units.--><b
+><!--Vous voudrez normalement sortir un espace entre les unités lexicales.--><b
 ></b
 ><lu
-><!--Note that the 2nd word is item 2 in the 2-word pattern matched above--><clip
+><!--Notez que le 2ème mot est l'élément 2 dans le motif de 2 mots correspondant ci-dessus--><clip
 part="whole"
 pos="2"
 side="tl"
@@ -391,16 +391,16 @@ side="tl"
 ></action
 ></rule
 ><rule
-comment="Sample - Output word and new affix"
+comment="Exemple - Sortir le mot et un nouvel affixe"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Output word 1 and an additional suffix--><out
+><!--Sortir le mot 1 et un suffixe supplémentaire--><out
 ><lu
-><!--In FLExTrans the minimum lexical unit you should output is the lemma (e.g. word2.3) plus the grammatical category--><clip
+><!--Dans FLExTrans, l'unité lexicale minimale que vous devriez sortir est le lemme (par exemple word2.3) plus la catégorie grammaticale--><clip
 part="lem"
 pos="1"
 side="tl"
@@ -410,7 +410,7 @@ part="a_gram_cat"
 pos="1"
 side="tl"
 ></clip
-><!--We use the literal tag element to put out a tag (symbol). Here we saying the plural affix should be outputted on the word.--><lit-tag
+><!--Nous utilisons l'élément d'étiquette littérale pour sortir une étiquette (symbole). Ici, nous disons que l'affixe pluriel devrait être sorti sur le mot.--><lit-tag
 v="pl"
 ></lit-tag
 ></lu
@@ -418,22 +418,22 @@ v="pl"
 ></action
 ></rule
 ><rule
-comment="Sample - Output new word"
+comment="Exemple - Sortir un mot complètement nouveau"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Output a new word (ignoring the input items)--><out
+><!--Créer un mot cible complètement nouveau. Dans ce cas, c'est un verbe.--><out
 ><lu
-><!--In FLExTrans the minimum lexical unit you should output is the lemma (e.g. word2.3) plus the grammatical category--><!--In place of using clip...lem we can use the literal string element to put out a lemma of our choice. This lemma should match the target FLEx project.--><!--Here we output the 4th sense of the 1st homograph for 'word'--><lit
-v="word1.4"
+><!--Nous utilisons l'élément chaîne littérale pour sortir une chaîne (par exemple un lemme). Ici, nous disons que le lemme devrait être word4.5.--><lit
+v="word4.5"
 ></lit
-><!--In place of clip...a_gram_cat, this should be the grammatical category that corresponds to word1.4 in the target FLEx project. Here we are saying the category is verb.--><lit-tag
+><!--Nous utilisons l'élément d'étiquette littérale pour sortir une étiquette (symbole). Ici, nous disons que le verbe de catégorie grammaticale devrait être sorti sur le mot.--><lit-tag
 v="v"
 ></lit-tag
-><!--We use the literal tag element to put out a tag (symbol). Here we saying the plural affix should be outputted on the word.--><lit-tag
+><!--Nous utilisons l'élément d'étiquette littérale pour sortir une étiquette (symbole). Ici, nous disons que l'affixe pluriel devrait être sorti sur le mot.--><lit-tag
 v="pl"
 ></lit-tag
 ></lu
@@ -441,15 +441,15 @@ v="pl"
 ></action
 ></rule
 ><rule
-comment="Sample - Change case"
+comment="Exemple - Changer la casse"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Change the case of the first thing (lemma) to match the case of the second thing (literal string). 
-This following will capitalize the lemma. Using 'aa' will make it lowercase. 'AA' would make the lemma all uppercase.--><!--Instead of using a literal string, you could alternatively use a variable to have the lemma match the case of the variable.--><modify-case
+><!--Changer la casse de la première chose (lemme) pour qu'elle corresponde à la casse de la deuxième chose (chaîne littérale). 
+Ce qui suit mettra le lemme en majuscule. Utiliser 'aa' le mettra en minuscules. 'AA' mettrait le lemme tout en majuscules.--><!--Au lieu d'utiliser une chaîne littérale, vous pourriez alternativement utiliser une variable pour que le lemme corresponde à la casse de la variable.--><modify-case
 ><clip
 part="lem"
 pos="1"
@@ -462,17 +462,17 @@ v="Aa"
 ></action
 ></rule
 ><rule
-comment="Sample - 2-way if with output"
+comment="Exemple - If à 2 voies avec sortie"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--If X output A, otherwise output B--><choose
-><!-- First test--><when
+><!--Si X sortir A, sinon sortir B--><choose
+><!-- Premier test--><when
 ><test
-><!--  Use the equal block to see if two things are equal--><equal
+><!--  Utilisez le bloc equal pour voir si deux choses sont égales--><equal
 ><clip
 part="a_sample"
 pos="1"
@@ -483,8 +483,8 @@ v="uvw"
 ></lit-tag
 ></equal
 ></test
-><!--  Whatever follows the test block will be done if the above things are equal
-  This specific example outputs the target word by parts, with a specific literal tag for the affix.--><out
+><!--  Tout ce qui suit le bloc test sera fait si les choses ci-dessus sont égales
+  Cet exemple spécifique sort le mot cible par parties, avec une étiquette littérale spécifique pour l'affixe.--><out
 ><lu
 ><clip
 part="lem"
@@ -502,8 +502,8 @@ v="agr1"
 ></lu
 ></out
 ></when
-><!-- If all the when blocks above fail, do this logic below--><otherwise
-><!--  This specific example outputs the target word by parts, with a different literal tag for the affix.--><out
+><!-- Si tous les blocs when ci-dessus échouent, faites cette logique ci-dessous--><otherwise
+><!--  Cet exemple spécifique sort le mot cible par parties, avec une étiquette littérale différente pour l'affixe.--><out
 ><lu
 ><clip
 part="lem"
@@ -525,17 +525,17 @@ v="agr2"
 ></action
 ></rule
 ><rule
-comment="Sample - 3-way choose with let"
+comment="Exemple - Choose à 3 voies avec let"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--If X let A, if Y let B, otherwise let C.  Then output.--><choose
+><!--Si X let A, si Y let B, sinon let C.  Ensuite sortir.--><choose
 ><when
 ><test
-><!--Use the equal block to see if two things are equal--><equal
+><!--Utilisez le bloc equal pour voir si deux choses sont égales--><equal
 ><clip
 part="a_sample"
 pos="1"
@@ -546,8 +546,8 @@ v="uvw"
 ></lit-tag
 ></equal
 ></test
-><!--  Whatever follows the test block will be done if the above things are equal
-  This specific example sets one of the elements of the target word to a tag (feature or gloss of affix).--><let
+><!--  Tout ce qui suit le bloc test sera fait si les choses ci-dessus sont égales
+  Cet exemple spécifique définit l'un des éléments du mot cible à une étiquette (caractéristique ou glose de l'affixe).--><let
 ><clip
 part="a_sample2"
 pos="1"
@@ -558,7 +558,7 @@ v="agr1"
 ></lit-tag
 ></let
 ></when
-><!--If the when block above fails (the two things weren't equal), try this test below--><when
+><!--Si le bloc when ci-dessus échoue (les deux choses n'étaient pas égales), essayez ce test ci-dessous--><when
 ><test
 ><equal
 ><clip
@@ -582,7 +582,7 @@ v="agr2"
 ></lit-tag
 ></let
 ></when
-><!--If all the when blocks above fail, do this logic below--><!--This particular example sets a value that indicates something unexpected was encountered.--><!--It is a good "elsewhere" condition.--><otherwise
+><!--Si tous les blocs when ci-dessus échouent, faites cette logique ci-dessous--><!--Cet exemple particulier définit une valeur qui indique que quelque chose d'inattendu a été rencontré.--><!--C'est une bonne condition "ailleurs".--><otherwise
 ><let
 ><clip
 part="a_sample2"
@@ -607,19 +607,19 @@ side="tl"
 ></action
 ></rule
 ><rule
-comment="Sample - If statements with various tests"
+comment="Exemple - Instructions if avec divers tests"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--If with other things besides equals--><choose
+><!--If avec d'autres choses que equals--><choose
 ><when
 ><test
 ><and
 ><begins-with
-><!--Use begins with if you just want to match the beginning of something, like in the case, the grammatical category--><clip
+><!--Utilisez begins-with si vous voulez juste correspondre au début de quelque chose, comme dans ce cas, la catégorie grammaticale--><clip
 part="a_gram_cat"
 pos="1"
 side="tl"
@@ -629,7 +629,7 @@ v="x"
 ></lit-tag
 ></begins-with
 ><ends-with
-><!--Use ends with if you just want to match the end of something, like in the case, the lemma. Remember all lemmas are going to end in X.X--><clip
+><!--Utilisez ends-with si vous voulez juste correspondre à la fin de quelque chose, comme dans ce cas, le lemme. Rappelez-vous que tous les lemmes vont se terminer par X.X--><clip
 part="lem"
 pos="1"
 side="tl"
@@ -639,7 +639,7 @@ v="ing1.1"
 ></lit
 ></ends-with
 ><begins-with-list
-><!--Use begins with something in list if you want to match the beginning of the first thing. The text to match can be anything in the given list. The list is defined above.--><var
+><!--Utilisez begins-with something in list si vous voulez correspondre au début de la première chose. Le texte à correspondre peut être n'importe quoi dans la liste donnée. La liste est définie ci-dessus.--><var
 n="v_sample"
 ></var
 ><list
@@ -647,7 +647,7 @@ n="l_sample"
 ></list
 ></begins-with-list
 ><ends-with-list
-><!--Use ends with something in list if you want to match the end of the first thing. The match can be anything in the given list. The list is defined above.--><clip
+><!--Utilisez ends-with something in list si vous voulez correspondre à la fin de la première chose. La correspondance peut être n'importe quoi dans la liste donnée. La liste est définie ci-dessus.--><clip
 part="lem"
 pos="1"
 side="tl"
@@ -657,7 +657,7 @@ n="l_sample"
 ></list
 ></ends-with-list
 ><in
-><!--Use in list to see if the first thing is one of the things in the given list.--><clip
+><!--Utilisez in list pour voir si la première chose est l'une des choses dans la liste donnée.--><clip
 part="lem"
 pos="1"
 side="tl"
@@ -667,7 +667,7 @@ n="l_sample"
 ></list
 ></in
 ><contains-substring
-><!--When you use contains substring you can check if the second listed string is somewhere in the first thing.--><var
+><!--Lorsque vous utilisez contains-substring, vous pouvez vérifier si la deuxième chaîne listée se trouve quelque part dans la première chose.--><var
 n="v_sample"
 ></var
 ><lit
@@ -676,7 +676,7 @@ v="abc"
 ></contains-substring
 ></and
 ></test
-><!--Whatever follows the test block will be done if the above condition is true. In this case, all of the above checks would need to be true in order to do the output.--><out
+><!--Tout ce qui suit le bloc test sera fait si la condition ci-dessus est vraie. Dans ce cas, tous les contrôles ci-dessus devraient être vrais pour faire la sortie.--><out
 ><lu
 ><clip
 part="whole"
@@ -693,7 +693,7 @@ v="agr1"
 ></action
 ></rule
 ><rule
-comment="Sample - If statements with and/or/not"
+comment="Exemple - Instructions if avec and/or/not"
 ><pattern
 ><pattern-item
 n="c_sample"
@@ -703,10 +703,10 @@ n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!-- If X and Y output A--><choose
+><!-- Si X et Y sortir A--><choose
 ><when
 ><test
-><!--  Use the and block to see if two conditions are true. You can add more equal blocks if desired.--><and
+><!--  Utilisez le bloc and pour voir si deux conditions sont vraies. Vous pouvez ajouter plus de blocs equal si désiré.--><and
 ><equal
 ><clip
 part="a_sample"
@@ -729,7 +729,7 @@ v="xyz"
 ></equal
 ></and
 ></test
-><!-- Whatever follows the test block will be done if the above condition is true--><out
+><!-- Tout ce qui suit le bloc test sera fait si la condition ci-dessus est vraie--><out
 ><lu
 ><clip
 part="lem"
@@ -748,10 +748,10 @@ v="agr1"
 ></out
 ></when
 ></choose
-><!-- If X or Y output A--><choose
+><!-- Si X ou Y sortir A--><choose
 ><when
 ><test
-><!--  Use the or block to see if two conditions are true. You can add more equal blocks if desired.--><or
+><!--  Utilisez le bloc or pour voir si deux conditions sont vraies. Vous pouvez ajouter plus de blocs equal si désiré.--><or
 ><equal
 ><clip
 part="a_sample"
@@ -774,7 +774,7 @@ v="xyz"
 ></equal
 ></or
 ></test
-><!-- Whatever follows the test block will be done if the above condition is true--><out
+><!-- Tout ce qui suit le bloc test sera fait si la condition ci-dessus est vraie--><out
 ><lu
 ><clip
 part="lem"
@@ -793,10 +793,10 @@ v="agr2"
 ></out
 ></when
 ></choose
-><!-- If not X output A--><choose
+><!-- Si non X sortir A--><choose
 ><when
 ><test
-><!--  Use the not block to check if two things are not equal--><not
+><!--  Utilisez le bloc not pour vérifier si deux choses ne sont pas égales--><not
 ><equal
 ><clip
 part="a_sample"
@@ -809,7 +809,7 @@ v="uvw"
 ></equal
 ></not
 ></test
-><!-- Whatever follows the test block will be done if the above condition is true--><out
+><!-- Tout ce qui suit le bloc test sera fait si la condition ci-dessus est vraie--><out
 ><lu
 ><clip
 part="lem"
@@ -831,14 +831,14 @@ v="agr3"
 ></action
 ></rule
 ><rule
-comment="Sample - Call a macro to test a condition and output"
+comment="Exemple - Appeler une macro pour tester une condition et sortir"
 ><pattern
 ><pattern-item
 n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--This calls a macro with one item; if the pattern contains 2 items, it might be needed to call the macro with 2 items--><call-macro
+><!--Cela appelle une macro avec un élément ; si le motif contient 2 éléments, il pourrait être nécessaire d'appeler la macro avec 2 éléments--><call-macro
 n="m_sample"
 ><with-param
 pos="1"

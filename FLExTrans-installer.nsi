@@ -83,6 +83,7 @@ Var /GLOBAL DESKTOP_FOLDER
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "French"
 
 ; Define a macro for copying transfer rules files based on language
 !macro InstallLocalizedRulesFile DEST_NAME SRC_BASE
@@ -90,6 +91,8 @@ Var /GLOBAL DESKTOP_FOLDER
         File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_de.t1x"
     ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
         File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_es.t1x"
+    ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
+        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_fr.t1x"
     ${Else}
         File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}.t1x"
     ${EndIf}
@@ -109,9 +112,11 @@ ShowUnInstDetails show
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
 LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
 LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
+LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.11.7$\nIMPORTANT! Cochez la case: «Add Python 3.11 to Path».$\nUtilisez l'option «Install now»."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
 LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
+LangString InstallXMLmindMsg ${LANG_FRENCH} "Installer XMLmind?"
 
 # English
 LangString Drafting       ${LANG_ENGLISH} "Drafting"
@@ -133,6 +138,13 @@ LangString Run_Testbed    ${LANG_SPANISH} "Ejecutar testbed"
 LangString Tools          ${LANG_SPANISH} "Herramientas"
 LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
 LangString Clusters       ${LANG_SPANISH} "Racimos"
+
+# French
+LangString Drafting       ${LANG_SPANISH} "Rédaction"
+LangString Run_Testbed    ${LANG_SPANISH} "Lancer le banc d'essai"
+LangString Tools          ${LANG_SPANISH} "Outils"
+LangString Synthesis_Test ${LANG_SPANISH} "Test de synthèse"
+LangString Clusters       ${LANG_SPANISH} "Grappes"
 
 Section "MainSection" SEC01
   InitPluginsDir
@@ -280,6 +292,14 @@ Section "MainSection" SEC01
   ${If} $LANGUAGE == ${LANG_SPANISH}
   
     ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Herramientas.ini"
+	
+	  Goto skip4
+    ${EndIf}
+  ${EndIf}
+	
+  ${If} $LANGUAGE == ${LANG_FRENCH}
+  
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Outils.ini"
 	
 	  Goto skip4
     ${EndIf}
@@ -459,6 +479,8 @@ associate_extension:
     nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
     nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
+  ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
   ${EndIf}
   
   # Update the XXE properties file
@@ -630,9 +652,11 @@ SectionEnd
 LangString ChooseFolderText ${LANG_ENGLISH} "Choose where to put FLExTrans folder."
 LangString ChooseFolderText ${LANG_GERMAN} "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
 LangString ChooseFolderText ${LANG_SPANISH} "Elija dónde colocar la carpeta FLExTrans."
+LangString ChooseFolderText ${LANG_FRENCH} "Choisissez l'emplacement du dossier FLExTrans."
 LangString BrowseText ${LANG_ENGLISH} "Browse"
 LangString BrowseText ${LANG_GERMAN} "Durchsuchen"
 LangString BrowseText ${LANG_SPANISH} "Navegar"
+LangString BrowseText ${LANG_FRENCH} "Parcourir"
 
 #--Select folder function
 !include nsDialogs.nsh
@@ -763,16 +787,20 @@ FunctionEnd
 LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
 LangString ProdModeLabelText1 ${LANG_GERMAN}  "Produktivbetrieb?"
 LangString ProdModeLabelText1 ${LANG_SPANISH} "¿Uso en producción?"
+LangString ProdModeLabelText1 ${LANG_FRENCH} "Utilisation en production?"
 LangString ProdModeLabelText2 ${LANG_ENGLISH} "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
 LangString ProdModeLabelText2 ${LANG_GERMAN}  "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie „Ja“. Für die FLExTrans-Entwicklung wählen Sie „Nein“."
 LangString ProdModeLabelText2 ${LANG_SPANISH} "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No"
+LangString ProdModeLabelText2 ${LANG_FRENCH} "«Pour installer une interface FLExTrans simplifiée destinée à une utilisation en production, choisissez Oui. Pour les travaux de développement sur FLExTrans, choisissez Non.»"
 LangString NoText ${LANG_ENGLISH} "No"
 LangString NoText ${LANG_GERMAN} "Nein"
 LangString NoText ${LANG_SPANISH} "No"
+LangString NoText ${LANG_FRENCH} "Non"
 
 LangString YesText ${LANG_ENGLISH} "Yes"
 LangString YesText ${LANG_GERMAN} "Ja"
 LangString YesText ${LANG_SPANISH} "Sí"
+LangString YesText ${LANG_FRENCH} "Oui"
 
 # Set up the Production mode step
 Function ProdModeDialog
@@ -807,6 +835,8 @@ Function .onInit
 	Push English
 	Push ${LANG_SPANISH}
 	Push Español
+	Push ${LANG_FRENCH}
+	Push Française
 	Push ${LANG_GERMAN}
 	Push Deutsch
 	Push A ; A means auto count languages
@@ -824,6 +854,8 @@ Function .onInit
         StrCpy $LANGCODE "de"
     ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
         StrCpy $LANGCODE "es"
+    ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
+        StrCpy $LANGCODE "fr"
     ${Else}
         StrCpy $LANGCODE "en" ; fallback
     ${EndIf}

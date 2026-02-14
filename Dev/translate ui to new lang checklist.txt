@@ -1,7 +1,15 @@
 -Translate all the strings in the code to the new lang. Use a variation of process-fr_transl.bat to pull strings into .ts files.
--Create new transer rules files for the new lang. And translate the comment strings in the sample rules files.
--Translate the module names in the installer .nsi file.
--Translate the template elements for XXE.
+x-Update the extract and compile batch files for the new lang.
+x-Update the create installer batch file to include the new lang. code.
+x-Create new transer rules files for the new lang. And translate the comment strings in them. 
+x transfer_rules-Sample1_xx.t1x
+x transfer_rules-Swedish_xx.t1x
+x-Translate the collection names in the installer .nsi file.
+x-Translate the template elements and other files for XXE. 
+x configuration\commands.xml
+x configuration\menus.xml
+x configuration\elementTemplates.xml
+x css\transfer.css
+x transfer.sch
 -Get FLExTools owner to translate the UI strings to the new lang.
 -Have Andy translate the Rule Assistant strings to the new lang.
--Create a new
