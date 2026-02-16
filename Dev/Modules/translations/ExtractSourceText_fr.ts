@@ -27,7 +27,7 @@ inflection features that may be present for the root/stem
 and class1 to classN are inflection classes that may be present on the stem.
 The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
 This is typically called source_text-aper.txt and is usually in the Build folder.</source>
-        <translation>Ce module utilisera le nom du texte source défini dans les paramètres. Il vérifiera d&apos;abord
+        <translation>Ce module utilisera le nom du texte source défini dans les paramètres. Il vérifiera d'abord
 si chaque mot dans le texte sélectionné est
 entièrement analysé (la glose ou la catégorie du mot n'est pas nécessaire). Si le texte n'est pas
 entièrement analysé, vous recevrez des avertissements.

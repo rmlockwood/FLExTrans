@@ -11,7 +11,7 @@
     <message>
         <location filename="../CatalogTargetAffixes.py" line="99"/>
         <source>Creates a list of all the affix glosses and morpheme types in the target project.</source>
-        <translation>Crée une liste de toutes les gloses d&apos;affixes et types de morphèmes dans le projet cible.</translation>
+        <translation>Crée une liste de toutes les gloses d'affixes et types de morphèmes dans le projet cible.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="101"/>
@@ -21,7 +21,7 @@ NOTE: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.
 The catalog will be created in the file specified by the Target Affix Gloss List File setting.
 This is typically called target_affix_glosses.txt and is usually in the Build folder.</source>
-        <translation>Ce module crée un fichier qui contient une liste de toutes les gloses d&apos;affixes et types de morphèmes dans le projet cible.
+        <translation>Ce module crée un fichier qui contient une liste de toutes les gloses d'affixes et types de morphèmes dans le projet cible.
 Cette liste est utilisée dans les modules FLExTrans ultérieurs pour effectuer des conversions et synthétiser le texte cible.
 REMARQUE : les messages dans la fenêtre de sortie afficheront le projet SOURCE
 comme étant utilisé. En réalité, c'est le projet cible qui est utilisé.
@@ -36,12 +36,12 @@ Il s'appelle généralement target_affix_glosses.txt et se trouve habituellement
     <message>
         <location filename="../CatalogTargetAffixes.py" line="156"/>
         <source>Problem accessing the target project.</source>
-        <translation>Problème d&apos;accès au projet cible.</translation>
+        <translation>Problème d'accès au projet cible.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="160"/>
         <source>Problem opening the target project.</source>
-        <translation>Problème d&apos;ouverture du projet cible.</translation>
+        <translation>Problème d'ouverture du projet cible.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="169"/>
@@ -61,12 +61,12 @@ Il s'appelle généralement target_affix_glosses.txt et se trouve habituellement
     <message>
         <location filename="../CatalogTargetAffixes.py" line="249"/>
         <source>Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}</source>
-        <translation>Caractères non valides dans l&apos;affixe : {gloss}. Les caractères suivants ne sont pas autorisés : {invalidChars}</translation>
+        <translation>Caractères non valides dans l'affixe : {gloss}. Les caractères suivants ne sont pas autorisés : {invalidChars}</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="275"/>
         <source>Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.</source>
-        <translation>Affixe/clitique en double trouvé avec la glose : {gloss}. L&apos;utilisation de cet affixe/clitique pourrait produire des résultats inattendus.</translation>
+        <translation>Affixe/clitique en double trouvé avec la glose : {gloss}. L'utilisation de cet affixe/clitique pourrait produire des résultats inattendus.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="277"/>

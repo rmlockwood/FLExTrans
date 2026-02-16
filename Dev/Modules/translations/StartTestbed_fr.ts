@@ -6,12 +6,12 @@
     <message>
         <location filename="../StartTestbed.py" line="54"/>
         <source>Start Testbed</source>
-        <translation>Démarrer le banc d&apos;essai</translation>
+        <translation>Démarrer le banc d'essai</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="57"/>
         <source>Initialize the testbed log and create source text from the testbed.</source>
-        <translation>Initialiser le journal du banc d&apos;essai et créer le texte source depuis le banc d&apos;essai.</translation>
+        <translation>Initialiser le journal du banc d'essai et créer le texte source depuis le banc d'essai.</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="59"/>
@@ -19,13 +19,13 @@
         Initialize the testbed log and create source text from the testbed.
         </source>
         <translation>
-        Initialiser le journal du banc d&apos;essai et créer le texte source depuis le banc d&apos;essai.
+        Initialiser le journal du banc d'essai et créer le texte source depuis le banc d'essai.
         </translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="78"/>
         <source>Testbed does not exist. Please add tests to the testbed.</source>
-        <translation>Le banc d&apos;essai n&apos;existe pas. Veuillez ajouter des tests au banc d&apos;essai.</translation>
+        <translation>Le banc d'essai n'existe pas. Veuillez ajouter des tests au banc d'essai.</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="128"/>

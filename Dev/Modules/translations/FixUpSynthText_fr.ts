@@ -11,14 +11,14 @@
     <message>
         <location filename="../FixUpSynthText.py" line="85"/>
         <source>Run a set of post-synthesis search and replace operations.</source>
-        <translation>Exécuter un ensemble d&apos;opérations de recherche et remplacement post-synthèse.</translation>
+        <translation>Exécuter un ensemble d'opérations de recherche et remplacement post-synthèse.</translation>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="87"/>
         <source>This module will run a set of search and replace operations to fix up the text that comes out of
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
 Fix Up Synthesis Text Rules File as specified in the Settings.</source>
-        <translation>Ce module exécutera un ensemble d&apos;opérations de recherche et remplacement pour corriger le texte qui sort de
+        <translation>Ce module exécutera un ensemble d'opérations de recherche et remplacement pour corriger le texte qui sort de
 la synthèse. Les opérations sont définies avec le module {textOutRulesModule}. Les règles sont stockées dans le
 fichier de règles de correction du texte de synthèse tel que spécifié dans les paramètres.</translation>
     </message>
@@ -34,12 +34,12 @@ fichier de règles de correction du texte de synthèse tel que spécifié dans l
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="146"/>
-        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &apos;{synthFile}&apos;.</source>
-        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d&apos;ouvrir le fichier de synthèse : « {synthFile} ».</translation>
+        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.</source>
+        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : « {synthFile} ».</translation>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="170"/>
-        <source>The synthesis file was fixed using {numRules} &apos;Text Out&apos; rules.</source>
+        <source>The synthesis file was fixed using {numRules} 'Text Out' rules.</source>
         <translation>Le fichier de synthèse a été corrigé en utilisant {numRules} règles « Texte en sortie ».</translation>
     </message>
 </context>

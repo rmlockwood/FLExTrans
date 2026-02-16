@@ -38,8 +38,8 @@ d'aide pour plus de détails.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="255"/>
-        <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
-        <translation>Le champ personnalisé pour la liaison n&apos;existe pas. Veuillez lire les instructions.</translation>
+        <source>Custom field for linking doesn't exist. Please read the instructions.</source>
+        <translation>Le champ personnalisé pour la liaison n'existe pas. Veuillez lire les instructions.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="258"/>
@@ -58,8 +58,8 @@ d'aide pour plus de détails.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="280"/>
-        <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
-        <translation>Le champ personnalisé : {linkField} n&apos;existe pas. Veuillez lire les instructions.</translation>
+        <source>Custom field: {linkField} doesn't exist. Please read the instructions.</source>
+        <translation>Le champ personnalisé : {linkField} n'existe pas. Veuillez lire les instructions.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="299"/>
@@ -84,7 +84,7 @@ d'aide pour plus de détails.</translation>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="368"/>
         <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
-        <translation>Un mot-vedette avec l&apos;un des caractères invalides suivants a été trouvé : {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
+        <translation>Un mot-vedette avec l'un des caractères invalides suivants a été trouvé : {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="395"/>
@@ -94,7 +94,7 @@ d'aide pour plus de détails.</translation>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="402"/>
         <source>Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}</source>
-        <translation>Un mot-vedette qui ne diffère que par la casse d&apos;un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. Mot-vedette source : {rawHeadWord}</translation>
+        <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. Mot-vedette source : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="453"/>
@@ -114,7 +114,7 @@ d'aide pour plus de détails.</translation>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="465"/>
         <source>Skipping sense, no analysis object for headword: {rawHeadWord}</source>
-        <translation>Sens ignoré, aucun objet d&apos;analyse pour le mot-vedette : {rawHeadWord}</translation>
+        <translation>Sens ignoré, aucun objet d'analyse pour le mot-vedette : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="488"/>

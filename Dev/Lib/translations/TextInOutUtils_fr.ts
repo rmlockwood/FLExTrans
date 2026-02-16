@@ -6,7 +6,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="282"/>
         <source>Test stopped on failure of rule: {ruleString}</source>
-        <translation>Test arrêté en raison de l&apos;échec de la règle : {ruleString}</translation>
+        <translation>Test arrêté en raison de l'échec de la règle : {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="342"/>
@@ -26,7 +26,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="444"/>
         <source>Error accessing work project folders.</source>
-        <translation>Erreur lors de l&apos;accès aux dossiers du projet de travail.</translation>
+        <translation>Erreur lors de l'accès aux dossiers du projet de travail.</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="447"/>
@@ -41,7 +41,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="512"/>
         <source>Run the {wildebeest} cleanup tool</source>
-        <translation>Exécuter l&apos;outil de nettoyage {wildebeest}</translation>
+        <translation>Exécuter l'outil de nettoyage {wildebeest}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="513"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="853"/>
         <source>For folder {foldName}, the rule: {ruleID} was not found.</source>
-        <translation>Pour le dossier {foldName}, la règle : {ruleID} n&apos;a pas été trouvée.</translation>
+        <translation>Pour le dossier {foldName}, la règle : {ruleID} n'a pas été trouvée.</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="1018"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="1167"/>
         <source>Test stopped on failure of rule {ruleNumber}: {ruleString}</source>
-        <translation>Test arrêté en raison de l&apos;échec de la règle {ruleNumber} : {ruleString}</translation>
+        <translation>Test arrêté en raison de l'échec de la règle {ruleNumber} : {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="1367"/>
@@ -86,7 +86,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="1471"/>
         <source>Error saving settings.</source>
-        <translation>Erreur lors de l&apos;enregistrement des paramètres.</translation>
+        <translation>Erreur lors de l'enregistrement des paramètres.</translation>
     </message>
 </context>
 </TS>

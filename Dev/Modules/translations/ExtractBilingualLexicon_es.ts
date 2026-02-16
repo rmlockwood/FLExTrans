@@ -33,7 +33,7 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando el Edit
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="310"/>
-        <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
+        <source>Custom field for linking doesn't exist. Please read the instructions.</source>
         <translation>El campo personalizado para enlazar no existe. Por favor, lea las instrucciones.</translation>
     </message>
     <message>
@@ -53,7 +53,7 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando el Edit
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="335"/>
-        <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
+        <source>Custom field: {linkField} doesn't exist. Please read the instructions.</source>
         <translation>El campo personalizado: {linkField} no existe. Por favor, lea las instrucciones.</translation>
     </message>
     <message>

@@ -65,7 +65,7 @@ L'outil attend qu'un projet soit ouvert avant de restaurer le suivant.</translat
     <message>
         <location filename="../RestoreFLExProjects.py" line="236"/>
         <source>Could not extract project name from {backupName}. Skipping.</source>
-        <translation>Impossible d&apos;extraire le nom du projet à partir de {backupName}. Passage ignoré.</translation>
+        <translation>Impossible d'extraire le nom du projet à partir de {backupName}. Passage ignoré.</translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="240"/>
@@ -74,13 +74,13 @@ L'outil attend qu'un projet soit ouvert avant de restaurer le suivant.</translat
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="252"/>
-        <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
+        <source>Couldn't detect the {proj} project as open after {secs} seconds. Skipping.</source>
         <translation>Impossible de détecter le projet {proj} comme ouvert après {secs} secondes. Passage ignoré.</translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="256"/>
         <source>The {proj} project took about {secs} seconds to open.</source>
-        <translation>Le projet {proj} a pris environ {secs} secondes pour s&apos;ouvrir.</translation>
+        <translation>Le projet {proj} a pris environ {secs} secondes pour s'ouvrir.</translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="259"/>

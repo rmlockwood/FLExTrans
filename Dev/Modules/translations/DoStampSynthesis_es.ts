@@ -129,7 +129,7 @@
 synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
 roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
-are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the &apos;Build&apos; folder.
+are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the 'Build' folder.
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the source project is being used. Actually the target project is being used.</source>

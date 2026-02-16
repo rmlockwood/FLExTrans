@@ -10,7 +10,7 @@
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="110"/>
-        <source>This module runs a tool which let&apos;s you create transfer rules.</source>
+        <source>This module runs a tool which let's you create transfer rules.</source>
         <translation>Dieses Modul führt ein Tool aus, mit dem Sie Übertragungsregeln erstellen können.</translation>
     </message>
     <message>
@@ -25,7 +25,7 @@
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="367"/>
-        <source>The text named &apos;%s&apos; was not found.</source>
+        <source>The text named '%s' was not found.</source>
         <translation>Der Text mit dem Namen '%s' wurde nicht gefunden.</translation>
     </message>
     <message>

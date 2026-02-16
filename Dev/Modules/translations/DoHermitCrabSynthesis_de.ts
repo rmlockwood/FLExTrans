@@ -17,14 +17,14 @@
         <location filename="../DoHermitCrabSynthesis.py" line="155"/>
         <source>This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
-This will default to something like &apos;target_text-syn.txt&apos;. 
+This will default to something like 'target_text-syn.txt'. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
 configuration file. 
-It is named &apos;HermitCrab.config&apos; and will be in the &apos;Build&apos; folder. 
+It is named 'HermitCrab.config' and will be in the 'Build' folder. 
 NOTE: Messages will say the SOURCE database
 is being used. Actually the target database is being used.
-Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
-produce surface forms (&apos;target_words-surface.txt&apos;). 
+Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
+produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.</source>
         <translation type="obsolete">Dieses Modul führt HermitCrab aus, um den synthetisierten Text zu erstellen. Die Ergebnisse werden in die Datei geschrieben, die in den Einstellungen als Zielausgabe-Synthesedatei angegeben ist. Standardmäßig wird dies etwas wie 'target_text-syn.txt' sein. 
 Bevor der synthetisierte Text erstellt wird, extrahiert dieses Modul das Lexikon der Zielsprache in Form einer HermitCrab-Konfigurationsdatei. 
@@ -70,7 +70,7 @@ Diese Formen werden dann verwendet, um den Zieltext zu erstellen.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="283"/>
-        <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} database.</source>
+        <source>The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} database.</source>
         <translation type="obsolete">Der Fehler enthält eine 'KeyNotFoundException', was oft darauf hinweist, dass das FLEx Find and Fix-Dienstprogramm auf der {projectName}-Datenbank ausgeführt werden sollte.</translation>
     </message>
     <message>
@@ -192,14 +192,14 @@ Diese Formen werden dann verwendet, um den Zieltext zu erstellen.</translation>
         <location filename="../DoHermitCrabSynthesis.py" line="153"/>
         <source>This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
-This will default to something like &apos;target_text-syn.txt&apos;. 
+This will default to something like 'target_text-syn.txt'. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
 configuration file. 
-It is named &apos;HermitCrab.config&apos; and will be in the &apos;Build&apos; folder. 
+It is named 'HermitCrab.config' and will be in the 'Build' folder. 
 NOTE: Messages will say the source project
 is being used. Actually the target project is being used.
-Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
-produce surface forms (&apos;target_words-surface.txt&apos;). 
+Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
+produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.</source>
         <translation>Dieses Modul führt HermitCrab aus, um den synthetisierten Text zu erstellen. Die Ergebnisse werden in die Datei geschrieben, die in den Einstellungen als Ziel-Output-Synthese-Datei bezeichnet ist.
 Dies wird standardmäßig etwas wie 'target_text-syn.txt' sein. 
@@ -216,7 +216,7 @@ Diese Formen werden dann verwendet, um den Zielsprachtext zu erstellen.</transla
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="281"/>
-        <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
+        <source>The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
         <translation>Der Fehler enthält eine 'KeyNotFoundException', was oft darauf hinweist, dass das FLEx Find and Fix-Werkzeug auf das Projekt {projectName} angewendet werden sollte.</translation>
     </message>
     <message>

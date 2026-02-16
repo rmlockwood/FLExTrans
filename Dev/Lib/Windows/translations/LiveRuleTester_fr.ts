@@ -71,7 +71,7 @@
     <message>
         <location filename="../LiveRuleTester.py" line="611"/>
         <source>Rule Execution Information</source>
-        <translation>Informations sur l&apos;exécution des règles</translation>
+        <translation>Informations sur l'exécution des règles</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="615"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../LiveRuleTester.py" line="616"/>
         <source>Open Rule Assistant</source>
-        <translation>Ouvrir l&apos;assistant de règles</translation>
+        <translation>Ouvrir l'assistant de règles</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="617"/>
@@ -143,22 +143,22 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
         <location filename="../LiveRuleTester.py" line="627"/>
         <source>&amp;Add to Testbed</source>
-        <translation>&amp;Ajouter au banc d&apos;essai</translation>
+        <translation>&amp;Ajouter au banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="628"/>
         <source>Add multiple words to the testbed word by word</source>
-        <translation>Ajouter plusieurs mots au banc d&apos;essai mot par mot</translation>
+        <translation>Ajouter plusieurs mots au banc d'essai mot par mot</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="629"/>
         <source>&amp;Edit Testbed</source>
-        <translation>&amp;Modifier le banc d&apos;essai</translation>
+        <translation>&amp;Modifier le banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="630"/>
         <source>&amp;View Testbed Log</source>
-        <translation>&amp;Afficher le journal du banc d&apos;essai</translation>
+        <translation>&amp;Afficher le journal du banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="632"/>

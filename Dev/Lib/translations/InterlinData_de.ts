@@ -35,7 +35,7 @@
     </message>
     <message>
       <location filename="../InterlinData.py" line="654"/>
-      <source>Couldn&apos;t find the sense for source headword: </source>
+      <source>Couldn't find the sense for source headword: </source>
       <translation>Konnte die Bedeutung für das Quellstichwort nicht finden: </translation>
     </message>
     <message>

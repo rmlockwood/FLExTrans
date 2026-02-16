@@ -19,25 +19,25 @@
 sentences live against transfer rules. This tool is especially helpful for
 finding out why transfer rules are not doing what you expect them to do.
 You can zero in on the problem by selecting just one source word and applying
-the pertinent transfer rule. In this way you don&apos;t have to run the whole system
+the pertinent transfer rule. In this way you don't have to run the whole system
 against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.</source>
-        <translation>L&apos;outil de testeur de règles en direct est un outil qui vous permet de tester des mots sources ou
+        <translation>L'outil de testeur de règles en direct est un outil qui vous permet de tester des mots sources ou
 des phrases en direct contre les règles de transfert. Cet outil est particulièrement utile pour
-découvrir pourquoi les règles de transfert ne font pas ce que vous attendez d&apos;elles.
+découvrir pourquoi les règles de transfert ne font pas ce que vous attendez d'elles.
 Vous pouvez cibler le problème en sélectionnant un seul mot source et en appliquant
-la règle de transfert pertinente. De cette façon, vous n&apos;avez pas à exécuter tout le système
+la règle de transfert pertinente. De cette façon, vous n'avez pas à exécuter tout le système
 contre le fichier texte entier et toutes les règles de transfert. Vous pouvez également tester que les
 résultats de transfert sont synthétisés correctement en mots cibles. Si vous le souhaitez, vous
-pouvez ajouter les éléments lexicaux sources associés aux résultats de synthèse à un banc d&apos;essai.
-Vous pouvez exécuter le banc d&apos;essai pour vérifier que vous obtenez les résultats attendus.</translation>
+pouvez ajouter les éléments lexicaux sources associés aux résultats de synthèse à un banc d'essai.
+Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résultats attendus.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="484"/>
         <source>Nothing selected. Select at least one word or sentence.</source>
-        <translation>Rien n&apos;est sélectionné. Sélectionnez au moins un mot ou une phrase.</translation>
+        <translation>Rien n'est sélectionné. Sélectionnez au moins un mot ou une phrase.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1220"/>
@@ -47,7 +47,7 @@ Vous pouvez exécuter le banc d&apos;essai pour vérifier que vous obtenez les r
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1220"/>
         <source>Could not copy the bilingual file to the folder: {0}. Please check that it exists.</source>
-        <translation>Impossible de copier le fichier bilingue dans le dossier : {0}. Veuillez vérifier qu&apos;il existe.</translation>
+        <translation>Impossible de copier le fichier bilingue dans le dossier : {0}. Veuillez vérifier qu'il existe.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1048"/>
@@ -57,7 +57,7 @@ Vous pouvez exécuter le banc d&apos;essai pour vérifier que vous obtenez les r
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1048"/>
         <source>Bilingual file: {0} could not be read.</source>
-        <translation>Fichier bilingue : {0} n&apos;a pas pu être lu.</translation>
+        <translation>Fichier bilingue : {0} n'a pas pu être lu.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1347"/>
@@ -67,27 +67,27 @@ Vous pouvez exécuter le banc d&apos;essai pour vérifier que vous obtenez les r
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1094"/>
         <source>Bilingual file: {0} does not exist.</source>
-        <translation>Fichier bilingue : {0} n&apos;existe pas.</translation>
+        <translation>Fichier bilingue : {0} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1107"/>
         <source>Transfer rule file: {0} does not exist.</source>
-        <translation>Fichier de règles de transfert : {0} n&apos;existe pas.</translation>
+        <translation>Fichier de règles de transfert : {0} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1146"/>
         <source>Lexical unit error</source>
-        <translation>Erreur d&apos;unité lexicale</translation>
+        <translation>Erreur d'unité lexicale</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1146"/>
         <source>The lexical unit(s) is/are incorrectly formed.</source>
-        <translation>L&apos;unité lexicale (ou les unités lexicales) est/sont incorrectement formée(s).</translation>
+        <translation>L'unité lexicale (ou les unités lexicales) est/sont incorrectement formée(s).</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1171"/>
         <source>Extract Bilingual Lexicon Error</source>
-        <translation>Erreur d&apos;extraction du lexique bilingue</translation>
+        <translation>Erreur d'extraction du lexique bilingue</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1171"/>
@@ -104,7 +104,7 @@ Exécutez le module Extraire le lexique bilingue séparément pour plus de déta
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1251"/>
         <source>Testbed file: {0} does not exist.</source>
-        <translation>Fichier de banc d&apos;essai : {0} n&apos;existe pas.</translation>
+        <translation>Fichier de banc d'essai : {0} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1263"/>
@@ -118,26 +118,26 @@ Exécutez le module Extraire le lexique bilingue séparément pour plus de déta
 {0}
 
 Do you want to overwrite it?</source>
-        <translation>Il existe un test qui existe déjà dans le banc d&apos;essai qui correspond à l&apos;unité lexicale :
+        <translation>Il existe un test qui existe déjà dans le banc d'essai qui correspond à l'unité lexicale :
 
 {0}
 
-Voulez-vous l&apos;écraser ?</translation>
+Voulez-vous l'écraser ?</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1347"/>
         <source>Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\testbed.xml</source>
-        <translation>Problème avec le fichier de banc d&apos;essai. Vérifiez que TestbedFile est défini sur une valeur dans votre fichier de configuration. Normalement, il est défini sur ..\testbed.xml</translation>
+        <translation>Problème avec le fichier de banc d'essai. Vérifiez que TestbedFile est défini sur une valeur dans votre fichier de configuration. Normalement, il est défini sur ..\testbed.xml</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1393"/>
         <source>Testbed Error</source>
-        <translation>Erreur de banc d&apos;essai</translation>
+        <translation>Erreur de banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1393"/>
         <source>There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.</source>
-        <translation>Il n&apos;y a pas un nombre égal de résultats de synthèse pour les unités lexicales que vous avez. Impossible d&apos;ajouter au banc d&apos;essai.</translation>
+        <translation>Il n'y a pas un nombre égal de résultats de synthèse pour les unités lexicales que vous avez. Impossible d'ajouter au banc d'essai.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1475"/>
@@ -152,7 +152,7 @@ Voulez-vous l&apos;écraser ?</translation>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1514"/>
         <source>There are no target text morphemes. Click the Transfer button first.</source>
-        <translation>Il n&apos;y a pas de morphèmes de texte cible. Cliquez d&apos;abord sur le bouton Transférer.</translation>
+        <translation>Il n'y a pas de morphèmes de texte cible. Cliquez d'abord sur le bouton Transférer.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1534"/>
@@ -182,7 +182,7 @@ Voulez-vous l&apos;écraser ?</translation>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1566"/>
         <source>An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}</source>
-        <translation>Une exception s&apos;est produite. Impossible d&apos;initialiser la DLL de synthèse HermitCrab. Erreur : {e}</translation>
+        <translation>Une exception s'est produite. Impossible d'initialiser la DLL de synthèse HermitCrab. Erreur : {e}</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1578"/>
@@ -192,7 +192,7 @@ Voulez-vous l&apos;écraser ?</translation>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1578"/>
         <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
-        <translation>Le projet pourrait être verrouillé. Vérifiez si le partage est activé pour le projet cible.                                     Si c&apos;est le cas, exécutez le module Nettoyer les fichiers puis le module Cataloguer les affixes cibles et signalez toute erreur aux développeurs.</translation>
+        <translation>Le projet pourrait être verrouillé. Vérifiez si le partage est activé pour le projet cible.                                     Si c'est le cas, exécutez le module Nettoyer les fichiers puis le module Cataloguer les affixes cibles et signalez toute erreur aux développeurs.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1587"/>
@@ -250,7 +250,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2314"/>
         <source>The transfer file has no transfer element or no section-rules element</source>
-        <translation>Le fichier de transfert n&apos;a pas d&apos;élément de transfert ou pas d&apos;élément section-rules</translation>
+        <translation>Le fichier de transfert n'a pas d'élément de transfert ou pas d'élément section-rules</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2338"/>
@@ -260,7 +260,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2338"/>
         <source>The interchunk transfer file has no transfer element or no section-rules element</source>
-        <translation>Le fichier de transfert interchunk n&apos;a pas d&apos;élément de transfert ou pas d&apos;élément section-rules</translation>
+        <translation>Le fichier de transfert interchunk n'a pas d'élément de transfert ou pas d'élément section-rules</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2362"/>
@@ -270,7 +270,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2362"/>
         <source>The postchunk transfer file has no transfer element or no section-rules element</source>
-        <translation>Le fichier de transfert postchunk n&apos;a pas d&apos;élément de transfert ou pas d&apos;élément section-rules</translation>
+        <translation>Le fichier de transfert postchunk n'a pas d'élément de transfert ou pas d'élément section-rules</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2441"/>
@@ -285,7 +285,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2620"/>
         <source>An error happened when running the Apertium tools.</source>
-        <translation>Une erreur s&apos;est produite lors de l&apos;exécution des outils Apertium.</translation>
+        <translation>Une erreur s'est produite lors de l'exécution des outils Apertium.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2637"/>
@@ -295,7 +295,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2686"/>
         <source>The rules produced no output.</source>
-        <translation>Les règles n&apos;ont produit aucune sortie.</translation>
+        <translation>Les règles n'ont produit aucune sortie.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2750"/>
@@ -305,7 +305,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2864"/>
         <source>The text named: {name} not found.</source>
-        <translation>Le texte nommé : {name} n&apos;a pas été trouvé.</translation>
+        <translation>Le texte nommé : {name} n'a pas été trouvé.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2897"/>
@@ -350,12 +350,12 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="3018"/>
         <source>An error occurred getting things initialized.</source>
-        <translation>Une erreur s&apos;est produite lors de l&apos;initialisation.</translation>
+        <translation>Une erreur s'est produite lors de l'initialisation.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="3041"/>
         <source>This text has no data.</source>
-        <translation>Ce texte n&apos;a pas de données.</translation>
+        <translation>Ce texte n'a pas de données.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="3084"/>

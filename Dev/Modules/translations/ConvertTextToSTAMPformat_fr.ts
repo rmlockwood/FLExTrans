@@ -46,17 +46,17 @@ qui est utilisé.</translation>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="409"/>
         <source>Lexicon files folder: {fileType} does not exist.</source>
-        <translation>Le dossier des fichiers de lexique : {fileType} n&apos;existe pas.</translation>
+        <translation>Le dossier des fichiers de lexique : {fileType} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="438"/>
         <source>Failed to open the target project.</source>
-        <translation>Échec de l&apos;ouverture du projet cible.</translation>
+        <translation>Échec de l'ouverture du projet cible.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1142"/>
         <source>The file: {fileName} was not found. Did you run the {runApert} module?</source>
-        <translation>Le fichier : {fileName} n&apos;a pas été trouvé. Avez-vous exécuté le module {runApert} ?</translation>
+        <translation>Le fichier : {fileName} n'a pas été trouvé. Avez-vous exécuté le module {runApert} ?</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1228"/>
@@ -76,7 +76,7 @@ qui est utilisé.</translation>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1366"/>
         <source>Error writing the output file.</source>
-        <translation>Erreur lors de l&apos;écriture du fichier de sortie.</translation>
+        <translation>Erreur lors de l'écriture du fichier de sortie.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1393"/>
@@ -101,7 +101,7 @@ qui est utilisé.</translation>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1416"/>
         <source>The Catalog Target Affixes module must be run before this module. The {fileType}: {filePath} does not exist.</source>
-        <translation>Le module Catalogue des affixes cibles doit être exécuté avant ce module. Le {fileType} : {filePath} n&apos;existe pas.</translation>
+        <translation>Le module Catalogue des affixes cibles doit être exécuté avant ce module. Le {fileType} : {filePath} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1432"/>

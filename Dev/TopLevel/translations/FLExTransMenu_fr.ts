@@ -5,7 +5,7 @@
     <message>
         <location filename="../FLExTransMenu.py" line="95"/>
         <source>Transfer rule file: {xferRulesFile} does not exist.</source>
-        <translation>Le fichier de règles de transfert : {xferRulesFile} n&apos;existe pas.</translation>
+        <translation>Le fichier de règles de transfert : {xferRulesFile} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../FLExTransMenu.py" line="95"/>

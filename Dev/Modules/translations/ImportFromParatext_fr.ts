@@ -50,7 +50,7 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
     <message>
         <location filename="../ImportFromParatext.py" line="315"/>
         <source>Could not open the configuration file: {myConfig}</source>
-        <translation>Impossible d&apos;ouvrir le fichier de configuration : {myConfig}</translation>
+        <translation>Impossible d'ouvrir le fichier de configuration : {myConfig}</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="346"/>
@@ -65,7 +65,7 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
     <message>
         <location filename="../ImportFromParatext.py" line="391"/>
         <source>Cannot find main title (\mt or \mtN). This is needed for importing introductory material.</source>
-        <translation>Impossible de trouver le titre principal (\mt ou \mtN). Ceci est nécessaire pour importer le matériel d&apos;introduction.</translation>
+        <translation>Impossible de trouver le titre principal (\mt ou \mtN). Ceci est nécessaire pour importer le matériel d'introduction.</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="412"/>
@@ -74,7 +74,7 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="427"/>
-        <source>{numRules} &apos;Text In&apos; rules applied.</source>
+        <source>{numRules} 'Text In' rules applied.</source>
         <translation>{numRules} règles « Texte entrant » appliquées.</translation>
     </message>
     <message>
@@ -82,7 +82,7 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
         <source>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
 
 Are you sure you want to continue with overwriting the text in FLEx?</source>
-        <translation>L&apos;option d&apos;écraser le texte dans FLEx a été choisie. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Texte &amp; Mots de FLEx.
+        <translation>L'option d'écraser le texte dans FLEx a été choisie. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Texte &amp; Mots de FLEx.
 
 Êtes-vous sûr de vouloir continuer et écraser le texte dans FLEx ?</translation>
     </message>

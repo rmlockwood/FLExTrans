@@ -143,7 +143,7 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1601"/>
-        <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
+        <source>Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
         <translation>No mostrar advertencias para palabras en mayúsculas (nombres propios) que quedan sin analizar. Excepto al principio de una oración.</translation>
     </message>
     <message>
@@ -153,7 +153,7 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1604"/>
-        <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
+        <source>Indicates if the system should avoid regenerating data that hasn't changed.
 Use the CleanFiles module to force the regeneration of data.</source>
         <translation>Indica si el sistema debe evitar regenerar datos que no han cambiado.
 Use el módulo CleanFiles para forzar la regeneración de datos.</translation>
@@ -757,7 +757,7 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1621"/>
-        <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
+        <source>In the production mode module 'Translate Text', where do you want the drafted text to go?</source>
         <translation>En el módulo de modo de producción 'Traducir Texto', ¿dónde quieres que vaya el texto borrador?</translation>
     </message>
     <message>
@@ -767,7 +767,7 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1308"/>
-        <source>Failed to open the &apos;{projectName}&apos; database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+        <source>Failed to open the '{projectName}' database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
         <translation type="obsolete">No se pudo abrir la base de datos '{projectName}'. Esto puede deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del diálogo de Propiedades del Proyecto de Fieldworks. Esta se encuentra en Archivo &gt; Gestión de Proyectos &gt; Propiedades del Proyecto de Fieldworks en el menú.</translation>
     </message>
     <message>
@@ -777,7 +777,7 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1497"/>
-        <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+        <source>Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
         <translation>No se pudo abrir el proyecto '{projectName}'. Esto podría ser porque tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del diálogo Propiedades del proyecto de Fieldworks. Se encuentra en el menú bajo Archivo &gt; Gestión de proyectos &gt; Propiedades del proyecto de Fieldworks.</translation>
     </message>
     <message>

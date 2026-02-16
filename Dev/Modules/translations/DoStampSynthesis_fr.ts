@@ -9,12 +9,12 @@
 synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
 roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
-are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the &apos;Build&apos; folder.
+are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the 'Build' folder.
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the source project is being used. Actually the target project is being used.</source>
         <translation>Ce module exécute STAMP pour créer le texte synthétisé.
-Avant de créer le texte synthétisé, ce module extrait les fichiers du lexique de la langue cible, un pour chacun des racines, préfixes, suffixes et infixes. Ils sont au format STAMP pour la synthèse. Les fichiers du lexique sont placés dans le dossier désigné dans les Paramètres comme Dossier de fichiers du lexique cible. Habituellement, c'est le dossier &apos;Build&apos;.
+Avant de créer le texte synthétisé, ce module extrait les fichiers du lexique de la langue cible, un pour chacun des racines, préfixes, suffixes et infixes. Ils sont au format STAMP pour la synthèse. Les fichiers du lexique sont placés dans le dossier désigné dans les Paramètres comme Dossier de fichiers du lexique cible. Habituellement, c'est le dossier 'Build'.
 Le texte synthétisé sera stocké dans le fichier spécifié par le paramètre Fichier de synthèse de sortie cible.
 Cela s'appelle généralement target_text-syn.txt et se trouve habituellement dans le dossier Output.
 REMARQUE : Les messages indiqueront que le projet source est utilisé. En réalité, c'est le projet cible qui est utilisé.</translation>
@@ -27,7 +27,7 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
         <location filename="../DoStampSynthesis.py" line="184"/>
         <source>Synthesizes the target text with the tool STAMP.</source>
-        <translation>Synthétise le texte cible avec l&apos;outil STAMP.</translation>
+        <translation>Synthétise le texte cible avec l'outil STAMP.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="911"/>

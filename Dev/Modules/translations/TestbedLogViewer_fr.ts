@@ -6,17 +6,17 @@
     <message>
         <location filename="../TestbedLogViewer.py" line="91"/>
         <source>Testbed Log Viewer</source>
-        <translation>Visionneuse du journal du banc d&apos;essai</translation>
+        <translation>Visionneuse du journal du banc d'essai</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="94"/>
         <source>View testbed run results.</source>
-        <translation>Voir les résultats d&apos;exécution du banc d&apos;essai.</translation>
+        <translation>Voir les résultats d'exécution du banc d'essai.</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="96"/>
         <source>View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.</source>
-        <translation>Voir les résultats d&apos;exécution du banc d&apos;essai. Le nombre de résultats à afficher est défini par défaut à 25. Modifiez MAX_RESULTS_TO_DISPLAY à une valeur différente si nécessaire.</translation>
+        <translation>Voir les résultats d'exécution du banc d'essai. Le nombre de résultats à afficher est défini par défaut à 25. Modifiez MAX_RESULTS_TO_DISPLAY à une valeur différente si nécessaire.</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="136"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../TestbedLogViewer.py" line="644"/>
         <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
-        <translation>Fichier du banc d&apos;essai : {testbedPath} n&apos;existe pas. Veuillez ajouter des tests au banc d&apos;essai.</translation>
+        <translation>Fichier du banc d'essai : {testbedPath} n'existe pas. Veuillez ajouter des tests au banc d'essai.</translation>
     </message>
 </context>
 </TS>

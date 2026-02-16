@@ -28,7 +28,7 @@ même nom ne sera pas écrasé. Une copie sera créée.</translation>
     <message>
         <location filename="../InsertTargetText.py" line="137"/>
         <source>Failed to open the target project.</source>
-        <translation>Échec de l&apos;ouverture du projet cible.</translation>
+        <translation>Échec de l'ouverture du projet cible.</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="140"/>
@@ -38,7 +38,7 @@ même nom ne sera pas écrasé. Une copie sera créée.</translation>
     <message>
         <location filename="../InsertTargetText.py" line="158"/>
         <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: "</source>
-        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d&apos;ouvrir le fichier de synthèse : "</translation>
+        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : "</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="193"/>

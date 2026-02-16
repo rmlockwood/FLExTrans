@@ -25,7 +25,7 @@ grammatical categories from the source FLEx project. This module will also creat
 attributes in the transfer rule file from FLEx inflection features, inflection classes
 and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.</source>
-        <translation>Ce module parcourt d&apos;abord les projets FLEx source et cible et extrait
+        <translation>Ce module parcourt d'abord les projets FLEx source et cible et extrait
 les listes de catégories grammaticales. Il remplacera ce qui est actuellement listé pour les
 balises de l'attribut a_gram_cat avec les listes extraites. Les catégories en double
 seront supprimées. De plus, les conventions de nommage seront suivies comme dans le lexique
@@ -44,7 +44,7 @@ doivent être écrasés.</translation>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="544"/>
         <source>The transfer rules file is malformed or not valid XML.</source>
-        <translation>Le fichier de règles de transfert est mal formé ou n&apos;est pas un XML valide.</translation>
+        <translation>Le fichier de règles de transfert est mal formé ou n'est pas un XML valide.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="554"/>
@@ -54,7 +54,7 @@ doivent être écrasés.</translation>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="589"/>
         <source>There was a problem writing the transfer rules file: {error}</source>
-        <translation>Il y a eu un problème lors de l&apos;écriture du fichier de règles de transfert : {error}</translation>
+        <translation>Il y a eu un problème lors de l'écriture du fichier de règles de transfert : {error}</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="592"/>
@@ -64,7 +64,7 @@ doivent être écrasés.</translation>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="593"/>
         <source>{num} categories created for the a_gram_cat attribute.</source>
-        <translation>{num} catégories créées pour l&apos;attribut a_gram_cat.</translation>
+        <translation>{num} catégories créées pour l'attribut a_gram_cat.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="594"/>

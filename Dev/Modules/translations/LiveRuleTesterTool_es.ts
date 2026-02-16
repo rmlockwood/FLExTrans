@@ -19,7 +19,7 @@
 sentences live against transfer rules. This tool is especially helpful for
 finding out why transfer rules are not doing what you expect them to do.
 You can zero in on the problem by selecting just one source word and applying
-the pertinent transfer rule. In this way you don&apos;t have to run the whole system
+the pertinent transfer rule. In this way you don't have to run the whole system
 against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.

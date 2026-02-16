@@ -65,12 +65,12 @@
     </message>
     <message>
       <location filename="../Utils.py" line="796"/>
-      <source>The abbreviation/name: &apos;{posAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; can&apos;t have a {charName} in it. Could not complete, &apos;+                                            &apos;please correct this {myType} in the {dbType} database.</source>
+      <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} database.</source>
       <translation>Die Abkürzung/der Name: '{posAbbrStr}' für {myType}: '{posFullNameStr}' darf kein {charName} enthalten. Konnte nicht abgeschlossen werden, '+                                            'bitte korrigieren Sie diese {myType} in der {dbType}-Datenbank.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="812"/>
-      <source>The abbreviation/name: &apos;{oldAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; in the {dbType} database can&apos;t have a {charName} in it. The {charName} &apos;+                                              &apos;has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
+      <source>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
       <translation>Die Abkürzung/der Name: '{oldAbbrStr}' für {myType}: '{posFullNameStr}' in der {dbType}-Datenbank darf kein {charName} enthalten. Das {charName} '+                                              'wurde {message}, wodurch {posAbbrStr} gebildet wurde. Beachten Sie dies, wenn Sie sich in Übertragungsregeln auf diese {myType} beziehen.</translation>
     </message>
     <message>

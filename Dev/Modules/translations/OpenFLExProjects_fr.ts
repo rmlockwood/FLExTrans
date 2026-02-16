@@ -15,7 +15,7 @@
     <message>
         <location filename="../OpenFLExProjects.py" line="69"/>
         <source>Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.</source>
-        <translation>Sélectionnez un ou plusieurs projets FLEx et ouvrez-les automatiquement un par un. L&apos;outil attend qu&apos;un projet soit ouvert avant d&apos;ouvrir le suivant.</translation>
+        <translation>Sélectionnez un ou plusieurs projets FLEx et ouvrez-les automatiquement un par un. L'outil attend qu'un projet soit ouvert avant d'ouvrir le suivant.</translation>
     </message>
     <message>
         <location filename="../OpenFLExProjects.py" line="94"/>
@@ -39,13 +39,13 @@
     </message>
     <message>
         <location filename="../OpenFLExProjects.py" line="177"/>
-        <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
+        <source>Couldn't detect the {proj} project as open after {secs} seconds. Skipping.</source>
         <translation>Impossible de détecter le projet {proj} comme ouvert après {secs} secondes. Passage ignoré.</translation>
     </message>
     <message>
         <location filename="../OpenFLExProjects.py" line="181"/>
         <source>The {proj} project took about {secs} seconds to open.</source>
-        <translation>Le projet {proj} a pris environ {secs} secondes pour s&apos;ouvrir.</translation>
+        <translation>Le projet {proj} a pris environ {secs} secondes pour s'ouvrir.</translation>
     </message>
 </context>
 </TS>

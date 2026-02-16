@@ -6,7 +6,7 @@
     <message>
         <location filename="../GenStc.py" line="73"/>
         <source>Generate Sentences from Model</source>
-        <translation>Générer des phrases à partir d&apos;un modèle</translation>
+        <translation>Générer des phrases à partir d'un modèle</translation>
     </message>
     <message>
         <location filename="../GenStc.py" line="78"/>

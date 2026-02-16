@@ -24,7 +24,7 @@ must run the modules up to and including {runApert} before running this module.<
 Les unités lexicales sont codées par couleur comme suit : noir-lemme, bleu-catégorie
 grammaticale, vert-affixe ou caractéristique ou classe, jaune-ponctuation non-phrastique,
 rose foncé-lemme inconnu, rose-catégorie inconnue, rouge-lemme non trouvé. Important ! Vous
-devez exécuter les modules jusqu&apos;à et y compris {runApert} avant d&apos;exécuter ce module.</translation>
+devez exécuter les modules jusqu'à et y compris {runApert} avant d'exécuter ce module.</translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="229"/>
@@ -34,22 +34,22 @@ devez exécuter les modules jusqu&apos;à et y compris {runApert} avant d&apos;e
     <message>
         <location filename="../ViewSrcTgt.py" line="226"/>
         <source>There was a problem opening the Source Apertium Text file: {fileName}. </source>
-        <translation>Il y a eu un problème lors de l&apos;ouverture du fichier de texte Apertium source : {fileName}. </translation>
+        <translation>Il y a eu un problème lors de l'ouverture du fichier de texte Apertium source : {fileName}. </translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="226"/>
         <source>Make sure you have run the {moduleName} module first.</source>
-        <translation>Assurez-vous d&apos;avoir d&apos;abord exécuté le module {moduleName}.</translation>
+        <translation>Assurez-vous d'avoir d'abord exécuté le module {moduleName}.</translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="229"/>
         <source>There was a problem opening a Target Apertium Text file: {fileName}. </source>
-        <translation>Il y a eu un problème lors de l&apos;ouverture du fichier de texte Apertium cible : {fileName}. </translation>
+        <translation>Il y a eu un problème lors de l'ouverture du fichier de texte Apertium cible : {fileName}. </translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="229"/>
         <source>Make sure you have run the modules up through {moduleName} first.</source>
-        <translation>Assurez-vous d&apos;avoir d&apos;abord exécuté les modules jusqu&apos;à {moduleName}.</translation>
+        <translation>Assurez-vous d'avoir d'abord exécuté les modules jusqu'à {moduleName}.</translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="321"/>

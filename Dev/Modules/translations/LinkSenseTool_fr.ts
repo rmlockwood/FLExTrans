@@ -79,7 +79,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1512"/>
         <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
-        <translation>Aucun mot avec un type de morphème racine valide n&apos;a été trouvé. Veuillez vérifier vos paramètres, en particulier les types de morphèmes sources comptés comme racines.</translation>
+        <translation>Aucun mot avec un type de morphème racine valide n'a été trouvé. Veuillez vérifier vos paramètres, en particulier les types de morphèmes sources comptés comme racines.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1619"/>
@@ -119,57 +119,57 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1799"/>
         <source>Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</source>
-        <translation>Erreur de permission lors de l&apos;écriture de {htmlFileName}. Peut-être que le fichier est utilisé dans un autre programme ?</translation>
+        <translation>Erreur de permission lors de l'écriture de {htmlFileName}. Peut-être que le fichier est utilisé dans un autre programme ?</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1803"/>
         <source>Error writing {htmlFileName}.</source>
-        <translation>Erreur lors de l&apos;écriture de {htmlFileName}.</translation>
+        <translation>Erreur lors de l'écriture de {htmlFileName}.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1807"/>
-        <source>{cnt} words written to the file: {htmlFileName}. You&apos;ll find it in the Output folder.</source>
+        <source>{cnt} words written to the file: {htmlFileName}. You'll find it in the Output folder.</source>
         <translation>{cnt} mots écrits dans le fichier : {htmlFileName}. Vous le trouverez dans le dossier de sortie.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1810"/>
         <source>No unlinked words. Nothing exported.</source>
-        <translation>Aucun mot non lié. Rien n&apos;a été exporté.</translation>
+        <translation>Aucun mot non lié. Rien n'a été exporté.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1825"/>
         <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
-        <translation>Aucun nom de texte source n&apos;a été défini. Veuillez aller dans les paramètres et corriger cela.</translation>
+        <translation>Aucun nom de texte source n'a été défini. Veuillez aller dans les paramètres et corriger cela.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1830"/>
         <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
-        <translation>Aucun champ personnalisé source pour le lien d&apos;entrée n&apos;a été défini. Veuillez aller dans les paramètres et corriger cela.</translation>
+        <translation>Aucun champ personnalisé source pour le lien d'entrée n'a été défini. Veuillez aller dans les paramètres et corriger cela.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1836"/>
         <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-        <translation>Aucun type de morphème source compté comme racine n&apos;a été sélectionné. Veuillez aller dans les paramètres et corriger cela.</translation>
+        <translation>Aucun type de morphème source compté comme racine n'a été sélectionné. Veuillez aller dans les paramètres et corriger cela.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1841"/>
         <source>No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-        <translation>Aucun type de morphème cible compté comme racine n&apos;a été sélectionné. Veuillez aller dans les paramètres et corriger cela.</translation>
+        <translation>Aucun type de morphème cible compté comme racine n'a été sélectionné. Veuillez aller dans les paramètres et corriger cela.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1855"/>
         <source>The text named: {sourceTextName} not found.</source>
-        <translation>Le texte nommé : {sourceTextName} n&apos;a pas été trouvé.</translation>
+        <translation>Le texte nommé : {sourceTextName} n'a pas été trouvé.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1872"/>
-        <source>{linkField} field doesn&apos;t exist. Please read the instructions.</source>
-        <translation>Le champ {linkField} n&apos;existe pas. Veuillez lire les instructions.</translation>
+        <source>{linkField} field doesn't exist. Please read the instructions.</source>
+        <translation>Le champ {linkField} n'existe pas. Veuillez lire les instructions.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1886"/>
         <source>The target project does not exist. Please check the configuration file.</source>
-        <translation>Le projet cible n&apos;existe pas. Veuillez vérifier le fichier de configuration.</translation>
+        <translation>Le projet cible n'existe pas. Veuillez vérifier le fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1889"/>
@@ -179,7 +179,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1896"/>
         <source>Failed to open the target project.</source>
-        <translation>Échec de l&apos;ouverture du projet cible.</translation>
+        <translation>Échec de l'ouverture du projet cible.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1899"/>
@@ -189,7 +189,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1928"/>
         <source>There were no senses found for linking. Please check your text and approve some words.</source>
-        <translation>Aucun sens n&apos;a été trouvé pour la liaison. Veuillez vérifier votre texte et approuver certains mots.</translation>
+        <translation>Aucun sens n'a été trouvé pour la liaison. Veuillez vérifier votre texte et approuver certains mots.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1944"/>

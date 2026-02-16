@@ -25,9 +25,9 @@
     </message>
     <message>
         <location filename="../Linker.py" line="249"/>
-        <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked),
+        <source>Type the beginning of an entry or any text (if 'Filter on all fields' is checked),
 then double-click in the Target Head Word column for the desired row to link to it.</source>
-        <translation>Tapez le début d&apos;une entrée ou n&apos;importe quel texte (si &apos;Filtrer sur tous les champs&apos; est coché),
+        <translation>Tapez le début d'une entrée ou n'importe quel texte (si 'Filtrer sur tous les champs' est coché),
 puis double-cliquez dans la colonne Mot-vedette cible pour la ligne souhaitée pour y créer un lien.</translation>
     </message>
     <message>

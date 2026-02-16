@@ -6,7 +6,7 @@
     <message>
         <location filename="../ReadConfig.py" line="193"/>
         <source>Error reading the file: &quot;{path}/{file}&quot;. Check that it exists.</source>
-        <translation>Erreur de lecture du fichier : &quot;{path}/{file}&quot;. Vérifiez qu&apos;il existe.</translation>
+        <translation>Erreur de lecture du fichier : &quot;{path}/{file}&quot;. Vérifiez qu'il existe.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="230"/>
@@ -21,12 +21,12 @@
     <message>
         <location filename="../ReadConfig.py" line="279"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line with more than one &quot;=&quot; was found.</source>
-        <translation>Problème de lecture du fichier : &quot;{file}&quot;. Une ligne avec plus d&apos;un &quot;=&quot; a été trouvée.</translation>
+        <translation>Problème de lecture du fichier : &quot;{file}&quot;. Une ligne avec plus d'un &quot;=&quot; a été trouvée.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="303"/>
         <source>Error in the file: &quot;{file}&quot;. A value for &quot;{key}&quot; was not found.</source>
-        <translation>Erreur dans le fichier : &quot;{file}&quot;. Une valeur pour &quot;{key}&quot; n&apos;a pas été trouvée.</translation>
+        <translation>Erreur dans le fichier : &quot;{file}&quot;. Une valeur pour &quot;{key}&quot; n'a pas été trouvée.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="329"/>

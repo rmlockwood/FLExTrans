@@ -41,7 +41,7 @@
     <message>
         <location filename="../LiveRuleTester2.py" line="385"/>
         <source>Rule Execution Information</source>
-        <translation>Informations sur l&apos;exécution des règles</translation>
+        <translation>Informations sur l'exécution des règles</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="386"/>
@@ -56,12 +56,12 @@
     <message>
         <location filename="../LiveRuleTester2.py" line="388"/>
         <source>&amp;Add to Testbed</source>
-        <translation>&amp;Ajouter au banc d&apos;essai</translation>
+        <translation>&amp;Ajouter au banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="389"/>
         <source>Add multiple words to the testbed word by word</source>
-        <translation>Ajouter plusieurs mots au banc d&apos;essai mot par mot</translation>
+        <translation>Ajouter plusieurs mots au banc d'essai mot par mot</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="390"/>
@@ -123,7 +123,7 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
         <location filename="../LiveRuleTester2.py" line="402"/>
         <source>Open Rule Assistant</source>
-        <translation>Ouvrir l&apos;assistant de règles</translation>
+        <translation>Ouvrir l'assistant de règles</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="403"/>
@@ -138,7 +138,7 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
         <location filename="../LiveRuleTester2.py" line="405"/>
         <source>This button is not programmed yet, please close LRT and re-open.</source>
-        <translation>Ce bouton n&apos;est pas encore programmé, veuillez fermer LRT et le rouvrir.</translation>
+        <translation>Ce bouton n'est pas encore programmé, veuillez fermer LRT et le rouvrir.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="406"/>
@@ -148,12 +148,12 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
         <location filename="../LiveRuleTester2.py" line="407"/>
         <source>&amp;Edit Testbed</source>
-        <translation>&amp;Modifier le banc d&apos;essai</translation>
+        <translation>&amp;Modifier le banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="408"/>
         <source>&amp;View Testbed Log</source>
-        <translation>&amp;Afficher le journal du banc d&apos;essai</translation>
+        <translation>&amp;Afficher le journal du banc d'essai</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="409"/>

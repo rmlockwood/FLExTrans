@@ -124,7 +124,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1768"/>
-      <source>{cnt} words written to the file: {htmlFileName}. You&apos;ll find it in the Output folder.</source>
+      <source>{cnt} words written to the file: {htmlFileName}. You'll find it in the Output folder.</source>
       <translation>{cnt} palabras escritas en el archivo: {htmlFileName}. Lo encontrará en la carpeta de salida.</translation>
     </message>
     <message>
@@ -159,7 +159,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1831"/>
-      <source>{linkField} field doesn&apos;t exist. Please read the instructions.</source>
+      <source>{linkField} field doesn't exist. Please read the instructions.</source>
       <translation>El campo {linkField} no existe. Por favor, lea las instrucciones.</translation>
     </message>
     <message>

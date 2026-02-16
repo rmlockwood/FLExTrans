@@ -96,7 +96,7 @@
     <message>
         <location filename="../TextInOut.py" line="426"/>
         <source>This tool will run before other rules.</source>
-        <translation>Cet outil s&apos;exécutera avant les autres règles.</translation>
+        <translation>Cet outil s'exécutera avant les autres règles.</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="427"/>
@@ -142,7 +142,7 @@
         <location filename="../TextInOut.py" line="435"/>
         <source>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-        <translation>Étapes à ajouter au nombre de base d&apos;étapes sélectionnées ci-dessus.
+        <translation>Étapes à ajouter au nombre de base d'étapes sélectionnées ci-dessus.
 Séparez les étapes par des espaces ou des virgules.</translation>
     </message>
     <message>
@@ -154,7 +154,7 @@ Séparez les étapes par des espaces ou des virgules.</translation>
         <location filename="../TextInOut.py" line="438"/>
         <source>Steps to skip from the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-        <translation>Étapes à ignorer du nombre de base d&apos;étapes sélectionnées ci-dessus.
+        <translation>Étapes à ignorer du nombre de base d'étapes sélectionnées ci-dessus.
 Séparez les étapes par des espaces ou des virgules.</translation>
     </message>
     <message>
@@ -165,7 +165,7 @@ Séparez les étapes par des espaces ou des virgules.</translation>
     <message>
         <location filename="../TextInOut.py" line="441"/>
         <source>Test the checked rules above with the input text.</source>
-        <translation>Tester les règles cochées ci-dessus avec le texte d&apos;entrée.</translation>
+        <translation>Tester les règles cochées ci-dessus avec le texte d'entrée.</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="442"/>
@@ -193,7 +193,7 @@ Séparez les étapes par des espaces ou des virgules.</translation>
 Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
 
 </source>
-        <translation>Message d&apos;erreur ici Message d&apos;erreur ici Message d&apos;erreur ici Message d&apos;erreur ici
+        <translation>Message d'erreur ici Message d'erreur ici Message d'erreur ici Message d'erreur ici
 Message d'erreur ici Message ici Message ici Message ici Message ici Message ici
 
 </translation>
@@ -203,12 +203,12 @@ Message d'erreur ici Message ici Message ici Message ici Message ici Message ici
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Message d'erreur ici Message d'erreur ici Message d'erreur ici Message d'erreur ici Message d'erreur ici Message ici Message ici Message ici Message ici Message ici&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>

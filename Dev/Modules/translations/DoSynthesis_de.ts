@@ -15,11 +15,11 @@
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="66"/>
-        <source>This module synthesizes the target text. If in the settings you select &apos;Yes&apos; for &apos;Use HermitCrab synthesis?&apos;,
+        <source>This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
 then the following information from the {hermitCrabModule} module applies: {hermitCrabDescription}
 
 
-If in the settings you select &apos;No&apos; for &apos;Use HermitCrab synthesis?&apos;,
+If in the settings you select 'No' for 'Use HermitCrab synthesis?',
 then the following information from the {stampModule} module applies: {stampDescription}</source>
         <translation>Dieses Modul synthetisiert den Zieltext. Wenn Sie in den Einstellungen 'Ja' für 'HermitCrab-Synthese verwenden?' auswählen,
 dann gilt die folgende Information aus dem Modul {hermitCrabModule}: {hermitCrabDescription}

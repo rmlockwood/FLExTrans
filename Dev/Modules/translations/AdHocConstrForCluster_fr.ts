@@ -36,7 +36,7 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="175"/>
         <source>anywhere around</source>
-        <translation>n&apos;importe où autour</translation>
+        <translation>n'importe où autour</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="176"/>
@@ -81,32 +81,32 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="404"/>
         <source>It looks like you may not have used the Auto Complete values. &quot;{key}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
-        <translation>Il semble que vous n&apos;ayez pas utilisé les valeurs de saisie automatique. &quot;{key}&quot; seul ne peut pas être trouvé. Tapez le morphème/allomorphe en vernaculaire et sélectionnez la valeur complétée automatiquement.</translation>
+        <translation>Il semble que vous n'ayez pas utilisé les valeurs de saisie automatique. &quot;{key}&quot; seul ne peut pas être trouvé. Tapez le morphème/allomorphe en vernaculaire et sélectionnez la valeur complétée automatiquement.</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="428"/>
         <source>It looks like you may not have used the Auto Complete values. &quot;{otherStr}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
-        <translation>Il semble que vous n&apos;ayez pas utilisé les valeurs de saisie automatique. &quot;{otherStr}&quot; seul ne peut pas être trouvé. Tapez le morphème/allomorphe en vernaculaire et sélectionnez la valeur complétée automatiquement.</translation>
+        <translation>Il semble que vous n'ayez pas utilisé les valeurs de saisie automatique. &quot;{otherStr}&quot; seul ne peut pas être trouvé. Tapez le morphème/allomorphe en vernaculaire et sélectionnez la valeur complétée automatiquement.</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="476"/>
         <source>The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
 </source>
-        <translation>Le {selectedType} {key} n&apos;a pas pu être trouvé dans le projet {proj}. Si le morphème était un radical, il se pourrait que l&apos;URL de lien vers ce radical n&apos;était pas valide.
+        <translation>Le {selectedType} {key} n'a pas pu être trouvé dans le projet {proj}. Si le morphème était un radical, il se pourrait que l'URL de lien vers ce radical n'était pas valide.
 </translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="481"/>
         <source>The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.
 </source>
-        <translation>Le {selectedType} {otherStr} avec le même ID n&apos;existe pas dans le projet {proj}.
+        <translation>Le {selectedType} {otherStr} avec le même ID n'existe pas dans le projet {proj}.
 </translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="496"/>
         <source>The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
 </source>
-        <translation>Le {selectedType} {otherStr} n&apos;a pas pu être trouvé dans le projet {proj}. Si le morphème était un radical, il se pourrait que l&apos;URL de lien vers ce radical n&apos;était pas valide.
+        <translation>Le {selectedType} {otherStr} n'a pas pu être trouvé dans le projet {proj}. Si le morphème était un radical, il se pourrait que l'URL de lien vers ce radical n'était pas valide.
 </translation>
     </message>
     <message>

@@ -40,7 +40,7 @@ vocatif singulier, vous pouvez le spécifier ici.</translation>
     <message>
         <location filename="../ReplacementEditor.py" line="573"/>
         <source>The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </source>
-        <translation>Les lignes suivantes n&apos;ont pas d&apos;affixes et sont donc redondantes avec les liens créés par l&apos;outil de liaison de sens : </translation>
+        <translation>Les lignes suivantes n'ont pas d'affixes et sont donc redondantes avec les liens créés par l'outil de liaison de sens : </translation>
     </message>
     <message>
         <location filename="../ReplacementEditor.py" line="576"/>

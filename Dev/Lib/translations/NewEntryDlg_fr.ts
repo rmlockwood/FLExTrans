@@ -16,7 +16,7 @@
     <message>
         <location filename="../NewEntryDlg.py" line="292"/>
         <source>Error Check</source>
-        <translation>Vérification d&apos;erreur</translation>
+        <translation>Vérification d'erreur</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="217"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../NewEntryDlg.py" line="271"/>
         <source>Failed to open the project: {proj}</source>
-        <translation>Échec de l&apos;ouverture du projet : {proj}</translation>
+        <translation>Échec de l'ouverture du projet : {proj}</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="292"/>

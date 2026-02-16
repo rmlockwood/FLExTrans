@@ -66,7 +66,7 @@ is checked, Proper Nouns will not be exported.</source>
     </message>
     <message>
         <location filename="../Linker.py" line="249"/>
-        <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
+        <source>Type the beginning of an entry or any text (if 'Filter on all fields' is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
         <translation>Geben Sie den Anfang eines Eintrags oder einen beliebigen Text ein (wenn &quot;Nach allen Feldern filtern&quot; aktiviert ist), 
 und doppelklicken Sie dann in der Spalte &quot;Ziel-Stichwort&quot; auf die gewünschte Zeile, um sie zu verknüpfen.</translation>

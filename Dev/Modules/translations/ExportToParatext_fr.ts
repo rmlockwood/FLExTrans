@@ -17,7 +17,7 @@
         <location filename="../ExportToParatext.py" line="121"/>
         <source>
 After chapters have been synthesized with the {synthText} module, the draft resides in the file specified
-by the setting &apos;Target Output Synthesis File&apos; (typically called &apos;target_text-syn.txt&apos;). This module
+by the setting 'Target Output Synthesis File' (typically called 'target_text-syn.txt'). This module
 takes the draft in this file and copies the chapters into Paratext to the project specified.</source>
         <translation>
 Après que les chapitres ont été synthétisés avec le module {synthText}, le brouillon se trouve dans le fichier spécifié
@@ -37,7 +37,7 @@ prend le brouillon dans ce fichier et copie les chapitres dans Paratext vers le 
     <message>
         <location filename="../ExportToParatext.py" line="196"/>
         <source>The book name or abbreviation {book} is invalid. It should match a Paratext book.</source>
-        <translation>Le nom ou l&apos;abréviation du livre {book} est invalide. Il devrait correspondre à un livre Paratext.</translation>
+        <translation>Le nom ou l'abréviation du livre {book} est invalide. Il devrait correspondre à un livre Paratext.</translation>
     </message>
     <message>
         <location filename="../ExportToParatext.py" line="275"/>

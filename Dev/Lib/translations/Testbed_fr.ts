@@ -11,7 +11,7 @@
     <message>
         <location filename="../Testbed.py" line="870"/>
         <source>The testbed file: {filePath} could not be read or written.</source>
-        <translation>Le fichier testbed : {filePath} n&apos;a pas pu être lu ou écrit.</translation>
+        <translation>Le fichier testbed : {filePath} n'a pas pu être lu ou écrit.</translation>
     </message>
     <message>
         <location filename="../Testbed.py" line="875"/>

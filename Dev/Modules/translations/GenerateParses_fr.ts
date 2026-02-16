@@ -11,19 +11,19 @@
     <message>
         <location filename="../GenerateParses.py" line="103"/>
         <source>Creates all possible parses from a FLEx project, in Apertium format.</source>
-        <translation>Crée toutes les analyses possibles à partir d&apos;un projet FLEx, au format Apertium.</translation>
+        <translation>Crée toutes les analyses possibles à partir d'un projet FLEx, au format Apertium.</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="105"/>
         <source>This module creates an Apertium file (that can be converted for input to a Synthesizer process) with
 all the parses that can be generated from the target FLEx project, based on its inflectional templates.
-(It doesn&apos;t generate based on derivation information in the project and it doesn&apos;t yet handle
+(It doesn't generate based on derivation information in the project and it doesn't yet handle
 clitics or variants.)
 In FLExTrans &gt; Settings, under Synthesis Test settings, it is possible to limit output to
 a single POS or Citation Form, or to a specified number of stems (stems will be chosen
 randomly). This module also outputs a human readable version of the parses (with glosses of roots
 and affixes) to the Parses Output File specified in the settings.</source>
-        <translation>Ce module crée un fichier Apertium (qui peut être converti pour l&apos;entrée dans un processus de synthétiseur) avec
+        <translation>Ce module crée un fichier Apertium (qui peut être converti pour l'entrée dans un processus de synthétiseur) avec
 toutes les analyses qui peuvent être générées à partir du projet FLEx cible, en fonction de ses modèles flexionnels.
 (Il ne génère pas à partir des informations de dérivation dans le projet et il ne gère pas encore
 les clitiques ou les variantes.)
@@ -35,7 +35,7 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="168"/>
         <source>No tags found for slot {slotName} of template {templateName}. Skipping.</source>
-        <translation>Aucune étiquette trouvée pour l&apos;emplacement {slotName} du modèle {templateName}. Ignoré.</translation>
+        <translation>Aucune étiquette trouvée pour l'emplacement {slotName} du modèle {templateName}. Ignoré.</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="242"/>
@@ -122,12 +122,12 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="505"/>
         <source>POS msaPOS missing Abbreviation label</source>
-        <translation>POS msaPOS sans étiquette d&apos;abréviation</translation>
+        <translation>POS msaPOS sans étiquette d'abréviation</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="510"/>
         <source>      Adding affix {lexForm} {lex} to slot [{slotName}]</source>
-        <translation>      Ajout de l&apos;affixe {lexForm} {lex} à l&apos;emplacement [{slotName}]</translation>
+        <translation>      Ajout de l'affixe {lexForm} {lex} à l'emplacement [{slotName}]</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="514"/>

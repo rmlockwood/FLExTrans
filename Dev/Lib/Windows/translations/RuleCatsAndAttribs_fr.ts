@@ -16,7 +16,7 @@
     <message>
         <location filename="../RuleCatsAndAttribs.py" line="78"/>
         <source>Populate inflection features as attributes</source>
-        <translation>Remplir les traits de flexion en tant qu&apos;attributs</translation>
+        <translation>Remplir les traits de flexion en tant qu'attributs</translation>
     </message>
     <message>
         <location filename="../RuleCatsAndAttribs.py" line="79"/>
@@ -36,22 +36,22 @@
     <message>
         <location filename="../RuleCatsAndAttribs.py" line="82"/>
         <source>Populate inflection classes as attributes</source>
-        <translation>Remplir les classes de flexion en tant qu&apos;attributs</translation>
+        <translation>Remplir les classes de flexion en tant qu'attributs</translation>
     </message>
     <message>
         <location filename="../RuleCatsAndAttribs.py" line="83"/>
         <source>Populate template slots as attributes</source>
-        <translation>Remplir les emplacements de modèle en tant qu&apos;attributs</translation>
+        <translation>Remplir les emplacements de modèle en tant qu'attributs</translation>
     </message>
     <message>
         <location filename="../RuleCatsAndAttribs.py" line="84"/>
         <source>Overwrite existing template slot attributes</source>
-        <translation>Écraser les attributs d&apos;emplacement de modèle existants</translation>
+        <translation>Écraser les attributs d'emplacement de modèle existants</translation>
     </message>
     <message>
         <location filename="../RuleCatsAndAttribs.py" line="85"/>
         <source>Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten.</source>
-        <translation>Les catégories sources et l&apos;attribut a_gram_cat sont remplis automatiquement. Les catégories sources existantes ne sont pas écrasées.</translation>
+        <translation>Les catégories sources et l'attribut a_gram_cat sont remplis automatiquement. Les catégories sources existantes ne sont pas écrasées.</translation>
     </message>
 </context>
 </TS>

@@ -11,7 +11,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="451"/>
         <source>The book abbreviation: {bookAbbrev} is invalid.</source>
-        <translation>L&apos;abréviation du livre : {bookAbbrev} est invalide.</translation>
+        <translation>L'abréviation du livre : {bookAbbrev} est invalide.</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="465"/>
@@ -511,7 +511,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="820"/>
         <source>Ezra Apocalypse</source>
-        <translation>Apocalypse d&apos;Esdras</translation>
+        <translation>Apocalypse d'Esdras</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="821"/>

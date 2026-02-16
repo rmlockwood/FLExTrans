@@ -47,7 +47,7 @@ für Bäume verwendet wird. </translation>
     </message>
     <message>
         <location filename="../RunTreeTran.py" line="218"/>
-        <source>Can&apos;t find the TreeTran rules file: {rulesFilePath}.</source>
+        <source>Can't find the TreeTran rules file: {rulesFilePath}.</source>
         <translation>Die TreeTran-Regeldatei kann nicht gefunden werden: {rulesFilePath}.</translation>
     </message>
     <message>

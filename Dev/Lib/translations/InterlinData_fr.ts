@@ -31,7 +31,7 @@
     <message>
         <location filename="../InterlinData.py" line="378"/>
         <source>Invalid characters in the affix: {myStr}. The following characters are not allowed: {chars}</source>
-        <translation>Caractères invalides dans l&apos;affixe : {myStr}. Les caractères suivants ne sont pas autorisés : {chars}</translation>
+        <translation>Caractères invalides dans l'affixe : {myStr}. Les caractères suivants ne sont pas autorisés : {chars}</translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="624"/>
@@ -50,8 +50,8 @@
     </message>
     <message>
         <location filename="../InterlinData.py" line="678"/>
-        <source>Couldn&apos;t find the sense for source headword: </source>
-        <translation>Impossible de trouver le sens pour l&apos;entrée principale source : </translation>
+        <source>Couldn't find the sense for source headword: </source>
+        <translation>Impossible de trouver le sens pour l'entrée principale source : </translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="691"/>

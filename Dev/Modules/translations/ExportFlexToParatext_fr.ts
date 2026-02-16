@@ -60,7 +60,7 @@ un numéro de chapitre ou une plage de numéros de chapitres.</translation>
     <message>
         <location filename="../ExportFlexToParatext.py" line="236"/>
         <source>There was a problem exporting {title} from the {proj} project to {exportProjectAbbrev}.</source>
-        <translation>Un problème est survenu lors de l&apos;exportation de {title} du projet {proj} vers {exportProjectAbbrev}.</translation>
+        <translation>Un problème est survenu lors de l'exportation de {title} du projet {proj} vers {exportProjectAbbrev}.</translation>
     </message>
     <message>
         <location filename="../ExportFlexToParatext.py" line="313"/>

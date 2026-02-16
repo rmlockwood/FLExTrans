@@ -36,7 +36,7 @@
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="130"/>
         <source>Otherwise we will just use the book abbreviation.</source>
-        <translation>Sinon, nous utiliserons simplement l&apos;abréviation du livre.</translation>
+        <translation>Sinon, nous utiliserons simplement l'abréviation du livre.</translation>
     </message>
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="131"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="138"/>
         <source>Include introduction (for chapter 1)</source>
-        <translation>Inclure l&apos;introduction (pour le chapitre 1)</translation>
+        <translation>Inclure l'introduction (pour le chapitre 1)</translation>
     </message>
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="139"/>
@@ -98,7 +98,7 @@ si JHN 01 existe déjà, il le supprimera et créera JHN 01 à nouveau.</transla
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="143"/>
         <source>Clicking any chapter of a book selects all chapters of the book</source>
-        <translation>Cliquer sur n&apos;importe quel chapitre d&apos;un livre sélectionne tous les chapitres du livre</translation>
+        <translation>Cliquer sur n'importe quel chapitre d'un livre sélectionne tous les chapitres du livre</translation>
     </message>
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="144"/>

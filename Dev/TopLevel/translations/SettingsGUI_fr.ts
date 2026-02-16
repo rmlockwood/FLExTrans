@@ -15,7 +15,7 @@
     <message>
         <location filename="../SettingsGUI.py" line="820"/>
         <source>View Mode</source>
-        <translation>Mode d&apos;affichage</translation>
+        <translation>Mode d'affichage</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="830"/>
@@ -82,7 +82,7 @@
     <message>
         <location filename="../SettingsGUI.py" line="1510"/>
         <source>Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-        <translation>Échec d&apos;ouverture du projet &apos;{projectName}&apos;. Cela peut être dû au fait que vous avez le projet ouvert et que vous n&apos;avez pas activé l&apos;option de partage dans l&apos;onglet Partage de la boîte de dialogue Propriétés du projet Fieldworks. Cela se trouve sous Fichier &gt; Gestion de projet &gt; Propriétés du projet Fieldworks dans le menu.</translation>
+        <translation>Échec d'ouverture du projet '{projectName}'. Cela peut être dû au fait que vous avez le projet ouvert et que vous n'avez pas activé l'option de partage dans l'onglet Partage de la boîte de dialogue Propriétés du projet Fieldworks. Cela se trouve sous Fichier &gt; Gestion de projet &gt; Propriétés du projet Fieldworks dans le menu.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1527"/>
@@ -113,7 +113,7 @@
         <location filename="../SettingsGUI.py" line="1602"/>
         <source>The name of the text (in the first analysis writing system)
 in the source FLEx project to be translated.</source>
-        <translation>Le nom du texte (dans le premier système d&apos;écriture d&apos;analyse)
+        <translation>Le nom du texte (dans le premier système d'écriture d'analyse)
 dans le projet FLEx source à traduire.</translation>
     </message>
     <message>
@@ -158,7 +158,7 @@ projet FLEx source. Il est possible de choisir de ne pas traduire les noms propr
     <message>
         <location filename="../SettingsGUI.py" line="1614"/>
         <source>Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
-        <translation>Ne pas afficher d&apos;avertissements pour les mots en majuscules (noms propres) non analysés. Sauf au début d&apos;une phrase.</translation>
+        <translation>Ne pas afficher d'avertissements pour les mots en majuscules (noms propres) non analysés. Sauf au début d'une phrase.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1616"/>
@@ -169,19 +169,19 @@ projet FLEx source. Il est possible de choisir de ne pas traduire les noms propr
         <location filename="../SettingsGUI.py" line="1617"/>
         <source>Indicates if the system should avoid regenerating data that hasn't changed.
 Use the CleanFiles module to force the regeneration of data.</source>
-        <translation>Indique si le système doit éviter de régénérer les données qui n&apos;ont pas changé.
+        <translation>Indique si le système doit éviter de régénérer les données qui n'ont pas changé.
 Utilisez le module CleanFiles pour forcer la régénération des données.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1619"/>
         <source>Use composed characters in editing?</source>
-        <translation>Utiliser des caractères composés lors de l&apos;édition ?</translation>
+        <translation>Utiliser des caractères composés lors de l'édition ?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1620"/>
         <source>When editing the transfer rules file or the testbed, if Yes, characters with 
 diacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).</source>
-        <translation>Lors de l&apos;édition du fichier de règles de transfert ou du banc d&apos;essai, si Oui, les caractères avec
+        <translation>Lors de l'édition du fichier de règles de transfert ou du banc d'essai, si Oui, les caractères avec
 des signes diacritiques seront composés (NFC) en caractères uniques (si possible). Si Non, les caractères seront décomposés (NFD).</translation>
     </message>
     <message>
@@ -194,7 +194,7 @@ des signes diacritiques seront composés (NFC) en caractères uniques (si possib
         <source>A list of punctuation that ends a sentence.
 In transfer rules you can check for the end of a sentence.</source>
         <translation>Une liste de ponctuation qui termine une phrase.
-Dans les règles de transfert, vous pouvez vérifier la fin d&apos;une phrase.</translation>
+Dans les règles de transfert, vous pouvez vérifier la fin d'une phrase.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1626"/>
@@ -206,7 +206,7 @@ Dans les règles de transfert, vous pouvez vérifier la fin d&apos;une phrase.</
         <source>Morpheme types in the source FLEx project that are to be considered
 as some kind of root. In other words, non-affixes and non-clitics.</source>
         <translation>Types de morphèmes dans le projet FLEx source qui doivent être considérés
-comme une sorte de racine. En d&apos;autres termes, non-affixes et non-clitiques.</translation>
+comme une sorte de racine. En d'autres termes, non-affixes et non-clitiques.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1629"/>
@@ -218,7 +218,7 @@ comme une sorte de racine. En d&apos;autres termes, non-affixes et non-clitiques
         <source>Morpheme types in the target FLEx project that are to be considered
 as some kind of root. In other words, non-affixes and non-clitics.</source>
         <translation>Types de morphèmes dans le projet FLEx cible qui doivent être considérés
-comme une sorte de racine. En d&apos;autres termes, non-affixes et non-clitiques.</translation>
+comme une sorte de racine. En d'autres termes, non-affixes et non-clitiques.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1633"/>
@@ -228,7 +228,7 @@ comme une sorte de racine. En d&apos;autres termes, non-affixes et non-clitiques
     <message>
         <location filename="../SettingsGUI.py" line="1634"/>
         <source>In the production mode module 'Translate Text', where do you want the drafted text to go?</source>
-        <translation>Dans le module de mode de production &apos;Traduire le texte&apos;, où voulez-vous que le texte brouillon aille ?</translation>
+        <translation>Dans le module de mode de production 'Traduire le texte', où voulez-vous que le texte brouillon aille ?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1638"/>
@@ -249,7 +249,7 @@ These types, when occurring in the text file to be synthesized,
 will be broken down into their constituent entries. Use this property
 for the types that have inflection on the first element of the complex form.</source>
         <translation>Un ou plusieurs types complexes du projet FLEx source.
-Ces types, lorsqu&apos;ils apparaissent dans le fichier texte à synthétiser,
+Ces types, lorsqu'ils apparaissent dans le fichier texte à synthétiser,
 seront décomposés en leurs entrées constitutives. Utilisez cette propriété
 pour les types qui ont une inflexion sur le premier élément de la forme complexe.</translation>
     </message>
@@ -332,7 +332,7 @@ bilingue après la liaison des sens ?</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1665"/>
         <source>In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.</source>
-        <translation>Dans l&apos;outil de liaison de sens, cochez par défaut la case pour reconstruire le lexique bilingue.</translation>
+        <translation>Dans l'outil de liaison de sens, cochez par défaut la case pour reconstruire le lexique bilingue.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1667"/>
@@ -342,7 +342,7 @@ bilingue après la liaison des sens ?</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1668"/>
         <source>In the Sense Linker tool by default check the checkbox for filtering on all fields.</source>
-        <translation>Dans l&apos;outil de liaison de sens, cochez par défaut la case pour filtrer sur tous les champs.</translation>
+        <translation>Dans l'outil de liaison de sens, cochez par défaut la case pour filtrer sur tous les champs.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1672"/>
@@ -382,7 +382,7 @@ bilingue après la liaison des sens ?</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1684"/>
         <source>Category Abbreviation Pairs</source>
-        <translation>Paires d&apos;abréviations de catégories</translation>
+        <translation>Paires d'abréviations de catégories</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1685"/>
@@ -423,7 +423,7 @@ le texte source extrait.</translation>
         <location filename="../SettingsGUI.py" line="1694"/>
         <source>The path and name of the file which holds replacement
 entry pairs for the bilingual lexicon.</source>
-        <translation>Le chemin et le nom du fichier qui contient des paires d&apos;entrées de remplacement
+        <translation>Le chemin et le nom du fichier qui contient des paires d'entrées de remplacement
 pour le lexique bilingue.</translation>
     </message>
     <message>
@@ -453,8 +453,8 @@ après avoir subi le processus de transfert.</translation>
         <source>Use the HermitCrab phonological synthesizer. This applies if you have
 HermitCrab parsing set up for your target project. You also need to have the
 Synthesize Text with HermitCrab module in your AllSteps collection.</source>
-        <translation>Utilisez le synthétiseur phonologique HermitCrab. Cela s&apos;applique si vous avez
-configuré l&apos;analyse HermitCrab pour votre projet cible. Vous devez également avoir le
+        <translation>Utilisez le synthétiseur phonologique HermitCrab. Cela s'applique si vous avez
+configuré l'analyse HermitCrab pour votre projet cible. Vous devez également avoir le
 module Synthétiser le texte avec HermitCrab dans votre collection AllSteps.</translation>
     </message>
     <message>
@@ -501,7 +501,7 @@ le texte intermédiaire au format STAMP.</translation>
         <source>The path and name of the HermitCrab master file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Le chemin et le nom du fichier maître HermitCrab.
-Ceci n&apos;est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
+Ceci n'est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1719"/>
@@ -513,19 +513,19 @@ Ceci n&apos;est nécessaire que si vous utilisez la synthèse HermitCrab.</trans
         <source>The path and name of the HermitCrab configuration file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Le chemin et le nom du fichier de configuration HermitCrab.
-Ceci n&apos;est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
+Ceci n'est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1722"/>
         <source>HermitCrab Parses File</source>
-        <translation>Fichier d&apos;analyses HermitCrab</translation>
+        <translation>Fichier d'analyses HermitCrab</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1723"/>
         <source>The path and name of the HermitCrab parses file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
-        <translation>Le chemin et le nom du fichier d&apos;analyses HermitCrab.
-Ceci n&apos;est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
+        <translation>Le chemin et le nom du fichier d'analyses HermitCrab.
+Ceci n'est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1725"/>
@@ -537,7 +537,7 @@ Ceci n&apos;est nécessaire que si vous utilisez la synthèse HermitCrab.</trans
         <source>The path and name of the HermitCrab surface forms file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Le chemin et le nom du fichier des formes de surface HermitCrab.
-Ceci n&apos;est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
+Ceci n'est nécessaire que si vous utilisez la synthèse HermitCrab.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1728"/>
@@ -554,13 +554,13 @@ le fichier synthétisé intermédiaire.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1731"/>
         <source>Target Affix Gloss List File</source>
-        <translation>Fichier de liste des gloses d&apos;affixes cibles</translation>
+        <translation>Fichier de liste des gloses d'affixes cibles</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1732"/>
         <source>The ancillary file that hold a list of affix
 glosses from the target FLEx project.</source>
-        <translation>Le fichier auxiliaire qui contient une liste de gloses d&apos;affixes
+        <translation>Le fichier auxiliaire qui contient une liste de gloses d'affixes
 du projet FLEx cible.</translation>
     </message>
     <message>
@@ -576,35 +576,35 @@ du projet FLEx cible.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1737"/>
         <source>Text In Rules File</source>
-        <translation>Fichier de règles d&apos;entrée de texte</translation>
+        <translation>Fichier de règles d'entrée de texte</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1738"/>
         <source>The file that holds the search/replace rules to fix up the Paratext import text.</source>
-        <translation>Le fichier qui contient les règles de recherche/remplacement pour corriger le texte d&apos;importation Paratext.</translation>
+        <translation>Le fichier qui contient les règles de recherche/remplacement pour corriger le texte d'importation Paratext.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1740"/>
         <source>Target Custom Field for Entry-level XAMPLE Properties</source>
-        <translation>Champ personnalisé cible pour les propriétés XAMPLE au niveau de l&apos;entrée</translation>
+        <translation>Champ personnalisé cible pour les propriétés XAMPLE au niveau de l'entrée</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1741"/>
         <source>The name of the entry-level custom field in the target FLEx project that
 holds a property value. Used with custom STAMP tests.</source>
-        <translation>Le nom du champ personnalisé au niveau de l&apos;entrée dans le projet FLEx cible qui
+        <translation>Le nom du champ personnalisé au niveau de l'entrée dans le projet FLEx cible qui
 contient une valeur de propriété. Utilisé avec des tests STAMP personnalisés.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1743"/>
         <source>Target Custom Field for Allomorph-level XAMPLE Properties</source>
-        <translation>Champ personnalisé cible pour les propriétés XAMPLE au niveau de l&apos;allomorphe</translation>
+        <translation>Champ personnalisé cible pour les propriétés XAMPLE au niveau de l'allomorphe</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1744"/>
         <source>The name of the allomorph-level custom field in the target FLEx project that
 holds a property value. Used with custom STAMP tests.</source>
-        <translation>Le nom du champ personnalisé au niveau de l&apos;allomorphe dans le projet FLEx cible qui
+        <translation>Le nom du champ personnalisé au niveau de l'allomorphe dans le projet FLEx cible qui
 contient une valeur de propriété. Utilisé avec des tests STAMP personnalisés.</translation>
     </message>
     <message>
@@ -620,7 +620,7 @@ contient une valeur de propriété. Utilisé avec des tests STAMP personnalisés
     <message>
         <location filename="../SettingsGUI.py" line="1751"/>
         <source>One or more grammatical categories. The synthesis test will be limited to using only these categories.</source>
-        <translation>Une ou plusieurs catégories grammaticales. Le test de synthèse sera limité à l&apos;utilisation de ces catégories uniquement.</translation>
+        <translation>Une ou plusieurs catégories grammaticales. Le test de synthèse sera limité à l'utilisation de ces catégories uniquement.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1753"/>
@@ -653,8 +653,8 @@ Les radicaux choisis peuvent sembler aléatoires.</translation>
         <location filename="../SettingsGUI.py" line="1760"/>
         <source>The path and name of the file for the generated parse forms in human readable
 form, with glosses of roots and affixes.</source>
-        <translation>Le chemin et le nom du fichier pour les formes d&apos;analyse générées sous forme lisible par l&apos;humain,
-avec des gloses de racines et d&apos;affixes.</translation>
+        <translation>Le chemin et le nom du fichier pour les formes d'analyse générées sous forme lisible par l'humain,
+avec des gloses de racines et d'affixes.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1762"/>
@@ -665,7 +665,7 @@ avec des gloses de racines et d&apos;affixes.</translation>
         <location filename="../SettingsGUI.py" line="1763"/>
         <source>The path and name of the file for the generated parse forms in SIGMORPHON
 format, with no roots, and affixes separated by semicolons.</source>
-        <translation>Le chemin et le nom du fichier pour les formes d&apos;analyse générées au format SIGMORPHON,
+        <translation>Le chemin et le nom du fichier pour les formes d'analyse générées au format SIGMORPHON,
 sans racines, et les affixes séparés par des points-virgules.</translation>
     </message>
     <message>
@@ -683,32 +683,32 @@ du test de synthèse.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1770"/>
         <source>Testbed Settings</source>
-        <translation>Paramètres du banc d&apos;essai</translation>
+        <translation>Paramètres du banc d'essai</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1773"/>
         <source>Testbed File</source>
-        <translation>Fichier du banc d&apos;essai</translation>
+        <translation>Fichier du banc d'essai</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1774"/>
         <source>The path and name of the testbed file.</source>
-        <translation>Le chemin et le nom du fichier du banc d&apos;essai.</translation>
+        <translation>Le chemin et le nom du fichier du banc d'essai.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1776"/>
         <source>Testbed Results Log File</source>
-        <translation>Fichier de log des résultats du banc d&apos;essai</translation>
+        <translation>Fichier de log des résultats du banc d'essai</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1777"/>
         <source>The path and name of the testbed results log file.</source>
-        <translation>Le chemin et le nom du fichier de log des résultats du banc d&apos;essai.</translation>
+        <translation>Le chemin et le nom du fichier de log des résultats du banc d'essai.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1781"/>
         <source>Import Settings</source>
-        <translation>Paramètres d&apos;importation</translation>
+        <translation>Paramètres d'importation</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1784"/>
@@ -730,12 +730,12 @@ Les fichiers .sfm ou .usfm doivent se trouver ici.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1792"/>
         <source>Rule Assistant Rule File</source>
-        <translation>Fichier de règles de l&apos;assistant de règles</translation>
+        <translation>Fichier de règles de l'assistant de règles</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1793"/>
         <source>The path and name of the rule assistant rule definition file.</source>
-        <translation>Le chemin et le nom du fichier de définition des règles de l&apos;assistant de règles.</translation>
+        <translation>Le chemin et le nom du fichier de définition des règles de l'assistant de règles.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1797"/>
@@ -782,7 +782,7 @@ le texte extrait dans la langue source.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1813"/>
         <source>One or more grammatical categories. sentence generation word replacement in head word will be limited to using only these categories.</source>
-        <translation>Une ou plusieurs catégories grammaticales. Le remplacement de mots de génération de phrases dans le mot principal sera limité à l&apos;utilisation de ces catégories uniquement.</translation>
+        <translation>Une ou plusieurs catégories grammaticales. Le remplacement de mots de génération de phrases dans le mot principal sera limité à l'utilisation de ces catégories uniquement.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1818"/>
@@ -807,7 +807,7 @@ le texte extrait dans la langue source.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1825"/>
         <source>One or more grammatical categories. sentence generation word replacement in dependent word will be limited to using only these categories.</source>
-        <translation>Une ou plusieurs catégories grammaticales. Le remplacement de mots de génération de phrases dans le mot dépendant sera limité à l&apos;utilisation de ces catégories uniquement.</translation>
+        <translation>Une ou plusieurs catégories grammaticales. Le remplacement de mots de génération de phrases dans le mot dépendant sera limité à l'utilisation de ces catégories uniquement.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1827"/>
@@ -832,7 +832,7 @@ le texte extrait dans la langue source.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1834"/>
         <source>One or more grammatical categories. sentence generation word replacement in second dependent word will be limited to using only these categories.</source>
-        <translation>Une ou plusieurs catégories grammaticales. Le remplacement de mots de génération de phrases dans le deuxième mot dépendant sera limité à l&apos;utilisation de ces catégories uniquement.</translation>
+        <translation>Une ou plusieurs catégories grammaticales. Le remplacement de mots de génération de phrases dans le deuxième mot dépendant sera limité à l'utilisation de ces catégories uniquement.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1836"/>
@@ -899,12 +899,12 @@ mots qui peuvent être insérés avec une règle TreeTran.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1863"/>
         <source>Send usage statistics to FLExTrans developers</source>
-        <translation>Envoyer des statistiques d&apos;utilisation aux développeurs de FLExTrans</translation>
+        <translation>Envoyer des statistiques d'utilisation aux développeurs de FLExTrans</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1864"/>
         <source>No personally identifiable information is sent. These anonymous statistics will help with future development.</source>
-        <translation>Aucune information personnellement identifiable n&apos;est envoyée. Ces statistiques anonymes aideront au développement futur.</translation>
+        <translation>Aucune information personnellement identifiable n'est envoyée. Ces statistiques anonymes aideront au développement futur.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1866"/>
@@ -914,17 +914,17 @@ mots qui peuvent être insérés avec une règle TreeTran.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1867"/>
         <source>The (probably) unique ID for this project which gets logged to Mixpanel.</source>
-        <translation>L&apos;ID (probablement) unique pour ce projet qui est enregistré dans Mixpanel.</translation>
+        <translation>L'ID (probablement) unique pour ce projet qui est enregistré dans Mixpanel.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1869"/>
         <source>Usage Statistics Opt Out Question Asked</source>
-        <translation>Question de refus des statistiques d&apos;utilisation posée</translation>
+        <translation>Question de refus des statistiques d'utilisation posée</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1870"/>
         <source>Opt out of sending usage statistics.</source>
-        <translation>Refuser l&apos;envoi de statistiques d&apos;utilisation.</translation>
+        <translation>Refuser l'envoi de statistiques d'utilisation.</translation>
     </message>
 </context>
 </TS>

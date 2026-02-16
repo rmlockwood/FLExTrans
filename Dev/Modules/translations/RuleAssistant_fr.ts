@@ -5,7 +5,7 @@
     <name>RuleAssistant</name>
     <message>
         <location filename="../RuleAssistant.py" line="102"/>
-        <source>This module runs a tool which let&apos;s you create transfer rules.</source>
+        <source>This module runs a tool which let's you create transfer rules.</source>
         <translation>Ce module exécute un outil qui vous permet de créer des règles de transfert.</translation>
     </message>
     <message>
@@ -25,8 +25,8 @@
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="359"/>
-        <source>The text named &apos;%s&apos; was not found.</source>
-        <translation>Le texte nommé &apos;%s&apos; n&apos;a pas été trouvé.</translation>
+        <source>The text named '%s' was not found.</source>
+        <translation>Le texte nommé '%s' n'a pas été trouvé.</translation>
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="379"/>
@@ -48,7 +48,7 @@
     <message>
         <location filename="../RuleAssistant.py" line="469"/>
         <source>An error happened when running the {ruleAssistant} tool: {error}</source>
-        <translation>Une erreur s&apos;est produite lors de l&apos;exécution de l&apos;outil {ruleAssistant} : {error}</translation>
+        <translation>Une erreur s'est produite lors de l'exécution de l'outil {ruleAssistant} : {error}</translation>
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="527"/>
