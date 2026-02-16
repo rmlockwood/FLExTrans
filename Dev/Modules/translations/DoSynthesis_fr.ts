@@ -6,12 +6,12 @@
     <message>
         <location filename="../DoSynthesis.py" line="70"/>
         <source>Synthesize Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Synthétiser le texte</translation>
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="73"/>
         <source>Synthesizes the target text with either STAMP or HermitCrab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Synthétise le texte cible avec STAMP ou HermitCrab.</translation>
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="75"/>
@@ -21,22 +21,27 @@ then the following information from the {hermitCrabModule} module applies: {herm
 
 If in the settings you select &apos;No&apos; for &apos;Use HermitCrab synthesis?&apos;,
 then the following information from the {stampModule} module applies: {stampDescription}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce module synthétise le texte cible. Si dans les paramètres vous sélectionnez &apos;Oui&apos; pour &apos;Utiliser la synthèse HermitCrab ?&apos;,
+alors les informations suivantes du module {hermitCrabModule} s'appliquent : {hermitCrabDescription}
+
+
+Si dans les paramètres vous sélectionnez &apos;Non&apos; pour &apos;Utiliser la synthèse HermitCrab ?&apos;,
+alors les informations suivantes du module {stampModule} s'appliquent : {stampDescription}</translation>
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="102"/>
         <source>Failed to read the configuration file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de la lecture du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="112"/>
         <source>Using HermitCrab for synthesis.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisation de HermitCrab pour la synthèse.</translation>
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="118"/>
         <source>Using STAMP for synthesis.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisation de STAMP pour la synthèse.</translation>
     </message>
 </context>
 </TS>

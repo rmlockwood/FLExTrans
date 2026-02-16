@@ -462,7 +462,7 @@ the intermediary text in STAMP format.</source>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1703"/>
-        <source>Hermit Crab Master File</source>
+        <source>HermitCrab Master File</source>
         <translation>HermitCrab-Masterdatei</translation>
     </message>
     <message>
@@ -474,7 +474,7 @@ Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translat
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1706"/>
-        <source>Hermit Crab Configuration File</source>
+        <source>HermitCrab Configuration File</source>
         <translation>HermitCrab-Konfigurationsdatei</translation>
     </message>
     <message>
@@ -486,7 +486,7 @@ Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translat
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1709"/>
-        <source>Hermit Crab Parses File</source>
+        <source>HermitCrab Parses File</source>
         <translation>HermitCrab-Parse-Datei</translation>
     </message>
     <message>
@@ -498,7 +498,7 @@ Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translat
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1712"/>
-        <source>Hermit Crab Surface Forms File</source>
+        <source>HermitCrab Surface Forms File</source>
         <translation>HermitCrab-Oberflächenformen-Datei</translation>
     </message>
     <message>

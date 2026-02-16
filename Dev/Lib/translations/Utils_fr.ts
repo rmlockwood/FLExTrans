@@ -6,87 +6,87 @@
     <message>
         <location filename="../Utils.py" line="331"/>
         <source>space</source>
-        <translation type="unfinished"></translation>
+        <translation>espace</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="331"/>
         <source>converted to an underscore</source>
-        <translation type="unfinished"></translation>
+        <translation>converti en trait de soulignement</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="332"/>
         <source>period</source>
-        <translation type="unfinished"></translation>
+        <translation>point</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="332"/>
         <source>removed</source>
-        <translation type="unfinished"></translation>
+        <translation>supprimé</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="398"/>
         <source> - Copy</source>
-        <translation type="unfinished"></translation>
+        <translation> - Copie</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="427"/>
         <source>Could not open the file {myFile} when converting to NFD.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;ouvrir le fichier {myFile} lors de la conversion en NFD.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="606"/>
         <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Une erreur s&apos;est produite lors de l&apos;ouverture du projet : {DBname}. Peut-être que le projet est ouvert et que l&apos;option de partage dans les Propriétés du projet Fieldworks n&apos;a pas été cliquée.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="623"/>
         <source>The target project does not exist. Please check the configuration file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le projet cible n&apos;existe pas. Veuillez vérifier le fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="630"/>
         <source>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Une erreur s&apos;est produite lors de l&apos;ouverture du projet cible : {targetProj}. Peut-être que le projet est ouvert et que l&apos;option de partage dans les Propriétés du projet Fieldworks n&apos;a pas été cliquée.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="657"/>
         <source>source</source>
-        <translation type="unfinished"></translation>
+        <translation>source</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="662"/>
         <source>target</source>
-        <translation type="unfinished"></translation>
+        <translation>cible</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="727"/>
         <source>category</source>
-        <translation type="unfinished"></translation>
+        <translation>catégorie</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="746"/>
         <source>The abbreviation/name: &apos;{posAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; can&apos;t have a {charName} in it. Could not complete, &apos;+                                            &apos;please correct this {myType} in the {dbType} project.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;abréviation/nom : &apos;{posAbbrStr}&apos; pour {myType} : &apos;{posFullNameStr}&apos; ne peut pas contenir de {charName}. Impossible de terminer, veuillez corriger ce {myType} dans le projet {dbType}.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="762"/>
         <source>The abbreviation/name: &apos;{oldAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; in the {dbType} project can&apos;t have a {charName} in it. The {charName} &apos;+                                              &apos;has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;abréviation/nom : &apos;{oldAbbrStr}&apos; pour {myType} : &apos;{posFullNameStr}&apos; dans le projet {dbType} ne peut pas contenir de {charName}. Le {charName} a été {message}, formant {posAbbrStr}. Gardez cela à l&apos;esprit lors de la référence à ce {myType} dans les règles de transfert.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="770"/>
         <source>Suppressing further warnings of this type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Suppression des avertissements supplémentaires de ce type.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="920"/>
         <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lien URL invalide ou URL introuvable dans le projet cible lors du traitement de l&apos;entrée principale source : {headWord}.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="1034"/>
         <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</source>
-        <translation type="unfinished"></translation>
+        <translation>lié à l&apos;entrée : {headWordStr}, sens : {glossStr} dans le projet {projectName}.</translation>
     </message>
 </context>
 </TS>

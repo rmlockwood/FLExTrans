@@ -6,67 +6,67 @@
     <message>
         <location filename="../TestbedLogViewer.py" line="91"/>
         <source>Testbed Log Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Visionneuse du journal du banc d&apos;essai</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="94"/>
         <source>View testbed run results.</source>
-        <translation type="unfinished"></translation>
+        <translation>Voir les résultats d&apos;exécution du banc d&apos;essai.</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="96"/>
         <source>View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Voir les résultats d&apos;exécution du banc d&apos;essai. Le nombre de résultats à afficher est défini par défaut à 25. Modifiez MAX_RESULTS_TO_DISPLAY à une valeur différente si nécessaire.</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="136"/>
         <source>{total} Tests, {failed} Failed, {invalid} Invalid</source>
-        <translation type="unfinished"></translation>
+        <translation>{total} Tests, {failed} Échoués, {invalid} Invalides</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="169"/>
         <source>Column Count Not Specified!!</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de colonnes non spécifié !!</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="172"/>
         <source>Data gather method not implemented!</source>
-        <translation type="unfinished"></translation>
+        <translation>Méthode de collecte de données non implémentée !</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="195"/>
         <source>Source Lexical Unit(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Unité(s) lexicale(s) source</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="197"/>
         <source>Expected Result</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultat attendu</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="199"/>
         <source>Actual Result</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultat réel</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="221"/>
         <source>Date format error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de format de date.</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="240"/>
         <source>Test completed in 1 minute and {seconds} seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Test terminé en 1 minute et {seconds} secondes</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="242"/>
         <source>Test completed in {minutes} minute and {seconds} seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Test terminé en {minutes} minutes et {seconds} secondes</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="644"/>
         <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichier du banc d&apos;essai : {testbedPath} n&apos;existe pas. Veuillez ajouter des tests au banc d&apos;essai.</translation>
     </message>
 </context>
 </TS>

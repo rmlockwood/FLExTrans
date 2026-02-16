@@ -1713,16 +1713,16 @@ widgetList = [
    [_translate("SettingsGUI", "Target Output ANA File"), "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
     _translate("SettingsGUI", "The path and name of the file holding\nthe intermediary text in STAMP format."), GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Hermit Crab Master File"), "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
+   [_translate("SettingsGUI", "HermitCrab Master File"), "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
     _translate("SettingsGUI", "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Hermit Crab Configuration File"), "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
+   [_translate("SettingsGUI", "HermitCrab Configuration File"), "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
     _translate("SettingsGUI", "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Hermit Crab Parses File"), "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
+   [_translate("SettingsGUI", "HermitCrab Parses File"), "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
     _translate("SettingsGUI", "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Hermit Crab Surface Forms File"), "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
+   [_translate("SettingsGUI", "HermitCrab Surface Forms File"), "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
     _translate("SettingsGUI", "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Target Output Synthesis File"), "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\

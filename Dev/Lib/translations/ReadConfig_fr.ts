@@ -6,32 +6,32 @@
     <message>
         <location filename="../ReadConfig.py" line="193"/>
         <source>Error reading the file: &quot;{path}/{file}&quot;. Check that it exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de lecture du fichier : &quot;{path}/{file}&quot;. Vérifiez qu&apos;il existe.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="230"/>
         <source>Setting: &quot;{setting}&quot; not found in the configuration file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètre : &quot;{setting}&quot; non trouvé dans le fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="269"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line without &quot;=&quot; was found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Problème de lecture du fichier : &quot;{file}&quot;. Une ligne sans &quot;=&quot; a été trouvée.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="279"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line with more than one &quot;=&quot; was found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Problème de lecture du fichier : &quot;{file}&quot;. Une ligne avec plus d&apos;un &quot;=&quot; a été trouvée.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="303"/>
         <source>Error in the file: &quot;{file}&quot;. A value for &quot;{key}&quot; was not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur dans le fichier : &quot;{file}&quot;. Une valeur pour &quot;{key}&quot; n&apos;a pas été trouvée.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="329"/>
         <source>Error in the file: &quot;{file}&quot;. The value for &quot;{key}&quot; is supposed to be a comma separated list. For a single value, end it with a comma.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur dans le fichier : &quot;{file}&quot;. La valeur pour &quot;{key}&quot; est censée être une liste séparée par des virgules. Pour une valeur unique, terminez-la par une virgule.</translation>
     </message>
 </context>
 </TS>

@@ -6,12 +6,12 @@
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="99"/>
         <source>Set Up Transfer Rule Categories and Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurer les catégories et attributs de règles de transfert</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="102"/>
         <source>Set up the transfer rule file with categories and attributes from source and target FLEx projects.</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurer le fichier de règles de transfert avec les catégories et attributs des projets FLEx source et cible.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="104"/>
@@ -25,42 +25,51 @@ grammatical categories from the source FLEx project. This module will also creat
 attributes in the transfer rule file from FLEx inflection features, inflection classes
 and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce module parcourt d&apos;abord les projets FLEx source et cible et extrait
+les listes de catégories grammaticales. Il remplacera ce qui est actuellement listé pour les
+balises de l'attribut a_gram_cat avec les listes extraites. Les catégories en double
+seront supprimées. De plus, les conventions de nommage seront suivies comme dans le lexique
+bilingue. C'est-à-dire que les espaces sont convertis en traits de soulignement, les points et barres obliques sont supprimés.
+Ce module remplira également la section des catégories du fichier de règles de transfert avec
+les catégories grammaticales du projet FLEx source. Ce module créera également des
+attributs dans le fichier de règles de transfert à partir des caractéristiques d'inflexion FLEx, des classes d'inflexion
+et des emplacements de modèle. Vous pouvez décider lesquels sont utilisés et si les attributs existants
+doivent être écrasés.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="532"/>
         <source>There was a problem finding the transfer rules file. Check your configuration.</source>
-        <translation type="unfinished"></translation>
+        <translation>Il y a eu un problème pour trouver le fichier de règles de transfert. Vérifiez votre configuration.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="544"/>
         <source>The transfer rules file is malformed or not valid XML.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le fichier de règles de transfert est mal formé ou n&apos;est pas un XML valide.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="554"/>
         <source>The transfer rules file is missing required sections.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le fichier de règles de transfert manque des sections requises.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="589"/>
         <source>There was a problem writing the transfer rules file: {error}</source>
-        <translation type="unfinished"></translation>
+        <translation>Il y a eu un problème lors de l&apos;écriture du fichier de règles de transfert : {error}</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="592"/>
         <source>{attrCount} attributes added to the attributes section.</source>
-        <translation type="unfinished"></translation>
+        <translation>{attrCount} attributs ajoutés à la section des attributs.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="593"/>
         <source>{num} categories created for the a_gram_cat attribute.</source>
-        <translation type="unfinished"></translation>
+        <translation>{num} catégories créées pour l&apos;attribut a_gram_cat.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="594"/>
         <source>{catCount} categories added to the categories section.</source>
-        <translation type="unfinished"></translation>
+        <translation>{catCount} catégories ajoutées à la section des catégories.</translation>
     </message>
 </context>
 </TS>

@@ -6,22 +6,22 @@
     <message>
         <location filename="../TestbedLog.py" line="76"/>
         <source>Testbed Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Journal du banc d&apos;essai</translation>
     </message>
     <message>
         <location filename="../TestbedLog.py" line="77"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../TestbedLog.py" line="78"/>
         <source>Edit Testbed</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifier le banc d&apos;essai</translation>
     </message>
     <message>
         <location filename="../TestbedLog.py" line="79"/>
         <source>Font Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille de police :</translation>
     </message>
 </context>
 </TS>

@@ -6,52 +6,52 @@
     <message>
         <location filename="../NewEntryDlg.py" line="92"/>
         <source>Target FLEx project name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom du projet FLEx cible</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="93"/>
         <source>Lexeme Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Forme de lexème</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="292"/>
         <source>Error Check</source>
-        <translation type="unfinished"></translation>
+        <translation>Vérification d&apos;erreur</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="217"/>
         <source>You must enter a Gloss.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous devez entrer une glose.</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="238"/>
         <source>Cluster Project Selection Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de sélection de projet de cluster</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="238"/>
         <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous devez au moins sélectionner le projet cible par défaut, {proj}, parmi vos projets de cluster.</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="251"/>
         <source>You must enter all the Lexeme Forms.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous devez entrer toutes les formes de lexème.</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="271"/>
         <source>Not Found Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur non trouvée</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="271"/>
         <source>Failed to open the project: {proj}</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de l&apos;ouverture du projet : {proj}</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="292"/>
         <source>You must enter a Lexeme Form.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous devez entrer une forme de lexème.</translation>
     </message>
 </context>
 </TS>
