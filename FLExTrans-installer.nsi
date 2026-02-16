@@ -140,11 +140,11 @@ LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
 LangString Clusters       ${LANG_SPANISH} "Racimos"
 
 # French
-LangString Drafting       ${LANG_SPANISH} "Rédaction"
-LangString Run_Testbed    ${LANG_SPANISH} "Lancer le banc d'essai"
-LangString Tools          ${LANG_SPANISH} "Outils"
-LangString Synthesis_Test ${LANG_SPANISH} "Test de synthèse"
-LangString Clusters       ${LANG_SPANISH} "Grappes"
+LangString Drafting       ${LANG_FRENCH} "Rédaction"
+LangString Run_Testbed    ${LANG_FRENCH} "Lancer le banc d`essai"
+LangString Tools          ${LANG_FRENCH} "Outils"
+LangString Synthesis_Test ${LANG_FRENCH} "Test de synthèse"
+LangString Clusters       ${LANG_FRENCH} "Grappes"
 
 Section "MainSection" SEC01
   InitPluginsDir
@@ -470,6 +470,7 @@ associate_extension:
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   File "${GIT_FOLDER}\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
   File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
+  File "${GIT_FOLDER}\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip"
   
   # Install the English one first
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
