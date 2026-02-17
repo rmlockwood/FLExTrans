@@ -15,9 +15,9 @@
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="97"/>
-        <source>This module will display a more readable view of the Apertium source or target
-file. The lexical units are color coded as follows: black-lemma, blue-grammatical
-category, green-affix or feature or class, yellow-non-sentence punctuation,
+        <source>This module will display a more readable view of the Apertium source or target 
+file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
+category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.</source>
         <translation>Ce module affichera une vue plus lisible du fichier Apertium source ou cible.

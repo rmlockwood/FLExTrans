@@ -15,7 +15,7 @@
     </message>
     <message>
         <location filename="../TextOutRules.py" line="86"/>
-        <source>This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of
+        <source>This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired.</source>
         <translation>Ce module est utilisé pour définir et tester un ensemble d'opérations de recherche et remplacement à utiliser pour corriger le texte qui sort de
 la synthèse. Les expressions régulières peuvent être utilisées si désiré.</translation>

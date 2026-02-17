@@ -14,7 +14,7 @@
     </message>
     <message>
         <location filename="../LinkAllSensesAsDup.py" line="79"/>
-        <source>This module will link all senses to the same ID in the target. CAUTION: This will
+        <source>This module will link all senses to the same ID in the target. CAUTION: This will 
 overwrite all senses in the source project!
 This assumes the target project was copied from the source and all the senses have the same
 unique identifier (guid).</source>

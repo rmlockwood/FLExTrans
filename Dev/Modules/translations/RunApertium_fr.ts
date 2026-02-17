@@ -5,7 +5,7 @@
     <name>RunApertium</name>
     <message>
         <location filename="../RunApertium.py" line="95"/>
-        <source>This module executes lexical transfer based on links from source to target sense
+        <source>This module executes lexical transfer based on links from source to target sense 
 you have established and then executes structural transfer which
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 The results of this module are found in the file you specified in the Target Transfer Results File.

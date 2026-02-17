@@ -15,11 +15,11 @@
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="184"/>
-        <source>This module asks you which Paratext project, which book and which chapters should be
+        <source>This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
-Paratext. Those chapters are gathered and inserted into the current FLEx project as a
-new text. If you want to include various things, click the appropriate check box.
-If you want to use the full name of the book in the text name, instead of the abbreviation, click the check box.
+Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
+new text. If you want to include various things, click the appropriate check box. 
+If you want to use the full name of the book in the text name, instead of the abbreviation, click the check box. 
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
 cluster projects in the main FLExTrans Settings, then come back to this module.</source>

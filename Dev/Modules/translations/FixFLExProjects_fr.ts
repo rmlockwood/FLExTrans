@@ -15,7 +15,7 @@
     </message>
     <message>
         <location filename="../FixFLExProjects.py" line="80"/>
-        <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx.
+        <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.</source>
         <translation>Exécuter l'utilitaire Rechercher et corriger sur les projets FLEx que vous choisissez. C'est le même utilitaire qui est disponible dans FLEx.

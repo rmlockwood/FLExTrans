@@ -19,7 +19,7 @@
 file is placed in the Output folder which is then used by the {extractSourceTextModule}
 module to modify the word order of the sentence according to the TreeTran rules
 file. The TreeTran Rules file is in the Output folder also. This module assumes
-that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%).
+that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
 button is used. </source>
         <translation>Ce module exécutera le programme TreeTran pour modifier un arbre syntaxique. Le fichier

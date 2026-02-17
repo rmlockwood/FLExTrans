@@ -15,7 +15,7 @@
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="101"/>
-        <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target project.
+        <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.

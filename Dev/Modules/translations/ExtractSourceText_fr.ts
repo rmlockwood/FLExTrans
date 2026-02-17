@@ -15,15 +15,15 @@
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="100"/>
-        <source>This module will use the Source Text Name set in the Settings. It will first check
+        <source>This module will use the Source Text Name set in the Settings. It will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
 fully analyzed you will get warnings.
 Next, this module will go through each bundle in the interlinear text and export
 information in the format that Apertium needs. The general idea is that
 affixes and clitics will be exported as &lt;gloss&gt; and root/stems will be exported
-as head_word&lt;pos&gt;&lt;feat1&gt;...&lt;featN&gt;&lt;class1&gt;...&lt;classN&gt;. Where feat1 to featN are one or more
-inflection features that may be present for the root/stem
+as head_word&lt;pos&gt;&lt;feat1&gt;...&lt;featN&gt;&lt;class1&gt;...&lt;classN&gt;. Where feat1 to featN are one or more 
+inflection features that may be present for the root/stem 
 and class1 to classN are inflection classes that may be present on the stem.
 The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
 This is typically called source_text-aper.txt and is usually in the Build folder.</source>

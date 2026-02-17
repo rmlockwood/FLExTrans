@@ -17,7 +17,7 @@
         <source>The target project specified in the settings will be used. This module will take
 the results of the {doSynthModule} module
 and insert the text into the target FLEx project. The Source Text Name setting
-will be used for the text name in the target project. An existing text of the
+will be used for the text name in the target project. An existing text of the 
 same name will not be overwritten. A copy will be created.</source>
         <translation>Le projet cible spécifié dans les paramètres sera utilisé. Ce module prendra
 les résultats du module {doSynthModule}
