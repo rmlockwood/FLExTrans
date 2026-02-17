@@ -1376,6 +1376,7 @@ class LocalizedDateTimeFormatter:
                 'de': QLocale(QLocale.German, QLocale.Germany),
                 'es': QLocale(QLocale.Spanish, QLocale.Spain),
                 'en': QLocale(QLocale.English, QLocale.UnitedStates),
+                'fr': QLocale(QLocale.French, QLocale.France),   
             }
             self.localeCache[langCode] = localeMap.get(langCode, QLocale())
         
