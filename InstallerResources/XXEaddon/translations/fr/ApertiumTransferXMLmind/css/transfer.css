@@ -44,7 +44,7 @@ and
 
 append:before
 {
-    content: " ajouter Ã  : "
+    content: " ajouter à : "
     text-field(attribute,n,background-color,def-var-background-color(),columns,25);
 }
 append
@@ -54,7 +54,7 @@ append
 }
 attr-item:before
 {
-    content:"Ã©tiquettes : ";
+    content:"étiquettes : ";
 } 
 attr-item[tags]
 {
@@ -75,7 +75,7 @@ b
 
 begins-with:before
 {
-    content: " commence par : "check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " commence par : "check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 begins-with
 {
@@ -85,7 +85,7 @@ begins-with
 
 begins-with-list:before
 {
-    content: " commence par quelque chose dans la liste : "check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " commence par quelque chose dans la liste : "check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 begins-with-list
 {
@@ -111,8 +111,8 @@ case-of:before
 case-of[side=sl]
 {
     display:block;
-    content: " Ã©lÃ©ment : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     "  cÃ´tÃ© : "  combo-box(attribute, side, 
+    content: " élément : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  côté : "  combo-box(attribute, side, 
                            color, #ff0000,
                            labels, "langue source\A langue cible", 
                            values, "sl\A tl")
@@ -122,8 +122,8 @@ case-of[side=sl]
 case-of
 {
     display:block;
-    content: " Ã©lÃ©ment : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     "  cÃ´tÃ© : "  combo-box(attribute, side, 
+    content: " élément : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  côté : "  combo-box(attribute, side, 
                            color, #ce901b,
                            labels, "langue source\A langue cible", 
                            values, "sl\A tl")
@@ -133,7 +133,7 @@ case-of
 
 cat-item:before
 {
-    content:"Ã©tiquettes : ";
+    content:"étiquettes : ";
 }
 cat-item[tags]
 {
@@ -178,8 +178,8 @@ clip:before
 clip[side=sl]
 {
     display:block;
-    content: " Ã©lÃ©ment : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     " cÃ´tÃ© : "  combo-box(attribute, side, 
+    content: " élément : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " côté : "  combo-box(attribute, side, 
                            color, #ff0000,
                            labels, "langue source\A langue cible", 
                            values, "sl\A tl")
@@ -191,8 +191,8 @@ clip[side=sl]
 clip
 {
     display:block;
-    content: " Ã©lÃ©ment : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     " cÃ´tÃ© : "  combo-box(attribute, side, 
+    content: " élément : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " côté : "  combo-box(attribute, side, 
                            color, #ce901b,
                            labels, "langue source\A langue cible", 
                            values, "sl\A tl")
@@ -213,7 +213,7 @@ concat
 
 contains-substring:before
 {
-    content: " contient sous-chaÃ®ne : " check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " contient sous-chaîne : " check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 contains-substring
 {
@@ -236,7 +236,7 @@ def-attr
 def-cat:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " catÃ©gorie : " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
+    " catégorie : " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
 }
 def-cat
 {
@@ -261,7 +261,7 @@ def-macro:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " macro : " text-field(attribute,n,background-color,def-macro-background-color(),columns,30)
-    " nombre d'Ã©lÃ©ments = " 
+    " nombre d'éléments = " 
     text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
 }
 def-macro
@@ -284,7 +284,7 @@ def-var
 
 ends-with:before
 {
-    content: " se termine par : "check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " se termine par : "check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 ends-with
 {
@@ -294,7 +294,7 @@ ends-with
 
 ends-with-list:before
 {
-    content: " se termine par quelque chose dans la liste : "check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " se termine par quelque chose dans la liste : "check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 ends-with-list
 {
@@ -304,7 +304,7 @@ ends-with-list
 
 equal:before
 {
-    content: " Ã©gal : " check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " égal : " check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 equal
 {
@@ -315,7 +315,7 @@ equal
 get-case-from:before
 {
     content: " obtenir la casse de " 
-    " Ã©lÃ©ment : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+    " élément : " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
 }
 get-case-from
 {
@@ -325,7 +325,7 @@ get-case-from
 
 in:before
 {
-    content: " dans la liste : " check-box(attribute, caseless, label, "insensible Ã  la casse", unchecked-value, "no", checked-value, "yes");
+    content: " dans la liste : " check-box(attribute, caseless, label, "insensible à la casse", unchecked-value, "no", checked-value, "yes");
 }
 in
 {
@@ -356,7 +356,7 @@ list
 
 list-item:before
 {
-    content:"Ã©lÃ©ment : ";
+    content:"élément : ";
 }
 list-item[v]
 {
@@ -367,7 +367,7 @@ list-item[v]
 
 lit:before
 {
-    content:" chaÃ®ne littÃ©rale : ";
+    content:" chaîne littérale : ";
 }
 lit
 {
@@ -378,7 +378,7 @@ lit
 
 lit-tag:before
 {
-    content:" Ã©tiquette littÃ©rale : ";
+    content:" étiquette littérale : ";
 }
 lit-tag
 {
@@ -389,7 +389,7 @@ lit-tag
 
 lu:before
 {
-    content: " unitÃ© lexicale : ";
+    content: " unité lexicale : ";
 }
 lu
 {
@@ -473,7 +473,7 @@ pattern
 
 pattern-item:before
 {
-    content:"Ã©lÃ©ment : ";
+    content:"élément : ";
 }
 pattern-item
 {
@@ -485,7 +485,7 @@ pattern-item
 rule:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " rÃ¨gle : " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
+    " règle : " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
 }
 rule
 {
@@ -507,7 +507,7 @@ section-def-attrs
 section-def-cats:before
 {
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-	" CatÃ©gories : ";
+	" Catégories : ";
 }
 section-def-cats
 {
@@ -554,7 +554,7 @@ section-rules:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-	" RÃ¨gles : ";
+	" Règles : ";
 }
 section-rules
 {
@@ -566,7 +566,7 @@ tag:before
 {
     display:block;
     padding-left:.125in;
-    content: " Ã©tiquette : " ;
+    content: " étiquette : " ;
 }
 tag
 {
@@ -577,7 +577,7 @@ tag
 tags:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " Ã©tiquettes : " ;
+    " étiquettes : " ;
 }
 tags
 {
@@ -626,7 +626,7 @@ when
 
 with-param:before
 {
-    content: " avec Ã©lÃ©ment : " 
+    content: " avec élément : " 
     text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
 }
 with-param
