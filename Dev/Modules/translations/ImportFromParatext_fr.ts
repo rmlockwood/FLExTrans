@@ -84,7 +84,7 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
 Are you sure you want to continue with overwriting the text in FLEx?</source>
         <translation>L'option d'écraser le texte dans FLEx a été choisie. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Texte &amp; Mots de FLEx.
 
-Êtes-vous sûr de vouloir continuer et écraser le texte dans FLEx ?</translation>
+Êtes-vous sûr de vouloir continuer et écraser le texte dans FLEx?</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="491"/>

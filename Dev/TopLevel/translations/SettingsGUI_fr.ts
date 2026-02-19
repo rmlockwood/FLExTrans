@@ -97,7 +97,7 @@
     <message>
         <location filename="../SettingsGUI.py" line="1562"/>
         <source>Do you want to save your changes?</source>
-        <translation>Voulez-vous enregistrer vos modifications ?</translation>
+        <translation>Voulez-vous enregistrer vos modifications?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1596"/>
@@ -163,7 +163,7 @@ projet FLEx source. Il est possible de choisir de ne pas traduire les noms propr
     <message>
         <location filename="../SettingsGUI.py" line="1616"/>
         <source>Cache data for faster processing?</source>
-        <translation>Mettre en cache les données pour un traitement plus rapide ?</translation>
+        <translation>Mettre en cache les données pour un traitement plus rapide?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1617"/>
@@ -175,7 +175,7 @@ Utilisez le module CleanFiles pour forcer la régénération des données.</tran
     <message>
         <location filename="../SettingsGUI.py" line="1619"/>
         <source>Use composed characters in editing?</source>
-        <translation>Utiliser des caractères composés lors de l'édition ?</translation>
+        <translation>Utiliser des caractères composés lors de l'édition?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1620"/>
@@ -228,7 +228,7 @@ comme une sorte de racine. En d'autres termes, non-affixes et non-clitiques.</tr
     <message>
         <location filename="../SettingsGUI.py" line="1634"/>
         <source>In the production mode module 'Translate Text', where do you want the drafted text to go?</source>
-        <translation>Dans le module de mode de production 'Traduire le texte', où voulez-vous que le texte brouillon aille ?</translation>
+        <translation>Dans le module de mode de production 'Traduire le texte', où voulez-vous que le texte brouillon aille?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1638"/>
@@ -327,7 +327,7 @@ avec inflexion sur le dernier élément</translation>
         <source>Default to rebuilding the bilingual
 lexicon after linking senses?</source>
         <translation>Reconstruire par défaut le lexique
-bilingue après la liaison des sens ?</translation>
+bilingue après la liaison des sens?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1665"/>
@@ -337,7 +337,7 @@ bilingue après la liaison des sens ?</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1667"/>
         <source>Default to filtering on all fields?</source>
-        <translation>Filtrer par défaut sur tous les champs ?</translation>
+        <translation>Filtrer par défaut sur tous les champs?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1668"/>
@@ -446,7 +446,7 @@ après avoir subi le processus de transfert.</translation>
     <message>
         <location filename="../SettingsGUI.py" line="1704"/>
         <source>Use HermitCrab synthesis?</source>
-        <translation>Utiliser la synthèse HermitCrab ?</translation>
+        <translation>Utiliser la synthèse HermitCrab?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1705"/>
@@ -460,7 +460,7 @@ module Synthétiser le texte avec HermitCrab dans votre collection AllSteps.</tr
     <message>
         <location filename="../SettingsGUI.py" line="1707"/>
         <source>Clean Up Unknown Target Words?</source>
-        <translation>Nettoyer les mots cibles inconnus ?</translation>
+        <translation>Nettoyer les mots cibles inconnus?</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1708"/>

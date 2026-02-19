@@ -60,7 +60,7 @@ vocatif singulier, vous pouvez le spécifier ici.</translation>
     <message>
         <location filename="../ReplacementEditor.py" line="594"/>
         <source>Save changes before exiting?</source>
-        <translation>Enregistrer les modifications avant de quitter ?</translation>
+        <translation>Enregistrer les modifications avant de quitter?</translation>
     </message>
     <message>
         <location filename="../ReplacementEditor.py" line="624"/>

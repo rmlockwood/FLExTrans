@@ -26,12 +26,12 @@
     <message>
         <location filename="../TestbedLogViewer.py" line="169"/>
         <source>Column Count Not Specified!!</source>
-        <translation>Nombre de colonnes non spécifié !!</translation>
+        <translation>Nombre de colonnes non spécifié!!</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="172"/>
         <source>Data gather method not implemented!</source>
-        <translation>Méthode de collecte de données non implémentée !</translation>
+        <translation>Méthode de collecte de données non implémentée!</translation>
     </message>
     <message>
         <location filename="../TestbedLogViewer.py" line="195"/>

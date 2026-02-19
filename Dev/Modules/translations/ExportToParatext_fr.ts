@@ -42,7 +42,7 @@ prend le brouillon dans ce fichier et copie les chapitres dans Paratext vers le 
     <message>
         <location filename="../ExportToParatext.py" line="275"/>
         <source>Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.</source>
-        <translation>Impossible de trouver le fichier de synthèse. Avez-vous exécuté le module Synthétiser le texte ? Fichier manquant : {synFile}.</translation>
+        <translation>Impossible de trouver le fichier de synthèse. Avez-vous exécuté le module Synthétiser le texte? Fichier manquant : {synFile}.</translation>
     </message>
     <message>
         <location filename="../ExportToParatext.py" line="291"/>

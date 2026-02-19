@@ -76,7 +76,7 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="383"/>
         <source>You need to set the key field and at least the 1st other field!</source>
-        <translation>Vous devez définir le champ clé et au moins le 1er autre champ !</translation>
+        <translation>Vous devez définir le champ clé et au moins le 1er autre champ!</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="404"/>

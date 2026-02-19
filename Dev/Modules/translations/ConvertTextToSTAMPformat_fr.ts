@@ -31,7 +31,7 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1135"/>
         <source>The file: {fileName} was not found. Did you run the {runApert} module?</source>
-        <translation>Le fichier : {fileName} n'a pas été trouvé. Avez-vous exécuté le module {runApert} ?</translation>
+        <translation>Le fichier : {fileName} n'a pas été trouvé. Avez-vous exécuté le module {runApert}?</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1221"/>

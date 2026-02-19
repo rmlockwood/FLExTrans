@@ -51,7 +51,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="613"/>
         <source>Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</source>
-        <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} de {bookName} dans le projet {projAbbrev} ?</translation>
+        <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} de {bookName} dans le projet {projAbbrev}?</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="614"/>

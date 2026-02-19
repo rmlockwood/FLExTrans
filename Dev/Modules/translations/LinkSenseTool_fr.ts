@@ -59,7 +59,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1144"/>
         <source>Do you want to save your changes?</source>
-        <translation>Voulez-vous enregistrer vos modifications ?</translation>
+        <translation>Voulez-vous enregistrer vos modifications?</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1265"/>
@@ -119,7 +119,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1799"/>
         <source>Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</source>
-        <translation>Erreur de permission lors de l'écriture de {htmlFileName}. Peut-être que le fichier est utilisé dans un autre programme ?</translation>
+        <translation>Erreur de permission lors de l'écriture de {htmlFileName}. Peut-être que le fichier est utilisé dans un autre programme?</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1803"/>
@@ -199,7 +199,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1946"/>
         <source>Link it!</source>
-        <translation>Liez-le !</translation>
+        <translation>Liez-le!</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1948"/>

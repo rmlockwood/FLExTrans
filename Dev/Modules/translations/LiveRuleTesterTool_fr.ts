@@ -122,7 +122,7 @@ Do you want to overwrite it?</source>
 
 {0}
 
-Voulez-vous l'écraser ?</translation>
+Voulez-vous l'écraser?</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1347"/>
@@ -187,7 +187,7 @@ Voulez-vous l'écraser ?</translation>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1578"/>
         <source>Locked DB?</source>
-        <translation>BD verrouillée ?</translation>
+        <translation>BD verrouillée?</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1578"/>

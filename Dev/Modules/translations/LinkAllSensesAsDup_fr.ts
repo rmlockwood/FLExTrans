@@ -19,7 +19,7 @@ overwrite all senses in the source project!
 This assumes the target project was copied from the source and all the senses have the same
 unique identifier (guid).</source>
         <translation>Ce module liera tous les sens au même ID dans la cible. ATTENTION : Cela va
-écraser tous les sens dans le projet source !
+écraser tous les sens dans le projet source!
 Cela suppose que le projet cible a été copié depuis la source et que tous les sens ont le même
 identifiant unique (guid).</translation>
     </message>
