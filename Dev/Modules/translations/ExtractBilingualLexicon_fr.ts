@@ -54,7 +54,7 @@ d'aide pour plus de détails.</translation>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="270"/>
         <source>Ill-formed property: &quot;CategoryAbbrevSubstitutionList&quot;. Expected pairs of categories.</source>
-        <translation>Propriété mal formée: « CategoryAbbrevSubstitutionList ». Paires de catégories attendues.</translation>
+        <translation>Propriété mal formée: «CategoryAbbrevSubstitutionList». Paires de catégories attendues.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="280"/>

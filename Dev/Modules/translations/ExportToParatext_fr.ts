@@ -21,7 +21,7 @@ by the setting 'Target Output Synthesis File' (typically called 'target_text-syn
 takes the draft in this file and copies the chapters into Paratext to the project specified.</source>
         <translation>
 Après que les chapitres ont été synthétisés avec le module {synthText}, le brouillon se trouve dans le fichier spécifié
-par le paramètre « Fichier de synthèse de la sortie cible » (généralement appelé « target_text-syn.txt »). Ce module
+par le paramètre «Fichier de synthèse de la sortie cible» (généralement appelé «target_text-syn.txt»). Ce module
 prend le brouillon dans ce fichier et copie les chapitres dans Paratext vers le projet spécifié.</translation>
     </message>
     <message>
@@ -32,7 +32,7 @@ prend le brouillon dans ce fichier et copie les chapitres dans Paratext vers le 
     <message>
         <location filename="../ExportToParatext.py" line="173"/>
         <source>The text name &quot;{sourceText}&quot; is invalid it should be of the form GEN 01 or Genesis 23-38</source>
-        <translation>Le nom du texte « {sourceText} » est invalide, il devrait être de la forme GEN 01 ou Genèse 23-38</translation>
+        <translation>Le nom du texte «{sourceText}» est invalide, il devrait être de la forme GEN 01 ou Genèse 23-38</translation>
     </message>
     <message>
         <location filename="../ExportToParatext.py" line="196"/>

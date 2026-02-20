@@ -75,7 +75,7 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
     <message>
         <location filename="../ImportFromParatext.py" line="427"/>
         <source>{numRules} 'Text In' rules applied.</source>
-        <translation>{numRules} règles « Texte entrant » appliquées.</translation>
+        <translation>{numRules} règles «Texte entrant» appliquées.</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="489"/>
@@ -99,7 +99,7 @@ Are you sure you want to continue with overwriting the text in FLEx?</source>
     <message>
         <location filename="../ImportFromParatext.py" line="531"/>
         <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
-        <translation>Texte: « {title} » créé dans le projet {projectName}.</translation>
+        <translation>Texte: «{title}» créé dans le projet {projectName}.</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="576"/>
