@@ -66,7 +66,7 @@
     <message>
         <location filename="../TestbedLogViewer.py" line="644"/>
         <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
-        <translation>Fichier du banc d'essai : {testbedPath} n'existe pas. Veuillez ajouter des tests au banc d'essai.</translation>
+        <translation>Fichier du banc d'essai: {testbedPath} n'existe pas. Veuillez ajouter des tests au banc d'essai.</translation>
     </message>
 </context>
 </TS>

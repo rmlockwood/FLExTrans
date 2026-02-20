@@ -30,8 +30,8 @@ These forms are then used to create the target text.</source>
 Par défaut, ce sera quelque chose comme 'target_text-syn.txt'.
 Avant de créer le texte synthétisé, ce module extrait le lexique de la langue cible sous forme de fichier de configuration HermitCrab.
 Il se nomme 'HermitCrab.config' et sera dans le dossier 'Build'.
-REMARQUE : Les messages indiqueront que le projet source est utilisé. En réalité, c'est le projet cible qui est utilisé.
-Informations avancées : Ce module exécute HermitCrab sur une liste d'analyses cibles ('target_words-parses.txt') pour produire des formes de surface ('target_words-surface.txt').
+REMARQUE: Les messages indiqueront que le projet source est utilisé. En réalité, c'est le projet cible qui est utilisé.
+Informations avancées: Ce module exécute HermitCrab sur une liste d'analyses cibles ('target_words-parses.txt') pour produire des formes de surface ('target_words-surface.txt').
 Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     </message>
     <message>
@@ -42,7 +42,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="216"/>
         <source>Failed to open the target project: {targetProj}.</source>
-        <translation>Échec de l'ouverture du projet cible : {targetProj}.</translation>
+        <translation>Échec de l'ouverture du projet cible: {targetProj}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="225"/>
@@ -57,12 +57,12 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="248"/>
         <source>An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}</source>
-        <translation>Une exception s'est produite lors de la tentative d'obtention du fichier XML HermitCrab depuis l'objet DLL : {e}</translation>
+        <translation>Une exception s'est produite lors de la tentative d'obtention du fichier XML HermitCrab depuis l'objet DLL: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="298"/>
         <source>An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}</source>
-        <translation>Une exception s'est produite lors de la tentative de définition du fichier XML HermitCrab dans l'objet DLL. Erreur : {e}</translation>
+        <translation>Une exception s'est produite lors de la tentative de définition du fichier XML HermitCrab dans l'objet DLL. Erreur: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="264"/>
@@ -72,7 +72,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="274"/>
         <source>Generated the HermitCrab config. file: {filePath}.</source>
-        <translation>Fichier de configuration HermitCrab généré : {filePath}.</translation>
+        <translation>Fichier de configuration HermitCrab généré: {filePath}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="303"/>
@@ -87,7 +87,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="282"/>
         <source>The full error message is:</source>
-        <translation>Le message d'erreur complet est :</translation>
+        <translation>Le message d'erreur complet est:</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="293"/>
@@ -102,7 +102,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="342"/>
         <source>The file: {transferResultsFile} was not found. Did you run the {runApertium} module?</source>
-        <translation>Le fichier : {transferResultsFile} n'a pas été trouvé. Avez-vous exécuté le module {runApertium}?</translation>
+        <translation>Le fichier: {transferResultsFile} n'a pas été trouvé. Avez-vous exécuté le module {runApertium}?</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="357"/>
@@ -117,12 +117,12 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="411"/>
         <source>Error writing the file: {synFile}.</source>
-        <translation>Erreur lors de l'écriture du fichier : {synFile}.</translation>
+        <translation>Erreur lors de l'écriture du fichier: {synFile}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="428"/>
         <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
-        <translation>Une erreur s'est produite lors de l'ouverture du fichier maître HermitCrab. Avez-vous activé le paramètre &quot;Utiliser la synthèse HermitCrab&quot;? Avez-vous exécuté le module Convertir le texte au format du synthétiseur? Fichier : {parsesFile}</translation>
+        <translation>Une erreur s'est produite lors de l'ouverture du fichier maître HermitCrab. Avez-vous activé le paramètre &quot;Utiliser la synthèse HermitCrab&quot;? Avez-vous exécuté le module Convertir le texte au format du synthétiseur? Fichier: {parsesFile}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="437"/>
@@ -132,7 +132,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="452"/>
         <source>Malformed Lexical Unit in HermitCrab master file skipping this line: {line}</source>
-        <translation>Unité lexicale mal formée dans le fichier maître HermitCrab, cette ligne est ignorée : {line}</translation>
+        <translation>Unité lexicale mal formée dans le fichier maître HermitCrab, cette ligne est ignorée: {line}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="648"/>
@@ -147,7 +147,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="679"/>
         <source>An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-        <translation>Une exception s'est produite lors de la tentative de définition du fichier de gloses pour l'outil HermitCrab Synthétiser par glose (DLL). Erreur : {e}</translation>
+        <translation>Une exception s'est produite lors de la tentative de définition du fichier de gloses pour l'outil HermitCrab Synthétiser par glose (DLL). Erreur: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="685"/>
@@ -157,7 +157,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="690"/>
         <source>An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-        <translation>Une exception s'est produite lors de la tentative d'exécution (en appelant Process) de l'outil HermitCrab Synthétiser par glose (DLL). Erreur : {e}</translation>
+        <translation>Une exception s'est produite lors de la tentative d'exécution (en appelant Process) de l'outil HermitCrab Synthétiser par glose (DLL). Erreur: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="710"/>
@@ -167,7 +167,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="723"/>
         <source>An error happened when trying to open the file: {parsesFile}</source>
-        <translation>Une erreur s'est produite lors de la tentative d'ouverture du fichier : {parsesFile}</translation>
+        <translation>Une erreur s'est produite lors de la tentative d'ouverture du fichier: {parsesFile}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="726"/>
@@ -177,12 +177,12 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="741"/>
         <source>Configuration file problem with the value: {val}.</source>
-        <translation>Problème de fichier de configuration avec la valeur : {val}.</translation>
+        <translation>Problème de fichier de configuration avec la valeur: {val}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="756"/>
         <source>The synthesized target text is in the file: {file}.</source>
-        <translation>Le texte cible synthétisé se trouve dans le fichier : {file}.</translation>
+        <translation>Le texte cible synthétisé se trouve dans le fichier: {file}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="757"/>

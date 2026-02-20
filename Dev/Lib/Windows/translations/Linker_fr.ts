@@ -11,12 +11,12 @@
     <message>
         <location filename="../Linker.py" line="246"/>
         <source>Source Text:</source>
-        <translation>Texte source :</translation>
+        <translation>Texte source:</translation>
     </message>
     <message>
         <location filename="../Linker.py" line="247"/>
         <source>All Target Senses:</source>
-        <translation>Tous les sens cibles :</translation>
+        <translation>Tous les sens cibles:</translation>
     </message>
     <message>
         <location filename="../Linker.py" line="248"/>
@@ -73,7 +73,7 @@ puis double-cliquez dans la colonne Mot-vedette cible pour la ligne souhaitée p
     <message>
         <location filename="../Linker.py" line="259"/>
         <source>Zoom:</source>
-        <translation>Zoom :</translation>
+        <translation>Zoom:</translation>
     </message>
     <message>
         <location filename="../Linker.py" line="260"/>
@@ -100,7 +100,7 @@ est coché, les noms propres ne seront pas exportés.</translation>
     <message>
         <location filename="../Linker.py" line="265"/>
         <source>Senses to link:</source>
-        <translation>Sens à lier :</translation>
+        <translation>Sens à lier:</translation>
     </message>
 </context>
 </TS>

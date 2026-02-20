@@ -25,7 +25,7 @@ L'outil attend qu'un projet soit ouvert avant de restaurer le suivant.</translat
     <message>
         <location filename="../RestoreFLExProjects.py" line="102"/>
         <source>Backup Folder: </source>
-        <translation>Dossier de sauvegarde : </translation>
+        <translation>Dossier de sauvegarde: </translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="109"/>
@@ -35,7 +35,7 @@ L'outil attend qu'un projet soit ouvert avant de restaurer le suivant.</translat
     <message>
         <location filename="../RestoreFLExProjects.py" line="120"/>
         <source>FLEx project backup files (multi-select):</source>
-        <translation>Fichiers de sauvegarde de projet FLEx (sélection multiple) :</translation>
+        <translation>Fichiers de sauvegarde de projet FLEx (sélection multiple):</translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="129"/>
@@ -55,12 +55,12 @@ L'outil attend qu'un projet soit ouvert avant de restaurer le suivant.</translat
     <message>
         <location filename="../RestoreFLExProjects.py" line="162"/>
         <source>Selected Folder: </source>
-        <translation>Dossier sélectionné : </translation>
+        <translation>Dossier sélectionné: </translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="218"/>
         <source>Could not find the sample projects folder: {defaultFolder}.</source>
-        <translation>Impossible de trouver le dossier des projets exemples : {defaultFolder}.</translation>
+        <translation>Impossible de trouver le dossier des projets exemples: {defaultFolder}.</translation>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="236"/>

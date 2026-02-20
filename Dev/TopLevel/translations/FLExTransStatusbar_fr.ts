@@ -5,7 +5,7 @@
     <message>
         <location filename="../FLExTransStatusbar.py" line="50"/>
         <source>  Work Project: {project}    Source Text: </source>
-        <translation>  Projet de travail : {project}    Texte source : </translation>
+        <translation>  Projet de travail: {project}    Texte source: </translation>
     </message>
 </context>
 </TS>

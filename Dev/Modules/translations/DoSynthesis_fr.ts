@@ -22,11 +22,11 @@ then the following information from the {hermitCrabModule} module applies: {herm
 If in the settings you select 'No' for 'Use HermitCrab synthesis?',
 then the following information from the {stampModule} module applies: {stampDescription}</source>
         <translation>Ce module synthétise le texte cible. Si dans les paramètres vous sélectionnez 'Oui' pour 'Utiliser la synthèse HermitCrab?',
-alors les informations suivantes du module {hermitCrabModule} s'appliquent : {hermitCrabDescription}
+alors les informations suivantes du module {hermitCrabModule} s'appliquent: {hermitCrabDescription}
 
 
 Si dans les paramètres vous sélectionnez 'Non' pour 'Utiliser la synthèse HermitCrab?',
-alors les informations suivantes du module {stampModule} s'appliquent : {stampDescription}</translation>
+alors les informations suivantes du module {stampModule} s'appliquent: {stampDescription}</translation>
     </message>
     <message>
         <location filename="../DoSynthesis.py" line="102"/>

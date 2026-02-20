@@ -21,7 +21,7 @@
     <message>
         <location filename="../TestbedLog.py" line="79"/>
         <source>Font Size:</source>
-        <translation>Taille de police :</translation>
+        <translation>Taille de police:</translation>
     </message>
 </context>
 </TS>

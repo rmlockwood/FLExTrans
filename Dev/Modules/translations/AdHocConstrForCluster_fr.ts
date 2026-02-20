@@ -26,12 +26,12 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="134"/>
         <source>Group Name:</source>
-        <translation>Nom du groupe :</translation>
+        <translation>Nom du groupe:</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="139"/>
         <source>Group Description:</source>
-        <translation>Description du groupe :</translation>
+        <translation>Description du groupe:</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="175"/>
@@ -119,7 +119,7 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="597"/>
         <source>NEW: {sourceGroupName}</source>
-        <translation>NOUVEAU : {sourceGroupName}</translation>
+        <translation>NOUVEAU: {sourceGroupName}</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="632"/>
@@ -134,7 +134,7 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="729"/>
         <source>Similar groups in {projectName}:</source>
-        <translation>Groupes similaires dans {projectName} :</translation>
+        <translation>Groupes similaires dans {projectName}:</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="903"/>

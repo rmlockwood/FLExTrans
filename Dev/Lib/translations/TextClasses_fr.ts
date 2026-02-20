@@ -6,7 +6,7 @@
     <message>
         <location filename="../TextClasses.py" line="593"/>
         <source>No analysis found for the word: </source>
-        <translation>Aucune analyse trouvée pour le mot : </translation>
+        <translation>Aucune analyse trouvée pour le mot: </translation>
     </message>
     <message>
         <location filename="../TextClasses.py" line="593"/>

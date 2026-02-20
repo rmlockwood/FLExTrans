@@ -6,17 +6,17 @@
     <message>
         <location filename="../TestbedValidator.py" line="108"/>
         <source>Word Sense: {wordSense} not found.</source>
-        <translation>Sens du mot : {wordSense} non trouvé.</translation>
+        <translation>Sens du mot: {wordSense} non trouvé.</translation>
     </message>
     <message>
         <location filename="../TestbedValidator.py" line="114"/>
         <source>Grammatical Category: {gramCat} not found.</source>
-        <translation>Catégorie grammaticale : {gramCat} non trouvée.</translation>
+        <translation>Catégorie grammaticale: {gramCat} non trouvée.</translation>
     </message>
     <message>
         <location filename="../TestbedValidator.py" line="120"/>
         <source>Tag: {tag} not found.</source>
-        <translation>Étiquette : {tag} non trouvée.</translation>
+        <translation>Étiquette: {tag} non trouvée.</translation>
     </message>
     <message>
         <location filename="../TestbedValidator.py" line="232"/>

@@ -50,12 +50,12 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
     <message>
         <location filename="../ImportFromParatext.py" line="315"/>
         <source>Could not open the configuration file: {myConfig}</source>
-        <translation>Impossible d'ouvrir le fichier de configuration : {myConfig}</translation>
+        <translation>Impossible d'ouvrir le fichier de configuration: {myConfig}</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="346"/>
         <source>Could not find the book file: {bookPath}</source>
-        <translation>Impossible de trouver le fichier du livre : {bookPath}</translation>
+        <translation>Impossible de trouver le fichier du livre: {bookPath}</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="360"/>
@@ -99,12 +99,12 @@ Are you sure you want to continue with overwriting the text in FLEx?</source>
     <message>
         <location filename="../ImportFromParatext.py" line="531"/>
         <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
-        <translation>Texte : « {title} » créé dans le projet {projectName}.</translation>
+        <translation>Texte: « {title} » créé dans le projet {projectName}.</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="576"/>
         <source>The rules file: {textInRulesFile} has invalid XML data.</source>
-        <translation>Le fichier de règles : {textInRulesFile} contient des données XML invalides.</translation>
+        <translation>Le fichier de règles: {textInRulesFile} contient des données XML invalides.</translation>
     </message>
 </context>
 </TS>

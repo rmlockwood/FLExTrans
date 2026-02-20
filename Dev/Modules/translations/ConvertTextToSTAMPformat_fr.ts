@@ -21,7 +21,7 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="404"/>
         <source>Lexicon files folder: {fileType} does not exist.</source>
-        <translation>Le dossier des fichiers de lexique : {fileType} n'existe pas.</translation>
+        <translation>Le dossier des fichiers de lexique: {fileType} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="433"/>
@@ -31,12 +31,12 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1137"/>
         <source>The file: {fileName} was not found. Did you run the {runApert} module?</source>
-        <translation>Le fichier : {fileName} n'a pas été trouvé. Avez-vous exécuté le module {runApert}?</translation>
+        <translation>Le fichier: {fileName} n'a pas été trouvé. Avez-vous exécuté le module {runApert}?</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1223"/>
         <source>Lemma or grammatical category missing for a target word near word {wordNum}. Found only: {morphs}. The preceding two words were: {prevWords}. The following two words were: {follWords}. Processing stopped.</source>
-        <translation>Lemme ou catégorie grammaticale manquant pour un mot cible près du mot {wordNum}. Trouvé seulement : {morphs}. Les deux mots précédents étaient : {prevWords}. Les deux mots suivants étaient : {follWords}. Traitement arrêté.</translation>
+        <translation>Lemme ou catégorie grammaticale manquant pour un mot cible près du mot {wordNum}. Trouvé seulement: {morphs}. Les deux mots précédents étaient: {prevWords}. Les deux mots suivants étaient: {follWords}. Traitement arrêté.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1300"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1311"/>
         <source>Configuration file problem with: {property}.</source>
-        <translation>Problème de fichier de configuration avec : {property}.</translation>
+        <translation>Problème de fichier de configuration avec: {property}.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1361"/>
@@ -56,7 +56,7 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1388"/>
         <source>Converted target words put in the file: {filePath}.</source>
-        <translation>Mots cibles convertis mis dans le fichier : {filePath}.</translation>
+        <translation>Mots cibles convertis mis dans le fichier: {filePath}.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1389"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1391"/>
         <source>Converted target words put in the file: {filePath}</source>
-        <translation>Mots cibles convertis mis dans le fichier : {filePath}</translation>
+        <translation>Mots cibles convertis mis dans le fichier: {filePath}</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1392"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1427"/>
         <source>Configuration file problem with: {fileType}.</source>
-        <translation>Problème de fichier de configuration avec : {fileType}.</translation>
+        <translation>Problème de fichier de configuration avec: {fileType}.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="153"/>
@@ -93,13 +93,13 @@ une synthèse HermitCrab. Pour STAMP, le fichier est celui que vous avez spécif
 appelé target_text-ana.txt.
 Pour HermitCrab, le fichier est celui que vous avez spécifié par le paramètre Fichier maître HermitCrab -- généralement appelé
 target_words-HC.txt. Les deux fichiers sont généralement dans le dossier Build.
-REMARQUE : les messages et la barre des tâches afficheront le projet source comme étant utilisé. En réalité, c'est le projet cible
+REMARQUE: les messages et la barre des tâches afficheront le projet source comme étant utilisé. En réalité, c'est le projet cible
 qui est utilisé.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1411"/>
         <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-        <translation>Le module {modname} doit être exécuté avant ce module. Le fichier : ...\{filePath} n'existe pas.</translation>
+        <translation>Le module {modname} doit être exécuté avant ce module. Le fichier: ...\{filePath} n'existe pas.</translation>
     </message>
 </context>
 </TS>

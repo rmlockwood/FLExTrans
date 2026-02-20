@@ -16,7 +16,7 @@
     <message>
         <location filename="../EndTestbed.py" line="114"/>
         <source>There is a problem with the Synthesis Output File path: {outFileVal}. Please check the configuration file setting.</source>
-        <translation>Il y a un problème avec le chemin du fichier de sortie de synthèse : {outFileVal}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a un problème avec le chemin du fichier de sortie de synthèse: {outFileVal}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../EndTestbed.py" line="132"/>

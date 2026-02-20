@@ -76,7 +76,7 @@
         <location filename="../SettingsGUI.py" line="1412"/>
         <source>FLExTrans made these changes for you:
 </source>
-        <translation>FLExTrans a effectué ces modifications pour vous :
+        <translation>FLExTrans a effectué ces modifications pour vous:
 </translation>
     </message>
     <message>

@@ -18,7 +18,7 @@
 overwrite all senses in the source project!
 This assumes the target project was copied from the source and all the senses have the same
 unique identifier (guid).</source>
-        <translation>Ce module liera tous les sens au même ID dans la cible. ATTENTION : Cela va
+        <translation>Ce module liera tous les sens au même ID dans la cible. ATTENTION: Cela va
 écraser tous les sens dans le projet source!
 Cela suppose que le projet cible a été copié depuis la source et que tous les sens ont le même
 identifiant unique (guid).</translation>
@@ -46,7 +46,7 @@ identifiant unique (guid).</translation>
     <message>
         <location filename="../LinkAllSensesAsDup.py" line="171"/>
         <source>Skipped this guid that was not found: {guidSubStr}.</source>
-        <translation>Ignoré ce guid qui n'a pas été trouvé : {guidSubStr}.</translation>
+        <translation>Ignoré ce guid qui n'a pas été trouvé: {guidSubStr}.</translation>
     </message>
     <message>
         <location filename="../LinkAllSensesAsDup.py" line="177"/>

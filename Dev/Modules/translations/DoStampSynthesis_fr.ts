@@ -17,7 +17,7 @@ NOTE: Messages will say the source project is being used. Actually the target pr
 Avant de créer le texte synthétisé, ce module extrait les fichiers du lexique de la langue cible, un pour chacun des racines, préfixes, suffixes et infixes. Ils sont au format STAMP pour la synthèse. Les fichiers du lexique sont placés dans le dossier désigné dans les Paramètres comme Dossier de fichiers du lexique cible. Habituellement, c'est le dossier 'Build'.
 Le texte synthétisé sera stocké dans le fichier spécifié par le paramètre Fichier de synthèse de sortie cible.
 Cela s'appelle généralement target_text-syn.txt et se trouve habituellement dans le dossier Output.
-REMARQUE : Les messages indiqueront que le projet source est utilisé. En réalité, c'est le projet cible qui est utilisé.</translation>
+REMARQUE: Les messages indiqueront que le projet source est utilisé. En réalité, c'est le projet cible qui est utilisé.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="184"/>
@@ -32,7 +32,7 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
         <location filename="../DoStampSynthesis.py" line="914"/>
         <source>Null grapheme found for natural class: {natClassName}. Skipping.</source>
-        <translation>Graphème nul trouvé pour la classe naturelle : {natClassName}. Ignoré.</translation>
+        <translation>Graphème nul trouvé pour la classe naturelle: {natClassName}. Ignoré.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="956"/>

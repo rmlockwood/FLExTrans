@@ -36,7 +36,7 @@
     <message>
         <location filename="../RuleAssistant.py" line="395"/>
         <source>&lt;p&gt;&lt;b&gt;Source Text:&lt;/b&gt; </source>
-        <translation>&lt;p&gt;&lt;b&gt;Texte source :&lt;/b&gt; </translation>
+        <translation>&lt;p&gt;&lt;b&gt;Texte source:&lt;/b&gt; </translation>
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="434"/>
@@ -48,7 +48,7 @@
     <message>
         <location filename="../RuleAssistant.py" line="469"/>
         <source>An error happened when running the {ruleAssistant} tool: {error}</source>
-        <translation>Une erreur s'est produite lors de l'exécution de l'outil {ruleAssistant} : {error}</translation>
+        <translation>Une erreur s'est produite lors de l'exécution de l'outil {ruleAssistant}: {error}</translation>
     </message>
     <message>
         <location filename="../RuleAssistant.py" line="527"/>

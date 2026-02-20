@@ -31,32 +31,32 @@
     <message>
         <location filename="../InterlinData.py" line="378"/>
         <source>Invalid characters in the affix: {myStr}. The following characters are not allowed: {chars}</source>
-        <translation>Caractères invalides dans l'affixe : {myStr}. Les caractères suivants ne sont pas autorisés : {chars}</translation>
+        <translation>Caractères invalides dans l'affixe: {myStr}. Les caractères suivants ne sont pas autorisés: {chars}</translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="624"/>
         <source>No sense found for some part of the source word: </source>
-        <translation>Aucun sens trouvé pour une partie du mot source : </translation>
+        <translation>Aucun sens trouvé pour une partie du mot source: </translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="629"/>
         <source>No morphosyntactic analysis found for some part of the source word: </source>
-        <translation>Aucune analyse morphosyntaxique trouvée pour une partie du mot source : </translation>
+        <translation>Aucune analyse morphosyntaxique trouvée pour une partie du mot source: </translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="661"/>
         <source>No grammatical category found for the source word: </source>
-        <translation>Aucune catégorie grammaticale trouvée pour le mot source : </translation>
+        <translation>Aucune catégorie grammaticale trouvée pour le mot source: </translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="678"/>
         <source>Couldn't find the sense for source headword: </source>
-        <translation>Impossible de trouver le sens pour l'entrée principale source : </translation>
+        <translation>Impossible de trouver le sens pour l'entrée principale source: </translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="691"/>
         <source>No root or stem found for source word: </source>
-        <translation>Aucune racine ou radical trouvé pour le mot source : </translation>
+        <translation>Aucune racine ou radical trouvé pour le mot source: </translation>
     </message>
     <message>
         <location filename="../InterlinData.py" line="701"/>

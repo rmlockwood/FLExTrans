@@ -55,7 +55,7 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="316"/>
         <source>There was a problem creating the log file: {logFile}.</source>
-        <translation>Il y a eu un problème lors de la création du fichier journal : {logFile}.</translation>
+        <translation>Il y a eu un problème lors de la création du fichier journal: {logFile}.</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="321"/>
@@ -65,7 +65,7 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="327"/>
         <source>  Only collecting templates for these POS: {focusPOS}</source>
-        <translation>  Collecte des modèles uniquement pour ces catégories grammaticales : {focusPOS}</translation>
+        <translation>  Collecte des modèles uniquement pour ces catégories grammaticales: {focusPOS}</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="331"/>
@@ -97,7 +97,7 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="390"/>
         <source>  Skipping Variant with {count} Senses: {lex}</source>
-        <translation>  Variante ignorée avec {count} sens : {lex}</translation>
+        <translation>  Variante ignorée avec {count} sens: {lex}</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="423"/>
@@ -142,12 +142,12 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="538"/>
         <source>There was a problem creating the Apertium file: {aperFile}.</source>
-        <translation>Il y a eu un problème lors de la création du fichier Apertium : {aperFile}.</translation>
+        <translation>Il y a eu un problème lors de la création du fichier Apertium: {aperFile}.</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="546"/>
         <source>There was a problem creating the words file: {outFile}.</source>
-        <translation>Il y a eu un problème lors de la création du fichier de mots : {outFile}.</translation>
+        <translation>Il y a eu un problème lors de la création du fichier de mots: {outFile}.</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="574"/>
@@ -157,7 +157,7 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
         <location filename="../GenerateParses.py" line="577"/>
         <source>Creation complete to the file: {outFile}.</source>
-        <translation>Création terminée dans le fichier : {outFile}.</translation>
+        <translation>Création terminée dans le fichier: {outFile}.</translation>
     </message>
     <message>
         <location filename="../GenerateParses.py" line="578"/>

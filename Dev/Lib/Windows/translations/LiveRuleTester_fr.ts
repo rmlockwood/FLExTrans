@@ -163,7 +163,7 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
         <location filename="../LiveRuleTester.py" line="632"/>
         <source>Zoom:</source>
-        <translation>Zoom :</translation>
+        <translation>Zoom:</translation>
     </message>
 </context>
 </TS>

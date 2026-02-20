@@ -33,17 +33,17 @@ même nom ne sera pas écrasé. Une copie sera créée.</translation>
     <message>
         <location filename="../InsertTargetText.py" line="140"/>
         <source>Using: {targetProj} as the target project.</source>
-        <translation>Utilisation : {targetProj} comme projet cible.</translation>
+        <translation>Utilisation: {targetProj} comme projet cible.</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="158"/>
         <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: "</source>
-        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : "</translation>
+        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse: "</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="193"/>
         <source>Text: "{sourceTextName}" created in the {targetProj} project.</source>
-        <translation>Texte : "{sourceTextName}" créé dans le projet {targetProj}.</translation>
+        <translation>Texte: "{sourceTextName}" créé dans le projet {targetProj}.</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="202"/>

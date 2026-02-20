@@ -6,12 +6,12 @@
     <message>
         <location filename="../TextInOutUtils.py" line="282"/>
         <source>Test stopped on failure of rule: {ruleString}</source>
-        <translation>Test arrêté en raison de l'échec de la règle : {ruleString}</translation>
+        <translation>Test arrêté en raison de l'échec de la règle: {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="342"/>
         <source>The rules file: {textOutRulesFile} has invalid XML data.</source>
-        <translation>Le fichier de règles : {textOutRulesFile} contient des données XML invalides.</translation>
+        <translation>Le fichier de règles: {textOutRulesFile} contient des données XML invalides.</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="354"/>
@@ -61,22 +61,22 @@
     <message>
         <location filename="../TextInOutUtils.py" line="760"/>
         <source>For folder {foldName}, the rule: {ruleID} already exists.</source>
-        <translation>Pour le dossier {foldName}, la règle : {ruleID} existe déjà.</translation>
+        <translation>Pour le dossier {foldName}, la règle: {ruleID} existe déjà.</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="853"/>
         <source>For folder {foldName}, the rule: {ruleID} was not found.</source>
-        <translation>Pour le dossier {foldName}, la règle : {ruleID} n'a pas été trouvée.</translation>
+        <translation>Pour le dossier {foldName}, la règle: {ruleID} n'a pas été trouvée.</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="1018"/>
         <source>For folder {foldName}, the rule: {ruleID} not found.</source>
-        <translation>Pour le dossier {foldName}, la règle : {ruleID} introuvable.</translation>
+        <translation>Pour le dossier {foldName}, la règle: {ruleID} introuvable.</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="1167"/>
         <source>Test stopped on failure of rule {ruleNumber}: {ruleString}</source>
-        <translation>Test arrêté en raison de l'échec de la règle {ruleNumber} : {ruleString}</translation>
+        <translation>Test arrêté en raison de l'échec de la règle {ruleNumber}: {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="1367"/>

@@ -34,18 +34,18 @@ vocatif singulier, vous pouvez le spécifier ici.</translation>
         <location filename="../ReplacementEditor.py" line="571"/>
         <source>The following sets of rows are identical on the source side and only the first one will have any effect:
 </source>
-        <translation>Les ensembles de lignes suivants sont identiques du côté source et seul le premier aura un effet :
+        <translation>Les ensembles de lignes suivants sont identiques du côté source et seul le premier aura un effet:
 </translation>
     </message>
     <message>
         <location filename="../ReplacementEditor.py" line="573"/>
         <source>The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </source>
-        <translation>Les lignes suivantes n'ont pas d'affixes et sont donc redondantes avec les liens créés par l'outil de liaison de sens : </translation>
+        <translation>Les lignes suivantes n'ont pas d'affixes et sont donc redondantes avec les liens créés par l'outil de liaison de sens: </translation>
     </message>
     <message>
         <location filename="../ReplacementEditor.py" line="576"/>
         <source>Useless Lines:</source>
-        <translation>Lignes inutiles :</translation>
+        <translation>Lignes inutiles:</translation>
     </message>
     <message>
         <location filename="../ReplacementEditor.py" line="588"/>
