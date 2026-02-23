@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.15.1 - 2/23/26 - Ron Lockwood
+#    Fixes #1249. Correctly show the right sentence with checkboxes on restart of the LRT. 
+#
 #   Version 3.15 - 2/4/26 - Ron Lockwood
 #    Fixes #1204. Do a delayed scroll to the selected source sentence in the list box 
 #    so it gets centered in the viewable area. This is needed because the scroll was 
@@ -264,7 +267,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -782,6 +785,9 @@ class Main(QMainWindow):
             self.listSentClicked()
 
         if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
+
+            # Set the index of the combo box to what was saved before
+            self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
 
             # Check the saved words
             self.restoreCheckedWords()
