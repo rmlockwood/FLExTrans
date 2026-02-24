@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>07 October 2025</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>27 January 2026</small></center>
       <center><small>Version: 3.14</small></center>
       <hr>
       <div>
@@ -330,7 +330,7 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Navigate to the folder for your project (typically <span style="font-style:italic; ">Documents\FLExTrans\WorkProjects\[YourProject]</span>).
                </li>
-               <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file).
+               <li>Double-click on the file <span style="font-weight:bold; ">FLExTrans.vbs</span> (a Visual Basic script file).
                </li>
                <li>It should look like <a href="#xFirstStart">(1)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -958,10 +958,10 @@
       </p>
       <h3 style=""><a name="sExportUnlinked"></a>4.1.10&nbsp;Export Unlinked Senses
       </h3>
-      <p>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper
-         Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send
-         to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to
-         open this in a word processor and save it as a document. After the completed file is returned for use in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, it may be necessary to create new <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> entries and use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>.
+      <p>Use this check box to export a list of unlinked senses to a file (after clicking OK) that may be useful when asking a colleague
+         to provide the correct target words for the given source word. The results pane will tell you where the file is and its name.
+         The file is in HTML format. To save it as a file that a colleague can edit, open it in a word processor (e.g., Word or LibreOffice)
+         and save it as a document. After the colleague returns the completed file, it may be necessary to create new <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> entries and use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>. If Proper nouns don't need to be included, check the box Hide Proper Nouns before exporting.
       </p>
       <h3 style=""><a name="sSenses2Link"></a>4.1.11&nbsp;Senses to link
       </h3>
@@ -1257,13 +1257,25 @@
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
       <h2 style=""><a name="sSynthTest"></a>4.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Synthesis Test Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses Tool</span> provides a way to test whether your Target Project is ready for the Synthesis stage of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. It allows you to choose a specific inflectional template from your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure
-         they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. It does not attempt to generate for any category without a template, and it does not attempt to generate with derivational
-         affixes.
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses Tool</span> provides a way to test whether your Target Project is ready for the Synthesis stage of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. It allows you to choose a specific inflectional template from your Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure
+         they are all valid forms. If not, that is an indication of further work needed on the morphological description in the Target
+         <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. It does not attempt to generate forms for any category without a template, and it does not attempt to generate with
+         derivational affixes.
       </p>
       <p>The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is
-         a good idea to limit the output when starting out, because it can easily become quite large.
+         a good idea to limit the output when starting out, because it can easily become quite large. If you have not set any POS values
+         in the setting <span style="font-weight:bold; color:#964B00; ">Limit to Specific POS Values</span>, there will be an error message.
       </p>
+      <p>To adjust the settings for the Synthesis Test,</p>
+      <ol style="list-style-type:decimal; ">
+         <li>Select <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the menu.
+         </li>
+         <li>You should see the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> window.
+         </li>
+         <li>Scroll down until you get the the section <span style="font-weight:bold; color:#964B00; ">Synthesis Test Settings</span>.
+         </li>
+         <li>Here you can adjust the various parameters, as well as the names and locations of the output files.</li>
+      </ol>
       <p>Note that for this test, any active template must have at least one affix in each of its slots. If you have any slots with
          no affixes in them, it is recommended to set that template to "inactive" for this test. (Untick the box labeled "Active" in
          the description of the template in Category Edit in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.)
@@ -3699,7 +3711,7 @@
       <ol style="list-style-type:decimal; ">
          <li>Navigate to the installation folder (typically <span style="font-style:italic; ">Documents\FLExTrans\WorkProjects\[YourProject]</span>).
          </li>
-         <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file).
+         <li>Double-click on the file <span style="font-weight:bold; ">FLExTrans.vbs</span> (a Visual Basic script file).
          </li>
          <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> window should appear which will look something like <a href="#xFirstStart">(1)</a>.
          </li>

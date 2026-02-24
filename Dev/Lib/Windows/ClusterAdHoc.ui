@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Add Cluster Ad Hoc Rules</string>
+   <string>Add Cluster Ad Hoc Rules</string>
   </property>
   <property name="animated">
    <bool>false</bool>

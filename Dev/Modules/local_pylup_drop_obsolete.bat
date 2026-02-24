@@ -1,0 +1,2 @@
+pylupdate5 -verbose -noobsolete %1.py -ts translations\%1_de.ts
+pylupdate5 -verbose -noobsolete %1.py -ts translations\%1_es.ts

@@ -191,7 +191,7 @@ class Main(QMainWindow):
         self.returnVal = False
 
     def initUI(self, project_names):
-        self.setWindowTitle('Fix FLEx Projects')
+        self.setWindowTitle(_translate("FixFLExProjects", 'Fix FLEx Projects'))
         self.setGeometry(100, 100, 400, 300)
 
         # Create a central widget and set a layout

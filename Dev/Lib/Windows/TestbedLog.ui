@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Testbed Log</string>
+   <string>Testbed Log</string>
   </property>
   <property name="documentMode">
    <bool>false</bool>

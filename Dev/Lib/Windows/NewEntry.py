@@ -16,7 +16,6 @@ class Ui_Dialog(object):
         Dialog.setObjectName("Dialog")
         Dialog.setWindowModality(QtCore.Qt.ApplicationModal)
         Dialog.resize(438, 199)
-        Dialog.setWindowTitle("Add New Target Entry")
         Dialog.setWhatsThis("")
         Dialog.setInputMethodHints(QtCore.Qt.ImhNone)
         Dialog.setModal(True)
@@ -80,6 +79,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Add New Target Entry"))
         self.label.setText(_translate("Dialog", "Lexeme Form"))
         self.label_4.setText(_translate("Dialog", "Morpheme Type"))
         self.label_5.setText(_translate("Dialog", "Grammatical Category"))

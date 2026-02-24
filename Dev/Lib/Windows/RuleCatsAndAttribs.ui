@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Set Up Transfer Rule Categories &amp; Attributes</string>
+   <string>Set Up Transfer Rule Categories &amp; Attributes</string>
   </property>
   <property name="animated">
    <bool>false</bool>

@@ -35,7 +35,7 @@
     </and>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="anexar_clip">
+  <cfg:elementTemplate name="anexar_recorte">
     <append n="v_">
       <clip pos="1" side="tl" part="a_"/>
     </append>
@@ -120,10 +120,10 @@
     </def-cat>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="clip_idioma-fuente">
+  <cfg:elementTemplate name="recorte_idioma-fuente">
     <clip pos="1" side="sl" part="a_"/>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="clip_idioma-destino">
+  <cfg:elementTemplate name="recorte_idioma-destino">
     <clip pos="1" side="tl" part="a_"/>
   </cfg:elementTemplate>
   
@@ -315,13 +315,13 @@
     </ends-with-list>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="igual_clip_lit">
+  <cfg:elementTemplate name="igual_recorte_cadena-literal">
     <equal>
       <clip pos="1" side="tl" part="lem"/>
       <lit v="x1.1"/>
     </equal>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="igual_clip_lit-tag">
+  <cfg:elementTemplate name="igual_recorte_etiqueta-literal">
     <equal>
       <clip pos="1" side="tl" part="a_"/>
       <lit-tag v="pl"/>
@@ -339,25 +339,25 @@
     <pattern-item n="c_" />
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="asignar_clip_lit-tag">
+  <cfg:elementTemplate name="asignar_recorte_etiqueta-literal">
     <let>
       <clip pos="1" side="tl" part="a_"/>
       <lit-tag v="pl"/>
     </let>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="asignar_clip_cadena-literal">
+  <cfg:elementTemplate name="asignar_recorte_cadena-literal">
     <let>
       <clip pos="1" side="tl" part="lem"/>
       <lit v="x1.1"/>
     </let>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="asignar_var_clip">
+  <cfg:elementTemplate name="asignar_var_recorte">
     <let>
       <var n="v_"/>
       <clip pos="1" side="tl" part="a_"/>
     </let>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="asignar_clip_var">
+  <cfg:elementTemplate name="asignar_recorte_var">
     <let>
       <clip pos="1" side="tl" part="a_"/>
       <var n="v_"/>
@@ -377,18 +377,18 @@
     </let>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="unidad_lexica_clip">
+  <cfg:elementTemplate name="unidad_lexica_recorte">
     <lu>
       <clip pos="1" side="tl" part="a_"/>
     </lu>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="unidad_lexica_clip_2">
+  <cfg:elementTemplate name="unidad_lexica_recorte_2">
     <lu>
       <clip pos="1" side="tl" part="a_"/>
       <clip pos="1" side="tl" part="a_"/>
     </lu>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="unidad_lexica_clip_3">
+  <cfg:elementTemplate name="unidad_lexica_recorte_3">
     <lu>
       <clip pos="1" side="tl" part="a_"/>
       <clip pos="1" side="tl" part="a_"/>

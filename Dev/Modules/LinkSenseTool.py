@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.10 - 1/23/26 - Ron Lockwood
+#    Fixes #1193. Fixed missing value in message saying how many links were removed.
+#
+#   Version 3.14.9 - 12/15/25 - Ron Lockwood
+#    Fixes #1140. Reduce the unlinked list when a word is checked via the checkbox.
+#
 #   Version 3.14.8 - 11/24/25 - Ron Lockwood
 #    Fixes #1121. Give a better error message when no words matching morphtype roots is found.
 #
@@ -251,7 +257,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.8",
+        FTM_Version    : "3.14.10",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -765,7 +771,7 @@ class Main(QMainWindow):
         self.ui = Ui_SenseLinkerWindow()
         self.ui.setupUi(self)
         myFont = self.ui.tableView.font()
-        self.__model = LinkerTable(myData, headerData, myFont, self.calculateRemainingLinks)
+        self.__model = LinkerTable(myData, headerData, myFont, self.filter)
         self.__fullData = myData
         self.headerData = headerData
         self.ui.tableView.setModel(self.__model)
@@ -1681,7 +1687,7 @@ def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, se
        
     elif unlinkCount > 1:
        
-        report.Info(_translate("LinkSenseTool", ' links removed').format(num=str(unlinkCount)))
+        report.Info(_translate("LinkSenseTool", '{num} links removed').format(num=str(unlinkCount)))
                       
 def containsWord(sentHPGlist, word):
     

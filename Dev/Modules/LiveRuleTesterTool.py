@@ -5,6 +5,21 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.15 - 2/4/26 - Ron Lockwood
+#    Fixes #1204. Do a delayed scroll to the selected source sentence in the list box 
+#    so it gets centered in the viewable area. This is needed because the scroll was 
+#    happening before the layout was done and so it was not scrolling to the right place.
+#
+#   Version 3.14.17 - 1/9/26 - Ron Lockwood
+#    Fixes #1165. Set default buttons to a minimum size so they are not too small. 
+#
+#   Version 3.14.16 - 1/9/26 - Ron Lockwood
+#    Fixes #1162. Only initialize the lexical units from the source sentences list if 
+#    that 2nd tab has been selected. This avoids initializing lexical units unnecessarily which
+#    allowed transfer to work on a fresh or cleaned install without checking word check boxes.
+#    Also, default to selecting all rule checkboxes if none were saved. This means the tri-state
+#    checkbox needs to be checked initially.
+#
 #   Version 3.14.15 - 12/11/25 - Ron Lockwood
 #    Add a stylesheet to pad all but a few buttons with space left and right.
 #    This makes the buttons look less cramped when the window is resized.
@@ -267,7 +282,7 @@ from flexlibs import FLExProject
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView
 
 import Mixpanel
 import InterlinData
@@ -306,7 +321,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.14.15",
+        FTM_Version    : "3.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -670,9 +685,9 @@ class Main(QMainWindow):
         self.ui.scrollArea.setWidget(self.content_widget)
 
         # Make sure we are on right tabs
-        ruleTab = 0
-        sourceTab = 0
-        selectWordsSentNum = 0
+        ruleTab = 0            # default to transfer rules tab
+        sourceTab = 0          # default to source text tab
+        selectWordsSentNum = 0 # default to first sentence
         savedSourceTextName = ''
         sourceFontSizeStr = ''
         targetFontSizeStr = ''
@@ -805,16 +820,23 @@ class Main(QMainWindow):
         self.ui.SentCombo.setModel(self.__sent_model)
         self.ui.listSentences.selectionModel().selectionChanged.connect(self.listSentClicked)
         
-        # Only use the sentence number from saved values if the text is the same one that was last saved
-        if savedSourceTextName != sourceText:
+        # Do some initialization if we are on the list sentences tab
+        if sourceTab == 1:
 
-            selectWordsSentNum = 0
+            # Only use the sentence number from saved values if the text is the same one that was last saved
+            if savedSourceTextName != sourceText:
 
-        # Set the index of the combo box and sentence list to what was saved before
-        self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
-        qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
-        self.ui.listSentences.setCurrentIndex(qIndex)
-        self.listSentClicked()
+                selectWordsSentNum = 0
+
+            # Set the index of the combo box and sentence list to what was saved before
+            self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
+            qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
+            self.ui.listSentences.setCurrentIndex(qIndex)
+
+            # Scroll to the selected item and center it in the viewable area
+            # Use a timer to delay the scroll so the view has time to layout properly
+            QtCore.QTimer.singleShot(0, lambda: self.ui.listSentences.scrollTo(qIndex, QAbstractItemView.PositionAtCenter))
+            self.listSentClicked()
 
         if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
 
@@ -1157,18 +1179,20 @@ class Main(QMainWindow):
 
     def checkThemAll(self):
 
-            if self.advancedTransfer:
-                self.__ruleModel = self.__interChunkModel
-                self.__rulesElement = self.__interchunkRulesElement
-                self.SelectAllCheckBoxClicked()
-                self.__ruleModel = self.__postChunkModel
-                self.__rulesElement = self.__postchunkRulesElement
-                self.SelectAllCheckBoxClicked()
-                self.__ruleModel = self.__transferModel
-                self.__rulesElement = self.__transferRulesElement
-                self.SelectAllCheckBoxClicked()
-            else:
-                self.SelectAllCheckBoxClicked()
+        self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+
+        if self.advancedTransfer:
+            self.__ruleModel = self.__interChunkModel
+            self.__rulesElement = self.__interchunkRulesElement
+            self.SelectAllCheckBoxClicked()
+            self.__ruleModel = self.__postChunkModel
+            self.__rulesElement = self.__postchunkRulesElement
+            self.SelectAllCheckBoxClicked()
+            self.__ruleModel = self.__transferModel
+            self.__rulesElement = self.__transferRulesElement
+            self.SelectAllCheckBoxClicked()
+        else:
+            self.SelectAllCheckBoxClicked()
 
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
@@ -1305,6 +1329,11 @@ class Main(QMainWindow):
         
         msgBox.setDefaultButton(QMessageBox.Yes)
         
+        # Find the buttons and set a minimum width/height
+        for button in msgBox.buttons():
+
+            button.setMinimumSize(75, 23)
+
         # Show the dialog and get the user's response
         result = msgBox.exec_()
         return result

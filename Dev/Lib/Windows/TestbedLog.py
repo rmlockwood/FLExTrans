@@ -15,7 +15,6 @@ class Ui_TestbedLogWindow(object):
     def setupUi(self, TestbedLogWindow):
         TestbedLogWindow.setObjectName("TestbedLogWindow")
         TestbedLogWindow.resize(900, 546)
-        TestbedLogWindow.setWindowTitle("Testbed Log")
         TestbedLogWindow.setDocumentMode(False)
         self.centralwidget = QtWidgets.QWidget(TestbedLogWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -74,6 +73,7 @@ class Ui_TestbedLogWindow(object):
 
     def retranslateUi(self, TestbedLogWindow):
         _translate = QtCore.QCoreApplication.translate
+        TestbedLogWindow.setWindowTitle(_translate("TestbedLogWindow", "Testbed Log"))
         self.OKButton.setText(_translate("TestbedLogWindow", "OK"))
         self.editTestbedButton.setText(_translate("TestbedLogWindow", "Edit Testbed"))
         self.ZoomLabel.setText(_translate("TestbedLogWindow", "Font Size:"))

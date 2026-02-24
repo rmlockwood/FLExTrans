@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.15 - 2/6/26 - Ron Lockwood
+#    Fixes #1207. Bring the main form back to the foreground after closing the settings dialog.
+#
 #   Version 3.14.1 - 7/11/25 - Ron Lockwood
 #    Use new shortcuts system.
 #
@@ -36,6 +39,9 @@ import Version
 import ReadConfig
 import Utils
 
+import ctypes
+user32 = ctypes.windll.user32
+
 def RunSettings(sender, event):
     form = sender.OwnerItem.Owner.Parent
 
@@ -43,6 +49,12 @@ def RunSettings(sender, event):
     SettingsGUI.MainFunction(None, None)
     form.Enabled = True
 
+    # Bring the form back to the foreground after the settings dialog is closed
+    # Same code as in Flexlibs - UIMain.py
+    user32.keybd_event(0,0,0,0)
+    hwnd = form.Handle.ToInt32()
+    user32.SetForegroundWindow(hwnd)
+    
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FLExTransMenu'

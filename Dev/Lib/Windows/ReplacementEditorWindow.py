@@ -15,7 +15,6 @@ class Ui_ReplacementEditorWindow(object):
     def setupUi(self, ReplacementEditorWindow):
         ReplacementEditorWindow.setObjectName("ReplacementEditorWindow")
         ReplacementEditorWindow.resize(1036, 487)
-        ReplacementEditorWindow.setWindowTitle("Replacement Dictionary Editor")
         self.centralwidget = QtWidgets.QWidget(ReplacementEditorWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -97,7 +96,7 @@ class Ui_ReplacementEditorWindow(object):
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         ReplacementEditorWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(ReplacementEditorWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1036, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1036, 22))
         self.menubar.setObjectName("menubar")
         ReplacementEditorWindow.setMenuBar(self.menubar)
 
@@ -106,6 +105,7 @@ class Ui_ReplacementEditorWindow(object):
 
     def retranslateUi(self, ReplacementEditorWindow):
         _translate = QtCore.QCoreApplication.translate
+        ReplacementEditorWindow.setWindowTitle(_translate("ReplacementEditorWindow", "Replacement Dictionary Editor"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("ReplacementEditorWindow", "Source Lemma"))
         item = self.tableWidget.horizontalHeaderItem(1)
