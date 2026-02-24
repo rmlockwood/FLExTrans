@@ -109,11 +109,11 @@ ShowUnInstDetails show
 
 # Set up variables to hold installation messages in different UI languages
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
-LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkï¿½stchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "ï¿½Instalar Python 3.11.7?$\nï¿½IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opciï¿½n 'Install now'."
+LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
-LangString InstallXMLmindMsg ${LANG_SPANISH} "ï¿½Instalar XMLmind?"
+LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
 
 # English
 LangString Drafting       ${LANG_ENGLISH} "Drafting"
@@ -124,16 +124,16 @@ LangString Clusters       ${LANG_ENGLISH} "Clusters"
 
 # German
 LangString Drafting       ${LANG_GERMAN} "Entwerfen"
-LangString Run_Testbed    ${LANG_GERMAN} "Tests durchfï¿½hren"
+LangString Run_Testbed    ${LANG_GERMAN} "Tests durchführen"
 LangString Tools          ${LANG_GERMAN} "Werkzeuge"
 LangString Synthesis_Test ${LANG_GERMAN} "Synthesetest"
 LangString Clusters       ${LANG_GERMAN} "Clusters"
 
 # Spanish
-LangString Drafting       ${LANG_SPANISH} "Redacciï¿½n"
+LangString Drafting       ${LANG_SPANISH} "Redacción"
 LangString Run_Testbed    ${LANG_SPANISH} "Ejecutar testbed"
 LangString Tools          ${LANG_SPANISH} "Herramientas"
-LangString Synthesis_Test ${LANG_SPANISH} "Prueba de sï¿½ntesis"
+LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
 LangString Clusters       ${LANG_SPANISH} "Racimos"
 
 Section "MainSection" SEC01
@@ -629,8 +629,8 @@ SectionEnd
 
 # Define the string in each language
 LangString ChooseFolderText ${LANG_ENGLISH} "Choose where to put FLExTrans folder."
-LangString ChooseFolderText ${LANG_GERMAN} "Wï¿½hlen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
-LangString ChooseFolderText ${LANG_SPANISH} "Elija dï¿½nde colocar la carpeta FLExTrans."
+LangString ChooseFolderText ${LANG_GERMAN} "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
+LangString ChooseFolderText ${LANG_SPANISH} "Elija dónde colocar la carpeta FLExTrans."
 LangString BrowseText ${LANG_ENGLISH} "Browse"
 LangString BrowseText ${LANG_GERMAN} "Durchsuchen"
 LangString BrowseText ${LANG_SPANISH} "Navegar"
@@ -763,17 +763,17 @@ FunctionEnd
 
 LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
 LangString ProdModeLabelText1 ${LANG_GERMAN}  "Produktivbetrieb?"
-LangString ProdModeLabelText1 ${LANG_SPANISH} "ï¿½Uso en producciï¿½n?"
+LangString ProdModeLabelText1 ${LANG_SPANISH} "¿Uso en producción?"
 LangString ProdModeLabelText2 ${LANG_ENGLISH} "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
-LangString ProdModeLabelText2 ${LANG_GERMAN}  "Um eine einfachere FLExTrans-Oberflï¿½che fï¿½r den Produktivbetrieb zu installieren, wï¿½hlen Sie ï¿½Jaï¿½. Fï¿½r die FLExTrans-Entwicklung wï¿½hlen Sie ï¿½Neinï¿½."
-LangString ProdModeLabelText2 ${LANG_SPANISH} "Para instalar una interfaz FLExTrans mï¿½s sencilla para uso en producciï¿½n, elija Sï¿½. Para trabajo de desarrollo de FLExTrans, elija No"
+LangString ProdModeLabelText2 ${LANG_GERMAN}  "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie „Ja“. Für die FLExTrans-Entwicklung wählen Sie „Nein“."
+LangString ProdModeLabelText2 ${LANG_SPANISH} "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No"
 LangString NoText ${LANG_ENGLISH} "No"
 LangString NoText ${LANG_GERMAN} "Nein"
 LangString NoText ${LANG_SPANISH} "No"
 
 LangString YesText ${LANG_ENGLISH} "Yes"
 LangString YesText ${LANG_GERMAN} "Ja"
-LangString YesText ${LANG_SPANISH} "Sï¿½"
+LangString YesText ${LANG_SPANISH} "Sí"
 
 # Set up the Production mode step
 Function ProdModeDialog
@@ -807,7 +807,7 @@ Function .onInit
 	Push ${LANG_ENGLISH} 
 	Push English
 	Push ${LANG_SPANISH}
-	Push Espaï¿½ol
+	Push Espa?ol
 	Push ${LANG_GERMAN}
 	Push Deutsch
 	Push A ; A means auto count languages
