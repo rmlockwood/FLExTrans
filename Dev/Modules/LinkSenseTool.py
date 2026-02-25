@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.15.1 - 2/25/26 - Ron Lockwood
+#    Fixes #1247. In the fix for #1140, I re-filter the list after checking a box, but it was also
+#    scrolling to the top of the list which was annoying. I removed the scroll to top so that when you check a box, 
+#    you stay in the same place in the list. The scroll to top is still there when you check the Show Only Unlinked box 
+#    because that is a more significant change to the list and it makes more sense to scroll to the top in that case.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -196,7 +202,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1112,9 +1118,11 @@ class Main(QMainWindow):
     def ShowOnlyUnlinkedClicked(self):
         if self.ui.ShowOnlyUnlinkedCheckBox.isChecked():
             self.showOnlyUnlinked = True
+            self.filter()
+            self.ui.tableView.scrollToTop()
         else:
             self.showOnlyUnlinked = False
-        self.filter()
+            self.filter()
         
     def HideProperNounsClicked(self):
         if self.ui.HideProperNounsCheckBox.isChecked():
@@ -1218,10 +1226,10 @@ class Main(QMainWindow):
         self.ui.tableView.update()
         self.__model.resetInternalData()
         
-        # Recalculate links since we won't count prop nouns if the Hide prop nouns checkboxe is checked.
+        # Recalculate links since we won't count prop nouns if the Hide prop nouns checkbox is checked.
         self.calculateRemainingLinks()
 
-        self.ui.tableView.scrollToTop()
+        #self.ui.tableView.scrollToTop()
         return
     
 def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
