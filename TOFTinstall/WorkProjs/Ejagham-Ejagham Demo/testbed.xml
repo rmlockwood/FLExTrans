@@ -1,3 +1,520 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE FLExTransTestbed PUBLIC "-//XMLmind//DTD FLExTransTestbed//EN" "FLExTransTestbed.dtd">
-<FLExTransTestbed source_direction="ltr"><testbeds><testbed n="default"><tests><test id="654cd2a4-2f2e-4246-858b-fedf79716263" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>nnat1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>2</tag><tag>1</tag><tag>1_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>yót1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags /></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>nnat ńnyɔ́t</expectedResult><actualResult /></targetOutput></test><test id="1bac7400-3fc3-4625-9d9b-765de5f965e0" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>ndík1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>3sg</tag><tag>3sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>mə́t1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags /></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>ndék ḿmɛ́t</expectedResult><actualResult /></targetOutput></test><test id="19680f9f-4fe1-491d-bbee-422c097bc75f" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>ebhák1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>8</tag><tag>5</tag><tag>5_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>jə́t1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags /></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>ebhák ńjét</expectedResult><actualResult /></targetOutput></test><test id="21d1bdb2-08b5-480a-bcab-0de475c8ad57" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>njok1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>14pl</tag><tag>9sg</tag><tag>9sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>yə́t1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags /></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>njɔk ńnyét</expectedResult><actualResult /></targetOutput></test><test id="aeb0f69e-81cf-4bed-898c-effd562ab122" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>obhô1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>14sg</tag><tag>14sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>bə́t1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags /></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>ɔbhɔ̂ ḿbét</expectedResult><actualResult /></targetOutput></test><test id="e0bf2c7f-f589-4181-b8d3-4614bd525fb3" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>itə́n1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>2</tag><tag>19</tag><tag>19_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>fə́t1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags /></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>betén ḿfét</expectedResult><actualResult /></targetOutput></test><test id="1a5fb7bf-1c31-4e0e-b160-e195e0fadc7a" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>nnat1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>2</tag><tag>1</tag><tag>2_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>bháe1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags><tag>2_num</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>anat ábhe</expectedResult><actualResult /></targetOutput></test><test id="584edf69-d34e-4965-aa6a-16ced7450775" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>ekát1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>5</tag><tag>6_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>bháe1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags><tag>6_num</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>akát ábhe</expectedResult><actualResult /></targetOutput></test><test id="6cee335f-a51f-4fa2-b814-5c8a0c947357" is_valid="yes"><sourceInput origin="W Noun Numeral Kathie"><lexicalUnits><lexicalUnit><headWord>ebhák1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>8</tag><tag>5</tag><tag>8_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>bháe1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>num</grammaticalCategoryTag><otherTags><tag>8_num</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>bebhák bébhe</expectedResult><actualResult /></targetOutput></test><test id="0e0781ad-cd0b-4fba-a884-8120220e19bd" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>ntem1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>2</tag><tag>1</tag><tag>1_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>ntem1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>2</tag><tag>1</tag><tag>2_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>nte ate</expectedResult><actualResult /></targetOutput></test><test id="18a1c401-eefd-4f66-861f-730bf7231fa5" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>ndík1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>3sg</tag><tag>3sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>ndík1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>3sg</tag><tag>6_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>ndék arék</expectedResult><actualResult /></targetOutput></test><test id="f97d669b-8032-44d4-a218-98709bb8927a" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>nnyô1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>14pl</tag><tag>9sg</tag><tag>3sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>nnyô1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>14pl</tag><tag>9sg</tag><tag>14pl_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>nnyɔ̂ ɔnyɔ̂</expectedResult><actualResult /></targetOutput></test><test id="1640320a-41a1-4c51-84a9-90c18f95fffb" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>eyu1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>8</tag><tag>5</tag><tag>5_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>eyu1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>8</tag><tag>5</tag><tag>8_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>eyu beyu</expectedResult><actualResult /></targetOutput></test><test id="ad89f656-2d63-4d11-9752-7eb0df588de8" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>njok1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>14pl</tag><tag>9sg</tag><tag>9sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>njok1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>14pl</tag><tag>9sg</tag><tag>14pl_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>njɔk ɔjɔk</expectedResult><actualResult /></targetOutput></test><test id="4a9e2889-858d-4c19-b78e-d480f943fef4" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>otûŋ1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>14sg</tag><tag>14sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>otûŋ1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>14sg</tag><tag>6_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>ɔtôŋ atôŋ</expectedResult><actualResult /></targetOutput></test><test id="b038d4ce-a1b8-4c53-a0cd-cd8a45150f36" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>okún1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>9pl</tag><tag>14sg</tag><tag>14sg_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>okún1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>9pl</tag><tag>14sg</tag><tag>9pl_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>ɔkó nkó</expectedResult><actualResult /></targetOutput></test><test id="ec03de3c-88ed-4c5f-81e0-742b8a1d7a52" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>ikî1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>3pl</tag><tag>19</tag><tag>19_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>ikî1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>3pl</tag><tag>19</tag><tag>3pl_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>bekî nkî</expectedResult><actualResult /></targetOutput></test><test id="a6e1b268-9f31-403c-b8c0-1ce60448c211" is_valid="yes"><sourceInput origin="W Noun Paradigm Kathie"><lexicalUnits><lexicalUnit><headWord>baŋ1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>19</tag><tag>19_n</tag></otherTags></lexicalUnit><lexicalUnit><headWord>baŋ1</headWord><senseNum>1</senseNum><grammaticalCategoryTag>n</grammaticalCategoryTag><otherTags><tag>6</tag><tag>19</tag><tag>6_n</tag></otherTags></lexicalUnit></lexicalUnits></sourceInput><targetOutput><expectedResult>bebaŋ abaŋ</expectedResult><actualResult /></targetOutput></test></tests></testbed></testbeds></FLExTransTestbed>
+<FLExTransTestbed source_direction="ltr">
+	<testbeds>
+		<testbed n="default">
+			<tests>
+				<test id="654cd2a4-2f2e-4246-858b-fedf79716263" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>nnat1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>2</tag>
+									<tag>1</tag>
+									<tag>1_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>yót1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags/>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>nnat ńnyɔ́t</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="1bac7400-3fc3-4625-9d9b-765de5f965e0" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ndík1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>3sg</tag>
+									<tag>3sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>mə́t1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags/>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>ndék ḿmɛ́t</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="19680f9f-4fe1-491d-bbee-422c097bc75f" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ebhák1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>8</tag>
+									<tag>5</tag>
+									<tag>5_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>jə́t1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags/>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>ebhák ńjét</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="21d1bdb2-08b5-480a-bcab-0de475c8ad57" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>njok1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>14pl</tag>
+									<tag>9sg</tag>
+									<tag>9sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>yə́t1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags/>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>njɔk ńnyét</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="aeb0f69e-81cf-4bed-898c-effd562ab122" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>obhô1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>14sg</tag>
+									<tag>14sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>bə́t1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags/>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>ɔbhɔ̂ ḿbét</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="e0bf2c7f-f589-4181-b8d3-4614bd525fb3" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>itə́n1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>2</tag>
+									<tag>19</tag>
+									<tag>19_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>fə́t1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags/>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>betén ḿfét</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="1a5fb7bf-1c31-4e0e-b160-e195e0fadc7a" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>nnat1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>2</tag>
+									<tag>1</tag>
+									<tag>2_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>bháe1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags>
+									<tag>2_num</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>anat ábhe</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="584edf69-d34e-4965-aa6a-16ced7450775" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ekát1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>5</tag>
+									<tag>6_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>bháe1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6_num</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>akát ábhe</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="6cee335f-a51f-4fa2-b814-5c8a0c947357" is_valid="yes">
+					<sourceInput origin="Noun Numeral">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ebhák1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>8</tag>
+									<tag>5</tag>
+									<tag>8_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>bháe1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>num</grammaticalCategoryTag>
+								<otherTags>
+									<tag>8_num</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>bebhák bébhe</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="0e0781ad-cd0b-4fba-a884-8120220e19bd" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ntem1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>2</tag>
+									<tag>1</tag>
+									<tag>1_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>ntem1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>2</tag>
+									<tag>1</tag>
+									<tag>2_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>nte ate</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="18a1c401-eefd-4f66-861f-730bf7231fa5" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ndík1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>3sg</tag>
+									<tag>3sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>ndík1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>3sg</tag>
+									<tag>6_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>ndék arék</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="f97d669b-8032-44d4-a218-98709bb8927a" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>nnyô1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>14pl</tag>
+									<tag>9sg</tag>
+									<tag>3sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>nnyô1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>14pl</tag>
+									<tag>9sg</tag>
+									<tag>14pl_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>nnyɔ̂ ɔnyɔ̂</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="1640320a-41a1-4c51-84a9-90c18f95fffb" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>eyu1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>8</tag>
+									<tag>5</tag>
+									<tag>5_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>eyu1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>8</tag>
+									<tag>5</tag>
+									<tag>8_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>eyu beyu</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="ad89f656-2d63-4d11-9752-7eb0df588de8" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>njok1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>14pl</tag>
+									<tag>9sg</tag>
+									<tag>9sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>njok1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>14pl</tag>
+									<tag>9sg</tag>
+									<tag>14pl_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>njɔk ɔjɔk</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="4a9e2889-858d-4c19-b78e-d480f943fef4" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>otûŋ1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>14sg</tag>
+									<tag>14sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>otûŋ1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>14sg</tag>
+									<tag>6_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>ɔtôŋ atôŋ</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="b038d4ce-a1b8-4c53-a0cd-cd8a45150f36" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>okún1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>9pl</tag>
+									<tag>14sg</tag>
+									<tag>14sg_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>okún1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>9pl</tag>
+									<tag>14sg</tag>
+									<tag>9pl_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>ɔkó nkó</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="ec03de3c-88ed-4c5f-81e0-742b8a1d7a52" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>ikî1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>3pl</tag>
+									<tag>19</tag>
+									<tag>19_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>ikî1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>3pl</tag>
+									<tag>19</tag>
+									<tag>3pl_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>bekî nkî</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+				<test id="a6e1b268-9f31-403c-b8c0-1ce60448c211" is_valid="yes">
+					<sourceInput origin="Noun">
+						<lexicalUnits>
+							<lexicalUnit>
+								<headWord>baŋ1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>19</tag>
+									<tag>19_n</tag>
+								</otherTags>
+							</lexicalUnit>
+							<lexicalUnit>
+								<headWord>baŋ1</headWord>
+								<senseNum>1</senseNum>
+								<grammaticalCategoryTag>n</grammaticalCategoryTag>
+								<otherTags>
+									<tag>6</tag>
+									<tag>19</tag>
+									<tag>6_n</tag>
+								</otherTags>
+							</lexicalUnit>
+						</lexicalUnits>
+					</sourceInput>
+					<targetOutput>
+						<expectedResult>bebaŋ abaŋ</expectedResult>
+						<actualResult/>
+					</targetOutput>
+				</test>
+			</tests>
+		</testbed>
+	</testbeds>
+</FLExTransTestbed>
