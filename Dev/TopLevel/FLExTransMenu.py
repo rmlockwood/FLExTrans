@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.15.1 - 3/4/26 - Ron Lockwood
+#    Fixes #1255. Error checking for the XXE program and successfully opening the transfer rules file in XXE.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Fixes #1207. Bring the main form back to the foreground after closing the settings dialog.
 #
@@ -31,7 +34,7 @@ from System.Windows.Forms import (  # type: ignore
 )
 
 import os
-from subprocess import call
+import subprocess
 
 import SettingsGUI
 from FTPaths import HELP_DIR
@@ -99,7 +102,22 @@ def RunEditTransferRules(sender, event):
 
     progFilesFolder = os.environ["ProgramFiles(x86)"]
     xxe = progFilesFolder + "\\XMLmind_XML_Editor\\bin\\xxe.exe"
-    call([xxe, xferRulesFile])
+
+    if not os.path.exists(xxe):
+
+        MessageBox.Show(_translate("FLExTransMenu", "XMLmind XML Editor not found at expected location: {xxe}").format(xxe=xxe),
+                        _translate("FLExTransMenu", "Not Found Error"),
+                        MessageBoxButtons.OK)
+        return
+
+    try:
+        result = subprocess.run([xxe, xferRulesFile], capture_output=True)
+
+    except Exception as e:
+
+        MessageBox.Show(_translate("FLExTransMenu", "Error occurred while trying to open transfer rules file: {e}").format(e=e),
+                        _translate("FLExTransMenu", "Error"),
+                        MessageBoxButtons.OK)
 
 def RunHelp(sender, event):
 
