@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.15 - 2/19/26 - Ron Lockwood
+#    Make it easy to override the UI language with a code change.
+#
 #   Version 3.14.4 - 7/31/25 - Ron Lockwood
 #    Fixes #1033. Don't escape <> in literal strings in the rule file.
 #
@@ -1376,6 +1379,7 @@ class LocalizedDateTimeFormatter:
                 'de': QLocale(QLocale.German, QLocale.Germany),
                 'es': QLocale(QLocale.Spanish, QLocale.Spain),
                 'en': QLocale(QLocale.English, QLocale.UnitedStates),
+                'fr': QLocale(QLocale.French, QLocale.France),   
             }
             self.localeCache[langCode] = localeMap.get(langCode, QLocale())
         
@@ -1389,4 +1393,10 @@ class LocalizedDateTimeFormatter:
     
 def getInterfaceLangCode():
 
-    return FTConfig.UILanguage 
+    langOverride = ''
+
+    if langOverride == '':
+
+        return FTConfig.UILanguage 
+    else:
+        return langOverride

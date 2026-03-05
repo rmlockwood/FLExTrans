@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.1 - 2/19/26 - Ron Lockwood
+#    Parameterized a module name in an error message.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -102,6 +105,7 @@ import re
 import os
 from datetime import datetime
 
+import FTPaths
 from SIL.LCModel import ( # type: ignore
     ILexSense,
     ILexEntryInflType,
@@ -123,6 +127,7 @@ import Mixpanel
 import ReadConfig
 import Utils
 from RunApertium import docs as RunApertDocs
+from CatalogTargetAffixes import docs as catalogDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -144,22 +149,15 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
         FTM_Description: _translate("ConvertTextToSTAMPformat",
-"""This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable 
-for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
-HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
-synthesis program. 
-The output file will be stored in different files depending on whether you are doing STAMP synthesis (default) or
-HermitCrab synthesis. For STAMP, the file is what you specified by the Target Output ANA File setting -- typically
-called target_text-ana.txt.
-For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
-target_words-HC.txt. Both files are usually in the Build folder.
-NOTE: messages and the task bar will show the source project as being used. Actually the target project 
-is being used.""").format(runApert=RunApertDocs[FTM_Name])}
+"""This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for
+HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab synthesis program. The output file will be stored in different files depending on whether you are doing STAMP synthesis (default) or
+HermitCrab synthesis. For STAMP, the file is what you specified by the Target Output ANA File setting -- typically called target_text-ana.txt. For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
+target_words-HC.txt. Both files are usually in the Build folder. NOTE: messages and the task bar will show the source project as being used. Actually the target project is being used.""").format(runApert=RunApertDocs[FTM_Name])}
 
 #app.quit()
 #del app
@@ -1413,7 +1411,8 @@ def convertToSynthesizerFormat(DB, configMap, report):
     # Verify that the affix file exist.
     if not os.path.exists(affixFile):
         
-        report.Error(_translate("ConvertTextToSTAMPformat", "The Catalog Target Affixes module must be run before this module. The {fileType}: {filePath} does not exist.").format(fileType=ReadConfig.TARGET_AFFIX_GLOSS_FILE, filePath=affixFile))
+        report.Error(_translate("ConvertTextToSTAMPformat", "The {modname} module must be run before this module. The file: ...\\{filePath} does not exist.").format(
+            modname=catalogDocs[FTM_Name], filePath=os.path.relpath(affixFile, FTPaths.WORK_PROJECTS_DIR)))
         return None
     
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)

@@ -51,7 +51,7 @@ def GetUserID(configMap, report):
         msgBox.setText(_translate('Mixpanel', "FLExTrans would like to send usage statistics to FLExTrans developers. "+\
                                     "No personally identifiable information is sent. These anonymous statistics will help with future development. "+\
                                     "Do you want to opt out of sending usage statistics?"))
-        msgBox.setWindowTitle("FLExTrans Usage")
+        msgBox.setWindowTitle(_translate('Mixpanel', "FLExTrans Usage"))
         msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
         result = msgBox.exec_()

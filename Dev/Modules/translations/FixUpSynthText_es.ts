@@ -32,12 +32,12 @@ Fix Up Synthesis Text Rules File as specified in the Settings.</source>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="140"/>
-        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &apos;{synthFile}&apos;.</source>
+        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.</source>
         <translation>El módulo &quot;Synthesize Text&quot; debe ejecutarse antes que este. No se pudo abrir el archivo de síntesis: '{synthFile}'.</translation>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="164"/>
-        <source>The synthesis file was fixed using {numRules} &apos;Text Out&apos; rules.</source>
+        <source>The synthesis file was fixed using {numRules} 'Text Out' rules.</source>
         <translation>El archivo de síntesis se corrigió utilizando {numRules} reglas de 'Text Out'.</translation>
     </message>
     <message>

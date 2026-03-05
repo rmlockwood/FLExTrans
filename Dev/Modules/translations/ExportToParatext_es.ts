@@ -17,7 +17,7 @@
         <location filename="../ExportToParatext.py" line="120"/>
         <source>
 After chapters have been synthesized with the Synthesize Text module, the draft resides in the file specified
-by the setting &apos;Target Output Synthesis File&apos; (typically called &apos;target_text-syn.txt&apos;). This module
+by the setting 'Target Output Synthesis File' (typically called 'target_text-syn.txt'). This module
 takes the draft in this file and copies the chapters into Paratext to the project specified.</source>
         <translation type="obsolete">
 Después de que los capítulos hayan sido sintetizados con el módulo &quot;Sintetizar Texto&quot;, el borrador se encuentra en el archivo especificado
@@ -53,7 +53,7 @@ toma el borrador de este archivo y copia los capítulos en Paratext al proyecto 
         <location filename="../ExportToParatext.py" line="121"/>
         <source>
 After chapters have been synthesized with the {synthText} module, the draft resides in the file specified
-by the setting &apos;Target Output Synthesis File&apos; (typically called &apos;target_text-syn.txt&apos;). This module
+by the setting 'Target Output Synthesis File' (typically called 'target_text-syn.txt'). This module
 takes the draft in this file and copies the chapters into Paratext to the project specified.</source>
         <translation>Este módulo exporta el borrador que ha sido traducido con FLExTrans a Paratext. Después de que los capítulos hayan sido sintetizados con el módulo {synthText}, el borrador se encuentra en el archivo especificado
 por la configuración 'Archivo de Síntesis de Salida de Destino' (típicamente llamado 'target_text-syn.txt'). Este módulo

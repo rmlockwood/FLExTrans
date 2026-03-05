@@ -47,7 +47,7 @@ se usa el botón de la barra de herramientas del árbol. </translation>
     </message>
     <message>
         <location filename="../RunTreeTran.py" line="218"/>
-        <source>Can&apos;t find the TreeTran rules file: {rulesFilePath}.</source>
+        <source>Can't find the TreeTran rules file: {rulesFilePath}.</source>
         <translation>No se puede encontrar el archivo de reglas TreeTran: {rulesFilePath}.</translation>
     </message>
     <message>

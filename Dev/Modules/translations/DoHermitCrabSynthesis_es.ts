@@ -162,14 +162,14 @@
         <location filename="../DoHermitCrabSynthesis.py" line="153"/>
         <source>This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
-This will default to something like &apos;target_text-syn.txt&apos;. 
+This will default to something like 'target_text-syn.txt'. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
 configuration file. 
-It is named &apos;HermitCrab.config&apos; and will be in the &apos;Build&apos; folder. 
+It is named 'HermitCrab.config' and will be in the 'Build' folder. 
 NOTE: Messages will say the source project
 is being used. Actually the target project is being used.
-Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
-produce surface forms (&apos;target_words-surface.txt&apos;). 
+Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
+produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.</source>
         <translation>Este módulo ejecuta HermitCrab para crear el texto sintetizado. Los resultados se colocan en el archivo designado en la configuración como &quot;Target Output Synthesis File&quot;. Por defecto, será algo como &quot;target_text-syn.txt&quot;.
 Antes de crear el texto sintetizado, este módulo extrae el léxico del idioma de destino en forma de un archivo de configuración de HermitCrab.
@@ -185,7 +185,7 @@ Estas formas luego se utilizan para crear el texto de destino.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="281"/>
-        <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
+        <source>The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
         <translation>El error contiene una 'KeyNotFoundException' y esto a menudo indica que se debe ejecutar la utilidad FLEx Find and Fix en el proyecto {projectName}.</translation>
     </message>
     <message>

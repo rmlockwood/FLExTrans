@@ -72,7 +72,7 @@ The tool waits until one project is open before restoring the next.</source>
     </message>
     <message>
         <location filename="../RestoreFLExProjects.py" line="239"/>
-        <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
+        <source>Couldn't detect the {proj} project as open after {secs} seconds. Skipping.</source>
         <translation>Das Projekt {proj} konnte nach {secs} Sekunden nicht als geöffnet erkannt werden. Überspringen.</translation>
     </message>
     <message>

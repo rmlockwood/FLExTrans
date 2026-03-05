@@ -33,7 +33,7 @@ Sie können benutzerdefinierte Änderungen am zweisprachigen Lexikon vornehmen, 
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="310"/>
-        <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
+        <source>Custom field for linking doesn't exist. Please read the instructions.</source>
         <translation>Das benutzerdefinierte Feld für Verknüpfungen existiert nicht. Bitte lesen Sie die Anweisungen.</translation>
     </message>
     <message>
@@ -53,7 +53,7 @@ Sie können benutzerdefinierte Änderungen am zweisprachigen Lexikon vornehmen, 
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="335"/>
-        <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
+        <source>Custom field: {linkField} doesn't exist. Please read the instructions.</source>
         <translation>Benutzerdefiniertes Feld: {linkField} existiert nicht. Bitte lesen Sie die Anweisungen.</translation>
     </message>
     <message>

@@ -17,7 +17,7 @@
         <location filename="../GenerateParses.py" line="96"/>
         <source>This module creates an Apertium file (that can be converted for input to a Synthesizer process) with
 all the parses that can be generated from the target FLEx project, based on its inflectional templates.
-(It doesn&apos;t generate based on derivation information in the project and it doesn&apos;t yet handle
+(It doesn't generate based on derivation information in the project and it doesn't yet handle
 clitics or variants.)
 In FLExTrans &gt; Settings, under Synthesis Test settings, it is possible to limit output to
 a single POS or Citation Form, or to a specified number of stems (stems will be chosen

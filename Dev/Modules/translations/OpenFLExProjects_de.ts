@@ -40,7 +40,7 @@
     </message>
     <message>
         <location filename="../OpenFLExProjects.py" line="164"/>
-        <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
+        <source>Couldn't detect the {proj} project as open after {secs} seconds. Skipping.</source>
         <translation>Das Projekt {proj} konnte nach {secs} Sekunden nicht als geöffnet erkannt werden. Überspringen.</translation>
     </message>
     <message>

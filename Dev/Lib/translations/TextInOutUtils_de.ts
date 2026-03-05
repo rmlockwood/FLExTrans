@@ -40,7 +40,7 @@
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="354"/>
-        <source>{numRules} &apos;Text Out&apos; rules applied.</source>
+        <source>{numRules} 'Text Out' rules applied.</source>
         <translation type="obsolete">{numRules} 'Text Out'-Regeln angewendet.</translation>
     </message>
     <message>

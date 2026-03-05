@@ -143,7 +143,7 @@ Quell-FLEx-Projekt verwenden. Es ist möglich, Eigennamen nicht zu übersetzen.<
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1601"/>
-        <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
+        <source>Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
         <translation>Keine Warnungen für großgeschriebene Wörter (Eigennamen) anzeigen, die nicht analysiert wurden. Außer am Satzanfang.</translation>
     </message>
     <message>
@@ -153,7 +153,7 @@ Quell-FLEx-Projekt verwenden. Es ist möglich, Eigennamen nicht zu übersetzen.<
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1604"/>
-        <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
+        <source>Indicates if the system should avoid regenerating data that hasn't changed.
 Use the CleanFiles module to force the regeneration of data.</source>
         <translation>Gibt an, ob das System die Neuerstellung von Daten vermeiden soll, die sich nicht geändert haben.
 Verwenden Sie das CleanFiles-Modul, um die Neuerstellung von Daten zu erzwingen.</translation>
@@ -462,7 +462,7 @@ the intermediary text in STAMP format.</source>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1703"/>
-        <source>Hermit Crab Master File</source>
+        <source>HermitCrab Master File</source>
         <translation>HermitCrab-Masterdatei</translation>
     </message>
     <message>
@@ -474,7 +474,7 @@ Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translat
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1706"/>
-        <source>Hermit Crab Configuration File</source>
+        <source>HermitCrab Configuration File</source>
         <translation>HermitCrab-Konfigurationsdatei</translation>
     </message>
     <message>
@@ -486,7 +486,7 @@ Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translat
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1709"/>
-        <source>Hermit Crab Parses File</source>
+        <source>HermitCrab Parses File</source>
         <translation>HermitCrab-Parse-Datei</translation>
     </message>
     <message>
@@ -498,7 +498,7 @@ Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translat
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1712"/>
-        <source>Hermit Crab Surface Forms File</source>
+        <source>HermitCrab Surface Forms File</source>
         <translation>HermitCrab-Oberflächenformen-Datei</translation>
     </message>
     <message>
@@ -762,7 +762,7 @@ die mit einer TreeTran-Regel eingefügt werden können.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1621"/>
-        <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
+        <source>In the production mode module 'Translate Text', where do you want the drafted text to go?</source>
         <translation>In dem Produktionsmodus-Modul 'Text Übersetzen', wo möchten Sie, dass der entworfene Text hingeht?</translation>
     </message>
     <message>
@@ -774,7 +774,7 @@ FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu üb
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1308"/>
-        <source>Failed to open the &apos;{projectName}&apos; database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+        <source>Failed to open the '{projectName}' database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
         <translation type="obsolete">Die Datenbank '{projectName}' konnte nicht geöffnet werden. Dies könnte daran liegen, dass Sie das Projekt geöffnet haben und die Freigabeoption im Reiter &quot;Freigabe&quot; des Fieldworks-Projekteigenschaften-Dialogs nicht aktiviert haben. Diese finden Sie unter Datei &gt; Projektverwaltung &gt; Fieldworks-Projekteigenschaften im Menü.</translation>
     </message>
     <message>
@@ -784,7 +784,7 @@ FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu üb
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1497"/>
-        <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+        <source>Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
         <translation>Das Projekt '{projectName}' konnte nicht geöffnet werden. Dies könnte daran liegen, dass Sie das Projekt geöffnet haben und die Freigabeoption in der Registerkarte „Freigabe&quot; des Dialogfelds „Fieldworks-Projekteigenschaften&quot; nicht aktiviert haben. Dies finden Sie im Menü unter Datei &gt; Projektverwaltung &gt; Fieldworks-Projekteigenschaften.</translation>
     </message>
     <message>

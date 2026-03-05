@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.1 - 2/19/26 - Ron Lockwood
+#    Parameterized a module name in an error message.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -147,7 +150,7 @@ import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
-
+from ConvertTextToSTAMPformat import docs as convertDocs
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication, QTranslator
 
@@ -179,7 +182,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -1416,7 +1419,8 @@ def doStamp(DB, report, configMap=None):
     
     if not os.path.exists(targetANA):
 
-        report.Error(_translate("DoStampSynthesis", "The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.").format(fileType=ReadConfig.TARGET_ANA_FILE, filePath=targetANA))
+        report.Error(_translate("DoStampSynthesis", "The {modname} module must be run before this module. The file: ...\\{filePath} does not exist.").format(
+            modname=convertDocs[FTM_Name], filePath=os.path.relpath(targetANA, FTPaths.WORK_PROJECTS_DIR)))
         return None
 
     anaFile = Utils.build_path_default_to_temp(targetANA)

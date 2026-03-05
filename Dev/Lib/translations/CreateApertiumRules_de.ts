@@ -20,17 +20,17 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="835"/>
-      <source>Clear the variable to be sure we don&apos;t accidentally retain a prior value</source>
+      <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
       <translation>Löschen Sie die Variable, um sicherzustellen, dass wir nicht versehentlich einen vorherigen Wert beibehalten</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="637"/>
-      <source>No target affixes found for feature &apos;{trgSpec.label}&apos; on part-of-speech {trgSpec.category}.</source>
+      <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
       <translation>Keine Ziel-Affixe für das Merkmal '{trgSpec.label}' der Wortart {trgSpec.category} gefunden.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="638"/>
-      <source>There are no target affixes, so there&apos;s nothing further to do here.</source>
+      <source>There are no target affixes, so there's nothing further to do here.</source>
       <translation>Es gibt keine Ziel-Affixe, daher gibt es hier nichts weiter zu tun.</translation>
     </message>
     <message>
@@ -50,17 +50,17 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="750"/>
-      <source>The source noun doesn&apos;t have a plural affix attached. (Likely it has a singular affix.)</source>
+      <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
       <translation>Das Quellsubstantiv hat kein Plural-Affix. (Wahrscheinlich hat es ein Singular-Affix.)</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="754"/>
-      <source>The target noun doesn&apos;t take plural agreement (marked as such).</source>
+      <source>The target noun doesn't take plural agreement (marked as such).</source>
       <translation>Das Zielsubstantiv nimmt keine Pluralübereinstimmung an (als solche markiert).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="758"/>
-      <source>But if the target noun doesn&apos;t take singular agreement (marked as such), then we will have a plural noun class.</source>
+      <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
       <translation>Wenn das Zielsubstantiv jedoch keine Singularübereinstimmung annimmt (als solche markiert), haben wir eine Plural-Substantivklasse.</translation>
     </message>
     <message>

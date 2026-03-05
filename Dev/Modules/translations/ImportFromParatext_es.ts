@@ -52,7 +52,7 @@ cluster projects in the main FLExTrans Settings, then come back to this module.<
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="439"/>
-        <source>{numRules} &apos;Text In&apos; rules applied.</source>
+        <source>{numRules} 'Text In' rules applied.</source>
         <translation>{numRules} reglas de 'Texto Entrante' aplicadas.</translation>
     </message>
     <message>

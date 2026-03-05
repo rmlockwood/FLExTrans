@@ -124,7 +124,7 @@ Legen Sie in den Einstellungen fest, welches benutzerdefinierte Feld für die Ve
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1768"/>
-      <source>{cnt} words written to the file: {htmlFileName}. You&apos;ll find it in the Output folder.</source>
+      <source>{cnt} words written to the file: {htmlFileName}. You'll find it in the Output folder.</source>
       <translation>{cnt} Wörter in die Datei geschrieben: {htmlFileName}. Sie finden sie im Ausgabeverzeichnis.</translation>
     </message>
     <message>
@@ -159,7 +159,7 @@ Legen Sie in den Einstellungen fest, welches benutzerdefinierte Feld für die Ve
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1831"/>
-      <source>{linkField} field doesn&apos;t exist. Please read the instructions.</source>
+      <source>{linkField} field doesn't exist. Please read the instructions.</source>
       <translation>Das Feld {linkField} existiert nicht. Bitte lesen Sie die Anweisungen.</translation>
     </message>
     <message>

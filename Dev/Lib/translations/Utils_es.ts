@@ -80,13 +80,13 @@
     </message>
     <message>
         <location filename="../Utils.py" line="796"/>
-        <source>The abbreviation/name: &apos;{posAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; can&apos;t have a {charName} in it. Could not complete, &apos;+                                            &apos;please correct this {myType} in the {dbType} project.</source>
-        <translation>La abreviatura/nombre: &apos;{posAbbrStr}&apos; para {myType}: &apos;{posFullNameStr}&apos; no puede contener un {charName}. No se pudo completar, por favor corrija este {myType} en el proyecto {dbType}.</translation>
+        <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</source>
+        <translation>La abreviatura/nombre: '{posAbbrStr}' para {myType}: '{posFullNameStr}' no puede contener un {charName}. No se pudo completar, por favor corrija este {myType} en el proyecto {dbType}.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="812"/>
-        <source>The abbreviation/name: &apos;{oldAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; in the {dbType} project can&apos;t have a {charName} in it. The {charName} &apos;+                                              &apos;has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
-        <translation>La abreviatura/nombre: &apos;{oldAbbrStr}&apos; para {myType}: &apos;{posFullNameStr}&apos; en el proyecto {dbType} no puede contener un {charName}. El {charName} ha sido {message}, formando {posAbbrStr}. Tenga esto en cuenta al referirse a este {myType} en las reglas de transferencia.</translation>
+        <source>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
+        <translation>La abreviatura/nombre: '{oldAbbrStr}' para {myType}: '{posFullNameStr}' en el proyecto {dbType} no puede contener un {charName}. El {charName} ha sido {message}, formando {posAbbrStr}. Tenga esto en cuenta al referirse a este {myType} en las reglas de transferencia.</translation>
     </message>
 </context>
 </TS>
