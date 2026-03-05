@@ -117,6 +117,8 @@ for %%d in (Images Agreement "Irregular Form" "Synthesis Self-Test" "Transfer Ru
     mkdir %flextransdoc%\%%d
     xcopy Doc\%%d\* %flextransdoc%\%%d   /s /e
 )
+rem use the same .vbs file for Croatian sample
+copy %installer_resources%\VBS\FLExTrans.vbs %flextransdoc%\"Transfer Rules Tutorial\Croatian-English"
 
 rem SampleProjects
 copy "%installer_resources%\Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
