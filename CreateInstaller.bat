@@ -75,7 +75,7 @@ rem Create the modified config file line by line
 @echo on
 
 rem build Python requirements file
-xcopy FlexTools_%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
+echo flextoolslib==2026.2.26b0 >> %flextransfolder%\requirements.txt
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo mixpanel >> %flextransfolder%\requirements.txt
