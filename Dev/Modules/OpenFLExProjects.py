@@ -30,9 +30,9 @@ import os
 from subprocess import Popen, DETACHED_PROCESS
 import sys
 import time
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
+from PyQt6.QtCore import QCoreApplication
 import pygetwindow as gw
 
 from flextoolslib import *
@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
 
         self.listWidget = QListWidget()
         self.listWidget.addItems(project_names)
-        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         layout.addWidget(self.listWidget)
 
         # Create OK and Cancel buttons
@@ -149,7 +149,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     mainWindow = MainWindow(AllProjectNames())
     mainWindow.show()
-    app.exec_()
+    app.exec()
 
     # Get the Fieldworks folder path
     fieldworksDir = os.getenv('FIELDWORKSDIR')

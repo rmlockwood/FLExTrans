@@ -79,7 +79,7 @@ echo flextoolslib==2026.2.26b0 >> %flextransfolder%\requirements.txt
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo mixpanel >> %flextransfolder%\requirements.txt
-echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
+echo PyQt6==6.10.2 >> %flextransfolder%\requirements.txt
 echo regex >> %flextransfolder%\requirements.txt
 echo wildebeest-nlp >> %flextransfolder%\requirements.txt
 echo pygetwindow >> %flextransfolder%\requirements.txt

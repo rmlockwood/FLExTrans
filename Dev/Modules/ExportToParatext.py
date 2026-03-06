@@ -74,9 +74,9 @@ import os
 import re
 import xml.etree.ElementTree as ET
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtCore import QCoreApplication
 
 from SIL.LCModel import * # type: ignore                                                  
 from flextoolslib import *                                                 
@@ -259,7 +259,7 @@ def doExportToParatext(DB, configMap, report):
     window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()
-    app.exec_()
+    app.exec()
     
     if window.retVal == True:
         

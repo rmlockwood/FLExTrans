@@ -118,8 +118,8 @@ from SIL.LCModel import *                                                    # t
 from flextoolslib import *                                                 
 from flexlibs import FLExProject, FWProjectsDir
 
-from PyQt5.QtCore import QCoreApplication, QTranslator
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QTranslator
+from PyQt6.QtWidgets import QApplication
 
 import Mixpanel
 import ReadConfig

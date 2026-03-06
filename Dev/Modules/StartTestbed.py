@@ -26,8 +26,8 @@
 from SIL.LCModel import * # type: ignore
 from flextoolslib import *                                                 
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
 
 from Testbed import *
 import Mixpanel

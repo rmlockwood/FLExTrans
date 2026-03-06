@@ -65,8 +65,8 @@
 import os
 import xml.etree.ElementTree as ET
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
 
 from SIL.LCModel import ( # type: ignore
     ITextFactory,

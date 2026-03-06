@@ -198,7 +198,7 @@ import unicodedata
 import itertools
 from collections import defaultdict
 
-from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale
+from PyQt6.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
@@ -1351,7 +1351,7 @@ def loadTranslations(libList, translatorsList, loadBase=False):
 
         # Load the Qt base translation for standard dialogs
         qt_translator = QTranslator()
-        qt_translator.load(f"qtbase_{getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        qt_translator.load(f"qtbase_{getInterfaceLangCode()}", QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         QCoreApplication.installTranslator(qt_translator)
         translatorsList.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
 

@@ -58,9 +58,9 @@ import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                                 
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 from SrcTgtViewer import Ui_SrcTgtWindow
@@ -366,7 +366,7 @@ def MainFunction(DB, report, modify=True):
     window = Main(srcFile, tgtFile, htmlFile, advanced)
     
     window.show()
-    app.exec_()
+    app.exec()
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

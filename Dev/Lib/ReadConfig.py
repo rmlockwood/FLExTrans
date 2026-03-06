@@ -170,7 +170,7 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
 
 
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate

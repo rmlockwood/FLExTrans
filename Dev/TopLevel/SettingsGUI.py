@@ -150,10 +150,10 @@ from System import String # type: ignore
 
 from System.Windows.Forms import (MessageBox, MessageBoxButtons) # type: ignore
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
-from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo
-from PyQt5.QtGui import QIcon
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
+from PyQt6.QtCore import QCoreApplication, QTranslator, QLibraryInfo
+from PyQt6.QtGui import QIcon
 
 from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
@@ -777,7 +777,7 @@ def doFolderBrowse(wind, myWidgInfo):
     # As above, this will bring up the native file dialog for Windows using the current Windows locale.
     # We could use options=QFileDialog.DontUseNativeDialog to force it to be in the selected UI language, 
     # but this QT dialog would look unfamiliar to the user. Chances are that the user is using the same language as the OS, so we don't need to force it.
-    dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", startDir, options=QFileDialog.ShowDirsOnly)
+    dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", startDir, options=QFileDialog.Option.ShowDirsOnly)
     
     if dirName:
         
@@ -818,7 +818,7 @@ class Ui_MainWindow(object):
         self.radioGroupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.radioGroupBox.setObjectName("radioGroupBox")
         self.radioGroupBox.setTitle(_translate("SettingsGUI", "View Mode"))
-        self.radioGroupBox.setFixedHeight(47)  # Set a fixed height for the group box
+        self.radioGroupBox.setFixedHeight(60)  # Set a fixed height for the group box
 
         # Create a horizontal layout for the radio buttons
         self.radioLayout = QtWidgets.QHBoxLayout(self.radioGroupBox)
@@ -843,7 +843,7 @@ class Ui_MainWindow(object):
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
@@ -926,8 +926,8 @@ class Ui_MainWindow(object):
 
                 # Add a horizontal line
                 line = QtWidgets.QFrame(self.scrollAreaWidgetContents)
-                line.setFrameShape(QtWidgets.QFrame.HLine)
-                line.setFrameShadow(QtWidgets.QFrame.Sunken)
+                line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+                line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
                 line.setObjectName("line")
                 widgInfo[WIDGET1_OBJ] = line
                 j += 1
@@ -943,7 +943,7 @@ class Ui_MainWindow(object):
                 
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
-                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAlphabetically)
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
                 self.hideWidgetIfNeeded(widgInfo, newObj)
@@ -960,7 +960,7 @@ class Ui_MainWindow(object):
                 
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
-                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAlphabetically)
                 
                 # Add a blank item
                 newObj.addItem("")
@@ -970,7 +970,7 @@ class Ui_MainWindow(object):
             
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
-                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAlphabetically)
                 
                 # Add a blank item
                 newObj.addItem("")
@@ -1007,7 +1007,7 @@ class Ui_MainWindow(object):
                 
                 newObj = CheckableComboBox()
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
-                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAlphabetically)
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
                 self.hideWidgetIfNeeded(widgInfo, newObj)
@@ -1242,7 +1242,13 @@ class Main(QMainWindow):
     def centerWindow(self):
 
         # Get the screen geometry
-        screen = QtWidgets.QDesktopWidget().screenGeometry()
+        from PyQt6.QtGui import QGuiApplication
+
+        primScreen = QGuiApplication.primaryScreen()
+        screen = primScreen.geometry()
+
+
+        #screen = QtWidgets.QDesktopWidget().screenGeometry()
 
         # Get the window geometry
         size = self.geometry()
@@ -1420,9 +1426,9 @@ class Main(QMainWindow):
             msg = QMessageBox()
             msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
             msg.setText(msgStr)
-            msg.setIcon(QMessageBox.NoIcon)  # <- Suppresses the sound
+            msg.setIcon(QMessageBox.Icon.NoIcon)  # <- Suppresses the sound
             msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-            msg.exec_()
+            msg.exec()
         
     def save(self):
 
@@ -1554,12 +1560,12 @@ def MainFunction(DB, report, modify=True):
     
     window = Main(configMap, TargetDB, sourceDB)
     window.show()
-    app.exec_()
+    app.exec()
     
     # Prompt the user to save changes, if needed
     if window.modified == True:
         
-        if QMessageBox.question(window, _translate("SettingsGUI", 'Save Changes'), _translate("SettingsGUI", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+        if QMessageBox.question(window, _translate("SettingsGUI", 'Save Changes'), _translate("SettingsGUI", "Do you want to save your changes?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes) == QMessageBox.StandardButton.Yes:
 
             window.save()
     

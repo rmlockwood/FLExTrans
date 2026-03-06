@@ -52,9 +52,9 @@ from SIL.LCModel import ( # type: ignore
     IStTxtPara, 
 )
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QMainWindow, QApplication, QComboBox
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 import ReadConfig
@@ -287,7 +287,7 @@ def MainFunction(DB, report, modify):
     
     window = Main(targetDB, clusterProjects, scriptureTitles)
     window.show()
-    app.exec_()
+    app.exec()
     
     if window.retVal == True:
         

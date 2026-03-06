@@ -62,8 +62,8 @@ import re
 import sys
 from datetime import datetime
 
-from PyQt5.QtCore import QCoreApplication, QTranslator
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QTranslator
+from PyQt6.QtWidgets import QApplication
 
 from SIL.LCModel import * # type: ignore
 

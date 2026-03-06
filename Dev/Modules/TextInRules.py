@@ -38,8 +38,8 @@
 
 from flextoolslib import *                                          
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 import Utils
@@ -102,7 +102,7 @@ def MainFunction(DB, report, modify=True):
     
     if window.retVal:
         window.show()
-        app.exec_()
+        app.exec()
     
 #----------------------------------------------------------------
 # define the FlexToolsModule

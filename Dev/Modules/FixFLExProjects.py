@@ -45,9 +45,9 @@ from SIL.LCModel import LcmFileHelper # type: ignore
 clr.AddReference("SIL.LCModel.Utils")
 from SIL.LCModel.Utils import IProgress  # type: ignore
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
-from PyQt5 import QtGui
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
+from PyQt6 import QtGui
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 import ReadConfig
@@ -208,7 +208,7 @@ class Main(QMainWindow):
 
         self.listWidget = QListWidget()
         self.listWidget.addItems(project_names)
-        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         layout.addWidget(self.listWidget)
 
         # Create OK and Cancel buttons
@@ -274,7 +274,7 @@ def MainFunction(DB, report, modifyAllowed=True):
     # Show the window to get the options the user wants
     window = Main(AllProjectNames())
     window.show()
-    app.exec_()
+    app.exec()
     
     if window.returnVal:
 

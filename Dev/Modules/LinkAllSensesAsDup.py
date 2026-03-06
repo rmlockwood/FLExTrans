@@ -40,8 +40,8 @@
 
 import re
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
 
 from System import Guid # type: ignore
 from System import String # type: ignore

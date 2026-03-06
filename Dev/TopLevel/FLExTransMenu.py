@@ -25,8 +25,8 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
 from System.Windows.Forms import (  # type: ignore
     Keys,
     MessageBox,

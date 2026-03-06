@@ -41,7 +41,7 @@ import xml.etree.ElementTree as ET
 import tempfile
 from dataclasses import dataclass
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Utils
 import ReadConfig

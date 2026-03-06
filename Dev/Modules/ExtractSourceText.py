@@ -62,8 +62,8 @@
 #   used by the Apertium transfer engine.
 #
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
 
 import InterlinData
 from SIL.LCModel import * # type: ignore

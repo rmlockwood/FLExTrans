@@ -65,8 +65,8 @@ from collections import defaultdict
 import random
 import logging
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
 
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,

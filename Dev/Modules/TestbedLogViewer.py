@@ -55,10 +55,10 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from subprocess import call
 
-from PyQt5 import QtGui, QtCore
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
-from PyQt5.QtCore import QCoreApplication, QDateTime
+from PyQt6 import QtGui, QtCore
+from PyQt6 import QtWidgets
+from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
+from PyQt6.QtCore import QCoreApplication, QDateTime
 
 from SIL.LCModel import *   # type: ignore
 from flextoolslib import *                                                 
@@ -229,7 +229,7 @@ class TestStatsItem(BaseTreeItem):
         myLabel = QtWidgets.QLabel()
         myLabel.setText(self.Data(col))
         if self.isRTL():
-            myLabel.setAlignment(QtCore.Qt.AlignRight)
+            myLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         
         # Create the elapsed time tooltip
         total_secs = self.statsObj.getTestElapsedSeconds()
@@ -538,16 +538,16 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         return None
     
     def headerData(self, column, orientation, role):
-        if (orientation == QtCore.Qt.Horizontal and
-        role == QtCore.Qt.DisplayRole):
+        if (orientation == QtCore.Qt.Orientation.Horizontal and
+        role == QtCore.Qt.ItemDataRole.DisplayRole):
             try:
                 return self.rootItem.Data(column)
             except IndexError:
                 pass
 
-        if role == QtCore.Qt.TextAlignmentRole:
+        if role == QtCore.Qt.ItemDataRole.TextAlignmentRole:
             if self.getRTL():
-                return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
+                return QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignCenter
         
         return QtCore.QVariant()
                 
@@ -567,7 +567,7 @@ class LogViewerMain(QMainWindow):
 
         # check the text direction of the test language
         if self.__model.getRTL():
-            self.ui.logTreeView.setLayoutDirection(QtCore.Qt.RightToLeft)
+            self.ui.logTreeView.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         
         self.ui.OKButton.clicked.connect(self.okClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
@@ -591,7 +591,7 @@ class LogViewerMain(QMainWindow):
         return self.__model
     
     def okClicked(self):
-        self.retValue = QDialogButtonBox.Ok
+        self.retValue = QDialogButtonBox.StandardButton.Ok
         self.close()
 
     def EditTestbedClicked(self):
@@ -661,7 +661,7 @@ def RunTestbedLogViewer(report):
         firstIndex = window.getModel().rootItem.children[0].index
         window.ui.logTreeView.expand(firstIndex)
         
-    app.exec_()
+    app.exec()
 
 def MainFunction(DB, report, modify):
     

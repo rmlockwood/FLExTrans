@@ -120,8 +120,8 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString          # type: ignore
 from flextoolslib import *                                                 
 from flexlibs import FLExProject
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QTranslator
 
 import Mixpanel
 import ReadConfig

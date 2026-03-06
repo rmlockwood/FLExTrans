@@ -151,8 +151,8 @@ import ReadConfig
 import Utils
 import FTPaths
 from ConvertTextToSTAMPformat import docs as convertDocs
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QTranslator
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate

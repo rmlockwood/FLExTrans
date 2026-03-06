@@ -52,7 +52,7 @@ import TestbedValidator
 import ReadConfig 
 import Utils
 
-from PyQt5.QtCore import QCoreApplication, QDateTime
+from PyQt6.QtCore import QCoreApplication, QDateTime
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate

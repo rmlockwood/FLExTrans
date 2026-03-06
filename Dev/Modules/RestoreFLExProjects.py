@@ -34,9 +34,9 @@ import sys
 import time
 import pygetwindow as gw
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt6.QtCore import QCoreApplication
 
 from flextoolslib import *
 
@@ -104,8 +104,8 @@ class MainWindow(QMainWindow):
 
         # Create a horizontal layout for the browse button
         browseLayout = QHBoxLayout()
-        spacer1 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        spacer2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacer1 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        spacer2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.browseButton = QPushButton(_translate("RestoreFLExProjects", "Browse for Folder"))
         self.browseButton.setFixedWidth(int(self.width() * BROWSE_BUT_PCT))  # Set the button width to X% of the window width
         browseLayout.addItem(spacer1)
@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(projectLabel)
 
         self.listWidget = QListWidget()
-        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         layout.addWidget(self.listWidget)
 
         # Create OK and Cancel buttons
@@ -220,7 +220,7 @@ def mainFunction(DB, report, modifyAllowed):
 
     mainWindow = MainWindow(defaultFolder)
     mainWindow.show()
-    app.exec_()
+    app.exec()
 
     # Get the Fieldworks folder path
     fieldworksDir = os.getenv('FIELDWORKSDIR')

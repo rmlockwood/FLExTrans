@@ -160,9 +160,9 @@ import time
 
 from fuzzywuzzy import fuzz
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtCore import QTimer, QCoreApplication
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
+from PyQt6 import QtGui, QtCore
+from PyQt6.QtCore import QTimer, QCoreApplication
+from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
@@ -463,7 +463,7 @@ class LinkerCombo(QtCore.QAbstractListModel):
         row = index.row()
         myHPG = self.__localData[row]
         
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             if self.getRTL():
                 value = myHPG.getHeadword() + ' (' + myHPG.getPOS() + ') ' + myHPG.getGloss()
             else:
@@ -471,7 +471,7 @@ class LinkerCombo(QtCore.QAbstractListModel):
             self.__currentHPG = myHPG    
             return value
             
-    def setData(self, index, value, role = QtCore.Qt.EditRole):
+    def setData(self, index, value, role = QtCore.Qt.ItemDataRole.EditRole):
         return True
             
 class LinkerTable(QtCore.QAbstractTableModel):
@@ -503,14 +503,14 @@ class LinkerTable(QtCore.QAbstractTableModel):
     def headerData(self, section, orientation, role):
         
         # Set the background color
-        if role == QtCore.Qt.BackgroundRole:
+        if role == QtCore.Qt.ItemDataRole.BackgroundRole:
             
-            qColor = QtGui.QColor(QtCore.Qt.gray)
+            qColor = QtGui.QColor(QtGui.QColorConstants.Gray)
             return qColor
         
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             
-            if orientation == QtCore.Qt.Horizontal:
+            if orientation == QtCore.Qt.Orientation.Horizontal:
                 
                 return self.__myHeaderData[section]
             else:
@@ -522,7 +522,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         col = index.column()
         locData = self.__localData[row]
         
-        if role == QtCore.Qt.EditRole:
+        if role == QtCore.Qt.ItemDataRole.EditRole:
             
             if col == COL_LINK_IT: # Checkbox column
                 pass
@@ -540,26 +540,26 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 
                 return self.__selectedHPG.getHeadword()
         
-        if role == QtCore.Qt.FontRole:
+        if role == QtCore.Qt.ItemDataRole.FontRole:
             
             return self.__font
         
         # Set the foreground (font) color
-        if role == QtCore.Qt.ForegroundRole:
+        if role == QtCore.Qt.ItemDataRole.ForegroundRole:
             
-            qColor = QtGui.QColor(QtCore.Qt.black)
+            qColor = QtGui.QColor(QtGui.QColorConstants.Black)
             
             if row >= 0:
                 
                 # src headword
                 if col == COL_SRC_HEADWORD:
                     
-                    qColor = QtGui.QColor(QtCore.Qt.darkGreen)
+                    qColor = QtGui.QColor(QtGui.QColorConstants.DarkGreen)
                 
                 # tgt headword    
                 elif col == COL_TGT_HEADWORD:
                     
-                    qColor = QtGui.QColor(QtCore.Qt.darkBlue)
+                    qColor = QtGui.QColor(QtGui.QColorConstants.DarkBlue)
                 
                 # gram. category    
                 elif (col == COL_SRC_POS or col == COL_TGT_POS) and locData.isSuggestion() == True: 
@@ -567,14 +567,14 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     # If there is a mismatch in grammatical category color it red
                     if locData.getSrcPOS().lower() != locData.getTgtPOS().lower():
                         
-                        qColor = QtGui.QColor(QtCore.Qt.red)
+                        qColor = QtGui.QColor(QtGui.QColorConstants.Red)
                         
                 qBrush = QtGui.QBrush(qColor)
                 
                 return qBrush
         
         # Set the background color
-        if role == QtCore.Qt.BackgroundRole:
+        if role == QtCore.Qt.ItemDataRole.BackgroundRole:
             
             if row >= 0:
                 
@@ -583,7 +583,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 # Mark in yellow the first column cells for the rows to be linked or unlinked (in the case of a previously linked row from the DB)
                 if col == 0 and ((locData.getLinkIt() == True and not initiallyLinkedUnmodifiedSense) or (locData.getLinkIt() == False and initiallyLinkedUnmodifiedSense)):
                     
-                    qColor = QtGui.QColor(QtCore.Qt.yellow)
+                    qColor = QtGui.QColor(QtGui.QColorConstants.Yellow)
                     
                 # Modified rows get a color just for the target columns
                 elif col >= COL_TGT_HEADWORD and col <= COL_TGT_GLOSS and (locData.getTgtModified() == True or \
@@ -609,38 +609,38 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 # Existing link in the DB    
                 else: # INITIAL_STATUS_LINKED:
                     
-                    qColor = QtGui.QColor(QtCore.Qt.white)
+                    qColor = QtGui.QColor(QtGui.QColorConstants.White)
 
                 # This causes continual repainting and high processor use, moved it to SetData()
                 #self.dataChanged.emit(index, index)
                 
                 return qColor
         
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
              
             if col != COL_LINK_IT:
                  
                 return locData.getDataByColumn(col)
                  
-        if role == QtCore.Qt.CheckStateRole:
+        if role == QtCore.Qt.ItemDataRole.CheckStateRole:
              
             if col == COL_LINK_IT:
                  
                 # If user said link it, check the box. Also if there is an existing link in the DB on 
                 if locData.getLinkIt() == True or (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.getModified() == False):
                      
-                    val = QtCore.Qt.Checked
+                    val = QtCore.Qt.CheckState.Checked
                 else:
-                    val = QtCore.Qt.Unchecked
+                    val = QtCore.Qt.CheckState.Unchecked
                 
                 return val
              
-        elif role == QtCore.Qt.TextAlignmentRole:
+        elif role == QtCore.Qt.ItemDataRole.TextAlignmentRole:
              
             if col == COL_LINK_IT:
                  
                 # Doesn't have an effect
-                return QtCore.Qt.AlignCenter
+                return QtCore.Qt.AlignmentFlag.AlignCenter
              
             # Check if we have right to left data in a column, if so align it right
             elif col > COL_LINK_IT and len(locData.getDataByColumn(col)) > 0:
@@ -648,14 +648,14 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 # check first character of the given cell
                 if unicodedata.bidirectional(locData.getDataByColumn(col)[0]) in ('R', 'AL'): 
                      
-                    return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
+                    return QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignCenter
                 
     def flags(self, index):
         
         locData = self.__localData[index.row()]
         
         # Columns 0 and 4 are enabled and selectable
-        val = QtCore.Qt.ItemIsSelectable
+        val = QtCore.Qt.ItemFlag.ItemIsSelectable
         
         # Add checkable for the 1st column
         if index.column() == COL_LINK_IT:
@@ -663,28 +663,28 @@ class LinkerTable(QtCore.QAbstractTableModel):
             # Don't allow the box to be checked if we have an unlinked row that hasn't had the target modified
             if not (locData.getInitialStatus() == INITIAL_STATUS_UNLINKED and locData.getTgtModified() == False):
             
-                val =  val | QtCore.Qt.ItemIsEnabled
+                val =  val | QtCore.Qt.ItemFlag.ItemIsEnabled
                 
-            val =  val | QtCore.Qt.ItemIsUserCheckable 
+            val =  val | QtCore.Qt.ItemFlag.ItemIsUserCheckable 
         
         # Add editable for the target headword column  
         elif index.column() == COL_TGT_HEADWORD:
             
-            val = val | QtCore.Qt.ItemIsEnabled #| QtCore.Qt.ItemIsEditable 
+            val = val | QtCore.Qt.ItemFlag.ItemIsEnabled  
             
         return val
     
-    def setData(self, index, value, role = QtCore.Qt.EditRole):
+    def setData(self, index, value, role = QtCore.Qt.ItemDataRole.EditRole):
         
         col = index.column()
 
-        if role == QtCore.Qt.CheckStateRole and col == COL_LINK_IT:
+        if role == QtCore.Qt.ItemDataRole.CheckStateRole and col == COL_LINK_IT:
             
             self.__linkingChanged = True
             
             row = index.row()
             
-            if value == QtCore.Qt.Checked: 
+            if value == QtCore.Qt.CheckState.Checked: 
                 
                 self.__localData[row].setLinkIt(True)
                 self.__localData[row].setModified(True)
@@ -771,7 +771,7 @@ class Main(QMainWindow):
 
             if unicodedata.bidirectional(myHeadword[i]) in ('R', 'AL'):
 
-                self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
                 self.__comboModel.setRTL(True)
                 break
     
@@ -825,7 +825,7 @@ class Main(QMainWindow):
 
         if index.column() == COL_TGT_HEADWORD:
 
-            self.__model.data(index, QtCore.Qt.EditRole)
+            self.__model.data(index, QtCore.Qt.ItemDataRole.EditRole)
             
             # Repaint the target headword, target POS, and target gloss columns
             for col in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
@@ -853,7 +853,7 @@ class Main(QMainWindow):
             lexemeForm = ''
 
         dlg = NewEntryDlg.NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames, clusterProjects, lexemeForm)
-        dlg.exec_()
+        dlg.exec()
 
         if dlg.retVal == True:
 
@@ -876,25 +876,25 @@ class Main(QMainWindow):
         
     def InitSearchAllCheckBox(self):
         
-        self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Unchecked)
+        self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
         
         val = ReadConfig.getConfigVal(self.__configMap, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, report=None, giveError=False)
         
         if val:
             if val == 'y':
                 
-                self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Checked)
+                self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
                 
     def InitRebuildBilingCheckBox(self):
         
-        self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)
+        self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
         
         val = ReadConfig.getConfigVal(self.__configMap, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, report=None, giveError=False)
         
         if val:
             if val == 'n':
                 
-                self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Unchecked)
+                self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
                 
         self.rebuildBiling = self.ui.RebuildBilingCheckBox.isChecked()
         
@@ -1062,7 +1062,7 @@ class Main(QMainWindow):
         # LinkIt column width (first one)
         firstColWidth = 45
         headerText = self.headerData[COL_LINK_IT]
-        textWidth = metrics.width(headerText) + 20  # Adding padding
+        textWidth = metrics.horizontalAdvance(headerText) + 20  # Adding padding
         firstColWidth = textWidth
         self.ui.tableView.setColumnWidth(COL_LINK_IT, firstColWidth)
         
@@ -1076,7 +1076,7 @@ class Main(QMainWindow):
         for col in range(2, self.cols):
 
             headerText = self.headerData[col]
-            textWidth = metrics.width(headerText) + 20  # Adding padding
+            textWidth = metrics.horizontalAdvance(headerText) + 20  # Adding padding
 
             # See if our needed width for the text is less than our standard column width
             if textWidth < colWidth:
@@ -1149,14 +1149,14 @@ class Main(QMainWindow):
             if self.__model.didLinkingChange():
                 
                 # Check if the user wants to save changes
-                if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+                if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes) == QMessageBox.StandardButton.Yes:
             
                     self.retVal = 1
             
         elif self.rebuildBiling:
         
             # Show hourglass cursor 
-            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor) 
+            QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor) 
 
             # Pause for 3 seconds to let FLEx write out the links before the bilingual lexicon gets rebuilt
             time.sleep(3)
@@ -1908,7 +1908,7 @@ def RunModule(DB, report, configMap, app):
                 DB.BuildGotoURL(textObj))
 
     preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub('\s','+', targetProj)
+    preGuidStr += re.sub(r'\s','+', targetProj)
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
      
     glossMap = {}
@@ -1969,7 +1969,7 @@ def RunModule(DB, report, configMap, app):
         window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList, targetMorphNames, TargetDB)
         
         window.show()
-        app.exec_()
+        app.exec()
         
         # Update the source database with the correct links
         if window.retVal: # True = make the changes        

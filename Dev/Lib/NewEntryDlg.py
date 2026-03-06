@@ -35,9 +35,9 @@
 import json
 import os
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMessageBox, QDialog, QLineEdit
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui, QtCore
+from PyQt6.QtWidgets import QMessageBox, QDialog, QLineEdit
+from PyQt6.QtCore import QCoreApplication
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
@@ -253,7 +253,7 @@ class NewEntryDlg(QDialog):
                     self.retVal = False
                     return
 
-            self.setCursor(QtCore.Qt.WaitCursor)
+            self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
             # Loop through all of the cluster project lexeme form widgets
             for i, proj in enumerate(selectedProjects):

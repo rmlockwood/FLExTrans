@@ -68,9 +68,9 @@ from SIL.LCModel import ( # type: ignore
 
 from flextoolslib import *                                          
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 import FTPaths
@@ -477,7 +477,7 @@ def MainFunction(DB, report, modify=True):
     
     window = Main()
     window.show()
-    app.exec_()
+    app.exec()
     
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)

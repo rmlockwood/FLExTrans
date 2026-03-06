@@ -54,7 +54,7 @@ from typing import Optional
 from itertools import combinations, permutations
 import dataclasses
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Utils
 

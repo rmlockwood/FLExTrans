@@ -60,7 +60,7 @@ import ReadConfig
 import Testbed 
 import Utils as MyUtils
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
