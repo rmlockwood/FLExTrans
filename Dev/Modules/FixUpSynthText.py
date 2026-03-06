@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 2/11/26 - Ron Lockwood
 #    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
 #
@@ -80,7 +83,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("FixUpSynthText", "Fix Up Synthesis Text"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
