@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -62,7 +65,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",

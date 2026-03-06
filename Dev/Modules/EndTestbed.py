@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -71,7 +74,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",

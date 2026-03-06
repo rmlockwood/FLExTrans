@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.5 - 12/15/25 - Ron Lockwood
 #    Fixes #1149. Support alternate Paratext folder setting.
 #    Also check for absolute paths using pathlib. Instead of looking for ':'.

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -94,7 +97,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
-        FTM_Version    : "3.15",        
+        FTM_Version    : "3.15.1",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",

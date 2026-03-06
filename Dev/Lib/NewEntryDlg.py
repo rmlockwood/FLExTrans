@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.1 - 7/2/25 - Ron Lockwood
 #    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
 #

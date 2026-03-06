@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.1 - 7/23/25 - Ron Lockwood
 #    Fixes #1016. Repeat the expected result in the actual result column.
 #

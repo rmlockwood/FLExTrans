@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -97,7 +100,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",

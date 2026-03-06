@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -72,7 +75,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",

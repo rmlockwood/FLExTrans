@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/5/26 - Ron Lockwood
 #    Fixes #1071. Change drives before the cd command in the make batch file.
 #
@@ -99,7 +102,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  

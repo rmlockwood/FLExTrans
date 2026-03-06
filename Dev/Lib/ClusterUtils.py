@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.3 - 12/13/25 - Ron Lockwood
 #   Fixes #1157 Use resizeable window and widgets.
 #   For this code it means doing stuff differently when in layout mode vs absolute geometry mode.
