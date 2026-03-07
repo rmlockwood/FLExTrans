@@ -464,18 +464,48 @@ class SentenceList(QtCore.QAbstractListModel):
 
         return ret.lstrip()
 
+# ── Shared checkbox drawing constants ─────────────────────────────────────────
+CHKBOX_BOX  = 14   # indicator size in pixels
+CHKBOX_PAD  = 4    # left margin before box (delegate only)
+CHKBOX_GAP  = 6    # gap between box and text
+
+
+def paint_checkbox_indicator(painter: QPainter, box_x: int, box_y: int,
+                              checked: bool) -> None:
+    """Draw a 14-px checkbox indicator at (box_x, box_y).
+    Blue filled box + white tick when checked; white box + grey border when not.
+    Caller is responsible for save/restore and setting RenderHint.Antialiasing.
+    """
+    s = CHKBOX_BOX
+    box_rect = QRect(box_x, box_y, s, s)
+
+    if checked:
+        painter.setBrush(QBrush(QColor("#0078d4")))
+        painter.setPen(QPen(QColor("#0078d4"), 1.5))
+        painter.drawRoundedRect(box_rect, 3, 3)
+
+        pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
+                   Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+        painter.setPen(pen)
+        p1 = QPoint(box_x + int(s * 0.18), box_y + int(s * 0.50))
+        p2 = QPoint(box_x + int(s * 0.42), box_y + int(s * 0.72))
+        p3 = QPoint(box_x + int(s * 0.82), box_y + int(s * 0.28))
+        painter.drawLine(p1, p2)
+        painter.drawLine(p2, p3)
+    else:
+        painter.setBrush(QBrush(QColor("white")))
+        painter.setPen(QPen(QColor("#999999"), 1.5))
+        painter.drawRoundedRect(box_rect, 3, 3)
+
+
 class CheckboxDelegate(QStyledItemDelegate):
-    """Draws a touch-friendly checkbox (14 px) with a crisp white tick.
+    """Draws a 14-px checkbox with a white tick in a QListView.
     Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds.
     """
 
-    BOX = 14          # indicator size in pixels
-    PAD = 4           # left margin before box
-    GAP = 6           # gap between box and text
-
     def sizeHint(self, option, index):
         sh = super().sizeHint(option, index)
-        return sh.__class__(sh.width(), max(sh.height(), self.BOX + 8))
+        return sh.__class__(sh.width(), max(sh.height(), CHKBOX_BOX + 8))
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
         painter.save()
@@ -493,39 +523,15 @@ class CheckboxDelegate(QStyledItemDelegate):
         else:
             painter.fillRect(rect, option.palette.base())
 
-        # Checkbox box
-        box_size = self.BOX
-        box_x = rect.left() + self.PAD
-        box_y = rect.top() + (rect.height() - box_size) // 2
-        box_rect = QRect(box_x, box_y, box_size, box_size)
-
+        # Indicator
+        box_x = rect.left() + CHKBOX_PAD
+        box_y = rect.top() + (rect.height() - CHKBOX_BOX) // 2
         checked = index.data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked.value
-
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        if checked:
-            painter.setBrush(QBrush(QColor("#0078d4")))
-            painter.setPen(QPen(QColor("#0078d4"), 1.5))
-            painter.drawRoundedRect(box_rect, 3, 3)
-
-            # White checkmark
-            pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
-                       Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
-            painter.setPen(pen)
-            s = box_size
-            x0, y0 = box_x, box_y
-            p1 = QPoint(x0 + int(s * 0.18), y0 + int(s * 0.50))
-            p2 = QPoint(x0 + int(s * 0.42), y0 + int(s * 0.72))
-            p3 = QPoint(x0 + int(s * 0.82), y0 + int(s * 0.28))
-            painter.drawLine(p1, p2)
-            painter.drawLine(p2, p3)
-        else:
-            painter.setBrush(QBrush(QColor("white")))
-            painter.setPen(QPen(QColor("#999999"), 1.5))
-            painter.drawRoundedRect(box_rect, 3, 3)
+        paint_checkbox_indicator(painter, box_x, box_y, checked)
 
         # Text
-        text_x = box_x + box_size + self.GAP
+        text_x = box_x + CHKBOX_BOX + CHKBOX_GAP
         text_rect = QRect(text_x, rect.top(), rect.right() - text_x, rect.height())
         if is_selected:
             painter.setPen(QPen(option.palette.highlightedText().color()))
@@ -555,17 +561,13 @@ class CheckboxDelegate(QStyledItemDelegate):
 
 
 class CustomCheckBox(QCheckBox):
-    """QCheckBox that paints its own indicator using QPainter — same style
-    as CheckboxDelegate (14 px box, white tick on blue when checked).
+    """QCheckBox that paints its own indicator — same style as CheckboxDelegate.
     Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds.
     """
 
-    BOX = 14
-    GAP = 6
-
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Reserve space for our custom indicator via a transparent stylesheet
+        # Hide Qt's built-in indicator; we draw our own in paintEvent
         self.setStyleSheet("""
             QCheckBox { spacing: 0px; }
             QCheckBox::indicator { width: 0px; height: 0px; }
@@ -575,40 +577,17 @@ class CustomCheckBox(QCheckBox):
     def sizeHint(self):
         sh = super().sizeHint()
         text_w = self.fontMetrics().horizontalAdvance(self.text())
-        return QtCore.QSize(self.BOX + self.GAP + text_w + 4,
-                            max(sh.height(), self.BOX + 6))
+        return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4,
+                            max(sh.height(), CHKBOX_BOX + 6))
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        # ── Box ───────────────────────────────────────────────────────
-        box_x = 0
-        box_y = (self.height() - self.BOX) // 2
-        box_rect = QRect(box_x, box_y, self.BOX, self.BOX)
+        box_y = (self.height() - CHKBOX_BOX) // 2
+        paint_checkbox_indicator(painter, 0, box_y, self.isChecked())
 
-        if self.isChecked():
-            painter.setBrush(QBrush(QColor("#0078d4")))
-            painter.setPen(QPen(QColor("#0078d4"), 1.5))
-            painter.drawRoundedRect(box_rect, 3, 3)
-
-            # White checkmark
-            pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
-                       Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
-            painter.setPen(pen)
-            s = self.BOX
-            p1 = QPoint(box_x + int(s * 0.18), box_y + int(s * 0.50))
-            p2 = QPoint(box_x + int(s * 0.42), box_y + int(s * 0.72))
-            p3 = QPoint(box_x + int(s * 0.82), box_y + int(s * 0.28))
-            painter.drawLine(p1, p2)
-            painter.drawLine(p2, p3)
-        else:
-            painter.setBrush(QBrush(QColor("white")))
-            painter.setPen(QPen(QColor("#999999"), 1.5))
-            painter.drawRoundedRect(box_rect, 3, 3)
-
-        # ── Label ─────────────────────────────────────────────────────
-        text_x = self.BOX + self.GAP
+        text_x = CHKBOX_BOX + CHKBOX_GAP
         text_rect = QRect(text_x, 0, self.width() - text_x, self.height())
         painter.setPen(QPen(self.palette().text().color()))
         painter.setFont(self.font())
