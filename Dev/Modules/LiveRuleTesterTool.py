@@ -554,6 +554,68 @@ class CheckboxDelegate(QStyledItemDelegate):
         return super().editorEvent(event, model, option, index)
 
 
+class CustomCheckBox(QCheckBox):
+    """QCheckBox that paints its own indicator using QPainter — same style
+    as CheckboxDelegate (14 px box, white tick on blue when checked).
+    Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds.
+    """
+
+    BOX = 14
+    GAP = 6
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Reserve space for our custom indicator via a transparent stylesheet
+        self.setStyleSheet("""
+            QCheckBox { spacing: 0px; }
+            QCheckBox::indicator { width: 0px; height: 0px; }
+        """)
+
+    def sizeHint(self):
+        sh = super().sizeHint()
+        text_w = self.fontMetrics().horizontalAdvance(self.text())
+        return QtCore.QSize(self.BOX + self.GAP + text_w + 4,
+                            max(sh.height(), self.BOX + 6))
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        # ── Box ───────────────────────────────────────────────────────
+        box_x = 0
+        box_y = (self.height() - self.BOX) // 2
+        box_rect = QRect(box_x, box_y, self.BOX, self.BOX)
+
+        if self.isChecked():
+            painter.setBrush(QBrush(QColor("#0078d4")))
+            painter.setPen(QPen(QColor("#0078d4"), 1.5))
+            painter.drawRoundedRect(box_rect, 3, 3)
+
+            # White checkmark
+            pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
+                       Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+            painter.setPen(pen)
+            s = self.BOX
+            p1 = QPoint(box_x + int(s * 0.18), box_y + int(s * 0.50))
+            p2 = QPoint(box_x + int(s * 0.42), box_y + int(s * 0.72))
+            p3 = QPoint(box_x + int(s * 0.82), box_y + int(s * 0.28))
+            painter.drawLine(p1, p2)
+            painter.drawLine(p2, p3)
+        else:
+            painter.setBrush(QBrush(QColor("white")))
+            painter.setPen(QPen(QColor("#999999"), 1.5))
+            painter.drawRoundedRect(box_rect, 3, 3)
+
+        # ── Label ─────────────────────────────────────────────────────
+        text_x = self.BOX + self.GAP
+        text_rect = QRect(text_x, 0, self.width() - text_x, self.height())
+        painter.setPen(QPen(self.palette().text().color()))
+        painter.setFont(self.font())
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter, self.text())
+
+        painter.end()
+
+
 class Main(QMainWindow):
 
     def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
@@ -711,7 +773,7 @@ class Main(QMainWindow):
 
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = QCheckBox(self.content_widget)
+            myCheck = CustomCheckBox(self.content_widget)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
 
