@@ -229,9 +229,9 @@ from flextoolslib import *
 from flexlibs import FLExProject
 
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtGui import QStandardItem, QStandardItemModel
-from PyQt6.QtCore import QCoreApplication
-from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView
+from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
+from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
 
 import Mixpanel
 import InterlinData
@@ -344,7 +344,7 @@ class FlowLayout(QLayout):
         return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
 
     def expandingDirections(self):
-        return QtCore.Qt.Orientations(QtCore.Qt.Orientation())
+        return QtCore.Qt.Orientation(0)
 
     def hasHeightForWidth(self):
         return True
@@ -463,6 +463,96 @@ class SentenceList(QtCore.QAbstractListModel):
                 ret += ' ' + t[i]
 
         return ret.lstrip()
+
+class CheckboxDelegate(QStyledItemDelegate):
+    """Draws a touch-friendly checkbox (14 px) with a crisp white tick.
+    Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds.
+    """
+
+    BOX = 14          # indicator size in pixels
+    PAD = 4           # left margin before box
+    GAP = 6           # gap between box and text
+
+    def sizeHint(self, option, index):
+        sh = super().sizeHint(option, index)
+        return sh.__class__(sh.width(), max(sh.height(), self.BOX + 8))
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+        painter.save()
+
+        from PyQt6.QtWidgets import QStyle
+        is_selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        is_hover    = bool(option.state & QStyle.StateFlag.State_MouseOver)
+        rect = option.rect
+
+        # Background
+        if is_selected:
+            painter.fillRect(rect, option.palette.highlight())
+        elif is_hover:
+            painter.fillRect(rect, option.palette.highlight().color().lighter(190))
+        else:
+            painter.fillRect(rect, option.palette.base())
+
+        # Checkbox box
+        box_size = self.BOX
+        box_x = rect.left() + self.PAD
+        box_y = rect.top() + (rect.height() - box_size) // 2
+        box_rect = QRect(box_x, box_y, box_size, box_size)
+
+        checked = index.data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked.value
+
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        if checked:
+            painter.setBrush(QBrush(QColor("#0078d4")))
+            painter.setPen(QPen(QColor("#0078d4"), 1.5))
+            painter.drawRoundedRect(box_rect, 3, 3)
+
+            # White checkmark
+            pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
+                       Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+            painter.setPen(pen)
+            s = box_size
+            x0, y0 = box_x, box_y
+            p1 = QPoint(x0 + int(s * 0.18), y0 + int(s * 0.50))
+            p2 = QPoint(x0 + int(s * 0.42), y0 + int(s * 0.72))
+            p3 = QPoint(x0 + int(s * 0.82), y0 + int(s * 0.28))
+            painter.drawLine(p1, p2)
+            painter.drawLine(p2, p3)
+        else:
+            painter.setBrush(QBrush(QColor("white")))
+            painter.setPen(QPen(QColor("#999999"), 1.5))
+            painter.drawRoundedRect(box_rect, 3, 3)
+
+        # Text
+        text_x = box_x + box_size + self.GAP
+        text_rect = QRect(text_x, rect.top(), rect.right() - text_x, rect.height())
+        if is_selected:
+            painter.setPen(QPen(option.palette.highlightedText().color()))
+        else:
+            painter.setPen(QPen(option.palette.text().color()))
+        painter.setFont(option.font)
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter,
+                         index.data(Qt.ItemDataRole.DisplayRole) or "")
+
+        painter.restore()
+
+    def editorEvent(self, event, model, option, index):
+        """Toggle check state on click anywhere in the row."""
+        from PyQt6.QtCore import QEvent
+        if not index.isValid():
+            return False
+        if event.type() == QEvent.Type.MouseButtonPress:
+            current = index.data(Qt.ItemDataRole.CheckStateRole)
+            new_state = (Qt.CheckState.Unchecked
+                         if current == Qt.CheckState.Checked.value
+                         else Qt.CheckState.Checked)
+            model.setData(index, new_state, Qt.ItemDataRole.CheckStateRole)
+            return True
+        if event.type() == QEvent.Type.MouseButtonRelease:
+            return True  # consume to prevent base class double-toggle
+        return super().editorEvent(event, model, option, index)
+
 
 class Main(QMainWindow):
 
@@ -621,7 +711,7 @@ class Main(QMainWindow):
 
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = QCheckBox(self.ui.scrollArea)
+            myCheck = QCheckBox(self.content_widget)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
 
@@ -877,7 +967,6 @@ class Main(QMainWindow):
         self.AdvancedOptionsCheckboxClicked()
 
         self.setMinimumHeight(500)
-        # self.ui.transferRuleButtonsHorizLayout.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignmentFlag.AlignBottom)
         self.retVal = True
 
     def AdvancedOptionsCheckboxClicked(self):
@@ -1837,11 +1926,11 @@ class Main(QMainWindow):
         # Loop through all the items in the rule list model
         for i in range(0, myModel.rowCount()):
 
-            # Save the state of each check box
-            if myModel.item(i).checkState():
-                myList.append(QtCore.Qt.CheckState.Checked)
+            # Store as plain int (1/0) so str() serialises correctly in PyQt6
+            if myModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
+                myList.append(1)
             else:
-                myList.append(QtCore.Qt.CheckState.Unchecked)
+                myList.append(0)
 
     def collectWordChecks(self, myList, checkBoxList):
 
@@ -1853,10 +1942,10 @@ class Main(QMainWindow):
                 break
 
             # Save the state of each check box
-            if checkBoxList[i].checkState():
-                myList.append(QtCore.Qt.CheckState.Checked)
+            if checkBoxList[i].checkState() == QtCore.Qt.CheckState.Checked:
+                myList.append(1)
             else:
-                myList.append(QtCore.Qt.CheckState.Unchecked)
+                myList.append(0)
 
     def saveCheckedWords(self):
 
@@ -1886,7 +1975,7 @@ class Main(QMainWindow):
             if i < len(myList):
 
                 # Set the state of each check box
-                myModel.item(i).setCheckState(QtCore.Qt.CheckState.Checked if myList[i] == QtCore.Qt.CheckState.Checked else QtCore.Qt.CheckState.Unchecked)
+                myModel.item(i).setCheckState(QtCore.Qt.CheckState.Checked if myList[i] == 1 else QtCore.Qt.CheckState.Unchecked)
 
     def recheckWords(self, myList, checkBoxList):
 
@@ -1896,7 +1985,7 @@ class Main(QMainWindow):
             if i < len(myList):
 
                 # Set the state of each check box
-                checkBoxList[i].setCheckState(QtCore.Qt.CheckState.Checked if myList[i] == QtCore.Qt.CheckState.Checked else QtCore.Qt.CheckState.Unchecked)
+                checkBoxList[i].setCheckState(QtCore.Qt.CheckState.Checked if myList[i] == 1 else QtCore.Qt.CheckState.Unchecked)
             else:
                 break
 
@@ -2318,6 +2407,8 @@ class Main(QMainWindow):
 
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
+            self.ui.listTransferRules.setItemDelegate(CheckboxDelegate(None))
+            self.__transferModel.dataChanged.connect(lambda *_: self.rulesListClicked())
 
         else:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Rules File'), \
@@ -2343,6 +2434,8 @@ class Main(QMainWindow):
                 self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
+                self.ui.listInterChunkRules.setItemDelegate(CheckboxDelegate(None))
+                self.__interChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
             else:
                 QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Interchunk Rules File'), \
                 _translate('LiveRuleTesterTool', 'The interchunk transfer file has no transfer element or no section-rules element'))
@@ -2367,6 +2460,8 @@ class Main(QMainWindow):
                     self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
+                    self.ui.listPostChunkRules.setItemDelegate(CheckboxDelegate(None))
+                    self.__postChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
                 else:
                     QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid postchunk Rules File'), \
                     _translate('LiveRuleTesterTool', 'The postchunk transfer file has no transfer element or no section-rules element'))
@@ -2399,44 +2494,55 @@ class Main(QMainWindow):
 
         return True
 
-    def rulesListClicked(self, index):
+    def rulesListClicked(self, index=None):
 
-        self.TRIndex = index
-        active_rules = 1
-        oneBoxChecked = False
-        oneBoxUnchecked = False
-        
-        self.rulesChanged = True
+        # Guard against re-entrant calls (dataChanged fires during setText/setCheckState)
+        if getattr(self, '_rulesListUpdating', False):
+            return
+        self._rulesListUpdating = True
 
-        for i, el in enumerate(self.__rulesElement):
-            ruleText = el.get('comment')
+        try:
+            if index is not None and hasattr(index, 'row'):
+                self.TRIndex = index
 
-            if ruleText == None:
-                ruleText = _translate('LiveRuleTesterTool', 'missing comment')
+            active_rules = 1
+            oneBoxChecked = False
+            oneBoxUnchecked = False
 
-            # If active add text with the active rule #
-            if self.__ruleModel.item(i).checkState():
+            self.rulesChanged = True
 
-                oneBoxChecked = True
-                self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
-                active_rules += 1
+            for i, el in enumerate(self.__rulesElement):
+                ruleText = el.get('comment')
+
+                if ruleText is None:
+                    ruleText = _translate('LiveRuleTesterTool', 'missing comment')
+
+                # Read state BEFORE setText, which can reset it in some Qt6 builds
+                itemState = self.__ruleModel.item(i).checkState()
+
+                if itemState == QtCore.Qt.CheckState.Checked:
+                    oneBoxChecked = True
+                    self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
+                    self.__ruleModel.item(i).setCheckState(itemState)  # restore after setText
+                    active_rules += 1
+                else:
+                    oneBoxUnchecked = True
+                    self.__ruleModel.item(i).setText(ruleText)
+                    self.__ruleModel.item(i).setCheckState(itemState)  # restore after setText
+
+            # Update the select-all checkbox to reflect current state
+            if oneBoxChecked and oneBoxUnchecked:
+                self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.PartiallyChecked)
+                self.lastSelectAllState = QtCore.Qt.CheckState.PartiallyChecked
+            elif oneBoxChecked:
+                self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
+                self.lastSelectAllState = QtCore.Qt.CheckState.Checked
             else:
-                oneBoxUnchecked = True
-                self.__ruleModel.item(i).setText(ruleText)
+                self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
+                self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
 
-        # If we have a mix of checked and unchecked boxes, set the select All CheckBox to partially checked
-        if oneBoxChecked and oneBoxUnchecked:
-
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.PartiallyChecked)
-            self.lastSelectAllState = QtCore.Qt.CheckState.PartiallyChecked
-
-        elif oneBoxChecked:
-
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
-            self.lastSelectAllState = QtCore.Qt.CheckState.Checked
-        else:
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
-            self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
+        finally:
+            self._rulesListUpdating = False
 
     def displayRules(self, rules_element, ruleModel):
 
@@ -2568,7 +2674,7 @@ class Main(QMainWindow):
             for i, rule_el in enumerate(rules_element):
 
                 # Add to the xml structure if it is a selected rule
-                if self.__ruleModel.item(i).checkState():
+                if self.__ruleModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
                     new_sr_element.append(rule_el)
 
             # If no rules were selected, create a dummy rule
@@ -3030,20 +3136,29 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         window.show()
         app.exec()
 
+        # Save needed attributes then explicitly destroy window before Python GC
+        # runs, to prevent QThreadStorage/mutex destruction-ordering crashes
+        restartTester        = window.restartTester
+        startTestbedLogViewer = window.startTestbedLogViewer
+        startRuleAssistant   = window.startRuleAssistant
+        startReplacementEditor = window.startReplacementEditor
+        window.deleteLater()
+        del window
+
         # If the user changed the source text combo, the restart member is set to True
-        if window.restartTester:
+        if restartTester:
 
             return RESTART_MODULE
 
-        elif window.startTestbedLogViewer:
+        elif startTestbedLogViewer:
 
             return START_LOG_VIEWER
 
-        elif window.startRuleAssistant:
+        elif startRuleAssistant:
 
             return START_RULE_ASSISTANT
-        
-        elif window.startReplacementEditor:
+
+        elif startReplacementEditor:
 
             return START_REPLACEMENT_EDITOR
     else:

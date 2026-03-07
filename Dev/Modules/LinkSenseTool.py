@@ -508,7 +508,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         # Set the background color
         if role == QtCore.Qt.ItemDataRole.BackgroundRole:
             
-            qColor = QtGui.QColor(QtGui.QColorConstants.Gray)
+            qColor = QtGui.QColor(QtGui.QColorConstants.LightGray)
             return qColor
         
         if role == QtCore.Qt.ItemDataRole.DisplayRole:
