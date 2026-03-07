@@ -569,6 +569,7 @@ class CustomCheckBox(QCheckBox):
         self.setStyleSheet("""
             QCheckBox { spacing: 0px; }
             QCheckBox::indicator { width: 0px; height: 0px; }
+            QToolTip { background-color: white; color: black; border: 1px solid #999999; }
         """)
 
     def sizeHint(self):
