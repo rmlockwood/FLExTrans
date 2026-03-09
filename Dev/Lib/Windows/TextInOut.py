@@ -180,7 +180,6 @@ class Ui_TextInOutMainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.rulesList.setFont(font)
-        self.rulesList.setStyleSheet("background-color: rgb(240, 221, 255);")
         self.rulesList.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.EditKeyPressed)
         self.rulesList.setObjectName("rulesList")
         self.verticalLayout_3.addWidget(self.rulesList)
@@ -245,17 +244,17 @@ class Ui_TextInOutMainWindow(object):
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.WBstepsDefaultRadio = QtWidgets.QRadioButton(parent=self.widgetContainer)
-        self.WBstepsDefaultRadio.setMaximumSize(QtCore.QSize(16777215, 15))
+        self.WBstepsDefaultRadio.setMaximumSize(QtCore.QSize(16777215, 17))
         self.WBstepsDefaultRadio.setToolTip("")
         self.WBstepsDefaultRadio.setChecked(True)
         self.WBstepsDefaultRadio.setObjectName("WBstepsDefaultRadio")
         self.horizontalLayout_5.addWidget(self.WBstepsDefaultRadio)
         self.WBstepsAllRadio = QtWidgets.QRadioButton(parent=self.widgetContainer)
-        self.WBstepsAllRadio.setMaximumSize(QtCore.QSize(16777215, 15))
+        self.WBstepsAllRadio.setMaximumSize(QtCore.QSize(16777215, 17))
         self.WBstepsAllRadio.setObjectName("WBstepsAllRadio")
         self.horizontalLayout_5.addWidget(self.WBstepsAllRadio)
         self.WBstepsNoneRadio = QtWidgets.QRadioButton(parent=self.widgetContainer)
-        self.WBstepsNoneRadio.setMaximumSize(QtCore.QSize(16777215, 15))
+        self.WBstepsNoneRadio.setMaximumSize(QtCore.QSize(16777215, 17))
         self.WBstepsNoneRadio.setObjectName("WBstepsNoneRadio")
         self.horizontalLayout_5.addWidget(self.WBstepsNoneRadio)
         self.WBlangLabel = QtWidgets.QLabel(parent=self.widgetContainer)
@@ -320,10 +319,13 @@ class Ui_TextInOutMainWindow(object):
         self.inputText.setFont(font)
         self.inputText.setStyleSheet("background-color: rgb(225, 255, 255);")
         self.inputText.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>")
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\';\"><br /></p></body></html>")
         self.inputText.setObjectName("inputText")
         self.verticalLayout_3.addWidget(self.inputText)
         self.horizontalLayout_18 = QtWidgets.QHBoxLayout()
@@ -358,10 +360,13 @@ class Ui_TextInOutMainWindow(object):
         self.outputText.setReadOnly(True)
         self.outputText.setMarkdown("")
         self.outputText.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8.25pt;\"><br /></p></body></html>")
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\"><br /></p></body></html>")
         self.outputText.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByKeyboard|QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
         self.outputText.setPlaceholderText("")
         self.outputText.setObjectName("outputText")
@@ -446,7 +451,10 @@ class Ui_TextInOutMainWindow(object):
 "\n"
 ""))
         self.errorTextBox.setHtml(_translate("TextInOutMainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here</p></body></html>"))
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\">Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here</span></p></body></html>"))

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.3 - 3/6/26 - Ron Lockwood
+#    Make Wildebeest controls invisible.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -423,7 +426,7 @@ class TextInOutRulesWindow(QMainWindow):
 
                 self.report.Error(_translate("TextInOutUtils", "Current Project not in Cluster Projects list, exiting."))
                 self.retVal = False
-                self.close()
+                #self.close()
                 return
             
             # Remove the current project from the cluster projects list, we will always use it
@@ -509,7 +512,8 @@ class TextInOutRulesWindow(QMainWindow):
         self.setWindowTitle(winTitle)
 
         # See if we are doing text in or out
-        if not self.textIn:
+        # For now hide the wildebeest stuff because of python 3.13 incompatibility, but eventually we will want to show it for text out and hide it for text in.
+        if True: #not self.textIn:
 
             # If we are doing text out, don't show the wildebeest checkbox
             self.hideWildebeestStuff()
@@ -1245,7 +1249,9 @@ class TextInOutRulesWindow(QMainWindow):
         # Get the Wildebeest attribute
         wildebeest = testRoot.get(APPLY_WILDEBEEST_ATTRIB)
 
-        if wildebeest and wildebeest == 'yes':
+        # For now, we are going to ignore the value of the attribute and just hide or show the wildebeest controls based on whether we are doing text in or text out, because of python 3.13 incompatibility. 
+        # Eventually we will want to use the attribute value to set the checkbox and show/hide the controls.
+        if False: #wildebeest and wildebeest == 'yes':
 
             self.ui.wildebeestCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
             self.setWildebeestVisibility(True)
@@ -1433,6 +1439,7 @@ class TextInOutRulesWindow(QMainWindow):
 
     def setWildebeestVisibility(self, makeVisible):
 
+        pass
         for widget in self.WBcontrols:
 
             widget.setVisible(makeVisible)
