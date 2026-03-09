@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.15.3 - 3/9/26 - Ron Lockwood
+#    Fix to checkbox not checking problem. Check the value of the CheckState enum.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -687,7 +690,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
             row = index.row()
             
-            if value == QtCore.Qt.CheckState.Checked: 
+            if value == QtCore.Qt.CheckState.Checked or value == QtCore.Qt.CheckState.Checked.value: 
                 
                 self.__localData[row].setLinkIt(True)
                 self.__localData[row].setModified(True)

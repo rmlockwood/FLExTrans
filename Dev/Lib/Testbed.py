@@ -1210,7 +1210,7 @@ def parseString(inputStr):
         ('>>', ['sent'])
         >>> parseString("\\>\\><sent>")
         ('\\>\\>', ['sent'])
-        >>> parseString("d\>a<b>c<zx><uv>")
+        >>> parseString("d\\>a<b>c<zx><uv>")
         ('d\\>a<b>c', ['zx', 'uv'])
         >>> parseString("d<<c<zx><uv>")
         ('d<<c', ['zx', 'uv'])
