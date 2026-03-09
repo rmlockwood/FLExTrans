@@ -274,6 +274,7 @@ class Ui_LRTWindow(object):
         self.tabRules.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.tabRules.setTabPosition(QtWidgets.QTabWidget.TabPosition.South)
         self.tabRules.setTabShape(QtWidgets.QTabWidget.TabShape.Rounded)
+        self.tabRules.setTabBarAutoHide(True)
         self.tabRules.setObjectName("tabRules")
         self.tab_transfer_rules = QtWidgets.QWidget()
         self.tab_transfer_rules.setMinimumSize(QtCore.QSize(0, 23))
