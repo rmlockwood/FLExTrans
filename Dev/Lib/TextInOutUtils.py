@@ -182,7 +182,7 @@ def getRuleFromElement(element):
 
     return searchReplaceRuleData
 
-def buildRuleString(searchRplObj, basicInfo=True):
+def buildRuleString(searchRplObj, basicInfo=False):
 
     # Create a regex indicator string if reg ex is checked
     if searchRplObj.isRegEx:
