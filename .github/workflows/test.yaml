@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: pip install regex
+        run: py -3.13 -m pip install regex
       - name: test
         working-directory: Dev/TestRuleAssistant
         env:
