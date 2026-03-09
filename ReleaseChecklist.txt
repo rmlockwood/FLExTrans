@@ -61,3 +61,11 @@ Switching to a newer version of Python
 -Edit the .nsi installer script with the new version (maybe in a couple places).
 -Change the .vbs files in the InstallerResources\VBS folder to the updated version. E.g. PYTHON = "py -3.13"
 -Change the command.bat (in InstallerResources) to the updated version. E.g. py -3.13
+-Change the GitHub CI script to use py -3.xx instead of the existing version.
+
+Switching to a newer version of PyQt
+====================================
+Update all the import statements that import the old PyQtX library
+Update the unit test code and test Rule assistant code for the same import issues
+Change the convert convert_ui_py.bat to use the new version
+Install what is needed for the new version of the Designer tool. For PyQt6 I used: pip install pyside6 and the executable was put in the python\...\scripts folder.
