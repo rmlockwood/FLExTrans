@@ -5,7 +5,7 @@
 #   SIL International
 #   9/11/23
 #
-#   Version 3.15 - 3/6/26 - Ron Lockwood
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
 #   Version 3.14.5 - 12/5/25 - Ron Lockwood
@@ -57,7 +57,7 @@ from typing import Optional
 from itertools import combinations, permutations
 import dataclasses
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 from . import Utils
 
