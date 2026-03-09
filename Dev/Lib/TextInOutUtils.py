@@ -5,7 +5,11 @@
 #   SIL International
 #   7/1/24
 #
-#   Version 3.15.3 - 3/6/26 - Ron Lockwood
+#   Version 3.15.4 - 3/9/26 - Ron Lockwood
+#    Wrong default for Build String function.
+#    Fix the logic for seeing is something is checked. Use the explicit state.
+#
+#   Version 3.15.3 - 3/9/26 - Ron Lockwood
 #    Make Wildebeest controls invisible.
 #
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
@@ -1100,7 +1104,7 @@ class TextInOutRulesWindow(QMainWindow):
         for i in range(0, self.rulesModel.rowCount()):
 
             # If active add text with the active rule #
-            if self.rulesModel.item(i).checkState():
+            if self.rulesModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
 
                 oneBoxChecked = True
             else:
@@ -1161,7 +1165,7 @@ class TextInOutRulesWindow(QMainWindow):
         for ind, ruleEl in enumerate(self.xmlParentObjList[0]):
 
             # Process the rule if it is checked
-            if self.rulesModel.item(ind).checkState():
+            if self.rulesModel.item(ind).checkState() == QtCore.Qt.CheckState.Checked:
 
                 searchReplDataObj = getRuleFromElement(ruleEl)
 
