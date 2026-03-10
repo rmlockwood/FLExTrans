@@ -135,6 +135,7 @@ class Main(QMainWindow):
 
         self.ui = Ui_CatsAndAttribsWindow()
         self.ui.setupUi(self)
+        self.retVal = False
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
