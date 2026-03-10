@@ -151,11 +151,59 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\install_files"
 
-  # Install python 
-  MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
+# Check if Python is installed and what version
+  nsExec::ExecToStack 'py --version'
+  Pop $0  ; exit code
+  Pop $1  ; output (e.g. "Python 3.11.2")
+
+  ${If} $0 != 0
+    ; Python not found at all - offer to install
+    MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
+      File "${RESOURCE_FOLDER}\python-3.13.12-amd64.exe"
+      ExecWait "$INSTDIR\install_files\python-3.13.12-amd64.exe InstallAllUsers=1 PrependPath=1"
+      Goto endPythonSync
+  ${Else}
+    ; Python is installed - extract major.minor version
+    ; $1 looks like "Python 3.11.2\r\n" - strip the "Python " prefix
+    StrCpy $2 $1 "" 7        ; remove leading "Python "
+    
+    ; Extract major version number (chars before first ".")
+    StrCpy $3 ""
+    StrCpy $4 0
+    extractMajorLoop:
+      StrCpy $5 $2 1 $4
+      StrCmp $5 "." extractMajorDone
+      StrCmp $5 ""  extractMajorDone
+      StrCpy $3 "$3$5"
+      IntOp $4 $4 + 1
+      Goto extractMajorLoop
+    extractMajorDone:
+    
+    ; Step past the "." to get minor version
+    IntOp $4 $4 + 1
+    StrCpy $6 ""
+    extractMinorLoop:
+      StrCpy $5 $2 1 $4
+      StrCmp $5 "." extractMinorDone
+      StrCmp $5 ""  extractMinorDone
+      StrCmp $5 "$\r" extractMinorDone
+      StrCmp $5 "$\n" extractMinorDone
+      StrCpy $6 "$6$5"
+      IntOp $4 $4 + 1
+      Goto extractMinorLoop
+    extractMinorDone:
+
+    ; Compare: need major >= 3 and minor >= 13
+    IntCmp $3 3 checkMinor needPython checkMinor
+    checkMinor:
+      IntCmp $6 13 endPythonSync endPythonSync needPython  ; >= 13 is fine
+    needPython:
+      ; Python found but version is too old - tell the user and offer upgrade
+      MessageBox MB_YESNO "Python $2 is installed, but FLExTrans requires Python 3.13 or newer.$\nInstall Python 3.13.12 now?" /SD IDYES IDNO endPythonSync
         File "${RESOURCE_FOLDER}\python-3.13.12-amd64.exe"
         ExecWait "$INSTDIR\install_files\python-3.13.12-amd64.exe InstallAllUsers=1 PrependPath=1"
         Goto endPythonSync
+  ${EndIf}
   endPythonSync:
   
   Var /GLOBAL OUT_FOLDER
