@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.3 - 3/10/26 - Ron Lockwood
+#    Regular expression syntax fixes that showed up with Python 3.13.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -152,7 +155,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.15.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -675,7 +678,7 @@ class ConversionData():
                 spec = IFsClosedValue(spec)
                 featGrpName = Utils.as_string(spec.FeatureRA.Name)
                 abbValue = Utils.as_string(spec.ValueRA.Abbreviation)
-                abbValue = re.sub('\.', '_', abbValue)
+                abbValue = re.sub(r'\.', '_', abbValue)
                 featAbbrevList.append((featGrpName, abbValue))
         return
     
@@ -1130,7 +1133,7 @@ def convertIt(pfxName, outName, report, sentPunct):
     
     for line in fAfx:
         
-        (affix, morphType) = re.split('\|', line.rstrip())
+        (affix, morphType) = re.split(r'\|', line.rstrip())
         affixMap[affix] = morphType
         
     fAfx.close()
