@@ -54,7 +54,7 @@ doivent être écrasés.</translation>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="589"/>
         <source>There was a problem writing the transfer rules file: {error}</source>
-        <translation>Il y a eu un problème lors de l'écriture du fichier de règles de transfert: {error}</translation>
+        <translation>Il y a eu un problème lors de l'écriture du fichier de règles de transfert : {error}</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="592"/>

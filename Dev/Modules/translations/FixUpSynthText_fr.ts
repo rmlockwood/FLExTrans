@@ -25,22 +25,22 @@ fichier de règles de correction du texte de synthèse tel que spécifié dans l
     <message>
         <location filename="../FixUpSynthText.py" line="125"/>
         <source>The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.</source>
-        <translation>Le fichier de règles: {textOutRulesFile} est introuvable. Utilisez le module Règles du texte en sortie pour définir les règles.</translation>
+        <translation>Le fichier de règles : {textOutRulesFile} est introuvable. Utilisez le module Règles du texte en sortie pour définir les règles.</translation>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="138"/>
         <source>The rules file: {textOutRulesFile} has invalid XML data.</source>
-        <translation>Le fichier de règles: {textOutRulesFile} contient des données XML invalides.</translation>
+        <translation>Le fichier de règles : {textOutRulesFile} contient des données XML invalides.</translation>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="146"/>
         <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.</source>
-        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse: «{synthFile}».</translation>
+        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : « {synthFile} ».</translation>
     </message>
     <message>
         <location filename="../FixUpSynthText.py" line="170"/>
         <source>The synthesis file was fixed using {numRules} 'Text Out' rules.</source>
-        <translation>Le fichier de synthèse a été corrigé en utilisant {numRules} règles «Texte en sortie».</translation>
+        <translation>Le fichier de synthèse a été corrigé en utilisant {numRules} règles « Texte en sortie ».</translation>
     </message>
 </context>
 </TS>

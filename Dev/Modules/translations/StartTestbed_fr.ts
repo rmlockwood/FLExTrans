@@ -30,7 +30,7 @@
     <message>
         <location filename="../StartTestbed.py" line="128"/>
         <source>There is a problem with the Analyzed Text Output File path: {outFileVal}. Please check the configuration file setting.</source>
-        <translation>Il y a un problème avec le chemin du fichier de sortie du texte analysé: {outFileVal}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a un problème avec le chemin du fichier de sortie du texte analysé : {outFileVal}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="146"/>

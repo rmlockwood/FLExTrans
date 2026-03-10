@@ -59,17 +59,17 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1144"/>
         <source>Do you want to save your changes?</source>
-        <translation>Voulez-vous enregistrer vos modifications?</translation>
+        <translation>Voulez-vous enregistrer vos modifications ?</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1265"/>
         <source>Empty grammatical category found for the target word: </source>
-        <translation>Catégorie grammaticale vide trouvée pour le mot cible: </translation>
+        <translation>Catégorie grammaticale vide trouvée pour le mot cible : </translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1289"/>
         <source>Empty gloss found for the target word: </source>
-        <translation>Glose vide trouvée pour le mot cible: </translation>
+        <translation>Glose vide trouvée pour le mot cible : </translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1294"/>
@@ -119,7 +119,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1799"/>
         <source>Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</source>
-        <translation>Erreur de permission lors de l'écriture de {htmlFileName}. Peut-être que le fichier est utilisé dans un autre programme?</translation>
+        <translation>Erreur de permission lors de l'écriture de {htmlFileName}. Peut-être que le fichier est utilisé dans un autre programme ?</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1803"/>
@@ -129,7 +129,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1807"/>
         <source>{cnt} words written to the file: {htmlFileName}. You'll find it in the Output folder.</source>
-        <translation>{cnt} mots écrits dans le fichier: {htmlFileName}. Vous le trouverez dans le dossier de sortie.</translation>
+        <translation>{cnt} mots écrits dans le fichier : {htmlFileName}. Vous le trouverez dans le dossier de sortie.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1810"/>
@@ -159,7 +159,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1855"/>
         <source>The text named: {sourceTextName} not found.</source>
-        <translation>Le texte nommé: {sourceTextName} n'a pas été trouvé.</translation>
+        <translation>Le texte nommé : {sourceTextName} n'a pas été trouvé.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1872"/>
@@ -174,7 +174,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1889"/>
         <source>Opening: {targetProj} as the target project.</source>
-        <translation>Ouverture de: {targetProj} en tant que projet cible.</translation>
+        <translation>Ouverture de : {targetProj} en tant que projet cible.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1896"/>
@@ -184,7 +184,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1899"/>
         <source>Starting {moduleName} for text: {sourceTextName}.</source>
-        <translation>Démarrage de {moduleName} pour le texte: {sourceTextName}.</translation>
+        <translation>Démarrage de {moduleName} pour le texte : {sourceTextName}.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1928"/>
@@ -199,7 +199,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
         <location filename="../LinkSenseTool.py" line="1946"/>
         <source>Link it!</source>
-        <translation>Liez-le!</translation>
+        <translation>Liez-le !</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1948"/>

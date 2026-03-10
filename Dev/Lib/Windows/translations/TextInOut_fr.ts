@@ -11,17 +11,17 @@
     <message>
         <location filename="../TextInOut.py" line="409"/>
         <source>Search for:</source>
-        <translation>Rechercher:</translation>
+        <translation>Rechercher :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="410"/>
         <source>Replace with:</source>
-        <translation>Remplacer par:</translation>
+        <translation>Remplacer par :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="411"/>
         <source>Comment:</source>
-        <translation>Commentaire:</translation>
+        <translation>Commentaire :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="412"/>
@@ -101,7 +101,7 @@
     <message>
         <location filename="../TextInOut.py" line="427"/>
         <source>Steps:</source>
-        <translation>Étapes:</translation>
+        <translation>Étapes :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="428"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../TextInOut.py" line="431"/>
         <source>Lang:</source>
-        <translation>Langue:</translation>
+        <translation>Langue :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="432"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="../TextInOut.py" line="434"/>
         <source>Add:</source>
-        <translation>Ajouter:</translation>
+        <translation>Ajouter :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="435"/>
@@ -148,7 +148,7 @@ Séparez les étapes par des espaces ou des virgules.</translation>
     <message>
         <location filename="../TextInOut.py" line="437"/>
         <source>Skip:</source>
-        <translation>Ignorer:</translation>
+        <translation>Ignorer :</translation>
     </message>
     <message>
         <location filename="../TextInOut.py" line="438"/>

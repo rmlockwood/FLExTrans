@@ -46,7 +46,7 @@
     <message>
         <location filename="../NewEntryDlg.py" line="271"/>
         <source>Failed to open the project: {proj}</source>
-        <translation>Échec de l'ouverture du projet: {proj}</translation>
+        <translation>Échec de l'ouverture du projet : {proj}</translation>
     </message>
     <message>
         <location filename="../NewEntryDlg.py" line="292"/>

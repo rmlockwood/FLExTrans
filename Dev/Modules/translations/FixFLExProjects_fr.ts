@@ -25,7 +25,7 @@ n'est pas ouvert. Les erreurs corrigées sont enregistrées dans le volet de rap
     <message>
         <location filename="../FixFLExProjects.py" line="206"/>
         <source>FLEx project names (multi-select):</source>
-        <translation>Noms des projets FLEx (sélection multiple):</translation>
+        <translation>Noms des projets FLEx (sélection multiple) :</translation>
     </message>
     <message>
         <location filename="../FixFLExProjects.py" line="216"/>
@@ -45,22 +45,22 @@ n'est pas ouvert. Les erreurs corrigées sont enregistrées dans le volet de rap
     <message>
         <location filename="../FixFLExProjects.py" line="297"/>
         <source>{projName}: Project is open. Skipping.</source>
-        <translation>{projName}: Le projet est ouvert. Ignoré.</translation>
+        <translation>{projName} : Le projet est ouvert. Ignoré.</translation>
     </message>
     <message>
         <location filename="../FixFLExProjects.py" line="304"/>
         <source>{projName}: Skipping. {error}</source>
-        <translation>{projName}: Ignoré. {error}</translation>
+        <translation>{projName} : Ignoré. {error}</translation>
     </message>
     <message>
         <location filename="../FixFLExProjects.py" line="307"/>
         <source>{projName}: {errorCount} errors fixed.</source>
-        <translation>{projName}: {errorCount} erreurs corrigées.</translation>
+        <translation>{projName} : {errorCount} erreurs corrigées.</translation>
     </message>
     <message>
         <location filename="../FixFLExProjects.py" line="309"/>
         <source>{projName}: No errors found</source>
-        <translation>{projName}: Aucune erreur trouvée</translation>
+        <translation>{projName} : Aucune erreur trouvée</translation>
     </message>
 </context>
 </TS>

@@ -43,12 +43,12 @@ bouton de la barre d'outils d'arbre est utilisé. </translation>
     <message>
         <location filename="../RunTreeTran.py" line="206"/>
         <source>There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?</source>
-        <translation>Il y a un problème avec le fichier d'entrée TreeTran: {filteredFile}. Le programme PC-PATR avec FLEx a-t-il été exécuté correctement?</translation>
+        <translation>Il y a un problème avec le fichier d'entrée TreeTran : {filteredFile}. Le programme PC-PATR avec FLEx a-t-il été exécuté correctement ?</translation>
     </message>
     <message>
         <location filename="../RunTreeTran.py" line="221"/>
         <source>Can't find the TreeTran rules file: {rulesFilePath}.</source>
-        <translation>Impossible de trouver le fichier de règles TreeTran: {rulesFilePath}.</translation>
+        <translation>Impossible de trouver le fichier de règles TreeTran : {rulesFilePath}.</translation>
     </message>
     <message>
         <location filename="../RunTreeTran.py" line="227"/>

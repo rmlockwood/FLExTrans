@@ -21,9 +21,9 @@ category, green-affix or feature or class, yellow-non-sentence punctuation,
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.</source>
         <translation>Ce module affichera une vue plus lisible du fichier Apertium source ou cible.
-Les unités lexicales sont codées par couleur comme suit: noir-lemme, bleu-catégorie
+Les unités lexicales sont codées par couleur comme suit : noir-lemme, bleu-catégorie
 grammaticale, vert-affixe ou caractéristique ou classe, jaune-ponctuation non-phrastique,
-rose foncé-lemme inconnu, rose-catégorie inconnue, rouge-lemme non trouvé. Important! Vous
+rose foncé-lemme inconnu, rose-catégorie inconnue, rouge-lemme non trouvé. Important ! Vous
 devez exécuter les modules jusqu'à et y compris {runApert} avant d'exécuter ce module.</translation>
     </message>
     <message>
@@ -34,7 +34,7 @@ devez exécuter les modules jusqu'à et y compris {runApert} avant d'exécuter c
     <message>
         <location filename="../ViewSrcTgt.py" line="226"/>
         <source>There was a problem opening the Source Apertium Text file: {fileName}. </source>
-        <translation>Il y a eu un problème lors de l'ouverture du fichier de texte Apertium source: {fileName}. </translation>
+        <translation>Il y a eu un problème lors de l'ouverture du fichier de texte Apertium source : {fileName}. </translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="226"/>
@@ -44,7 +44,7 @@ devez exécuter les modules jusqu'à et y compris {runApert} avant d'exécuter c
     <message>
         <location filename="../ViewSrcTgt.py" line="229"/>
         <source>There was a problem opening a Target Apertium Text file: {fileName}. </source>
-        <translation>Il y a eu un problème lors de l'ouverture du fichier de texte Apertium cible: {fileName}. </translation>
+        <translation>Il y a eu un problème lors de l'ouverture du fichier de texte Apertium cible : {fileName}. </translation>
     </message>
     <message>
         <location filename="../ViewSrcTgt.py" line="229"/>
