@@ -66,6 +66,7 @@ Switching to a newer version of Python
 Switching to a newer version of PyQt
 ====================================
 Update all the import statements that import the old PyQtX library
-Update the unit test code and test Rule assistant code for the same import issues
+Update the unit test code, ci_stubs and test Rule assistant code for the same import issues
 Change the convert convert_ui_py.bat to use the new version
 Install what is needed for the new version of the Designer tool. For PyQt6 I used: pip install pyside6 and the executable was put in the python\...\scripts folder.
+Change CreateInstaller.bat to have the new PyQt in the requirements text file for pip install
