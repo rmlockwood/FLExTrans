@@ -11,6 +11,13 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_VERSION "3.15"
+!define PYTHON_MAJOR "3"
+!define PYTHON_MINOR "13"
+!define PYTHON_PATCH "12"
+!define PYTHON_VERSION "${PYTHON_MAJOR}.${PYTHON_MINOR}.${PYTHON_PATCH}"
+!define PYTHON_LAUNCHER_ARG "-${PYTHON_MAJOR}.${PYTHON_MINOR}"
+!define PYTHON_EXE    "python-${PYTHON_VERSION}-amd64.exe"
+!define XXE_EXE "xxe-perso-8_2_0-setup.exe"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
@@ -53,6 +60,9 @@ VIProductVersion 3.15.0.${BUILD_NUM}
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 
+; Language selection page
+Page custom LanguageDialog LanguageDialogLeave
+
 ; Directory page
 Page custom nsDialogsPage
 
@@ -69,6 +79,17 @@ Var /GLOBAL LANGCODE
 Var /GLOBAL REAL_USER_APPDATA
 Var /GLOBAL REAL_USER_SID
 Var /GLOBAL DESKTOP_FOLDER
+Var /GLOBAL LANG_PAGE_VISITED
+Var /GLOBAL LANG_PAGE_GOING_BACK
+Var /GLOBAL STR_CHOOSE_FOLDER
+Var /GLOBAL STR_BROWSE
+Var /GLOBAL STR_PROD_LABEL1
+Var /GLOBAL STR_PROD_LABEL2
+Var /GLOBAL STR_YES
+Var /GLOBAL STR_NO
+Var /GLOBAL STR_PYTHON_OLD
+Var /GLOBAL STR_INSTALL_PYTHON
+Var /GLOBAL STR_INSTALL_XMLMIND
 
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -109,15 +130,6 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 # Set up variables to hold installation messages in different UI languages
-LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.13.12?$\nIMPORTANT! Check the box: 'Add Python 3.13 to Path'.$\nUse the 'Install now' option"
-LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.13.12 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.13 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.13.12?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.13 to Path'.$\nUse la opción 'Install now'."
-LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.13.12$\nIMPORTANT! Cochez la case: «Add Python 3.13 to Path».$\nUtilisez l'option «Install now»."
-LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
-LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
-LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
-LangString InstallXMLmindMsg ${LANG_FRENCH} "Installer XMLmind?"
-
 # English
 LangString Drafting       ${LANG_ENGLISH} "Drafting"
 LangString Run_Testbed    ${LANG_ENGLISH} "Run Testbed"
@@ -151,11 +163,61 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\install_files"
 
-  # Install python 
-  MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
-        File "${RESOURCE_FOLDER}\python-3.13.12-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.13.12-amd64.exe InstallAllUsers=1 PrependPath=1"
+# Check if Python is installed and what version
+  nsExec::ExecToStack 'py --version'
+  Pop $0  ; exit code
+  Pop $1  ; output (e.g. "Python 3.11.2")
+
+  ${If} $0 != 0
+    ; Python not found at all - offer to install
+    MessageBox MB_YESNO "$STR_INSTALL_PYTHON" /SD IDYES IDNO endPythonSync
+	  File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
+      ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
+      Goto endPythonSync
+  ${Else}
+    ; Python is installed - extract major.minor version
+    ; $1 looks like "Python 3.11.2\r\n" - strip the "Python " prefix
+    StrCpy $2 $1 "" 7        ; remove leading "Python "
+    ${StrRep} $2 $2 "$\r" ""
+    ${StrRep} $2 $2 "$\n" ""
+	
+    ; Extract major version number (chars before first ".")
+    StrCpy $3 ""
+    StrCpy $4 0
+    extractMajorLoop:
+      StrCpy $5 $2 1 $4
+      StrCmp $5 "." extractMajorDone
+      StrCmp $5 ""  extractMajorDone
+      StrCpy $3 "$3$5"
+      IntOp $4 $4 + 1
+      Goto extractMajorLoop
+    extractMajorDone:
+    
+    ; Step past the "." to get minor version
+    IntOp $4 $4 + 1
+    StrCpy $6 ""
+    extractMinorLoop:
+      StrCpy $5 $2 1 $4
+      StrCmp $5 "." extractMinorDone
+      StrCmp $5 ""  extractMinorDone
+      StrCmp $5 "$\r" extractMinorDone
+      StrCmp $5 "$\n" extractMinorDone
+      StrCpy $6 "$6$5"
+      IntOp $4 $4 + 1
+      Goto extractMinorLoop
+    extractMinorDone:
+
+    ; Compare: need major MAJOR and minor >= MINOR
+	IntCmp $3 ${PYTHON_MAJOR} checkMinor needPython endPythonSync
+    checkMinor:
+      IntCmp $6 ${PYTHON_MINOR} endPythonSync needPython endPythonSync  ; equal=ok, less=needPython, greater=ok
+    needPython:
+      ; Python found but version is too old - tell the user and offer upgrade
+      MessageBox MB_YESNO "Python $2 $STR_PYTHON_OLD" /SD IDYES IDNO endPythonSync
+	    File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
+        ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
         Goto endPythonSync
+  ${EndIf}
   endPythonSync:
   
   Var /GLOBAL OUT_FOLDER
@@ -403,8 +465,7 @@ Section "MainSection" SEC01
   nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-5-11:(OI)(CI)(M) /T /C'
   
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd 'py -3.13 -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
-  #  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
+  !define mycmd 'py ${PYTHON_LAUNCHER_ARG} -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
   
   SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
   File "${GIT_RESOURCES}\Command.bat"
@@ -425,11 +486,19 @@ Section "MainSection" SEC01
   ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
   
   SetOutPath "$INSTDIR\install_files"
-  MessageBox MB_YESNO "$(InstallXMLmindMsg)" /SD IDYES IDNO endXXeSync 
-        File "${RESOURCE_FOLDER}\xxe-perso-8_2_0-setup.exe"
-        ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
-        Goto endXXeSync
-  endXXeSync:
+
+
+  # Check if XMLmind XML Editor (XXE) is installed
+  ReadRegStr $0 HKLM "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\XMLmind XML Editor_is1" "DisplayName"
+
+  ${If} $0 == ""
+    # XMLmind not found - prompt to install
+    MessageBox MB_YESNO "$STR_INSTALL_XMLMIND" /SD IDYES IDNO endXXESync
+      File "${RESOURCE_FOLDER}\${XXE_EXE}"
+      ExecWait "$INSTDIR\install_files\${XXE_EXE} /SILENT"
+      Goto endXXESync
+  ${EndIf}
+  endXXESync:
     
   # Associate file extensions with XMLmind XML Editor
   # Start extension association loop
@@ -579,7 +648,7 @@ Section Uninstall
   # Check if the requirements file exists before trying to do pip uninstall
   ${If} ${FileExists} "$R0\requirements.txt"
     # Use the -y flag to skip the "Are you sure?" confirmation prompt from pip
-    ExecWait 'py -3.13 -m pip uninstall -r "$R0\requirements.txt" -y'
+    ExecWait 'py ${PYTHON_LAUNCHER_ARG} -m pip uninstall -r "$R0\requirements.txt" -y'
   ${EndIf}
   
   # Note: You'll need to write this "InstallPath" during installation in the Post section
@@ -649,22 +718,14 @@ Section Uninstall
   SetAutoClose true
 SectionEnd
 
-# Define the string in each language
-LangString ChooseFolderText ${LANG_ENGLISH} "Choose where to put FLExTrans folder."
-LangString ChooseFolderText ${LANG_GERMAN} "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
-LangString ChooseFolderText ${LANG_SPANISH} "Elija dónde colocar la carpeta FLExTrans."
-LangString ChooseFolderText ${LANG_FRENCH} "Choisissez l'emplacement du dossier FLExTrans."
-LangString BrowseText ${LANG_ENGLISH} "Browse"
-LangString BrowseText ${LANG_GERMAN} "Durchsuchen"
-LangString BrowseText ${LANG_SPANISH} "Navegar"
-LangString BrowseText ${LANG_FRENCH} "Parcourir"
-
 #--Select folder function
 !include nsDialogs.nsh
 var /global BROWSEDEST
 var /global DESTTEXT
 ;Var Dialog
 Function nsDialogsPage
+
+    StrCpy $LANG_PAGE_GOING_BACK "1"
     Var /GLOBAL REAL_USERNAME
     Var /GLOBAL USER_PROFILE_PATH
     Var /GLOBAL DOCS_FOLDER_NAME
@@ -762,11 +823,11 @@ Function nsDialogsPage
         Abort
     ${EndIf}
     
-    ${NSD_CreateLabel} 0 60 100% 12u "$(ChooseFolderText)"
+    ${NSD_CreateLabel} 0 60 100% 12u "$STR_CHOOSE_FOLDER"
     ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
     pop $DESTTEXT
     SendMessage $DESTTEXT ${EM_SETREADONLY} 1 0
-    ${NSD_CreateBrowseButton} 320 80 20% 12u "$(BrowseText)"
+    ${NSD_CreateBrowseButton} 320 80 20% 12u "$STR_BROWSE"
     pop $BROWSEDEST
     ${NSD_OnClick} $BROWSEDEST Browsedest
     
@@ -785,38 +846,20 @@ Function Browsedest
 	${EndIf}
 FunctionEnd
 
-LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
-LangString ProdModeLabelText1 ${LANG_GERMAN}  "Produktivbetrieb?"
-LangString ProdModeLabelText1 ${LANG_SPANISH} "¿Uso en producción?"
-LangString ProdModeLabelText1 ${LANG_FRENCH} "Utilisation en production?"
-LangString ProdModeLabelText2 ${LANG_ENGLISH} "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
-LangString ProdModeLabelText2 ${LANG_GERMAN}  "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie „Ja“. Für die FLExTrans-Entwicklung wählen Sie „Nein“."
-LangString ProdModeLabelText2 ${LANG_SPANISH} "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No"
-LangString ProdModeLabelText2 ${LANG_FRENCH} "«Pour installer une interface FLExTrans simplifiée destinée à une utilisation en production, choisissez Oui. Pour les travaux de développement sur FLExTrans, choisissez Non.»"
-LangString NoText ${LANG_ENGLISH} "No"
-LangString NoText ${LANG_GERMAN} "Nein"
-LangString NoText ${LANG_SPANISH} "No"
-LangString NoText ${LANG_FRENCH} "Non"
-
-LangString YesText ${LANG_ENGLISH} "Yes"
-LangString YesText ${LANG_GERMAN} "Ja"
-LangString YesText ${LANG_SPANISH} "Sí"
-LangString YesText ${LANG_FRENCH} "Oui"
-
 # Set up the Production mode step
 Function ProdModeDialog
   nsDialogs::Create 1018
   Pop $Dialog
 
-  ${NSD_CreateLabel} 0 0 450 40 "$(ProdModeLabelText1)"
+  ${NSD_CreateLabel} 0 0 450 40 "$STR_PROD_LABEL1"
   Pop $Label
-  ${NSD_CreateLabel} 0 30 450 40 "$(ProdModeLabelText2)"
+  ${NSD_CreateLabel} 0 30 450 40 "$STR_PROD_LABEL2"
   Pop $Label
 
-  ${NSD_CreateRadioButton} 10 80 200 12 "$(YesText)"
+  ${NSD_CreateRadioButton} 10 80 200 12 "$STR_YES"
   Pop $RadioYes
 
-  ${NSD_CreateRadioButton} 10 100 200 12 "$(NoText)"
+  ${NSD_CreateRadioButton} 10 100 200 12 "$STR_NO"
   Pop $RadioNo
   SendMessage $RadioNo ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
 
@@ -829,40 +872,100 @@ FunctionEnd
 
 Function .onInit
 
-	;Initial language selection dialog
-
-	Push ""
-	Push ${LANG_ENGLISH} 
-	Push English
-	Push ${LANG_SPANISH}
-	Push Español
-	Push ${LANG_FRENCH}
-	Push Français
-	Push ${LANG_GERMAN}
-	Push Deutsch
-	Push A ; A means auto count languages
-	       ; for the auto count to work the first empty push (Push "") must remain
-	LangDLL::LangDialog "Installer Language" "Please select the language to use with FLExTrans."
-
-	Pop $LANGUAGE
-	StrCmp $LANGUAGE "cancel" 0 +2
-		Abort
-		
-	; Assign two-character code for use elsewhere
-    ${If} $LANGUAGE == ${LANG_ENGLISH}
-        StrCpy $LANGCODE "en"
-    ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
-        StrCpy $LANGCODE "de"
-    ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-        StrCpy $LANGCODE "es"
-    ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
-        StrCpy $LANGCODE "fr"
-    ${Else}
-        StrCpy $LANGCODE "en" ; fallback
-    ${EndIf}
-	
+  StrCpy $LANG_PAGE_VISITED "0"
+  StrCpy $LANG_PAGE_GOING_BACK "0"
+  Call ShowLanguageDialog
+  Call SetLanguageCode
+  
 FunctionEnd
 
+Function LanguageDialog
+  ${If} $LANG_PAGE_VISITED == "0"
+    StrCpy $LANG_PAGE_VISITED "1"
+    Abort
+  ${ElseIf} $LANG_PAGE_GOING_BACK == "1"
+    StrCpy $LANG_PAGE_GOING_BACK "0"
+    Call ShowLanguageDialog
+	Call SetLanguageCode
+  ${Else}
+    Abort
+  ${EndIf}
+FunctionEnd
+
+Function LanguageDialogLeave
+  Call SetLanguageCode
+FunctionEnd
+
+Function ShowLanguageDialog
+
+  Push ""
+  Push ${LANG_ENGLISH} 
+  Push English
+  Push ${LANG_SPANISH}
+  Push Español
+  Push ${LANG_FRENCH}
+  Push Français
+  Push ${LANG_GERMAN}
+  Push Deutsch
+  Push A ; A means auto count languages
+         ; for the auto count to work the first empty push (Push "") must remain
+  LangDLL::LangDialog "Installer Language" "Please select the language to use with FLExTrans."
+  
+  Pop $LANGUAGE
+  StrCmp $LANGUAGE "cancel" 0 +2
+  	Abort
+  	
+FunctionEnd
+
+Function SetLanguageCode
+  ${If} $LANGUAGE == ${LANG_ENGLISH}
+    StrCpy $LANGCODE "en"
+    StrCpy $STR_CHOOSE_FOLDER "Choose where to put FLExTrans folder."
+    StrCpy $STR_BROWSE "Browse"
+    StrCpy $STR_PROD_LABEL1 "Production use?"
+    StrCpy $STR_PROD_LABEL2 "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
+    StrCpy $STR_YES "Yes"
+    StrCpy $STR_NO "No"
+	StrCpy $STR_PYTHON_OLD "is installed, but FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR} or newer When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION} now?"
+    StrCpy $STR_INSTALL_PYTHON "FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR} to run. It is recommended that you install it now. When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION}?"
+    StrCpy $STR_INSTALL_XMLMIND "FLExTrans relies on XMLmind XML Editor for editing transfer rule files. It is recommended that you install it now.$\nInstall XMLmind?"
+  ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
+    StrCpy $LANGCODE "de"
+    StrCpy $STR_CHOOSE_FOLDER "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
+    StrCpy $STR_BROWSE "Durchsuchen"
+    StrCpy $STR_PROD_LABEL1 "Produktivbetrieb?"
+    StrCpy $STR_PROD_LABEL2 "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie Ja. Für die FLExTrans-Entwicklung wählen Sie Nein."
+    StrCpy $STR_YES "Ja"
+    StrCpy $STR_NO "Nein"
+	StrCpy $STR_PYTHON_OLD "ist installiert, aber FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR} oder neuer. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} jetzt installieren?"
+    StrCpy $STR_INSTALL_PYTHON "FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR} zum Ausführen. Es wird empfohlen, es jetzt zu installieren. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} installieren?"
+    StrCpy $STR_INSTALL_XMLMIND "FLExTrans verwendet XMLmind XML Editor zum Bearbeiten von Transferregeldateien. Es wird empfohlen, es jetzt zu installieren.$\nXMLmind installieren?"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    StrCpy $LANGCODE "es"
+    StrCpy $STR_CHOOSE_FOLDER "Elija dónde colocar la carpeta FLExTrans."
+    StrCpy $STR_BROWSE "Navegar"
+    StrCpy $STR_PROD_LABEL1 "¿Uso en producción?"
+    StrCpy $STR_PROD_LABEL2 "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No."
+    StrCpy $STR_YES "Sí"
+    StrCpy $STR_NO "No"
+	StrCpy $STR_PYTHON_OLD "está instalado, pero FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR} o más reciente. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION} ahora?"
+    StrCpy $STR_INSTALL_PYTHON "FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR} para ejecutarse. Se recomienda instalarlo ahora. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION}?"
+    StrCpy $STR_INSTALL_XMLMIND "FLExTrans utiliza XMLmind XML Editor para editar archivos de reglas de transferencia. Se recomienda instalarlo ahora.$\n¿Instalar XMLmind?"
+  ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
+    StrCpy $LANGCODE "fr"
+    StrCpy $STR_CHOOSE_FOLDER "Choisissez l'emplacement du dossier FLExTrans."
+    StrCpy $STR_BROWSE "Parcourir"
+    StrCpy $STR_PROD_LABEL1 "Utilisation en production?"
+    StrCpy $STR_PROD_LABEL2 "Pour installer une interface FLExTrans simplifiée destinée à une utilisation en production, choisissez Oui. Pour les travaux de développement sur FLExTrans, choisissez Non."
+    StrCpy $STR_YES "Oui"
+    StrCpy $STR_NO "Non"
+	StrCpy $STR_PYTHON_OLD "est installé, mais FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR} ou plus récent. Lors de l'installation, utilisez l'option 'Install now'$\nInstaller Python ${PYTHON_VERSION} maintenant?"
+    StrCpy $STR_INSTALL_PYTHON "FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR} pour fonctionner. Il est recommandé de l'installer maintenant. Lors de l'installation, utilisez l'option 'Install now'.$\nInstaller Python ${PYTHON_VERSION}?"
+    StrCpy $STR_INSTALL_XMLMIND "FLExTrans utilise XMLmind XML Editor pour éditer les fichiers de règles de transfert. Il est recommandé de l'installer maintenant.$\nInstaller XMLmind?"
+  ${Else}
+    StrCpy $LANGCODE "en"
+  ${EndIf}
+FunctionEnd
 ; ==========================================================
 ; StrStr - Searches for a string within another string
 ; Input: Top of stack = string to search for
