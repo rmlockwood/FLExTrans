@@ -11,6 +11,12 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_VERSION "3.15"
+!define PYTHON_MAJOR "3"
+!define PYTHON_MINOR "13"
+!define PYTHON_PATCH "12"
+!define PYTHON_VERSION "${PYTHON_MAJOR}.${PYTHON_MINOR}.${PYTHON_PATCH}"
+!define PYTHON_EXE    "python-${PYTHON_VERSION}-amd64.exe"
+!define XXE_EXE "xxe-perso-8_2_0-setup.exe"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
@@ -109,10 +115,10 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 # Set up variables to hold installation messages in different UI languages
-LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.13.12?$\nIMPORTANT! Check the box: 'Add Python 3.13 to Path'.$\nUse the 'Install now' option"
-LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.13.12 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.13 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.13.12?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.13 to Path'.$\nUse la opción 'Install now'."
-LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.13.12$\nIMPORTANT! Cochez la case: «Add Python 3.13 to Path».$\nUtilisez l'option «Install now»."
+LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python ${PYTHON_VERSION}?$\nUse the 'Install now' option"
+LangString InstallPythonMsg ${LANG_GERMAN}  "Python ${PYTHON_VERSION} installieren?$\nVerwenden Sie die Option 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python ${PYTHON_VERSION}?$\nUse la opci\xf3n 'Install now'."
+LangString InstallPythonMsg ${LANG_FRENCH}  "Installer Python ${PYTHON_VERSION}?$\nUtilisez l'option «Install now»."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
 LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
@@ -159,8 +165,8 @@ Section "MainSection" SEC01
   ${If} $0 != 0
     ; Python not found at all - offer to install
     MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
-      File "${RESOURCE_FOLDER}\python-3.13.12-amd64.exe"
-      ExecWait "$INSTDIR\install_files\python-3.13.12-amd64.exe InstallAllUsers=1 PrependPath=1"
+	  File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
+      ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
       Goto endPythonSync
   ${Else}
     ; Python is installed - extract major.minor version
@@ -193,15 +199,15 @@ Section "MainSection" SEC01
       Goto extractMinorLoop
     extractMinorDone:
 
-    ; Compare: need major >= 3 and minor >= 13
-    IntCmp $3 3 checkMinor needPython checkMinor
+    ; Compare: need major MAJOR and minor >= MINOR
+	IntCmp $3 ${PYTHON_MAJOR} checkMinor needPython checkMinor
     checkMinor:
-      IntCmp $6 13 endPythonSync endPythonSync needPython  ; >= 13 is fine
+      IntCmp $6 ${PYTHON_MINOR} endPythonSync endPythonSync needPython ; >= MINOR is fine
     needPython:
       ; Python found but version is too old - tell the user and offer upgrade
-      MessageBox MB_YESNO "Python $2 is installed, but FLExTrans requires Python 3.13 or newer.$\nInstall Python 3.13.12 now?" /SD IDYES IDNO endPythonSync
-        File "${RESOURCE_FOLDER}\python-3.13.12-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.13.12-amd64.exe InstallAllUsers=1 PrependPath=1"
+      MessageBox MB_YESNO "Python $2 is installed, but FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR} or newer.$\nInstall Python ${PYTHON_VERSION} now?" /SD IDYES IDNO endPythonSync
+	    File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
+        ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
         Goto endPythonSync
   ${EndIf}
   endPythonSync:
@@ -473,11 +479,19 @@ Section "MainSection" SEC01
   ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
   
   SetOutPath "$INSTDIR\install_files"
-  MessageBox MB_YESNO "$(InstallXMLmindMsg)" /SD IDYES IDNO endXXeSync 
-        File "${RESOURCE_FOLDER}\xxe-perso-8_2_0-setup.exe"
-        ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
-        Goto endXXeSync
-  endXXeSync:
+
+
+  # Check if XMLmind XML Editor (XXE) is installed
+  ReadRegStr $0 HKLM "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\XMLmind XML Editor_is1" "DisplayName"
+
+  ${If} $0 == ""
+    # XMLmind not found - prompt to install
+    MessageBox MB_YESNO "$(InstallXMLmindMsg)" /SD IDYES IDNO endXXESync
+      File "${RESOURCE_FOLDER}\${XXE_EXE}"
+      ExecWait "$INSTDIR\install_files\${XXE_EXE} /SILENT"
+      Goto endXXESync
+  ${EndIf}
+  endXXESync:
     
   # Associate file extensions with XMLmind XML Editor
   # Start extension association loop
