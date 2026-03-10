@@ -109,10 +109,10 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 # Set up variables to hold installation messages in different UI languages
-LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.13.12?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
-LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.13.12 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.13.12?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
-LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.13.12$\nIMPORTANT! Cochez la case: «Add Python 3.11 to Path».$\nUtilisez l'option «Install now»."
+LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.13.12?$\nIMPORTANT! Check the box: 'Add Python 3.13 to Path'.$\nUse the 'Install now' option"
+LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.13.12 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.13 to Path'.$\nVerwenden Sie die Option 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.13.12?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.13 to Path'.$\nUse la opción 'Install now'."
+LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.13.12$\nIMPORTANT! Cochez la case: «Add Python 3.13 to Path».$\nUtilisez l'option «Install now»."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
 LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
