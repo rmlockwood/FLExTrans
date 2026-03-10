@@ -31,7 +31,7 @@
      <number>2</number>
     </property>
     <property name="sizeConstraint">
-     <enum>QLayout::SetDefaultConstraint</enum>
+     <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
     </property>
     <property name="leftMargin">
      <number>8</number>
@@ -136,7 +136,7 @@
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -199,7 +199,7 @@
       <item>
        <spacer name="horizontalSpacer_8">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -251,10 +251,10 @@
        </size>
       </property>
       <property name="tabPosition">
-       <enum>QTabWidget::South</enum>
+       <enum>QTabWidget::TabPosition::South</enum>
       </property>
       <property name="tabShape">
-       <enum>QTabWidget::Rounded</enum>
+       <enum>QTabWidget::TabShape::Rounded</enum>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -294,10 +294,10 @@
            <string notr="true">background-color: rgb(255, 220, 213);</string>
           </property>
           <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAsNeeded</enum>
+           <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
           </property>
           <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
+           <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
           </property>
           <property name="widgetResizable">
            <bool>true</bool>
@@ -307,8 +307,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1232</width>
-             <height>69</height>
+             <width>1230</width>
+             <height>49</height>
             </rect>
            </property>
           </widget>
@@ -382,7 +382,7 @@
            </font>
           </property>
           <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
           </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(225, 255, 255);</string>
@@ -466,7 +466,7 @@
       <item>
        <spacer name="horizontalSpacer_12">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -494,7 +494,7 @@
          <string>Select transfer rules to test</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
         </property>
        </widget>
       </item>
@@ -553,10 +553,10 @@
          </size>
         </property>
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
+         <enum>QSizePolicy::Policy::Preferred</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -594,7 +594,7 @@
       <item>
        <spacer name="horizontalSpacer_4">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -632,7 +632,7 @@
       <item>
        <spacer name="horizontalSpacer_5">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -660,7 +660,7 @@
          <string>Rule Execution Information</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing</set>
         </property>
        </widget>
       </item>
@@ -695,13 +695,16 @@
          </size>
         </property>
         <property name="tabPosition">
-         <enum>QTabWidget::South</enum>
+         <enum>QTabWidget::TabPosition::South</enum>
         </property>
         <property name="tabShape">
-         <enum>QTabWidget::Rounded</enum>
+         <enum>QTabWidget::TabShape::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
+        </property>
+        <property name="tabBarAutoHide">
+         <bool>true</bool>
         </property>
         <widget class="QWidget" name="tab_transfer_rules">
          <property name="minimumSize">
@@ -743,11 +746,14 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(240, 221, 255);</string>
             </property>
             <property name="editTriggers">
-             <set>QAbstractItemView::EditKeyPressed</set>
+             <set>QAbstractItemView::EditTrigger::EditKeyPressed</set>
             </property>
            </widget>
           </item>
@@ -886,14 +892,14 @@
          <string>Target Text</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
         </property>
        </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_9">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -1062,7 +1068,7 @@ color: rgb(255, 0, 0);</string>
          <string>Synthesized Text</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
         </property>
        </widget>
       </item>
@@ -1075,7 +1081,7 @@ color: rgb(255, 0, 0);</string>
          </size>
         </property>
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -1141,7 +1147,7 @@ color: rgb(255, 0, 0);</string>
       <item>
        <spacer name="horizontalSpacer_11">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -1185,7 +1191,7 @@ color: rgb(255, 0, 0);</string>
          </size>
         </property>
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -1235,7 +1241,7 @@ color: rgb(255, 0, 0);</string>
          </size>
         </property>
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -1430,7 +1436,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
          <string>Zoom:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -1444,7 +1450,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
         </property>
         <property name="minimumSize">
          <size>
-          <width>21</width>
+          <width>25</width>
           <height>23</height>
          </size>
         </property>
@@ -1463,7 +1469,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <widget class="QPushButton" name="ZoomDecreaseTarget">
         <property name="minimumSize">
          <size>
-          <width>21</width>
+          <width>25</width>
           <height>23</height>
          </size>
         </property>
@@ -1500,7 +1506,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      <string>Zoom:</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="ZoomIncreaseSource">
@@ -1508,13 +1514,13 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      <rect>
       <x>1180</x>
       <y>150</y>
-      <width>21</width>
+      <width>25</width>
       <height>23</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>0</width>
+      <width>25</width>
       <height>23</height>
      </size>
     </property>
@@ -1533,13 +1539,13 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      <rect>
       <x>1210</x>
       <y>150</y>
-      <width>21</width>
+      <width>25</width>
       <height>23</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>0</width>
+      <width>25</width>
       <height>23</height>
      </size>
     </property>

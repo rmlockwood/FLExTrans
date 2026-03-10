@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place. 
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects.
 #

@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.3 - 12/13/25 - Ron Lockwood
 #   Fixes #1157 Use resizeable window and widgets.
 #   For this code it means doing stuff differently when in layout mode vs absolute geometry mode.
@@ -26,8 +29,8 @@
 #    Initial version.
 #
 from ComboBox import CheckableComboBox
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QLabel, QLayout, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QSizePolicy
+from PyQt6 import QtCore, QtGui
+from PyQt6.QtWidgets import QLabel, QLayout, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QSizePolicy
 
 IMP_EXP_WINDOW_HEIGHT = 260
 IMP_EXP_WINDOW_WIDTH = 626
@@ -64,7 +67,7 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
     self.headWidg1.setText(header1TextStr)
     self.headWidg1.setVisible(False)
     self.headWidg1.setFont(font)
-    self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+    self.headWidg1.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignCenter)
     if not use_layout:
         self.headWidg1.setGeometry(QtCore.QRect(10, 190, self.ui.clusterProjectsLabel.width(), 22))
 
@@ -96,8 +99,8 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
         self.clusterGrid.setSpacing(6)
 
         # Header widgets in row 0
-        self.clusterGrid.addWidget(self.headWidg1, 0, 0, alignment=QtCore.Qt.AlignRight)
-        self.clusterGrid.addWidget(self.headWidg2, 0, 1, alignment=QtCore.Qt.AlignLeft)
+        self.clusterGrid.addWidget(self.headWidg1, 0, 0, alignment=QtCore.Qt.AlignmentFlag.AlignRight)
+        self.clusterGrid.addWidget(self.headWidg2, 0, 1, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
 
         # Make column 1 take remaining space
         self.clusterGrid.setColumnStretch(0, 0)
@@ -111,7 +114,7 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
         # Create the label and widget differently depending on layout usage
         if use_layout:
             labelWidget = QLabel()
-            labelWidget.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+            labelWidget.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignCenter)
             labelWidget.setObjectName(f"label{x}")
             labelWidget.setText(self.clusterProjects[x])
             labelWidget.setVisible(False)
@@ -122,16 +125,16 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
             if comboWidth:
                 keyWidget.setFixedWidth(comboWidth)
             else:
-                keyWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+                keyWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
             # Add label and key into the grid at row x+1
-            self.clusterGrid.addWidget(labelWidget, x + 1, 0, alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-            self.clusterGrid.addWidget(keyWidget, x + 1, 1, alignment=QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+            self.clusterGrid.addWidget(labelWidget, x + 1, 0, alignment=QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignCenter)
+            self.clusterGrid.addWidget(keyWidget, x + 1, 1, alignment=QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignCenter)
 
         else:
             labelWidget = QLabel(parentWin)
             labelWidget.setGeometry(QtCore.QRect(10, 190, self.ui.clusterProjectsLabel.width(), 21))
-            labelWidget.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+            labelWidget.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignCenter)
             labelWidget.setObjectName(f"label{x}")
             labelWidget.setText(self.clusterProjects[x])
             labelWidget.setVisible(False)
@@ -228,7 +231,7 @@ def showClusterWidgets(self):
         # Show the header labels if we have cluster projects selected
         if len(self.ui.clusterProjectsComboBox.currentData()) > 0:
             self.headWidg1.setGeometry(labelStartXpos, startYpos+10, self.headWidg1.width(), self.headWidg1.height())
-            self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+            self.headWidg1.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignCenter)
             self.headWidg1.setVisible(True)
             self.headWidg2.setGeometry(comboStartXpos, startYpos+10, self.headWidg2.width(), self.headWidg2.height())
             self.headWidg2.setVisible(True)

@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -30,9 +33,9 @@ import os
 from subprocess import Popen, DETACHED_PROCESS
 import sys
 import time
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
+from PyQt6.QtCore import QCoreApplication
 import pygetwindow as gw
 
 from flextoolslib import *
@@ -62,7 +65,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",
@@ -96,7 +99,7 @@ class MainWindow(QMainWindow):
 
         self.listWidget = QListWidget()
         self.listWidget.addItems(project_names)
-        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         layout.addWidget(self.listWidget)
 
         # Create OK and Cancel buttons
@@ -149,7 +152,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     mainWindow = MainWindow(AllProjectNames())
     mainWindow.show()
-    app.exec_()
+    app.exec()
 
     # Get the Fieldworks folder path
     fieldworksDir = os.getenv('FIELDWORKSDIR')

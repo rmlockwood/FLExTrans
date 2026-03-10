@@ -74,7 +74,7 @@
            <string>All Target Senses:</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -101,7 +101,7 @@
            <string>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</string>
           </property>
           <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
           </property>
          </widget>
         </item>
@@ -234,7 +234,7 @@ then double-click in the Target Head Word column for the desired row to link to 
            <string>Zoom:</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -248,7 +248,7 @@ then double-click in the Target Head Word column for the desired row to link to 
           </property>
           <property name="minimumSize">
            <size>
-            <width>20</width>
+            <width>25</width>
             <height>0</height>
            </size>
           </property>
@@ -273,7 +273,7 @@ then double-click in the Target Head Word column for the desired row to link to 
           </property>
           <property name="minimumSize">
            <size>
-            <width>20</width>
+            <width>25</width>
             <height>0</height>
            </size>
           </property>
@@ -319,14 +319,14 @@ then double-click in the Target Head Word column for the desired row to link to 
            <string notr="true">Arial</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
           </property>
          </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -411,7 +411,7 @@ is checked, Proper Nouns will not be exported.</string>
         <item>
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -433,7 +433,7 @@ is checked, Proper Nouns will not be exported.</string>
      <x>0</x>
      <y>0</y>
      <width>1133</width>
-     <height>21</height>
+     <height>33</height>
     </rect>
    </property>
   </widget>

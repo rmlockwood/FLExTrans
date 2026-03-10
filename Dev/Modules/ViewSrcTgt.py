@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -58,9 +61,9 @@ import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                                 
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 from SrcTgtViewer import Ui_SrcTgtWindow
@@ -90,7 +93,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'SrcTgtViewer']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ViewSrcTgt", "View Source/Target Apertium Text Tool"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),
         FTM_Help       : "",
@@ -366,7 +369,7 @@ def MainFunction(DB, report, modify=True):
     window = Main(srcFile, tgtFile, htmlFile, advanced)
     
     window.show()
-    app.exec_()
+    app.exec()
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

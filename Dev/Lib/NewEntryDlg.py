@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.1 - 7/2/25 - Ron Lockwood
 #    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
 #
@@ -35,9 +38,9 @@
 import json
 import os
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMessageBox, QDialog, QLineEdit
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui, QtCore
+from PyQt6.QtWidgets import QMessageBox, QDialog, QLineEdit
+from PyQt6.QtCore import QCoreApplication
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
@@ -253,7 +256,7 @@ class NewEntryDlg(QDialog):
                     self.retVal = False
                     return
 
-            self.setCursor(QtCore.Qt.WaitCursor)
+            self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
             # Loop through all of the cluster project lexeme form widgets
             for i, proj in enumerate(selectedProjects):

@@ -79,9 +79,10 @@ echo flextoolslib==2026.2.26b0 >> %flextransfolder%\requirements.txt
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo mixpanel >> %flextransfolder%\requirements.txt
-echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
+echo PyQt6==6.10.2 >> %flextransfolder%\requirements.txt
 echo regex >> %flextransfolder%\requirements.txt
-echo wildebeest-nlp >> %flextransfolder%\requirements.txt
+rem Currently wildebeest doesn't work with python 3.13
+rem echo wildebeest-nlp >> %flextransfolder%\requirements.txt
 echo pygetwindow >> %flextransfolder%\requirements.txt
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
@@ -117,6 +118,8 @@ for %%d in (Images Agreement "Irregular Form" "Synthesis Self-Test" "Transfer Ru
     mkdir %flextransdoc%\%%d
     xcopy Doc\%%d\* %flextransdoc%\%%d   /s /e
 )
+rem use the same .vbs file for Croatian sample
+copy %installer_resources%\VBS\FLExTrans.vbs %flextransdoc%\"Transfer Rules Tutorial\Croatian-English"
 
 rem SampleProjects
 copy "%installer_resources%\Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%

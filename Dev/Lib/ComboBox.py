@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -30,9 +33,9 @@
 #   The code is found on: https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 #   with some modifications made by Lærke.
 
-from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate
-from PyQt5.QtGui import QStandardItem, QFontMetrics
-from PyQt5.QtCore import QEvent, Qt, pyqtSignal
+from PyQt6.QtWidgets import QComboBox, QStyledItemDelegate
+from PyQt6.QtGui import QStandardItem, QFontMetrics
+from PyQt6.QtCore import QEvent, Qt, pyqtSignal
 
 class CheckableComboBox(QComboBox):
 
@@ -51,7 +54,7 @@ class CheckableComboBox(QComboBox):
         super().__init__(*args, **kwargs)
 
         # Needed to use wheelEvent method below to disable wheel scrolling
-        self.setFocusPolicy(Qt.StrongFocus)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         self.modified = False
 
@@ -81,7 +84,7 @@ class CheckableComboBox(QComboBox):
     def eventFilter(self, object, event):
 
         if object == self.lineEdit():
-            if event.type() == QEvent.MouseButtonRelease:
+            if event.type() == QEvent.Type.MouseButtonRelease:
                 if self.closeOnLineEditClick:
                     self.hidePopup()
                 else:
@@ -90,14 +93,14 @@ class CheckableComboBox(QComboBox):
             return False
 
         if object == self.view().viewport():
-            if event.type() == QEvent.MouseButtonRelease:
+            if event.type() == QEvent.Type.MouseButtonRelease:
                 index = self.view().indexAt(event.pos())
                 item = self.model().item(index.row())
 
-                if item.checkState() == Qt.Checked:
-                    item.setCheckState(Qt.Unchecked)
+                if item.checkState() == Qt.CheckState.Checked:
+                    item.setCheckState(Qt.CheckState.Unchecked)
                 else:
-                    item.setCheckState(Qt.Checked)
+                    item.setCheckState(Qt.CheckState.Checked)
             
                 # Emit the custom signal when an item is checked/unchecked
                 self.itemCheckedStateChanged.emit(index.row())
@@ -128,24 +131,24 @@ class CheckableComboBox(QComboBox):
     def updateText(self):
         texts = []
         for i in range(self.model().rowCount()):
-            if self.model().item(i).checkState() == Qt.Checked:
+            if self.model().item(i).checkState() == Qt.CheckState.Checked:
                 texts.append(self.model().item(i).text())
         text = ", ".join(texts)
 
         # Compute elided text (with "...")
         metrics = QFontMetrics(self.lineEdit().font())
-        elidedText = metrics.elidedText(text, Qt.ElideRight, self.lineEdit().width())
+        elidedText = metrics.elidedText(text, Qt.TextElideMode.ElideRight, self.lineEdit().width())
         self.lineEdit().setText(elidedText)
 
     def check(self, text):
         for i in range(self.model().rowCount()):
             if self.model().item(i).text() == text:
-                self.model().item(i).setCheckState(Qt.Checked)
+                self.model().item(i).setCheckState(Qt.CheckState.Checked)
 
     def unCheck(self, text):
         for i in range(self.model().rowCount()):
             if self.model().item(i).text() == text:
-                self.model().item(i).setCheckState(Qt.Unchecked)
+                self.model().item(i).setCheckState(Qt.CheckState.Unchecked)
 
     def addItem(self, text, data=None):
         item = QStandardItem()
@@ -154,8 +157,8 @@ class CheckableComboBox(QComboBox):
             item.setData(text)
         else:
             item.setData(data)
-        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        item.setData(Qt.Unchecked, Qt.CheckStateRole)
+        item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
+        item.setData(Qt.CheckState.Unchecked, Qt.ItemDataRole.CheckStateRole)
         self.model().appendRow(item)
 
     def addItems(self, texts, datalist=None):
@@ -171,7 +174,7 @@ class CheckableComboBox(QComboBox):
         # Return the list of selected items data
         res = []
         for i in range(self.model().rowCount()):
-            if self.model().item(i).checkState() == Qt.Checked:
+            if self.model().item(i).checkState() == Qt.CheckState.Checked:
                 res.append(self.model().item(i).text())
         return res
     

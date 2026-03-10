@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.1 - 9/19/25 - Ron Lockwood
 #    Fixes #1074. Support inflection on the first element of a complex form.
 #    Converted interlinParams to a dataclass.
@@ -41,7 +44,7 @@ import xml.etree.ElementTree as ET
 import tempfile
 from dataclasses import dataclass
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 import Utils
 import ReadConfig

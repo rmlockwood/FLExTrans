@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -46,9 +49,9 @@ import os
 from unicodedata import normalize
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter, QApplication, QMessageBox
-from PyQt5.QtGui import QFontMetrics, QIcon
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter, QApplication, QMessageBox
+from PyQt6.QtGui import QFontMetrics, QIcon
+from PyQt6.QtCore import QCoreApplication, Qt
 
 from SIL.LCModel import IMoStemMsa                      # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
@@ -386,7 +389,7 @@ class CompleterDelegate(QItemDelegate):
             comp = SegmentedCompleter(self.values, ret)
         else:
             comp = QCompleter(self.values)
-        comp.setCaseSensitivity(Qt.CaseInsensitive)
+        comp.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         ret.setCompleter(comp)
         return ret
 
@@ -453,7 +456,7 @@ class Main(QMainWindow):
         for col in range(self.ui.tableWidget.columnCount()):
 
             headerText = self.ui.tableWidget.horizontalHeaderItem(col).text()
-            textWidth = metrics.width(headerText) + 20  # Adding padding
+            textWidth = metrics.horizontalAdvance(headerText) + 20  # Adding padding
 
             if col == 9:  # Comment column:
 
@@ -593,11 +596,11 @@ class Main(QMainWindow):
         if self.unsaved:
             confirm = QMessageBox.question(
                 self, _translate("ReplacementEditor", 'Unsaved Changes'), _translate("ReplacementEditor", 'Save changes before exiting?'),
-                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
+                QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
             )
-            if confirm == QMessageBox.Save:
+            if confirm == QMessageBox.StandardButton.Save:
                 self.save()
-            elif confirm == QMessageBox.Cancel:
+            elif confirm == QMessageBox.StandardButton.Cancel:
                 event.ignore()
 
 def MainFunction(DB, report, modifyAllowed):
@@ -632,7 +635,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     window = Main(replaceFile, DB, targetDB, report, composed)
     window.show()
-    app.exec_()
+    app.exec()
 
     targetDB.CloseProject()
 

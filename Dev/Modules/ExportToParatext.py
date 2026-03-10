@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 2/11/26 - Ron Lockwood
 #    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
 #
@@ -74,9 +77,9 @@ import os
 import re
 import xml.etree.ElementTree as ET
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtCore import QCoreApplication
 
 from SIL.LCModel import * # type: ignore                                                  
 from flextoolslib import *                                                 
@@ -114,7 +117,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -259,7 +262,7 @@ def doExportToParatext(DB, configMap, report):
     window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()
-    app.exec_()
+    app.exec()
     
     if window.retVal == True:
         

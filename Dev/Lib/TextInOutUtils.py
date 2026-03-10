@@ -5,6 +5,16 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.4 - 3/9/26 - Ron Lockwood
+#    Wrong default for Build String function.
+#    Fix the logic for seeing is something is checked. Use the explicit state.
+#
+#   Version 3.15.3 - 3/9/26 - Ron Lockwood
+#    Make Wildebeest controls invisible.
+#
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 2/11/26 - Ron Lockwood
 #    Fixes #1073. Automatically apply search/replace rules on the text coming out of synthesis.
 #
@@ -65,12 +75,13 @@ import os
 import shutil
 import json
 import xml.etree.ElementTree as ET
-from wildebeest.wb_normalize import Wildebeest
+# Disabling for now because of Python 3.13 incompatibility. 
+#from wildebeest.wb_normalize import Wildebeest
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QComboBox, QWidget, QVBoxLayout, QTextEdit, QPushButton
+from PyQt6 import QtCore, QtGui
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QStandardItem, QStandardItemModel
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QComboBox, QWidget, QVBoxLayout, QTextEdit, QPushButton
 
 from TextInOut import Ui_TextInOutMainWindow
 
@@ -121,7 +132,7 @@ class RulesPopup(QWidget):
 
     def __init__(self, rules_text, parent=None):
 
-        super().__init__(parent, QtCore.Qt.Window | QtCore.Qt.ToolTip)
+        super().__init__(parent, QtCore.Qt.WindowType.Window | QtCore.Qt.WindowType.ToolTip)
         self.setWindowTitle("Rules for WorkProject")
         layout = QVBoxLayout(self)
 
@@ -175,7 +186,7 @@ def getRuleFromElement(element):
 
     return searchReplaceRuleData
 
-def buildRuleString(searchRplObj, basicInfo=True):
+def buildRuleString(searchRplObj, basicInfo=False):
 
     # Create a regex indicator string if reg ex is checked
     if searchRplObj.isRegEx:
@@ -254,9 +265,10 @@ def applySearchReplaceRules(inputStr, tree):
     # See if we have Wildebeest to run, if so run it
     wildebeestStr = root.get(APPLY_WILDEBEEST_ATTRIB)
 
-    if wildebeestStr == 'yes':
+    # Disabled for now because of python 3.13 incompatibility.
+    # if wildebeestStr == 'yes':
 
-       newStr = runWildebeest(root, newStr)
+    #    newStr = runWildebeest(root, newStr)
 
     # Loop through each rule
     for ruleEl in searchReplaceRulesElement:
@@ -315,9 +327,10 @@ def runWildebeest(root, inputStr):
         langCode = WBelem.get(WB_LANG_CODE_ATTRIB)
 
         # clean the string with Wildebeest
-        wb = Wildebeest()
-        ht = wb.build_norm_step_dict(base=baseStr, skip=skipList, add=addList)
-        newStr = wb.norm_clean_string(newStr, ht, lang_code=langCode)
+# Disabled for now because of python 3.13 incompatibility.
+#        wb = Wildebeest()
+#        ht = wb.build_norm_step_dict(base=baseStr, skip=skipList, add=addList)
+#        newStr = wb.norm_clean_string(newStr, ht, lang_code=langCode)
 
     return newStr
 
@@ -379,7 +392,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.workProjectFoldersList = []
         self.selectedWorkProjects = []
         self.validFolders = False
-        self.lastSelectAllState = QtCore.Qt.Checked
+        self.lastSelectAllState = QtCore.Qt.CheckState.Checked
         self.retVal = True
         self.keyWidgetList = []
 
@@ -417,7 +430,7 @@ class TextInOutRulesWindow(QMainWindow):
 
                 self.report.Error(_translate("TextInOutUtils", "Current Project not in Cluster Projects list, exiting."))
                 self.retVal = False
-                self.close()
+                #self.close()
                 return
             
             # Remove the current project from the cluster projects list, we will always use it
@@ -491,11 +504,11 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Reset icon images
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.ui.moveUpButton.setIcon(icon)
         
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "DownArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "DownArrow.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.ui.moveDownButton.setIcon(icon2)
 
         self.ui.errorTextBox.setText('')
@@ -503,7 +516,8 @@ class TextInOutRulesWindow(QMainWindow):
         self.setWindowTitle(winTitle)
 
         # See if we are doing text in or out
-        if not self.textIn:
+        # For now hide the wildebeest stuff because of python 3.13 incompatibility, but eventually we will want to show it for text out and hide it for text in.
+        if True: #not self.textIn:
 
             # If we are doing text out, don't show the wildebeest checkbox
             self.hideWildebeestStuff()
@@ -597,7 +611,7 @@ class TextInOutRulesWindow(QMainWindow):
     def eventFilter(self, obj, event):
 
         # Show popup when mouse enters key widget
-        if event.type() == QtCore.QEvent.Enter and obj in self.keyWidgetList:
+        if event.type() == QtCore.QEvent.TypeEnter and obj in self.keyWidgetList:
 
             # Always close any existing popup before opening a new one
             if hasattr(self, 'rulesPopup') and self.rulesPopup:
@@ -640,15 +654,15 @@ class TextInOutRulesWindow(QMainWindow):
             self._popupActive = True
 
         # Hide popup only if mouse leaves both widget and popup
-        elif event.type() == QtCore.QEvent.Leave and obj in self.keyWidgetList:
+        elif event.type() == QtCore.QEvent.Type.Leave and obj in self.keyWidgetList:
 
             QtCore.QTimer.singleShot(100, self._maybeClosePopup)
 
-        elif event.type() == QtCore.QEvent.Leave and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+        elif event.type() == QtCore.QEvent.Type.Leave and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
 
             QtCore.QTimer.singleShot(100, self._maybeClosePopup)
 
-        elif event.type() == QtCore.QEvent.Enter and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+        elif event.type() == QtCore.QEvent.Type.Enter and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
 
             self._popupActive = True
 
@@ -731,7 +745,7 @@ class TextInOutRulesWindow(QMainWindow):
         # Create an item object
         item = QStandardItem(ruleStr) 
         item.setCheckable(True)
-        item.setCheckState(QtCore.Qt.Checked)
+        item.setCheckState(QtCore.Qt.CheckState.Checked)
 
         # Insert it
         self.rulesModel.insertRow(rowNum, item)
@@ -798,7 +812,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Update the selected rule
         myItem.setText(ruleStr)
-        myItem.setCheckState(QtCore.Qt.Checked)
+        myItem.setCheckState(QtCore.Qt.CheckState.Checked)
 
         # Update the etree elements
         for i in range(len(self.selectedWorkProjects)+1):
@@ -904,23 +918,23 @@ class TextInOutRulesWindow(QMainWindow):
 
         state = self.ui.selectAllCheckBox.checkState()
 
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.CheckState.Checked:
 
             newState = state
 
-        elif state == QtCore.Qt.Unchecked:
+        elif state == QtCore.Qt.CheckState.Unchecked:
 
-            newState = QtCore.Qt.Unchecked
+            newState = QtCore.Qt.CheckState.Unchecked
 
-        else: #state == QtCore.Qt.PartiallyChecked:
+        else: #state == QtCore.Qt.CheckState.PartiallyChecked:
             
-            newState = QtCore.Qt.Checked
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+            newState = QtCore.Qt.CheckState.Checked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
 
-        if self.lastSelectAllState == QtCore.Qt.PartiallyChecked:
+        if self.lastSelectAllState == QtCore.Qt.CheckState.PartiallyChecked:
 
-            newState = QtCore.Qt.Unchecked
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            newState = QtCore.Qt.CheckState.Unchecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
 
         # Loop through all the items in the rule list model
         for i in range(0, self.rulesModel.rowCount()):
@@ -1059,16 +1073,16 @@ class TextInOutRulesWindow(QMainWindow):
         # Set the RegEx check box
         if searchReplaceRuleData.isRegEx:
 
-            self.ui.regexCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.ui.regexCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
         else:
-            self.ui.regexCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            self.ui.regexCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
 
         # Set the Inactive check box
         if searchReplaceRuleData.isInactive:
 
-            self.ui.inactiveCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.ui.inactiveCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
         else:
-            self.ui.inactiveCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            self.ui.inactiveCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
 
         # Set comment
         self.ui.commentTextBox.setText(searchReplaceRuleData.comment)
@@ -1090,7 +1104,7 @@ class TextInOutRulesWindow(QMainWindow):
         for i in range(0, self.rulesModel.rowCount()):
 
             # If active add text with the active rule #
-            if self.rulesModel.item(i).checkState():
+            if self.rulesModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
 
                 oneBoxChecked = True
             else:
@@ -1099,16 +1113,16 @@ class TextInOutRulesWindow(QMainWindow):
         # If we have a mix of checked and unchecked boxes, set the select All CheckBox to partially checked
         if oneBoxChecked and oneBoxUnchecked:
 
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.PartiallyChecked)
-            self.lastSelectAllState = QtCore.Qt.PartiallyChecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.PartiallyChecked)
+            self.lastSelectAllState = QtCore.Qt.CheckState.PartiallyChecked
 
         elif oneBoxChecked:
 
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
-            self.lastSelectAllState = QtCore.Qt.Checked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
+            self.lastSelectAllState = QtCore.Qt.CheckState.Checked
         else:
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
-            self.lastSelectAllState = QtCore.Qt.Unchecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
+            self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
 
     def SearchOrReplaceChanged(self):
         
@@ -1142,15 +1156,16 @@ class TextInOutRulesWindow(QMainWindow):
         newStr = inStr
 
         # Run Wildebeest if needed
-        if self.ui.wildebeestCheckBox.isChecked():
+        # Disabled for now because of python 3.13 incompatibility.
+        # if self.ui.wildebeestCheckBox.isChecked():
 
-            newStr = runWildebeest(self.defaultRoot, newStr)
+        #     newStr = runWildebeest(self.defaultRoot, newStr)
 
         # Loop through the rules and apply each checked one in turn
         for ind, ruleEl in enumerate(self.xmlParentObjList[0]):
 
             # Process the rule if it is checked
-            if self.rulesModel.item(ind).checkState():
+            if self.rulesModel.item(ind).checkState() == QtCore.Qt.CheckState.Checked:
 
                 searchReplDataObj = getRuleFromElement(ruleEl)
 
@@ -1206,7 +1221,7 @@ class TextInOutRulesWindow(QMainWindow):
             # Create an item object
             item = QStandardItem(ruleStr) 
             item.setCheckable(True)
-            item.setCheckState(QtCore.Qt.Checked)
+            item.setCheckState(QtCore.Qt.CheckState.Checked)
 
             # Append it
             rulesModel.appendRow(item)
@@ -1238,9 +1253,11 @@ class TextInOutRulesWindow(QMainWindow):
         # Get the Wildebeest attribute
         wildebeest = testRoot.get(APPLY_WILDEBEEST_ATTRIB)
 
-        if wildebeest and wildebeest == 'yes':
+        # For now, we are going to ignore the value of the attribute and just hide or show the wildebeest controls based on whether we are doing text in or text out, because of python 3.13 incompatibility. 
+        # Eventually we will want to use the attribute value to set the checkbox and show/hide the controls.
+        if False: #wildebeest and wildebeest == 'yes':
 
-            self.ui.wildebeestCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.ui.wildebeestCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
             self.setWildebeestVisibility(True)
         else:
             self.setWildebeestVisibility(False)
@@ -1417,15 +1434,16 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Remove commas, semicolons spaces or bars and put together again with spaces
         temp = self.ui.WBaddStepsTextBox.text()
-        temp = " ".join(regex.split('[\s,;|]+', temp))
+        temp = " ".join(regex.split(r'[\s,;|]+', temp))
         addStepsElem.text = temp
 
         temp = self.ui.WBskipStepsTextBox.text()
-        temp = " ".join(regex.split('[\s,;|]+', temp))
+        temp = " ".join(regex.split(r'[\s,;|]+', temp))
         skipStepsElem.text = temp
 
     def setWildebeestVisibility(self, makeVisible):
 
+        pass
         for widget in self.WBcontrols:
 
             widget.setVisible(makeVisible)

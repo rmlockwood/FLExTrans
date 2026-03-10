@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.15.3 - 3/7/26 - Ron Lockwood
+#    Overhaul of checkboxes against colored background using two different strategies.
+#
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 2/23/26 - Ron Lockwood
 #    Fixes #1249. Correctly show the right sentence with checkboxes on restart of the LRT. 
 #
@@ -225,10 +231,10 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: igno
 from flextoolslib import *
 from flexlibs import FLExProject
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView
+from PyQt6 import QtCore, QtGui
+from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
+from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
 
 import Mixpanel
 import InterlinData
@@ -267,7 +273,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -341,7 +347,7 @@ class FlowLayout(QLayout):
         return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
 
     def expandingDirections(self):
-        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
+        return QtCore.Qt.Orientation(0)
 
     def hasHeightForWidth(self):
         return True
@@ -364,7 +370,7 @@ class FlowLayout(QLayout):
 
     def setGeometry(self, rect):
         super().setGeometry(rect)
-        is_rtl = self.parentWidget().layoutDirection() == QtCore.Qt.RightToLeft
+        is_rtl = self.parentWidget().layoutDirection() == QtCore.Qt.LayoutDirection.RightToLeft
 
         x = rect.width() if is_rtl else 0
         y = 0
@@ -436,7 +442,7 @@ class SentenceList(QtCore.QAbstractListModel):
         return len(self.__localData)
     def data(self, index, role):
         
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.ToolTipRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole or role == QtCore.Qt.ItemDataRole.ToolTipRole:
 
             value = self.joinTupParts(self.__localData[index.row()], 0)
 
@@ -447,7 +453,7 @@ class SentenceList(QtCore.QAbstractListModel):
 
             return value
 
-    def setData(self, index, value, role = QtCore.Qt.EditRole):
+    def setData(self, index, value, role = QtCore.Qt.ItemDataRole.EditRole):
         return True
     def joinTupParts(self, tupList, i):
         ret = ''
@@ -460,6 +466,143 @@ class SentenceList(QtCore.QAbstractListModel):
                 ret += ' ' + t[i]
 
         return ret.lstrip()
+
+# ── Shared checkbox drawing constants ─────────────────────────────────────────
+CHKBOX_BOX  = 14   # indicator size in pixels
+CHKBOX_PAD  = 4    # left margin before box (delegate only)
+CHKBOX_GAP  = 6    # gap between box and text
+
+
+def paint_checkbox_indicator(painter: QPainter, box_x: int, box_y: int,
+                              checked: bool) -> None:
+    """Draw a 14-px checkbox indicator at (box_x, box_y).
+    Blue filled box + white tick when checked; white box + grey border when not.
+    Caller is responsible for save/restore and setting RenderHint.Antialiasing.
+    """
+    s = CHKBOX_BOX
+    box_rect = QRect(box_x, box_y, s, s)
+
+    if checked:
+        painter.setBrush(QBrush(QColor("#0078d4")))
+        painter.setPen(QPen(QColor("#0078d4"), 1.5))
+        painter.drawRoundedRect(box_rect, 3, 3)
+
+        pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
+                   Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+        painter.setPen(pen)
+        p1 = QPoint(box_x + int(s * 0.18), box_y + int(s * 0.50))
+        p2 = QPoint(box_x + int(s * 0.42), box_y + int(s * 0.72))
+        p3 = QPoint(box_x + int(s * 0.82), box_y + int(s * 0.28))
+        painter.drawLine(p1, p2)
+        painter.drawLine(p2, p3)
+    else:
+        painter.setBrush(QBrush(QColor("white")))
+        painter.setPen(QPen(QColor("#999999"), 1.5))
+        painter.drawRoundedRect(box_rect, 3, 3)
+
+
+class CheckboxDelegate(QStyledItemDelegate):
+    """Draws a 14-px checkbox with a white tick in a QListView.
+    Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds.
+    """
+
+    def sizeHint(self, option, index):
+        sh = super().sizeHint(option, index)
+        return sh.__class__(sh.width(), max(sh.height(), CHKBOX_BOX + 8))
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+        painter.save()
+
+        from PyQt6.QtWidgets import QStyle
+        is_selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        is_hover    = bool(option.state & QStyle.StateFlag.State_MouseOver)
+        rect = option.rect
+
+        # Background
+        if is_selected:
+            painter.fillRect(rect, option.palette.highlight())
+        elif is_hover:
+            painter.fillRect(rect, option.palette.highlight().color().lighter(190))
+        else:
+            painter.fillRect(rect, option.palette.base())
+
+        # Indicator
+        box_x = rect.left() + CHKBOX_PAD
+        box_y = rect.top() + (rect.height() - CHKBOX_BOX) // 2
+        checked = index.data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked.value
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        paint_checkbox_indicator(painter, box_x, box_y, checked)
+
+        # Text
+        text_x = box_x + CHKBOX_BOX + CHKBOX_GAP
+        text_rect = QRect(text_x, rect.top(), rect.right() - text_x, rect.height())
+        if is_selected:
+            painter.setPen(QPen(option.palette.highlightedText().color()))
+        else:
+            painter.setPen(QPen(option.palette.text().color()))
+        painter.setFont(option.font)
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter,
+                         index.data(Qt.ItemDataRole.DisplayRole) or "")
+
+        painter.restore()
+
+    def editorEvent(self, event, model, option, index):
+        """Toggle check state on click anywhere in the row."""
+        from PyQt6.QtCore import QEvent
+        if not index.isValid():
+            return False
+        if event.type() == QEvent.Type.MouseButtonPress:
+            current = index.data(Qt.ItemDataRole.CheckStateRole)
+            new_state = (Qt.CheckState.Unchecked
+                         if current == Qt.CheckState.Checked.value
+                         else Qt.CheckState.Checked)
+            model.setData(index, new_state, Qt.ItemDataRole.CheckStateRole)
+            return True
+        if event.type() == QEvent.Type.MouseButtonRelease:
+            return True  # consume to prevent base class double-toggle
+        return super().editorEvent(event, model, option, index)
+
+
+class CustomCheckBox(QCheckBox):
+    """QCheckBox that paints its own indicator — same style as CheckboxDelegate.
+    Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Hide Qt's built-in indicator; we draw our own in paintEvent
+        self.setStyleSheet("""
+            QCheckBox { spacing: 0px; }
+            QCheckBox::indicator { width: 0px; height: 0px; }
+            QToolTip { background-color: white; color: black; border: 1px solid #999999; }
+        """)
+
+    def sizeHint(self):
+        sh = super().sizeHint()
+        text_w = self.fontMetrics().horizontalAdvance(self.text())
+        return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4,
+                            max(sh.height(), CHKBOX_BOX + 6))
+
+    def mousePressEvent(self, event):
+        """Toggle on click anywhere in the widget (box or text label)."""
+        self.setChecked(not self.isChecked())
+        self.clicked.emit(self.isChecked())
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        box_y = (self.height() - CHKBOX_BOX) // 2
+        paint_checkbox_indicator(painter, 0, box_y, self.isChecked())
+
+        text_x = CHKBOX_BOX + CHKBOX_GAP
+        text_rect = QRect(text_x, 0, self.width() - text_x, self.height())
+        painter.setPen(QPen(self.palette().text().color()))
+        painter.setFont(self.font())
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter, self.text())
+
+        painter.end()
+
 
 class Main(QMainWindow):
 
@@ -518,7 +661,7 @@ class Main(QMainWindow):
         self.startRuleAssistant = False
         self.startReplacementEditor = False
         self.HCdllObj = None
-        self.lastSelectAllState = QtCore.Qt.Unchecked
+        self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
         self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
@@ -556,11 +699,11 @@ class Main(QMainWindow):
         """)
         
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.ui.upButton.setIcon(icon)
 
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "DownArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "DownArrow.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.ui.downButton.setIcon(icon2)
 
         # Tie controls to functions
@@ -595,7 +738,7 @@ class Main(QMainWindow):
         self.ui.refreshSourceLexiconButton.clicked.connect(self.sourceTextComboChanged)
 
         # Align selectAllCheckBox to the bottom
-        self.ui.horizontalLayout_9.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
+        self.ui.horizontalLayout_9.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignmentFlag.AlignBottom)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -618,7 +761,7 @@ class Main(QMainWindow):
 
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = QCheckBox(self.ui.scrollArea)
+            myCheck = CustomCheckBox(self.content_widget)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
 
@@ -736,15 +879,15 @@ class Main(QMainWindow):
 
                 if self.hasRTLdata(surface_form):
 
-                    self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
-                    self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                    self.ui.listSentences.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
+                    self.ui.SentCombo.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
                     self.__sent_model.setRTL(True)
                     found_rtl = True
                     break
 
         if found_rtl:
             # this doesn't seem to be working
-            self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
+            self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         if self.ReadBilingualLexicon() == False:
@@ -781,7 +924,7 @@ class Main(QMainWindow):
 
             # Scroll to the selected item and center it in the viewable area
             # Use a timer to delay the scroll so the view has time to layout properly
-            QtCore.QTimer.singleShot(0, lambda: self.ui.listSentences.scrollTo(qIndex, QAbstractItemView.PositionAtCenter))
+            QtCore.QTimer.singleShot(0, lambda: self.ui.listSentences.scrollTo(qIndex, QAbstractItemView.ScrollHint.PositionAtCenter))
             self.listSentClicked()
 
         if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
@@ -874,7 +1017,6 @@ class Main(QMainWindow):
         self.AdvancedOptionsCheckboxClicked()
 
         self.setMinimumHeight(500)
-        # self.ui.transferRuleButtonsHorizLayout.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
         self.retVal = True
 
     def AdvancedOptionsCheckboxClicked(self):
@@ -896,7 +1038,7 @@ class Main(QMainWindow):
                 self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
 
                 # Align ruleExecutionLabel to the right.
-                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignBottom)
 
                 # Move ruleExecutionLabel from horizontalLayout_4 to horizontalLayout_9.
                 self.ui.horizontalLayout_4.removeWidget(self.ui.ruleExecutionLabel)
@@ -963,7 +1105,7 @@ class Main(QMainWindow):
                 self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
 
                 # Align ruleExecutionLabel to the left.
-                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignBottom)
 
                 # Move ruleExecutionLabel from horizontalLayout_9 to horizontalLayout_4.
                 self.ui.horizontalLayout_9.removeWidget(self.ui.ruleExecutionLabel)
@@ -1128,7 +1270,7 @@ class Main(QMainWindow):
 
     def checkThemAll(self):
 
-        self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+        self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
 
         if self.advancedTransfer:
             self.__ruleModel = self.__interChunkModel
@@ -1182,7 +1324,7 @@ class Main(QMainWindow):
 
     def RebuildBilingLexButtonClicked(self):
 
-        self.setCursor(QtCore.Qt.WaitCursor)
+        self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
         self.fixBilingLex = True
 
@@ -1272,11 +1414,11 @@ class Main(QMainWindow):
         # Add custom buttons based on the parameter
         if showAllButtons:
 
-            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No | QMessageBox.NoToAll)
+            msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.YesToAll | QMessageBox.StandardButton.No | QMessageBox.StandardButton.NoToAll)
         else:
-            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         
-        msgBox.setDefaultButton(QMessageBox.Yes)
+        msgBox.setDefaultButton(QMessageBox.StandardButton.Yes)
         
         # Find the buttons and set a minimum width/height
         for button in msgBox.buttons():
@@ -1284,7 +1426,7 @@ class Main(QMainWindow):
             button.setMinimumSize(75, 23)
 
         # Show the dialog and get the user's response
-        result = msgBox.exec_()
+        result = msgBox.exec()
         return result
         
     def removeSentLUs(self, luObjList):
@@ -1368,7 +1510,7 @@ class Main(QMainWindow):
         synResult = re.sub('\u200F','', synResult)
 
         # Remove multiple spaces
-        synResult = re.sub('\s{2,}', ' ', synResult)
+        synResult = re.sub(r'\s{2,}', ' ', synResult)
 
         # Remove non-sentence-ending punctuation
         synResult, errMsg = self.removeNonSentencePunctuation(synResult, self.__sentPunc)
@@ -1424,16 +1566,16 @@ class Main(QMainWindow):
 
                     if existingTestXMLObj:
                         # Get confirmation from the user if necessary.
-                        if retVal != QDialogButtonBox.YesToAll:
+                        if retVal != QDialogButtonBox.StandardButton.YesToAll:
                             retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString())
 
                         # See if we should overwrite
-                        if retVal == QDialogButtonBox.Yes or retVal == QDialogButtonBox.YesToAll:
+                        if retVal == QDialogButtonBox.StandardButton.Yes or retVal == QDialogButtonBox.StandardButton.YesToAll:
                             testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
                             cnt += 1
 
                         # Break out of the loop if the user said no to all
-                        elif retVal == QDialogButtonBox.NoToAll:
+                        elif retVal == QDialogButtonBox.StandardButton.NoToAll:
                             break
                     else:
                         testbedObj.addToTestbed(myTestXMLObj)
@@ -1467,7 +1609,7 @@ class Main(QMainWindow):
                     retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString(), showAllButtons=False)
 
                     # See if we should overwrite
-                    if retVal == QMessageBox.Yes:
+                    if retVal == QMessageBox.StandardButton.Yes:
 
                         testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
                         cnt += 1
@@ -1526,7 +1668,7 @@ class Main(QMainWindow):
             self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
             return        
 
-        self.setCursor(QtCore.Qt.WaitCursor)
+        self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
@@ -1713,9 +1855,9 @@ class Main(QMainWindow):
         if self.hasRTLdata(synthText[:len(synthText)//2]): # just check the 1st half of the string.
             
             synthText = '\u200F' + synthText
-            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
+            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         else:
-            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
+            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
 
         # If we got no output, give a string to the user to indicate it.
         if len(synthText) == 0:
@@ -1735,7 +1877,7 @@ class Main(QMainWindow):
             self.ui.addToTestbedButton.setEnabled(True)
 
             # See if we have multiple words, If so, enable the Add Multiple... checkbox
-            if re.search('\S+\s+\S+', synthText):
+            if re.search(r'\S+\s+\S+', synthText):
                 self.ui.addMultipleCheckBox.setEnabled(True)
             else:
                 self.ui.addMultipleCheckBox.setEnabled(False)
@@ -1790,23 +1932,23 @@ class Main(QMainWindow):
         
         state = self.ui.selectAllCheckBox.checkState()
 
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.CheckState.Checked:
 
             newState = state
 
-        elif state == QtCore.Qt.Unchecked:
+        elif state == QtCore.Qt.CheckState.Unchecked:
 
-            newState = QtCore.Qt.Unchecked
+            newState = QtCore.Qt.CheckState.Unchecked
 
-        else: #state == QtCore.Qt.PartiallyChecked:
+        else: #state == QtCore.Qt.CheckState.PartiallyChecked:
             
-            newState = QtCore.Qt.Checked
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+            newState = QtCore.Qt.CheckState.Checked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
 
-        if self.lastSelectAllState == QtCore.Qt.PartiallyChecked:
+        if self.lastSelectAllState == QtCore.Qt.CheckState.PartiallyChecked:
 
-            newState = QtCore.Qt.Unchecked
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            newState = QtCore.Qt.CheckState.Unchecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
 
         # Loop through all the items in the rule list model
         for i in range(0, self.__ruleModel.rowCount()):
@@ -1834,11 +1976,11 @@ class Main(QMainWindow):
         # Loop through all the items in the rule list model
         for i in range(0, myModel.rowCount()):
 
-            # Save the state of each check box
-            if myModel.item(i).checkState():
-                myList.append(QtCore.Qt.Checked)
+            # Store as plain int (1/0) so str() serialises correctly in PyQt6
+            if myModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
+                myList.append(1)
             else:
-                myList.append(QtCore.Qt.Unchecked)
+                myList.append(0)
 
     def collectWordChecks(self, myList, checkBoxList):
 
@@ -1850,10 +1992,10 @@ class Main(QMainWindow):
                 break
 
             # Save the state of each check box
-            if checkBoxList[i].checkState():
-                myList.append(QtCore.Qt.Checked)
+            if checkBoxList[i].checkState() == QtCore.Qt.CheckState.Checked:
+                myList.append(1)
             else:
-                myList.append(QtCore.Qt.Unchecked)
+                myList.append(0)
 
     def saveCheckedWords(self):
 
@@ -1883,7 +2025,7 @@ class Main(QMainWindow):
             if i < len(myList):
 
                 # Set the state of each check box
-                myModel.item(i).setCheckState(myList[i])
+                myModel.item(i).setCheckState(QtCore.Qt.CheckState.Checked if myList[i] == 1 else QtCore.Qt.CheckState.Unchecked)
 
     def recheckWords(self, myList, checkBoxList):
 
@@ -1893,7 +2035,7 @@ class Main(QMainWindow):
             if i < len(myList):
 
                 # Set the state of each check box
-                checkBoxList[i].setCheckState(myList[i])
+                checkBoxList[i].setCheckState(QtCore.Qt.CheckState.Checked if myList[i] == 1 else QtCore.Qt.CheckState.Unchecked)
             else:
                 break
 
@@ -1920,7 +2062,7 @@ class Main(QMainWindow):
         # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
         #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
         # in this case we won't have punctuation
-        tokens = re.split('\^|\$', luStr)
+        tokens = re.split(r'\^|\$', luStr)
 
         # process pairs of tokens (white space and lexical unit)
         # we only care about the 2nd item in the pair, the lexical unit
@@ -2136,7 +2278,7 @@ class Main(QMainWindow):
 
         if self.__sent_model.getRTL():
 
-            self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
+            self.ui.scrollArea.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
         # Remove all widgets from self.content_widget
         layout = self.content_widget.layout
@@ -2179,7 +2321,7 @@ class Main(QMainWindow):
         dataStreamStr = wrdTup[1].strip() # of the form (\\v 1) ^word1.2<v><3sg>$
 
         # Find the lexical unit. There should only be one, but there might be non-lexical unit stuff like format markers
-        aper_toks = re.split('\^|\$', dataStreamStr)
+        aper_toks = re.split(r'\^|\$', dataStreamStr)
 
         # one of the tokens will have the lexical unit
         for aper_tok in aper_toks:
@@ -2188,7 +2330,7 @@ class Main(QMainWindow):
             if re.search('<.+>', aper_tok):
 
                 # Split off the lemma part, it's the first token
-                toks = re.split('<', aper_tok)
+                toks = re.split(r'<', aper_tok)
                 lemma = toks[0]
 
                 if lemma in self.__bilingMap:
@@ -2315,6 +2457,8 @@ class Main(QMainWindow):
 
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
+            self.ui.listTransferRules.setItemDelegate(CheckboxDelegate(None))
+            self.__transferModel.dataChanged.connect(lambda *_: self.rulesListClicked())
 
         else:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Rules File'), \
@@ -2340,6 +2484,8 @@ class Main(QMainWindow):
                 self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
+                self.ui.listInterChunkRules.setItemDelegate(CheckboxDelegate(None))
+                self.__interChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
             else:
                 QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Interchunk Rules File'), \
                 _translate('LiveRuleTesterTool', 'The interchunk transfer file has no transfer element or no section-rules element'))
@@ -2364,6 +2510,8 @@ class Main(QMainWindow):
                     self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
+                    self.ui.listPostChunkRules.setItemDelegate(CheckboxDelegate(None))
+                    self.__postChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
                 else:
                     QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid postchunk Rules File'), \
                     _translate('LiveRuleTesterTool', 'The postchunk transfer file has no transfer element or no section-rules element'))
@@ -2396,44 +2544,55 @@ class Main(QMainWindow):
 
         return True
 
-    def rulesListClicked(self, index):
+    def rulesListClicked(self, index=None):
 
-        self.TRIndex = index
-        active_rules = 1
-        oneBoxChecked = False
-        oneBoxUnchecked = False
-        
-        self.rulesChanged = True
+        # Guard against re-entrant calls (dataChanged fires during setText/setCheckState)
+        if getattr(self, '_rulesListUpdating', False):
+            return
+        self._rulesListUpdating = True
 
-        for i, el in enumerate(self.__rulesElement):
-            ruleText = el.get('comment')
+        try:
+            if index is not None and hasattr(index, 'row'):
+                self.TRIndex = index
 
-            if ruleText == None:
-                ruleText = _translate('LiveRuleTesterTool', 'missing comment')
+            active_rules = 1
+            oneBoxChecked = False
+            oneBoxUnchecked = False
 
-            # If active add text with the active rule #
-            if self.__ruleModel.item(i).checkState():
+            self.rulesChanged = True
 
-                oneBoxChecked = True
-                self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
-                active_rules += 1
+            for i, el in enumerate(self.__rulesElement):
+                ruleText = el.get('comment')
+
+                if ruleText is None:
+                    ruleText = _translate('LiveRuleTesterTool', 'missing comment')
+
+                # Read state BEFORE setText, which can reset it in some Qt6 builds
+                itemState = self.__ruleModel.item(i).checkState()
+
+                if itemState == QtCore.Qt.CheckState.Checked:
+                    oneBoxChecked = True
+                    self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
+                    self.__ruleModel.item(i).setCheckState(itemState)  # restore after setText
+                    active_rules += 1
+                else:
+                    oneBoxUnchecked = True
+                    self.__ruleModel.item(i).setText(ruleText)
+                    self.__ruleModel.item(i).setCheckState(itemState)  # restore after setText
+
+            # Update the select-all checkbox to reflect current state
+            if oneBoxChecked and oneBoxUnchecked:
+                self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.PartiallyChecked)
+                self.lastSelectAllState = QtCore.Qt.CheckState.PartiallyChecked
+            elif oneBoxChecked:
+                self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
+                self.lastSelectAllState = QtCore.Qt.CheckState.Checked
             else:
-                oneBoxUnchecked = True
-                self.__ruleModel.item(i).setText(ruleText)
+                self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Unchecked)
+                self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
 
-        # If we have a mix of checked and unchecked boxes, set the select All CheckBox to partially checked
-        if oneBoxChecked and oneBoxUnchecked:
-
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.PartiallyChecked)
-            self.lastSelectAllState = QtCore.Qt.PartiallyChecked
-
-        elif oneBoxChecked:
-
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
-            self.lastSelectAllState = QtCore.Qt.Checked
-        else:
-            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
-            self.lastSelectAllState = QtCore.Qt.Unchecked
+        finally:
+            self._rulesListUpdating = False
 
     def displayRules(self, rules_element, ruleModel):
 
@@ -2449,7 +2608,7 @@ class Main(QMainWindow):
             # Create an item object
             item = QStandardItem(comment)
             item.setCheckable(True)
-            item.setCheckState(False)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             ruleModel.appendRow(item)
 
     def escapeDataStreamsLemmas(self, inputString):
@@ -2469,7 +2628,7 @@ class Main(QMainWindow):
 
     def TransferClicked(self):
 
-        self.setCursor(QtCore.Qt.WaitCursor)
+        self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
             self.__interchunkHtmlResult = ''
@@ -2565,7 +2724,7 @@ class Main(QMainWindow):
             for i, rule_el in enumerate(rules_element):
 
                 # Add to the xml structure if it is a selected rule
-                if self.__ruleModel.item(i).checkState():
+                if self.__ruleModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
                     new_sr_element.append(rule_el)
 
             # If no rules were selected, create a dummy rule
@@ -2639,7 +2798,7 @@ class Main(QMainWindow):
 
         except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
 
-            tgt_file = re.sub('\.txt', '.aper', tgt_file)
+            tgt_file = re.sub(r'\.txt', '.aper', tgt_file)
             err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=tgt_file)
 
             try:
@@ -2674,7 +2833,7 @@ class Main(QMainWindow):
             # parse the lexical units. This will give us tokens before, between
             # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
             #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
-            tokens = re.split('\^|\$', targetOutput)
+            tokens = re.split(r'\^|\$', targetOutput)
 
             # process pairs of tokens (punctuation and lexical unit)
             # ignore the punctuation (spaces)
@@ -3025,22 +3184,31 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             return ERROR_HAPPENED
 
         window.show()
-        app.exec_()
+        app.exec()
+
+        # Save needed attributes then explicitly destroy window before Python GC
+        # runs, to prevent QThreadStorage/mutex destruction-ordering crashes
+        restartTester        = window.restartTester
+        startTestbedLogViewer = window.startTestbedLogViewer
+        startRuleAssistant   = window.startRuleAssistant
+        startReplacementEditor = window.startReplacementEditor
+        window.deleteLater()
+        del window
 
         # If the user changed the source text combo, the restart member is set to True
-        if window.restartTester:
+        if restartTester:
 
             return RESTART_MODULE
 
-        elif window.startTestbedLogViewer:
+        elif startTestbedLogViewer:
 
             return START_LOG_VIEWER
 
-        elif window.startRuleAssistant:
+        elif startRuleAssistant:
 
             return START_RULE_ASSISTANT
-        
-        elif window.startReplacementEditor:
+
+        elif startReplacementEditor:
 
             return START_REPLACEMENT_EDITOR
     else:

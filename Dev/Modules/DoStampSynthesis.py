@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 2/19/26 - Ron Lockwood
 #    Parameterized a module name in an error message.
 #
@@ -151,8 +154,8 @@ import ReadConfig
 import Utils
 import FTPaths
 from ConvertTextToSTAMPformat import docs as convertDocs
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QTranslator
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -182,7 +185,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",

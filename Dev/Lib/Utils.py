@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/19/26 - Ron Lockwood
 #    Make it easy to override the UI language with a code change.
 #
@@ -198,7 +201,7 @@ import unicodedata
 import itertools
 from collections import defaultdict
 
-from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale
+from PyQt6.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
@@ -1351,7 +1354,7 @@ def loadTranslations(libList, translatorsList, loadBase=False):
 
         # Load the Qt base translation for standard dialogs
         qt_translator = QTranslator()
-        qt_translator.load(f"qtbase_{getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        qt_translator.load(f"qtbase_{getInterfaceLangCode()}", QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         QCoreApplication.installTranslator(qt_translator)
         translatorsList.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
 

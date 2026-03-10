@@ -109,10 +109,10 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 # Set up variables to hold installation messages in different UI languages
-LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
-LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
-LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.11.7$\nIMPORTANT! Cochez la case: «Add Python 3.11 to Path».$\nUtilisez l'option «Install now»."
+LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.13.12?$\nIMPORTANT! Check the box: 'Add Python 3.13 to Path'.$\nUse the 'Install now' option"
+LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.13.12 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.13 to Path'.$\nVerwenden Sie die Option 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.13.12?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.13 to Path'.$\nUse la opción 'Install now'."
+LangString InstallPythonMsg ${LANG_FRENCH} "Installer Python 3.13.12$\nIMPORTANT! Cochez la case: «Add Python 3.13 to Path».$\nUtilisez l'option «Install now»."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
 LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
@@ -153,8 +153,8 @@ Section "MainSection" SEC01
 
   # Install python 
   MessageBox MB_YESNO "$(InstallPythonMsg)" /SD IDYES IDNO endPythonSync
-        File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe InstallAllUsers=1 PrependPath=1"
+        File "${RESOURCE_FOLDER}\python-3.13.12-amd64.exe"
+        ExecWait "$INSTDIR\install_files\python-3.13.12-amd64.exe InstallAllUsers=1 PrependPath=1"
         Goto endPythonSync
   endPythonSync:
   
@@ -403,7 +403,7 @@ Section "MainSection" SEC01
   nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEXTRANS_FOLDER}" /grant *S-1-5-11:(OI)(CI)(M) /T /C'
   
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd 'py -3.11 -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
+  !define mycmd 'py -3.13 -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
   #  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEXTRANS_FOLDER}\requirements.txt"'
   
   SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}"
@@ -579,7 +579,7 @@ Section Uninstall
   # Check if the requirements file exists before trying to do pip uninstall
   ${If} ${FileExists} "$R0\requirements.txt"
     # Use the -y flag to skip the "Are you sure?" confirmation prompt from pip
-    ExecWait 'py -3.11 -m pip uninstall -r "$R0\requirements.txt" -y'
+    ExecWait 'py -3.13 -m pip uninstall -r "$R0\requirements.txt" -y'
   ${EndIf}
   
   # Note: You'll need to write this "InstallPath" during installation in the Post section

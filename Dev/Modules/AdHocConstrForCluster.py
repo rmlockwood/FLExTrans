@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -71,10 +74,10 @@ from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
 from fuzzywuzzy import fuzz
-from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QLibraryInfo
-from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QInputDialog, QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QMessageBox
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt6 import QtGui
+from PyQt6.QtCore import Qt, QLibraryInfo
+from PyQt6.QtWidgets import QMainWindow, QApplication, QCompleter, QInputDialog, QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QMessageBox
+from PyQt6.QtCore import QCoreApplication, QTranslator
 
 from fuzzywuzzy import fuzz
 
@@ -105,7 +108,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("AdHocConstrForCluster", "Add Ad Hoc Constraint for a Cluster"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),
         FTM_Help       : "",
@@ -141,7 +144,7 @@ class GroupInputDialog(QDialog):
         layout.addWidget(self.groupDescLabel)
         layout.addWidget(self.groupDescEdit)
 
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel, self)
         layout.addWidget(self.buttons)
 
         self.buttons.accepted.connect(self.accept)
@@ -242,9 +245,9 @@ class AdHocMain(QMainWindow):
     def promptUserForGroupDetails(self):
 
         dialog = GroupInputDialog()
-        result = dialog.exec_()
+        result = dialog.exec()
         
-        if result == QDialog.Accepted:
+        if result == QDialog.DialogCode.Accepted:
 
             self.newGroupName, self.newGroupDesc = dialog.getInputs()
 
@@ -293,7 +296,7 @@ class AdHocMain(QMainWindow):
         else:
             return # still on (Choose Type)
         
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
 
         for widget in self.autoCompleteWidgets:
             
@@ -336,7 +339,7 @@ class AdHocMain(QMainWindow):
         selectedProject = self.ui.sourceProjectComboBox.currentText()
 
         # Show hourglass cursor 
-        QApplication.setOverrideCursor(Qt.WaitCursor) 
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor) 
 
         # If we had opened a different project from our main FlexTools project, close it
         if self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
@@ -386,7 +389,7 @@ class AdHocMain(QMainWindow):
         feedbackStr = ''
 
         # Show hourglass cursor 
-        QApplication.setOverrideCursor(Qt.WaitCursor) 
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor) 
 
         # Determine the type of ad hoc rule
         selectedType = self.ui.adHocTypeComboBox.currentText()
@@ -591,7 +594,7 @@ class AdHocMain(QMainWindow):
                             selectedGroupName = self.promptUserForGroupName(filteredGroupNames, proj)
 
                             # Show hourglass cursor 
-                            QApplication.setOverrideCursor(Qt.WaitCursor) 
+                            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor) 
 
                             # Create a new group named the same as the source one when the user chooses NEW ...
                             if selectedGroupName == _translate("AdHocConstrForCluster", 'NEW: {sourceGroupName}').format(sourceGroupName=sourceGroupName):
@@ -909,7 +912,7 @@ def MainFunction(DB, report, modify=True):
     window = AdHocMain(report, DB, composed, projects)
     
     window.show()
-    app.exec_()
+    app.exec()
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

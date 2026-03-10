@@ -5,6 +5,9 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -45,9 +48,9 @@ from SIL.LCModel import LcmFileHelper # type: ignore
 clr.AddReference("SIL.LCModel.Utils")
 from SIL.LCModel.Utils import IProgress  # type: ignore
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
-from PyQt5 import QtGui
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
+from PyQt6 import QtGui
+from PyQt6.QtCore import QCoreApplication
 
 import Mixpanel
 import ReadConfig
@@ -73,7 +76,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation for the user:
 docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,
@@ -208,7 +211,7 @@ class Main(QMainWindow):
 
         self.listWidget = QListWidget()
         self.listWidget.addItems(project_names)
-        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         layout.addWidget(self.listWidget)
 
         # Create OK and Cancel buttons
@@ -274,7 +277,7 @@ def MainFunction(DB, report, modifyAllowed=True):
     # Show the window to get the options the user wants
     window = Main(AllProjectNames())
     window.show()
-    app.exec_()
+    app.exec()
     
     if window.returnVal:
 

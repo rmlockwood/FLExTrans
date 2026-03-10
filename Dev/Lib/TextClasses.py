@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14.2 - 12/8/25 - Ron Lockwood
 #    Don't save complex form map items that have a zero-length list. This was 
 #    causing problems for phrasal verbs with inflection on the last element. The items
@@ -73,7 +76,7 @@
 
 import re
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,

@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 3/4/26 - Ron Lockwood
 #    Fixes #1255. Error checking for the XXE program and successfully opening the transfer rules file in XXE.
 #
@@ -25,8 +28,8 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication
 from System.Windows.Forms import (  # type: ignore
     Keys,
     MessageBox,

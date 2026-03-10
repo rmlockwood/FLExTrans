@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15 - 2/6/26 - Ron Lockwood
 #    Bumped to 3.15.
 #
@@ -34,9 +37,9 @@ import sys
 import time
 import pygetwindow as gw
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
-from PyQt5.QtCore import QCoreApplication
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt6.QtCore import QCoreApplication
 
 from flextoolslib import *
 
@@ -64,7 +67,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.15",
+        FTM_Version    : "3.15.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",
@@ -104,8 +107,8 @@ class MainWindow(QMainWindow):
 
         # Create a horizontal layout for the browse button
         browseLayout = QHBoxLayout()
-        spacer1 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        spacer2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacer1 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        spacer2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.browseButton = QPushButton(_translate("RestoreFLExProjects", "Browse for Folder"))
         self.browseButton.setFixedWidth(int(self.width() * BROWSE_BUT_PCT))  # Set the button width to X% of the window width
         browseLayout.addItem(spacer1)
@@ -121,7 +124,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(projectLabel)
 
         self.listWidget = QListWidget()
-        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         layout.addWidget(self.listWidget)
 
         # Create OK and Cancel buttons
@@ -220,7 +223,7 @@ def mainFunction(DB, report, modifyAllowed):
 
     mainWindow = MainWindow(defaultFolder)
     mainWindow.show()
-    app.exec_()
+    app.exec()
 
     # Get the Fieldworks folder path
     fieldworksDir = os.getenv('FIELDWORKSDIR')

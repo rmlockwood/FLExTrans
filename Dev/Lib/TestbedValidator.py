@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -60,7 +63,7 @@ import ReadConfig
 import Testbed 
 import Utils as MyUtils
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate

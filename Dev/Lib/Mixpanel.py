@@ -4,6 +4,9 @@
 #   SIL International
 #   9/6/2024
 #
+#   Version 3.15.1 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -24,8 +27,8 @@
 import functools
 import mixpanel
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QMessageBox, QApplication
 
 import ReadConfig
 
@@ -47,16 +50,16 @@ def GetUserID(configMap, report):
     if opt_out_asked == 'n' or opt_out_asked is None:
 
         msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setText(_translate('Mixpanel', "FLExTrans would like to send usage statistics to FLExTrans developers. "+\
                                     "No personally identifiable information is sent. These anonymous statistics will help with future development. "+\
                                     "Do you want to opt out of sending usage statistics?"))
         msgBox.setWindowTitle(_translate('Mixpanel', "FLExTrans Usage"))
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
-        result = msgBox.exec_()
+        result = msgBox.exec()
         
-        if result == QMessageBox.Yes:
+        if result == QMessageBox.StandardButton.Yes:
 
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'n', createIfMissing=True)
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y', createIfMissing=True)

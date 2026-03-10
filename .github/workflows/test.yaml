@@ -26,11 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: pip install regex
+        run: py -3.13 -m pip install regex
       - name: test
         working-directory: Dev/TestRuleAssistant
         env:
           PYTHONPATH: ${{ github.workspace }}\ci_stubs;${{ env.PYTHONPATH }}
         run: |
-          python -m unittest test_rule_assistant.py -v
-          python -m unittest discover -s ${{ github.workspace }}\Dev\unit_tests -v
+          py -3.13 -m unittest test_rule_assistant.py -v
+          py -3.13 -m unittest discover -s ${{ github.workspace }}\Dev\unit_tests -v

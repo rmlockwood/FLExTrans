@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.15.4 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.3 - 2/11/26 - Ron Lockwood
 #    Fixes #1231. Link the report message for the created text to the text in FLEx so the user can double click to go to it.
 #
@@ -143,10 +146,10 @@ from SIL.LCModel import ( # type: ignore
 from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
 from flextoolslib import *                                                 
-from PyQt5 import QtGui
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox, QMessageBox, QCheckBox
-from PyQt5.QtGui import QIcon
+from PyQt6 import QtGui
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QMainWindow, QApplication, QComboBox, QMessageBox, QCheckBox
+from PyQt6.QtGui import QIcon
 
 import ClusterUtils
 import Mixpanel
@@ -177,7 +180,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.15.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -484,18 +487,18 @@ def do_import(DB, report, chapSelectObj, tree):
             
             # Create a QMessageBox instance 
             msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setIcon(QMessageBox.Icon.Question)
             msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msgBox.setText(_translate("ImportFromParatext",
             'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx.\n\nAre you sure you want to continue with overwriting the text in FLEx?'))
             msgBox.setWindowTitle(_translate("ImportFromParatext", "Overwriting FLEx text"))
-            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             checkbox = QCheckBox(_translate("ImportFromParatext", "Overwrite all selected chapters"))
             msgBox.setCheckBox(checkbox)
 
             # Display the message box and wait for user interaction
-            ret = msgBox.exec_()
-            if ret == QMessageBox.Yes:
+            ret = msgBox.exec()
+            if ret == QMessageBox.StandardButton.Yes:
                     chapSelectObj.confirmContinueOverwrite = True
 
             # Check if the user wants to overwrite all chapters
@@ -589,7 +592,7 @@ def MainFunction(DB, report, modify=True):
 
     window = Main(clusterProjects, altParatextFolder)
     window.show()
-    app.exec_()
+    app.exec()
     
     if window.retVal == True:
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15.2 - 3/6/26 - Ron Lockwood
+#    Upgraded to PyQt6 and Python 3.13.
+#
 #   Version 3.15.1 - 2/11/26 - Ron Lockwood
 #    Fixes #1149. Support alternate Paratext folder setting.
 #
@@ -79,8 +82,8 @@ from shutil import copyfile
 import winreg
 import glob
 import json
-from PyQt5.QtWidgets import QMessageBox, QCheckBox, QApplication
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication
+from PyQt6.QtCore import QCoreApplication
 
 import ClusterUtils
 from ComboBox import CheckableComboBox
@@ -609,10 +612,10 @@ def doExport(textContents, report, chapSelectObj, parent):
 
         # Create a QMessageBox instance
         msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setText(_translate("ChapterSelection", "Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?").format(chapStr=chapStr, digitsStr=digitsStr, bookName=bookMap[chapSelectObj.bookAbbrev], projAbbrev=chapSelectObj.exportProjectAbbrev))
         msgBox.setWindowTitle(_translate("ChapterSelection", "Overwrite chapters"))
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         
         # Add checkbox to the QMessageBox if we have multiple projects
         if len(chapSelectObj.clusterProjects) > 0:
@@ -621,14 +624,14 @@ def doExport(textContents, report, chapSelectObj, parent):
             msgBox.setCheckBox(checkBox)
         
         # Display the message box and wait for user interaction
-        ret = msgBox.exec_()
+        ret = msgBox.exec()
         
         # Check if the checkbox was checked
         if len(chapSelectObj.clusterProjects) > 0 and checkBox.isChecked():
 
             chapSelectObj.dontShowWarning = True
 
-        if ret == QMessageBox.No:
+        if ret == QMessageBox.StandardButton.No:
 
             report.Info(_translate("ChapterSelection", 'Export cancelled.'))
             return None

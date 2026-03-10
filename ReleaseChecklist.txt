@@ -50,4 +50,22 @@ Do these things when you are going live with the release
 -Send out the FLExTrans newsletter
 -Setup things for the next release (so that new builds don't overwrite the just released one.)
  -See steps at the top
- 
+
+Switching to a newer version of Python
+======================================
+-Check compatibility with other tools, especially FlexTools and PyQt
+-Download the Python installer something like: python-3.13.12-amd64.exe
+-Copy this file to the local installer folder (the same path at the bottom of CreateInstaller.bat [e.g. -DRESOURCE_FOLDER=c:\data\FLExTrans\installer])
+-Edit the BuildScripts\copyPythonBinary.ps1 and change the URL and PTH variables as appropriate
+-Enable the BuildStep "Copy Python Binary" for the Build FLExTrans Installer build at least one time then you can disable it again.
+-Edit the .nsi installer script with the new version (maybe in a couple places).
+-Change the .vbs files in the InstallerResources\VBS folder to the updated version. E.g. PYTHON = "py -3.13"
+-Change the command.bat (in InstallerResources) to the updated version. E.g. py -3.13
+-Change the GitHub CI script to use py -3.xx instead of the existing version.
+
+Switching to a newer version of PyQt
+====================================
+Update all the import statements that import the old PyQtX library
+Update the unit test code and test Rule assistant code for the same import issues
+Change the convert convert_ui_py.bat to use the new version
+Install what is needed for the new version of the Designer tool. For PyQt6 I used: pip install pyside6 and the executable was put in the python\...\scripts folder.
