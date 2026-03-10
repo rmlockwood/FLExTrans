@@ -5,6 +5,10 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.5 - 3/10/26 - Ron Lockwood
+#    Fixes #1246. Check for valid index before trying to use it. This was causing a crash if the user 
+#    checked or unchecked the select all box when there were no rules.
+#
 #   Version 3.15.4 - 3/9/26 - Ron Lockwood
 #    Wrong default for Build String function.
 #    Fix the logic for seeing is something is checked. Use the explicit state.
@@ -81,7 +85,7 @@ import xml.etree.ElementTree as ET
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtGui import QStandardItem, QStandardItemModel
-from PyQt6.QtWidgets import QMessageBox, QMainWindow, QComboBox, QWidget, QVBoxLayout, QTextEdit, QPushButton
+from PyQt6.QtWidgets import QMainWindow, QComboBox, QWidget, QVBoxLayout, QTextEdit, QPushButton
 
 from TextInOut import Ui_TextInOutMainWindow
 
@@ -942,7 +946,11 @@ class TextInOutRulesWindow(QMainWindow):
             # change each box
             self.rulesModel.item(i).setCheckState(newState)
 
-        self.RulesListClicked(self.ui.rulesList.currentIndex())
+        index = self.ui.rulesList.currentIndex()
+
+        if index.isValid():
+
+            self.RulesListClicked(index)
 
     def CloseClicked(self):
         
