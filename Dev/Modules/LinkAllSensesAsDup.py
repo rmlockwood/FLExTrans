@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.15.2 - 3/10/26 - Ron Lockwood
+#    Regular expression syntax fixes that showed up with Python 3.13.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -75,7 +78,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",
@@ -143,7 +146,7 @@ def MainFunction(DB, report, modify=False):
     myStyle = Utils.getHyperLinkStyle(DB)
 
     preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub('\s','+', targetProj)
+    preGuidStr += re.sub(r'\s','+', targetProj)
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
 
     # Loop through all the source entries
