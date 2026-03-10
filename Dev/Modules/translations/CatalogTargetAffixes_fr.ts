@@ -23,7 +23,7 @@ The catalog will be created in the file specified by the Target Affix Gloss List
 This is typically called target_affix_glosses.txt and is usually in the Build folder.</source>
         <translation>Ce module crée un fichier qui contient une liste de toutes les gloses d'affixes et types de morphèmes dans le projet cible.
 Cette liste est utilisée dans les modules FLExTrans ultérieurs pour effectuer des conversions et synthétiser le texte cible.
-REMARQUE: les messages dans la fenêtre de sortie afficheront le projet SOURCE
+REMARQUE : les messages dans la fenêtre de sortie afficheront le projet SOURCE
 comme étant utilisé. En réalité, c'est le projet cible qui est utilisé.
 Le catalogue sera créé dans le fichier spécifié par le paramètre Fichier liste de glosses d'affixe cible.
 Il s'appelle généralement target_affix_glosses.txt et se trouve habituellement dans le dossier Build.</translation>
@@ -31,7 +31,7 @@ Il s'appelle généralement target_affix_glosses.txt et se trouve habituellement
     <message>
         <location filename="../CatalogTargetAffixes.py" line="147"/>
         <source>Problem reading the configuration file for the property: {property}</source>
-        <translation>Problème de lecture du fichier de configuration pour la propriété: {property}</translation>
+        <translation>Problème de lecture du fichier de configuration pour la propriété : {property}</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="156"/>
@@ -56,22 +56,22 @@ Il s'appelle généralement target_affix_glosses.txt et se trouve habituellement
     <message>
         <location filename="../CatalogTargetAffixes.py" line="184"/>
         <source>There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.</source>
-        <translation>Un problème est survenu lors de la création du fichier liste de glosses de préfixe cible: {filePath}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Un problème est survenu lors de la création du fichier liste de glosses de préfixe cible : {filePath}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="249"/>
         <source>Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}</source>
-        <translation>Caractères non valides dans l'affixe: {gloss}. Les caractères suivants ne sont pas autorisés: {invalidChars}</translation>
+        <translation>Caractères non valides dans l'affixe : {gloss}. Les caractères suivants ne sont pas autorisés : {invalidChars}</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="275"/>
         <source>Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.</source>
-        <translation>Affixe/clitique en double trouvé avec la glose: {gloss}. L'utilisation de cet affixe/clitique pourrait produire des résultats inattendus.</translation>
+        <translation>Affixe/clitique en double trouvé avec la glose : {gloss}. L'utilisation de cet affixe/clitique pourrait produire des résultats inattendus.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="277"/>
         <source>Catalog created in the file: {filePath}.</source>
-        <translation>Catalogue créé dans le fichier: {filePath}.</translation>
+        <translation>Catalogue créé dans le fichier : {filePath}.</translation>
     </message>
     <message>
         <location filename="../CatalogTargetAffixes.py" line="278"/>

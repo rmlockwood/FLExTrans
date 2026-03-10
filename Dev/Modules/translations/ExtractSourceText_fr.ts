@@ -43,17 +43,17 @@ Il s'appelle généralement source_text-aper.txt et se trouve habituellement dan
     <message>
         <location filename="../ExtractSourceText.py" line="269"/>
         <source>There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.</source>
-        <translation>Il y a un problème avec le chemin du fichier de sortie du texte analysé: {path}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a un problème avec le chemin du fichier de sortie du texte analysé : {path}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="285"/>
         <source>The text named: {textName} not found.</source>
-        <translation>Le texte nommé: {textName} est introuvable.</translation>
+        <translation>Le texte nommé : {textName} est introuvable.</translation>
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="318"/>
         <source>There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.</source>
-        <translation>Il y a un problème avec le chemin du fichier de résultat Tree Tran: {path}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a un problème avec le chemin du fichier de résultat Tree Tran : {path}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="366"/>
@@ -73,12 +73,12 @@ Il s'appelle généralement source_text-aper.txt et se trouve habituellement dan
     <message>
         <location filename="../ExtractSourceText.py" line="452"/>
         <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
-        <translation>Phrase: {sentNum} introuvable. Vérifiez que les bonnes analyses sont présentes.</translation>
+        <translation>Phrase : {sentNum} introuvable. Vérifiez que les bonnes analyses sont présentes.</translation>
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="460"/>
         <source>Exported: {count} sentence(s) using TreeTran results.</source>
-        <translation>Exporté: {count} phrase(s) en utilisant les résultats TreeTran.</translation>
+        <translation>Exporté : {count} phrase(s) en utilisant les résultats TreeTran.</translation>
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="463"/>

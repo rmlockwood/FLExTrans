@@ -81,7 +81,7 @@
     <message>
         <location filename="../LiveRuleTester2.py" line="410"/>
         <source>Zoom:</source>
-        <translation>Zoom:</translation>
+        <translation>Zoom :</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester2.py" line="394"/>

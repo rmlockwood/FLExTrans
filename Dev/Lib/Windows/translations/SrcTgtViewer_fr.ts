@@ -31,7 +31,7 @@
     <message>
         <location filename="../SrcTgtViewer.py" line="152"/>
         <source>Zoom:</source>
-        <translation>Zoom:</translation>
+        <translation>Zoom :</translation>
     </message>
     <message>
         <location filename="../SrcTgtViewer.py" line="153"/>

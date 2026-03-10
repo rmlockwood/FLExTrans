@@ -47,7 +47,7 @@ Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résul
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1220"/>
         <source>Could not copy the bilingual file to the folder: {0}. Please check that it exists.</source>
-        <translation>Impossible de copier le fichier bilingue dans le dossier: {0}. Veuillez vérifier qu'il existe.</translation>
+        <translation>Impossible de copier le fichier bilingue dans le dossier : {0}. Veuillez vérifier qu'il existe.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1048"/>
@@ -57,7 +57,7 @@ Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résul
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1048"/>
         <source>Bilingual file: {0} could not be read.</source>
-        <translation>Fichier bilingue: {0} n'a pas pu être lu.</translation>
+        <translation>Fichier bilingue : {0} n'a pas pu être lu.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1347"/>
@@ -67,12 +67,12 @@ Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résul
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1094"/>
         <source>Bilingual file: {0} does not exist.</source>
-        <translation>Fichier bilingue: {0} n'existe pas.</translation>
+        <translation>Fichier bilingue : {0} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1107"/>
         <source>Transfer rule file: {0} does not exist.</source>
-        <translation>Fichier de règles de transfert: {0} n'existe pas.</translation>
+        <translation>Fichier de règles de transfert : {0} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1146"/>
@@ -104,7 +104,7 @@ Exécutez le module Extraire le lexique bilingue séparément pour plus de déta
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1251"/>
         <source>Testbed file: {0} does not exist.</source>
-        <translation>Fichier de banc d'essai: {0} n'existe pas.</translation>
+        <translation>Fichier de banc d'essai : {0} n'existe pas.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1263"/>
@@ -118,11 +118,11 @@ Exécutez le module Extraire le lexique bilingue séparément pour plus de déta
 {0}
 
 Do you want to overwrite it?</source>
-        <translation>Il existe un test qui existe déjà dans le banc d'essai qui correspond à l'unité lexicale:
+        <translation>Il existe un test qui existe déjà dans le banc d'essai qui correspond à l'unité lexicale :
 
 {0}
 
-Voulez-vous l'écraser?</translation>
+Voulez-vous l'écraser ?</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1347"/>
@@ -172,7 +172,7 @@ Voulez-vous l'écraser?</translation>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1549"/>
         <source>Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}</source>
-        <translation>Impossible de basculer vers le répertoire Fieldworks: {fieldworksDir}. Erreur: {e}</translation>
+        <translation>Impossible de basculer vers le répertoire Fieldworks : {fieldworksDir}. Erreur : {e}</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1566"/>
@@ -182,12 +182,12 @@ Voulez-vous l'écraser?</translation>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1566"/>
         <source>An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}</source>
-        <translation>Une exception s'est produite. Impossible d'initialiser la DLL de synthèse HermitCrab. Erreur: {e}</translation>
+        <translation>Une exception s'est produite. Impossible d'initialiser la DLL de synthèse HermitCrab. Erreur : {e}</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1578"/>
         <source>Locked DB?</source>
-        <translation>BD verrouillée?</translation>
+        <translation>BD verrouillée ?</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1578"/>
@@ -290,7 +290,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2637"/>
         <source>Cannot find file: {tgt_file}.</source>
-        <translation>Impossible de trouver le fichier: {tgt_file}.</translation>
+        <translation>Impossible de trouver le fichier : {tgt_file}.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2686"/>
@@ -305,12 +305,12 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2864"/>
         <source>The text named: {name} not found.</source>
-        <translation>Le texte nommé: {name} n'a pas été trouvé.</translation>
+        <translation>Le texte nommé : {name} n'a pas été trouvé.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2897"/>
         <source>There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.</source>
-        <translation>Il y a un problème avec le chemin du fichier de résultats Tree Tran: {file}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a un problème avec le chemin du fichier de résultats Tree Tran : {file}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2945"/>
@@ -330,12 +330,12 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2985"/>
         <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
-        <translation>Phrase: {sentNum} non trouvée. Vérifiez que les bonnes analyses sont présentes.</translation>
+        <translation>Phrase : {sentNum} non trouvée. Vérifiez que les bonnes analyses sont présentes.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2992"/>
         <source>Exported: {num} sentence(s) using TreeTran results.</source>
-        <translation>Exporté: {num} phrase(s) en utilisant les résultats TreeTran.</translation>
+        <translation>Exporté : {num} phrase(s) en utilisant les résultats TreeTran.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2995"/>
@@ -345,7 +345,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="3002"/>
         <source>Starting {moduleName} for text: {sourceTextName}.</source>
-        <translation>Démarrage de {moduleName} pour le texte: {sourceTextName}.</translation>
+        <translation>Démarrage de {moduleName} pour le texte : {sourceTextName}.</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="3018"/>

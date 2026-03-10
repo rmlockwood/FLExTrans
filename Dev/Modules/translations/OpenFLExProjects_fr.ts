@@ -20,7 +20,7 @@
     <message>
         <location filename="../OpenFLExProjects.py" line="94"/>
         <source>FLEx project names (multi-select):</source>
-        <translation>Noms des projets FLEx (sélection multiple):</translation>
+        <translation>Noms des projets FLEx (sélection multiple) :</translation>
     </message>
     <message>
         <location filename="../OpenFLExProjects.py" line="104"/>

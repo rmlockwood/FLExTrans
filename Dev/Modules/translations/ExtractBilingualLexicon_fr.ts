@@ -54,12 +54,12 @@ d'aide pour plus de détails.</translation>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="270"/>
         <source>Ill-formed property: &quot;CategoryAbbrevSubstitutionList&quot;. Expected pairs of categories.</source>
-        <translation>Propriété mal formée: «CategoryAbbrevSubstitutionList». Paires de catégories attendues.</translation>
+        <translation>Propriété mal formée : « CategoryAbbrevSubstitutionList ». Paires de catégories attendues.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="280"/>
         <source>Custom field: {linkField} doesn't exist. Please read the instructions.</source>
-        <translation>Le champ personnalisé: {linkField} n'existe pas. Veuillez lire les instructions.</translation>
+        <translation>Le champ personnalisé : {linkField} n'existe pas. Veuillez lire les instructions.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="299"/>
@@ -79,67 +79,67 @@ d'aide pour plus de détails.</translation>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="365"/>
         <source>Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.</source>
-        <translation>Un mot-vedette avec des espaces au début ou à la fin a été trouvé lors du traitement du mot-vedette source: {rawHeadWord}. Les espaces ont été supprimés, mais veuillez corriger cela dans le lexique.</translation>
+        <translation>Un mot-vedette avec des espaces au début ou à la fin a été trouvé lors du traitement du mot-vedette source : {rawHeadWord}. Les espaces ont été supprimés, mais veuillez corriger cela dans le lexique.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="368"/>
         <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
-        <translation>Un mot-vedette avec l'un des caractères invalides suivants a été trouvé: {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
+        <translation>Un mot-vedette avec l'un des caractères invalides suivants a été trouvé : {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="395"/>
         <source>Encountered a sense that has unknown POS while processing source headword: {rawHeadWord}</source>
-        <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement du mot-vedette source: {rawHeadWord}</translation>
+        <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement du mot-vedette source : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="402"/>
         <source>Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}</source>
-        <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. Mot-vedette source: {rawHeadWord}</translation>
+        <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. Mot-vedette source : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="453"/>
         <source>Skipping sense because the target POS is undefined for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-        <translation>Sens ignoré car la catégorie grammaticale cible est indéfinie pour le mot-vedette cible: {targetHeadWord} lors du traitement du mot-vedette source: {rawHeadWord}</translation>
+        <translation>Sens ignoré car la catégorie grammaticale cible est indéfinie pour le mot-vedette cible : {targetHeadWord} lors du traitement du mot-vedette source : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="455"/>
         <source>Skipping sense because it is of this class: {className} for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-        <translation>Sens ignoré car il est de cette classe: {className} pour le mot-vedette cible: {targetHeadWord} lors du traitement du mot-vedette source: {rawHeadWord}</translation>
+        <translation>Sens ignoré car il est de cette classe : {className} pour le mot-vedette cible : {targetHeadWord} lors du traitement du mot-vedette source : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="463"/>
         <source>Skipping sense that is of class: {className} for headword: {rawHeadWord}</source>
-        <translation>Sens ignoré car il est de la classe: {className} pour le mot-vedette: {rawHeadWord}</translation>
+        <translation>Sens ignoré car il est de la classe : {className} pour le mot-vedette : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="465"/>
         <source>Skipping sense, no analysis object for headword: {rawHeadWord}</source>
-        <translation>Sens ignoré, aucun objet d'analyse pour le mot-vedette: {rawHeadWord}</translation>
+        <translation>Sens ignoré, aucun objet d'analyse pour le mot-vedette : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="488"/>
         <source>No lexeme form. Skipping. Headword: {rawHeadWord}</source>
-        <translation>Aucune forme de lexème. Ignoré. Mot-vedette: {rawHeadWord}</translation>
+        <translation>Aucune forme de lexème. Ignoré. Mot-vedette : {rawHeadWord}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="497"/>
         <source>No Morph Type. Skipping. {rawHeadWord} Best Vern: {vernString}</source>
-        <translation>Aucun type morphologique. Ignoré. {rawHeadWord} Meilleur vernaculaire: {vernString}</translation>
+        <translation>Aucun type morphologique. Ignoré. {rawHeadWord} Meilleur vernaculaire : {vernString}</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="523"/>
         <source>There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.</source>
-        <translation>Il y a un problème avec le fichier de remplacement du dictionnaire bilingue: {replFile}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a un problème avec le fichier de remplacement du dictionnaire bilingue : {replFile}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="550"/>
         <source>There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.</source>
-        <translation>Il y a eu un problème lors de la création du fichier de sortie du dictionnaire bilingue: {fullPathBilingFile}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+        <translation>Il y a eu un problème lors de la création du fichier de sortie du dictionnaire bilingue : {fullPathBilingFile}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="554"/>
         <source>Creation complete to the file: {filePath}.</source>
-        <translation>Création terminée dans le fichier: {filePath}.</translation>
+        <translation>Création terminée dans le fichier : {filePath}.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="555"/>

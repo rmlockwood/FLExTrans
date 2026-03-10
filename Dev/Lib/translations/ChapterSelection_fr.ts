@@ -11,7 +11,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="451"/>
         <source>The book abbreviation: {bookAbbrev} is invalid.</source>
-        <translation>L'abréviation du livre: {bookAbbrev} est invalide.</translation>
+        <translation>L'abréviation du livre : {bookAbbrev} est invalide.</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="465"/>
@@ -31,17 +31,17 @@
     <message>
         <location filename="../ChapterSelection.py" line="471"/>
         <source>Could not find the Paratext path: {paratextPath}.</source>
-        <translation>Impossible de trouver le chemin Paratext: {paratextPath}.</translation>
+        <translation>Impossible de trouver le chemin Paratext : {paratextPath}.</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="486"/>
         <source>Could not find that project at: {projPath}.</source>
-        <translation>Impossible de trouver ce projet à: {projPath}.</translation>
+        <translation>Impossible de trouver ce projet à : {projPath}.</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="502"/>
         <source>Could not find that book file: {bookPath}.</source>
-        <translation>Impossible de trouver ce fichier de livre: {bookPath}.</translation>
+        <translation>Impossible de trouver ce fichier de livre : {bookPath}.</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="596"/>
@@ -51,7 +51,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="613"/>
         <source>Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</source>
-        <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} de {bookName} dans le projet {projAbbrev}?</translation>
+        <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} de {bookName} dans le projet {projAbbrev} ?</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="614"/>
@@ -71,7 +71,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="640"/>
         <source>Could not find the book file: {bookPath}</source>
-        <translation>Impossible de trouver le fichier de livre: {bookPath}</translation>
+        <translation>Impossible de trouver le fichier de livre : {bookPath}</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="722"/>

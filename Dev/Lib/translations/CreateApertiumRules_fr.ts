@@ -11,7 +11,7 @@
     <message>
         <location filename="../CreateApertiumRules.py" line="582"/>
         <source>Other possible values: {values}</source>
-        <translation>Autres valeurs possibles: {values}</translation>
+        <translation>Autres valeurs possibles : {values}</translation>
     </message>
     <message>
         <location filename="../CreateApertiumRules.py" line="638"/>
@@ -51,7 +51,7 @@
     <message>
         <location filename="../CreateApertiumRules.py" line="761"/>
         <source>We should check for the appropriate singular noun class if one of the following is true:</source>
-        <translation>Nous devons vérifier la classe nominale singulière appropriée si l'une des conditions suivantes est vraie:</translation>
+        <translation>Nous devons vérifier la classe nominale singulière appropriée si l'une des conditions suivantes est vraie :</translation>
     </message>
     <message>
         <location filename="../CreateApertiumRules.py" line="763"/>
@@ -101,7 +101,7 @@
     <message>
         <location filename="../CreateApertiumRules.py" line="972"/>
         <source>There is only one possible value for {source.label} here: {source.default}.</source>
-        <translation>Il n'y a qu'une seule valeur possible pour {source.label} ici: {source.default}.</translation>
+        <translation>Il n'y a qu'une seule valeur possible pour {source.label} ici : {source.default}.</translation>
     </message>
     <message>
         <location filename="../CreateApertiumRules.py" line="974"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../CreateApertiumRules.py" line="1024"/>
         <source>Possible values with this combination of tags: {lemmas}</source>
-        <translation>Valeurs possibles avec cette combinaison de balises: {lemmas}</translation>
+        <translation>Valeurs possibles avec cette combinaison de balises : {lemmas}</translation>
     </message>
     <message>
         <location filename="../CreateApertiumRules.py" line="1065"/>
@@ -146,7 +146,7 @@
     <message>
         <location filename="../CreateApertiumRules.py" line="1115"/>
         <source>Rule Assistant Description: {desc}</source>
-        <translation>Description de l'assistant de règles: {desc}</translation>
+        <translation>Description de l'assistant de règles : {desc}</translation>
     </message>
     <message>
         <location filename="../CreateApertiumRules.py" line="1183"/>
