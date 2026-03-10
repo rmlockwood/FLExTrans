@@ -583,6 +583,11 @@ class CustomCheckBox(QCheckBox):
         return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4,
                             max(sh.height(), CHKBOX_BOX + 6))
 
+    def mousePressEvent(self, event):
+        """Toggle on click anywhere in the widget (box or text label)."""
+        self.setChecked(not self.isChecked())
+        self.clicked.emit(self.isChecked())
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
