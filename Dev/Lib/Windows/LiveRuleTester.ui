@@ -291,7 +291,8 @@
         <item>
          <widget class="QScrollArea" name="scrollArea">
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 220, 213);</string>
+           <string notr="true">color: black;
+background-color: rgb(255, 220, 213);</string>
           </property>
           <property name="verticalScrollBarPolicy">
            <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
@@ -358,7 +359,8 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 220, 213);</string>
+           <string notr="true">color: black;
+background-color: rgb(255, 220, 213);</string>
           </property>
          </widget>
         </item>
@@ -437,7 +439,8 @@
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(225, 255, 255);</string>
+           <string notr="true">color: black;
+background-color: rgb(225, 255, 255);</string>
           </property>
          </widget>
         </item>
@@ -701,7 +704,7 @@
          <enum>QTabWidget::TabShape::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <property name="tabBarAutoHide">
          <bool>true</bool>
@@ -750,7 +753,8 @@
              <bool>true</bool>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(240, 221, 255);</string>
+             <string notr="true">color: black;
+background-color: rgb(240, 221, 255);</string>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::EditTrigger::EditKeyPressed</set>
@@ -794,7 +798,8 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 225, 194);</string>
+             <string notr="true">color: black;
+background-color: rgb(255, 225, 194);</string>
             </property>
            </widget>
           </item>
@@ -832,7 +837,8 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(222, 255, 246);</string>
+             <string notr="true">color: black;
+background-color: rgb(222, 255, 246);</string>
             </property>
            </widget>
           </item>
@@ -1305,7 +1311,8 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(254, 194,194);</string>
+       <string notr="true">color: black;
+background-color: rgb(254, 194,194);</string>
       </property>
       <property name="readOnly">
        <bool>true</bool>

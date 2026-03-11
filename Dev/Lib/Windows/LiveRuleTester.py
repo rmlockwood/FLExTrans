@@ -115,7 +115,8 @@ class Ui_LRTWindow(object):
         self.SentCombo.setObjectName("SentCombo")
         self.verticalLayout_3.addWidget(self.SentCombo)
         self.scrollArea = QtWidgets.QScrollArea(parent=self.tab_select_words)
-        self.scrollArea.setStyleSheet("background-color: rgb(255, 220, 213);")
+        self.scrollArea.setStyleSheet("color: black;\n"
+"background-color: rgb(255, 220, 213);")
         self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.scrollArea.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.scrollArea.setWidgetResizable(True)
@@ -145,7 +146,8 @@ class Ui_LRTWindow(object):
         sizePolicy.setHeightForWidth(self.listSentences.sizePolicy().hasHeightForWidth())
         self.listSentences.setSizePolicy(sizePolicy)
         self.listSentences.setMinimumSize(QtCore.QSize(0, 0))
-        self.listSentences.setStyleSheet("background-color: rgb(255, 220, 213);")
+        self.listSentences.setStyleSheet("color: black;\n"
+"background-color: rgb(255, 220, 213);")
         self.listSentences.setObjectName("listSentences")
         self.verticalLayout_4.addWidget(self.listSentences)
         self.SelectedSentencesEdit = QtWidgets.QTextEdit(parent=self.tab_select_sentences)
@@ -180,7 +182,8 @@ class Ui_LRTWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.ManualEdit.setFont(font)
-        self.ManualEdit.setStyleSheet("background-color: rgb(225, 255, 255);")
+        self.ManualEdit.setStyleSheet("color: black;\n"
+"background-color: rgb(225, 255, 255);")
         self.ManualEdit.setObjectName("ManualEdit")
         self.verticalLayout_7.addWidget(self.ManualEdit)
         self.tabSource.addTab(self.tab_manual_entry, "")
@@ -287,7 +290,8 @@ class Ui_LRTWindow(object):
         self.listTransferRules.setMinimumSize(QtCore.QSize(0, 23))
         self.listTransferRules.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.listTransferRules.setAutoFillBackground(True)
-        self.listTransferRules.setStyleSheet("background-color: rgb(240, 221, 255);")
+        self.listTransferRules.setStyleSheet("color: black;\n"
+"background-color: rgb(240, 221, 255);")
         self.listTransferRules.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.EditKeyPressed)
         self.listTransferRules.setObjectName("listTransferRules")
         self.verticalLayout_10.addWidget(self.listTransferRules)
@@ -301,7 +305,8 @@ class Ui_LRTWindow(object):
         self.listInterChunkRules = QtWidgets.QListView(parent=self.tab_interchunk_rules)
         self.listInterChunkRules.setEnabled(True)
         self.listInterChunkRules.setMinimumSize(QtCore.QSize(0, 23))
-        self.listInterChunkRules.setStyleSheet("background-color: rgb(255, 225, 194);")
+        self.listInterChunkRules.setStyleSheet("color: black;\n"
+"background-color: rgb(255, 225, 194);")
         self.listInterChunkRules.setObjectName("listInterChunkRules")
         self.verticalLayout_9.addWidget(self.listInterChunkRules)
         self.tabRules.addTab(self.tab_interchunk_rules, "Interchunk")
@@ -313,7 +318,8 @@ class Ui_LRTWindow(object):
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.listPostChunkRules = QtWidgets.QListView(parent=self.tab_postchunk_rules)
         self.listPostChunkRules.setMinimumSize(QtCore.QSize(0, 23))
-        self.listPostChunkRules.setStyleSheet("background-color: rgb(222, 255, 246);")
+        self.listPostChunkRules.setStyleSheet("color: black;\n"
+"background-color: rgb(222, 255, 246);")
         self.listPostChunkRules.setObjectName("listPostChunkRules")
         self.verticalLayout_8.addWidget(self.listPostChunkRules)
         self.tabRules.addTab(self.tab_postchunk_rules, "Postchunk")
@@ -492,7 +498,8 @@ class Ui_LRTWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.SynthTextEdit.setFont(font)
-        self.SynthTextEdit.setStyleSheet("background-color: rgb(254, 194,194);")
+        self.SynthTextEdit.setStyleSheet("color: black;\n"
+"background-color: rgb(254, 194,194);")
         self.SynthTextEdit.setReadOnly(True)
         self.SynthTextEdit.setObjectName("SynthTextEdit")
         self.verticalLayout.addWidget(self.SynthTextEdit)
@@ -590,7 +597,7 @@ class Ui_LRTWindow(object):
 
         self.retranslateUi(LRTWindow)
         self.tabSource.setCurrentIndex(0)
-        self.tabRules.setCurrentIndex(0)
+        self.tabRules.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(LRTWindow)
 
     def retranslateUi(self, LRTWindow):
