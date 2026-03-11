@@ -163,61 +163,64 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\install_files"
 
-# Check if Python is installed and what version
-  nsExec::ExecToStack 'py --version'
+  # Check if Python ${PYTHON_MAJOR}.${PYTHON_MINOR} specifically is installed
+  nsExec::ExecToStack 'py -${PYTHON_MAJOR}.${PYTHON_MINOR} --version 2>&1'
   Pop $0  ; exit code
-  Pop $1  ; output (e.g. "Python 3.11.2")
+  Pop $1  ; output (e.g. "Python 3.13.2") or empty if not found
 
+  ; Treat non-zero exit code OR empty output as not found
   ${If} $0 != 0
-    ; Python not found at all - offer to install
-    MessageBox MB_YESNO "$STR_INSTALL_PYTHON" /SD IDYES IDNO endPythonSync
-	  File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
+    Goto needPythonNotFound
+  ${EndIf}
+  ${If} $1 == ""
+    Goto needPythonNotFound
+  ${EndIf}
+
+  ; Python 3.13.x is installed - strip prefix and whitespace
+  StrCpy $2 $1 "" 7        ; remove leading "Python "
+  ${StrRep} $2 $2 "$\r" ""
+  ${StrRep} $2 $2 "$\n" ""
+
+  ; Skip past "major.minor." to get patch number
+  StrCpy $4 0
+  StrCpy $7 0  ; dot counter
+  extractPatchLoop:
+    StrCpy $5 $2 1 $4
+    StrCmp $5 "" extractPatchDone
+    StrCmp $5 "." countDot
+    IntOp $4 $4 + 1
+    Goto extractPatchLoop
+  countDot:
+    IntOp $7 $7 + 1
+    IntOp $4 $4 + 1
+    IntCmp $7 2 extractPatchNumber 0 0  ; after 2nd dot, start collecting patch
+    Goto extractPatchLoop
+  extractPatchNumber:
+    StrCpy $6 ""
+  extractPatchNumberLoop:
+    StrCpy $5 $2 1 $4
+    StrCmp $5 "" extractPatchDone
+    StrCpy $6 "$6$5"
+    IntOp $4 $4 + 1
+    Goto extractPatchNumberLoop
+  extractPatchDone:
+
+  ; Check patch version is >= ${PYTHON_PATCH}
+  IntCmp $6 ${PYTHON_PATCH} endPythonSync needPythonOldPatch endPythonSync 
+  ; equal=ok, less=needPythonOldPatch, greater=ok
+
+  needPythonOldPatch:
+    MessageBox MB_YESNO "Python $2 $STR_PYTHON_OLD" /SD IDYES IDNO endPythonSync
+      File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
       ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
       Goto endPythonSync
-  ${Else}
-    ; Python is installed - extract major.minor version
-    ; $1 looks like "Python 3.11.2\r\n" - strip the "Python " prefix
-    StrCpy $2 $1 "" 7        ; remove leading "Python "
-    ${StrRep} $2 $2 "$\r" ""
-    ${StrRep} $2 $2 "$\n" ""
-	
-    ; Extract major version number (chars before first ".")
-    StrCpy $3 ""
-    StrCpy $4 0
-    extractMajorLoop:
-      StrCpy $5 $2 1 $4
-      StrCmp $5 "." extractMajorDone
-      StrCmp $5 ""  extractMajorDone
-      StrCpy $3 "$3$5"
-      IntOp $4 $4 + 1
-      Goto extractMajorLoop
-    extractMajorDone:
-    
-    ; Step past the "." to get minor version
-    IntOp $4 $4 + 1
-    StrCpy $6 ""
-    extractMinorLoop:
-      StrCpy $5 $2 1 $4
-      StrCmp $5 "." extractMinorDone
-      StrCmp $5 ""  extractMinorDone
-      StrCmp $5 "$\r" extractMinorDone
-      StrCmp $5 "$\n" extractMinorDone
-      StrCpy $6 "$6$5"
-      IntOp $4 $4 + 1
-      Goto extractMinorLoop
-    extractMinorDone:
 
-    ; Compare: need major MAJOR and minor >= MINOR
-	IntCmp $3 ${PYTHON_MAJOR} checkMinor needPython endPythonSync
-    checkMinor:
-      IntCmp $6 ${PYTHON_MINOR} endPythonSync needPython endPythonSync  ; equal=ok, less=needPython, greater=ok
-    needPython:
-      ; Python found but version is too old - tell the user and offer upgrade
-      MessageBox MB_YESNO "Python $2 $STR_PYTHON_OLD" /SD IDYES IDNO endPythonSync
-	    File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
-        ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
-        Goto endPythonSync
-  ${EndIf}
+  needPythonNotFound:
+    MessageBox MB_YESNO "$STR_INSTALL_PYTHON" /SD IDYES IDNO endPythonSync
+      File "${RESOURCE_FOLDER}\${PYTHON_EXE}"
+      ExecWait "$INSTDIR\install_files\${PYTHON_EXE} InstallAllUsers=1 PrependPath=1"
+      Goto endPythonSync
+
   endPythonSync:
   
   Var /GLOBAL OUT_FOLDER
@@ -926,7 +929,7 @@ Function SetLanguageCode
     StrCpy $STR_PROD_LABEL2 "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
     StrCpy $STR_YES "Yes"
     StrCpy $STR_NO "No"
-	StrCpy $STR_PYTHON_OLD "is installed, but FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR} or newer When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION} now?"
+	StrCpy $STR_PYTHON_OLD "is installed, but FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION} now?"
     StrCpy $STR_INSTALL_PYTHON "FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR} to run. It is recommended that you install it now. When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION}?"
     StrCpy $STR_INSTALL_XMLMIND "FLExTrans relies on XMLmind XML Editor for editing transfer rule files. It is recommended that you install it now.$\nInstall XMLmind?"
   ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
@@ -937,7 +940,7 @@ Function SetLanguageCode
     StrCpy $STR_PROD_LABEL2 "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie Ja. Für die FLExTrans-Entwicklung wählen Sie Nein."
     StrCpy $STR_YES "Ja"
     StrCpy $STR_NO "Nein"
-	StrCpy $STR_PYTHON_OLD "ist installiert, aber FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR} oder neuer. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} jetzt installieren?"
+	StrCpy $STR_PYTHON_OLD "ist installiert, aber FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} jetzt installieren?"
     StrCpy $STR_INSTALL_PYTHON "FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR} zum Ausführen. Es wird empfohlen, es jetzt zu installieren. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} installieren?"
     StrCpy $STR_INSTALL_XMLMIND "FLExTrans verwendet XMLmind XML Editor zum Bearbeiten von Transferregeldateien. Es wird empfohlen, es jetzt zu installieren.$\nXMLmind installieren?"
   ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
@@ -948,7 +951,7 @@ Function SetLanguageCode
     StrCpy $STR_PROD_LABEL2 "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No."
     StrCpy $STR_YES "Sí"
     StrCpy $STR_NO "No"
-	StrCpy $STR_PYTHON_OLD "está instalado, pero FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR} o más reciente. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION} ahora?"
+	StrCpy $STR_PYTHON_OLD "está instalado, pero FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION} ahora?"
     StrCpy $STR_INSTALL_PYTHON "FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR} para ejecutarse. Se recomienda instalarlo ahora. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION}?"
     StrCpy $STR_INSTALL_XMLMIND "FLExTrans utiliza XMLmind XML Editor para editar archivos de reglas de transferencia. Se recomienda instalarlo ahora.$\n¿Instalar XMLmind?"
   ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
@@ -959,7 +962,7 @@ Function SetLanguageCode
     StrCpy $STR_PROD_LABEL2 "Pour installer une interface FLExTrans simplifiée destinée à une utilisation en production, choisissez Oui. Pour les travaux de développement sur FLExTrans, choisissez Non."
     StrCpy $STR_YES "Oui"
     StrCpy $STR_NO "Non"
-	StrCpy $STR_PYTHON_OLD "est installé, mais FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR} ou plus récent. Lors de l'installation, utilisez l'option 'Install now'$\nInstaller Python ${PYTHON_VERSION} maintenant?"
+	StrCpy $STR_PYTHON_OLD "est installé, mais FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. Lors de l'installation, utilisez l'option 'Install now'$\nInstaller Python ${PYTHON_VERSION} maintenant?"
     StrCpy $STR_INSTALL_PYTHON "FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR} pour fonctionner. Il est recommandé de l'installer maintenant. Lors de l'installation, utilisez l'option 'Install now'.$\nInstaller Python ${PYTHON_VERSION}?"
     StrCpy $STR_INSTALL_XMLMIND "FLExTrans utilise XMLmind XML Editor pour éditer les fichiers de règles de transfert. Il est recommandé de l'installer maintenant.$\nInstaller XMLmind?"
   ${Else}
