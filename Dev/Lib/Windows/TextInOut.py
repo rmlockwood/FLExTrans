@@ -317,7 +317,8 @@ class Ui_TextInOutMainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.inputText.setFont(font)
-        self.inputText.setStyleSheet("background-color: rgb(225, 255, 255);")
+        self.inputText.setStyleSheet("color: black;\n"
+"background-color: rgb(225, 255, 255);")
         self.inputText.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -356,7 +357,8 @@ class Ui_TextInOutMainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.outputText.setFont(font)
-        self.outputText.setStyleSheet("background-color: rgb(229, 255, 236);")
+        self.outputText.setStyleSheet("color: black;\n"
+"background-color: rgb(229, 255, 236);")
         self.outputText.setReadOnly(True)
         self.outputText.setMarkdown("")
         self.outputText.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
