@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.15.2 - 3/12/26 - Ron Lockwood
+#    Fixes #1273. Handle non-ASCII characters in paths when creating the batch file to run the makefile. 
+#    Use the Windows short path to avoid encoding issues with non-ASCII characters in the batch file.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -199,6 +203,7 @@ import tempfile
 import os
 import unicodedata
 import itertools
+import ctypes
 from collections import defaultdict
 
 from PyQt6.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale
@@ -1403,3 +1408,21 @@ def getInterfaceLangCode():
         return FTConfig.UILanguage 
     else:
         return langOverride
+
+def get_short_path(long_path):
+    """Convert a long Windows path with non-ASCII chars to its short 8.3 equivalent."""
+    buf = ctypes.create_unicode_buffer(512)
+    ctypes.windll.kernel32.GetShortPathNameW(long_path, buf, 512)
+    return buf.value or long_path  # fall back to original if short path unavailable
+
+def get_long_path(short_path):
+    buf = ctypes.create_unicode_buffer(512)
+    ctypes.windll.kernel32.GetLongPathNameW(short_path, buf, 512)
+    return buf.value or short_path
+
+def get_short_dir_only_path(full_path):
+    """Convert a long Windows path with non-ASCII chars to its short 8.3 equivalent, but only for the directory part, not the file name."""
+    dir_path = os.path.dirname(full_path)
+    file_name = os.path.basename(full_path)
+    short_dir = get_short_path(dir_path)
+    return os.path.join(short_dir, file_name)

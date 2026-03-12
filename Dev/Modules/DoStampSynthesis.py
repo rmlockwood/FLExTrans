@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.3 - 3/12/26 - Ron Lockwood
+#    Fixes #1273. Handle non-ASCII characters in paths when creating the batch file to run the makefile. 
+#    Use the Windows short path to avoid encoding issues with non-ASCII characters in the batch file.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -123,7 +127,7 @@
 
 import os
 import re 
-from subprocess import call
+import subprocess
 from datetime import datetime
 import winreg
 import xml.etree.ElementTree as ET
@@ -185,7 +189,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.15.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -1356,7 +1360,6 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     global reqFeaturesMap
     stemNameList = []
     reqFeaturesMap = {}
-    globalXAmplePropMap = {}
 
     targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
@@ -1384,16 +1387,27 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
         error_list.append((_translate("DoStampSynthesis", "Lexicon files folder: {folder} does not exist.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
 
-    # Have all files start with targetProject
-    partPath = os.path.join(lexFolder, targetProject)
+    # Have all files start with targetProject.
+    # Use the short path for the lexicon files folder in case we have a path with non-ASCII characters that will cause problems for STAMP.
+    partPath = os.path.join(Utils.get_short_path(lexFolder), targetProject)
     
     # Create other files we need for STAMP
     cmdFileName = create_synthesis_files(partPath)
 
-    # run STAMP to synthesize the results. E.g. stamp32" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
-    # this assumes stamp32.exe is in the current working directory.
+    # run STAMP to synthesize the results. E.g. stamp64" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
+    try:
+        result = subprocess.run([FTPaths.STAMP_EXE, '-f', cmdFileName, '-i', Utils.get_short_dir_only_path(anaFile), '-o', Utils.get_short_dir_only_path(synFile)], capture_output=False)
+
+        if result.returncode != 0:
+                
+            error_list.append((_translate("DoStampSynthesis", "An error happened when running the STAMP tool."), 2))
+            error_list.append((result.stderr.decode(), 2))
+            return error_list
     
-    call([FTPaths.STAMP_EXE, '-f', cmdFileName, '-i', anaFile, '-o', synFile])
+    except subprocess.CalledProcessError as e:
+        error_list.append((_translate("DoStampSynthesis", "An error happened when running the STAMP tool."), 2))
+        error_list.append((e.stderr.decode(), 2))
+        return error_list
 
     # Replace underscores with spaces in the Synthesized file
     # Underscores were added for multiword entries that contained a space
