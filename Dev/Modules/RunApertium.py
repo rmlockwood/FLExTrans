@@ -5,6 +5,10 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.15.2 - 3/12/26 - Ron Lockwood
+#    Fixes #1273. Handle non-ASCII characters in paths when creating the batch file to run the makefile. 
+#    Use the Windows short path to avoid encoding issues with non-ASCII characters in the batch file.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -102,7 +106,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -372,7 +376,10 @@ def run_makefile(absPathToBuildFolder, report):
     # Create the batch file which merely cds to the appropriate
     # directory and runs make.
     fullPathMake = os.path.join(absPathToBuildFolder, DO_MAKE_SCRIPT_FILE)
-    f = open(fullPathMake, 'w', encoding='utf-8')
+
+    # 'mbcs' is a Python alias for the Windows system default ANSI codepage.
+    # Using 'mbcs' allows the batch file to be created with the correct encoding for the system, which is important if there are non-ASCII characters in the paths.
+    f = open(fullPathMake, 'w', encoding='mbcs')
 
     # make a variable for where the bilingual dictionary file should be found
     outStr = f'set {MAKEFILE_DICT_VARIABLE}={dictionaryPath}\n'
@@ -394,21 +401,22 @@ def run_makefile(absPathToBuildFolder, report):
     # set path to nothing
     outStr += f'set PATH=""\n'
 
+    short_build_path = Utils.get_short_path(absPathToBuildFolder)
+
     # Extract drive letter and switch to it if the path is on a different drive
-    drive_letter = os.path.splitdrive(absPathToBuildFolder)[0]
+    drive_letter = os.path.splitdrive(short_build_path)[0]
+
     if drive_letter:
+
         outStr += f'{drive_letter}\n'
 
-    # Put quotes around the path in case there's a space
-    outStr += f'cd "{absPathToBuildFolder}"\n'
-
-    outStr += f'"{FTPaths.MAKE_EXE}" 2>"{APERTIUM_ERROR_FILE}"\n'
-
+     # Put quotes around the paths in case there's a space
+    outStr += f'cd "{short_build_path}"\n'
+    outStr += f'"{Utils.get_short_path(FTPaths.MAKE_EXE)}" 2>"{APERTIUM_ERROR_FILE}"\n'
     f.write(outStr)
     f.close()
 
     retVal = subprocess.call([fullPathMake])
-
     return retVal
 
 def runApertium(DB, configMap, report):
