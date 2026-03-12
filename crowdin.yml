@@ -1,0 +1,16 @@
+files:
+  - source: /Dev/Modules/translations/*_fr.ts
+    translation: /Dev/Modules/translations/%file_name%_%locale%.ts
+    type: qt
+
+  - source: /Dev/TopLevel/translations/*_fr.ts
+    translation: /Dev/TopLevel/translations/%file_name%_%locale%.ts
+    type: qt
+
+  - source: /Dev/Lib/translations/*_fr.ts
+    translation: /Dev/Lib/translations/%file_name%_%locale%.ts
+    type: qt
+
+  - source: /Dev/Lib/Windows/translations/*_fr.ts
+    translation: /Dev/Lib/Windows/translations/%file_name%_%locale%.ts
+    type: qt
