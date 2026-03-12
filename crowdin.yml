@@ -1,4 +1,4 @@
- files:
-  - source: /Dev/**/translations/*_fr.ts
+files:
+  - source: /Dev/**/translations/*.ts
     translation: /Dev/**/translations/%file_name%_%two_letters_code%.ts
     type: qt
