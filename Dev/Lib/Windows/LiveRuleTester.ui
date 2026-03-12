@@ -916,22 +916,6 @@ background-color: rgb(222, 255, 246);</string>
        </spacer>
       </item>
       <item>
-       <widget class="QCheckBox" name="advancedOptionsCheckbox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Advanced options</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="TestButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -953,6 +937,22 @@ background-color: rgb(222, 255, 246);</string>
         </property>
         <property name="text">
          <string>Transfer</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="advancedOptionsCheckbox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Advanced options</string>
         </property>
        </widget>
       </item>
@@ -1098,6 +1098,31 @@ color: rgb(255, 0, 0);</string>
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="synthesizeButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>&amp;Synthesize</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="traceHermitCrabSynthesisCheckBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1122,31 +1147,6 @@ color: rgb(255, 0, 0);</string>
         </property>
         <property name="text">
          <string>Trace HermitCrab synthesis</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="synthesizeButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>&amp;Synthesize</string>
         </property>
        </widget>
       </item>
