@@ -84,6 +84,7 @@ echo regex >> %flextransfolder%\requirements.txt
 rem Currently wildebeest doesn't work with python 3.13
 rem echo wildebeest-nlp >> %flextransfolder%\requirements.txt
 echo pygetwindow >> %flextransfolder%\requirements.txt
+echo tomli_w >> %flextransfolder%\requirements.txt
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
 copy Dev\TopLevel\*.py %flextoolsfolder%

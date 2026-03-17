@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 
 # Import raw LibLCM interfaces for casting
-from Modules.FLExTrans.Lib import Utils
+from Modules.FLExTrans.Lib import FTPaths, Utils
 from SIL.LCModel import IFsComplexValue, IFsFeatStruc, IFsClosedValue, IPartOfSpeech, IMoStemMsa, IMoInflAffMsa, IMoInflAffixSlot
 
 #----------------------------------------------------------------
@@ -29,8 +29,16 @@ Warnings use a gentler tone (primarily lowercase, "problem" instead of "fail").
 """
 }
 
+import sys
+import os
+import tomllib
+import tomli_w 
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QListWidgetItem, QDialogButtonBox, QApplication, QLabel, QComboBox, QListWidget, QListWidgetItem, QDialogButtonBox, QMessageBox
+from PyQt6.QtCore import Qt
+
 #----------------------------------------------------------------
 # Constants
+BANTU_SETTINGS_FILE = "BantuSettings.toml"
 
 TARGET_POS = "Noun"
 TARGET_SLOT = "NC"
@@ -106,9 +114,117 @@ def find_slot_recursive(project, pos, target_name):
                 return result
     return None
 
+class BantuConfigDialog(QDialog):
+    def __init__(self, current_data, pos_options, slot_options, feature_options):
+        super().__init__()
+        self.setWindowTitle("Bantu Feature Configuration")
+        self.resize(400, 500)
+        self.main_layout = QVBoxLayout()  # No 'self' here
+        self.setLayout(self.main_layout)  # Explicitly set it
+
+        # Helper to set combo box safely
+        def set_safe_combo(combo, options, value):
+            if value:
+                value = str(value).strip()
+                # Find index case-insensitively
+                for i in range(combo.count()):
+                    if combo.itemText(i).strip().lower() == value.lower():
+                        combo.setCurrentIndex(i)
+                        return
+            combo.setCurrentIndex(0) # Default to first if no match
+
+        # 1. POS Noun Name
+        self.main_layout.addWidget(QLabel("Name for POS Noun:"))
+        self.pos_combo = QComboBox()
+        self.pos_combo.addItems(pos_options)
+        set_safe_combo(self.pos_combo, pos_options, current_data.get("name_for_POS_noun"))
+        self.main_layout.addWidget(self.pos_combo)
+
+        # 2. Slots with Affixes (The Multi-Select)
+        self.main_layout.addWidget(QLabel("Slots with Noun Class Affixes:"))
+        self.slot_list = QListWidget()
+        
+        # Build lookup list from TOML
+        existing_strings = []
+        raw_slots = current_data.get("slots_with_noun_class_affixes", [])
+        for entry in raw_slots:
+            p = entry.get("POS", "").strip()
+            for s in entry.get("slots", []):
+                existing_strings.append(f"{p} - {s.strip()}".lower())
+
+        for opt in slot_options:
+            display_text = f"{opt['POS']} - {opt['slot']}"
+            item = QListWidgetItem(display_text)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            
+            # Match against the lowercase list
+            is_checked = display_text.lower() in existing_strings
+            item.setCheckState(Qt.CheckState.Checked if is_checked else Qt.CheckState.Unchecked)
+            self.slot_list.addItem(item)
+        
+        self.main_layout.addWidget(self.slot_list)
+
+        # 3. Singular Feature Name
+        self.main_layout.addWidget(QLabel("Singular Feature Name:"))
+        self.sg_combo = QComboBox()
+        self.sg_combo.addItems(feature_options)
+        set_safe_combo(self.sg_combo, feature_options, current_data.get("bantu_singular_feature_name"))
+        self.main_layout.addWidget(self.sg_combo)
+
+        # 4. Plural Feature Name
+        self.main_layout.addWidget(QLabel("Plural Feature Name:"))
+        self.pl_combo = QComboBox()
+        self.pl_combo.addItems(feature_options)
+        set_safe_combo(self.pl_combo, feature_options, current_data.get("bantu_plural_feature_name"))
+        self.main_layout.addWidget(self.pl_combo)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        self.main_layout.addWidget(buttons)
+
+    def get_results(self):
+        # ... (same as previous get_results)
+        grouped = {}
+        for i in range(self.slot_list.count()):
+            item = self.slot_list.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                parts = item.text().split(" - ")
+                pos, slot = parts[0], parts[1]
+                grouped.setdefault(pos, []).append(slot)
+        
+        slots_list = [{"POS": k, "slots": v} for k, v in grouped.items()]
+        return {
+            "bantu_info": {
+                "name_for_POS_noun": self.pos_combo.currentText(),
+                "slots_with_noun_class_affixes": slots_list,
+                "bantu_singular_feature_name": self.sg_combo.currentText(),
+                "bantu_plural_feature_name": self.pl_combo.currentText()
+            }
+        }
+
+def save_dialog_data(dialog, file_path):
+    # 1. Extract the dictionary from the dialog
+    # This should return: {"bantu_info": {...}}
+    updated_data = dialog.get_results()
+
+    try:
+        # 2. Open file in 'wb' (write binary) mode
+        # TOML requires UTF-8, and tomli_w handles this via binary streams
+        with open(file_path, "wb") as f:
+            # 3. Convert dict to TOML string and encode to bytes
+            toml_string = tomli_w.dumps(updated_data,)
+            f.write(toml_string.encode("utf-8"))
+            
+        print(f"Successfully saved to {file_path}")
+        return True
+    
+    except Exception as e:
+        print(f"Failed to save TOML file: {e}")
+        return False
+
 #----------------------------------------------------------------
 # The main processing function
-
 def Main(project, report, modifyAllowed):
     report.Info("Starting Bantu language health check...")
     
@@ -117,7 +233,47 @@ def Main(project, report, modifyAllowed):
     total_prefixes_checked = 0
     total_suffixes_checked = 0
     total_affixes_val_checked = 0
+
+    # Get Settings
+    app = QApplication(sys.argv)
+
+    # Master Lists 
+    posMap = {}
+    Utils.get_categories(project, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
+    pos_names = list(posMap.values())
     
+    #features = project.lp.MsFeatureSystemOA.FeaturesOC
+    # features = ["BantuSg", "BantuPl", "Number", "Gender"]
+    
+    all_possible_slots = [
+        {"POS": "Noun", "slot": "NC"},
+        {"POS": "Demonstrative", "slot": "demNC"},
+        {"POS": "Verb", "slot": "objNC"},
+        {"POS": "Verb", "slot": "sbjNC"}
+    ]
+    features = ["BantuSg", "BantuPl", "Number", "Gender"]
+
+    # Load existing TOML data
+    settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), BANTU_SETTINGS_FILE)
+
+    current_data = {}
+    if os.path.exists(settingsPath):
+
+        with open(settingsPath, "rb") as f:
+            try:                                            
+                full_config = tomllib.load(f)
+                current_data = full_config.get("bantu_info", {})
+
+            except Exception as e:
+                print(f"Error reading TOML: {e}")
+
+    # Launch Dialog
+    dialog = BantuConfigDialog(current_data, pos_names, all_possible_slots, features)
+
+    # --- Integrated Usage Example ---
+    if dialog.exec():
+        save_dialog_data(dialog, settingsPath)
+
     # Store issues to report them grouped by type
     issues = {
         "roots": [], 
