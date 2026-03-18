@@ -1,22 +1,53 @@
-from flextoolslib import *
-#from flexlibs2 import POSOperations
+
 import re
 from collections import defaultdict
 
-# Import raw LibLCM interfaces for casting
-from Modules.FLExTrans.Lib import FTPaths, Utils
-from SIL.LCModel import IFsComplexValue, IFsFeatStruc, IFsClosedValue, IPartOfSpeech, IMoStemMsa, IMoInflAffMsa, IMoInflAffixSlot
+from SIL.LCModel import (# type: ignore
+    IFsComplexValue, 
+    IFsFeatStruc, 
+    IFsClosedValue, 
+    IPartOfSpeech, 
+    IMoStemMsa, 
+    IMoInflAffMsa, 
+    IMoInflAffixSlot,
+)
+
+from flextoolslib import *
+
+import Mixpanel
+import ReadConfig
+import Utils
+import FTPaths
+
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QTranslator
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'BantuHealthCheck'
+
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {
-    FTM_Name        : "Bantu Health Check",
+    FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
     FTM_Version     : 5,
     FTM_ModifiesDB  : False,
-    FTM_Synopsis    : "Flags Bantu Noun roots without 2 features and NC prefixes without features.",
+    FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description : 
-"""
+_translate("BantuHealthCheck", """
 Bantu Health Check:
 1. Identifies Noun 'roots' (bound root, bound stem, discontiguous phrase, 
    particle, phrase, root, stem) and verifies that they have exactly two
@@ -26,7 +57,7 @@ Bantu Health Check:
 
 Issues are grouped by morphological type (roots, then prefixes, then suffixes).
 Warnings use a gentler tone (primarily lowercase, "problem" instead of "fail").
-"""
+""")
 }
 
 import sys
@@ -40,18 +71,18 @@ from PyQt6.QtCore import Qt
 # Constants
 BANTU_SETTINGS_FILE = "BantuSettings.toml"
 
-TARGET_POS = "Noun"
-TARGET_SLOT = "NC"
+# TARGET_POS = "Noun"
+# TARGET_SLOT = "NC"
 
-ROOT_MORPH_TYPES = [
-    "bound root",
-    "bound stem",
-    "discontiguous phrase",
-    "particle",
-    "phrase",
-    "root",
-    "stem"
-]
+# ROOT_MORPH_TYPES = [
+#     "bound root",
+#     "bound stem",
+#     "discontiguous phrase",
+#     "particle",
+#     "phrase",
+#     "root",
+#     "stem"
+# ]
 
 #----------------------------------------------------------------
 # Helper Functions
@@ -69,10 +100,6 @@ def as_string(project, obj):
     if not obj: return ""
     return project.BestStr(obj)
 
-def as_tag(project, possibility):
-    if not possibility: return ""
-    return project.BestStr(possibility.Abbreviation)
-
 def get_feat_abbr_list(project, SpecsOC, feat_abbr_list):
     """
     Recursive function to traverse feature structures.
@@ -88,8 +115,8 @@ def get_feat_abbr_list(project, SpecsOC, feat_abbr_list):
         elif spec.ClassName == "FsClosedValue":
             spec_closed = IFsClosedValue(spec)
             
-            featGrpName = as_string(project, spec_closed.FeatureRA.Name) if spec_closed.FeatureRA else "ERR"
-            abbValue = as_tag(project, spec_closed.ValueRA) if spec_closed.ValueRA else "ERR"
+            featGrpName = Utils.as_string(spec_closed.FeatureRA.Name) if spec_closed.FeatureRA else "ERR"
+            abbValue = Utils.as_string(project, spec_closed.ValueRA.Abbreviation) if spec_closed.ValueRA else "ERR"
                 
             feat_abbr_list.append((featGrpName, abbValue))
     return
@@ -113,6 +140,18 @@ def find_slot_recursive(project, pos, target_name):
             if result:
                 return result
     return None
+
+def get_all_slots(project, pos, slots_list):
+
+    pos_concrete = IPartOfSpeech(pos) 
+
+    if hasattr(pos_concrete, "AffixSlotsOC"):
+
+        for slot in pos_concrete.AffixSlotsOC:
+
+            name = project.BestStr(slot.Name)
+            slots_list.append(name)
+    return
 
 class BantuConfigDialog(QDialog):
     def __init__(self, current_data, pos_options, slot_options, feature_options):
@@ -165,14 +204,14 @@ class BantuConfigDialog(QDialog):
         self.main_layout.addWidget(self.slot_list)
 
         # 3. Singular Feature Name
-        self.main_layout.addWidget(QLabel("Singular Feature Name:"))
+        self.main_layout.addWidget(QLabel("Feature containing singular gender values:"))
         self.sg_combo = QComboBox()
         self.sg_combo.addItems(feature_options)
         set_safe_combo(self.sg_combo, feature_options, current_data.get("bantu_singular_feature_name"))
         self.main_layout.addWidget(self.sg_combo)
 
         # 4. Plural Feature Name
-        self.main_layout.addWidget(QLabel("Plural Feature Name:"))
+        self.main_layout.addWidget(QLabel("Feature containing plural gender values:"))
         self.pl_combo = QComboBox()
         self.pl_combo.addItems(feature_options)
         set_safe_combo(self.pl_combo, feature_options, current_data.get("bantu_plural_feature_name"))
@@ -226,7 +265,6 @@ def save_dialog_data(dialog, file_path):
 #----------------------------------------------------------------
 # The main processing function
 def Main(project, report, modifyAllowed):
-    report.Info("Starting Bantu language health check...")
     
     entries = list(project.LexiconAllEntriesSorted())
     total_roots_checked = 0
@@ -234,24 +272,57 @@ def Main(project, report, modifyAllowed):
     total_suffixes_checked = 0
     total_affixes_val_checked = 0
 
-    # Get Settings
-    app = QApplication(sys.argv)
+    # Read the configuration file.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return 
+    
+    # Log the start of this module on the analytics server if the user allows logging.
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
+    if not morphNames:
+        report.error(_translate("BantuHealthCheck", "Configuration file problem."))
+        return 
+    
+    report.Info(_translate("BantuHealthCheck", "Starting Bantu language health check..."))
 
     # Master Lists 
     posMap = {}
+    all_possible_slots = []
+    features = []
+
+    # Get POS
     Utils.get_categories(project, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
     pos_names = list(posMap.values())
-    
-    #features = project.lp.MsFeatureSystemOA.FeaturesOC
+
+    # Get Features
+    feature_objects = project.lp.MsFeatureSystemOA.FeaturesOC
+
+    for feature in feature_objects:
+
+        feat_name = project.BestStr(feature.Name)
+        features.append(feat_name)
+
+    # Get POS with associated slots
+    for pos in project.lp.AllPartsOfSpeech:
+
+        slots_list = list()
+        get_all_slots(project, pos, slots_list)
+        
+        if slots_list:
+            pos_name = project.BestStr(pos.Name)
+
+            for slot_name in slots_list:
+                all_possible_slots.append({"POS": pos_name, "slot": slot_name})
+
+    # all_possible_slots = [
+    #     {"POS": "Noun", "slot": "NC"},
+    #     {"POS": "Demonstrative", "slot": "demNC"},
+    #     {"POS": "Verb", "slot": "objNC"},
+    #     {"POS": "Verb", "slot": "sbjNC"}
+    # ]
     # features = ["BantuSg", "BantuPl", "Number", "Gender"]
-    
-    all_possible_slots = [
-        {"POS": "Noun", "slot": "NC"},
-        {"POS": "Demonstrative", "slot": "demNC"},
-        {"POS": "Verb", "slot": "objNC"},
-        {"POS": "Verb", "slot": "sbjNC"}
-    ]
-    features = ["BantuSg", "BantuPl", "Number", "Gender"]
 
     # Load existing TOML data
     settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), BANTU_SETTINGS_FILE)
@@ -267,12 +338,16 @@ def Main(project, report, modifyAllowed):
             except Exception as e:
                 print(f"Error reading TOML: {e}")
 
-    # Launch Dialog
+    # Launch Dialog to get Bantu settings from user
     dialog = BantuConfigDialog(current_data, pos_names, all_possible_slots, features)
 
-    # --- Integrated Usage Example ---
     if dialog.exec():
+
         save_dialog_data(dialog, settingsPath)
+
+    # This should return: {"bantu_info": {...}}
+    bantuData = dialog.get_results()
+    nameForPOSNoun = bantuData["bantu_info"]["name_for_POS_noun"]
 
     # Store issues to report them grouped by type
     issues = {
@@ -298,26 +373,31 @@ def Main(project, report, modifyAllowed):
 
     # 1. Find the NC slot for prefix checking (Noun specific)
     #posOps = POSOperations(project)
-    #noun_pos_raw = posOps.Find(TARGET_POS)
+    #noun_pos_obj = posOps.Find(TARGET_POS)
+
+    noun_pos_obj = None
 
     for pos in project.lp.AllPartsOfSpeech:
-        abbr = Utils.as_string(pos.Abbreviation)
-        if abbr == 'n':
+        posName = Utils.as_string(pos.Name)
+
+        if posName == nameForPOSNoun:
+            noun_pos_obj = pos
             break
 
-    noun_pos_raw = pos if abbr == 'n' else None
-
+    if not noun_pos_obj:
+        report.Warning(_translate("BantuHealthCheck", "Could not find POS named '{pos}' in the project.".format(pos=nameForPOSNoun)))
+        return
 
     # posMap = {}
     # Utils.get_categories(project, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True)
-    # noun_pos_raw = posMap.get(TARGET_POS, None)
+    # noun_pos_obj = posMap.get(TARGET_POS, None)
 
     nc_slot = None
-    if noun_pos_raw:
-        nc_slot = find_slot_recursive(project, noun_pos_raw, TARGET_SLOT)
+    if noun_pos_obj:
+        nc_slot = find_slot_recursive(project, noun_pos_obj, TARGET_SLOT)
                     
     if not nc_slot:
-        report.Warning("Could not find slot '{}' owned by '{}' in the project. Skipping NC prefix check (Check 2).".format(TARGET_SLOT, TARGET_POS))
+        report.Warning(_translate("BantuHealthCheck", "Could not find slot '{slot}' owned by '{pos}' in the project. Skipping NC prefix check (Check 2).".format(slot=TARGET_SLOT, pos=TARGET_POS)))
 
     # Identify all POS that have an NC slot (For Check 6)
     def scan_pos_recursive(pos_obj):
@@ -353,6 +433,7 @@ def Main(project, report, modifyAllowed):
         morph_type = ""
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
             morph_type = project.BestStr(entry.LexemeFormOA.MorphTypeRA.Name)
+            morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
             
         lexeme_form = project.LexiconGetLexemeForm(entry)
         
@@ -403,7 +484,8 @@ def Main(project, report, modifyAllowed):
         is_noun_attaching = False
         target_pos_abbr = ""
 
-        if morph_type == "prefix" or morph_type == "suffix":
+        if morphGuidStr == Utils.morphTypeReverseMap['prefix'] or morphGuidStr == Utils.morphTypeReverseMap['suffix']:
+
             for msa in entry.MorphoSyntaxAnalysesOC:
                 if msa.ClassName != "MoInflAffMsa":
                     continue
@@ -470,7 +552,7 @@ def Main(project, report, modifyAllowed):
                 issues["prefixes"].append((msg, sourceURL, current_features_details))
 
         # --- CHECKS 3, 4, 5: Affix Validation ---
-        if morph_type == "prefix" or morph_type == "suffix":
+        if morphGuidStr == Utils.morphTypeReverseMap['prefix'] or morphGuidStr == Utils.morphTypeReverseMap['suffix']:
             total_affixes_val_checked += 1
             
             # Feature Count Problem (Max 1, skip if Noun-attaching)
