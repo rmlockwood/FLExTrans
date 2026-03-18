@@ -157,90 +157,125 @@ class BantuConfigDialog(QDialog):
     def __init__(self, current_data, pos_options, slot_options, feature_options):
         super().__init__()
         self.setWindowTitle("Bantu Feature Configuration")
-        self.resize(400, 500)
-        self.main_layout = QVBoxLayout()  # No 'self' here
-        self.setLayout(self.main_layout)  # Explicitly set it
+        self.resize(400, 550)
+        
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
 
-        # Helper to set combo box safely
-        def set_safe_combo(combo, options, value):
-            if value:
-                value = str(value).strip()
-                # Find index case-insensitively
-                for i in range(combo.count()):
-                    if combo.itemText(i).strip().lower() == value.lower():
-                        combo.setCurrentIndex(i)
-                        return
-            combo.setCurrentIndex(0) # Default to first if no match
+        self.all_slot_options = slot_options
+        self.current_data = current_data
 
         # 1. POS Noun Name
-        self.main_layout.addWidget(QLabel("Name for POS Noun:"))
+        main_layout.addWidget(QLabel("Name for POS Noun:"))
         self.pos_combo = QComboBox()
         self.pos_combo.addItems(pos_options)
-        set_safe_combo(self.pos_combo, pos_options, current_data.get("name_for_POS_noun"))
-        self.main_layout.addWidget(self.pos_combo)
+        main_layout.addWidget(self.pos_combo)
 
-        # 2. Slots with Affixes (The Multi-Select)
-        self.main_layout.addWidget(QLabel("Slots with Noun Class Affixes:"))
-        self.slot_list = QListWidget()
-        
-        # Build lookup list from TOML
-        existing_strings = []
-        raw_slots = current_data.get("slots_with_noun_class_affixes", [])
-        for entry in raw_slots:
-            p = entry.get("POS", "").strip()
-            for s in entry.get("slots", []):
-                existing_strings.append(f"{p} - {s.strip()}".lower())
+        # 2. Single Noun Slot (Combo Box)
+        main_layout.addWidget(QLabel("Slot containing noun class affix (Noun POS only):"))
+        self.noun_slot_combo = QComboBox()
+        main_layout.addWidget(self.noun_slot_combo)
 
-        for opt in slot_options:
-            display_text = f"{opt['POS']} - {opt['slot']}"
-            item = QListWidgetItem(display_text)
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-            
-            # Match against the lowercase list
-            is_checked = display_text.lower() in existing_strings
-            item.setCheckState(Qt.CheckState.Checked if is_checked else Qt.CheckState.Unchecked)
-            self.slot_list.addItem(item)
-        
-        self.main_layout.addWidget(self.slot_list)
+        # 3. Other Slots (Multi-select, excluding Noun POS slots)
+        main_layout.addWidget(QLabel("Other Slots with Noun Class Affixes (Non-Noun POS):"))
+        self.general_slot_list = QListWidget()
+        self.general_slot_list.setFixedHeight(180)
+        main_layout.addWidget(self.general_slot_list)
 
-        # 3. Singular Feature Name
-        self.main_layout.addWidget(QLabel("Feature containing singular gender values:"))
+        # 4. Features
+        main_layout.addWidget(QLabel("Feature containing singular gender values:"))
         self.sg_combo = QComboBox()
         self.sg_combo.addItems(feature_options)
-        set_safe_combo(self.sg_combo, feature_options, current_data.get("bantu_singular_feature_name"))
-        self.main_layout.addWidget(self.sg_combo)
+        main_layout.addWidget(self.sg_combo)
 
-        # 4. Plural Feature Name
-        self.main_layout.addWidget(QLabel("Feature containing plural gender values:"))
+        main_layout.addWidget(QLabel("Feature containing plural gender values:"))
         self.pl_combo = QComboBox()
         self.pl_combo.addItems(feature_options)
-        set_safe_combo(self.pl_combo, feature_options, current_data.get("bantu_plural_feature_name"))
-        self.main_layout.addWidget(self.pl_combo)
+        main_layout.addWidget(self.pl_combo)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
-        self.main_layout.addWidget(buttons)
+        main_layout.addWidget(buttons)
+
+        # Connect signals and initialize
+        self.pos_combo.currentTextChanged.connect(self.update_ui_filtering)
+        self.set_initial_values(pos_options, feature_options)
+        self.update_ui_filtering()
+
+    def update_ui_filtering(self):
+        """Filters widgets based on the selected Noun POS."""
+        selected_noun_pos = self.pos_combo.currentText()
+        
+        self.noun_slot_combo.blockSignals(True)
+        self.noun_slot_combo.clear()
+        self.general_slot_list.clear()
+
+        # Get saved values from TOML
+        saved_primary_slot = self.current_data.get("noun_class_slot", "")
+        saved_others = self.current_data.get("slots_with_noun_class_affixes", [])
+        
+        # Flatten other slots for easy checkbox matching
+        other_lookup = []
+        for entry in saved_others:
+            p = entry.get("POS", "")
+            for s in entry.get("slots", []):
+                other_lookup.append(f"{p} - {s}".lower())
+
+        # Distribute options
+        for opt in self.all_slot_options:
+            pos_name, slot_name = opt['POS'], opt['slot']
+            
+            if pos_name == selected_noun_pos:
+                self.noun_slot_combo.addItem(slot_name)
+            else:
+                display_text = f"{pos_name} - {slot_name}"
+                item = QListWidgetItem(display_text)
+                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                is_checked = display_text.lower() in other_lookup
+                item.setCheckState(Qt.CheckState.Checked if is_checked else Qt.CheckState.Unchecked)
+                self.general_slot_list.addItem(item)
+
+        # Restore the primary slot selection
+        idx = self.noun_slot_combo.findText(saved_primary_slot)
+        if idx >= 0:
+            self.noun_slot_combo.setCurrentIndex(idx)
+
+        self.noun_slot_combo.blockSignals(False)
+
+    def set_initial_values(self, pos_options, feature_options):
+        def set_val(combo, val):
+            index = combo.findText(val)
+            if index >= 0: combo.setCurrentIndex(index)
+
+        set_val(self.pos_combo, self.current_data.get("name_for_POS_noun", ""))
+        set_val(self.sg_combo, self.current_data.get("bantu_singular_feature_name", ""))
+        set_val(self.pl_combo, self.current_data.get("bantu_plural_feature_name", ""))
 
     def get_results(self):
-        # ... (same as previous get_results)
-        grouped = {}
-        for i in range(self.slot_list.count()):
-            item = self.slot_list.item(i)
-            if item.checkState() == Qt.CheckState.Checked:
-                parts = item.text().split(" - ")
-                pos, slot = parts[0], parts[1]
-                grouped.setdefault(pos, []).append(slot)
+        """Prepares dictionary for TOML saving."""
+        selected_noun_pos = self.pos_combo.currentText()
         
-        slots_list = [{"POS": k, "slots": v} for k, v in grouped.items()]
+        # Group general checkboxes by POS
+        grouped_others = {}
+        for i in range(self.general_slot_list.count()):
+            item = self.general_slot_list.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                pos, slot = item.text().split(" - ")
+                grouped_others.setdefault(pos, []).append(slot)
+        
+        others_list = [{"POS": k, "slots": v} for k, v in grouped_others.items()]
+        
         return {
             "bantu_info": {
-                "name_for_POS_noun": self.pos_combo.currentText(),
-                "slots_with_noun_class_affixes": slots_list,
+                "name_for_POS_noun": selected_noun_pos,
+                "noun_class_slot": self.noun_slot_combo.currentText(), # Explicitly saved
+                "slots_with_noun_class_affixes": others_list,
                 "bantu_singular_feature_name": self.sg_combo.currentText(),
                 "bantu_plural_feature_name": self.pl_combo.currentText()
             }
         }
+    
 
 def save_dialog_data(dialog, file_path):
     # 1. Extract the dictionary from the dialog
@@ -257,12 +292,12 @@ def save_dialog_data(dialog, file_path):
             
         print(f"Successfully saved to {file_path}")
         return True
+    #----------------------------------------------------------------
     
     except Exception as e:
         print(f"Failed to save TOML file: {e}")
         return False
-
-#----------------------------------------------------------------
+            
 # The main processing function
 def Main(project, report, modifyAllowed):
     
@@ -345,10 +380,6 @@ def Main(project, report, modifyAllowed):
 
         save_dialog_data(dialog, settingsPath)
 
-    # This should return: {"bantu_info": {...}}
-    bantuData = dialog.get_results()
-    nameForPOSNoun = bantuData["bantu_info"]["name_for_POS_noun"]
-
     # Store issues to report them grouped by type
     issues = {
         "roots": [], 
@@ -375,6 +406,11 @@ def Main(project, report, modifyAllowed):
     #posOps = POSOperations(project)
     #noun_pos_obj = posOps.Find(TARGET_POS)
 
+    # This should return: {"bantu_info": {...}}
+    bantuData = dialog.get_results()
+    nameForPOSNoun = bantuData["bantu_info"]["name_for_POS_noun"]
+    nounClassSlotName = bantuData["noun_class_slot"] # This is the saved combo box value
+
     noun_pos_obj = None
 
     for pos in project.lp.AllPartsOfSpeech:
@@ -392,7 +428,7 @@ def Main(project, report, modifyAllowed):
     # Utils.get_categories(project, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True)
     # noun_pos_obj = posMap.get(TARGET_POS, None)
 
-    nc_slot = None
+    nc_slot = ''
     if noun_pos_obj:
         nc_slot = find_slot_recursive(project, noun_pos_obj, TARGET_SLOT)
                     
