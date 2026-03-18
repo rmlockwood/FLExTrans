@@ -116,7 +116,7 @@ def get_feat_abbr_list(project, SpecsOC, feat_abbr_list):
             spec_closed = IFsClosedValue(spec)
             
             featGrpName = Utils.as_string(spec_closed.FeatureRA.Name) if spec_closed.FeatureRA else "ERR"
-            abbValue = Utils.as_string(project, spec_closed.ValueRA.Abbreviation) if spec_closed.ValueRA else "ERR"
+            abbValue = Utils.as_string(spec_closed.ValueRA.Abbreviation) if spec_closed.ValueRA else "ERR"
                 
             feat_abbr_list.append((featGrpName, abbValue))
     return
@@ -409,73 +409,62 @@ def Main(project, report, modifyAllowed):
     # This should return: {"bantu_info": {...}}
     bantuData = dialog.get_results()
     nameForPOSNoun = bantuData["bantu_info"]["name_for_POS_noun"]
-    nounClassSlotName = bantuData["noun_class_slot"] # This is the saved combo box value
+    nounClassSlotName = bantuData["bantu_info"]["noun_class_slot"] # This is the saved combo box value
+    slots_list = bantuData["bantu_info"]["slots_with_noun_class_affixes"]
+
+    # 1. Get all possible slot names (as a flat list)
+    allNCslotNames = []
+
+    for row in slots_list:
+
+        allNCslotNames.extend(row['slots'])
+
+    # 2. Create a mapping for reverse lookup (Slot -> POS)
+    slot_to_pos_map = {}
+
+    for row in slots_list:
+
+        current_pos = row['POS']
+
+        for slot in row['slots']:
+
+            slot_to_pos_map[slot] = current_pos
 
     noun_pos_obj = None
+    pos_list = []
 
     for pos in project.lp.AllPartsOfSpeech:
+
         posName = Utils.as_string(pos.Name)
+        pos_list.append(pos)
 
         if posName == nameForPOSNoun:
+
             noun_pos_obj = pos
             break
 
     if not noun_pos_obj:
+
         report.Warning(_translate("BantuHealthCheck", "Could not find POS named '{pos}' in the project.".format(pos=nameForPOSNoun)))
         return
 
-    # posMap = {}
-    # Utils.get_categories(project, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True)
-    # noun_pos_obj = posMap.get(TARGET_POS, None)
-
-    nc_slot = ''
-    if noun_pos_obj:
-        nc_slot = find_slot_recursive(project, noun_pos_obj, TARGET_SLOT)
-                    
-    if not nc_slot:
-        report.Warning(_translate("BantuHealthCheck", "Could not find slot '{slot}' owned by '{pos}' in the project. Skipping NC prefix check (Check 2).".format(slot=TARGET_SLOT, pos=TARGET_POS)))
-
-    # Identify all POS that have an NC slot (For Check 6)
-    def scan_pos_recursive(pos_obj):
-        p_concrete = IPartOfSpeech(pos_obj) #  CastingOperations.cast_to_concrete(pos_obj)
-        p_name = project.BestStr(pos_obj.Name)
-        has_nc = False
-        if hasattr(p_concrete, "AffixSlotsOC"):
-            for s in p_concrete.AffixSlotsOC:
-                s_name = project.BestStr(s.Name)
-                s_abbr = project.BestStr(s.Abbreviation) if hasattr(s, "Abbreviation") else ""
-                if "NC" in s_name or "NC" in s_abbr:
-                    has_nc = True
-                    break
-        if has_nc:
-            pos_with_nc_slot.add(p_name)
-        
-        if hasattr(p_concrete, "SubPossibilitiesOS"):
-            for sub in p_concrete.SubPossibilitiesOS:
-                scan_pos_recursive(sub)
-
-    pos_list = []
-    try:
-        for p_obj in project.lp.AllPartsOfSpeech:
-            pos_list.append(p_obj)
-    except:
-        pass
-
-    for pos in pos_list:
-        scan_pos_recursive(pos)
-
     for entry in entries:
+
         # Get Morph Type (MorphTypeRA.Name)
         morph_type = ""
+
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+
             morph_type = project.BestStr(entry.LexemeFormOA.MorphTypeRA.Name)
             morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
             
         lexeme_form = project.LexiconGetLexemeForm(entry)
         
         # --- CHECK 1: Noun Roots (Inflection Features) ---
-        if morph_type in ROOT_MORPH_TYPES:
+        if morph_type in morphNames:
+
             for sense in entry.SensesOS:
+
                 msa = sense.MorphoSyntaxAnalysisRA
                 if not msa: continue
                 
@@ -485,7 +474,8 @@ def Main(project, report, modifyAllowed):
                 if hasattr(msa_concrete, "PartOfSpeechRA") and msa_concrete.PartOfSpeechRA:
                     pos_name = project.BestStr(msa_concrete.PartOfSpeechRA.Name)
                 
-                if pos_name == "Noun":
+                if pos_name == nameForPOSNoun:
+
                     total_roots_checked += 1
                     
                     fs = getattr(msa_concrete, "MsFeaturesOA", None) or getattr(msa_concrete, "InflFeatsOA", None)
@@ -496,17 +486,20 @@ def Main(project, report, modifyAllowed):
                     
                     # Collect for summary
                     for grp, val in features_found:
+
                         global_noun_features[grp].add(val)
                     
                     if len(features_found) != 2 and len(features_found) > 0:
+
                         gloss = project.LexiconGetSenseGloss(sense)
                         sourceURL = project.BuildGotoURL(sense)
                         
-                        msg = "root problem: only {} feature found (expected 2). lex: '{}', gloss: '{}'".format(
-                             len(features_found), lexeme_form, gloss)
+                        msg = "root problem: only {} feature found (expected 2). lex: '{}', gloss: '{}'".format(len(features_found), lexeme_form, gloss)
                         
                         details = []
+
                         for grp, val in features_found:
+
                             details.append("    - {}: {}".format(grp, val))
                             
                         issues["roots"].append((msg, sourceURL, details))
@@ -523,82 +516,115 @@ def Main(project, report, modifyAllowed):
         if morphGuidStr == Utils.morphTypeReverseMap['prefix'] or morphGuidStr == Utils.morphTypeReverseMap['suffix']:
 
             for msa in entry.MorphoSyntaxAnalysesOC:
+
                 if msa.ClassName != "MoInflAffMsa":
                     continue
-                msa_c = IMoInflAffMsa(msa) # CastingOperations.cast_to_concrete(msa)
+
+                msa_c = IMoInflAffMsa(msa) 
+
                 # General NC Tracking
                 if hasattr(msa_c, "SlotsRC"):
-                    for s in msa_c.SlotsRC:
-                        s_name = project.BestStr(s.Name)
-                        s_abbr = project.BestStr(s.Abbreviation) if hasattr(s, "Abbreviation") else ""
 
-                        if "NC" in s_name or "NC" in s_abbr:
-                        #if s_name == "NC" or s_abbr == "NC":
+                    for slot in msa_c.SlotsRC:
+
+                        slot_name = project.BestStr(slot.Name)
+
+                        if slot_name in allNCslotNames:
+
                             in_any_nc_slot = True
-                            if hasattr(s, "Owner") and s.Owner and s.Owner.ClassName == "PartOfSpeech":
-                                pos_owning_nc_slot = project.BestStr(IPartOfSpeech(s.Owner).Name)
+
+                            if hasattr(slot, "Owner") and slot.Owner and slot.Owner.ClassName == "PartOfSpeech":
+
+                                pos_owning_nc_slot = project.BestStr(IPartOfSpeech(slot.Owner).Name)
+
                         # Specific Noun NC Slot tracking
-                        if nc_slot and s.Hvo == nc_slot.Hvo:
+                        if slot_name == nounClassSlotName:
+
                             in_noun_nc_slot = True
 
                 # Feature Extraction
                 fs = getattr(msa_c, "InflFeatsOA", None) or getattr(msa_c, "MsFeaturesOA", None)
+
                 if fs and fs.FeatureSpecsOC:
+
                     fs_list = []
                     get_feat_abbr_list(project, fs.FeatureSpecsOC, fs_list)
+
                     for cat, val in fs_list:
+
                         entry_feat_abbrs.add(val.lower())
                         current_features_details.append("    - {}: {}".format(cat, val))
 
             if in_any_nc_slot and pos_owning_nc_slot:
+
                 for f_val in entry_feat_abbrs:
+
                     found_nc_prefix_features[pos_owning_nc_slot].add(f_val)
 
             # Determine Target POS and Noun-attaching status (from Senses)
             for sense in entry.SensesOS:
+
                 msa = sense.MorphoSyntaxAnalysisRA
+
                 if msa:
+
                     if msa.ClassName != "MoInflAffMsa":
                         continue
-                    msa_c = IMoInflAffMsa(msa) # CastingOperations.cast_to_concrete(msa)
+                    
+                    msa_c = IMoInflAffMsa(msa)  
                     pos_obj = None
+
                     if hasattr(msa_c, "SlotsRC") and msa_c.SlotsRC.Count > 0:
-                        slot_c = IMoInflAffixSlot(msa_c.SlotsRC.ToArray()[0]) #CastingOperations.cast_to_concrete(msa_c.SlotsRC.ToArray()[0])
+
+                        slot_c = IMoInflAffixSlot(msa_c.SlotsRC.ToArray()[0]) 
+
                         if hasattr(slot_c, "Owner") and slot_c.Owner and slot_c.Owner.ClassName == "PartOfSpeech":
+
                             pos_obj = IPartOfSpeech(slot_c.Owner)
+
                     elif hasattr(msa_c, "PartOfSpeechRA") and msa_c.PartOfSpeechRA:
+
                         pos_obj = msa_c.PartOfSpeechRA
+
                     elif hasattr(msa_c, "PartOfSpeech") and msa_c.PartOfSpeech:
+
                         pos_obj = msa_c.PartOfSpeech
                     
                     if pos_obj:
+
                         target_pos_abbr = project.BestStr(pos_obj.Abbreviation).lower()
-                        if project.BestStr(pos_obj.Name) == TARGET_POS:
+
+                        if project.BestStr(pos_obj.Name) == nameForPOSNoun:
+
                             is_noun_attaching = True
 
         # --- CHECK 2: Noun NC-slot Prefixes (Inflection Features) ---
         if in_noun_nc_slot:
+
             total_prefixes_checked += 1
             feature_count = len(entry_feat_abbrs)
+
             if feature_count != 1:
+
                 sourceURL = project.BuildGotoURL(entry)
                 gloss = project.LexiconGetSenseGloss(entry.SensesOS[0]) if entry.SensesOS.Count > 0 else ""
-                msg = "prefix problem: {} inflection features (expected exactly 1) for Noun NC-slot prefix '{}' with gloss: '{}'".format(
-                    feature_count, lexeme_form, gloss)
+                msg = "prefix problem: {} inflection features (expected exactly 1) for Noun NC-slot prefix '{}' with gloss: '{}'".format(feature_count, lexeme_form, gloss)
                 issues["prefixes"].append((msg, sourceURL, current_features_details))
 
         # --- CHECKS 3, 4, 5: Affix Validation ---
         if morphGuidStr == Utils.morphTypeReverseMap['prefix'] or morphGuidStr == Utils.morphTypeReverseMap['suffix']:
+
             total_affixes_val_checked += 1
             
             # Feature Count Problem (Max 1, skip if Noun-attaching)
             if not is_noun_attaching and len(entry_feat_abbrs) > 1:
+
                 sourceURL = project.BuildGotoURL(entry)
-                msg = "affix problem: lex: '{}' has {} inflection features assigned (expected max 1)".format(
-                    lexeme_form, len(entry_feat_abbrs))
+                msg = "affix problem: lex: '{}' has {} inflection features assigned (expected max 1)".format(lexeme_form, len(entry_feat_abbrs))
                 issues["affix_gloss"].append((msg, sourceURL, current_features_details))
 
             for sense in entry.SensesOS:
+
                 gloss = project.LexiconGetSenseGloss(sense)
                 sourceURL = project.BuildGotoURL(sense)
                 
@@ -607,12 +633,15 @@ def Main(project, report, modifyAllowed):
                 
                 # Check 5: No Spaces
                 if " " in gloss:
+
                     msg = "affix problem: gloss contains spaces: '{}' for lex: '{}'".format(gloss, lexeme_form)
                     issues["spaces"].append((msg, sourceURL, []))
 
                 # CHECK 3: Gloss Format and Alignment
                 match = re.match(r'^([0-9]+[a-z]*)\.([a-z/]+)', gloss)
+
                 if not match:
+
                     # Ignore Noun NC prefixes for format check
                     if not in_noun_nc_slot:
                         msg = "affix problem: does not match expected 'n.xyz' format (found '{}') for lex: '{}'".format(gloss, lexeme_form)
@@ -622,36 +651,54 @@ def Main(project, report, modifyAllowed):
                     g_pos = match.group(2).lower()
                     
                     problem_details = []
+
                     if g_feat not in entry_feat_abbrs:
+
                         problem_details.append("    - gloss feature '{}' not in entry features {}".format(g_feat, ", ".join(sorted(list(entry_feat_abbrs)))))
+
                     if target_pos_abbr and g_pos != target_pos_abbr:
+
                         problem_details.append("    - gloss POS extension '{}' does not match target POS '{}'".format(g_pos, target_pos_abbr))
                     
                     if problem_details:
+
                         msg = "affix problem: consistency issue for lex: '{}' gloss: '{}'".format(lexeme_form, gloss)
                         issues["affix_gloss"].append((msg, sourceURL, problem_details))
 
     # Post-loop Check 4: Duplicate Affix Glosses
     for gloss, entries_list in affix_glosses.items():
+
         if len(entries_list) > 1:
+
             lexemes = sorted(list(set(e[0] for e in entries_list)))
+
             if len(lexemes) > 1:
+
                 msg = "affix problem: duplicate gloss '{}' shared by: {}".format(gloss, ", ".join("'{}'".format(l) for l in lexemes))
                 issues["duplicates"].append((msg, entries_list[0][1], []))
 
     # Check 6: Missing NC Affixes for any POS with an NC slot
     # Master reference list from the global_noun_features (union of all categories)
     master_features = set()
+
     for cat in global_noun_features:
+
         for val in global_noun_features[cat]:
+
             master_features.add(val.lower())
     
     issues["missing_nc"] = []
+
     if master_features:
+
         for pos_name in sorted(list(pos_with_nc_slot)):
+
             found_features = found_nc_prefix_features[pos_name]
+
             for m_feat in sorted(list(master_features)):
+
                 if m_feat not in found_features:
+
                     msg = "slot problem: missing prefix in '{}' NC slot for feature '{}'".format(pos_name, m_feat)
                     issues["missing_nc"].append((msg, None, []))
 
