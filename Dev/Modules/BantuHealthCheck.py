@@ -12,7 +12,7 @@ from SIL.LCModel import (# type: ignore
     IMoInflAffixSlot,
 )
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -95,6 +95,17 @@ def numeric_sort_key(s):
     if match:
         return (int(match.group(1)), s)
     return (float('inf'), s)
+
+
+def missing_nc_sort_key(issue):
+    msg = issue[0]
+    match = re.search(r"missing prefix in '([^']+)' NC slot for feature '([^']+)'", msg)
+    if match:
+        pos_name = match.group(1)
+        feature = match.group(2)
+        return (pos_name, numeric_sort_key(feature))
+    return (msg,)
+
 
 def as_string(project, obj):
     if not obj: return ""
@@ -260,7 +271,7 @@ class BantuConfigDialog(QDialog):
         grouped_others = {}
         for i in range(self.general_slot_list.count()):
             item = self.general_slot_list.item(i)
-            if item.checkState() == Qt.CheckState.Checked:
+            if item and item.checkState() == Qt.CheckState.Checked:
                 pos, slot = item.text().split(" - ")
                 grouped_others.setdefault(pos, []).append(slot)
         
@@ -379,6 +390,9 @@ def Main(project, report, modifyAllowed):
     if dialog.exec():
 
         save_dialog_data(dialog, settingsPath)
+    else:
+        report.Info(_translate("BantuHealthCheck", "Bantu Health Check cancelled by user."))
+        return
 
     # Store issues to report them grouped by type
     issues = {
@@ -418,6 +432,7 @@ def Main(project, report, modifyAllowed):
     for row in slots_list:
 
         allNCslotNames.extend(row['slots'])
+        pos_with_nc_slot.add(row['POS'])
 
     # 2. Create a mapping for reverse lookup (Slot -> POS)
     slot_to_pos_map = {}
@@ -484,6 +499,9 @@ def Main(project, report, modifyAllowed):
                     if fs and fs.FeatureSpecsOC:
                         get_feat_abbr_list(project, fs.FeatureSpecsOC, features_found)
                     
+                    # Reduce this list to just the features in the chosen Bantu Sg and Pl feature groups
+                    features_found = [(grp, val) for grp, val in features_found if grp in [bantuData["bantu_info"]["bantu_singular_feature_name"], bantuData["bantu_info"]["bantu_plural_feature_name"]]]
+
                     # Collect for summary
                     for grp, val in features_found:
 
@@ -638,7 +656,8 @@ def Main(project, report, modifyAllowed):
                     issues["spaces"].append((msg, sourceURL, []))
 
                 # CHECK 3: Gloss Format and Alignment
-                match = re.match(r'^([0-9]+[a-z]*)\.([a-z/]+)', gloss)
+                # Get the gender feature then the rest of the gloss
+                match = re.match(r'^([0-9]+[a-z]*)\.(.+)', gloss)
 
                 if not match:
 
@@ -648,7 +667,7 @@ def Main(project, report, modifyAllowed):
                         issues["affix_gloss"].append((msg, sourceURL, []))
                 else:
                     g_feat = match.group(1).lower()
-                    g_pos = match.group(2).lower()
+                    g_rest = match.group(2).lower()
                     
                     problem_details = []
 
@@ -656,9 +675,9 @@ def Main(project, report, modifyAllowed):
 
                         problem_details.append("    - gloss feature '{}' not in entry features {}".format(g_feat, ", ".join(sorted(list(entry_feat_abbrs)))))
 
-                    if target_pos_abbr and g_pos != target_pos_abbr:
+                    if target_pos_abbr and target_pos_abbr not in g_rest:
 
-                        problem_details.append("    - gloss POS extension '{}' does not match target POS '{}'".format(g_pos, target_pos_abbr))
+                        problem_details.append("    - POS '{}' not found in gloss '{}'".format(target_pos_abbr, gloss))
                     
                     if problem_details:
 
@@ -695,7 +714,7 @@ def Main(project, report, modifyAllowed):
 
             found_features = found_nc_prefix_features[pos_name]
 
-            for m_feat in sorted(list(master_features)):
+            for m_feat in sorted(list(master_features), key=numeric_sort_key):
 
                 if m_feat not in found_features:
 
@@ -754,6 +773,7 @@ def Main(project, report, modifyAllowed):
 
     # Detailed Missing NC Affixes (Check 6)
     if issues["missing_nc"]:
+        issues["missing_nc"] = sorted(issues["missing_nc"], key=missing_nc_sort_key)
         report.Info("Missing Affixes (Check 6): Found {} instances of missing features in NC slots:".format(len(issues["missing_nc"])))
         for msg, url, details in issues["missing_nc"]:
             report.Warning(msg, url)
