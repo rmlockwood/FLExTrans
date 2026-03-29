@@ -716,7 +716,7 @@ def Main(project, report, modifyAllowed):
 
             for m_feat in sorted(list(master_features), key=numeric_sort_key):
 
-                if m_feat not in found_features:
+                if m_feat not in found_features and "na" not in m_feat.lower(): # Don't flag missing features that are explicitly marked as "NA"
 
                     msg = "slot problem: missing prefix in '{}' NC slot for feature '{}'".format(pos_name, m_feat)
                     issues["missing_nc"].append((msg, None, []))
