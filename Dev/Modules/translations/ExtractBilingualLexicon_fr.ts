@@ -6,140 +6,12 @@
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="138"/>
         <source>Build Bilingual Lexicon</source>
-        <translation>Construir léxico bilingüe</translation>
+        <translation>Construire le lexique bilingue</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="141"/>
         <source>Builds an Apertium-style bilingual lexicon.</source>
-        <translation>Construye un léxico bilingüe al estilo de Apertium.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="182"/>
-        <source>This module will build a bilingual lexicon for two projects. The
-project that FlexTools is set to is your source project. Set the Target Project
-in Settings to the name of your target project.
-This module builds the bilingual lexicon based on the links from source senses to target senses
-that are in your source project. Use the Sense Linker Module to create these links.
-The bilingual lexicon will be stored in the file specified by the Bilingual Dictionary Output File setting.
-This is typically called bilingual.dix and is usually in the Output folder.
-
-You can make custom changes to the bilingual lexicon by using Replacement Dictionary Editor. See the help
-document for more details.</source>
-        <translation type="obsolete">Este módulo construirá un léxico bilingüe para dos proyectos. El proyecto al que está configurado FlexTools es su proyecto fuente. Configure el Proyecto Destino en Configuración con el nombre de su proyecto destino.
-Este módulo construye el léxico bilingüe basado en los enlaces de sentidos fuente a sentidos destino que están en su proyecto fuente. Use el módulo Sense Linker para crear estos enlaces.
-El léxico bilingüe se almacenará en el archivo especificado por la configuración &quot;Archivo de Salida del Diccionario Bilingüe&quot;. Este archivo generalmente se llama bilingual.dix y suele estar en la carpeta de Salida.
-
-Puede realizar cambios personalizados en el léxico bilingüe utilizando el Editor de Diccionario de Reemplazo. Consulte el documento de ayuda para más detalles.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="270"/>
-        <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
-        <translation>El campo personalizado para enlazar no existe. Por favor, lea las instrucciones.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="273"/>
-        <source>No Source Morphnames to count as root found. Review your Settings.</source>
-        <translation>No se encontraron nombres de morfemas fuente para contar como raíz. Revise su configuración.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="276"/>
-        <source>No Sentence Punctuation found. Review your Settings.</source>
-        <translation>No se encontraron signos de puntuación de oración. Revise su configuración.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="285"/>
-        <source>Ill-formed property: &quot;CategoryAbbrevSubstitutionList&quot;. Expected pairs of categories.</source>
-        <translation>Propiedad mal formada: &quot;CategoryAbbrevSubstitutionList&quot;. Se esperaban pares de categorías.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="295"/>
-        <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
-        <translation>El campo personalizado: {linkField} no existe. Por favor, lea las instrucciones.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="314"/>
-        <source>A value for {key} not found in the configuration file.</source>
-        <translation>No se encontró un valor para {key} en el archivo de configuración.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="326"/>
-        <source>The bilingual dictionary is up to date.</source>
-        <translation>El diccionario bilingüe está actualizado.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="345"/>
-        <source>Error retrieving categories.</source>
-        <translation>Error al recuperar categorías.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="381"/>
-        <source>Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.</source>
-        <translation>Se encontró una entrada con espacios al principio o al final mientras se procesaba la entrada fuente: {rawHeadWord}. Los espacios fueron eliminados, pero por favor corríjalo en el léxico.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="384"/>
-        <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
-        <translation>Se encontró una entrada con uno de los siguientes caracteres no válidos: {chars} en {rawHeadWord}. Por favor, corríjalo en el léxico antes de continuar.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="411"/>
-        <source>Encountered a sense that has unknown POS while processing source headword: {rawHeadWord}</source>
-        <translation>Se encontró un sentido con categoría gramatical desconocida mientras se procesaba la entrada fuente: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="418"/>
-        <source>Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}</source>
-        <translation>Se encontró una entrada que solo difiere en mayúsculas/minúsculas de otra entrada con la misma categoría gramatical ({sourcePOSabbrev}). Este sentido será omitido. Entrada fuente: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="469"/>
-        <source>Skipping sense because the target POS is undefined for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-        <translation>Omitiendo sentido porque la categoría gramatical del destino no está definida para la entrada destino: {targetHeadWord} mientras se procesaba la entrada fuente: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="471"/>
-        <source>Skipping sense because it is of this class: {className} for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-        <translation>Omitiendo sentido porque pertenece a esta clase: {className} para la entrada destino: {targetHeadWord} mientras se procesaba la entrada fuente: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="479"/>
-        <source>Skipping sense that is of class: {className} for headword: {rawHeadWord}</source>
-        <translation>Omitiendo sentido que pertenece a la clase: {className} para la entrada: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="481"/>
-        <source>Skipping sense, no analysis object for headword: {rawHeadWord}</source>
-        <translation>Omitiendo sentido, no hay objeto de análisis para la entrada: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="504"/>
-        <source>No lexeme form. Skipping. Headword: {rawHeadWord}</source>
-        <translation>Sin forma de lexema. Omitiendo. Entrada: {rawHeadWord}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="513"/>
-        <source>No Morph Type. Skipping. {rawHeadWord} Best Vern: {vernString}</source>
-        <translation>Sin tipo de morfema. Omitiendo. {rawHeadWord} Mejor Vern: {vernString}</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="539"/>
-        <source>There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.</source>
-        <translation>Hay un problema con el Archivo de Reemplazo del Diccionario Bilingüe: {replFile}. Por favor, revise la configuración del archivo.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="566"/>
-        <source>There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.</source>
-        <translation>Hubo un problema al crear el Archivo de Salida del Diccionario Bilingüe: {fullPathBilingFile}. Por favor, revise la configuración del archivo.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="570"/>
-        <source>Creation complete to the file: {filePath}.</source>
-        <translation>Creación completada en el archivo: {filePath}.</translation>
-    </message>
-    <message>
-        <location filename="../ExtractBilingualLexicon.py" line="571"/>
-        <source>{recordsDumpedCount} records created.</source>
-        <translation>{recordsDumpedCount} registros creados.</translation>
+        <translation>Construit un lexique bilingue de style Apertium.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="143"/>
@@ -153,18 +25,131 @@ This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.</source>
-        <translation>Este módulo creará un diccionario bilingüe para dos proyectos. El proyecto que FlexTools está configurado es su proyecto fuente. Establezca el Proyecto Objetivo en Configuración al nombre de su proyecto objetivo.
-Este módulo construye el diccionario bilingüe basado en los enlaces de sentidos fuente a sentidos objetivo
-que están en su proyecto fuente. Use el Módulo de Enlazador de Sentidos para crear estos enlaces.
-El diccionario bilingüe se almacenará en el archivo especificado por la configuración del Archivo de Salida del Diccionario Bilingüe.
-Esto típicamente se llama bilingual.dix y se encuentra normalmente en la carpeta Output.
+        <translation>Ce module construira un lexique bilingue pour deux projets. Le
+projet sur lequel FlexTools est configuré est votre projet source. Définissez le projet cible
+dans les paramètres avec le nom de votre projet cible.
+Ce module construit le lexique bilingue basé sur les liens entre les sens sources et les sens cibles
+qui se trouvent dans votre projet source. Utilisez le module de liaison de sens pour créer ces liens.
+Le lexique bilingue sera stocké dans le fichier spécifié par le paramètre Fichier de sortie du dictionnaire bilingue.
+Il s'appelle généralement bilingual.dix et se trouve habituellement dans le dossier Output.
 
-Puede hacer cambios personalizados al diccionario bilingüe usando el {replEditorModule}. Consulte el documento de ayuda para más detalles.</translation>
+Vous pouvez apporter des modifications personnalisées au lexique bilingue en utilisant le {replEditorModule}. Consultez le document
+d'aide pour plus de détails.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="270"/>
+        <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
+        <translation>Le champ personnalisé pour la liaison n'existe pas. Veuillez lire les instructions.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="273"/>
+        <source>No Source Morphnames to count as root found. Review your Settings.</source>
+        <translation>Aucun nom morphologique source à compter comme racine trouvé. Vérifiez vos paramètres.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="276"/>
+        <source>No Sentence Punctuation found. Review your Settings.</source>
+        <translation>Aucune ponctuation de phrase trouvée. Vérifiez vos paramètres.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="285"/>
+        <source>Ill-formed property: &quot;CategoryAbbrevSubstitutionList&quot;. Expected pairs of categories.</source>
+        <translation>Propriété mal formée : « CategoryAbbrevSubstitutionList ». Paires de catégories attendues.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="295"/>
+        <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
+        <translation>Le champ personnalisé : {linkField} n'existe pas. Veuillez lire les instructions.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="314"/>
+        <source>A value for {key} not found in the configuration file.</source>
+        <translation>Une valeur pour {key} introuvable dans le fichier de configuration.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="326"/>
+        <source>The bilingual dictionary is up to date.</source>
+        <translation>Le dictionnaire bilingue est à jour.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="345"/>
+        <source>Error retrieving categories.</source>
+        <translation>Erreur lors de la récupération des catégories.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="381"/>
+        <source>Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.</source>
+        <translation>Un mot-vedette avec des espaces au début ou à la fin a été trouvé lors du traitement du mot-vedette source : {rawHeadWord}. Les espaces ont été supprimés, mais veuillez corriger cela dans le lexique.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="384"/>
+        <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
+        <translation>Un mot-vedette avec l'un des caractères invalides suivants a été trouvé : {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="411"/>
+        <source>Encountered a sense that has unknown POS while processing source headword: {rawHeadWord}</source>
+        <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement du mot-vedette source : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="418"/>
+        <source>Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}</source>
+        <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. Mot-vedette source : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="469"/>
+        <source>Skipping sense because the target POS is undefined for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
+        <translation>Sens ignoré car la catégorie grammaticale cible est indéfinie pour le mot-vedette cible : {targetHeadWord} lors du traitement du mot-vedette source : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="471"/>
+        <source>Skipping sense because it is of this class: {className} for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
+        <translation>Sens ignoré car il est de cette classe : {className} pour le mot-vedette cible : {targetHeadWord} lors du traitement du mot-vedette source : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="479"/>
+        <source>Skipping sense that is of class: {className} for headword: {rawHeadWord}</source>
+        <translation>Sens ignoré car il est de la classe : {className} pour le mot-vedette : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="481"/>
+        <source>Skipping sense, no analysis object for headword: {rawHeadWord}</source>
+        <translation>Sens ignoré, aucun objet d'analyse pour le mot-vedette : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="504"/>
+        <source>No lexeme form. Skipping. Headword: {rawHeadWord}</source>
+        <translation>Aucune forme de lexème. Ignoré. Mot-vedette : {rawHeadWord}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="513"/>
+        <source>No Morph Type. Skipping. {rawHeadWord} Best Vern: {vernString}</source>
+        <translation>Aucun type morphologique. Ignoré. {rawHeadWord} Meilleur vernaculaire : {vernString}</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="539"/>
+        <source>There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.</source>
+        <translation>Il y a un problème avec le fichier de remplacement du dictionnaire bilingue : {replFile}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="566"/>
+        <source>There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.</source>
+        <translation>Il y a eu un problème lors de la création du fichier de sortie du dictionnaire bilingue : {fullPathBilingFile}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="570"/>
+        <source>Creation complete to the file: {filePath}.</source>
+        <translation>Création terminée dans le fichier : {filePath}.</translation>
+    </message>
+    <message>
+        <location filename="../ExtractBilingualLexicon.py" line="571"/>
+        <source>{recordsDumpedCount} records created.</source>
+        <translation>{recordsDumpedCount} enregistrements créés.</translation>
     </message>
     <message>
         <location filename="../ExtractBilingualLexicon.py" line="244"/>
         <source>Encountered a sense that has an invalid feature while processing source headword: {rawHeadWord}</source>
-        <translation>Se ha encontrado una acepción con un rasgo no válido al procesar el lema de origen: {rawHeadWord}</translation>
+        <translation>Une acception avec un trait non valide a été détectée lors du traitement du mot-vedette source : {rawHeadWord}</translation>
     </message>
 </context>
 </TS>
