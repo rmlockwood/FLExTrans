@@ -1,3 +1,4 @@
-pylupdate5 -verbose -noobsolete %1.py -ts translations\%1_de.ts
-pylupdate5 -verbose -noobsolete %1.py -ts translations\%1_es.ts
-pylupdate5 -verbose -noobsolete %1.py -ts translations\%1_fr.ts
+set FILENAME=%~n1
+pylupdate5 -verbose -noobsolete %FILENAME%.py -ts translations\%FILENAME%_de.ts
+pylupdate5 -verbose -noobsolete %FILENAME%.py -ts translations\%FILENAME%_es.ts
+pylupdate5 -verbose -noobsolete %FILENAME%.py -ts translations\%FILENAME%_fr.ts
