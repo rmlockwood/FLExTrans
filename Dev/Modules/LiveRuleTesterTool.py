@@ -2782,7 +2782,16 @@ class Main(QMainWindow):
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
         if ret:
-            self.ui.TargetTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'An error happened when running the Apertium tools.'))
+            apertErrStr = _translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:')
+
+            try:
+                f = open(os.path.join(self.buildFolder, RunApertium.APERTIUM_ERROR_FILE), encoding='utf-8')
+                lines = f.readlines()
+                apertErrStr = '\n'.join([apertErrStr] + lines)
+            except:
+                pass
+
+            self.ui.TargetTextEdit.setPlainText(apertErrStr)
             self.unsetCursor()
             return
 
