@@ -11,12 +11,12 @@ sys.path.append('C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\')
 
 # Import and initialize pythonnet
 import clr
-clr.AddReference("System")
-clr.AddReference("SIL.LCModel")
-clr.AddReference("SIL.LCModel.Core")
+clr.AddReference("System") # type: ignore
+clr.AddReference("SIL.LCModel") # type: ignore
+clr.AddReference("SIL.LCModel.Core") # type: ignore
 
 import Utils
-from DoHermitCrabSynthesis import extractRootAndFirstTag as extract_root_and_first_tag_func
+from DoHermitCrabSynthesis import extractRootAndFirstTag as extract_root_and_first_tag_func # type: ignore
 
 class extractRootAndFirstTag(unittest.TestCase):
     # Alias the function so test methods can use it

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.15.3 - 3/30/26 - Ron Lockwood
+#    Fixes for Python linter.
+#
 #   Version 3.15.2 - 3/30/26 - Ron Lockwood
 #    Fixes #1282. Give an error when ERR comes back for an inflection feature.
 #
@@ -106,7 +109,7 @@ from SIL.LCModel import ( # type: ignore
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString  # type: ignore
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -136,7 +139,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.15.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -274,6 +277,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
     if not sentPunct:
         errorList.append((_translate("ExtractBilingualLexicon", "No Sentence Punctuation found. Review your Settings."), 2))
+        sentPunct = ''
 
     if len(errorList) > 0:
         return errorList
@@ -308,6 +312,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         return errorList
 
     TargetDB = Utils.openTargetProject(configMap, report)
+
+    if not TargetDB:
+        return
 
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
@@ -516,7 +523,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
         # Create a regular expression string for the punctuation characters
         # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
-        reStr = re.sub(r'([+?|*])',r'\\\1',sentPunct)
+        reStr = re.sub(r'([+?|*])', r'\\\1', sentPunct)
         reStr = '['+reStr+']+'
 
         # This notation in Apertium basically means that any combination of the given punctuation characters
