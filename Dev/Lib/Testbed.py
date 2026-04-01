@@ -44,6 +44,8 @@
 #   Classes that model objects for the testbed.
 #   See design diagrams here: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb 
 
+from email.mime import text
+from platform import node
 import re
 import os
 import xml.etree.ElementTree as ET
@@ -440,7 +442,7 @@ class TestbedTestXMLObject():
     # You can initialize this class in two ways:
     # 1) Give it a list of LexicalUnit objects + origin + synthesis result and it creates the testbed XML object
     # 2) Give it a <test> XML object (ElementTree.Element) and it initializes the LexicalUnit List
-    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None, luCache={}):
+    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None, luCache={}, comment=None):
         self.__luList = luList
         self.__origin = origin
         self.__synthResult = synthResult
@@ -449,6 +451,7 @@ class TestbedTestXMLObject():
         self.__actResult = None
         self.__expResult = None
         self.__luCache = luCache
+        self.__comment = comment
         
         # If no lexical unit object list is given, create it
         if luList == None:
@@ -526,6 +529,9 @@ class TestbedTestXMLObject():
         expectedResult = ET.SubElement(targetOutput, EXPECTED_RESULT)
         expectedResult.text = self.__synthResult
         ET.SubElement(targetOutput, ACTUAL_RESULT)
+        if self.__comment:
+            comment = ET.SubElement(self.__testNode, "comment")
+            comment.text = self.__comment
     
     def getID(self):
         return self.__testNode.attrib[ID]
@@ -547,6 +553,14 @@ class TestbedTestXMLObject():
         self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
     def getTestNode(self):
         return self.__testNode
+    def getComment(self):
+        node = self.__testNode.find("comment")
+        return node.text if node is not None else ""
+    def setComment(self, text):
+        node = self.__testNode.find("comment")
+        if node is None:
+            node = ET.SubElement(self.__testNode, "comment")
+        node.text = text
     # Convert all the lexical units into one string    
     def getLUString(self):
         ret_str = ''

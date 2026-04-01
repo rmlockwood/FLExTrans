@@ -1297,13 +1297,13 @@ class Main(QMainWindow):
         # Get the lexical units from the parser
         return lexParser.getLexicalUnits()
 
-    def buildTestNodeFromInput(self, lexUnitList, synthesisResult):
+    def buildTestNodeFromInput(self, lexUnitList, synthesisResult, comment="NEW TEST"):
         # Get the name of the text this lu came from
         origin = self.__sourceText
 
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
-        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult)
+        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult, comment=comment)
 
         return myObj
 
