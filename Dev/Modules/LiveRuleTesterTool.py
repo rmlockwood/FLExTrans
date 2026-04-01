@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.15.4 - 4/1/26 - Ron Lockwood
+#    Fixes #1271. Show Apertium error output in the Target text box.
+#
 #   Version 3.15.3 - 3/7/26 - Ron Lockwood
 #    Overhaul of checkboxes against colored background using two different strategies.
 #
@@ -273,7 +276,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.15.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
