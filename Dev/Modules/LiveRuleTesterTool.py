@@ -228,7 +228,7 @@ from subprocess import call
 from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject
 
 from PyQt6 import QtCore, QtGui
@@ -369,8 +369,9 @@ class FlowLayout(QLayout):
         return y + line_height
 
     def setGeometry(self, rect):
+        
         super().setGeometry(rect)
-        is_rtl = self.parentWidget().layoutDirection() == QtCore.Qt.LayoutDirection.RightToLeft
+        is_rtl = (p := self.parentWidget()) is not None and p.layoutDirection() == QtCore.Qt.LayoutDirection.RightToLeft
 
         x = rect.width() if is_rtl else 0
         y = 0
@@ -414,12 +415,14 @@ class FlowContainer(QWidget):
         self.setLayout(self.layout)
 
     def sizeHint(self):
-        width = self.parent().width() if self.parent() else 40
+        parent_widget = self.parentWidget()
+        width = parent_widget.width() if parent_widget else 40
         height = self.layout.heightForWidth(width)
         return QtCore.QSize(width, height)
 
     def minimumSizeHint(self):
-        width = self.parent().width() if self.parent() else 40
+        parent_widget = self.parentWidget()
+        width = parent_widget.width() if parent_widget else 40
         height = self.layout.heightForWidth(width)
         return QtCore.QSize(width, height)
     
@@ -845,8 +848,8 @@ class Main(QMainWindow):
             pass
 
         # Set which tab is shown
-        self.ui.tabRules.setCurrentIndex(ruleTab)
-        self.ui.tabSource.setCurrentIndex(sourceTab)
+        self.ui.tabRules.setCurrentIndex(int(ruleTab))
+        self.ui.tabSource.setCurrentIndex(int(sourceTab))
 
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
@@ -907,7 +910,9 @@ class Main(QMainWindow):
 
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
-        self.ui.listSentences.selectionModel().selectionChanged.connect(self.listSentClicked)
+        selection_model = self.ui.listSentences.selectionModel()
+        assert selection_model is not None
+        selection_model.selectionChanged.connect(self.listSentClicked)
         
         # Do some initialization if we are on the list sentences tab
         if sourceTab == 1:
@@ -918,8 +923,8 @@ class Main(QMainWindow):
                 selectWordsSentNum = 0
 
             # Set the index of the combo box and sentence list to what was saved before
-            self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
-            qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
+            self.ui.SentCombo.setCurrentIndex(int(selectWordsSentNum))
+            qIndex = self.__sent_model.createIndex(int(selectWordsSentNum), 0)
             self.ui.listSentences.setCurrentIndex(qIndex)
 
             # Scroll to the selected item and center it in the viewable area
@@ -930,7 +935,7 @@ class Main(QMainWindow):
         if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
 
             # Set the index of the combo box to what was saved before
-            self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
+            self.ui.SentCombo.setCurrentIndex(int(selectWordsSentNum))
 
             # Check the saved words
             self.restoreCheckedWords()
@@ -964,7 +969,7 @@ class Main(QMainWindow):
             self.retVal = False
             self.close()
 
-        self.__testbedPath = testbedPath
+        self.__testbedPath = str(testbedPath)
 
         # Disable the edit testbed button if the testbed doesn't exist.
         if os.path.exists(self.__testbedPath) == False:
@@ -1250,9 +1255,9 @@ class Main(QMainWindow):
 
     def EditTransferRulesButtonClicked(self):
 
-        if os.path.exists(self.__transfer_rules_file) == False:
+        if not self.__transfer_rules_file or not os.path.exists(self.__transfer_rules_file):
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file or ''))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -1394,9 +1399,9 @@ class Main(QMainWindow):
 
     def EditTestbedLogButtonClicked(self):
 
-        if os.path.exists(self.__testbedPath) == False:
+        if not self.__testbedPath or not os.path.exists(self.__testbedPath):
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -1454,8 +1459,9 @@ class Main(QMainWindow):
             if errMsg:
 
                 return "", errMsg
-        
+
         # Filter out sentence-ending punctuation
+        sentencePunctuation = sentencePunctuation or []
         nonSentencePunctuation = allPunctuation - set(sentencePunctuation)
         
         if nonSentencePunctuation:
@@ -1689,12 +1695,16 @@ class Main(QMainWindow):
                 # Change to the Fieldworks folder for doing the dll operations
                 fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
 
+                if not fieldworksDir:
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Fieldworks directory is not set.'))
+                    self.unsetCursor()
+                    return
+
                 try:
                     os.chdir(fieldworksDir)
 
                 except OSError as e:
-
-                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format)
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format(fieldworksDir=fieldworksDir, e=e))
                     self.unsetCursor()
                     return
 
@@ -1889,7 +1899,7 @@ class Main(QMainWindow):
         return
 
     def UpButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() > 0:
+        if self.TRIndex and self.TRIndex.row() > 0 and self.__rulesElement and self.__ruleModel:
 
             # get current list item and insert it one above and remove it from its old position
             elemToMove = self.__rulesElement[self.TRIndex.row()]
@@ -1897,10 +1907,16 @@ class Main(QMainWindow):
             self.__rulesElement.insert(self.TRIndex.row()-1, elemToMove)
 
             # copy the selection
-            cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
-            oth_state = self.__ruleModel.item(self.TRIndex.row()-1).checkState()
-            self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
-            self.__ruleModel.item(self.TRIndex.row()-1).setCheckState(cur_state)
+            curr_item = self.__ruleModel.item(self.TRIndex.row())
+            prev_item = self.__ruleModel.item(self.TRIndex.row() - 1)
+
+            # Only perform the swap if both items actually exist
+            if curr_item and prev_item:
+                cur_state = curr_item.checkState()
+                oth_state = prev_item.checkState()
+                
+                curr_item.setCheckState(oth_state)
+                prev_item.setCheckState(cur_state)
 
             myIndex = self.__ruleModel.index(self.TRIndex.row()-1, self.TRIndex.column())
             self.ui.listTransferRules.setCurrentIndex(myIndex)
@@ -1909,7 +1925,7 @@ class Main(QMainWindow):
             self.rulesListClicked(myIndex)
 
     def DownButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() < len(list(self.__rulesElement))-1:
+        if self.TRIndex and self.__rulesElement and self.__ruleModel and self.TRIndex.row() < len(list(self.__rulesElement))-1:
 
             # get current list item and insert it one above and remove it from its old position
             elemToMove = self.__rulesElement[self.TRIndex.row()]
@@ -1917,10 +1933,16 @@ class Main(QMainWindow):
             self.__rulesElement.insert(self.TRIndex.row()+1, elemToMove)
 
             # copy the selection
-            cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
-            oth_state = self.__ruleModel.item(self.TRIndex.row()+1).checkState()
-            self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
-            self.__ruleModel.item(self.TRIndex.row()+1).setCheckState(cur_state)
+            curr_item = self.__ruleModel.item(self.TRIndex.row())
+            next_item = self.__ruleModel.item(self.TRIndex.row()+1)
+
+            # Only perform the swap if both items actually exist
+            if curr_item and next_item:
+                cur_state = curr_item.checkState()
+                oth_state = next_item.checkState()
+
+                curr_item.setCheckState(oth_state)
+                next_item.setCheckState(cur_state)
 
             myIndex = self.__ruleModel.index(self.TRIndex.row()+1, self.TRIndex.column())
             self.ui.listTransferRules.setCurrentIndex(myIndex)
@@ -1929,6 +1951,9 @@ class Main(QMainWindow):
             self.rulesListClicked(myIndex)
 
     def SelectAllCheckBoxClicked(self):
+        
+        if not self.__ruleModel:
+            return
         
         state = self.ui.selectAllCheckBox.checkState()
 
@@ -1954,9 +1979,10 @@ class Main(QMainWindow):
         for i in range(0, self.__ruleModel.rowCount()):
 
             # change each box
-            self.__ruleModel.item(i).setCheckState(newState)
+            myItem = self.__ruleModel.item(i)
 
-        # self.lastSelectAllState = newState
+            if myItem:
+                myItem.setCheckState(newState)
 
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
@@ -2442,7 +2468,7 @@ class Main(QMainWindow):
         if RunApertium.stripRulesFile(self.__report, self.testerFolder, self.__transfer_rules_file, RULE_FILE1) == True:
             return True
         
-        test_tree = ET.parse(self.__transfer_rules_file)
+        test_tree = ET.parse(str(self.__transfer_rules_file))
         test_rt = test_tree.getroot()
         self.__transferRulesElement = test_rt.find('section-rules')
 
@@ -2555,6 +2581,8 @@ class Main(QMainWindow):
             if index is not None and hasattr(index, 'row'):
                 self.TRIndex = index
 
+            assert self.__rulesElement is not None
+
             active_rules = 1
             oneBoxChecked = False
             oneBoxUnchecked = False
@@ -2568,17 +2596,20 @@ class Main(QMainWindow):
                     ruleText = _translate('LiveRuleTesterTool', 'missing comment')
 
                 # Read state BEFORE setText, which can reset it in some Qt6 builds
-                itemState = self.__ruleModel.item(i).checkState()
+                item = self.__ruleModel.item(i)
+                if item is None:
+                    continue
+                itemState = item.checkState()
 
                 if itemState == QtCore.Qt.CheckState.Checked:
                     oneBoxChecked = True
-                    self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
-                    self.__ruleModel.item(i).setCheckState(itemState)  # restore after setText
+                    item.setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
+                    item.setCheckState(itemState)  # restore after setText
                     active_rules += 1
                 else:
                     oneBoxUnchecked = True
-                    self.__ruleModel.item(i).setText(ruleText)
-                    self.__ruleModel.item(i).setCheckState(itemState)  # restore after setText
+                    item.setText(ruleText)
+                    item.setCheckState(itemState)  # restore after setText
 
             # Update the select-all checkbox to reflect current state
             if oneBoxChecked and oneBoxUnchecked:
@@ -2595,6 +2626,9 @@ class Main(QMainWindow):
             self._rulesListUpdating = False
 
     def displayRules(self, rules_element, ruleModel):
+
+        if rules_element is None:
+            return
 
         # Loop through each rule
         for rule_el in rules_element:
@@ -2711,7 +2745,9 @@ class Main(QMainWindow):
             myRoot = myTree.getroot()
 
             sr_element = myRoot.find('section-rules')
-
+            if sr_element is None:
+                return
+            
             # Remove the section-rules element
             myRoot.remove(sr_element)
 
@@ -2719,12 +2755,17 @@ class Main(QMainWindow):
             new_sr_element = ET.SubElement(myRoot, 'section-rules')
 
             rules_element = ruleFileRoot.find('section-rules')
+            if rules_element is None:
+                return
 
             # Loop through all the selected rules
             for i, rule_el in enumerate(rules_element):
 
                 # Add to the xml structure if it is a selected rule
-                if self.__ruleModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
+                item = self.__ruleModel.item(i)
+                if item is None:
+                    continue
+                if item.checkState() == QtCore.Qt.CheckState.Checked:
                     new_sr_element.append(rule_el)
 
             # If no rules were selected, create a dummy rule
@@ -2917,6 +2958,8 @@ class Main(QMainWindow):
 
                 # Extract the rule # and the lexical units
                 matchObj = re.search(r'(.+)(Applied rule )(\d+)( line \d+ )(.+)', line)
+                if matchObj is None:
+                    continue
                 ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
                 lexUnitsStr = matchObj.group(5).strip()
 
