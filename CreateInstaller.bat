@@ -166,13 +166,13 @@ del %ZIP_FILE%
 cd ..
 
 rem Zip the HermitCrab tools
-SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
-cd %installer_resources%\HermitCrabSynthesis
-7z a %HC_ZIP_FILE% *
-copy /Y %HC_ZIP_FILE% ..\..
+rem SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
+rem cd %installer_resources%\HermitCrabSynthesis
+rem 7z a %HC_ZIP_FILE% *
+rem copy /Y %HC_ZIP_FILE% ..\..
 rem copy /Y %HC_ZIP_FILE% ..\"previous versions"
-del %HC_ZIP_FILE%
-cd ..\..
+rem del %HC_ZIP_FILE%
+rem cd ..\..
 
 if %COMPUTERNAME% == RONS-XPS (
   cd C:\Data\Flextrans\Installer
