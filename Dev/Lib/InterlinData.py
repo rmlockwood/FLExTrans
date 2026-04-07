@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.15.2 - 4/7/26 - Ron Lockwood
+#    Take care of lint problems.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -78,10 +81,10 @@ PART_MISSING = "PART_MISSING"
 @dataclass
 class interlinInfo:
 
-    myWord: object
-    mySent: object
-    myPar: object
-    myText: object
+    myWord: TextWord
+    mySent: TextSentence
+    myPar: TextParagraph
+    myText: TextEntirety
     isNewSentence: bool
     isNewParagraph: bool
     inMultiLinePuncBlock: bool
@@ -240,7 +243,7 @@ def getTreeSents(inputFilename, report):
         # See if this word has multiple parses which means it wasn't syntax-parsed
         mparses = anaRec.findall('mparse')
 
-        if len(mparses) > 1:
+        if len(mparses) > 1 and myTreeSent:
 
             myTreeSent.setSingleTree(False)
 
@@ -254,7 +257,9 @@ def getTreeSents(inputFilename, report):
 
             newSent = True
 
-        myTreeSent.addGuid(currGuid)
+        if myTreeSent:
+
+            myTreeSent.addGuid(currGuid)
 
     return obj_list
 
@@ -311,7 +316,7 @@ def initInterlinParams(configMap, report, contents):
 
     typesFirstWordInflList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_FORMS_INFLECTION_1ST, report, giveError=False)
 
-    if not typesFirstWordInflList:
+    if not typesFirstWordInflList or type(typesFirstWordInflList) != list:
 
         typesFirstWordInflList = []
 
@@ -322,7 +327,7 @@ def initInterlinParams(configMap, report, contents):
     # This is the setting to use for inflection on the 2nd element of a complex form. For backwards compatibility, we use the old variable and setting name.
     typesSecondWordInflList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
 
-    if not typesSecondWordInflList:
+    if not typesSecondWordInflList or type(typesSecondWordInflList) != list:
 
         typesSecondWordInflList = []
 
@@ -332,7 +337,7 @@ def initInterlinParams(configMap, report, contents):
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
 
-    if not discontigTypesList:
+    if not discontigTypesList or type(discontigTypesList) != list:
 
         discontigTypesList = []
 
@@ -342,7 +347,7 @@ def initInterlinParams(configMap, report, contents):
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
 
-    if not discontigPOSList:
+    if not discontigPOSList or type(discontigPOSList) != list:
 
         discontigPOSList = []
 
@@ -548,7 +553,7 @@ def processPunctuation(report, myInfo, analysisOccurance, reSplitPuncObj):
 # At the end of the function we figure out appropriate warnings for unknown words and we process
 # complex forms which basically is substituting complex forms when we find contiguous words that match
 # the complex form's components.
-def getInterlinData(DB, report, params):
+def getInterlinData(DB, report, params) -> TextEntirety:
 
     prevEndOffset = 0
     currSegNum = 0
@@ -558,8 +563,8 @@ def getInterlinData(DB, report, params):
     # For the string "xy.'):\\" this would produce ['xy', ".'", ')', ':', '\\'] assuming :'. are in sentPunct
     reSplitPuncObj = re.compile(rf"([{''.join(params.sentPunct)}]+)")
 
-    myInfo = interlinInfo(myWord = None,
-                          mySent = None,
+    myInfo = interlinInfo(myWord = TextWord(report),
+                          mySent = TextSentence(report),
                           myPar = TextParagraph(),
                           myText = TextEntirety(),
                           isNewSentence = False,

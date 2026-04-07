@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.15.5 - 4/7/26 - Ron Lockwood
+#    Take care of lint problems.
+#
 #   Version 3.15.4 - 4/1/26 - Ron Lockwood
 #    Fixes #1271. Show Apertium error output in the Target text box.
 #
@@ -236,7 +239,7 @@ from flexlibs import FLExProject
 
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
-from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint
+from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint, QEvent
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
 
 import Mixpanel
@@ -276,7 +279,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15.4",
+        FTM_Version    : "3.15.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -554,8 +557,7 @@ class CheckboxDelegate(QStyledItemDelegate):
 
     def editorEvent(self, event, model, option, index):
         """Toggle check state on click anywhere in the row."""
-        from PyQt6.QtCore import QEvent
-        if not index.isValid():
+        if not index.isValid() or not event or not model:
             return False
         if event.type() == QEvent.Type.MouseButtonPress:
             current = index.data(Qt.ItemDataRole.CheckStateRole)
@@ -1171,7 +1173,7 @@ class Main(QMainWindow):
         ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
 
         # Set the global variable
-        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
+        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText() # type: ignore
 
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -1715,7 +1717,7 @@ class Main(QMainWindow):
                 import clr 
 
                 # Load the DLL 
-                clr.AddReference('HCSynthByGlossDll')
+                clr.AddReference('HCSynthByGlossDll') # type: ignore
                 from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
 
                 # Initialize the object with the output file name
@@ -2599,7 +2601,7 @@ class Main(QMainWindow):
                     ruleText = _translate('LiveRuleTesterTool', 'missing comment')
 
                 # Read state BEFORE setText, which can reset it in some Qt6 builds
-                item = self.__ruleModel.item(i)
+                item = self.__ruleModel.item(i) if self.__ruleModel else None
                 if item is None:
                     continue
                 itemState = item.checkState()
@@ -2765,7 +2767,7 @@ class Main(QMainWindow):
             for i, rule_el in enumerate(rules_element):
 
                 # Add to the xml structure if it is a selected rule
-                item = self.__ruleModel.item(i)
+                item = self.__ruleModel.item(i) if self.__ruleModel else None
                 if item is None:
                     continue
                 if item.checkState() == QtCore.Qt.CheckState.Checked:
@@ -2783,10 +2785,12 @@ class Main(QMainWindow):
 
                 # Create a dummy category to go with the rule
                 sectionDefCatsElement = myRoot.find('section-def-cats')
-                defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
-                defCatElement.attrib['n'] = 'c_dummy'
-                catItemElement = ET.SubElement(defCatElement, 'cat-item')
-                catItemElement.attrib['tags'] = 'dummy'
+
+                if sectionDefCatsElement:
+                    defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
+                    defCatElement.attrib['n'] = 'c_dummy'
+                    catItemElement = ET.SubElement(defCatElement, 'cat-item')
+                    catItemElement.attrib['tags'] = 'dummy'
 
             # Write out the file
             myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
@@ -2865,6 +2869,7 @@ class Main(QMainWindow):
                 self.unsetCursor()
                 return
         except:
+            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgt_file}.').format(tgt_file=tgt_file)
             self.ui.TargetTextEdit.setPlainText(err_msg)
             self.unsetCursor()
             return
@@ -3111,7 +3116,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
-            f_treeTranResultFile = open(treeTranResultFile, encoding='utf-8')
+            f_treeTranResultFile = open(str(treeTranResultFile), encoding='utf-8')
             f_treeTranResultFile.close()
         except:
             report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=treeTranResultFile))
@@ -3124,7 +3129,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             return ERROR_HAPPENED # error already reported
 
         # get log info. that tells us which sentences have a syntax parse and # words per sent
-        logInfo = Utils.importGoodParsesLog()
+        logInfo = InterlinData.importGoodParsesLog()
 
     # Get various bits of data for the get interlinear function
     interlinParams = InterlinData.initInterlinParams(configMap, report, contents)
@@ -3239,7 +3244,8 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             return ERROR_HAPPENED
 
         window.show()
-        app.exec()
+        if app:
+            app.exec()
 
         # Save needed attributes then explicitly destroy window before Python GC
         # runs, to prevent QThreadStorage/mutex destruction-ordering crashes
