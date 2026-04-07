@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.15.2 - 4/7/26 - Ron Lockwood
+#    Take care of lint problems.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -143,8 +146,6 @@ class TextEntirety():
         for par in self.__parList:
             par.getSurfaceAndDataTupleListBySent(tupBySentList)
         return tupBySentList
-    def hasMultipleUnknownWords(self):
-        return self.__multipleUnknownWords
     def haveData(self):
         if len(self.__parList) > 0:
             return True
@@ -240,6 +241,7 @@ class TextSentence():
         self.__guidMap = {}
         self.firstGetByGuid = True
         self.freeTranslation = ''
+        self.firstElemTypesList = []
     def addWord(self, textWord):
         self.__wordList.append(textWord)
     def createGuidMap(self, insertList):
@@ -622,7 +624,6 @@ class TextWord():
         self.__senseList = []
         self.__inflFeatAbbrevsList = [] # a list of lists
         self.__stemFeatAbbrList = []
-        self.firstElemTypesList = []
         self.secondElemTypesList = []
         # For GenStc work
         self.__ignoreInflClass = True
