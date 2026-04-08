@@ -1,4 +1,16 @@
 files:
-  - source: /Dev/**/translations/*.ts
-    translation: /Dev/**/translations/%file_name%_%two_letters_code%.ts
+  - source: /Dev/Lib/translations/*_en.ts
+    translation: /Dev/Lib/translations/%original_file_name%_%two_letters_code%.ts
+    type: qt
+
+  - source: /Dev/Lib/Windows/translations/*_en.ts
+    translation: /Dev/Lib/Windows/translations/%original_file_name%_%two_letters_code%.ts
+    type: qt
+
+  - source: /Dev/Modules/translations/*_en.ts
+    translation: /Dev/Modules/translations/%original_file_name%_%two_letters_code%.ts
+    type: qt
+
+  - source: /Dev/TopLevel/translations/*_en.ts
+    translation: /Dev/TopLevel/translations/%original_file_name%_%two_letters_code%.ts
     type: qt
