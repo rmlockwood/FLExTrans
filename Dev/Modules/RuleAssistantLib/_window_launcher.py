@@ -23,12 +23,12 @@ def log_crash(msg):
 print(f"[START] Launcher starting, PID={os.getpid()}", file=sys.stderr)
 log_crash("[INIT] Launcher process starting")
 
-# Setup Python path - add src_py's PARENT so that src_py becomes a package
-src_py_dir = Path(__file__).parent
-src_py_parent = src_py_dir.parent
-sys.path.insert(0, str(src_py_parent))
-log_crash(f"[PATH] Added to sys.path: {src_py_parent}")
-log_crash(f"[PATH] src_py_dir: {src_py_dir}")
+# Setup Python path - add RuleAssistantLib's PARENT so that RuleAssistantLib becomes a package
+rule_assistant_lib_dir = Path(__file__).parent
+rule_assistant_lib_parent = rule_assistant_lib_dir.parent
+sys.path.insert(0, str(rule_assistant_lib_parent))
+log_crash(f"[PATH] Added to sys.path: {rule_assistant_lib_parent}")
+log_crash(f"[PATH] rule_assistant_lib_dir: {rule_assistant_lib_dir}")
 
 try:
     # Parse args
@@ -57,8 +57,8 @@ try:
     log_crash("[WINDOW] About to import RuleAssistantWindow")
     print("[IMPORT] Importing RuleAssistantWindow...", file=sys.stderr)
 
-    # Use absolute import from the src_py package
-    import src_py.view.main_window as main_window_module
+    # Use absolute import from the RuleAssistantLib package
+    import RuleAssistantLib.view.main_window as main_window_module
     RuleAssistantWindow = main_window_module.RuleAssistantWindow
     log_crash("[WINDOW] RuleAssistantWindow imported successfully")
     print("[IMPORT] RuleAssistantWindow imported OK", file=sys.stderr)

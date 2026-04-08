@@ -486,10 +486,10 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         # LAZY IMPORT: Import only when actually needed (not at module load time)
         # This prevents Qt initialization issues when imported by FlexTools
         try:
-            from src_py.flextrans_integration import start_rule_assistant
-            _logger.info("Imported start_rule_assistant from src_py.flextrans_integration")
+            from RuleAssistantLib.flextrans_integration import start_rule_assistant
+            _logger.info("Imported start_rule_assistant from RuleAssistantLib.flextrans_integration")
         except ImportError as e:
-            _logger.warning(f"Failed to import from src_py: {e}, trying fallback")
+            _logger.warning(f"Failed to import from RuleAssistantLib: {e}, trying fallback")
             # Fallback for when RuleAssistantLib is in sys.path
             from flextrans_integration import start_rule_assistant
             _logger.info("Imported start_rule_assistant from flextrans_integration (fallback)")
