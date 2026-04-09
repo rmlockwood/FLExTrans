@@ -6,127 +6,127 @@
     <message>
       <location filename="../TextInOut.py" line="408"/>
       <source>Text Out Rules</source>
-      <translation type="unfinished">Text Out Rules</translation>
+      <translation>Règles de sortie de texte</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="409"/>
       <source>Search for:</source>
-      <translation type="unfinished">Search for:</translation>
+      <translation>Rechercher :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="410"/>
       <source>Replace with:</source>
-      <translation type="unfinished">Replace with:</translation>
+      <translation>Remplacer par :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="411"/>
       <source>Comment:</source>
-      <translation type="unfinished">Comment:</translation>
+      <translation>Commentaire :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="412"/>
       <source>Treat the search and replace text as regular expressions.</source>
-      <translation type="unfinished">Treat the search and replace text as regular expressions.</translation>
+      <translation>Traiter le texte de recherche et de remplacement comme des expressions régulières.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="413"/>
       <source>Regular Expression</source>
-      <translation type="unfinished">Regular Expression</translation>
+      <translation>Expression régulière</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="414"/>
       <source>Inactive</source>
-      <translation type="unfinished">Inactive</translation>
+      <translation>Inactif</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="415"/>
       <source>Add search and replace text as a new rule.</source>
-      <translation type="unfinished">Add search and replace text as a new rule.</translation>
+      <translation>Ajouter le texte de recherche et de remplacement comme nouvelle règle.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="416"/>
       <source>Add</source>
-      <translation type="unfinished">Add</translation>
+      <translation>Ajouter</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="417"/>
       <source>Update the rule selected below with the above search and replace text.</source>
-      <translation type="unfinished">Update the rule selected below with the above search and replace text.</translation>
+      <translation>Mettre à jour la règle sélectionnée ci-dessous avec le texte de recherche et de remplacement ci-dessus.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="418"/>
       <source>Update</source>
-      <translation type="unfinished">Update</translation>
+      <translation>Mettre à jour</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="419"/>
       <source>Delete the below selected rule.</source>
-      <translation type="unfinished">Delete the below selected rule.</translation>
+      <translation>Supprimer la règle sélectionnée ci-dessous.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="420"/>
       <source>Delete</source>
-      <translation type="unfinished">Delete</translation>
+      <translation>Supprimer</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="421"/>
       <source>Current project automatically included</source>
-      <translation type="unfinished">Current project automatically included</translation>
+      <translation>Projet actuel automatiquement inclus</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="422"/>
       <source>Cluster Projects to Apply to</source>
-      <translation type="unfinished">Cluster Projects to Apply to</translation>
+      <translation>Projets de cluster auxquels appliquer</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="423"/>
       <source>Rules</source>
-      <translation type="unfinished">Rules</translation>
+      <translation>Règles</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="424"/>
       <source>Move the selected rule up.</source>
-      <translation type="unfinished">Move the selected rule up.</translation>
+      <translation>Déplacer la règle sélectionnée vers le haut.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="425"/>
       <source>Move the selected rule down.</source>
-      <translation type="unfinished">Move the selected rule down.</translation>
+      <translation>Déplacer la règle sélectionnée vers le bas.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="426"/>
       <source>This tool will run before other rules.</source>
-      <translation type="unfinished">This tool will run before other rules.</translation>
+      <translation>Cet outil s'exécutera avant les autres règles.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="427"/>
       <source>Steps:</source>
-      <translation type="unfinished">Steps:</translation>
+      <translation>Étapes :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="428"/>
       <source>Default</source>
-      <translation type="unfinished">Default</translation>
+      <translation>Par défaut</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="429"/>
       <source>All</source>
-      <translation type="unfinished">All</translation>
+      <translation>Tout</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="430"/>
       <source>None</source>
-      <translation type="unfinished">None</translation>
+      <translation>Aucun</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="431"/>
       <source>Lang:</source>
-      <translation type="unfinished">Lang:</translation>
+      <translation>Langue :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="432"/>
       <source>3-letter ISO 639-3 code</source>
-      <translation type="unfinished">3-letter ISO 639-3 code</translation>
+      <translation>Code ISO 639-3 à 3 lettres</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="433"/>
@@ -136,56 +136,56 @@
     <message>
       <location filename="../TextInOut.py" line="434"/>
       <source>Add:</source>
-      <translation type="unfinished">Add:</translation>
+      <translation>Ajouter :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="435"/>
       <source>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-      <translation type="unfinished">Steps to add to the base number of steps selected above.
-Separate steps with spaces or commas.</translation>
+      <translation>Étapes à ajouter au nombre de base d'étapes sélectionnées ci-dessus.
+Séparez les étapes par des espaces ou des virgules.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="437"/>
       <source>Skip:</source>
-      <translation type="unfinished">Skip:</translation>
+      <translation>Ignorer :</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="438"/>
       <source>Steps to skip from the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-      <translation type="unfinished">Steps to skip from the base number of steps selected above.
-Separate steps with spaces or commas.</translation>
+      <translation>Étapes à ignorer du nombre de base d'étapes sélectionnées ci-dessus.
+Séparez les étapes par des espaces ou des virgules.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="440"/>
       <source>Test input</source>
-      <translation type="unfinished">Test input</translation>
+      <translation>Entrée de test</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="441"/>
       <source>Test the checked rules above with the input text.</source>
-      <translation type="unfinished">Test the checked rules above with the input text.</translation>
+      <translation>Tester les règles cochées ci-dessus avec le texte d'entrée.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="442"/>
       <source>Test</source>
-      <translation type="unfinished">Test</translation>
+      <translation>Tester</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="443"/>
       <source>dummy</source>
-      <translation type="unfinished">dummy</translation>
+      <translation>factice</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="444"/>
       <source>Test output</source>
-      <translation type="unfinished">Test output</translation>
+      <translation>Sortie de test</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="445"/>
       <source>Close</source>
-      <translation type="unfinished">Close</translation>
+      <translation>Fermer</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="446"/>
@@ -193,8 +193,8 @@ Separate steps with spaces or commas.</translation>
 Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
 
 </source>
-      <translation type="unfinished">Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here
-Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
+      <translation>Message d'erreur ici Message d'erreur ici Message d'erreur ici Message d'erreur ici
+Message d'erreur ici Message ici Message ici Message ici Message ici Message ici
 
 </translation>
     </message>
@@ -205,11 +205,11 @@ Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+      <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Message d'erreur ici Message d'erreur ici Message d'erreur ici Message d'erreur ici Message d'erreur ici Message ici Message ici Message ici Message ici Message ici&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
   </context>
 </TS>
