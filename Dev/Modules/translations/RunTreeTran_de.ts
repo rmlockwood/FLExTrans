@@ -1,76 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="de" sourcelanguage="en">
+  <context>
     <name>RunTreeTran</name>
     <message>
-        <location filename="../RunTreeTran.py" line="87"/>
-        <source>Run TreeTran</source>
-        <translation>TreeTran ausführen</translation>
+      <location filename="../RunTreeTran.py" line="90"/>
+      <source>Run TreeTran</source>
+      <translation type="unfinished">Run TreeTran</translation>
     </message>
     <message>
-        <location filename="../RunTreeTran.py" line="90"/>
-        <source>Run the TreeTran Tool.</source>
-        <translation>Das TreeTran-Tool ausführen.</translation>
+      <location filename="../RunTreeTran.py" line="93"/>
+      <source>Run the TreeTran Tool.</source>
+      <translation type="unfinished">Run the TreeTran Tool.</translation>
     </message>
     <message>
-        <location filename="../RunTreeTran.py" line="82"/>
-        <source>This module will run the TreeTran program to modify a syntax tree. The resulting
-file is placed in the Output folder which is then used by the ExtractSourceText
-module to modify the word order of the sentence according to the TreeTran rules
-file. The TreeTran Rules file is in the Output folder also. This module assumes
-that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
-This file gets created by the PC-PATR with FLEx program when the tree toolbar
-button is used. </source>
-        <translation type="obsolete">Dieses Modul führt das TreeTran-Programm aus, um einen Syntaxbaum zu modifizieren. Die resultierende
-Datei wird im Ausgabeordner abgelegt, der dann vom ExtractSourceText-Modul verwendet wird,
-um die Wortstellung des Satzes entsprechend der TreeTran-Regeldatei zu ändern.
-Die TreeTran-Regeldatei befindet sich ebenfalls im Ausgabeordner. Dieses Modul setzt voraus,
-dass die Aufruferdatei Invoker.xml im temporären Systemordner (%TEMP%) existiert. 
-Diese Datei wird vom PC-PATR mit FLEx-Programm erstellt, wenn die Symbolleistenschaltfläche
-für Bäume verwendet wird. </translation>
-    </message>
-    <message>
-        <location filename="../RunTreeTran.py" line="118"/>
-        <source>The Tree Tran Result File has invalid XML content.</source>
-        <translation>Die TreeTran-Ergebnisdatei hat ungültigen XML-Inhalt.</translation>
-    </message>
-    <message>
-        <location filename="../RunTreeTran.py" line="209"/>
-        <source>You have not specified a value in the configuration file for {file}.</source>
-        <translation>Sie haben keinen Wert in der Konfigurationsdatei für {file} angegeben.</translation>
-    </message>
-    <message>
-        <location filename="../RunTreeTran.py" line="203"/>
-        <source>There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?</source>
-        <translation>Es gibt ein Problem mit der TreeTran-Eingabedatei: {filteredFile}. Wurde das PC-PATR mit FLEx-Programm korrekt ausgeführt?</translation>
-    </message>
-    <message>
-        <location filename="../RunTreeTran.py" line="218"/>
-        <source>Can't find the TreeTran rules file: {rulesFilePath}.</source>
-        <translation>Die TreeTran-Regeldatei kann nicht gefunden werden: {rulesFilePath}.</translation>
-    </message>
-    <message>
-        <location filename="../RunTreeTran.py" line="224"/>
-        <source>{num} sentence(s) processed.</source>
-        <translation>{num} Satz/Sätze verarbeitet.</translation>
-    </message>
-    <message>
-        <location filename="../RunTreeTran.py" line="92"/>
-        <source>This module will run the TreeTran program to modify a syntax tree. The resulting
+      <location filename="../RunTreeTran.py" line="95"/>
+      <source>This module will run the TreeTran program to modify a syntax tree. The resulting
 file is placed in the Output folder which is then used by the {extractSourceTextModule}
 module to modify the word order of the sentence according to the TreeTran rules
 file. The TreeTran Rules file is in the Output folder also. This module assumes
 that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
 button is used. </source>
-        <translation>Dieses Modul führt das TreeTran-Programm aus, um einen Syntaxbaum zu modifizieren. Die resultierende
-Datei wird im Ausgabeordner abgelegt, die dann vom Modul {extractSourceTextModule}
-verwendet wird, um die Wortstellung des Satzes entsprechend der TreeTran-Regeldatei zu ändern.
-Die TreeTran-Regeldatei befindet sich ebenfalls im Ausgabeordner. Dieses Modul setzt voraus,
-dass die Aufruferdatei Invoker.xml im temporären Systemordner (%TEMP%) existiert. 
-Diese Datei wird vom PC-PATR mit FLEx-Programm erstellt, wenn die Schaltfläche in der
-Symbolleiste für Bäume verwendet wird. </translation>
+      <translation type="unfinished">This module will run the TreeTran program to modify a syntax tree. The resulting
+file is placed in the Output folder which is then used by the {extractSourceTextModule}
+module to modify the word order of the sentence according to the TreeTran rules
+file. The TreeTran Rules file is in the Output folder also. This module assumes
+that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
+This file gets created by the PC-PATR with FLEx program when the tree toolbar
+button is used. </translation>
     </message>
-</context>
+    <message>
+      <location filename="../RunTreeTran.py" line="121"/>
+      <source>The Tree Tran Result File has invalid XML content.</source>
+      <translation type="unfinished">The Tree Tran Result File has invalid XML content.</translation>
+    </message>
+    <message>
+      <location filename="../RunTreeTran.py" line="212"/>
+      <source>You have not specified a value in the configuration file for {file}.</source>
+      <translation type="unfinished">You have not specified a value in the configuration file for {file}.</translation>
+    </message>
+    <message>
+      <location filename="../RunTreeTran.py" line="206"/>
+      <source>There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?</source>
+      <translation type="unfinished">There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?</translation>
+    </message>
+    <message>
+      <location filename="../RunTreeTran.py" line="221"/>
+      <source>Can't find the TreeTran rules file: {rulesFilePath}.</source>
+      <translation type="unfinished">Can't find the TreeTran rules file: {rulesFilePath}.</translation>
+    </message>
+    <message>
+      <location filename="../RunTreeTran.py" line="227"/>
+      <source>{num} sentence(s) processed.</source>
+      <translation type="unfinished">{num} sentence(s) processed.</translation>
+    </message>
+  </context>
 </TS>
