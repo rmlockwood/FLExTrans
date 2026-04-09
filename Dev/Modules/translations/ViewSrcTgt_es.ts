@@ -6,12 +6,12 @@
     <message>
       <location filename="../ViewSrcTgt.py" line="92"/>
       <source>View Source/Target Apertium Text Tool</source>
-      <translation type="unfinished">View Source/Target Apertium Text Tool</translation>
+      <translation>Ver herramienta de texto Apertium fuente/objetivo</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="95"/>
       <source>View an easy-to-read source or target text file.</source>
-      <translation type="unfinished">View an easy-to-read source or target text file.</translation>
+      <translation>Ver un archivo de texto fuente o de destino fácil de leer.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="97"/>
@@ -20,41 +20,41 @@ file. The lexical units are color coded as follows: black-lemma, blue-grammatica
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.</source>
-      <translation type="unfinished">This module will display a more readable view of the Apertium source or target 
-file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
-category, green-affix or feature or class, yellow-non-sentence punctuation, 
-dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
-must run the modules up to and including {runApert} before running this module.</translation>
+      <translation>Este módulo mostrará una vista más legible del archivo fuente o de destino de Apertium. 
+Las unidades léxicas están codificadas por colores de la siguiente manera: negro-lema, azul-categoría 
+gramatical, verde-afijo o característica o clase, amarillo-puntuación fuera de oración, 
+rosa oscuro-lema desconocido, rosa-categoría desconocida, rojo-lema no encontrado. ¡Importante! Debe
+ejecutar los módulos hasta y además {runApert} antes de ejecutar este módulo.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="229"/>
       <source>File Error</source>
-      <translation type="unfinished">File Error</translation>
+      <translation>Error de Archivo</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="226"/>
       <source>There was a problem opening the Source Apertium Text file: {fileName}. </source>
-      <translation type="unfinished">There was a problem opening the Source Apertium Text file: {fileName}. </translation>
+      <translation>Hubo un problema al abrir el archivo de texto fuente de Apertium: {fileName}. </translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="226"/>
       <source>Make sure you have run the {moduleName} module first.</source>
-      <translation type="unfinished">Make sure you have run the {moduleName} module first.</translation>
+      <translation>Asegúrese de haber ejecutado primero el módulo {moduleName}.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="229"/>
       <source>There was a problem opening a Target Apertium Text file: {fileName}. </source>
-      <translation type="unfinished">There was a problem opening a Target Apertium Text file: {fileName}. </translation>
+      <translation>Hubo un problema al abrir un archivo de texto de destino de Apertium: {fileName}. </translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="229"/>
       <source>Make sure you have run the modules up through {moduleName} first.</source>
-      <translation type="unfinished">Make sure you have run the modules up through {moduleName} first.</translation>
+      <translation>Asegúrese de haber ejecutado primero los módulos hasta {moduleName}.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="321"/>
       <source>Open in Browser</source>
-      <translation type="unfinished">Open in Browser</translation>
+      <translation>Abrir en Navegador</translation>
     </message>
   </context>
 </TS>
