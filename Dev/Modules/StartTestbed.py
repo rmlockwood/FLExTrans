@@ -44,7 +44,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['StartTestbed'], translators)
@@ -106,7 +106,7 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + ['StartTestbed'], 
                            translators, loadBase=True)
