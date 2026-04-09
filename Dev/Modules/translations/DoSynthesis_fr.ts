@@ -6,12 +6,12 @@
     <message>
       <location filename="../DoSynthesis.py" line="70"/>
       <source>Synthesize Text</source>
-      <translation type="unfinished">Synthesize Text</translation>
+      <translation>Synthétiser le texte</translation>
     </message>
     <message>
       <location filename="../DoSynthesis.py" line="73"/>
       <source>Synthesizes the target text with either STAMP or HermitCrab.</source>
-      <translation type="unfinished">Synthesizes the target text with either STAMP or HermitCrab.</translation>
+      <translation>Synthétise le texte cible avec STAMP ou HermitCrab.</translation>
     </message>
     <message>
       <location filename="../DoSynthesis.py" line="75"/>
@@ -21,27 +21,27 @@ then the following information from the {hermitCrabModule} module applies: {herm
 
 If in the settings you select 'No' for 'Use HermitCrab synthesis?',
 then the following information from the {stampModule} module applies: {stampDescription}</source>
-      <translation type="unfinished">This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
-then the following information from the {hermitCrabModule} module applies: {hermitCrabDescription}
+      <translation>Ce module synthétise le texte cible. Si dans les paramètres vous sélectionnez 'Oui' pour 'Utiliser la synthèse HermitCrab ?',
+alors les informations suivantes du module {hermitCrabModule} s'appliquent : {hermitCrabDescription}
 
 
-If in the settings you select 'No' for 'Use HermitCrab synthesis?',
-then the following information from the {stampModule} module applies: {stampDescription}</translation>
+Si dans les paramètres vous sélectionnez 'Non' pour 'Utiliser la synthèse HermitCrab ?',
+alors les informations suivantes du module {stampModule} s'appliquent : {stampDescription}</translation>
     </message>
     <message>
       <location filename="../DoSynthesis.py" line="102"/>
       <source>Failed to read the configuration file.</source>
-      <translation type="unfinished">Failed to read the configuration file.</translation>
+      <translation>Échec de la lecture du fichier de configuration.</translation>
     </message>
     <message>
       <location filename="../DoSynthesis.py" line="112"/>
       <source>Using HermitCrab for synthesis.</source>
-      <translation type="unfinished">Using HermitCrab for synthesis.</translation>
+      <translation>Utilisation de HermitCrab pour la synthèse.</translation>
     </message>
     <message>
       <location filename="../DoSynthesis.py" line="118"/>
       <source>Using STAMP for synthesis.</source>
-      <translation type="unfinished">Using STAMP for synthesis.</translation>
+      <translation>Utilisation de STAMP pour la synthèse.</translation>
     </message>
   </context>
 </TS>
