@@ -6,22 +6,22 @@
     <message>
       <location filename="../Linker.py" line="245"/>
       <source>FLExTrans Sense Linker Tool</source>
-      <translation type="unfinished">FLExTrans Sense Linker Tool</translation>
+      <translation>FLExTrans Herramienta de enlace de sentidos</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="246"/>
       <source>Source Text:</source>
-      <translation type="unfinished">Source Text:</translation>
+      <translation>Texto fuente:</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="247"/>
       <source>All Target Senses:</source>
-      <translation type="unfinished">All Target Senses:</translation>
+      <translation>Todos los sentidos objetivo:</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="248"/>
       <source>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation type="unfinished">After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</translation>
+      <translation>Después de seleccionar el sentido deseado aquí, haga doble clic en la columna &quot;Palabra principal objetivo&quot; para la fila deseada para vincularla.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="249"/>
@@ -33,22 +33,22 @@ then double-click in the Target Head Word column for the desired row to link to 
     <message>
       <location filename="../Linker.py" line="251"/>
       <source>Search here</source>
-      <translation type="unfinished">Search here</translation>
+      <translation>Buscar aquí</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="252"/>
       <source>Filter on all fields</source>
-      <translation type="unfinished">Filter on all fields</translation>
+      <translation>Filtrar en todos los campos</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="253"/>
       <source>Add a new entry to the target lexicon.</source>
-      <translation type="unfinished">Add a new entry to the target lexicon.</translation>
+      <translation>Agregar una nueva entrada al léxico objetivo.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="254"/>
       <source> Add Entry </source>
-      <translation type="unfinished"> Add Entry </translation>
+      <translation> Agregar entrada </translation>
     </message>
     <message>
       <location filename="../Linker.py" line="255"/>
@@ -58,32 +58,32 @@ then double-click in the Target Head Word column for the desired row to link to 
     <message>
       <location filename="../Linker.py" line="256"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Cancelar</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="257"/>
       <source>Show Only Unlinked</source>
-      <translation type="unfinished">Show Only Unlinked</translation>
+      <translation>Mostrar solo no vinculados</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="258"/>
       <source>Hide Proper Nouns</source>
-      <translation type="unfinished">Hide Proper Nouns</translation>
+      <translation>Ocultar nombres propios</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="259"/>
       <source>Zoom:</source>
-      <translation type="unfinished">Zoom:</translation>
+      <translation>Zoom</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="260"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Fuente</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="261"/>
       <source>Rebuild Bilingual Lexicon</source>
-      <translation type="unfinished">Rebuild Bilingual Lexicon</translation>
+      <translation>Reconstruir léxico bilingüe</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="262"/>
@@ -95,12 +95,12 @@ is checked, Proper Nouns will not be exported.</translation>
     <message>
       <location filename="../Linker.py" line="264"/>
       <source>Export Unlinked Senses</source>
-      <translation type="unfinished">Export Unlinked Senses</translation>
+      <translation>Exportar sentidos no vinculados</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="265"/>
       <source>Senses to link:</source>
-      <translation type="unfinished">Senses to link:</translation>
+      <translation>Sentidos para vincular:</translation>
     </message>
   </context>
 </TS>
