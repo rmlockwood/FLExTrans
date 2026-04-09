@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="de" sourcelanguage="en">
+  <context>
     <name>NewEntryDlg</name>
     <message>
-      <location filename="../NewEntryDlg.py" line="89"/>
+      <location filename="../NewEntryDlg.py" line="92"/>
       <source>Target FLEx project name</source>
-      <translation>Name des FLEx-Zielprojekts</translation>
+      <translation type="unfinished">Target FLEx project name</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="90"/>
+      <location filename="../NewEntryDlg.py" line="93"/>
       <source>Lexeme Form</source>
-      <translation>Lexemform</translation>
+      <translation type="unfinished">Lexeme Form</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="271"/>
+      <location filename="../NewEntryDlg.py" line="292"/>
       <source>Error Check</source>
-      <translation>Fehlerprüfung</translation>
+      <translation type="unfinished">Error Check</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="196"/>
+      <location filename="../NewEntryDlg.py" line="217"/>
       <source>You must enter a Gloss.</source>
-      <translation>Sie müssen eine Glosse eingeben.</translation>
+      <translation type="unfinished">You must enter a Gloss.</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="217"/>
+      <location filename="../NewEntryDlg.py" line="238"/>
       <source>Cluster Project Selection Error</source>
-      <translation>Cluster-Projektauswahlfehler</translation>
+      <translation type="unfinished">Cluster Project Selection Error</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="217"/>
+      <location filename="../NewEntryDlg.py" line="238"/>
       <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-      <translation>Sie müssen mindestens das Standard-Zielprojekt, {proj}, unter Ihren Cluster-Projekten auswählen.</translation>
+      <translation type="unfinished">You must at least select the default target project, {proj}, among your cluster projects.</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="230"/>
+      <location filename="../NewEntryDlg.py" line="251"/>
       <source>You must enter all the Lexeme Forms.</source>
-      <translation>Sie müssen alle Lexemformen eingeben.</translation>
-    </message>
-    <message>
-      <location filename="../NewEntryDlg.py" line="250"/>
-      <source>Not Found Error</source>
-      <translation>Nicht-gefunden-Fehler</translation>
-    </message>
-    <message>
-      <location filename="../NewEntryDlg.py" line="250"/>
-      <source>Failed to open the project: {proj}</source>
-      <translation>Fehler beim Öffnen des Projekts: {proj}</translation>
+      <translation type="unfinished">You must enter all the Lexeme Forms.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="271"/>
+      <source>Not Found Error</source>
+      <translation type="unfinished">Not Found Error</translation>
+    </message>
+    <message>
+      <location filename="../NewEntryDlg.py" line="271"/>
+      <source>Failed to open the project: {proj}</source>
+      <translation type="unfinished">Failed to open the project: {proj}</translation>
+    </message>
+    <message>
+      <location filename="../NewEntryDlg.py" line="292"/>
       <source>You must enter a Lexeme Form.</source>
-      <translation>Sie müssen eine Lexemform eingeben.</translation>
+      <translation type="unfinished">You must enter a Lexeme Form.</translation>
     </message>
   </context>
 </TS>
