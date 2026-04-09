@@ -5,12 +5,12 @@
     <message>
       <location filename="../InsertTargetText.py" line="107"/>
       <source>Insert Target Text</source>
-      <translation type="unfinished">Insert Target Text</translation>
+      <translation>Insertar texto objetivo</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="110"/>
       <source>Insert a translated text into the target FLEx project.</source>
-      <translation type="unfinished">Insert a translated text into the target FLEx project.</translation>
+      <translation>Insertar un texto traducido en el proyecto FLEx de destino.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="112"/>
@@ -19,21 +19,21 @@ the results of the {doSynthModule} module
 and insert the text into the target FLEx project. The Source Text Name setting
 will be used for the text name in the target project. An existing text of the 
 same name will not be overwritten. A copy will be created.</source>
-      <translation type="unfinished">The target project specified in the settings will be used. This module will take
-the results of the {doSynthModule} module
-and insert the text into the target FLEx project. The Source Text Name setting
-will be used for the text name in the target project. An existing text of the 
-same name will not be overwritten. A copy will be created.</translation>
+      <translation>Se utilizará el proyecto de destino especificado en la configuración. Este módulo tomará
+los resultados del módulo {doSynthModule}
+y insertará el texto en el proyecto FLEx de destino. La configuración de Nombre de Texto de Origen
+se utilizará para el nombre del texto en el proyecto de destino. Un texto existente con el mismo nombre
+no será sobrescrito. Se creará una copia.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="137"/>
       <source>Failed to open the target project.</source>
-      <translation type="unfinished">Failed to open the target project.</translation>
+      <translation>No se pudo abrir el proyecto de destino.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="140"/>
       <source>Using: {targetProj} as the target project.</source>
-      <translation type="unfinished">Using: {targetProj} as the target project.</translation>
+      <translation>Usando: {targetProj} como el proyecto de destino.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="158"/>
