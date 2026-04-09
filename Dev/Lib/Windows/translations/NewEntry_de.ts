@@ -31,7 +31,7 @@
     <message>
       <location filename="../NewEntry.py" line="88"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="90"/>
