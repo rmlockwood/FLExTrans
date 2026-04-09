@@ -21,7 +21,7 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="79"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="80"/>
