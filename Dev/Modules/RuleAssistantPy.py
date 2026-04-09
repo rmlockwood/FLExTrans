@@ -13,6 +13,7 @@
 #
 #   Runs the Python version of the Rule Assistant to create Apertium transfer rules.
 #
+from main_window import RuleAssistantWindow
 
 import os
 import sys
@@ -24,6 +25,7 @@ from pathlib import Path
 import logging
 import tempfile
 from datetime import datetime
+
 
 # Fallback crash log - writes directly to file if logging fails
 _crash_log = os.path.join(tempfile.gettempdir(), 'RuleAssistantPy_CRASH.log')
@@ -70,7 +72,7 @@ _logger.info("RuleAssistantPy.py loaded")
 _logger.info(f"Log file: {_log_file}")
 _logger.info("=" * 80)
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
@@ -451,8 +453,7 @@ def GetTestDataFile(report, DB, configMap):
     return fhtml
 
 
-def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
-                       testDataFile, fromLRT=False):
+def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDataFile, fromLRT=False):
     """Launch the Python/PyQt6 Rule Assistant GUI.
 
     This function calls the Python version of the Rule Assistant (no fallback to Java).
@@ -482,17 +483,17 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         return (False, None, False)
 
     try:
-        _logger.info("About to import flextrans_integration")
-        # LAZY IMPORT: Import only when actually needed (not at module load time)
-        # This prevents Qt initialization issues when imported by FlexTools
-        try:
-            from RuleAssistantLib.flextrans_integration import start_rule_assistant
-            _logger.info("Imported start_rule_assistant from RuleAssistantLib.flextrans_integration")
-        except ImportError as e:
-            _logger.warning(f"Failed to import from RuleAssistantLib: {e}, trying fallback")
-            # Fallback for when RuleAssistantLib is in sys.path
-            from flextrans_integration import start_rule_assistant
-            _logger.info("Imported start_rule_assistant from flextrans_integration (fallback)")
+        # _logger.info("About to import flextrans_integration")
+        # # LAZY IMPORT: Import only when actually needed (not at module load time)
+        # # This prevents Qt initialization issues when imported by FlexTools
+        # try:
+        #     from RuleAssistantLib.flextrans_integration import start_rule_assistant
+        #     _logger.info("Imported start_rule_assistant from RuleAssistantLib.flextrans_integration")
+        # except ImportError as e:
+        #     _logger.warning(f"Failed to import from RuleAssistantLib: {e}, trying fallback")
+        #     # Fallback for when RuleAssistantLib is in sys.path
+        #     from flextrans_integration import start_rule_assistant
+        #     _logger.info("Imported start_rule_assistant from flextrans_integration (fallback)")
 
         # Get interface language from FLEx
         try:
@@ -502,18 +503,58 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
             _logger.warning(f"Failed to get interface language code: {e}")
             lang_code = "en"
 
-        _logger.info("About to call start_rule_assistant()")
-        # Launch the Python Rule Assistant
-        saved, rule_index, launch_lrt = start_rule_assistant(
+        # Ensure QApplication exists before creating window (QWebEngineView needs it)
+        _logger.info("About to get or create QApplication")
+        app = QApplication.instance()
+        _logger.info(f"QApplication.instance() returned: {app}")
+
+        if app is None:
+            _logger.info("Creating new QApplication")
+            app = QApplication(['RuleAssistant'])
+            _logger.info("QApplication created successfully")
+        else:
+            _logger.info("Reusing existing QApplication")
+
+        # _logger.info("About to call start_rule_assistant()")
+        # # Launch the Python Rule Assistant
+        # saved, rule_index, launch_lrt = start_rule_assistant(
+        #     rule_file=ruleAssistantFile,
+        #     flex_data_file=ruleAssistGUIinputfile,
+        #     test_data_file=testDataFile,
+        #     came_from_lrt=fromLRT,
+        #     ui_lang_code=lang_code,
+        # )
+        # _logger.info(f"start_rule_assistant() returned: saved={saved}, rule_index={rule_index}, launch_lrt={launch_lrt}")
+
+
+        window = RuleAssistantWindow(
             rule_file=ruleAssistantFile,
             flex_data_file=ruleAssistGUIinputfile,
             test_data_file=testDataFile,
             came_from_lrt=fromLRT,
             ui_lang_code=lang_code,
         )
-        _logger.info(f"start_rule_assistant() returned: saved={saved}, rule_index={rule_index}, launch_lrt={launch_lrt}")
+        _logger.info("[WINDOW] RuleAssistantWindow created")
+        print("[WINDOW] Window created OK", file=sys.stderr)
 
-        return (saved, rule_index, launch_lrt)
+        # Show and run
+        _logger.info("[SHOW] Calling window.show()")
+        print("[SHOW] Showing window...", file=sys.stderr)
+
+        window.show()
+        _logger.info("[SHOW] window.show() returned")
+        print("[EXEC] Running app.exec()...", file=sys.stderr)
+
+        if app:
+            app.exec()
+
+        # Get and save result
+        _logger.info("[RESULT] Getting result from window")
+        result = window.get_result()
+
+        _logger.info(f"[RESULT] Result: saved={result.saved}, rule_index={result.rule_index}, launch_lrt={result.launch_lrt}")
+
+        return (result.saved, result.rule_index, result.launch_lrt)
 
     except Exception as e:
         import traceback
@@ -539,7 +580,7 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
 
     if app is None:
         _logger.info("Creating new QApplication")
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
         _logger.info("QApplication created successfully")
     else:
         _logger.info("Reusing existing QApplication")
