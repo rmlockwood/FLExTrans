@@ -6,12 +6,12 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="147"/>
       <source>Source/Target Viewer</source>
-      <translation type="unfinished">Source/Target Viewer</translation>
+      <translation>Visualiseur source/cible</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="148"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Police</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="149"/>
@@ -21,17 +21,17 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="150"/>
       <source>Target</source>
-      <translation type="unfinished">Target</translation>
+      <translation>Cible</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="151"/>
       <source>Right to Left</source>
-      <translation type="unfinished">Right to Left</translation>
+      <translation>De droite à gauche</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="152"/>
       <source>Zoom:</source>
-      <translation type="unfinished">Zoom:</translation>
+      <translation>Zoom :</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="153"/>
