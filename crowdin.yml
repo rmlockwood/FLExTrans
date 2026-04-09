@@ -27,3 +27,6 @@ files:
       - /Dev/TopLevel/translations/*_fr.ts
     translation: /Dev/TopLevel/translations/%file_name%_%two_letters_code%.ts
     type: qt
+language_mapping:
+  - crowdin_language_id: es-ES
+    custom_code: es
