@@ -6,17 +6,17 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="76"/>
       <source>Set Up Transfer Rule Categories &amp; Attributes</source>
-      <translation type="unfinished">Set Up Transfer Rule Categories &amp; Attributes</translation>
+      <translation>Transferregeln-Kategorien und -Attribute einrichten</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="77"/>
       <source>Overwrite existing inflection feature attributes</source>
-      <translation type="unfinished">Overwrite existing inflection feature attributes</translation>
+      <translation>Vorhandene Flexionsmerkmalsattribute überschreiben</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="78"/>
       <source>Populate inflection features as attributes</source>
-      <translation type="unfinished">Populate inflection features as attributes</translation>
+      <translation>Flexionsmerkmale als Attribute ausfüllen</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="79"/>
@@ -26,32 +26,32 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="80"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Abbrechen</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="81"/>
       <source>Overwrite existing inflection class attributes</source>
-      <translation type="unfinished">Overwrite existing inflection class attributes</translation>
+      <translation>Vorhandene Flexionsklassenattribute überschreiben</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="82"/>
       <source>Populate inflection classes as attributes</source>
-      <translation type="unfinished">Populate inflection classes as attributes</translation>
+      <translation>Flexionsklassen als Attribute ausfüllen</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="83"/>
       <source>Populate template slots as attributes</source>
-      <translation type="unfinished">Populate template slots as attributes</translation>
+      <translation>Vorlagenslots als Attribute ausfüllen</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="84"/>
       <source>Overwrite existing template slot attributes</source>
-      <translation type="unfinished">Overwrite existing template slot attributes</translation>
+      <translation>Vorhandene Vorlagenslotattribute überschreiben</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="85"/>
       <source>Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten.</source>
-      <translation type="unfinished">Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten.</translation>
+      <translation>Quellkategorien und das Attribut a_gram_cat werden automatisch ausgefüllt. Vorhandene Quellkategorien werden nicht überschrieben.</translation>
     </message>
   </context>
 </TS>
