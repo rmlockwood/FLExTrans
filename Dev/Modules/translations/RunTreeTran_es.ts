@@ -6,12 +6,12 @@
     <message>
       <location filename="../RunTreeTran.py" line="90"/>
       <source>Run TreeTran</source>
-      <translation type="unfinished">Run TreeTran</translation>
+      <translation>Ejecutar TreeTran</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="93"/>
       <source>Run the TreeTran Tool.</source>
-      <translation type="unfinished">Run the TreeTran Tool.</translation>
+      <translation>Ejecutar la Herramienta TreeTran.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="95"/>
@@ -22,38 +22,38 @@ file. The TreeTran Rules file is in the Output folder also. This module assumes
 that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
 button is used. </source>
-      <translation type="unfinished">This module will run the TreeTran program to modify a syntax tree. The resulting
-file is placed in the Output folder which is then used by the {extractSourceTextModule}
-module to modify the word order of the sentence according to the TreeTran rules
-file. The TreeTran Rules file is in the Output folder also. This module assumes
-that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
-This file gets created by the PC-PATR with FLEx program when the tree toolbar
-button is used. </translation>
+      <translation>Este módulo ejecutará el programa TreeTran para modificar un árbol sintáctico. El archivo
+resultante se coloca en la carpeta de Salida que luego es utilizada por el módulo
+{extractSourceTextModule} para modificar el orden de palabras de la oración según el archivo
+de reglas TreeTran. El archivo de Reglas TreeTran también está en la carpeta de Salida.
+Este módulo asume que el archivo invocador Invoker.xml existe en la carpeta temporal
+del sistema (%TEMP%). Este archivo es creado por el programa PC-PATR con FLEx cuando
+se usa el botón de la barra de herramientas del árbol. </translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="121"/>
       <source>The Tree Tran Result File has invalid XML content.</source>
-      <translation type="unfinished">The Tree Tran Result File has invalid XML content.</translation>
+      <translation>El Archivo de Resultado TreeTran tiene contenido XML inválido.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="212"/>
       <source>You have not specified a value in the configuration file for {file}.</source>
-      <translation type="unfinished">You have not specified a value in the configuration file for {file}.</translation>
+      <translation>No ha especificado un valor en el archivo de configuración para {file}.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="206"/>
       <source>There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?</source>
-      <translation type="unfinished">There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?</translation>
+      <translation>Hay un problema con el archivo de entrada TreeTran: {filteredFile}. ¿Se ha ejecutado correctamente el programa PC-PATR con FLEx?</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="221"/>
       <source>Can't find the TreeTran rules file: {rulesFilePath}.</source>
-      <translation type="unfinished">Can't find the TreeTran rules file: {rulesFilePath}.</translation>
+      <translation>No se puede encontrar el archivo de reglas TreeTran: {rulesFilePath}.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="227"/>
       <source>{num} sentence(s) processed.</source>
-      <translation type="unfinished">{num} sentence(s) processed.</translation>
+      <translation>{num} oración(es) procesada(s).</translation>
     </message>
   </context>
 </TS>
