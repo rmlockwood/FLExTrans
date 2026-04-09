@@ -6,22 +6,22 @@
     <message>
       <location filename="../EndTestbed.py" line="73"/>
       <source>End Testbed</source>
-      <translation type="unfinished">End Testbed</translation>
+      <translation>End banc d'essai</translation>
     </message>
     <message>
       <location filename="../EndTestbed.py" line="78"/>
       <source>Conclude a testbed log result.</source>
-      <translation type="unfinished">Conclude a testbed log result.</translation>
+      <translation>Conclure un résultat de journal du banc d'essai.</translation>
     </message>
     <message>
       <location filename="../EndTestbed.py" line="114"/>
       <source>There is a problem with the Synthesis Output File path: {outFileVal}. Please check the configuration file setting.</source>
-      <translation type="unfinished">There is a problem with the Synthesis Output File path: {outFileVal}. Please check the configuration file setting.</translation>
+      <translation>Il y a un problème avec le chemin du fichier de sortie de synthèse : {outFileVal}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
       <location filename="../EndTestbed.py" line="132"/>
       <source>{count} results extracted.</source>
-      <translation type="unfinished">{count} results extracted.</translation>
+      <translation>{count} résultats extraits.</translation>
     </message>
   </context>
 </TS>
