@@ -5,47 +5,47 @@
     <message>
       <location filename="../OpenFLExProjects.py" line="85"/>
       <source>Open Multiple FLEx Projects</source>
-      <translation type="unfinished">Open Multiple FLEx Projects</translation>
+      <translation>Mehrere FLEx-Projekte öffnen</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="67"/>
       <source>Select one or more FLEx project and automatically open them one by one.</source>
-      <translation type="unfinished">Select one or more FLEx project and automatically open them one by one.</translation>
+      <translation>Wählen Sie ein oder mehrere FLEx-Projekte aus und öffnen Sie sie nacheinander automatisch.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="69"/>
       <source>Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.</source>
-      <translation type="unfinished">Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.</translation>
+      <translation>Wählen Sie ein oder mehrere FLEx-Projekte aus und öffnen Sie sie nacheinander automatisch. Das Tool wartet, bis ein Projekt geöffnet ist, bevor es das nächste öffnet.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="94"/>
       <source>FLEx project names (multi-select):</source>
-      <translation type="unfinished">FLEx project names (multi-select):</translation>
+      <translation>FLEx-Projektnamen (Mehrfachauswahl):</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="104"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="105"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Abbrechen</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="165"/>
       <source>The {proj} project is already open. Skipping.</source>
-      <translation type="unfinished">The {proj} project is already open. Skipping.</translation>
+      <translation>Das Projekt {proj} ist bereits geöffnet. Überspringen.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="177"/>
       <source>Couldn't detect the {proj} project as open after {secs} seconds. Skipping.</source>
-      <translation type="unfinished">Couldn't detect the {proj} project as open after {secs} seconds. Skipping.</translation>
+      <translation>Das Projekt {proj} konnte nach {secs} Sekunden nicht als geöffnet erkannt werden. Überspringen.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="181"/>
       <source>The {proj} project took about {secs} seconds to open.</source>
-      <translation type="unfinished">The {proj} project took about {secs} seconds to open.</translation>
+      <translation>Das Projekt {proj} benötigte etwa {secs} Sekunden zum Öffnen.</translation>
     </message>
   </context>
 </TS>
