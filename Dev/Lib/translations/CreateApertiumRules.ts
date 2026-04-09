@@ -4,6 +4,11 @@
 <context>
     <name>CreateApertiumRules</name>
     <message>
+        <location filename="../CreateApertiumRules.py" line="582"/>
+        <source>List values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../CreateApertiumRules.py" line="446"/>
         <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
         <translation>Impossible de trouver des balises pour la caractéristique {label} de la catégorie grammaticale {category}.</translation>
