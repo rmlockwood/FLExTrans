@@ -5,6 +5,11 @@
     <name>ChapterSelection</name>
     <message>
         <location filename="../ChapterSelection.py" line="451"/>
+        <source>Invalid Theology</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ChapterSelection.py" line="451"/>
         <source>Invalid Book Error</source>
         <translation>Erreur de livre invalide</translation>
     </message>
