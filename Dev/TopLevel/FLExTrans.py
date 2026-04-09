@@ -24,6 +24,8 @@
 
 import ctypes
 ctypes.windll.shcore.SetProcessDpiAwareness(0)
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebChannel import QWebChannel
 
 from flextoolslib import FTConfig, main
 
