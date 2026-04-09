@@ -6,62 +6,62 @@
     <message>
       <location filename="../ReplacementEditorWindow.py" line="108"/>
       <source>Replacement Dictionary Editor</source>
-      <translation type="unfinished">Replacement Dictionary Editor</translation>
+      <translation>Editor de diccionario de reemplazo</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="110"/>
       <source>Source Lemma</source>
-      <translation type="unfinished">Source Lemma</translation>
+      <translation>Lema fuente</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="120"/>
       <source>Gramm. Cat.</source>
-      <translation type="unfinished">Gramm. Cat.</translation>
+      <translation>Cat. gram.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="122"/>
       <source>Features/Classes</source>
-      <translation type="unfinished">Features/Classes</translation>
+      <translation>Características/Clases</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="124"/>
       <source>Affixes</source>
-      <translation type="unfinished">Affixes</translation>
+      <translation>Afijos</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="118"/>
       <source>Target Lemma</source>
-      <translation type="unfinished">Target Lemma</translation>
+      <translation>Lema objetivo</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="126"/>
       <source>Comment</source>
-      <translation type="unfinished">Comment</translation>
+      <translation>Comentario</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="127"/>
       <source>Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</source>
-      <translation type="unfinished">Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</translation>
+      <translation>Separe múltiples características/clases y/o afijos con un punto. Por ejemplo, f.sg para femenino singular.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="128"/>
       <source>Add Row</source>
-      <translation type="unfinished">Add Row</translation>
+      <translation>Agregar fila</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="129"/>
       <source>Delete Selected Rows</source>
-      <translation type="unfinished">Delete Selected Rows</translation>
+      <translation>Eliminar filas seleccionadas</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="130"/>
       <source>Save</source>
-      <translation type="unfinished">Save</translation>
+      <translation>Guardar</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="131"/>
       <source>Close</source>
-      <translation type="unfinished">Close</translation>
+      <translation>Cerrar</translation>
     </message>
   </context>
 </TS>
