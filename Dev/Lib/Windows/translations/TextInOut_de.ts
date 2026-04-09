@@ -71,17 +71,17 @@
     <message>
       <location filename="../TextInOut.py" line="421"/>
       <source>Current project automatically included</source>
-      <translation type="unfinished">Current project automatically included</translation>
+      <translation>Aktuelles Projekt automatisch integriert</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="422"/>
       <source>Cluster Projects to Apply to</source>
-      <translation type="unfinished">Cluster Projects to Apply to</translation>
+      <translation>Cluster-Projekte, auf die angewendet werden soll</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="423"/>
       <source>Rules</source>
-      <translation type="unfinished">Rules</translation>
+      <translation>Regeln</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="424"/>
@@ -175,7 +175,7 @@ Schritte mit Leerzeichen oder Kommas trennen.</translation>
     <message>
       <location filename="../TextInOut.py" line="443"/>
       <source>dummy</source>
-      <translation type="unfinished">dummy</translation>
+      <translation>dummy</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="444"/>
@@ -193,7 +193,7 @@ Schritte mit Leerzeichen oder Kommas trennen.</translation>
 Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
 
 </source>
-      <translation type="unfinished">Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here
+      <translation>Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here
 Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
 
 </translation>
@@ -205,11 +205,7 @@ Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation/>
     </message>
   </context>
 </TS>
