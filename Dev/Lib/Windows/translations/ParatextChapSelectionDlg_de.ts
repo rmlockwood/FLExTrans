@@ -56,7 +56,7 @@
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="134"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="135"/>
@@ -87,8 +87,8 @@
       <location filename="../ParatextChapSelectionDlg.py" line="140"/>
       <source>Overwrite a text that has the same name. For example,
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
-      <translation type="unfinished">Overwrite a text that has the same name. For example,
-if JHN 01 already exists, it will delete it and create JHN 01 again.</translation>
+      <translation>Einen Text mit demselben Namen überschreiben. Zum Beispiel, 
+wenn JHN 01 bereits existiert, wird er gelöscht und JHN 01 wird erneut erstellt.</translation>
     </message>
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="142"/>
