@@ -6,27 +6,27 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="147"/>
       <source>Source/Target Viewer</source>
-      <translation type="unfinished">Source/Target Viewer</translation>
+      <translation>Quell-/Zielviewer</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="148"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Schriftart</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="149"/>
       <source>Source</source>
-      <translation type="unfinished">Source</translation>
+      <translation>Quelle</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="150"/>
       <source>Target</source>
-      <translation type="unfinished">Target</translation>
+      <translation>Ziel</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="151"/>
       <source>Right to Left</source>
-      <translation type="unfinished">Right to Left</translation>
+      <translation>Rechts nach Links</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="152"/>
