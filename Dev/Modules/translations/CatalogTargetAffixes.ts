@@ -17,7 +17,7 @@
         <location filename="../CatalogTargetAffixes.py" line="101"/>
         <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
-NOTE: messages in the output window will show the SOURCE project
+Note: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.
 The catalog will be created in the file specified by the Target Affix Gloss List File setting.
 This is typically called target_affix_glosses.txt and is usually in the Build folder.</source>
