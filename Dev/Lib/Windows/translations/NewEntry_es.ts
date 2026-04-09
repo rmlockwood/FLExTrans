@@ -6,27 +6,27 @@
     <message>
       <location filename="../NewEntry.py" line="82"/>
       <source>Add New Target Entry</source>
-      <translation type="unfinished">Add New Target Entry</translation>
+      <translation>Agregar nueva entrada objetivo</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="83"/>
       <source>Lexeme Form</source>
-      <translation type="unfinished">Lexeme Form</translation>
+      <translation>Forma del lexema</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="84"/>
       <source>Morpheme Type</source>
-      <translation type="unfinished">Morpheme Type</translation>
+      <translation>Tipo de morfema</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="85"/>
       <source>Grammatical Category</source>
-      <translation type="unfinished">Grammatical Category</translation>
+      <translation>Categoría gramatical</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="92"/>
       <source>Add an entry to the target lexicon.</source>
-      <translation type="unfinished">Add an entry to the target lexicon.</translation>
+      <translation>Agregar una entrada al léxico objetivo.</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="88"/>
@@ -36,17 +36,17 @@
     <message>
       <location filename="../NewEntry.py" line="90"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Cancelar</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="91"/>
       <source>Gloss</source>
-      <translation type="unfinished">Gloss</translation>
+      <translation>Glosa</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="93"/>
       <source>Cluster Projects to Apply to</source>
-      <translation type="unfinished">Cluster Projects to Apply to</translation>
+      <translation>Proyectos de clúster a los que aplicar</translation>
     </message>
   </context>
 </TS>
