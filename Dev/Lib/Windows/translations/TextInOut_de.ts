@@ -6,67 +6,67 @@
     <message>
       <location filename="../TextInOut.py" line="408"/>
       <source>Text Out Rules</source>
-      <translation type="unfinished">Text Out Rules</translation>
+      <translation>Textausgaberegeln</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="409"/>
       <source>Search for:</source>
-      <translation type="unfinished">Search for:</translation>
+      <translation>Suchen nach:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="410"/>
       <source>Replace with:</source>
-      <translation type="unfinished">Replace with:</translation>
+      <translation>Ersetzen durch:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="411"/>
       <source>Comment:</source>
-      <translation type="unfinished">Comment:</translation>
+      <translation>Kommentar:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="412"/>
       <source>Treat the search and replace text as regular expressions.</source>
-      <translation type="unfinished">Treat the search and replace text as regular expressions.</translation>
+      <translation>Den Such- und Ersetzungstext als reguläre Ausdrücke behandeln.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="413"/>
       <source>Regular Expression</source>
-      <translation type="unfinished">Regular Expression</translation>
+      <translation>Regulärer Ausdruck</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="414"/>
       <source>Inactive</source>
-      <translation type="unfinished">Inactive</translation>
+      <translation>Inaktiv</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="415"/>
       <source>Add search and replace text as a new rule.</source>
-      <translation type="unfinished">Add search and replace text as a new rule.</translation>
+      <translation>Such- und Ersetzungstext als neue Regel hinzufügen.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="416"/>
       <source>Add</source>
-      <translation type="unfinished">Add</translation>
+      <translation>Hinzufügen</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="417"/>
       <source>Update the rule selected below with the above search and replace text.</source>
-      <translation type="unfinished">Update the rule selected below with the above search and replace text.</translation>
+      <translation>Die unten ausgewählte Regel mit dem obigen Such- und Ersetzungstext aktualisieren.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="418"/>
       <source>Update</source>
-      <translation type="unfinished">Update</translation>
+      <translation>Aktualisieren</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="419"/>
       <source>Delete the below selected rule.</source>
-      <translation type="unfinished">Delete the below selected rule.</translation>
+      <translation>Die unten ausgewählte Regel löschen.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="420"/>
       <source>Delete</source>
-      <translation type="unfinished">Delete</translation>
+      <translation>Löschen</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="421"/>
@@ -86,91 +86,91 @@
     <message>
       <location filename="../TextInOut.py" line="424"/>
       <source>Move the selected rule up.</source>
-      <translation type="unfinished">Move the selected rule up.</translation>
+      <translation>Die ausgewählte Regel nach oben verschieben.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="425"/>
       <source>Move the selected rule down.</source>
-      <translation type="unfinished">Move the selected rule down.</translation>
+      <translation>Die ausgewählte Regel nach unten verschieben.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="426"/>
       <source>This tool will run before other rules.</source>
-      <translation type="unfinished">This tool will run before other rules.</translation>
+      <translation>Dieses Tool wird vor anderen Regeln ausgeführt.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="427"/>
       <source>Steps:</source>
-      <translation type="unfinished">Steps:</translation>
+      <translation>Schritte:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="428"/>
       <source>Default</source>
-      <translation type="unfinished">Default</translation>
+      <translation>Stand.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="429"/>
       <source>All</source>
-      <translation type="unfinished">All</translation>
+      <translation>Alle</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="430"/>
       <source>None</source>
-      <translation type="unfinished">None</translation>
+      <translation>Keine</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="431"/>
       <source>Lang:</source>
-      <translation type="unfinished">Lang:</translation>
+      <translation>Sprache:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="432"/>
       <source>3-letter ISO 639-3 code</source>
-      <translation type="unfinished">3-letter ISO 639-3 code</translation>
+      <translation>3-Buchstaben-ISO-639-3-Code</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="433"/>
       <source>code</source>
-      <translation type="unfinished">code</translation>
+      <translation>Code</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="434"/>
       <source>Add:</source>
-      <translation type="unfinished">Add:</translation>
+      <translation>Hinzufügen:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="435"/>
       <source>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-      <translation type="unfinished">Steps to add to the base number of steps selected above.
-Separate steps with spaces or commas.</translation>
+      <translation>Schritte, die zur Basisanzahl der oben ausgewählten Schritte hinzugefügt werden sollen.
+Schritte mit Leerzeichen oder Kommas trennen.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="437"/>
       <source>Skip:</source>
-      <translation type="unfinished">Skip:</translation>
+      <translation>Überspringen:</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="438"/>
       <source>Steps to skip from the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-      <translation type="unfinished">Steps to skip from the base number of steps selected above.
-Separate steps with spaces or commas.</translation>
+      <translation>Schritte, die von der Basisanzahl der oben ausgewählten Schritte übersprungen werden sollen.
+Schritte mit Leerzeichen oder Kommas trennen.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="440"/>
       <source>Test input</source>
-      <translation type="unfinished">Test input</translation>
+      <translation>Testeingabe</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="441"/>
       <source>Test the checked rules above with the input text.</source>
-      <translation type="unfinished">Test the checked rules above with the input text.</translation>
+      <translation>Die oben ausgewählten Regeln mit dem Eingabetext testen.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="442"/>
       <source>Test</source>
-      <translation type="unfinished">Test</translation>
+      <translation>Testen</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="443"/>
@@ -180,12 +180,12 @@ Separate steps with spaces or commas.</translation>
     <message>
       <location filename="../TextInOut.py" line="444"/>
       <source>Test output</source>
-      <translation type="unfinished">Test output</translation>
+      <translation>Testausgabe</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="445"/>
       <source>Close</source>
-      <translation type="unfinished">Close</translation>
+      <translation>Schließen</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="446"/>
