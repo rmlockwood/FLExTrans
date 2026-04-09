@@ -37,6 +37,10 @@ for %%D in (%directories%) do (
 			
 				pylupdate5 -verbose -noobsolete %%F -ts translations\!filename!_%%L.ts
 				lrelease translations\!filename!_%%L.ts -qm %destination%\translations\!filename!_%%L.qm
+				
+				if "%%L"=="fr" (
+					copy translations\!filename!_%%L.ts translations\!filename!.ts
+				)
 			)
         )
 
