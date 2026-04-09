@@ -1,622 +1,627 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="fr" sourcelanguage="en">
+  <context>
     <name>ChapterSelection</name>
     <message>
-        <location filename="../ChapterSelection.py" line="451"/>
-        <source>Invalid Book Error</source>
-        <translation>Erreur de livre invalide</translation>
+      <location filename="../ChapterSelection.py" line="451"/>
+      <source>Invalid Theology</source>
+      <translation type="unfinished">Invalid Theology</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="451"/>
-        <source>The book abbreviation: {bookAbbrev} is invalid.</source>
-        <translation>L'abréviation du livre : {bookAbbrev} est invalide.</translation>
+      <location filename="../ChapterSelection.py" line="451"/>
+      <source>Invalid Book Error</source>
+      <translation type="unfinished">Invalid Book Error</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="465"/>
-        <source>Registry Error</source>
-        <translation>Erreur de registre</translation>
+      <location filename="../ChapterSelection.py" line="451"/>
+      <source>The book abbreviation: {bookAbbrev} is invalid.</source>
+      <translation type="unfinished">The book abbreviation: {bookAbbrev} is invalid.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="465"/>
-        <source>Could not find the Paratext data folder in the registry.</source>
-        <translation>Impossible de trouver le dossier de données Paratext dans le registre.</translation>
+      <location filename="../ChapterSelection.py" line="465"/>
+      <source>Registry Error</source>
+      <translation type="unfinished">Registry Error</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="502"/>
-        <source>Not Found Error</source>
-        <translation>Erreur non trouvée</translation>
+      <location filename="../ChapterSelection.py" line="465"/>
+      <source>Could not find the Paratext data folder in the registry.</source>
+      <translation type="unfinished">Could not find the Paratext data folder in the registry.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="471"/>
-        <source>Could not find the Paratext path: {paratextPath}.</source>
-        <translation>Impossible de trouver le chemin Paratext : {paratextPath}.</translation>
+      <location filename="../ChapterSelection.py" line="502"/>
+      <source>Not Found Error</source>
+      <translation type="unfinished">Not Found Error</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="486"/>
-        <source>Could not find that project at: {projPath}.</source>
-        <translation>Impossible de trouver ce projet à : {projPath}.</translation>
+      <location filename="../ChapterSelection.py" line="471"/>
+      <source>Could not find the Paratext path: {paratextPath}.</source>
+      <translation type="unfinished">Could not find the Paratext path: {paratextPath}.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="502"/>
-        <source>Could not find that book file: {bookPath}.</source>
-        <translation>Impossible de trouver ce fichier de livre : {bookPath}.</translation>
+      <location filename="../ChapterSelection.py" line="486"/>
+      <source>Could not find that project at: {projPath}.</source>
+      <translation type="unfinished">Could not find that project at: {projPath}.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="596"/>
-        <source>No chapters found in the text.</source>
-        <translation>Aucun chapitre trouvé dans le texte.</translation>
+      <location filename="../ChapterSelection.py" line="502"/>
+      <source>Could not find that book file: {bookPath}.</source>
+      <translation type="unfinished">Could not find that book file: {bookPath}.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="613"/>
-        <source>Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</source>
-        <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} de {bookName} dans le projet {projAbbrev} ?</translation>
+      <location filename="../ChapterSelection.py" line="596"/>
+      <source>No chapters found in the text.</source>
+      <translation type="unfinished">No chapters found in the text.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="614"/>
-        <source>Overwrite chapters</source>
-        <translation>Écraser les chapitres</translation>
+      <location filename="../ChapterSelection.py" line="613"/>
+      <source>Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</source>
+      <translation type="unfinished">Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="620"/>
-        <source>Do not show this message again.</source>
-        <translation>Ne plus afficher ce message.</translation>
+      <location filename="../ChapterSelection.py" line="614"/>
+      <source>Overwrite chapters</source>
+      <translation type="unfinished">Overwrite chapters</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="633"/>
-        <source>Export cancelled.</source>
-        <translation>Exportation annulée.</translation>
+      <location filename="../ChapterSelection.py" line="620"/>
+      <source>Do not show this message again.</source>
+      <translation type="unfinished">Do not show this message again.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="640"/>
-        <source>Could not find the book file: {bookPath}</source>
-        <translation>Impossible de trouver le fichier de livre : {bookPath}</translation>
+      <location filename="../ChapterSelection.py" line="633"/>
+      <source>Export cancelled.</source>
+      <translation type="unfinished">Export cancelled.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="722"/>
-        <source>{chapStr} {digitsStr} of {bookName} exported to the {projAbbrev} project.</source>
-        <translation>{chapStr} {digitsStr} de {bookName} exportés vers le projet {projAbbrev}.</translation>
+      <location filename="../ChapterSelection.py" line="640"/>
+      <source>Could not find the book file: {bookPath}</source>
+      <translation type="unfinished">Could not find the book file: {bookPath}</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="734"/>
-        <source>Genesis</source>
-        <translation>Genèse</translation>
+      <location filename="../ChapterSelection.py" line="722"/>
+      <source>{chapStr} {digitsStr} of {bookName} exported to the {projAbbrev} project.</source>
+      <translation type="unfinished">{chapStr} {digitsStr} of {bookName} exported to the {projAbbrev} project.</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="735"/>
-        <source>Exodus</source>
-        <translation>Exode</translation>
+      <location filename="../ChapterSelection.py" line="734"/>
+      <source>Genesis</source>
+      <translation type="unfinished">Genesis</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="736"/>
-        <source>Leviticus</source>
-        <translation>Lévitique</translation>
+      <location filename="../ChapterSelection.py" line="735"/>
+      <source>Exodus</source>
+      <translation type="unfinished">Exodus</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="737"/>
-        <source>Numbers</source>
-        <translation>Nombres</translation>
+      <location filename="../ChapterSelection.py" line="736"/>
+      <source>Leviticus</source>
+      <translation type="unfinished">Leviticus</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="738"/>
-        <source>Deuteronomy</source>
-        <translation>Deutéronome</translation>
+      <location filename="../ChapterSelection.py" line="737"/>
+      <source>Numbers</source>
+      <translation type="unfinished">Numbers</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="739"/>
-        <source>Joshua</source>
-        <translation>Josué</translation>
+      <location filename="../ChapterSelection.py" line="738"/>
+      <source>Deuteronomy</source>
+      <translation type="unfinished">Deuteronomy</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="740"/>
-        <source>Judges</source>
-        <translation>Juges</translation>
+      <location filename="../ChapterSelection.py" line="739"/>
+      <source>Joshua</source>
+      <translation type="unfinished">Joshua</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="741"/>
-        <source>Ruth</source>
-        <translation>Ruth</translation>
+      <location filename="../ChapterSelection.py" line="740"/>
+      <source>Judges</source>
+      <translation type="unfinished">Judges</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="742"/>
-        <source>1 Samuel</source>
-        <translation>1 Samuel</translation>
+      <location filename="../ChapterSelection.py" line="741"/>
+      <source>Ruth</source>
+      <translation type="unfinished">Ruth</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="743"/>
-        <source>2 Samuel</source>
-        <translation>2 Samuel</translation>
+      <location filename="../ChapterSelection.py" line="742"/>
+      <source>1 Samuel</source>
+      <translation type="unfinished">1 Samuel</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="744"/>
-        <source>1 Kings</source>
-        <translation>1 Rois</translation>
+      <location filename="../ChapterSelection.py" line="743"/>
+      <source>2 Samuel</source>
+      <translation type="unfinished">2 Samuel</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="745"/>
-        <source>2 Kings</source>
-        <translation>2 Rois</translation>
+      <location filename="../ChapterSelection.py" line="744"/>
+      <source>1 Kings</source>
+      <translation type="unfinished">1 Kings</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="746"/>
-        <source>1 Chronicles</source>
-        <translation>1 Chroniques</translation>
+      <location filename="../ChapterSelection.py" line="745"/>
+      <source>2 Kings</source>
+      <translation type="unfinished">2 Kings</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="747"/>
-        <source>2 Chronicles</source>
-        <translation>2 Chroniques</translation>
+      <location filename="../ChapterSelection.py" line="746"/>
+      <source>1 Chronicles</source>
+      <translation type="unfinished">1 Chronicles</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="748"/>
-        <source>Ezra</source>
-        <translation>Esdras</translation>
+      <location filename="../ChapterSelection.py" line="747"/>
+      <source>2 Chronicles</source>
+      <translation type="unfinished">2 Chronicles</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="749"/>
-        <source>Nehemiah</source>
-        <translation>Néhémie</translation>
+      <location filename="../ChapterSelection.py" line="748"/>
+      <source>Ezra</source>
+      <translation type="unfinished">Ezra</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="750"/>
-        <source>Esther</source>
-        <translation>Esther</translation>
+      <location filename="../ChapterSelection.py" line="749"/>
+      <source>Nehemiah</source>
+      <translation type="unfinished">Nehemiah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="751"/>
-        <source>Job</source>
-        <translation>Job</translation>
+      <location filename="../ChapterSelection.py" line="750"/>
+      <source>Esther</source>
+      <translation type="unfinished">Esther</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="752"/>
-        <source>Psalms</source>
-        <translation>Psaumes</translation>
+      <location filename="../ChapterSelection.py" line="751"/>
+      <source>Job</source>
+      <translation type="unfinished">Job</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="753"/>
-        <source>Proverbs</source>
-        <translation>Proverbes</translation>
+      <location filename="../ChapterSelection.py" line="752"/>
+      <source>Psalms</source>
+      <translation type="unfinished">Psalms</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="754"/>
-        <source>Ecclesiastes</source>
-        <translation>Ecclésiaste</translation>
+      <location filename="../ChapterSelection.py" line="753"/>
+      <source>Proverbs</source>
+      <translation type="unfinished">Proverbs</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="755"/>
-        <source>Song of Solomon</source>
-        <translation>Cantique des Cantiques</translation>
+      <location filename="../ChapterSelection.py" line="754"/>
+      <source>Ecclesiastes</source>
+      <translation type="unfinished">Ecclesiastes</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="756"/>
-        <source>Isaiah</source>
-        <translation>Ésaïe</translation>
+      <location filename="../ChapterSelection.py" line="755"/>
+      <source>Song of Solomon</source>
+      <translation type="unfinished">Song of Solomon</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="757"/>
-        <source>Jeremiah</source>
-        <translation>Jérémie</translation>
+      <location filename="../ChapterSelection.py" line="756"/>
+      <source>Isaiah</source>
+      <translation type="unfinished">Isaiah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="758"/>
-        <source>Lamentations</source>
-        <translation>Lamentations</translation>
+      <location filename="../ChapterSelection.py" line="757"/>
+      <source>Jeremiah</source>
+      <translation type="unfinished">Jeremiah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="759"/>
-        <source>Ezekiel</source>
-        <translation>Ézéchiel</translation>
+      <location filename="../ChapterSelection.py" line="758"/>
+      <source>Lamentations</source>
+      <translation type="unfinished">Lamentations</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="760"/>
-        <source>Daniel</source>
-        <translation>Daniel</translation>
+      <location filename="../ChapterSelection.py" line="759"/>
+      <source>Ezekiel</source>
+      <translation type="unfinished">Ezekiel</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="761"/>
-        <source>Hosea</source>
-        <translation>Osée</translation>
+      <location filename="../ChapterSelection.py" line="760"/>
+      <source>Daniel</source>
+      <translation type="unfinished">Daniel</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="762"/>
-        <source>Joel</source>
-        <translation>Joël</translation>
+      <location filename="../ChapterSelection.py" line="761"/>
+      <source>Hosea</source>
+      <translation type="unfinished">Hosea</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="763"/>
-        <source>Amos</source>
-        <translation>Amos</translation>
+      <location filename="../ChapterSelection.py" line="762"/>
+      <source>Joel</source>
+      <translation type="unfinished">Joel</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="764"/>
-        <source>Obadiah</source>
-        <translation>Abdias</translation>
+      <location filename="../ChapterSelection.py" line="763"/>
+      <source>Amos</source>
+      <translation type="unfinished">Amos</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="765"/>
-        <source>Jonah</source>
-        <translation>Jonas</translation>
+      <location filename="../ChapterSelection.py" line="764"/>
+      <source>Obadiah</source>
+      <translation type="unfinished">Obadiah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="766"/>
-        <source>Micah</source>
-        <translation>Michée</translation>
+      <location filename="../ChapterSelection.py" line="765"/>
+      <source>Jonah</source>
+      <translation type="unfinished">Jonah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="767"/>
-        <source>Nahum</source>
-        <translation>Nahum</translation>
+      <location filename="../ChapterSelection.py" line="766"/>
+      <source>Micah</source>
+      <translation type="unfinished">Micah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="768"/>
-        <source>Habakkuk</source>
-        <translation>Habacuc</translation>
+      <location filename="../ChapterSelection.py" line="767"/>
+      <source>Nahum</source>
+      <translation type="unfinished">Nahum</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="769"/>
-        <source>Zephaniah</source>
-        <translation>Sophonie</translation>
+      <location filename="../ChapterSelection.py" line="768"/>
+      <source>Habakkuk</source>
+      <translation type="unfinished">Habakkuk</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="770"/>
-        <source>Haggai</source>
-        <translation>Aggée</translation>
+      <location filename="../ChapterSelection.py" line="769"/>
+      <source>Zephaniah</source>
+      <translation type="unfinished">Zephaniah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="771"/>
-        <source>Zechariah</source>
-        <translation>Zacharie</translation>
+      <location filename="../ChapterSelection.py" line="770"/>
+      <source>Haggai</source>
+      <translation type="unfinished">Haggai</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="772"/>
-        <source>Malachi</source>
-        <translation>Malachie</translation>
+      <location filename="../ChapterSelection.py" line="771"/>
+      <source>Zechariah</source>
+      <translation type="unfinished">Zechariah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="773"/>
-        <source>Matthew</source>
-        <translation>Matthieu</translation>
+      <location filename="../ChapterSelection.py" line="772"/>
+      <source>Malachi</source>
+      <translation type="unfinished">Malachi</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="774"/>
-        <source>Mark</source>
-        <translation>Marc</translation>
+      <location filename="../ChapterSelection.py" line="773"/>
+      <source>Matthew</source>
+      <translation type="unfinished">Matthew</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="775"/>
-        <source>Luke</source>
-        <translation>Luc</translation>
+      <location filename="../ChapterSelection.py" line="774"/>
+      <source>Mark</source>
+      <translation type="unfinished">Mark</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="776"/>
-        <source>John</source>
-        <translation>Jean</translation>
+      <location filename="../ChapterSelection.py" line="775"/>
+      <source>Luke</source>
+      <translation type="unfinished">Luke</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="777"/>
-        <source>Acts</source>
-        <translation>Actes</translation>
+      <location filename="../ChapterSelection.py" line="776"/>
+      <source>John</source>
+      <translation type="unfinished">John</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="778"/>
-        <source>Romans</source>
-        <translation>Romains</translation>
+      <location filename="../ChapterSelection.py" line="777"/>
+      <source>Acts</source>
+      <translation type="unfinished">Acts</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="779"/>
-        <source>1 Corinthians</source>
-        <translation>1 Corinthiens</translation>
+      <location filename="../ChapterSelection.py" line="778"/>
+      <source>Romans</source>
+      <translation type="unfinished">Romans</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="780"/>
-        <source>2 Corinthians</source>
-        <translation>2 Corinthiens</translation>
+      <location filename="../ChapterSelection.py" line="779"/>
+      <source>1 Corinthians</source>
+      <translation type="unfinished">1 Corinthians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="781"/>
-        <source>Galatians</source>
-        <translation>Galates</translation>
+      <location filename="../ChapterSelection.py" line="780"/>
+      <source>2 Corinthians</source>
+      <translation type="unfinished">2 Corinthians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="782"/>
-        <source>Ephesians</source>
-        <translation>Éphésiens</translation>
+      <location filename="../ChapterSelection.py" line="781"/>
+      <source>Galatians</source>
+      <translation type="unfinished">Galatians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="783"/>
-        <source>Philippians</source>
-        <translation>Philippiens</translation>
+      <location filename="../ChapterSelection.py" line="782"/>
+      <source>Ephesians</source>
+      <translation type="unfinished">Ephesians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="784"/>
-        <source>Colossians</source>
-        <translation>Colossiens</translation>
+      <location filename="../ChapterSelection.py" line="783"/>
+      <source>Philippians</source>
+      <translation type="unfinished">Philippians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="785"/>
-        <source>1 Thessalonians</source>
-        <translation>1 Thessaloniciens</translation>
+      <location filename="../ChapterSelection.py" line="784"/>
+      <source>Colossians</source>
+      <translation type="unfinished">Colossians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="786"/>
-        <source>2 Thessalonians</source>
-        <translation>2 Thessaloniciens</translation>
+      <location filename="../ChapterSelection.py" line="785"/>
+      <source>1 Thessalonians</source>
+      <translation type="unfinished">1 Thessalonians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="787"/>
-        <source>1 Timothy</source>
-        <translation>1 Timothée</translation>
+      <location filename="../ChapterSelection.py" line="786"/>
+      <source>2 Thessalonians</source>
+      <translation type="unfinished">2 Thessalonians</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="788"/>
-        <source>2 Timothy</source>
-        <translation>2 Timothée</translation>
+      <location filename="../ChapterSelection.py" line="787"/>
+      <source>1 Timothy</source>
+      <translation type="unfinished">1 Timothy</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="789"/>
-        <source>Titus</source>
-        <translation>Tite</translation>
+      <location filename="../ChapterSelection.py" line="788"/>
+      <source>2 Timothy</source>
+      <translation type="unfinished">2 Timothy</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="790"/>
-        <source>Philemon</source>
-        <translation>Philémon</translation>
+      <location filename="../ChapterSelection.py" line="789"/>
+      <source>Titus</source>
+      <translation type="unfinished">Titus</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="791"/>
-        <source>Hebrews</source>
-        <translation>Hébreux</translation>
+      <location filename="../ChapterSelection.py" line="790"/>
+      <source>Philemon</source>
+      <translation type="unfinished">Philemon</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="792"/>
-        <source>James</source>
-        <translation>Jacques</translation>
+      <location filename="../ChapterSelection.py" line="791"/>
+      <source>Hebrews</source>
+      <translation type="unfinished">Hebrews</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="793"/>
-        <source>1 Peter</source>
-        <translation>1 Pierre</translation>
+      <location filename="../ChapterSelection.py" line="792"/>
+      <source>James</source>
+      <translation type="unfinished">James</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="794"/>
-        <source>2 Peter</source>
-        <translation>2 Pierre</translation>
+      <location filename="../ChapterSelection.py" line="793"/>
+      <source>1 Peter</source>
+      <translation type="unfinished">1 Peter</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="795"/>
-        <source>1 John</source>
-        <translation>1 Jean</translation>
+      <location filename="../ChapterSelection.py" line="794"/>
+      <source>2 Peter</source>
+      <translation type="unfinished">2 Peter</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="796"/>
-        <source>2 John</source>
-        <translation>2 Jean</translation>
+      <location filename="../ChapterSelection.py" line="795"/>
+      <source>1 John</source>
+      <translation type="unfinished">1 John</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="797"/>
-        <source>3 John</source>
-        <translation>3 Jean</translation>
+      <location filename="../ChapterSelection.py" line="796"/>
+      <source>2 John</source>
+      <translation type="unfinished">2 John</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="798"/>
-        <source>Jude</source>
-        <translation>Jude</translation>
+      <location filename="../ChapterSelection.py" line="797"/>
+      <source>3 John</source>
+      <translation type="unfinished">3 John</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="799"/>
-        <source>Revelation</source>
-        <translation>Apocalypse</translation>
+      <location filename="../ChapterSelection.py" line="798"/>
+      <source>Jude</source>
+      <translation type="unfinished">Jude</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="800"/>
-        <source>Tobit</source>
-        <translation>Tobie</translation>
+      <location filename="../ChapterSelection.py" line="799"/>
+      <source>Revelation</source>
+      <translation type="unfinished">Revelation</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="801"/>
-        <source>Judith</source>
-        <translation>Judith</translation>
+      <location filename="../ChapterSelection.py" line="800"/>
+      <source>Tobit</source>
+      <translation type="unfinished">Tobit</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="802"/>
-        <source>Esther Greek</source>
-        <translation>Esther grec</translation>
+      <location filename="../ChapterSelection.py" line="801"/>
+      <source>Judith</source>
+      <translation type="unfinished">Judith</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="803"/>
-        <source>Wisdom of Solomon</source>
-        <translation>Sagesse de Salomon</translation>
+      <location filename="../ChapterSelection.py" line="802"/>
+      <source>Esther Greek</source>
+      <translation type="unfinished">Esther Greek</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="804"/>
-        <source>Sirach</source>
-        <translation>Siracide</translation>
+      <location filename="../ChapterSelection.py" line="803"/>
+      <source>Wisdom of Solomon</source>
+      <translation type="unfinished">Wisdom of Solomon</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="805"/>
-        <source>Baruch</source>
-        <translation>Baruch</translation>
+      <location filename="../ChapterSelection.py" line="804"/>
+      <source>Sirach</source>
+      <translation type="unfinished">Sirach</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="806"/>
-        <source>Letter of Jeremiah</source>
-        <translation>Lettre de Jérémie</translation>
+      <location filename="../ChapterSelection.py" line="805"/>
+      <source>Baruch</source>
+      <translation type="unfinished">Baruch</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="807"/>
-        <source>Song of the 3 Young Men</source>
-        <translation>Cantique des trois jeunes gens</translation>
+      <location filename="../ChapterSelection.py" line="806"/>
+      <source>Letter of Jeremiah</source>
+      <translation type="unfinished">Letter of Jeremiah</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="808"/>
-        <source>Susanna</source>
-        <translation>Suzanne</translation>
+      <location filename="../ChapterSelection.py" line="807"/>
+      <source>Song of the 3 Young Men</source>
+      <translation type="unfinished">Song of the 3 Young Men</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="809"/>
-        <source>Bel and the Dragon</source>
-        <translation>Bel et le Dragon</translation>
+      <location filename="../ChapterSelection.py" line="808"/>
+      <source>Susanna</source>
+      <translation type="unfinished">Susanna</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="810"/>
-        <source>1 Maccabees</source>
-        <translation>1 Maccabées</translation>
+      <location filename="../ChapterSelection.py" line="809"/>
+      <source>Bel and the Dragon</source>
+      <translation type="unfinished">Bel and the Dragon</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="811"/>
-        <source>2 Maccabees</source>
-        <translation>2 Maccabées</translation>
+      <location filename="../ChapterSelection.py" line="810"/>
+      <source>1 Maccabees</source>
+      <translation type="unfinished">1 Maccabees</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="812"/>
-        <source>3 Maccabees</source>
-        <translation>3 Maccabées</translation>
+      <location filename="../ChapterSelection.py" line="811"/>
+      <source>2 Maccabees</source>
+      <translation type="unfinished">2 Maccabees</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="813"/>
-        <source>4 Maccabees</source>
-        <translation>4 Maccabées</translation>
+      <location filename="../ChapterSelection.py" line="812"/>
+      <source>3 Maccabees</source>
+      <translation type="unfinished">3 Maccabees</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="814"/>
-        <source>1 Esdras (Greek)</source>
-        <translation>1 Esdras (grec)</translation>
+      <location filename="../ChapterSelection.py" line="813"/>
+      <source>4 Maccabees</source>
+      <translation type="unfinished">4 Maccabees</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="815"/>
-        <source>2 Esdras (Latin)</source>
-        <translation>2 Esdras (latin)</translation>
+      <location filename="../ChapterSelection.py" line="814"/>
+      <source>1 Esdras (Greek)</source>
+      <translation type="unfinished">1 Esdras (Greek)</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="816"/>
-        <source>Prayer of Manasseh</source>
-        <translation>Prière de Manassé</translation>
+      <location filename="../ChapterSelection.py" line="815"/>
+      <source>2 Esdras (Latin)</source>
+      <translation type="unfinished">2 Esdras (Latin)</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="817"/>
-        <source>Psalm 151</source>
-        <translation>Psaume 151</translation>
+      <location filename="../ChapterSelection.py" line="816"/>
+      <source>Prayer of Manasseh</source>
+      <translation type="unfinished">Prayer of Manasseh</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="818"/>
-        <source>Odae/Odes</source>
-        <translation>Odes</translation>
+      <location filename="../ChapterSelection.py" line="817"/>
+      <source>Psalm 151</source>
+      <translation type="unfinished">Psalm 151</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="819"/>
-        <source>Psalms of Solomon</source>
-        <translation>Psaumes de Salomon</translation>
+      <location filename="../ChapterSelection.py" line="818"/>
+      <source>Odae/Odes</source>
+      <translation type="unfinished">Odae/Odes</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="820"/>
-        <source>Ezra Apocalypse</source>
-        <translation>Apocalypse d'Esdras</translation>
+      <location filename="../ChapterSelection.py" line="819"/>
+      <source>Psalms of Solomon</source>
+      <translation type="unfinished">Psalms of Solomon</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="821"/>
-        <source>5 Ezra</source>
-        <translation>5 Esdras</translation>
+      <location filename="../ChapterSelection.py" line="820"/>
+      <source>Ezra Apocalypse</source>
+      <translation type="unfinished">Ezra Apocalypse</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="822"/>
-        <source>6 Ezra</source>
-        <translation>6 Esdras</translation>
+      <location filename="../ChapterSelection.py" line="821"/>
+      <source>5 Ezra</source>
+      <translation type="unfinished">5 Ezra</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="823"/>
-        <source>Daniel Greek</source>
-        <translation>Daniel grec</translation>
+      <location filename="../ChapterSelection.py" line="822"/>
+      <source>6 Ezra</source>
+      <translation type="unfinished">6 Ezra</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="824"/>
-        <source>Psalms 152-155</source>
-        <translation>Psaumes 152-155</translation>
+      <location filename="../ChapterSelection.py" line="823"/>
+      <source>Daniel Greek</source>
+      <translation type="unfinished">Daniel Greek</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="825"/>
-        <source>2 Baruch (Apocalypse)</source>
-        <translation>2 Baruch (Apocalypse)</translation>
+      <location filename="../ChapterSelection.py" line="824"/>
+      <source>Psalms 152-155</source>
+      <translation type="unfinished">Psalms 152-155</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="826"/>
-        <source>Letter of Baruch</source>
-        <translation>Lettre de Baruch</translation>
+      <location filename="../ChapterSelection.py" line="825"/>
+      <source>2 Baruch (Apocalypse)</source>
+      <translation type="unfinished">2 Baruch (Apocalypse)</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="827"/>
-        <source>Jubilees</source>
-        <translation>Jubilés</translation>
+      <location filename="../ChapterSelection.py" line="826"/>
+      <source>Letter of Baruch</source>
+      <translation type="unfinished">Letter of Baruch</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="828"/>
-        <source>Enoch</source>
-        <translation>Hénoch</translation>
+      <location filename="../ChapterSelection.py" line="827"/>
+      <source>Jubilees</source>
+      <translation type="unfinished">Jubilees</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="829"/>
-        <source>1 Meqabyan/Mekabis</source>
-        <translation>1 Meqabyan/Mekabis</translation>
+      <location filename="../ChapterSelection.py" line="828"/>
+      <source>Enoch</source>
+      <translation type="unfinished">Enoch</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="830"/>
-        <source>Reproof</source>
-        <translation>Réprimande</translation>
+      <location filename="../ChapterSelection.py" line="829"/>
+      <source>1 Meqabyan/Mekabis</source>
+      <translation type="unfinished">1 Meqabyan/Mekabis</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="831"/>
-        <source>4 Baruch</source>
-        <translation>4 Baruch</translation>
+      <location filename="../ChapterSelection.py" line="830"/>
+      <source>Reproof</source>
+      <translation type="unfinished">Reproof</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="832"/>
-        <source>Letter to the Laodiceans</source>
-        <translation>Lettre aux Laodicéens</translation>
+      <location filename="../ChapterSelection.py" line="831"/>
+      <source>4 Baruch</source>
+      <translation type="unfinished">4 Baruch</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="833"/>
-        <source>Extra A</source>
-        <translation>Extra A</translation>
+      <location filename="../ChapterSelection.py" line="832"/>
+      <source>Letter to the Laodiceans</source>
+      <translation type="unfinished">Letter to the Laodiceans</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="834"/>
-        <source>Extra B</source>
-        <translation>Extra B</translation>
+      <location filename="../ChapterSelection.py" line="833"/>
+      <source>Extra A</source>
+      <translation type="unfinished">Extra A</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="835"/>
-        <source>Extra C</source>
-        <translation>Extra C</translation>
+      <location filename="../ChapterSelection.py" line="834"/>
+      <source>Extra B</source>
+      <translation type="unfinished">Extra B</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="836"/>
-        <source>Extra D</source>
-        <translation>Extra D</translation>
+      <location filename="../ChapterSelection.py" line="835"/>
+      <source>Extra C</source>
+      <translation type="unfinished">Extra C</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="837"/>
-        <source>Extra E</source>
-        <translation>Extra E</translation>
+      <location filename="../ChapterSelection.py" line="836"/>
+      <source>Extra D</source>
+      <translation type="unfinished">Extra D</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="838"/>
-        <source>Extra F</source>
-        <translation>Extra F</translation>
+      <location filename="../ChapterSelection.py" line="837"/>
+      <source>Extra E</source>
+      <translation type="unfinished">Extra E</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="839"/>
-        <source>Extra G</source>
-        <translation>Extra G</translation>
+      <location filename="../ChapterSelection.py" line="838"/>
+      <source>Extra F</source>
+      <translation type="unfinished">Extra F</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="840"/>
-        <source>Introduction</source>
-        <translation>Introduction</translation>
+      <location filename="../ChapterSelection.py" line="839"/>
+      <source>Extra G</source>
+      <translation type="unfinished">Extra G</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="841"/>
-        <source>Glossary</source>
-        <translation>Glossaire</translation>
+      <location filename="../ChapterSelection.py" line="840"/>
+      <source>Introduction</source>
+      <translation type="unfinished">Introduction</translation>
     </message>
-</context>
+    <message>
+      <location filename="../ChapterSelection.py" line="841"/>
+      <source>Glossary</source>
+      <translation type="unfinished">Glossary</translation>
+    </message>
+  </context>
 </TS>
