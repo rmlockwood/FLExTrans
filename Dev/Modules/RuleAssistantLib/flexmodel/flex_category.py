@@ -1,7 +1,7 @@
 """FLEx category classes"""
 
 from dataclasses import dataclass, field
-from .flex_feature import FLExFeature
+from flex_feature import FLExFeature
 
 
 @dataclass

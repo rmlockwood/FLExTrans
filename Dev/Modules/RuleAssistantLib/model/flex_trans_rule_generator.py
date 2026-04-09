@@ -1,8 +1,8 @@
 """FLExTransRuleGenerator root model class"""
 
 from dataclasses import dataclass, field
-from .flex_trans_rule import FLExTransRule
-from .enums import OverwriteRulesValue
+from flex_trans_rule import FLExTransRule
+from enums import OverwriteRulesValue
 
 
 @dataclass

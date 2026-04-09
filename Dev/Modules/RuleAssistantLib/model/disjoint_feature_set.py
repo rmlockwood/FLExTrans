@@ -1,7 +1,7 @@
 """Disjoint feature set model classes"""
 
 from dataclasses import dataclass, field
-from .enums import PhraseType
+from enums import PhraseType
 
 
 @dataclass

@@ -5,8 +5,8 @@ from PyQt6.QtCore import Qt
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..flexmodel.flex_feature import FLExFeature, FLExFeatureValue
-    from ..model.feature import Feature
+    from flex_feature import FLExFeature, FLExFeatureValue
+    from feature import Feature
 
 
 class FeatureValueChooserDialog(QDialog):
@@ -76,7 +76,7 @@ class FeatureValueChooserDialog(QDialog):
         for feature in self.features:
             # Skip Greek variables in unmarked mode
             if self.show_unmarked_label:
-                from ..flexmodel.flex_feature import FLExFeatureValue
+                from flex_feature import FLExFeatureValue
                 values = [v for v in feature.values if not FLExFeatureValue.is_greek(v.abbreviation)]
             else:
                 values = feature.values

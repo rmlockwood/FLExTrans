@@ -2,8 +2,8 @@
 
 from dataclasses import dataclass, field
 from typing import Optional, TYPE_CHECKING
-from .rule_constituent import RuleConstituent
-from .. import constants
+from rule_constituent import RuleConstituent
+import constants
 
 if TYPE_CHECKING:
     pass

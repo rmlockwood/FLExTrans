@@ -3,9 +3,9 @@
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .feature import Feature
-    from .word import Word
-    from .phrase import Phrase
+    from feature import Feature
+    from word import Word
+    from phrase import Phrase
 
 
 class RuleConstituent:

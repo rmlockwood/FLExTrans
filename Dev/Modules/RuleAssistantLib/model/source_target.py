@@ -1,8 +1,8 @@
 """Source and Target classes - wrappers around Phrase"""
 
 from dataclasses import dataclass
-from .phrase import Phrase
-from .enums import PhraseType
+from phrase import Phrase
+from enums import PhraseType
 
 
 @dataclass

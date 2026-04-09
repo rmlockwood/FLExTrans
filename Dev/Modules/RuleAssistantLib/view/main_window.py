@@ -1,4 +1,6 @@
 """Main Window for FLExTrans Rule Assistant"""
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebChannel import QWebChannel
 
 import os
 from typing import Optional, NamedTuple
@@ -57,21 +59,21 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QShortcut
 
-from ..model.flex_trans_rule_generator import FLExTransRuleGenerator
-from ..model.enums import PhraseType, HeadValue, PermutationsValue
-from ..model.word import Word
-from ..flexmodel.flex_data import FLExData
-from ..service.xml_backend_provider import XMLBackEndProvider
-from ..service.xml_flex_data_provider import XMLFLExDataBackEndProvider
-from ..service.rule_id_parent_setter import RuleIdentifierAndParentSetter
-from ..service.constituent_finder import ConstituentFinder
-from ..service.validity_checker import ValidityChecker
-from ..service.web_page_producer import WebPageProducer
-from ..service.web_page_interactor import WebPageInteractor
-from ..service.application_preferences import ApplicationPreferences
-from .category_chooser import CategoryChooserDialog
-from .feature_value_chooser import FeatureValueChooserDialog
-from .disjoint_features_editor import DisjointFeaturesEditorDialog
+from flex_trans_rule_generator import FLExTransRuleGenerator
+from enums import PhraseType, HeadValue, PermutationsValue
+from word import Word
+from flex_data import FLExData
+from xml_backend_provider import XMLBackEndProvider
+from xml_flex_data_provider import XMLFLExDataBackEndProvider
+from rule_id_parent_setter import RuleIdentifierAndParentSetter
+from constituent_finder import ConstituentFinder
+from validity_checker import ValidityChecker
+from web_page_producer import WebPageProducer
+from web_page_interactor import WebPageInteractor
+from application_preferences import ApplicationPreferences
+from category_chooser import CategoryChooserDialog
+from feature_value_chooser import FeatureValueChooserDialog
+from disjoint_features_editor import DisjointFeaturesEditorDialog
 
 
 class WindowResult(NamedTuple):
@@ -119,8 +121,6 @@ class RuleAssistantWindow(QMainWindow):
         _logger.info("About to lazy import QWebEngineView and QWebChannel")
         global QWebEngineView, QWebChannel
         try:
-            from PyQt6.QtWebEngineWidgets import QWebEngineView
-            from PyQt6.QtWebChannel import QWebChannel
             _write_crash_log("[__init__] QWebEngineView and QWebChannel imported successfully")
             _logger.info("QWebEngineView and QWebChannel imported successfully")
         except Exception as e:
@@ -392,6 +392,7 @@ class RuleAssistantWindow(QMainWindow):
             # RULE_ASSISTANT_STANDALONE not set: in-process within FlexTools (skip rendering)
             env_standalone = os.environ.get('RULE_ASSISTANT_STANDALONE')
             in_flextools = env_standalone != '1'
+            in_flextools = False
             _write_crash_log(f"[webview] RULE_ASSISTANT_STANDALONE={env_standalone!r}, in_flextools={in_flextools}")
             _logger.info(f"RULE_ASSISTANT_STANDALONE={env_standalone!r}, in_flextools={in_flextools}")
 
@@ -576,6 +577,7 @@ class RuleAssistantWindow(QMainWindow):
             # Check if we're in FlexTools mode - loading HTML crashes in FlexTools
             env_standalone = os.environ.get('RULE_ASSISTANT_STANDALONE')
             in_flextools = env_standalone != '1'
+            in_flextools = False
 
             if self.test_data_file and Path(self.test_data_file).exists():
                 _write_crash_log(f"[load_data] Test data file exists: {self.test_data_file}")
@@ -695,6 +697,7 @@ class RuleAssistantWindow(QMainWindow):
             # Check if we're in FlexTools mode - setHtml crashes in FlexTools
             env_standalone = os.environ.get('RULE_ASSISTANT_STANDALONE')
             in_flextools = env_standalone != '1'
+            in_flextools = False
             _write_crash_log(f"[show_rule] RULE_ASSISTANT_STANDALONE={env_standalone!r}, in_flextools={in_flextools}")
 
             if in_flextools:
@@ -771,6 +774,8 @@ class RuleAssistantWindow(QMainWindow):
             # Check if we're in FlexTools mode - show() crashes in FlexTools
             env_standalone = os.environ.get('RULE_ASSISTANT_STANDALONE')
             in_flextools = env_standalone != '1'
+            in_flextools = False
+
             _write_crash_log(f"[window_state] RULE_ASSISTANT_STANDALONE={env_standalone!r}, in_flextools={in_flextools}")
 
             if in_flextools:
@@ -914,7 +919,7 @@ class RuleAssistantWindow(QMainWindow):
 
     def _on_overwrite_toggled(self) -> None:
         """Handle overwrite checkbox toggle."""
-        from ..model.enums import OverwriteRulesValue
+        from enums import OverwriteRulesValue
         if self._generator:
             self._generator.overwrite_rules = (
                 OverwriteRulesValue.yes if self.overwrite_checkbox.isChecked()
@@ -1050,7 +1055,7 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word:
             return
 
-        from ..model.enums import HeadValue
+        from enums import HeadValue
         self._selected_word.head = HeadValue.no
         self._mark_dirty()
         self._refresh_rule_view()
@@ -1094,8 +1099,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word:
             return
 
-        from ..model.affix import Affix
-        from ..model.enums import AffixType
+        from affix import Affix
+        from enums import AffixType
         new_affix = Affix(affix_type=AffixType.prefix)
         self._selected_word.affixes.append(new_affix)
         self._mark_dirty()
@@ -1106,8 +1111,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word:
             return
 
-        from ..model.affix import Affix
-        from ..model.enums import AffixType
+        from affix import Affix
+        from enums import AffixType
         new_affix = Affix(affix_type=AffixType.suffix)
         self._selected_word.affixes.append(new_affix)
         self._mark_dirty()
@@ -1138,7 +1143,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         # Get current category for pre-selection
-        from ..model.category import Category
+        from category import Category
         current_category = Category(name=self._selected_word.word_category) if self._selected_word.word_category else None
 
         dialog = CategoryChooserDialog(unique_categories, current_category, self)
@@ -1171,7 +1176,7 @@ class RuleAssistantWindow(QMainWindow):
             result = dialog.get_chosen_value()
             if result:
                 flex_feature, flex_value = result
-                from ..model.feature import Feature
+                from feature import Feature
                 new_feature = Feature(
                     label=flex_feature.name,
                     value=flex_value.abbreviation
@@ -1255,7 +1260,7 @@ class RuleAssistantWindow(QMainWindow):
         if not unique_categories:
             return
 
-        from ..model.category import Category
+        from category import Category
         current_category = Category(name=self._selected_category.name) if self._selected_category.name else None
 
         dialog = CategoryChooserDialog(unique_categories, current_category, self)
@@ -1293,7 +1298,7 @@ class RuleAssistantWindow(QMainWindow):
         if not all_features:
             return
 
-        from ..model.feature import Feature
+        from feature import Feature
         # Pre-select current feature for dialog
         current_feature = Feature(
             label=self._selected_feature.label,
@@ -1387,7 +1392,7 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix:
             return
 
-        from ..model.enums import AffixType
+        from enums import AffixType
         self._selected_affix.affix_type = (
             AffixType.suffix if self._selected_affix.affix_type == AffixType.prefix
             else AffixType.prefix
@@ -1416,7 +1421,7 @@ class RuleAssistantWindow(QMainWindow):
             result = dialog.get_chosen_value()
             if result:
                 flex_feature, flex_value = result
-                from ..model.feature import Feature
+                from feature import Feature
                 new_feature = Feature(
                     label=flex_feature.name,
                     value=flex_value.abbreviation
@@ -1430,8 +1435,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from ..model.affix import Affix
-        from ..model.enums import AffixType
+        from affix import Affix
+        from enums import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.prefix)
         self._selected_word.affixes.insert(index, new_affix)
@@ -1443,8 +1448,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from ..model.affix import Affix
-        from ..model.enums import AffixType
+        from affix import Affix
+        from enums import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.prefix)
         self._selected_word.affixes.insert(index + 1, new_affix)
@@ -1456,8 +1461,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from ..model.affix import Affix
-        from ..model.enums import AffixType
+        from affix import Affix
+        from enums import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.suffix)
         self._selected_word.affixes.insert(index, new_affix)
@@ -1469,8 +1474,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from ..model.affix import Affix
-        from ..model.enums import AffixType
+        from affix import Affix
+        from enums import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.suffix)
         self._selected_word.affixes.insert(index + 1, new_affix)
@@ -1524,9 +1529,9 @@ class RuleAssistantWindow(QMainWindow):
         if not self._generator:
             return
 
-        from ..model.flex_trans_rule import FLExTransRule
-        from ..model.source_target import Source, Target
-        from ..model.phrase import Phrase
+        from flex_trans_rule import FLExTransRule
+        from source_target import Source, Target
+        from phrase import Phrase
 
         new_rule = FLExTransRule(
             name=f"Rule {len(self._generator.flex_trans_rules) + 1}",
@@ -1542,9 +1547,9 @@ class RuleAssistantWindow(QMainWindow):
         if not self._generator:
             return
 
-        from ..model.flex_trans_rule import FLExTransRule
-        from ..model.source_target import Source, Target
-        from ..model.phrase import Phrase
+        from flex_trans_rule import FLExTransRule
+        from source_target import Source, Target
+        from phrase import Phrase
 
         new_rule = FLExTransRule(
             name=f"Rule {len(self._generator.flex_trans_rules) + 1}",
@@ -1642,7 +1647,7 @@ class RuleAssistantWindow(QMainWindow):
             # Compare by name since category objects may not be the same instance
             if word.category_constituent and word.category_constituent.name == category.name:
                 word.word_category = ""
-                from ..model.category import Category
+                from category import Category
                 word.category_constituent = Category(name="")
                 return
 

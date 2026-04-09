@@ -9,8 +9,8 @@ from PyQt6.QtCore import Qt, QSize
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..model.flex_trans_rule_generator import FLExTransRuleGenerator
-    from ..flexmodel.flex_data import FLExData
+    from flex_trans_rule_generator import FLExTransRuleGenerator
+    from flex_data import FLExData
 
 
 class DisjointFeaturesEditorDialog(QDialog):
@@ -224,7 +224,7 @@ class DisjointFeaturesEditorDialog(QDialog):
     def _on_language_changed(self) -> None:
         """Handle language combo change."""
         if 0 <= self._selected_index < len(self.generator.disjoint_features):
-            from ..model.enums import PhraseType
+            from enums import PhraseType
             lang = PhraseType.source if self.language_combo.currentText() == "Source" else PhraseType.target
             self.generator.disjoint_features[self._selected_index].language = lang
 
@@ -242,15 +242,15 @@ class DisjointFeaturesEditorDialog(QDialog):
             new_count = self.pairing_slider.value()
             # Adjust pairings list
             while len(ds.pairings) < new_count:
-                from ..model.disjoint_feature_set import DisjointFeatureValuePairing
+                from disjoint_feature_set import DisjointFeatureValuePairing
                 ds.pairings.append(DisjointFeatureValuePairing())
             while len(ds.pairings) > new_count:
                 ds.pairings.pop()
 
     def _on_add_set(self) -> None:
         """Add a new disjoint feature set."""
-        from ..model.disjoint_feature_set import DisjointFeatureSet, DisjointFeatureValuePairing
-        from ..model.enums import PhraseType
+        from disjoint_feature_set import DisjointFeatureSet, DisjointFeatureValuePairing
+        from enums import PhraseType
 
         new_set = DisjointFeatureSet(
             name="New Set",

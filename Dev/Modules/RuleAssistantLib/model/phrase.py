@@ -2,11 +2,11 @@
 
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
-from .rule_constituent import RuleConstituent
-from .enums import PhraseType
+from rule_constituent import RuleConstituent
+from enums import PhraseType
 
 if TYPE_CHECKING:
-    from .word import Word
+    from word import Word
     from flexmodel.flex_feature import FLExFeature
 
 
@@ -82,7 +82,7 @@ class Phrase(RuleConstituent):
         Returns:
             The newly created Word
         """
-        from .word import Word
+        from word import Word
 
         new_word = Word()
         new_word.word_id = new_word.get_id_of_newly_added_word(self.words)
@@ -137,7 +137,7 @@ class Phrase(RuleConstituent):
         Args:
             word: The word to mark as head
         """
-        from .enums import HeadValue
+        from enums import HeadValue
 
         for w in self.words:
             w.head = HeadValue.yes if w is word else HeadValue.no

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from typing import Optional
-from .rule_constituent import RuleConstituent
+from rule_constituent import RuleConstituent
 
 
 @dataclass

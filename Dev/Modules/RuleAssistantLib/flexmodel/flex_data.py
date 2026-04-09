@@ -1,9 +1,9 @@
 """FLExData root class and subclasses"""
 
 from dataclasses import dataclass, field
-from .flex_feature import FLExFeature, FLExFeatureValue
-from .flex_category import FLExCategory, ValidFeature
-from .. import constants
+from flex_feature import FLExFeature, FLExFeatureValue
+from flex_category import FLExCategory, ValidFeature
+import constants
 
 
 @dataclass
@@ -105,7 +105,7 @@ class FLExData:
         Returns:
             List of FLExCategory objects
         """
-        from ..model.enums import PhraseType
+        from enums import PhraseType
 
         if phrase_type == PhraseType.source:
             return self.source_data.get_flex_categories_for_phrase()
@@ -122,7 +122,7 @@ class FLExData:
         Returns:
             List of FLExFeature objects
         """
-        from ..model.enums import PhraseType
+        from enums import PhraseType
 
         if phrase_type == PhraseType.source:
             return self.source_data.get_features_for_category(category_abbr)

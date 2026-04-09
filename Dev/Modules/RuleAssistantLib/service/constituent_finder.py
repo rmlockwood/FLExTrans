@@ -3,8 +3,8 @@
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..model.rule_constituent import RuleConstituent
-    from ..model.flex_trans_rule import FLExTransRule
+    from rule_constituent import RuleConstituent
+    from flex_trans_rule import FLExTransRule
 
 
 class ConstituentFinder:

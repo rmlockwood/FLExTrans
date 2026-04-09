@@ -2,14 +2,14 @@
 
 from dataclasses import dataclass, field
 from typing import Optional, TYPE_CHECKING
-from .rule_constituent import RuleConstituent
-from .category import Category
-from .enums import AffixType, HeadValue
+from rule_constituent import RuleConstituent
+from category import Category
+from enums import AffixType, HeadValue
 
 if TYPE_CHECKING:
-    from .feature import Feature
-    from .affix import Affix
-    from .phrase import Phrase
+    from feature import Feature
+    from affix import Affix
+    from phrase import Phrase
 
 
 @dataclass
@@ -214,7 +214,7 @@ class Word(RuleConstituent):
             return None
 
         # Get corresponding source phrase
-        from .enums import PhraseType
+        from enums import PhraseType
 
         if hasattr(phrase, "phrase_type") and phrase.phrase_type == PhraseType.target:
             source_phrase = getattr(rule, "source", None)

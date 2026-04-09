@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..model.flex_trans_rule import FLExTransRule
+    from flex_trans_rule import FLExTransRule
 
 
 class ValidityChecker:
@@ -58,7 +58,7 @@ class ValidityChecker:
         Returns:
             Tuple of (is_valid, error_message)
         """
-        from ..model.enums import HeadValue
+        from enums import HeadValue
 
         words = rule.target.words
         if len(words) <= 1:

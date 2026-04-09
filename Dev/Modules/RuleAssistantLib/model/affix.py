@@ -2,11 +2,11 @@
 
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
-from .rule_constituent import RuleConstituent
-from .enums import AffixType
+from rule_constituent import RuleConstituent
+from enums import AffixType
 
 if TYPE_CHECKING:
-    from .feature import Feature
+    from feature import Feature
 
 
 @dataclass

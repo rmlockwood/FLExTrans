@@ -3,9 +3,9 @@
 import xml.etree.ElementTree as ET
 from typing import TYPE_CHECKING
 
-from ..flexmodel.flex_data import FLExData, SourceFLExData, TargetFLExData
-from ..flexmodel.flex_feature import FLExFeature, FLExFeatureValue
-from ..flexmodel.flex_category import FLExCategory, ValidFeature
+from flex_data import FLExData, SourceFLExData, TargetFLExData
+from flex_feature import FLExFeature, FLExFeatureValue
+from flex_category import FLExCategory, ValidFeature
 
 
 class XMLFLExDataBackEndProvider:

@@ -4,16 +4,16 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional, TYPE_CHECKING
 
-from ..model.flex_trans_rule_generator import FLExTransRuleGenerator
-from ..model.flex_trans_rule import FLExTransRule
-from ..model.source_target import Source, Target
-from ..model.phrase import Phrase
-from ..model.word import Word
-from ..model.feature import Feature
-from ..model.affix import Affix
-from ..model.category import Category
-from ..model.enums import AffixType, HeadValue, OverwriteRulesValue, PermutationsValue, PhraseType
-from ..model.disjoint_feature_set import DisjointFeatureSet, DisjointFeatureValuePairing
+from flex_trans_rule_generator import FLExTransRuleGenerator
+from flex_trans_rule import FLExTransRule
+from source_target import Source, Target
+from phrase import Phrase
+from word import Word
+from feature import Feature
+from affix import Affix
+from category import Category
+from enums import AffixType, HeadValue, OverwriteRulesValue, PermutationsValue, PhraseType
+from disjoint_feature_set import DisjointFeatureSet, DisjointFeatureValuePairing
 
 
 class XMLBackEndProvider:

@@ -1,9 +1,9 @@
 """FLExTransRule model class"""
 
 from dataclasses import dataclass, field
-from .rule_constituent import RuleConstituent
-from .enums import PermutationsValue
-from .source_target import Source, Target
+from rule_constituent import RuleConstituent
+from enums import PermutationsValue
+from source_target import Source, Target
 
 
 @dataclass

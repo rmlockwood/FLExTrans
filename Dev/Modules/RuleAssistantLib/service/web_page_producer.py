@@ -3,10 +3,10 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from .rule_id_parent_setter import RuleIdentifierAndParentSetter
+from rule_id_parent_setter import RuleIdentifierAndParentSetter
 
 if TYPE_CHECKING:
-    from ..model.flex_trans_rule import FLExTransRule
+    from flex_trans_rule import FLExTransRule
 
 
 class WebPageProducer:

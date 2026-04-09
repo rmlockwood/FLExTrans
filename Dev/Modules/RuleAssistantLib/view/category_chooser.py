@@ -7,8 +7,8 @@ from PyQt6.QtGui import QKeySequence
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..flexmodel.flex_category import FLExCategory
-    from ..model.category import Category
+    from flex_category import FLExCategory
+    from category import Category
 
 
 class CategoryChooserDialog(QDialog):

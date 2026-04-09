@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..model.flex_trans_rule import FLExTransRule
+    from flex_trans_rule import FLExTransRule
 
 
 class RuleIdentifierAndParentSetter:
