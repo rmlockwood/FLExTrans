@@ -5,12 +5,12 @@
     <message>
       <location filename="../ReplacementEditor.py" line="87"/>
       <source>Replacement Dictionary Editor</source>
-      <translation type="unfinished">Replacement Dictionary Editor</translation>
+      <translation>Editor für Ersetzungswörterbuch</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="90"/>
       <source>Edit manual overrides for the bilingual dictionary.</source>
-      <translation type="unfinished">Edit manual overrides for the bilingual dictionary.</translation>
+      <translation>Manuelle Überschreibungen für das zweisprachige Wörterbuch bearbeiten.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="92"/>
@@ -19,53 +19,53 @@ which allows you to override the links created by the {linkSenseToolModule}
 in the presence of particular affixes. For example, if you have a noun that
 is generally translated one way, but has a different translation in the
 vocative singular, you can specify that here.</source>
-      <translation type="unfinished">This module provides an interface for editing the replacement dictionary
-which allows you to override the links created by the {linkSenseToolModule}
-in the presence of particular affixes. For example, if you have a noun that
-is generally translated one way, but has a different translation in the
-vocative singular, you can specify that here.</translation>
+      <translation>Dieses Modul bietet eine Schnittstelle zum Bearbeiten des Ersetzungswörterbuchs,
+mit dem Sie die vom {linkSenseToolModule} erstellten Verknüpfungen
+bei bestimmten Affixen überschreiben können. Zum Beispiel, wenn Sie ein Substantiv haben,
+das normalerweise auf eine Weise übersetzt wird, aber im Vokativ Singular eine andere Übersetzung hat,
+können Sie dies hier angeben.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="556"/>
       <source>There are unsaved changes.</source>
-      <translation type="unfinished">There are unsaved changes.</translation>
+      <translation>Es gibt ungespeicherte Änderungen.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="571"/>
       <source>The following sets of rows are identical on the source side and only the first one will have any effect:
 </source>
-      <translation type="unfinished">The following sets of rows are identical on the source side and only the first one will have any effect:
+      <translation>Die folgenden Zeilensätze sind auf der Quellseite identisch, und nur der erste wird eine Wirkung haben:
 </translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="573"/>
       <source>The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </source>
-      <translation type="unfinished">The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </translation>
+      <translation>Die folgenden Zeilen haben keine Affixe und sind daher redundant mit den vom Sense Linker Tool erstellten Verknüpfungen: </translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="576"/>
       <source>Useless Lines:</source>
-      <translation type="unfinished">Useless Lines:</translation>
+      <translation>Nutzlose Zeilen:</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="588"/>
       <source>Replacement dictionary file saved.</source>
-      <translation type="unfinished">Replacement dictionary file saved.</translation>
+      <translation>Ersetzungswörterbuchdatei gespeichert.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="594"/>
       <source>Unsaved Changes</source>
-      <translation type="unfinished">Unsaved Changes</translation>
+      <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="594"/>
       <source>Save changes before exiting?</source>
-      <translation type="unfinished">Save changes before exiting?</translation>
+      <translation>Änderungen vor dem Beenden speichern?</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="624"/>
       <source>A value for {configValue} not found in the configuration file.</source>
-      <translation type="unfinished">A value for {configValue} not found in the configuration file.</translation>
+      <translation>Ein Wert für {configValue} wurde in der Konfigurationsdatei nicht gefunden.</translation>
     </message>
   </context>
 </TS>
