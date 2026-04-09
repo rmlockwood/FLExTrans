@@ -6,12 +6,12 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="96"/>
       <source>Catalog Target Affixes</source>
-      <translation type="unfinished">Catalog Target Affixes</translation>
+      <translation>Cataloguer les affixes cibles</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="99"/>
       <source>Creates a list of all the affix glosses and morpheme types in the target project.</source>
-      <translation type="unfinished">Creates a list of all the affix glosses and morpheme types in the target project.</translation>
+      <translation>Crée une liste de toutes les gloses d'affixes et types de morphèmes dans le projet cible.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="101"/>
@@ -31,52 +31,52 @@ This is typically called target_affix_glosses.txt and is usually in the Build fo
     <message>
       <location filename="../CatalogTargetAffixes.py" line="147"/>
       <source>Problem reading the configuration file for the property: {property}</source>
-      <translation type="unfinished">Problem reading the configuration file for the property: {property}</translation>
+      <translation>Problème de lecture du fichier de configuration pour la propriété : {property}</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="156"/>
       <source>Problem accessing the target project.</source>
-      <translation type="unfinished">Problem accessing the target project.</translation>
+      <translation>Problème d'accès au projet cible.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="160"/>
       <source>Problem opening the target project.</source>
-      <translation type="unfinished">Problem opening the target project.</translation>
+      <translation>Problème d'ouverture du projet cible.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="169"/>
       <source>Configuration file problem with {property}.</source>
-      <translation type="unfinished">Configuration file problem with {property}.</translation>
+      <translation>Problème du fichier de configuration avec {property}.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="176"/>
       <source>Affix list is up to date.</source>
-      <translation type="unfinished">Affix list is up to date.</translation>
+      <translation>La liste des affixes est à jour.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="184"/>
       <source>There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.</source>
-      <translation type="unfinished">There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.</translation>
+      <translation>Un problème est survenu lors de la création du fichier liste de glosses de préfixe cible : {filePath}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="249"/>
       <source>Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}</source>
-      <translation type="unfinished">Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}</translation>
+      <translation>Caractères non valides dans l'affixe : {gloss}. Les caractères suivants ne sont pas autorisés : {invalidChars}</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="275"/>
       <source>Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.</source>
-      <translation type="unfinished">Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.</translation>
+      <translation>Affixe/clitique en double trouvé avec la glose : {gloss}. L'utilisation de cet affixe/clitique pourrait produire des résultats inattendus.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="277"/>
       <source>Catalog created in the file: {filePath}.</source>
-      <translation type="unfinished">Catalog created in the file: {filePath}.</translation>
+      <translation>Catalogue créé dans le fichier : {filePath}.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="278"/>
       <source>{count} affixes/clitics exported to the catalog.</source>
-      <translation type="unfinished">{count} affixes/clitics exported to the catalog.</translation>
+      <translation>{count} affixes/clitiques exportés vers le catalogue.</translation>
     </message>
   </context>
 </TS>
