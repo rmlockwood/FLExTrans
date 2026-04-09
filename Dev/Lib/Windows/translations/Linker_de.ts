@@ -6,22 +6,22 @@
     <message>
       <location filename="../Linker.py" line="245"/>
       <source>FLExTrans Sense Linker Tool</source>
-      <translation type="unfinished">FLExTrans Sense Linker Tool</translation>
+      <translation>FLExTrans Sense-Linker-Werkzeug</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="246"/>
       <source>Source Text:</source>
-      <translation type="unfinished">Source Text:</translation>
+      <translation>Quelltext:</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="247"/>
       <source>All Target Senses:</source>
-      <translation type="unfinished">All Target Senses:</translation>
+      <translation>Alle Zielbedeutungen:</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="248"/>
       <source>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation type="unfinished">After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</translation>
+      <translation>Wählen Sie hier die gewünschte Bedeutung aus und doppelklicken Sie in der Spalte &quot;Ziel-Stichwort&quot; auf die gewünschte Zeile, um sie zu verknüpfen.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="249"/>
@@ -33,22 +33,22 @@ then double-click in the Target Head Word column for the desired row to link to 
     <message>
       <location filename="../Linker.py" line="251"/>
       <source>Search here</source>
-      <translation type="unfinished">Search here</translation>
+      <translation>Hier suchen</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="252"/>
       <source>Filter on all fields</source>
-      <translation type="unfinished">Filter on all fields</translation>
+      <translation>Nach allen Feldern filtern</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="253"/>
       <source>Add a new entry to the target lexicon.</source>
-      <translation type="unfinished">Add a new entry to the target lexicon.</translation>
+      <translation>Einen neuen Eintrag zum Ziellexikon hinzufügen.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="254"/>
       <source> Add Entry </source>
-      <translation type="unfinished"> Add Entry </translation>
+      <translation> Eintrag hinzufügen </translation>
     </message>
     <message>
       <location filename="../Linker.py" line="255"/>
@@ -58,17 +58,17 @@ then double-click in the Target Head Word column for the desired row to link to 
     <message>
       <location filename="../Linker.py" line="256"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Abbrechen</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="257"/>
       <source>Show Only Unlinked</source>
-      <translation type="unfinished">Show Only Unlinked</translation>
+      <translation>Nur nicht verknüpfte anzeigen</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="258"/>
       <source>Hide Proper Nouns</source>
-      <translation type="unfinished">Hide Proper Nouns</translation>
+      <translation>Eigennamen ausblenden</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="259"/>
@@ -78,12 +78,12 @@ then double-click in the Target Head Word column for the desired row to link to 
     <message>
       <location filename="../Linker.py" line="260"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Schriftart</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="261"/>
       <source>Rebuild Bilingual Lexicon</source>
-      <translation type="unfinished">Rebuild Bilingual Lexicon</translation>
+      <translation>Zweisprachiges Lexikon neu erstellen</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="262"/>
@@ -95,12 +95,12 @@ is checked, Proper Nouns will not be exported.</translation>
     <message>
       <location filename="../Linker.py" line="264"/>
       <source>Export Unlinked Senses</source>
-      <translation type="unfinished">Export Unlinked Senses</translation>
+      <translation>Nicht verknüpfte Bedeutungen exportieren</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="265"/>
       <source>Senses to link:</source>
-      <translation type="unfinished">Senses to link:</translation>
+      <translation>Zu verknüpfende Bedeutungen:</translation>
     </message>
   </context>
 </TS>
