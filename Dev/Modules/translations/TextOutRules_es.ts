@@ -6,19 +6,18 @@
     <message>
       <location filename="../TextOutRules.py" line="81"/>
       <source>Text Out Rules</source>
-      <translation type="unfinished">Text Out Rules</translation>
+      <translation>Reglas de salida de texto</translation>
     </message>
     <message>
       <location filename="../TextOutRules.py" line="84"/>
       <source>Define and test a set of post-synthesis search and replace operations.</source>
-      <translation type="unfinished">Define and test a set of post-synthesis search and replace operations.</translation>
+      <translation>Definir y probar un conjunto de operaciones de búsqueda y reemplazo posteriores a la síntesis.</translation>
     </message>
     <message>
       <location filename="../TextOutRules.py" line="86"/>
       <source>This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired.</source>
-      <translation type="unfinished">This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-synthesis. Regular expressions can be used if desired.</translation>
+      <translation>Este módulo se utiliza para definir y probar un conjunto de operaciones de búsqueda y reemplazo que se utilizarán para corregir el texto que proviene de la síntesis. Se pueden usar expresiones regulares si se desea.</translation>
     </message>
   </context>
 </TS>
