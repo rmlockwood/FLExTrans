@@ -6,47 +6,47 @@
     <message>
       <location filename="../GenStc.py" line="73"/>
       <source>Generate Sentences from Model</source>
-      <translation type="unfinished">Generate Sentences from Model</translation>
+      <translation>Generar frases a partir de un modelo</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="78"/>
       <source>Iterate over certain grammatical categories in a model sentence to produce variations.</source>
-      <translation type="unfinished">Iterate over certain grammatical categories in a model sentence to produce variations.</translation>
+      <translation>Iterar sobre ciertas categorías gramaticales en una frase modelo para producir variaciones.</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="175"/>
       <source>Problem with output file path: {filePath}. Please check configuration.</source>
-      <translation type="unfinished">Problem with output file path: {filePath}. Please check configuration.</translation>
+      <translation>Problema con la ruta del archivo de salida: {filePath}. Por favor revise la configuración.</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="191"/>
       <source>Text not found: {sourceTextName}</source>
-      <translation type="unfinished">Text not found: {sourceTextName}</translation>
+      <translation>Texto no encontrado: {sourceTextName}</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="648"/>
       <source>Found {stcCount} sentences in the text</source>
-      <translation type="unfinished">Found {stcCount} sentences in the text</translation>
+      <translation>Se encontraron {stcCount} frases en el texto</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="277"/>
       <source>valid pos: {valid_pos}</source>
-      <translation type="unfinished">valid pos: {valid_pos}</translation>
+      <translation>pos válida: {valid_pos}</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="568"/>
       <source>custom field: {customField}</source>
-      <translation type="unfinished">custom field: {customField}</translation>
+      <translation>campo personalizado: {customField}</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="575"/>
       <source>Translation file check: {translationFile}</source>
-      <translation type="unfinished">Translation file check: {translationFile}</translation>
+      <translation>Verificación del archivo de traducción: {translationFile}</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="734"/>
       <source>Export of {sourceName} complete.</source>
-      <translation type="unfinished">Export of {sourceName} complete.</translation>
+      <translation>Exportación de {sourceName} completada.</translation>
     </message>
   </context>
 </TS>
