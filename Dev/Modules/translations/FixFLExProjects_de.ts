@@ -6,61 +6,60 @@
     <message>
       <location filename="../FixFLExProjects.py" line="197"/>
       <source>Fix FLEx Projects</source>
-      <translation type="unfinished">Fix FLEx Projects</translation>
+      <translation>FLEx-Projekte reparieren</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="78"/>
       <source>Run the Find and Fix utility on the FLEx projects you choose.</source>
-      <translation type="unfinished">Run the Find and Fix utility on the FLEx projects you choose.</translation>
+      <translation>Führen Sie das Dienstprogramm &quot;Suchen und Beheben&quot; für die von Ihnen ausgewählten FLEx-Projekte aus.</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="80"/>
       <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.</source>
-      <translation type="unfinished">Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
-You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
-it is not open. Fixed errors are logged to the report pane.</translation>
+      <translation>Führen Sie das Dienstprogramm &quot;Suchen und Beheben&quot; für die von Ihnen ausgewählten FLEx-Projekte aus. Dies ist dasselbe Dienstprogramm, das in FLEx verfügbar ist. 
+Sie können dieses Dienstprogramm nicht für ein Projekt ausführen, das derzeit in FLEx geöffnet ist, oder für das aktuelle Quellprojekt, auch wenn es nicht geöffnet ist. Behobene Fehler werden im Berichtsbereich protokolliert.</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="206"/>
       <source>FLEx project names (multi-select):</source>
-      <translation type="unfinished">FLEx project names (multi-select):</translation>
+      <translation>FLEx-Projektnamen (Mehrfachauswahl):</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="216"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="217"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Abbrechen</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="286"/>
       <source>Fixing {projName}...</source>
-      <translation type="unfinished">Fixing {projName}...</translation>
+      <translation>Beheben von {projName}...</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="297"/>
       <source>{projName}: Project is open. Skipping.</source>
-      <translation type="unfinished">{projName}: Project is open. Skipping.</translation>
+      <translation>{projName}: Projekt ist geöffnet. Überspringen.</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="304"/>
       <source>{projName}: Skipping. {error}</source>
-      <translation type="unfinished">{projName}: Skipping. {error}</translation>
+      <translation>{projName}: Überspringen. {error}</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="307"/>
       <source>{projName}: {errorCount} errors fixed.</source>
-      <translation type="unfinished">{projName}: {errorCount} errors fixed.</translation>
+      <translation>{projName}: {errorCount} Fehler behoben.</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="309"/>
       <source>{projName}: No errors found</source>
-      <translation type="unfinished">{projName}: No errors found</translation>
+      <translation>{projName}: Keine Fehler gefunden</translation>
     </message>
   </context>
 </TS>
