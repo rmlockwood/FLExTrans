@@ -6,57 +6,57 @@
     <message>
       <location filename="../ClusterAdHoc.py" line="122"/>
       <source>Add Cluster Ad Hoc Rules</source>
-      <translation type="unfinished">Add Cluster Ad Hoc Rules</translation>
+      <translation>Ajouter des règles ad hoc de cluster</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="123"/>
       <source>Source Project</source>
-      <translation type="unfinished">Source Project</translation>
+      <translation>Projet source</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="124"/>
       <source>Add</source>
-      <translation type="unfinished">Add</translation>
+      <translation>Ajouter</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="125"/>
       <source>Close</source>
-      <translation type="unfinished">Close</translation>
+      <translation>Fermer</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="126"/>
       <source>Ad Hoc Group</source>
-      <translation type="unfinished">Ad Hoc Group</translation>
+      <translation>Groupe ad hoc</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="127"/>
       <source>Ad Hoc Type</source>
-      <translation type="unfinished">Ad Hoc Type</translation>
+      <translation>Type ad hoc</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="128"/>
       <source>Key Morpheme/Allomorph</source>
-      <translation type="unfinished">Key Morpheme/Allomorph</translation>
+      <translation>Morphème/allomorphe clé</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="129"/>
       <source>Other Morphemes/Allomorphs</source>
-      <translation type="unfinished">Other Morphemes/Allomorphs</translation>
+      <translation>Autres morphèmes/allomorphes</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="130"/>
       <source>Cannot Occur</source>
-      <translation type="unfinished">Cannot Occur</translation>
+      <translation>Ne peut pas se produire</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="131"/>
       <source>Cluster Projects to Apply to</source>
-      <translation type="unfinished">Cluster Projects to Apply to</translation>
+      <translation>Projets de cluster auxquels appliquer</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="132"/>
       <source>New Group</source>
-      <translation type="unfinished">New Group</translation>
+      <translation>Nouveau groupe</translation>
     </message>
   </context>
 </TS>
