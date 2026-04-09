@@ -163,7 +163,7 @@ verhindert dies die Bereinigung, sodass Sie Fehler leichter erkennen können.</t
     <message>
       <location filename="../LiveRuleTester.py" line="632"/>
       <source>Zoom:</source>
-      <translation type="unfinished">Zoom:</translation>
+      <translation>Zoom:</translation>
     </message>
   </context>
 </TS>
