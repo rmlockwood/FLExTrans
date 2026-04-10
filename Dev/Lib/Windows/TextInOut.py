@@ -343,6 +343,7 @@ class Ui_TextInOutMainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(8)
         self.dummyLabel.setFont(font)
+        self.dummyLabel.setText("dummy")
         self.dummyLabel.setObjectName("dummyLabel")
         self.horizontalLayout_18.addWidget(self.dummyLabel)
         self.verticalLayout_3.addLayout(self.horizontalLayout_18)
@@ -391,6 +392,18 @@ class Ui_TextInOutMainWindow(object):
         self.errorTextBox.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.errorTextBox.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.errorTextBox.setReadOnly(True)
+        self.errorTextBox.setMarkdown("Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here\n"
+"Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here\n"
+"\n"
+"")
+        self.errorTextBox.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here</p></body></html>")
         self.errorTextBox.setAcceptRichText(False)
         self.errorTextBox.setObjectName("errorTextBox")
         self.horizontalLayout_19.addWidget(self.errorTextBox)
@@ -445,18 +458,5 @@ class Ui_TextInOutMainWindow(object):
         self.testInputLabel.setText(_translate("TextInOutMainWindow", "Test input"))
         self.testButton.setToolTip(_translate("TextInOutMainWindow", "Test the checked rules above with the input text."))
         self.testButton.setText(_translate("TextInOutMainWindow", "Test"))
-        self.dummyLabel.setText(_translate("TextInOutMainWindow", "dummy"))
         self.testInputLabel_2.setText(_translate("TextInOutMainWindow", "Test output"))
         self.OKButton.setText(_translate("TextInOutMainWindow", "Close"))
-        self.errorTextBox.setMarkdown(_translate("TextInOutMainWindow", "Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here\n"
-"Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here\n"
-"\n"
-""))
-        self.errorTextBox.setHtml(_translate("TextInOutMainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\">Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Error Msg here Msg here Msg here Msg here Msg here Msg here Msg here</span></p></body></html>"))

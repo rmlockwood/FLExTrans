@@ -1,92 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de" sourcelanguage="en">
 <context>
     <name>Utils</name>
     <message>
-      <location filename="../Utils.py" line="381"/>
-      <source>space</source>
-      <translation>Leerzeichen</translation>
+        <location filename="../Utils.py" line="342"/>
+        <source>space</source>
+        <translation>space</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="381"/>
-      <source>converted to an underscore</source>
-      <translation>zu einem Unterstrich konvertiert</translation>
+        <location filename="../Utils.py" line="342"/>
+        <source>converted to an underscore</source>
+        <translation>converted to an underscore</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="382"/>
-      <source>period</source>
-      <translation>Punkt</translation>
+        <location filename="../Utils.py" line="343"/>
+        <source>period</source>
+        <translation>period</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="382"/>
-      <source>removed</source>
-      <translation>entfernt</translation>
+        <location filename="../Utils.py" line="343"/>
+        <source>removed</source>
+        <translation>removed</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="448"/>
-      <source> - Copy</source>
-      <translation> - Kopie</translation>
+        <location filename="../Utils.py" line="409"/>
+        <source> - Copy</source>
+        <translation> - Copy</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="477"/>
-      <source>Could not open the file {myFile} when converting to NFD.</source>
-      <translation>Die Datei {myFile} konnte beim Konvertieren in NFD nicht geöffnet werden.</translation>
+        <location filename="../Utils.py" line="438"/>
+        <source>Could not open the file {myFile} when converting to NFD.</source>
+        <translation>Could not open the file {myFile} when converting to NFD.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="656"/>
-      <source>There was an error opening database: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-      <translation>Beim Öffnen der Datenbank {DBname} ist ein Fehler aufgetreten. Vielleicht ist das Projekt geöffnet und die Freigabeoption unter den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
+        <location filename="../Utils.py" line="617"/>
+        <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
+        <translation>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="673"/>
-      <source>The Target Database does not exist. Please check the configuration file.</source>
-      <translation>Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
+        <location filename="../Utils.py" line="634"/>
+        <source>The target project does not exist. Please check the configuration file.</source>
+        <translation>The target project does not exist. Please check the configuration file.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="680"/>
-      <source>There was an error opening target database: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-      <translation>Beim Öffnen der Zieldatenbank {targetProj} ist ein Fehler aufgetreten. Vielleicht ist das Projekt geöffnet und die Freigabeoption unter den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
+        <location filename="../Utils.py" line="641"/>
+        <source>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
+        <translation>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="707"/>
-      <source>source</source>
-      <translation>Quelle</translation>
+        <location filename="../Utils.py" line="668"/>
+        <source>source</source>
+        <translation>source</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="712"/>
-      <source>target</source>
-      <translation>Ziel</translation>
+        <location filename="../Utils.py" line="673"/>
+        <source>target</source>
+        <translation>target</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="777"/>
-      <source>category</source>
-      <translation>Kategorie</translation>
+        <location filename="../Utils.py" line="738"/>
+        <source>category</source>
+        <translation>category</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="796"/>
-      <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} database.</source>
-      <translation>Die Abkürzung/der Name: '{posAbbrStr}' für {myType}: '{posFullNameStr}' darf kein {charName} enthalten. Konnte nicht abgeschlossen werden, '+                                            'bitte korrigieren Sie diese {myType} in der {dbType}-Datenbank.</translation>
+        <location filename="../Utils.py" line="757"/>
+        <source>The abbreviation/name: &apos;{posAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; can&apos;t have a {charName} in it. Could not complete, &apos;+                                            &apos;please correct this {myType} in the {dbType} project.</source>
+        <translation>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="812"/>
-      <source>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
-      <translation>Die Abkürzung/der Name: '{oldAbbrStr}' für {myType}: '{posFullNameStr}' in der {dbType}-Datenbank darf kein {charName} enthalten. Das {charName} '+                                              'wurde {message}, wodurch {posAbbrStr} gebildet wurde. Beachten Sie dies, wenn Sie sich in Übertragungsregeln auf diese {myType} beziehen.</translation>
+        <location filename="../Utils.py" line="773"/>
+        <source>The abbreviation/name: &apos;{oldAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; in the {dbType} project can&apos;t have a {charName} in it. The {charName} &apos;+                                              &apos;has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
+        <translation>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="820"/>
-      <source>Suppressing further warnings of this type.</source>
-      <translation>Weitere Warnungen dieser Art werden unterdrückt.</translation>
+        <location filename="../Utils.py" line="781"/>
+        <source>Suppressing further warnings of this type.</source>
+        <translation>Suppressing further warnings of this type.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="957"/>
-      <source>Invalid url link or url not found in the target database while processing source headword: {headWord}.</source>
-      <translation>Ungültiger URL-Link oder URL in der Zieldatenbank nicht gefunden beim Verarbeiten des Quell-Stichworts: {headWord}.</translation>
+        <location filename="../Utils.py" line="931"/>
+        <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
+        <translation>Invalid url link or url not found in the target project while processing source headword: {headWord}.</translation>
     </message>
     <message>
-      <location filename="../Utils.py" line="1071"/>
-      <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</source>
-      <translation>verknüpft mit Eintrag: {headWordStr}, Bedeutung: {glossStr} im Projekt {projectName}.</translation>
+        <location filename="../Utils.py" line="1045"/>
+        <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</source>
+        <translation>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</translation>
     </message>
-  </context>
+</context>
 </TS>

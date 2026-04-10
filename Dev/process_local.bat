@@ -11,7 +11,7 @@ REM Define excluded files
 set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py
 
 REM Define target folder
-set destination="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
+set destination="C:\Users\rlboo\GitHub\FLExTrans\Dev\CompiledTranslations"
 
 REM Loop through each directory
 for %%D in (%directories%) do (
@@ -36,7 +36,6 @@ for %%D in (%directories%) do (
 			for %%L in (%lang_codes%) do (
 			
 				pylupdate5 -verbose -noobsolete %%F -ts translations\!filename!_%%L.ts
-				lrelease translations\!filename!_%%L.ts -qm %destination%\translations\!filename!_%%L.qm
 				
 				if "%%L"=="fr" (
 					copy translations\!filename!_%%L.ts translations\!filename!.ts
