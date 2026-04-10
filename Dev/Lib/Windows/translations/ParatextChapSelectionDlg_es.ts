@@ -1,108 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="es-ES" sourcelanguage="en">
-<context>
+  <context>
     <name>ParatextChapSelectionWindow</name>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="122"/>
-        <source>Choose Chapters</source>
-        <translation>Seleccionar capítulos</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="122"/>
+      <source>Choose Chapters</source>
+      <translation type="unfinished">Choose Chapters</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="123"/>
-        <source>We will change the source text name for FLExTrans to the newly created text.</source>
-        <translation>Cambiaremos el nombre del texto fuente para FLExTrans al texto recién creado.</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="123"/>
+      <source>We will change the source text name for FLExTrans to the newly created text.</source>
+      <translation type="unfinished">We will change the source text name for FLExTrans to the newly created text.</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="124"/>
-        <source>Make new text the active text</source>
-        <translation>Hacer que el nuevo texto sea el texto activo</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="124"/>
+      <source>Make new text the active text</source>
+      <translation type="unfinished">Make new text the active text</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="125"/>
-        <source>Book Abbreviation</source>
-        <translation>Abreviatura del libro</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="125"/>
+      <source>Book Abbreviation</source>
+      <translation type="unfinished">Book Abbreviation</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="126"/>
-        <source>Paratext Project Abbreviation</source>
-        <translation>Abreviatura del proyecto Paratext</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="126"/>
+      <source>Paratext Project Abbreviation</source>
+      <translation type="unfinished">Paratext Project Abbreviation</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="127"/>
-        <source>to</source>
-        <translation>a</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="127"/>
+      <source>to</source>
+      <translation type="unfinished">to</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="128"/>
-        <source>Otherwise we will just use the book abbreviation.</source>
-        <translation>De lo contrario, solo usaremos la abreviatura del libro.</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="128"/>
+      <source>Otherwise we will just use the book abbreviation.</source>
+      <translation type="unfinished">Otherwise we will just use the book abbreviation.</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="129"/>
-        <source>Use full book name for title</source>
-        <translation>Usar el nombre completo del libro para el título</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="129"/>
+      <source>Use full book name for title</source>
+      <translation type="unfinished">Use full book name for title</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="130"/>
-        <source>Include footnotes</source>
-        <translation>Incluir notas al pie</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="130"/>
+      <source>Include footnotes</source>
+      <translation type="unfinished">Include footnotes</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="131"/>
-        <source>Chapter</source>
-        <translation>Capítulo</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="131"/>
+      <source>Chapter</source>
+      <translation type="unfinished">Chapter</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="132"/>
-        <source>OK</source>
-        <translation type="unfinished">OK</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="132"/>
+      <source>OK</source>
+      <translation type="unfinished">OK</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="133"/>
-        <source>Cancel</source>
-        <translation>Cancelar</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="133"/>
+      <source>Cancel</source>
+      <translation type="unfinished">Cancel</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="134"/>
-        <source>Include cross references (\x and \r)</source>
-        <translation>Incluir referencias cruzadas (\x y \r)</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="134"/>
+      <source>Include cross references (\x and \r)</source>
+      <translation type="unfinished">Include cross references (\x and \r)</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="135"/>
-        <source>Create one text per chapter</source>
-        <translation>Crear un texto por capítulo</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="135"/>
+      <source>Create one text per chapter</source>
+      <translation type="unfinished">Create one text per chapter</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="136"/>
-        <source>Include introduction (for chapter 1)</source>
-        <translation>Incluir introducción (para el capítulo 1)</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="136"/>
+      <source>Include introduction (for chapter 1)</source>
+      <translation type="unfinished">Include introduction (for chapter 1)</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="137"/>
-        <source>Cluster Projects to Apply to</source>
-        <translation>Proyectos de clúster a los que aplicar</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="137"/>
+      <source>Cluster Projects to Apply to</source>
+      <translation type="unfinished">Cluster Projects to Apply to</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="140"/>
-        <source>Overwrite existing text</source>
-        <translation>Sobrescribir texto existente</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="140"/>
+      <source>Overwrite existing text</source>
+      <translation type="unfinished">Overwrite existing text</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="141"/>
-        <source>Clicking any chapter of a book selects all chapters of the book</source>
-        <translation>Hacer clic en cualquier capítulo de un libro selecciona todos los capítulos del libro</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="141"/>
+      <source>Clicking any chapter of a book selects all chapters of the book</source>
+      <translation type="unfinished">Clicking any chapter of a book selects all chapters of the book</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="142"/>
-        <source>Scripture Texts</source>
-        <translation>Textos bíblicos</translation>
+      <location filename="../ParatextChapSelectionDlg.py" line="142"/>
+      <source>Scripture Texts</source>
+      <translation type="unfinished">Scripture Texts</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="138"/>
-        <source>Overwrite a text that has the same name. For example, 
+      <location filename="../ParatextChapSelectionDlg.py" line="138"/>
+      <source>Overwrite a text that has the same name. For example, 
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
-        <translation type="unfinished"></translation>
+      <translation type="unfinished">Overwrite a text that has the same name. For example, 
+if JHN 01 already exists, it will delete it and create JHN 01 again.</translation>
     </message>
-</context>
+  </context>
 </TS>
