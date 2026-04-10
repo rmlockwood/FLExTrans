@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="es-ES" sourcelanguage="en">
-<context>
+  <context>
     <name>ExtractSourceText</name>
     <message>
-        <location filename="../ExtractSourceText.py" line="98"/>
-        <source>Extract Source Text</source>
-        <translation>Extraer texto fuente</translation>
+      <location filename="../ExtractSourceText.py" line="95"/>
+      <source>Extract Source Text</source>
+      <translation>Extract Source Text</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="101"/>
-        <source>Exports an Analyzed FLEx text into Apertium format.</source>
-        <translation>Exporta un texto FLEx analizado al formato Apertium.</translation>
+      <location filename="../ExtractSourceText.py" line="98"/>
+      <source>Exports an Analyzed FLEx text into Apertium format.</source>
+      <translation>Exports an Analyzed FLEx text into Apertium format.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="103"/>
-        <source>This module will use the Source Text Name set in the Settings. It will first check 
+      <location filename="../ExtractSourceText.py" line="100"/>
+      <source>This module will use the Source Text Name set in the Settings. It will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
 fully analyzed you will get warnings.
@@ -27,62 +27,73 @@ inflection features that may be present for the root/stem
 and class1 to classN are inflection classes that may be present on the stem.
 The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
 This is typically called source_text-aper.txt and is usually in the Build folder.</source>
-        <translation>Este módulo usará el Nombre del Texto Fuente configurado en los Ajustes. Primero verificará si cada palabra en el texto seleccionado está completamente analizada (el glosario de palabras o la categoría no son necesarios). Si el texto no está completamente analizado, recibirá advertencias. Luego, este módulo recorrerá cada paquete en el texto interlineal y exportará información en el formato que necesita Apertium. La idea general es que los afijos y clíticos se exportarán como &lt;gloss&gt; y las raíces/tallos se exportarán como head_word&lt;pos&gt;&lt;feat1&gt;...&lt;featN&gt;&lt;class1&gt;...&lt;classN&gt;. Donde feat1 a featN son una o más características flexivas que pueden estar presentes para la raíz/tallo y class1 a classN son clases flexivas que pueden estar presentes en el tallo. Las oraciones exportadas se almacenarán en el archivo especificado por la configuración &quot;Archivo de Salida del Texto Analizado&quot;. Este archivo generalmente se llama source_text-aper.txt y suele estar en la carpeta Build.</translation>
+      <translation>This module will use the Source Text Name set in the Settings. It will first check 
+to see if each word in the selected text is
+fully analyzed (word gloss or category is not necessary). If the text is not
+fully analyzed you will get warnings.
+Next, this module will go through each bundle in the interlinear text and export
+information in the format that Apertium needs. The general idea is that
+affixes and clitics will be exported as &lt;gloss&gt; and root/stems will be exported
+as head_word&lt;pos&gt;&lt;feat1&gt;...&lt;featN&gt;&lt;class1&gt;...&lt;classN&gt;. Where feat1 to featN are one or more 
+inflection features that may be present for the root/stem 
+and class1 to classN are inflection classes that may be present on the stem.
+The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
+This is typically called source_text-aper.txt and is usually in the Build folder.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="272"/>
-        <source>There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.</source>
-        <translation>Hay un problema con la ruta del Archivo de Salida del Texto Analizado: {path}. Por favor, revise la configuración del archivo.</translation>
+      <location filename="../ExtractSourceText.py" line="269"/>
+      <source>There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.</source>
+      <translation>There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="288"/>
-        <source>The text named: {textName} not found.</source>
-        <translation>No se encontró el texto llamado: {textName}.</translation>
+      <location filename="../ExtractSourceText.py" line="285"/>
+      <source>The text named: {textName} not found.</source>
+      <translation>The text named: {textName} not found.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="321"/>
-        <source>There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.</source>
-        <translation>Hay un problema con la ruta del Archivo de Resultados de Tree Tran: {path}. Por favor, revise la configuración del archivo.</translation>
+      <location filename="../ExtractSourceText.py" line="318"/>
+      <source>There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.</source>
+      <translation>There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="369"/>
-        <source>Sentence {sentNum} from TreeTran not found</source>
-        <translation>No se encontró la oración {sentNum} de TreeTran.</translation>
+      <location filename="../ExtractSourceText.py" line="366"/>
+      <source>Sentence {sentNum} from TreeTran not found</source>
+      <translation>Sentence {sentNum} from TreeTran not found</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="390"/>
-        <source>Null Guid in sentence {sentNum}, word {wordNum}</source>
-        <translation>GUID nulo en la oración {sentNum}, palabra {wordNum}</translation>
+      <location filename="../ExtractSourceText.py" line="387"/>
+      <source>Null Guid in sentence {sentNum}, word {wordNum}</source>
+      <translation>Null Guid in sentence {sentNum}, word {wordNum}</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="398"/>
-        <source>Could not find the desired Guid in sentence {sentNum}, word {wordNum}</source>
-        <translation>No se pudo encontrar el GUID deseado en la oración {sentNum}, palabra {wordNum}</translation>
+      <location filename="../ExtractSourceText.py" line="395"/>
+      <source>Could not find the desired Guid in sentence {sentNum}, word {wordNum}</source>
+      <translation>Could not find the desired Guid in sentence {sentNum}, word {wordNum}</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="455"/>
-        <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
-        <translation>No se encontró la oración: {sentNum}. Verifique que los análisis correctos estén presentes.</translation>
+      <location filename="../ExtractSourceText.py" line="452"/>
+      <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
+      <translation>Sentence: {sentNum} not found. Check that the right parses are present.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="463"/>
-        <source>Exported: {count} sentence(s) using TreeTran results.</source>
-        <translation>Exportado: {count} oración(es) usando los resultados de TreeTran.</translation>
+      <location filename="../ExtractSourceText.py" line="460"/>
+      <source>Exported: {count} sentence(s) using TreeTran results.</source>
+      <translation>Exported: {count} sentence(s) using TreeTran results.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="466"/>
-        <source>No parses found for {count} sentence(s).</source>
-        <translation>No se encontraron análisis para {count} oración(es).</translation>
+      <location filename="../ExtractSourceText.py" line="463"/>
+      <source>No parses found for {count} sentence(s).</source>
+      <translation>No parses found for {count} sentence(s).</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="473"/>
-        <source>Exported {count} sentence(s) to {path}.</source>
-        <translation>Exportadas {count} oración(es) a {path}.</translation>
+      <location filename="../ExtractSourceText.py" line="470"/>
+      <source>Exported {count} sentence(s) to {path}.</source>
+      <translation>Exported {count} sentence(s) to {path}.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="477"/>
-        <source>Export of {textName} complete.</source>
-        <translation>Exportación de {textName} completada.</translation>
+      <location filename="../ExtractSourceText.py" line="474"/>
+      <source>Export of {textName} complete.</source>
+      <translation>Export of {textName} complete.</translation>
     </message>
-</context>
+  </context>
 </TS>
