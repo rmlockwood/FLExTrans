@@ -1,44 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="fr" sourcelanguage="en">
-<context>
+  <context>
     <name>FixUpSynthText</name>
     <message>
-        <location filename="../FixUpSynthText.py" line="85"/>
-        <source>Fix Up Synthesis Text</source>
-        <translation>Corriger le texte de synthèse</translation>
+      <location filename="../FixUpSynthText.py" line="82"/>
+      <source>Fix Up Synthesis Text</source>
+      <translation>Fix Up Synthesis Text</translation>
     </message>
     <message>
-        <location filename="../FixUpSynthText.py" line="88"/>
-        <source>Run a set of post-synthesis search and replace operations.</source>
-        <translation>Exécuter un ensemble d'opérations de recherche et remplacement post-synthèse.</translation>
+      <location filename="../FixUpSynthText.py" line="85"/>
+      <source>Run a set of post-synthesis search and replace operations.</source>
+      <translation>Run a set of post-synthesis search and replace operations.</translation>
     </message>
     <message>
-        <location filename="../FixUpSynthText.py" line="128"/>
-        <source>The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.</source>
-        <translation>Le fichier de règles : {textOutRulesFile} est introuvable. Utilisez le module Règles du texte en sortie pour définir les règles.</translation>
-    </message>
-    <message>
-        <location filename="../FixUpSynthText.py" line="141"/>
-        <source>The rules file: {textOutRulesFile} has invalid XML data.</source>
-        <translation>Le fichier de règles : {textOutRulesFile} contient des données XML invalides.</translation>
-    </message>
-    <message>
-        <location filename="../FixUpSynthText.py" line="149"/>
-        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &apos;{synthFile}&apos;.</source>
-        <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : « {synthFile} ».</translation>
-    </message>
-    <message>
-        <location filename="../FixUpSynthText.py" line="173"/>
-        <source>The synthesis file was fixed using {numRules} &apos;Text Out&apos; rules.</source>
-        <translation>Le fichier de synthèse a été corrigé en utilisant {numRules} règles « Texte en sortie ».</translation>
-    </message>
-    <message>
-        <location filename="../FixUpSynthText.py" line="90"/>
-        <source>This module will run a set of search and replace operations to fix up the text that comes out of 
+      <location filename="../FixUpSynthText.py" line="87"/>
+      <source>This module will run a set of search and replace operations to fix up the text that comes out of
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
 Fix Up Synthesis Text Rules File as specified in the Settings.</source>
-        <translation type="unfinished"></translation>
+      <translation>This module will run a set of search and replace operations to fix up the text that comes out of
+synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
+Fix Up Synthesis Text Rules File as specified in the Settings.</translation>
     </message>
-</context>
+    <message>
+      <location filename="../FixUpSynthText.py" line="125"/>
+      <source>The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.</source>
+      <translation>The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.</translation>
+    </message>
+    <message>
+      <location filename="../FixUpSynthText.py" line="138"/>
+      <source>The rules file: {textOutRulesFile} has invalid XML data.</source>
+      <translation>The rules file: {textOutRulesFile} has invalid XML data.</translation>
+    </message>
+    <message>
+      <location filename="../FixUpSynthText.py" line="146"/>
+      <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.</source>
+      <translation>The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.</translation>
+    </message>
+    <message>
+      <location filename="../FixUpSynthText.py" line="170"/>
+      <source>The synthesis file was fixed using {numRules} 'Text Out' rules.</source>
+      <translation>The synthesis file was fixed using {numRules} 'Text Out' rules.</translation>
+    </message>
+  </context>
 </TS>
