@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="de" sourcelanguage="en">
-<context>
+  <context>
     <name>ViewSrcTgt</name>
     <message>
-        <location filename="../ViewSrcTgt.py" line="98"/>
-        <source>View Source/Target Apertium Text Tool</source>
-        <translation>Quell-/Ziel-Apertium-Textwerkzeug anzeigen</translation>
+      <location filename="../ViewSrcTgt.py" line="98"/>
+      <source>View Source/Target Apertium Text Tool</source>
+      <translation type="unfinished">View Source/Target Apertium Text Tool</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="101"/>
-        <source>View an easy-to-read source or target text file.</source>
-        <translation>Eine gut lesbare Quell- oder Zieltextdatei anzeigen.</translation>
+      <location filename="../ViewSrcTgt.py" line="101"/>
+      <source>View an easy-to-read source or target text file.</source>
+      <translation type="unfinished">View an easy-to-read source or target text file.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="103"/>
-        <source>This module will display a more readable view of the Apertium source or target 
+      <location filename="../ViewSrcTgt.py" line="103"/>
+      <source>This module will display a more readable view of the Apertium source or target 
 file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.</source>
-        <translation>Dieses Modul zeigt eine besser lesbare Ansicht der Apertium-Quell- oder Zieldatei 
-an. Die lexikalischen Einheiten sind farblich wie folgt kodiert: schwarz-Lemma, blau-grammatische 
-Kategorie, grün-Affix oder Merkmal oder Klasse, gelb-Satzzeichen außerhalb von Sätzen, 
-dunkelrosa-unbekanntes Lemma, rosa-unbekannte Kategorie, rot-Lemma nicht gefunden. Wichtig! Sie
-müssen die Module bis einschließlich {runApert} ausführen, bevor Sie dieses Modul starten.</translation>
+      <translation type="unfinished">This module will display a more readable view of the Apertium source or target 
+file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
+category, green-affix or feature or class, yellow-non-sentence punctuation, 
+dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
+must run the modules up to and including {runApert} before running this module.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="235"/>
-        <source>File Error</source>
-        <translation>Dateifehler</translation>
+      <location filename="../ViewSrcTgt.py" line="235"/>
+      <source>File Error</source>
+      <translation type="unfinished">File Error</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="232"/>
-        <source>There was a problem opening the Source Apertium Text file: {fileName}. </source>
-        <translation>Es gab ein Problem beim Öffnen der Apertium-Quelltextdatei: {fileName}. </translation>
+      <location filename="../ViewSrcTgt.py" line="232"/>
+      <source>There was a problem opening the Source Apertium Text file: {fileName}. </source>
+      <translation type="unfinished">There was a problem opening the Source Apertium Text file: {fileName}. </translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="232"/>
-        <source>Make sure you have run the {moduleName} module first.</source>
-        <translation>Stellen Sie sicher, dass Sie zuerst das Modul {moduleName} ausgeführt haben.</translation>
+      <location filename="../ViewSrcTgt.py" line="232"/>
+      <source>Make sure you have run the {moduleName} module first.</source>
+      <translation type="unfinished">Make sure you have run the {moduleName} module first.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="235"/>
-        <source>There was a problem opening a Target Apertium Text file: {fileName}. </source>
-        <translation>Es gab ein Problem beim Öffnen einer Apertium-Zieltextdatei: {fileName}. </translation>
+      <location filename="../ViewSrcTgt.py" line="235"/>
+      <source>There was a problem opening a Target Apertium Text file: {fileName}. </source>
+      <translation type="unfinished">There was a problem opening a Target Apertium Text file: {fileName}. </translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="235"/>
-        <source>Make sure you have run the modules up through {moduleName} first.</source>
-        <translation>Stellen Sie sicher, dass Sie zuerst die Module bis einschließlich {moduleName} ausgeführt haben.</translation>
+      <location filename="../ViewSrcTgt.py" line="235"/>
+      <source>Make sure you have run the modules up through {moduleName} first.</source>
+      <translation type="unfinished">Make sure you have run the modules up through {moduleName} first.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="327"/>
-        <source>Open in Browser</source>
-        <translation>Im Browser öffnen</translation>
+      <location filename="../ViewSrcTgt.py" line="327"/>
+      <source>Open in Browser</source>
+      <translation type="unfinished">Open in Browser</translation>
     </message>
-</context>
+  </context>
 </TS>
