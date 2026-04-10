@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="de" sourcelanguage="en">
+  <context>
     <name>TestbedLogWindow</name>
     <message>
-        <location filename="../TestbedLog.py" line="77"/>
-        <source>OK</source>
-        <translation>OK</translation>
+      <location filename="../TestbedLog.py" line="76"/>
+      <source>Testbed Log</source>
+      <translation>Testbed-Protokoll</translation>
     </message>
     <message>
-        <location filename="../TestbedLog.py" line="78"/>
-        <source>Edit Testbed</source>
-        <translation>Testbed bearbeiten</translation>
+      <location filename="../TestbedLog.py" line="77"/>
+      <source>OK</source>
+      <translation>OK</translation>
     </message>
     <message>
-        <location filename="../TestbedLog.py" line="79"/>
-        <source>Font Size:</source>
-        <translation>Schriftgröße:</translation>
+      <location filename="../TestbedLog.py" line="78"/>
+      <source>Edit Testbed</source>
+      <translation>Testbed bearbeiten</translation>
     </message>
     <message>
-        <location filename="../TestbedLog.py" line="76"/>
-        <source>Testbed Log</source>
-        <translation>Testbed-Protokoll</translation>
+      <location filename="../TestbedLog.py" line="79"/>
+      <source>Font Size:</source>
+      <translation>Schriftgröße:</translation>
     </message>
-</context>
+  </context>
 </TS>

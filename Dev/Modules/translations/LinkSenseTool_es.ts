@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="es-ES" sourcelanguage="en">
+  <context>
     <name>LinkSenseTool</name>
     <message>
-      <location filename="../LinkSenseTool.py" line="118"/>
+      <location filename="../LinkSenseTool.py" line="198"/>
       <source>Sense Linker Tool</source>
       <translation>Herramienta de enlace de sentidos</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="229"/>
+      <location filename="../LinkSenseTool.py" line="201"/>
       <source>Link source and target senses.</source>
       <translation>Vincular sentidos de origen y destino.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="231"/>
+      <location filename="../LinkSenseTool.py" line="203"/>
       <source>This module will create links 
 in the source project to senses in the target project. It will show a window
 with a list of all the senses in the text. White background rows indicate links that
@@ -53,179 +52,189 @@ El propósito del campo personalizado es contener el enlace a un sentido en el p
 Configure qué campo personalizado se utiliza para vincular en la configuración.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1127"/>
+      <location filename="../LinkSenseTool.py" line="1144"/>
       <source>Save Changes</source>
       <translation>Guardar cambios</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1127"/>
+      <location filename="../LinkSenseTool.py" line="1144"/>
       <source>Do you want to save your changes?</source>
       <translation>¿Desea guardar los cambios?</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1235"/>
+      <location filename="../LinkSenseTool.py" line="1265"/>
       <source>Empty grammatical category found for the target word: </source>
       <translation>Se encontró una categoría gramatical vacía para la palabra de destino: </translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1259"/>
+      <location filename="../LinkSenseTool.py" line="1289"/>
       <source>Empty gloss found for the target word: </source>
       <translation>Se encontró una glosa vacía para la palabra de destino: </translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1264"/>
+      <location filename="../LinkSenseTool.py" line="1294"/>
       <source>More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.</source>
       <translation>Se encontraron más de {num_warnings} glosas vacías. Se suprimirán más advertencias para glosas de destino vacías.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1580"/>
+      <location filename="../LinkSenseTool.py" line="1512"/>
+      <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
+      <translation type="unfinished">No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1619"/>
       <source>1 link created.</source>
       <translation>1 enlace creado.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1582"/>
+      <location filename="../LinkSenseTool.py" line="1621"/>
       <source>{num} links created.</source>
       <translation>{num} enlaces creados.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1586"/>
+      <location filename="../LinkSenseTool.py" line="1625"/>
       <source>1 link removed</source>
       <translation>1 enlace eliminado.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1590"/>
-      <source> links removed</source>
-      <translation>enlaces eliminados.</translation>
+      <location filename="../LinkSenseTool.py" line="1629"/>
+      <source>{num} links removed</source>
+      <translation type="unfinished">{num} links removed</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1658"/>
+      <location filename="../LinkSenseTool.py" line="1697"/>
       <source>Gloss</source>
       <translation>Glosa</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1659"/>
+      <location filename="../LinkSenseTool.py" line="1698"/>
       <source>Category</source>
       <translation>Categoría</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1661"/>
+      <location filename="../LinkSenseTool.py" line="1700"/>
       <source>Comment</source>
       <translation>Comentario</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1760"/>
+      <location filename="../LinkSenseTool.py" line="1799"/>
       <source>Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</source>
       <translation>Error de permisos al escribir {htmlFileName}. ¿Quizás el archivo está en uso en otro programa?</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1764"/>
+      <location filename="../LinkSenseTool.py" line="1803"/>
       <source>Error writing {htmlFileName}.</source>
       <translation>Error al escribir {htmlFileName}.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1768"/>
+      <location filename="../LinkSenseTool.py" line="1807"/>
       <source>{cnt} words written to the file: {htmlFileName}. You'll find it in the Output folder.</source>
       <translation>{cnt} palabras escritas en el archivo: {htmlFileName}. Lo encontrará en la carpeta de salida.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1771"/>
+      <location filename="../LinkSenseTool.py" line="1810"/>
       <source>No unlinked words. Nothing exported.</source>
       <translation>No hay palabras no vinculadas. Nada exportado.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1786"/>
+      <location filename="../LinkSenseTool.py" line="1825"/>
       <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
       <translation>No se ha establecido un nombre de texto de origen. Por favor, vaya a Configuración y solucione esto.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1791"/>
+      <location filename="../LinkSenseTool.py" line="1830"/>
       <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
       <translation>No se ha establecido un campo personalizado de origen para el enlace de entrada. Por favor, vaya a Configuración y solucione esto.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1797"/>
+      <location filename="../LinkSenseTool.py" line="1836"/>
       <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
       <translation>No se han seleccionado tipos de morfemas de origen contados como raíces. Por favor, vaya a Configuración y solucione esto.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1802"/>
+      <location filename="../LinkSenseTool.py" line="1841"/>
       <source>No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
       <translation>No se han seleccionado tipos de morfemas de destino contados como raíces. Por favor, vaya a Configuración y solucione esto.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1815"/>
+      <location filename="../LinkSenseTool.py" line="1855"/>
       <source>The text named: {sourceTextName} not found.</source>
       <translation>No se encontró el texto llamado: {sourceTextName}.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1831"/>
+      <location filename="../LinkSenseTool.py" line="1872"/>
       <source>{linkField} field doesn't exist. Please read the instructions.</source>
       <translation>El campo {linkField} no existe. Por favor, lea las instrucciones.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1858"/>
-      <source>Starting {moduleName} for text: {sourceTextName}.</source>
-      <translation>Iniciando {moduleName} para el texto: {sourceTextName}.</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1902"/>
-      <source>There were no senses found for linking. Please check your text and approve some words.</source>
-      <translation>No se encontraron sentidos para vincular. Por favor, revise su texto y apruebe algunas palabras.</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1904"/>
-      <source>Link it!</source>
-      <translation>¡Vincúlalo!</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1906"/>
-      <source>Source Head Word</source>
-      <translation>Palabra principal de origen</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1907"/>
-      <source>Source Category</source>
-      <translation>Categoría de origen</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1908"/>
-      <source>Source Gloss</source>
-      <translation>Glosa de origen</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1909"/>
-      <source>Target Head Word</source>
-      <translation>Palabra principal de destino</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1910"/>
-      <source>Target Category</source>
-      <translation>Categoría de destino</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1911"/>
-      <source>Target Gloss</source>
-      <translation>Glosa de destino</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1963"/>
-      <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
-    </message>
-    <message>
-      <location filename="../LinkSenseTool.py" line="1845"/>
+      <location filename="../LinkSenseTool.py" line="1886"/>
       <source>The target project does not exist. Please check the configuration file.</source>
       <translation>El proyecto de destino no existe. Por favor, revise el archivo de configuración.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1848"/>
+      <location filename="../LinkSenseTool.py" line="1889"/>
       <source>Opening: {targetProj} as the target project.</source>
       <translation>Abriendo: {targetProj} como el proyecto de destino.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1855"/>
+      <location filename="../LinkSenseTool.py" line="1896"/>
       <source>Failed to open the target project.</source>
       <translation>No se pudo abrir el proyecto de destino.</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1899"/>
+      <source>Starting {moduleName} for text: {sourceTextName}.</source>
+      <translation>Iniciando {moduleName} para el texto: {sourceTextName}.</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1928"/>
+      <source>There were no senses found for linking. Please check your text and approve some words.</source>
+      <translation>No se encontraron sentidos para vincular. Por favor, revise su texto y apruebe algunas palabras.</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1944"/>
+      <source>There was an error finding senses to link.</source>
+      <translation type="unfinished">There was an error finding senses to link.</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1946"/>
+      <source>Link it!</source>
+      <translation>¡Vincúlalo!</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1948"/>
+      <source>Source Head Word</source>
+      <translation>Palabra principal de origen</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1949"/>
+      <source>Source Category</source>
+      <translation>Categoría de origen</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1950"/>
+      <source>Source Gloss</source>
+      <translation>Glosa de origen</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1951"/>
+      <source>Target Head Word</source>
+      <translation>Palabra principal de destino</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1952"/>
+      <source>Target Category</source>
+      <translation>Categoría de destino</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="1953"/>
+      <source>Target Gloss</source>
+      <translation>Glosa de destino</translation>
+    </message>
+    <message>
+      <location filename="../LinkSenseTool.py" line="2009"/>
+      <source>You need to run this module in &quot;modify mode.&quot;</source>
+      <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
     </message>
   </context>
 </TS>

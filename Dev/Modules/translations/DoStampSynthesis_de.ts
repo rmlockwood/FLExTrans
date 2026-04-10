@@ -1,130 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="de" sourcelanguage="en">
+  <context>
     <name>DoStampSynthesis</name>
     <message>
-      <location filename="../DoStampSynthesis.py" line="118"/>
-      <source>Synthesize Text with STAMP</source>
-      <translation>Text mit STAMP synthetisieren</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="159"/>
-      <source>Synthesizes the target text with the tool STAMP.</source>
-      <translation>Synthetisiert den Zieltext mit dem Tool STAMP.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="747"/>
-      <source>Null grapheme found for natural class: {natClassName}. Skipping.</source>
-      <translation>Null-Graphem für natürliche Klasse gefunden: {natClassName}. Überspringen.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="775"/>
-      <source>Skipping sense because the lexeme form is unknown: while processing target headword: {headword}.</source>
-      <translation>Bedeutung wird übersprungen, da die Lexemform unbekannt ist: während der Verarbeitung des Zielstichworts: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="783"/>
-      <source>Skipping sense because the morpheme type is unknown: while processing target headword: {headword}.</source>
-      <translation>Bedeutung wird übersprungen, da der Morphemtyp unbekannt ist: während der Verarbeitung des Zielstichworts: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="858"/>
-      <source>Skipping sense because the POS is unknown: while processing target headword: {headword}.</source>
-      <translation>Bedeutung wird übersprungen, da die Wortart (POS) unbekannt ist: während der Verarbeitung des Zielstichworts: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="861"/>
-      <source>Skipping sense that is of class: {className} for headword: {headword}.</source>
-      <translation>Bedeutung wird übersprungen, die zur Klasse gehört: {className} für Stichwort: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="864"/>
-      <source>Skipping sense that has no Morpho-syntax analysis. Headword: {headword}.</source>
-      <translation>Bedeutung wird übersprungen, da keine morphosyntaktische Analyse vorliegt. Stichwort: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="882"/>
-      <source>No gloss. Skipping. Headword: {headword}.</source>
-      <translation>Keine Glosse. Überspringen. Stichwort: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="886"/>
-      <source>No lexeme form. Skipping. Headword: {headword}.</source>
-      <translation>Keine Lexemform. Überspringen. Stichwort: {headword}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="890"/>
-      <source>No Morph Type. Skipping. {headword} Best Vern: {vernacular}.</source>
-      <translation>Kein Morphtyp. Überspringen. {headword} Beste Umgangssprache: {vernacular}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="900"/>
-      <source>Skipping entry since the lexeme is of type: {className}.</source>
-      <translation>Eintrag wird übersprungen, da das Lexem vom Typ ist: {className}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="986"/>
-      <source>Skipping entry because the morph type is: {morphType}.</source>
-      <translation>Eintrag wird übersprungen, da der Morphtyp ist: {morphType}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="922"/>
-      <source>STAMP dictionaries created. {roots} roots, {prefixes} prefixes, {suffixes} suffixes and {infixes} infixes.</source>
-      <translation>STAMP-Wörterbücher erstellt. {roots} Wurzeln, {prefixes} Präfixe, {suffixes} Suffixe und {infixes} Infixe.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1115"/>
-      <source>Configuration file problem.</source>
-      <translation>Problem mit der Konfigurationsdatei.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1001"/>
-      <source>Configuration file problem with TargetProject.</source>
-      <translation>Problem mit der Konfigurationsdatei für TargetProject.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1130"/>
-      <source>Configuration file problem with {folder}.</source>
-      <translation>Problem mit der Konfigurationsdatei für {folder}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1135"/>
-      <source>Lexicon files folder: {folder} does not exist.</source>
-      <translation>Lexikondateien-Ordner: {folder} existiert nicht.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1021"/>
-      <source>Configuration file problem with {cacheData}.</source>
-      <translation>Problem mit der Konfigurationsdatei für {cacheData}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1033"/>
-      <source>Problem accessing the target project.</source>
-      <translation>Problem beim Zugriff auf das Zielprojekt.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1044"/>
-      <source>Target lexicon files are up to date.</source>
-      <translation>Ziellexikondateien sind auf dem neuesten Stand.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1152"/>
-      <source>The synthesized target text is in the file: {filePath}.</source>
-      <translation>Der synthetisierte Zieltext befindet sich in der Datei: {filePath}.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1153"/>
-      <source>Synthesis complete.</source>
-      <translation>Synthese abgeschlossen.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="1176"/>
-      <source>The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.</source>
-      <translation>Das Modul 'Convert Text to STAMP Format' muss vor diesem Modul ausgeführt werden. Die Datei {fileType}: {filePath} existiert nicht.</translation>
-    </message>
-    <message>
-      <location filename="../DoStampSynthesis.py" line="147"/>
+      <location filename="../DoStampSynthesis.py" line="172"/>
       <source>This module runs STAMP to create the
 synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
@@ -140,14 +19,139 @@ Diese heißt typischerweise target_text-syn.txt und befindet sich normalerweise 
 HINWEIS: Die Meldungen geben an, dass das Quellprojekt verwendet wird. Tatsächlich wird aber das Zielprojekt verwendet.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1028"/>
+      <location filename="../DoStampSynthesis.py" line="181"/>
+      <source>Synthesize Text with STAMP</source>
+      <translation>Text mit STAMP synthetisieren</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="184"/>
+      <source>Synthesizes the target text with the tool STAMP.</source>
+      <translation>Synthetisiert den Zieltext mit dem Tool STAMP.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="911"/>
+      <source>Null grapheme found for natural class: {natClassName}. Skipping.</source>
+      <translation>Null-Graphem für natürliche Klasse gefunden: {natClassName}. Überspringen.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="953"/>
+      <source>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</source>
+      <translation type="unfinished">Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="964"/>
+      <source>Skipping sense because the lexeme form is unknown: while processing target headword: {headword}.</source>
+      <translation>Bedeutung wird übersprungen, da die Lexemform unbekannt ist: während der Verarbeitung des Zielstichworts: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="972"/>
+      <source>Skipping sense because the morpheme type is unknown: while processing target headword: {headword}.</source>
+      <translation>Bedeutung wird übersprungen, da der Morphemtyp unbekannt ist: während der Verarbeitung des Zielstichworts: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1056"/>
+      <source>Skipping sense because the POS is unknown: while processing target headword: {headword}.</source>
+      <translation>Bedeutung wird übersprungen, da die Wortart (POS) unbekannt ist: während der Verarbeitung des Zielstichworts: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1059"/>
+      <source>Skipping sense that is of class: {className} for headword: {headword}.</source>
+      <translation>Bedeutung wird übersprungen, die zur Klasse gehört: {className} für Stichwort: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1062"/>
+      <source>Skipping sense that has no Morpho-syntax analysis. Headword: {headword}.</source>
+      <translation>Bedeutung wird übersprungen, da keine morphosyntaktische Analyse vorliegt. Stichwort: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1082"/>
+      <source>No gloss. Skipping. Headword: {headword}.</source>
+      <translation>Keine Glosse. Überspringen. Stichwort: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1086"/>
+      <source>No lexeme form. Skipping. Headword: {headword}.</source>
+      <translation>Keine Lexemform. Überspringen. Stichwort: {headword}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1090"/>
+      <source>No Morph Type. Skipping. {headword} Best Vern: {vernacular}.</source>
+      <translation>Kein Morphtyp. Überspringen. {headword} Beste Umgangssprache: {vernacular}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1100"/>
+      <source>Skipping entry since the lexeme is of type: {className}.</source>
+      <translation>Eintrag wird übersprungen, da das Lexem vom Typ ist: {className}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1186"/>
+      <source>Skipping entry because the morph type is: {morphType}.</source>
+      <translation>Eintrag wird übersprungen, da der Morphtyp ist: {morphType}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1122"/>
+      <source>STAMP dictionaries created. {roots} roots, {prefixes} prefixes, {suffixes} suffixes and {infixes} infixes.</source>
+      <translation>STAMP-Wörterbücher erstellt. {roots} Wurzeln, {prefixes} Präfixe, {suffixes} Suffixe und {infixes} Infixe.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1358"/>
+      <source>Configuration file problem.</source>
+      <translation>Problem mit der Konfigurationsdatei.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1201"/>
+      <source>Configuration file problem with TargetProject.</source>
+      <translation>Problem mit der Konfigurationsdatei für TargetProject.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1373"/>
+      <source>Configuration file problem with {folder}.</source>
+      <translation>Problem mit der Konfigurationsdatei für {folder}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1378"/>
+      <source>Lexicon files folder: {folder} does not exist.</source>
+      <translation>Lexikondateien-Ordner: {folder} existiert nicht.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1221"/>
+      <source>Configuration file problem with {cacheData}.</source>
+      <translation>Problem mit der Konfigurationsdatei für {cacheData}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1228"/>
       <source>The target project does not exist. Please check the configuration file.</source>
       <translation>Das Zielprojekt existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1038"/>
+      <location filename="../DoStampSynthesis.py" line="1233"/>
+      <source>Problem accessing the target project.</source>
+      <translation>Problem beim Zugriff auf das Zielprojekt.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1238"/>
       <source>Failed to open the target project.</source>
       <translation>Das Zielprojekt konnte nicht geöffnet werden.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1244"/>
+      <source>Target lexicon files are up to date.</source>
+      <translation>Ziellexikondateien sind auf dem neuesten Stand.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1395"/>
+      <source>The synthesized target text is in the file: {filePath}.</source>
+      <translation>Der synthetisierte Zieltext befindet sich in der Datei: {filePath}.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1396"/>
+      <source>Synthesis complete.</source>
+      <translation>Synthese abgeschlossen.</translation>
+    </message>
+    <message>
+      <location filename="../DoStampSynthesis.py" line="1419"/>
+      <source>The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.</source>
+      <translation>Das Modul 'Convert Text to STAMP Format' muss vor diesem Modul ausgeführt werden. Die Datei {fileType}: {filePath} existiert nicht.</translation>
     </message>
   </context>
 </TS>

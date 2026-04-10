@@ -6,7 +6,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="582"/>
       <source>List values</source>
-      <translation type="unfinished">List values</translation>
+      <translation>List values</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="446"/>

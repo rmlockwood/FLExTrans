@@ -6,7 +6,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="582"/>
       <source>List values</source>
-      <translation type="unfinished">List values</translation>
+      <translation>List values</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
@@ -206,17 +206,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation type="unfinished">Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</translation>
+      <translation>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
       <source>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</source>
-      <translation type="unfinished">Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</translation>
+      <translation>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation type="unfinished">Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</translation>
+      <translation>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>

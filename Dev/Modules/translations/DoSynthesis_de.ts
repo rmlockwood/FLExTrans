@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="de" sourcelanguage="en">
+  <context>
     <name>DoSynthesis</name>
     <message>
-      <location filename="../DoSynthesis.py" line="118"/>
+      <location filename="../DoSynthesis.py" line="70"/>
       <source>Synthesize Text</source>
       <translation>Text synthetisieren</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="64"/>
-        <source>Synthesizes the target text with either STAMP or HermitCrab.</source>
-        <translation>Synthetisiert den Zieltext entweder mit STAMP oder HermitCrab.</translation>
+      <location filename="../DoSynthesis.py" line="73"/>
+      <source>Synthesizes the target text with either STAMP or HermitCrab.</source>
+      <translation>Synthetisiert den Zieltext entweder mit STAMP oder HermitCrab.</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="66"/>
-        <source>This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
+      <location filename="../DoSynthesis.py" line="75"/>
+      <source>This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
 then the following information from the {hermitCrabModule} module applies: {hermitCrabDescription}
 
 
 If in the settings you select 'No' for 'Use HermitCrab synthesis?',
 then the following information from the {stampModule} module applies: {stampDescription}</source>
-        <translation>Dieses Modul synthetisiert den Zieltext. Wenn Sie in den Einstellungen 'Ja' f체r 'HermitCrab-Synthese verwenden?' ausw채hlen,
+      <translation>Dieses Modul synthetisiert den Zieltext. Wenn Sie in den Einstellungen 'Ja' f체r 'HermitCrab-Synthese verwenden?' ausw채hlen,
 dann gilt die folgende Information aus dem Modul {hermitCrabModule}: {hermitCrabDescription}
 
 
@@ -29,19 +29,19 @@ Wenn Sie in den Einstellungen 'Nein' f체r 'HermitCrab-Synthese verwenden?' ausw�
 dann gilt die folgende Information aus dem Modul {stampModule}: {stampDescription}</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="89"/>
-        <source>Failed to read the configuration file.</source>
-        <translation>Fehler beim Lesen der Konfigurationsdatei.</translation>
+      <location filename="../DoSynthesis.py" line="102"/>
+      <source>Failed to read the configuration file.</source>
+      <translation>Fehler beim Lesen der Konfigurationsdatei.</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="99"/>
-        <source>Using HermitCrab for synthesis.</source>
-        <translation>HermitCrab wird f체r die Synthese verwendet.</translation>
+      <location filename="../DoSynthesis.py" line="112"/>
+      <source>Using HermitCrab for synthesis.</source>
+      <translation>HermitCrab wird f체r die Synthese verwendet.</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="105"/>
-        <source>Using STAMP for synthesis.</source>
-        <translation>STAMP wird f체r die Synthese verwendet.</translation>
+      <location filename="../DoSynthesis.py" line="118"/>
+      <source>Using STAMP for synthesis.</source>
+      <translation>STAMP wird f체r die Synthese verwendet.</translation>
     </message>
-</context>
+  </context>
 </TS>
