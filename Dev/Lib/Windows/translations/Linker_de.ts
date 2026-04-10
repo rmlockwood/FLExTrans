@@ -92,15 +92,14 @@
       <location filename="../Linker.py" line="247"/>
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation type="unfinished">Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
-then double-click in the Target Head Word column for the desired row to link to it.</translation>
+      <translation>Geben Sie den Anfang eines Eintrags oder beliebigen Text ein (wenn &quot;Filter on all fields&quot; aktiviert ist), 
+dann doppelklicken Sie in der Spalte &quot;Ziel-Stichwort&quot; auf die gewünschte Zeile, um sie zu verknüpfen.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="260"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</source>
-      <translation type="unfinished">Export a list of unlinked senses to a file. If Hide Proper Nouns 
-is checked, Proper Nouns will not be exported.</translation>
+      <translation>Exportiert eine Liste nicht verknüpfter Bedeutungen in eine Datei. Wenn &quot;Eigennamen ausblenden&quot; aktiviert ist, werden Eigennamen nicht exportiert.</translation>
     </message>
   </context>
 </TS>
