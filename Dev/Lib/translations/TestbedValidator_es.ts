@@ -4,24 +4,24 @@
   <context>
     <name>TestbedValidator</name>
     <message>
-      <location filename="../TestbedValidator.py" line="111"/>
+      <location filename="../TestbedValidator.py" line="108"/>
       <source>Word Sense: {wordSense} not found.</source>
-      <translation>Word Sense: {wordSense} not found.</translation>
+      <translation>Sentido de la palabra: {wordSense} no encontrado.</translation>
     </message>
     <message>
-      <location filename="../TestbedValidator.py" line="117"/>
+      <location filename="../TestbedValidator.py" line="114"/>
       <source>Grammatical Category: {gramCat} not found.</source>
-      <translation>Grammatical Category: {gramCat} not found.</translation>
+      <translation>Categoría gramatical: {gramCat} no encontrada.</translation>
     </message>
     <message>
-      <location filename="../TestbedValidator.py" line="123"/>
+      <location filename="../TestbedValidator.py" line="120"/>
       <source>Tag: {tag} not found.</source>
-      <translation>Tag: {tag} not found.</translation>
+      <translation>Etiqueta: {tag} no encontrada.</translation>
     </message>
     <message>
-      <location filename="../TestbedValidator.py" line="235"/>
+      <location filename="../TestbedValidator.py" line="232"/>
       <source>Configuration File Problem. Morphnames not found.</source>
-      <translation>Configuration File Problem. Morphnames not found.</translation>
+      <translation>Problema con el archivo de configuración. Nombres de morfemas no encontrados.</translation>
     </message>
   </context>
 </TS>
