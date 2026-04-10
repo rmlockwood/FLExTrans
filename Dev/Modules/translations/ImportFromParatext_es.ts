@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="es-ES" sourcelanguage="en">
-<context>
+  <context>
     <name>ImportFromParatext</name>
     <message>
-        <location filename="../ImportFromParatext.py" line="182"/>
-        <source>Import Text From Paratext</source>
-        <translation>Importar texto de Paratext</translation>
+      <location filename="../ImportFromParatext.py" line="179"/>
+      <source>Import Text From Paratext</source>
+      <translation>Import Text From Paratext</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="185"/>
-        <source>Import chapters from Paratext.</source>
-        <translation>Importar capítulos desde Paratext.</translation>
+      <location filename="../ImportFromParatext.py" line="182"/>
+      <source>Import chapters from Paratext.</source>
+      <translation>Import chapters from Paratext.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="187"/>
-        <source>This module asks you which Paratext project, which book and which chapters should be 
+      <location filename="../ImportFromParatext.py" line="184"/>
+      <source>This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
 new text. If you want to include various things, click the appropriate check box. 
@@ -23,82 +23,88 @@ If you want to use the full name of the book in the text name, instead of the ab
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
 cluster projects in the main FLExTrans Settings, then come back to this module.</source>
-        <translation>Este módulo le pregunta qué proyecto de Paratext, qué libro y qué capítulos deben ser importados. El nombre del libro debe darse como una abreviatura de tres letras, tal como en Paratext. Esos capítulos se recopilan y se insertan en el proyecto FLEx actual como un nuevo texto. Si desea incluir varias cosas, haga clic en la casilla correspondiente. Si desea usar el nombre completo del libro en el nombre del texto, en lugar de la abreviatura, haga clic en la casilla. Si desea que el texto recién importado sea el texto activo en FLExTrans, haga clic en la casilla.
-Es posible importar en múltiples proyectos FLEx desde múltiples proyectos Paratext. Primero seleccione sus proyectos de clúster en la configuración principal de FLExTrans y luego regrese a este módulo.</translation>
+      <translation>This module asks you which Paratext project, which book and which chapters should be 
+imported. The book name should be given as a three-letter abbreviation just like in
+Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
+new text. If you want to include various things, click the appropriate check box. 
+If you want to use the full name of the book in the text name, instead of the abbreviation, click the check box. 
+If you want to make the newly imported text, the active text in FLExTrans click the check box.
+Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
+cluster projects in the main FLExTrans Settings, then come back to this module.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="221"/>
-        <source>Import Paratext Chapters</source>
-        <translation>Importar capítulos de Paratext</translation>
+      <location filename="../ImportFromParatext.py" line="218"/>
+      <source>Import Paratext Chapters</source>
+      <translation>Import Paratext Chapters</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="223"/>
-        <source>FLEx project name</source>
-        <translation>Nombre del proyecto FLEx</translation>
+      <location filename="../ImportFromParatext.py" line="220"/>
+      <source>FLEx project name</source>
+      <translation>FLEx project name</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="224"/>
-        <source>Paratext project abbrev.</source>
-        <translation>Abreviatura del proyecto Paratext</translation>
+      <location filename="../ImportFromParatext.py" line="221"/>
+      <source>Paratext project abbrev.</source>
+      <translation>Paratext project abbrev.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="318"/>
-        <source>Could not open the configuration file: {myConfig}</source>
-        <translation>No se pudo abrir el archivo de configuración: {myConfig}</translation>
+      <location filename="../ImportFromParatext.py" line="315"/>
+      <source>Could not open the configuration file: {myConfig}</source>
+      <translation>Could not open the configuration file: {myConfig}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="349"/>
-        <source>Could not find the book file: {bookPath}</source>
-        <translation>No se pudo encontrar el archivo del libro: {bookPath}</translation>
+      <location filename="../ImportFromParatext.py" line="346"/>
+      <source>Could not find the book file: {bookPath}</source>
+      <translation>Could not find the book file: {bookPath}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="363"/>
-        <source>Starting chapter not found.</source>
-        <translation>No se encontró el capítulo inicial.</translation>
+      <location filename="../ImportFromParatext.py" line="360"/>
+      <source>Starting chapter not found.</source>
+      <translation>Starting chapter not found.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="394"/>
-        <source>Cannot find main title (\mt or \mtN). This is needed for importing introductory material.</source>
-        <translation>No se puede encontrar el título principal (\mt o \mtN). Esto es necesario para importar material introductorio.</translation>
+      <location filename="../ImportFromParatext.py" line="391"/>
+      <source>Cannot find main title (\mt or \mtN). This is needed for importing introductory material.</source>
+      <translation>Cannot find main title (\mt or \mtN). This is needed for importing introductory material.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="415"/>
-        <source>Cannot find the range of chapters specified.</source>
-        <translation>No se puede encontrar el rango de capítulos especificado.</translation>
+      <location filename="../ImportFromParatext.py" line="412"/>
+      <source>Cannot find the range of chapters specified.</source>
+      <translation>Cannot find the range of chapters specified.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="430"/>
-        <source>{numRules} &apos;Text In&apos; rules applied.</source>
-        <translation>{numRules} reglas de 'Texto Entrante' aplicadas.</translation>
+      <location filename="../ImportFromParatext.py" line="427"/>
+      <source>{numRules} 'Text In' rules applied.</source>
+      <translation>{numRules} 'Text In' rules applied.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="492"/>
-        <source>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
+      <location filename="../ImportFromParatext.py" line="489"/>
+      <source>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
 
 Are you sure you want to continue with overwriting the text in FLEx?</source>
-        <translation>Se eligió la opción de sobrescribir el texto en FLEx. Si FLEx está abierto, asegúrese de NO estar en la sección de Texto y Palabras de FLEx.
+      <translation>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
 
-¿Está seguro de que desea continuar sobrescribiendo el texto en FLEx?</translation>
+Are you sure you want to continue with overwriting the text in FLEx?</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="494"/>
-        <source>Overwriting FLEx text</source>
-        <translation>Sobrescribiendo texto de FLEx</translation>
+      <location filename="../ImportFromParatext.py" line="491"/>
+      <source>Overwriting FLEx text</source>
+      <translation>Overwriting FLEx text</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="496"/>
-        <source>Overwrite all selected chapters</source>
-        <translation>Sobrescribir todos los capítulos seleccionados</translation>
+      <location filename="../ImportFromParatext.py" line="493"/>
+      <source>Overwrite all selected chapters</source>
+      <translation>Overwrite all selected chapters</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="534"/>
-        <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
-        <translation>Texto: &quot;{title}&quot; creado en el proyecto {projectName}.</translation>
+      <location filename="../ImportFromParatext.py" line="531"/>
+      <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
+      <translation>Text: &quot;{title}&quot; created in the {projectName} project.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="579"/>
-        <source>The rules file: {textInRulesFile} has invalid XML data.</source>
-        <translation>El archivo de reglas: {textInRulesFile} tiene datos XML no válidos.</translation>
+      <location filename="../ImportFromParatext.py" line="576"/>
+      <source>The rules file: {textInRulesFile} has invalid XML data.</source>
+      <translation>The rules file: {textInRulesFile} has invalid XML data.</translation>
     </message>
-</context>
+  </context>
 </TS>
