@@ -417,19 +417,19 @@ class FlowLayout(QLayout):
 class FlowContainer(QWidget):
     def __init__(self):
         super().__init__()
-        self.flow_layout = FlowLayout()
-        self.setLayout(self.flow_layout)
+        self.layout = FlowLayout()
+        self.setLayout(self.layout)
 
     def sizeHint(self):
         parent_widget = self.parentWidget()
         width = parent_widget.width() if parent_widget else 40
-        height = self.flow_layout.heightForWidth(width)
+        height = self.layout.heightForWidth(width)
         return QtCore.QSize(width, height)
 
     def minimumSizeHint(self):
         parent_widget = self.parentWidget()
         width = parent_widget.width() if parent_widget else 40
-        height = self.flow_layout.heightForWidth(width)
+        height = self.layout.heightForWidth(width)
         return QtCore.QSize(width, height)
     
 # Model class for list of sentences.
@@ -2312,14 +2312,10 @@ class Main(QMainWindow):
             self.ui.scrollArea.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
         # Remove all widgets from self.content_widget
-        layout = self.content_widget.layout()
-
-        if not layout:
-            return
-        
+        layout = self.content_widget.layout
         while layout.count():
             item = layout.takeAt(0)
-            widget = item.widget() if item else None
+            widget = item.widget()
             if widget is not None:
                 widget.setParent(None)  # Detach from parent (removes from UI)
 
@@ -2334,12 +2330,7 @@ class Main(QMainWindow):
             myCheck = self.__checkBoxList[i]
 
             # Add widget to the content widget of the scroll area
-            myLayout = self.content_widget.layout()
-
-            if myLayout:
-                
-                myLayout.addWidget(myCheck)
-
+            self.content_widget.layout.addWidget(myCheck)
             myCheck.show()
 
             # Set the text of the check box from the first tuple element. This will be the surface form.
