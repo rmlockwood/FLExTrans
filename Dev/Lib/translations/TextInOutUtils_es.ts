@@ -4,89 +4,89 @@
   <context>
     <name>TextInOutUtils</name>
     <message>
-      <location filename="../TextInOutUtils.py" line="298"/>
+      <location filename="../TextInOutUtils.py" line="282"/>
       <source>Test stopped on failure of rule: {ruleString}</source>
-      <translation>Test stopped on failure of rule: {ruleString}</translation>
+      <translation>Prueba detenida debido a un error en la regla: {ruleString}</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="359"/>
+      <location filename="../TextInOutUtils.py" line="342"/>
       <source>The rules file: {textOutRulesFile} has invalid XML data.</source>
-      <translation>The rules file: {textOutRulesFile} has invalid XML data.</translation>
+      <translation>El archivo de reglas: {textOutRulesFile} tiene datos XML inválidos.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="371"/>
+      <location filename="../TextInOutUtils.py" line="354"/>
       <source>{numRules} {moduleName} rules applied.</source>
-      <translation>{numRules} {moduleName} rules applied.</translation>
+      <translation>{numRules} reglas de {moduleName} aplicadas.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="435"/>
+      <location filename="../TextInOutUtils.py" line="418"/>
       <source>Current Project not in Cluster Projects list, exiting.</source>
-      <translation>Current Project not in Cluster Projects list, exiting.</translation>
+      <translation>El proyecto actual no está en la lista de proyectos agrupados, saliendo.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="461"/>
+      <location filename="../TextInOutUtils.py" line="444"/>
       <source>Error accessing work project folders.</source>
-      <translation>Error accessing work project folders.</translation>
+      <translation>Error al acceder a las carpetas de proyectos de trabajo.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="464"/>
+      <location filename="../TextInOutUtils.py" line="447"/>
       <source>FLEx project name</source>
-      <translation>FLEx project name</translation>
+      <translation>Nombre del proyecto FLEx</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="465"/>
+      <location filename="../TextInOutUtils.py" line="448"/>
       <source>WorkProject folder</source>
-      <translation>WorkProject folder</translation>
+      <translation>Carpeta del proyecto de trabajo</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="530"/>
+      <location filename="../TextInOutUtils.py" line="512"/>
       <source>Run the {wildebeest} cleanup tool</source>
-      <translation>Run the {wildebeest} cleanup tool</translation>
+      <translation>Ejecutar la herr. de limpieza {wildebeest}</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="531"/>
+      <location filename="../TextInOutUtils.py" line="513"/>
       <source>help</source>
-      <translation>help</translation>
+      <translation>ayuda</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="576"/>
+      <location filename="../TextInOutUtils.py" line="558"/>
       <source>There was a problem reading the configuration file for folder {folderName}. Check your configuration.</source>
-      <translation>There was a problem reading the configuration file for folder {folderName}. Check your configuration.</translation>
+      <translation>Hubo un problema al leer el archivo de configuración para la carpeta {folderName}. Verifique su configuración.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="610"/>
+      <location filename="../TextInOutUtils.py" line="592"/>
       <source>There was a problem creating or backing up the rules file. Check your configuration.</source>
-      <translation>There was a problem creating or backing up the rules file. Check your configuration.</translation>
+      <translation>Hubo un problema al crear o respaldar el archivo de reglas. Verifique su configuración.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="778"/>
+      <location filename="../TextInOutUtils.py" line="760"/>
       <source>For folder {foldName}, the rule: {ruleID} already exists.</source>
-      <translation>For folder {foldName}, the rule: {ruleID} already exists.</translation>
+      <translation>Para la carpeta {foldName}, la regla: {ruleID} ya existe.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="871"/>
+      <location filename="../TextInOutUtils.py" line="853"/>
       <source>For folder {foldName}, the rule: {ruleID} was not found.</source>
-      <translation>For folder {foldName}, the rule: {ruleID} was not found.</translation>
+      <translation>Para la carpeta {foldName}, la regla: {ruleID} no fue encontrada.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="1040"/>
+      <location filename="../TextInOutUtils.py" line="1018"/>
       <source>For folder {foldName}, the rule: {ruleID} not found.</source>
-      <translation>For folder {foldName}, the rule: {ruleID} not found.</translation>
+      <translation>Para la carpeta {foldName}, la regla: {ruleID} no fue encontrada.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="1190"/>
+      <location filename="../TextInOutUtils.py" line="1167"/>
       <source>Test stopped on failure of rule {ruleNumber}: {ruleString}</source>
-      <translation>Test stopped on failure of rule {ruleNumber}: {ruleString}</translation>
+      <translation>Prueba detenida debido a un error en la regla {ruleNumber}: {ruleString}</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="1392"/>
+      <location filename="../TextInOutUtils.py" line="1367"/>
       <source>Error loading XML file.</source>
-      <translation>Error loading XML file.</translation>
+      <translation>Error al cargar el archivo XML.</translation>
     </message>
     <message>
-      <location filename="../TextInOutUtils.py" line="1497"/>
+      <location filename="../TextInOutUtils.py" line="1471"/>
       <source>Error saving settings.</source>
-      <translation>Error saving settings.</translation>
+      <translation>Error al guardar las configuraciones.</translation>
     </message>
   </context>
 </TS>
