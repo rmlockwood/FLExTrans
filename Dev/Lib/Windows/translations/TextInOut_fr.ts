@@ -1,186 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="fr" sourcelanguage="en">
-<context>
+  <context>
     <name>TextInOutMainWindow</name>
     <message>
-        <location filename="../TextInOut.py" line="426"/>
-        <source>Text Out Rules</source>
-        <translation>Règles de sortie de texte</translation>
+      <location filename="../TextInOut.py" line="426"/>
+      <source>Text Out Rules</source>
+      <translation>Text Out Rules</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="427"/>
-        <source>Search for:</source>
-        <translation>Rechercher :</translation>
+      <location filename="../TextInOut.py" line="427"/>
+      <source>Search for:</source>
+      <translation>Search for:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="428"/>
-        <source>Replace with:</source>
-        <translation>Remplacer par :</translation>
+      <location filename="../TextInOut.py" line="428"/>
+      <source>Replace with:</source>
+      <translation>Replace with:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="429"/>
-        <source>Comment:</source>
-        <translation>Commentaire :</translation>
+      <location filename="../TextInOut.py" line="429"/>
+      <source>Comment:</source>
+      <translation>Comment:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="430"/>
-        <source>Treat the search and replace text as regular expressions.</source>
-        <translation>Traiter le texte de recherche et de remplacement comme des expressions régulières.</translation>
+      <location filename="../TextInOut.py" line="430"/>
+      <source>Treat the search and replace text as regular expressions.</source>
+      <translation>Treat the search and replace text as regular expressions.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="431"/>
-        <source>Regular Expression</source>
-        <translation>Expression régulière</translation>
+      <location filename="../TextInOut.py" line="431"/>
+      <source>Regular Expression</source>
+      <translation>Regular Expression</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="432"/>
-        <source>Inactive</source>
-        <translation>Inactif</translation>
+      <location filename="../TextInOut.py" line="432"/>
+      <source>Inactive</source>
+      <translation>Inactive</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="433"/>
-        <source>Add search and replace text as a new rule.</source>
-        <translation>Ajouter le texte de recherche et de remplacement comme nouvelle règle.</translation>
+      <location filename="../TextInOut.py" line="433"/>
+      <source>Add search and replace text as a new rule.</source>
+      <translation>Add search and replace text as a new rule.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="434"/>
-        <source>Add</source>
-        <translation>Ajouter</translation>
+      <location filename="../TextInOut.py" line="434"/>
+      <source>Add</source>
+      <translation>Add</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="435"/>
-        <source>Update the rule selected below with the above search and replace text.</source>
-        <translation>Mettre à jour la règle sélectionnée ci-dessous avec le texte de recherche et de remplacement ci-dessus.</translation>
+      <location filename="../TextInOut.py" line="435"/>
+      <source>Update the rule selected below with the above search and replace text.</source>
+      <translation>Update the rule selected below with the above search and replace text.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="436"/>
-        <source>Update</source>
-        <translation>Mettre à jour</translation>
+      <location filename="../TextInOut.py" line="436"/>
+      <source>Update</source>
+      <translation>Update</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="437"/>
-        <source>Delete the below selected rule.</source>
-        <translation>Supprimer la règle sélectionnée ci-dessous.</translation>
+      <location filename="../TextInOut.py" line="437"/>
+      <source>Delete the below selected rule.</source>
+      <translation>Delete the below selected rule.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="438"/>
-        <source>Delete</source>
-        <translation>Supprimer</translation>
+      <location filename="../TextInOut.py" line="438"/>
+      <source>Delete</source>
+      <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="439"/>
-        <source>Current project automatically included</source>
-        <translation>Projet actuel automatiquement inclus</translation>
+      <location filename="../TextInOut.py" line="439"/>
+      <source>Current project automatically included</source>
+      <translation>Current project automatically included</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="440"/>
-        <source>Cluster Projects to Apply to</source>
-        <translation>Projets de cluster auxquels appliquer</translation>
+      <location filename="../TextInOut.py" line="440"/>
+      <source>Cluster Projects to Apply to</source>
+      <translation>Cluster Projects to Apply to</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="441"/>
-        <source>Rules</source>
-        <translation>Règles</translation>
+      <location filename="../TextInOut.py" line="441"/>
+      <source>Rules</source>
+      <translation>Rules</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="442"/>
-        <source>Move the selected rule up.</source>
-        <translation>Déplacer la règle sélectionnée vers le haut.</translation>
+      <location filename="../TextInOut.py" line="442"/>
+      <source>Move the selected rule up.</source>
+      <translation>Move the selected rule up.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="443"/>
-        <source>Move the selected rule down.</source>
-        <translation>Déplacer la règle sélectionnée vers le bas.</translation>
+      <location filename="../TextInOut.py" line="443"/>
+      <source>Move the selected rule down.</source>
+      <translation>Move the selected rule down.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="444"/>
-        <source>This tool will run before other rules.</source>
-        <translation>Cet outil s'exécutera avant les autres règles.</translation>
+      <location filename="../TextInOut.py" line="444"/>
+      <source>This tool will run before other rules.</source>
+      <translation>This tool will run before other rules.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="445"/>
-        <source>Steps:</source>
-        <translation>Étapes :</translation>
+      <location filename="../TextInOut.py" line="445"/>
+      <source>Steps:</source>
+      <translation>Steps:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="446"/>
-        <source>Default</source>
-        <translation>Par défaut</translation>
+      <location filename="../TextInOut.py" line="446"/>
+      <source>Default</source>
+      <translation>Default</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="447"/>
-        <source>All</source>
-        <translation>Tout</translation>
+      <location filename="../TextInOut.py" line="447"/>
+      <source>All</source>
+      <translation>All</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="448"/>
-        <source>None</source>
-        <translation>Aucun</translation>
+      <location filename="../TextInOut.py" line="448"/>
+      <source>None</source>
+      <translation>None</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="449"/>
-        <source>Lang:</source>
-        <translation>Langue :</translation>
+      <location filename="../TextInOut.py" line="449"/>
+      <source>Lang:</source>
+      <translation>Lang:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="450"/>
-        <source>3-letter ISO 639-3 code</source>
-        <translation>Code ISO 639-3 à 3 lettres</translation>
+      <location filename="../TextInOut.py" line="450"/>
+      <source>3-letter ISO 639-3 code</source>
+      <translation>3-letter ISO 639-3 code</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="451"/>
-        <source>code</source>
-        <translation type="unfinished">code</translation>
+      <location filename="../TextInOut.py" line="451"/>
+      <source>code</source>
+      <translation>code</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="452"/>
-        <source>Add:</source>
-        <translation>Ajouter :</translation>
+      <location filename="../TextInOut.py" line="452"/>
+      <source>Add:</source>
+      <translation>Add:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="453"/>
-        <source>Steps to add to the base number of steps selected above.
+      <location filename="../TextInOut.py" line="453"/>
+      <source>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-        <translation>Étapes à ajouter au nombre de base d'étapes sélectionnées ci-dessus.
-Séparez les étapes par des espaces ou des virgules.</translation>
+      <translation>Steps to add to the base number of steps selected above.
+Separate steps with spaces or commas.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="455"/>
-        <source>Skip:</source>
-        <translation>Ignorer :</translation>
+      <location filename="../TextInOut.py" line="455"/>
+      <source>Skip:</source>
+      <translation>Skip:</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="456"/>
-        <source>Steps to skip from the base number of steps selected above.
+      <location filename="../TextInOut.py" line="456"/>
+      <source>Steps to skip from the base number of steps selected above.
 Separate steps with spaces or commas.</source>
-        <translation>Étapes à ignorer du nombre de base d'étapes sélectionnées ci-dessus.
-Séparez les étapes par des espaces ou des virgules.</translation>
+      <translation>Steps to skip from the base number of steps selected above.
+Separate steps with spaces or commas.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="458"/>
-        <source>Test input</source>
-        <translation>Entrée de test</translation>
+      <location filename="../TextInOut.py" line="458"/>
+      <source>Test input</source>
+      <translation>Test input</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="459"/>
-        <source>Test the checked rules above with the input text.</source>
-        <translation>Tester les règles cochées ci-dessus avec le texte d'entrée.</translation>
+      <location filename="../TextInOut.py" line="459"/>
+      <source>Test the checked rules above with the input text.</source>
+      <translation>Test the checked rules above with the input text.</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="460"/>
-        <source>Test</source>
-        <translation>Tester</translation>
+      <location filename="../TextInOut.py" line="460"/>
+      <source>Test</source>
+      <translation>Test</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="461"/>
-        <source>Test output</source>
-        <translation>Sortie de test</translation>
+      <location filename="../TextInOut.py" line="461"/>
+      <source>Test output</source>
+      <translation>Test output</translation>
     </message>
     <message>
-        <location filename="../TextInOut.py" line="462"/>
-        <source>Close</source>
-        <translation>Fermer</translation>
+      <location filename="../TextInOut.py" line="462"/>
+      <source>Close</source>
+      <translation>Close</translation>
     </message>
-</context>
+  </context>
 </TS>
