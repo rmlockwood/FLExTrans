@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="es-ES" sourcelanguage="en">
 <context>
     <name>SrcTgtWindow</name>
     <message>
-        <location filename="../SrcTgtViewer.py" line="148"/>
+        <location filename="../SrcTgtViewer.py" line="145"/>
+        <source>Source/Target Viewer</source>
+        <translation>Visor de origen/objetivo</translation>
+    </message>
+    <message>
+        <location filename="../SrcTgtViewer.py" line="146"/>
         <source>Font</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.py" line="149"/>
+        <location filename="../SrcTgtViewer.py" line="147"/>
         <source>Source</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.py" line="150"/>
+        <location filename="../SrcTgtViewer.py" line="148"/>
         <source>Target</source>
         <translation>Objetivo</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.py" line="151"/>
+        <location filename="../SrcTgtViewer.py" line="149"/>
         <source>Right to Left</source>
         <translation>De derecha a izquierda</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.py" line="152"/>
+        <location filename="../SrcTgtViewer.py" line="150"/>
         <source>Zoom:</source>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.py" line="153"/>
+        <location filename="../SrcTgtViewer.py" line="151"/>
         <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../SrcTgtViewer.py" line="147"/>
-        <source>Source/Target Viewer</source>
-        <translation>Visor de origen/objetivo</translation>
+        <translation type="unfinished">OK</translation>
     </message>
 </context>
 </TS>
