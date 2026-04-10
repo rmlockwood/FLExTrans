@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="es-ES" sourcelanguage="en">
-<context>
+  <context>
     <name>DoHermitCrabSynthesis</name>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="151"/>
-        <source>Synthesize Text with HermitCrab</source>
-        <translation>Sintetizar texto con HermitCrab</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="151"/>
+      <source>Synthesize Text with HermitCrab</source>
+      <translation type="unfinished">Synthesize Text with HermitCrab</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="154"/>
-        <source>Synthesizes the target text with the tool HermitCrab.</source>
-        <translation>Sintetiza el texto objetivo con la herramienta HermitCrab.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="154"/>
+      <source>Synthesizes the target text with the tool HermitCrab.</source>
+      <translation type="unfinished">Synthesizes the target text with the tool HermitCrab.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="156"/>
-        <source>This module runs HermitCrab to create the
+      <location filename="../DoHermitCrabSynthesis.py" line="156"/>
+      <source>This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like &apos;target_text-syn.txt&apos;. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
@@ -26,172 +26,177 @@ is being used. Actually the target project is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
 produce surface forms (&apos;target_words-surface.txt&apos;). 
 These forms are then used to create the target text.</source>
-        <translation>Este módulo ejecuta HermitCrab para crear el texto sintetizado. Los resultados se colocan en el archivo designado en la configuración como &quot;Target Output Synthesis File&quot;. Por defecto, será algo como &quot;target_text-syn.txt&quot;.
-Antes de crear el texto sintetizado, este módulo extrae el léxico del idioma de destino en forma de un archivo de configuración de HermitCrab.
-Se llama &quot;HermitCrab.config&quot; y estará en la carpeta &quot;Build&quot;.
-NOTA: Los mensajes dirán que se está utilizando el proyecto fuente. En realidad, se está utilizando el proyecto de destino.
-Información avanzada: Este módulo ejecuta HermitCrab con una lista de análisis de destino (&quot;target_words-parses.txt&quot;) para producir formas superficiales (&quot;target_words-surface.txt&quot;).
-Estas formas luego se utilizan para crear el texto de destino.</translation>
+      <translation type="unfinished">This module runs HermitCrab to create the
+synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
+This will default to something like &apos;target_text-syn.txt&apos;. 
+Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
+configuration file. 
+It is named &apos;HermitCrab.config&apos; and will be in the &apos;Build&apos; folder. 
+NOTE: Messages will say the source project
+is being used. Actually the target project is being used.
+Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
+produce surface forms (&apos;target_words-surface.txt&apos;). 
+These forms are then used to create the target text.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="208"/>
-        <source>Configuration file problem with TargetProject.</source>
-        <translation>Problema con el archivo de configuración para TargetProject.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="208"/>
+      <source>Configuration file problem with TargetProject.</source>
+      <translation type="unfinished">Configuration file problem with TargetProject.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="219"/>
-        <source>Failed to open the target project: {targetProj}.</source>
-        <translation>No se pudo abrir el proyecto de destino: {targetProj}.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="219"/>
+      <source>Failed to open the target project: {targetProj}.</source>
+      <translation type="unfinished">Failed to open the target project: {targetProj}.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="228"/>
-        <source>A value for {cacheData} not found in the configuration file.</source>
-        <translation>No se encontró un valor para {cacheData} en el archivo de configuración.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="228"/>
+      <source>A value for {cacheData} not found in the configuration file.</source>
+      <translation type="unfinished">A value for {cacheData} not found in the configuration file.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="259"/>
-        <source>An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)</source>
-        <translation>Ocurrió un error al cargar el archivo de configuración de HermitCrab para el objeto de síntesis HC. (DLL)</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="259"/>
+      <source>An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)</source>
+      <translation type="unfinished">An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="251"/>
-        <source>An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}</source>
-        <translation>Ocurrió una excepción al intentar obtener el archivo XML de HermitCrab desde el objeto DLL: {e}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="251"/>
+      <source>An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}</source>
+      <translation type="unfinished">An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="301"/>
-        <source>An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}</source>
-        <translation>Ocurrió una excepción al intentar establecer el archivo XML de HermitCrab en el objeto DLL. Error: {e}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="301"/>
+      <source>An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}</source>
+      <translation type="unfinished">An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="267"/>
-        <source>The HermitCrab configuration file is up to date.</source>
-        <translation>El archivo de configuración de HermitCrab está actualizado.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="267"/>
+      <source>The HermitCrab configuration file is up to date.</source>
+      <translation type="unfinished">The HermitCrab configuration file is up to date.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="277"/>
-        <source>Generated the HermitCrab config. file: {filePath}.</source>
-        <translation>Se generó el archivo de configuración de HermitCrab: {filePath}.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="277"/>
+      <source>Generated the HermitCrab config. file: {filePath}.</source>
+      <translation type="unfinished">Generated the HermitCrab config. file: {filePath}.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="306"/>
-        <source>An error happened when running the Generate HermitCrab Configuration tool.</source>
-        <translation>Ocurrió un error al ejecutar la herramienta Generar Configuración de HermitCrab.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="306"/>
+      <source>An error happened when running the Generate HermitCrab Configuration tool.</source>
+      <translation type="unfinished">An error happened when running the Generate HermitCrab Configuration tool.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="284"/>
-        <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
-        <translation>El error contiene una 'KeyNotFoundException' y esto a menudo indica que se debe ejecutar la utilidad FLEx Find and Fix en el proyecto {projectName}.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="284"/>
+      <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
+      <translation type="unfinished">The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="285"/>
-        <source>The full error message is:</source>
-        <translation>El mensaje de error completo es:</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="285"/>
+      <source>The full error message is:</source>
+      <translation type="unfinished">The full error message is:</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="296"/>
-        <source>An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)</source>
-        <translation>Ocurrió un error al cargar el archivo de configuración de HermitCrab para el objeto de síntesis HC. Esto ocurrió después de que se generó el archivo de configuración. (DLL)</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="296"/>
+      <source>An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)</source>
+      <translation type="unfinished">An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="336"/>
-        <source>There was an error opening the HermitCrab surface forms file.</source>
-        <translation>Ocurrió un error al abrir el archivo de formas superficiales de HermitCrab.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="336"/>
+      <source>There was an error opening the HermitCrab surface forms file.</source>
+      <translation type="unfinished">There was an error opening the HermitCrab surface forms file.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="345"/>
-        <source>The file: {transferResultsFile} was not found. Did you run the {runApertium} module?</source>
-        <translation>El archivo: {transferResultsFile} no fue encontrado. ¿Ejecutó el módulo {runApertium}?</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="345"/>
+      <source>The file: {transferResultsFile} was not found. Did you run the {runApertium} module?</source>
+      <translation type="unfinished">The file: {transferResultsFile} was not found. Did you run the {runApertium} module?</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="360"/>
-        <source>The number of surface forms does not match the number of Lexical Units.</source>
-        <translation>El número de formas superficiales no coincide con el número de Unidades Léxicas.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="360"/>
+      <source>The number of surface forms does not match the number of Lexical Units.</source>
+      <translation type="unfinished">The number of surface forms does not match the number of Lexical Units.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="390"/>
-        <source>Synthesis failed. ({saveStr})</source>
-        <translation>La síntesis falló. ({saveStr})</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="390"/>
+      <source>Synthesis failed. ({saveStr})</source>
+      <translation type="unfinished">Synthesis failed. ({saveStr})</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="414"/>
-        <source>Error writing the file: {synFile}.</source>
-        <translation>Error al escribir el archivo: {synFile}.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="414"/>
+      <source>Error writing the file: {synFile}.</source>
+      <translation type="unfinished">Error writing the file: {synFile}.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="431"/>
-        <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
-        <translation>Ocurrió un error al abrir el archivo maestro de HermitCrab. ¿Tiene activada la opción &quot;Usar síntesis HermitCrab&quot;? ¿Ejecutó el módulo Convertir texto a formato de sintetizador? Archivo: {parsesFile}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="431"/>
+      <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
+      <translation type="unfinished">There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="440"/>
-        <source>There was an error opening the HermitCrab parses file.</source>
-        <translation>Ocurrió un error al abrir el archivo de análisis de HermitCrab.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="440"/>
+      <source>There was an error opening the HermitCrab parses file.</source>
+      <translation type="unfinished">There was an error opening the HermitCrab parses file.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="455"/>
-        <source>Malformed Lexical Unit in HermitCrab master file skipping this line: {line}</source>
-        <translation>Unidad léxica mal formada en el archivo maestro de HermitCrab, omitiendo esta línea: {line}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="455"/>
+      <source>Malformed Lexical Unit in HermitCrab master file skipping this line: {line}</source>
+      <translation type="unfinished">Malformed Lexical Unit in HermitCrab master file skipping this line: {line}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="651"/>
-        <source>Unable to open the HC master file.</source>
-        <translation>No se pudo abrir el archivo maestro de HC.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="651"/>
+      <source>Unable to open the HC master file.</source>
+      <translation type="unfinished">Unable to open the HC master file.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="677"/>
-        <source>An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).</source>
-        <translation>Ocurrió un error al establecer el archivo de glosas para la herramienta HermitCrab Synthesize By Gloss (DLL).</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="677"/>
+      <source>An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).</source>
+      <translation type="unfinished">An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="682"/>
-        <source>An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-        <translation>Ocurrió una excepción al intentar establecer el archivo de glosas para la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="682"/>
+      <source>An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
+      <translation type="unfinished">An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="688"/>
-        <source>An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).</source>
-        <translation>Ocurrió un error al ejecutar la herramienta HermitCrab Synthesize By Gloss (DLL).</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="688"/>
+      <source>An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).</source>
+      <translation type="unfinished">An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="693"/>
-        <source>An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-        <translation>Ocurrió una excepción al intentar ejecutar (llamando a Process) la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="693"/>
+      <source>An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
+      <translation type="unfinished">An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="713"/>
-        <source>An error happened when running the HermitCrab Synthesize By Gloss tool.</source>
-        <translation>Ocurrió un error al ejecutar la herramienta HermitCrab Synthesize By Gloss.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="713"/>
+      <source>An error happened when running the HermitCrab Synthesize By Gloss tool.</source>
+      <translation type="unfinished">An error happened when running the HermitCrab Synthesize By Gloss tool.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="726"/>
-        <source>An error happened when trying to open the file: {parsesFile}</source>
-        <translation>Ocurrió un error al intentar abrir el archivo: {parsesFile}</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="726"/>
+      <source>An error happened when trying to open the file: {parsesFile}</source>
+      <translation type="unfinished">An error happened when trying to open the file: {parsesFile}</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="729"/>
-        <source>Processing {LUsCount} unique lexical units.</source>
-        <translation>Procesando {LUsCount} unidades léxicas únicas.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="729"/>
+      <source>Processing {LUsCount} unique lexical units.</source>
+      <translation type="unfinished">Processing {LUsCount} unique lexical units.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="744"/>
-        <source>Configuration file problem with the value: {val}.</source>
-        <translation>Problema con el archivo de configuración en el valor: {val}.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="744"/>
+      <source>Configuration file problem with the value: {val}.</source>
+      <translation type="unfinished">Configuration file problem with the value: {val}.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="759"/>
-        <source>The synthesized target text is in the file: {file}.</source>
-        <translation>El texto objetivo sintetizado está en el archivo: {file}.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="759"/>
+      <source>The synthesized target text is in the file: {file}.</source>
+      <translation type="unfinished">The synthesized target text is in the file: {file}.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="760"/>
-        <source>Synthesis complete.</source>
-        <translation>Síntesis completa.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="760"/>
+      <source>Synthesis complete.</source>
+      <translation type="unfinished">Synthesis complete.</translation>
     </message>
     <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="798"/>
-        <source>{master} or {parses} or {surface} or {transfer} not found in the configuration file.</source>
-        <translation>{master} o {parses} o {surface} o {transfer} no se encontró en el archivo de configuración.</translation>
+      <location filename="../DoHermitCrabSynthesis.py" line="798"/>
+      <source>{master} or {parses} or {surface} or {transfer} not found in the configuration file.</source>
+      <translation type="unfinished">{master} or {parses} or {surface} or {transfer} not found in the configuration file.</translation>
     </message>
-</context>
+  </context>
 </TS>
