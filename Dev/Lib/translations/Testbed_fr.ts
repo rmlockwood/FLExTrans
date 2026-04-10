@@ -4,24 +4,24 @@
   <context>
     <name>Testbed</name>
     <message>
-      <location filename="../Testbed.py" line="655"/>
+      <location filename="../Testbed.py" line="652"/>
       <source>No more lines to read in the synthesis file.</source>
-      <translation>No more lines to read in the synthesis file.</translation>
+      <translation>Plus de lignes à lire dans le fichier de synthèse.</translation>
     </message>
     <message>
-      <location filename="../Testbed.py" line="873"/>
+      <location filename="../Testbed.py" line="870"/>
       <source>The testbed file: {filePath} could not be read or written.</source>
-      <translation>The testbed file: {filePath} could not be read or written.</translation>
+      <translation>Le fichier testbed : {filePath} n'a pas pu être lu ou écrit.</translation>
     </message>
     <message>
-      <location filename="../Testbed.py" line="878"/>
+      <location filename="../Testbed.py" line="875"/>
       <source>The testbed file: {filePath} is invalid.</source>
-      <translation>The testbed file: {filePath} is invalid.</translation>
+      <translation>Le fichier testbed : {filePath} est invalide.</translation>
     </message>
     <message>
-      <location filename="../Testbed.py" line="1110"/>
+      <location filename="../Testbed.py" line="1107"/>
       <source>The testbed results file: {resultsPath} is invalid.</source>
-      <translation>The testbed results file: {resultsPath} is invalid.</translation>
+      <translation>Le fichier de résultats testbed : {resultsPath} est invalide.</translation>
     </message>
   </context>
 </TS>
