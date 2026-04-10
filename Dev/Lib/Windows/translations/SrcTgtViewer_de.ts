@@ -31,12 +31,12 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="152"/>
       <source>Zoom:</source>
-      <translation type="unfinished">Zoom:</translation>
+      <translation>Zoom:</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="153"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
   </context>
 </TS>
