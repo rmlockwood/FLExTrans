@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="fr" sourcelanguage="en">
 <context>
     <name>ImportFromParatext</name>
     <message>
-        <location filename="../ImportFromParatext.py" line="179"/>
+        <location filename="../ImportFromParatext.py" line="182"/>
         <source>Import Text From Paratext</source>
         <translation>Importer le texte de Paratext</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="182"/>
+        <location filename="../ImportFromParatext.py" line="185"/>
         <source>Import chapters from Paratext.</source>
         <translation>Importer les chapitres de Paratext.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="184"/>
+        <location filename="../ImportFromParatext.py" line="187"/>
         <source>This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
@@ -33,52 +33,52 @@ L'importation dans plusieurs projets FLEx à partir de plusieurs projets Paratex
 projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à ce module.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="218"/>
+        <location filename="../ImportFromParatext.py" line="221"/>
         <source>Import Paratext Chapters</source>
         <translation>Importer les chapitres Paratext</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="220"/>
+        <location filename="../ImportFromParatext.py" line="223"/>
         <source>FLEx project name</source>
         <translation>Nom du projet FLEx</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="221"/>
+        <location filename="../ImportFromParatext.py" line="224"/>
         <source>Paratext project abbrev.</source>
         <translation>Abréviation du projet Paratext</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="315"/>
+        <location filename="../ImportFromParatext.py" line="318"/>
         <source>Could not open the configuration file: {myConfig}</source>
         <translation>Impossible d'ouvrir le fichier de configuration : {myConfig}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="346"/>
+        <location filename="../ImportFromParatext.py" line="349"/>
         <source>Could not find the book file: {bookPath}</source>
         <translation>Impossible de trouver le fichier du livre : {bookPath}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="360"/>
+        <location filename="../ImportFromParatext.py" line="363"/>
         <source>Starting chapter not found.</source>
         <translation>Chapitre de départ introuvable.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="391"/>
+        <location filename="../ImportFromParatext.py" line="394"/>
         <source>Cannot find main title (\mt or \mtN). This is needed for importing introductory material.</source>
         <translation>Impossible de trouver le titre principal (\mt ou \mtN). Ceci est nécessaire pour importer le matériel d'introduction.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="412"/>
+        <location filename="../ImportFromParatext.py" line="415"/>
         <source>Cannot find the range of chapters specified.</source>
         <translation>Impossible de trouver la plage de chapitres spécifiée.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="427"/>
-        <source>{numRules} 'Text In' rules applied.</source>
+        <location filename="../ImportFromParatext.py" line="430"/>
+        <source>{numRules} &apos;Text In&apos; rules applied.</source>
         <translation>{numRules} règles « Texte entrant » appliquées.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="489"/>
+        <location filename="../ImportFromParatext.py" line="492"/>
         <source>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
 
 Are you sure you want to continue with overwriting the text in FLEx?</source>
@@ -87,22 +87,22 @@ Are you sure you want to continue with overwriting the text in FLEx?</source>
 Êtes-vous sûr de vouloir continuer et écraser le texte dans FLEx ?</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="491"/>
+        <location filename="../ImportFromParatext.py" line="494"/>
         <source>Overwriting FLEx text</source>
         <translation>Écrasement du texte FLEx</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="493"/>
+        <location filename="../ImportFromParatext.py" line="496"/>
         <source>Overwrite all selected chapters</source>
         <translation>Écraser tous les chapitres sélectionnés</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="531"/>
+        <location filename="../ImportFromParatext.py" line="534"/>
         <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
         <translation>Texte : « {title} » créé dans le projet {projectName}.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="576"/>
+        <location filename="../ImportFromParatext.py" line="579"/>
         <source>The rules file: {textInRulesFile} has invalid XML data.</source>
         <translation>Le fichier de règles : {textInRulesFile} contient des données XML invalides.</translation>
     </message>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="fr" sourcelanguage="en">
 <context>
     <name>LiveRuleTesterTool</name>
     <message>
@@ -283,11 +283,6 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
         <translation> - Règle active </translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2620"/>
-        <source>An error happened when running the Apertium tools.</source>
-        <translation type="obsolete">Une erreur s'est produite lors de l'exécution des outils Apertium.</translation>
-    </message>
-    <message>
         <location filename="../LiveRuleTesterTool.py" line="2868"/>
         <source>Cannot find file: {tgt_file}.</source>
         <translation>Impossible de trouver le fichier : {tgt_file}.</translation>
@@ -370,7 +365,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2881"/>
         <source>Problem opening file: {tgt_file}.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Problem opening file: {tgt_file}.</translation>
     </message>
 </context>
 <context>
@@ -378,7 +373,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
         <location filename="../LiveRuleTesterTool.py" line="2842"/>
         <source>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
     </message>
 </context>
 </TS>

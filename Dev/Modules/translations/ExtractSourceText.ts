@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="fr" sourcelanguage="en">
 <context>
     <name>ExtractSourceText</name>
     <message>
-        <location filename="../ExtractSourceText.py" line="95"/>
+        <location filename="../ExtractSourceText.py" line="98"/>
         <source>Extract Source Text</source>
         <translation>Extraire le texte source</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="98"/>
+        <location filename="../ExtractSourceText.py" line="101"/>
         <source>Exports an Analyzed FLEx text into Apertium format.</source>
         <translation>Exporte un texte FLEx analysé au format Apertium.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="100"/>
+        <location filename="../ExtractSourceText.py" line="103"/>
         <source>This module will use the Source Text Name set in the Settings. It will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
@@ -41,57 +41,57 @@ Les phrases exportées seront stockées dans le fichier spécifié par le param�
 Il s'appelle généralement source_text-aper.txt et se trouve habituellement dans le dossier Build.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="269"/>
+        <location filename="../ExtractSourceText.py" line="272"/>
         <source>There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.</source>
         <translation>Il y a un problème avec le chemin du fichier de sortie du texte analysé : {path}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="285"/>
+        <location filename="../ExtractSourceText.py" line="288"/>
         <source>The text named: {textName} not found.</source>
         <translation>Le texte nommé : {textName} est introuvable.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="318"/>
+        <location filename="../ExtractSourceText.py" line="321"/>
         <source>There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.</source>
         <translation>Il y a un problème avec le chemin du fichier de résultat Tree Tran : {path}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="366"/>
+        <location filename="../ExtractSourceText.py" line="369"/>
         <source>Sentence {sentNum} from TreeTran not found</source>
         <translation>Phrase {sentNum} de TreeTran introuvable</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="387"/>
+        <location filename="../ExtractSourceText.py" line="390"/>
         <source>Null Guid in sentence {sentNum}, word {wordNum}</source>
         <translation>Guid nul dans la phrase {sentNum}, mot {wordNum}</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="395"/>
+        <location filename="../ExtractSourceText.py" line="398"/>
         <source>Could not find the desired Guid in sentence {sentNum}, word {wordNum}</source>
         <translation>Impossible de trouver le Guid désiré dans la phrase {sentNum}, mot {wordNum}</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="452"/>
+        <location filename="../ExtractSourceText.py" line="455"/>
         <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
         <translation>Phrase : {sentNum} introuvable. Vérifiez que les bonnes analyses sont présentes.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="460"/>
+        <location filename="../ExtractSourceText.py" line="463"/>
         <source>Exported: {count} sentence(s) using TreeTran results.</source>
         <translation>Exporté : {count} phrase(s) en utilisant les résultats TreeTran.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="463"/>
+        <location filename="../ExtractSourceText.py" line="466"/>
         <source>No parses found for {count} sentence(s).</source>
         <translation>Aucune analyse trouvée pour {count} phrase(s).</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="470"/>
+        <location filename="../ExtractSourceText.py" line="473"/>
         <source>Exported {count} sentence(s) to {path}.</source>
         <translation>Exporté {count} phrase(s) vers {path}.</translation>
     </message>
     <message>
-        <location filename="../ExtractSourceText.py" line="474"/>
+        <location filename="../ExtractSourceText.py" line="477"/>
         <source>Export of {textName} complete.</source>
         <translation>Exportation de {textName} terminée.</translation>
     </message>

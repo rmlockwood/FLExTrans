@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="fr" sourcelanguage="en">
 <context>
     <name>ReadConfig</name>
     <message>
-        <location filename="../ReadConfig.py" line="193"/>
+        <location filename="../ReadConfig.py" line="196"/>
         <source>Error reading the file: &quot;{path}/{file}&quot;. Check that it exists.</source>
-        <translation>Erreur de lecture du fichier : &quot;{path}/{file}&quot;. Vérifiez qu'il existe.</translation>
+        <translation>Error reading the file: &quot;{path}/{file}&quot;. Check that it exists.</translation>
     </message>
     <message>
-        <location filename="../ReadConfig.py" line="230"/>
+        <location filename="../ReadConfig.py" line="233"/>
         <source>Setting: &quot;{setting}&quot; not found in the configuration file.</source>
-        <translation>Paramètre : &quot;{setting}&quot; non trouvé dans le fichier de configuration.</translation>
+        <translation>Setting: &quot;{setting}&quot; not found in the configuration file.</translation>
     </message>
     <message>
-        <location filename="../ReadConfig.py" line="269"/>
+        <location filename="../ReadConfig.py" line="272"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line without &quot;=&quot; was found.</source>
-        <translation>Problème de lecture du fichier : &quot;{file}&quot;. Une ligne sans &quot;=&quot; a été trouvée.</translation>
+        <translation>Problem reading the file: &quot;{file}&quot;. A line without &quot;=&quot; was found.</translation>
     </message>
     <message>
-        <location filename="../ReadConfig.py" line="279"/>
+        <location filename="../ReadConfig.py" line="282"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line with more than one &quot;=&quot; was found.</source>
-        <translation>Problème de lecture du fichier : &quot;{file}&quot;. Une ligne avec plus d'un &quot;=&quot; a été trouvée.</translation>
+        <translation>Problem reading the file: &quot;{file}&quot;. A line with more than one &quot;=&quot; was found.</translation>
     </message>
     <message>
-        <location filename="../ReadConfig.py" line="303"/>
+        <location filename="../ReadConfig.py" line="306"/>
         <source>Error in the file: &quot;{file}&quot;. A value for &quot;{key}&quot; was not found.</source>
-        <translation>Erreur dans le fichier : &quot;{file}&quot;. Une valeur pour &quot;{key}&quot; n'a pas été trouvée.</translation>
+        <translation>Error in the file: &quot;{file}&quot;. A value for &quot;{key}&quot; was not found.</translation>
     </message>
     <message>
-        <location filename="../ReadConfig.py" line="329"/>
+        <location filename="../ReadConfig.py" line="332"/>
         <source>Error in the file: &quot;{file}&quot;. The value for &quot;{key}&quot; is supposed to be a comma separated list. For a single value, end it with a comma.</source>
-        <translation>Erreur dans le fichier : &quot;{file}&quot;. La valeur pour &quot;{key}&quot; est censée être une liste séparée par des virgules. Pour une valeur unique, terminez-la par une virgule.</translation>
+        <translation>Error in the file: &quot;{file}&quot;. The value for &quot;{key}&quot; is supposed to be a comma separated list. For a single value, end it with a comma.</translation>
     </message>
 </context>
 </TS>

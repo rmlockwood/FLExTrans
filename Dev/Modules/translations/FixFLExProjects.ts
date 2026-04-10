@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="fr" sourcelanguage="en">
 <context>
     <name>FixFLExProjects</name>
     <message>
-        <location filename="../FixFLExProjects.py" line="197"/>
+        <location filename="../FixFLExProjects.py" line="200"/>
         <source>Fix FLEx Projects</source>
         <translation>Corriger les projets FLEx</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="78"/>
+        <location filename="../FixFLExProjects.py" line="81"/>
         <source>Run the Find and Fix utility on the FLEx projects you choose.</source>
         <translation>Exécuter l'utilitaire Rechercher et corriger sur les projets FLEx que vous choisissez.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="80"/>
+        <location filename="../FixFLExProjects.py" line="83"/>
         <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.</source>
@@ -23,42 +23,42 @@ Vous ne pouvez pas exécuter cet utilitaire sur un projet actuellement ouvert da
 n'est pas ouvert. Les erreurs corrigées sont enregistrées dans le volet de rapport.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="206"/>
+        <location filename="../FixFLExProjects.py" line="209"/>
         <source>FLEx project names (multi-select):</source>
         <translation>Noms des projets FLEx (sélection multiple) :</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="216"/>
+        <location filename="../FixFLExProjects.py" line="219"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="217"/>
+        <location filename="../FixFLExProjects.py" line="220"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="286"/>
+        <location filename="../FixFLExProjects.py" line="289"/>
         <source>Fixing {projName}...</source>
         <translation>Correction de {projName}...</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="297"/>
+        <location filename="../FixFLExProjects.py" line="300"/>
         <source>{projName}: Project is open. Skipping.</source>
         <translation>{projName} : Le projet est ouvert. Ignoré.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="304"/>
+        <location filename="../FixFLExProjects.py" line="307"/>
         <source>{projName}: Skipping. {error}</source>
         <translation>{projName} : Ignoré. {error}</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="307"/>
+        <location filename="../FixFLExProjects.py" line="310"/>
         <source>{projName}: {errorCount} errors fixed.</source>
         <translation>{projName} : {errorCount} erreurs corrigées.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="309"/>
+        <location filename="../FixFLExProjects.py" line="312"/>
         <source>{projName}: No errors found</source>
         <translation>{projName} : Aucune erreur trouvée</translation>
     </message>
