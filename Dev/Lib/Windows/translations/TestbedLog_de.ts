@@ -11,7 +11,7 @@
     <message>
       <location filename="../TestbedLog.py" line="77"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../TestbedLog.py" line="78"/>
