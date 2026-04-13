@@ -6,12 +6,12 @@
     <message>
       <location filename="../LinkSenseTool.py" line="210"/>
       <source>Sense Linker Tool</source>
-      <translation type="unfinished">Sense Linker Tool</translation>
+      <translation>Sense Linker Tool</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="213"/>
       <source>Link source and target senses.</source>
-      <translation type="unfinished">Link source and target senses.</translation>
+      <translation>Link source and target senses.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="215"/>
@@ -33,7 +33,7 @@ This module requires
 a sense-level custom field in your source project. It should be simple text field.
 The purpose of the custom field is to hold the link to a sense in the target project.
 Set which custom field is used for linking in the settings.</source>
-      <translation type="unfinished">This module will create links 
+      <translation>This module will create links 
 in the source project to senses in the target project. It will show a window
 with a list of all the senses in the text. White background rows indicate links that
 already exist. blue background rows indicate suggested links based on an exact match
@@ -55,187 +55,187 @@ Set which custom field is used for linking in the settings.</translation>
     <message>
       <location filename="../LinkSenseTool.py" line="1158"/>
       <source>Save Changes</source>
-      <translation type="unfinished">Save Changes</translation>
+      <translation>Save Changes</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1158"/>
       <source>Do you want to save your changes?</source>
-      <translation type="unfinished">Do you want to save your changes?</translation>
+      <translation>Do you want to save your changes?</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1279"/>
       <source>Empty grammatical category found for the target word: </source>
-      <translation type="unfinished">Empty grammatical category found for the target word: </translation>
+      <translation>Empty grammatical category found for the target word: </translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1303"/>
       <source>Empty gloss found for the target word: </source>
-      <translation type="unfinished">Empty gloss found for the target word: </translation>
+      <translation>Empty gloss found for the target word: </translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1308"/>
       <source>More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.</source>
-      <translation type="unfinished">More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.</translation>
+      <translation>More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1526"/>
       <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
-      <translation type="unfinished">No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</translation>
+      <translation>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1633"/>
       <source>1 link created.</source>
-      <translation type="unfinished">1 link created.</translation>
+      <translation>1 link created.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1635"/>
       <source>{num} links created.</source>
-      <translation type="unfinished">{num} links created.</translation>
+      <translation>{num} links created.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1639"/>
       <source>1 link removed</source>
-      <translation type="unfinished">1 link removed</translation>
+      <translation>1 link removed</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1643"/>
       <source>{num} links removed</source>
-      <translation type="unfinished">{num} links removed</translation>
+      <translation>{num} links removed</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1711"/>
       <source>Gloss</source>
-      <translation type="unfinished">Gloss</translation>
+      <translation>Gloss</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1712"/>
       <source>Category</source>
-      <translation type="unfinished">Category</translation>
+      <translation>Category</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1714"/>
       <source>Comment</source>
-      <translation type="unfinished">Comment</translation>
+      <translation>Comment</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1813"/>
       <source>Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</source>
-      <translation type="unfinished">Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</translation>
+      <translation>Permission error writing {htmlFileName}. Perhaps the file is in use in another program?</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1817"/>
       <source>Error writing {htmlFileName}.</source>
-      <translation type="unfinished">Error writing {htmlFileName}.</translation>
+      <translation>Error writing {htmlFileName}.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1821"/>
       <source>{cnt} words written to the file: {htmlFileName}. You&apos;ll find it in the Output folder.</source>
-      <translation type="unfinished">{cnt} words written to the file: {htmlFileName}. You&apos;ll find it in the Output folder.</translation>
+      <translation>{cnt} words written to the file: {htmlFileName}. You&apos;ll find it in the Output folder.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1824"/>
       <source>No unlinked words. Nothing exported.</source>
-      <translation type="unfinished">No unlinked words. Nothing exported.</translation>
+      <translation>No unlinked words. Nothing exported.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1839"/>
       <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Source Text Name has been set. Please go to Settings and fix this.</translation>
+      <translation>No Source Text Name has been set. Please go to Settings and fix this.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1844"/>
       <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</translation>
+      <translation>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1850"/>
       <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</translation>
+      <translation>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1855"/>
       <source>No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</translation>
+      <translation>No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1869"/>
       <source>The text named: {sourceTextName} not found.</source>
-      <translation type="unfinished">The text named: {sourceTextName} not found.</translation>
+      <translation>The text named: {sourceTextName} not found.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1886"/>
       <source>{linkField} field doesn&apos;t exist. Please read the instructions.</source>
-      <translation type="unfinished">{linkField} field doesn&apos;t exist. Please read the instructions.</translation>
+      <translation>{linkField} field doesn&apos;t exist. Please read the instructions.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1900"/>
       <source>The target project does not exist. Please check the configuration file.</source>
-      <translation type="unfinished">The target project does not exist. Please check the configuration file.</translation>
+      <translation>The target project does not exist. Please check the configuration file.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1903"/>
       <source>Opening: {targetProj} as the target project.</source>
-      <translation type="unfinished">Opening: {targetProj} as the target project.</translation>
+      <translation>Opening: {targetProj} as the target project.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1910"/>
       <source>Failed to open the target project.</source>
-      <translation type="unfinished">Failed to open the target project.</translation>
+      <translation>Failed to open the target project.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1913"/>
       <source>Starting {moduleName} for text: {sourceTextName}.</source>
-      <translation type="unfinished">Starting {moduleName} for text: {sourceTextName}.</translation>
+      <translation>Starting {moduleName} for text: {sourceTextName}.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1942"/>
       <source>There were no senses found for linking. Please check your text and approve some words.</source>
-      <translation type="unfinished">There were no senses found for linking. Please check your text and approve some words.</translation>
+      <translation>There were no senses found for linking. Please check your text and approve some words.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1958"/>
       <source>There was an error finding senses to link.</source>
-      <translation type="unfinished">There was an error finding senses to link.</translation>
+      <translation>There was an error finding senses to link.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1960"/>
       <source>Link it!</source>
-      <translation type="unfinished">Link it!</translation>
+      <translation>Link it!</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1962"/>
       <source>Source Head Word</source>
-      <translation type="unfinished">Source Head Word</translation>
+      <translation>Source Head Word</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1963"/>
       <source>Source Category</source>
-      <translation type="unfinished">Source Category</translation>
+      <translation>Source Category</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1964"/>
       <source>Source Gloss</source>
-      <translation type="unfinished">Source Gloss</translation>
+      <translation>Source Gloss</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1965"/>
       <source>Target Head Word</source>
-      <translation type="unfinished">Target Head Word</translation>
+      <translation>Target Head Word</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1966"/>
       <source>Target Category</source>
-      <translation type="unfinished">Target Category</translation>
+      <translation>Target Category</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1967"/>
       <source>Target Gloss</source>
-      <translation type="unfinished">Target Gloss</translation>
+      <translation>Target Gloss</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="2023"/>
       <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation type="unfinished">You need to run this module in &quot;modify mode.&quot;</translation>
+      <translation>You need to run this module in &quot;modify mode.&quot;</translation>
     </message>
   </context>
 </TS>
