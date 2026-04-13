@@ -21,7 +21,7 @@ Unicode True
 !define XXE_EXE "xxe-perso-8_2_0-setup.exe"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
-!define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
+;!define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
 !define FLEXTRANS_FOLDER "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects"
 !define GERMAN_SWEDISHDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
@@ -268,9 +268,9 @@ Section "MainSection" SEC01
   ReadRegStr $0 HKLM Software\WOW6432Node\SIL\FieldWorks\9 "RootCodeDir"
   
   # Unzip the HermitCrab files in the FLEx programs folder
-  SetOutPath "$INSTDIR\install_files"
-  File "${GIT_FOLDER}\${HERMIT_CRAB_ZIP_FILE}"
-  nsisunz::Unzip "$INSTDIR\install_files\${HERMIT_CRAB_ZIP_FILE}" "$0"
+  #SetOutPath "$INSTDIR\install_files"
+  #File "${GIT_FOLDER}\${HERMIT_CRAB_ZIP_FILE}"
+  #nsisunz::Unzip "$INSTDIR\install_files\${HERMIT_CRAB_ZIP_FILE}" "$0"
 
   # Delete SettingGui.py from the Modules\FLExTrans folder (for old installs), it now lives right under FlexTools
   Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\Modules\FLExTrans\SettingsGUI.py"

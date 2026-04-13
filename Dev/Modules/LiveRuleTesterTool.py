@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.15.6 - 4/13/26 - Ron Lockwood
+#    Fixes #1287. Use HermitCrab tools that get installed with FLEx.
+#
 #   Version 3.15.5 - 4/7/26 - Ron Lockwood
 #    Take care of lint problems.
 #
@@ -279,7 +282,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15.5",
+        FTM_Version    : "3.15.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1717,8 +1720,20 @@ class Main(QMainWindow):
                 import clr 
 
                 # Load the DLL 
-                clr.AddReference('HCSynthByGlossDll') # type: ignore
-                from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
+                try:
+                    clr.AddReference('HCSynthByGlossDll') # type: ignore
+                    from SIL.HCSynthByGloss import HCSynthByGlossDll # type: ignore
+                except:
+
+                    # try loading the old version (HCSynthByGloss2) of the DLL for compatibility with older versions of FLExTrans
+                    # Newer versions of FLEx have this dll installed by FLEx (3.8+), but older versions don't and the dll was installed by FLExTrans (3.14.1 or earlier).
+                    try:
+                        from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
+
+                    except Exception as e:
+                        QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
+                        self.unsetCursor()
+                        return
 
                 # Initialize the object with the output file name
                 try:
