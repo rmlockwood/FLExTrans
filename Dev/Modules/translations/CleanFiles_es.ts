@@ -6,17 +6,17 @@
     <message>
       <location filename="../CleanFiles.py" line="88"/>
       <source>Clean Files</source>
-      <translation type="unfinished">Clean Files</translation>
+      <translation>Clean Files</translation>
     </message>
     <message>
       <location filename="../CleanFiles.py" line="91"/>
       <source>Remove generated files to force each FLExTrans module to regenerate everything</source>
-      <translation type="unfinished">Remove generated files to force each FLExTrans module to regenerate everything</translation>
+      <translation>Remove generated files to force each FLExTrans module to regenerate everything</translation>
     </message>
     <message>
       <location filename="../CleanFiles.py" line="93"/>
       <source>Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.</source>
-      <translation type="unfinished">Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.</translation>
+      <translation>Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.</translation>
     </message>
   </context>
 </TS>
