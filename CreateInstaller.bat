@@ -175,14 +175,14 @@ rem del %HC_ZIP_FILE%
 rem cd ..\..
 
 if %COMPUTERNAME% == RONS-XPS (
-  cd C:\Data\Flextrans\Installer
-  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
-  cd C:\Users\rlboo\GitHub\FLExTrans
+rem  cd C:\Data\Flextrans\Installer
+  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer -DOUT_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+rem  cd C:\Users\rlboo\GitHub\FLExTrans
 ) else (
   echo listing the FLExTrans folder:
   dir c:\FLExTrans
   echo calling makensis now ...
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans -DOUT_FOLDER=. FLExTrans-installer.nsi
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
 

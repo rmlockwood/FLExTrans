@@ -1,3 +1,4 @@
+Unicode True
 !include "StrRep.nsh"   # local file
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
@@ -100,22 +101,55 @@ Var /GLOBAL STR_INSTALL_XMLMIND
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
 
-; Language files
+; ==============================================================
+; TO ADD A NEW LANGUAGE â€” touch only the items marked (*)
+; ==============================================================
+; (*) 1. Copy LangForInstallerScript\en.nsh to LangForInstallerScript\XX.nsh, change EN_ prefix to XX_,
+;        translate all string values, set XX_DISPLAY_NAME.
+; (*) 2. Add one !insertmacro MUI_LANGUAGE line below.
+; (*) 3. Add one !include "LangForInstallerScript\XX.nsh" line below.
+; (*) 4. Add one Push pair in ShowLanguageDialog (search for that function).
+; (*) 5. Add one ${ElseIf} block in SetLanguageCode (search for that function).
+;     6. Add the language-specific transfer rules files
+;        (e.g. transfer_rules-Swedish_XX.t1x) to the TransferRules folder.
+; (*) 7. Add the XXE addon folder to XXEaddon\translations\XX and modify the CreateInstaller LangForInstallerScript
+;        to zip this folder and add a File line in the XXE section below.
+; ==============================================================
+
+; MUI language registrations â€” add one line per language (*)
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "Spanish"
 !insertmacro MUI_LANGUAGE "French"
 
-; Define a macro for copying transfer rules files based on language
+; Per-language string definitions â€” add one !include per language (*)
+; Each file defines LangStrings and XX_* compile-time string constants.
+!include "InstallerResources\LangForInstallerScript\de.nsh"
+!include "InstallerResources\LangForInstallerScript\en.nsh"
+!include "InstallerResources\LangForInstallerScript\es.nsh"
+!include "InstallerResources\LangForInstallerScript\fr.nsh"
+
+; Macro for copying localized transfer rules files.
+; Uses $LANGCODE set at runtime â€” no edits needed here when adding a language.
+; All language-specific source files must exist in ${TRANSFER_RULESDIR}.
 !macro InstallLocalizedRulesFile DEST_NAME SRC_BASE
-    ${If} $LANGUAGE == ${LANG_GERMAN}
-        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_de.t1x"
-    ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_es.t1x"
-    ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
-        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}_fr.t1x"
+    ; 1. Save the current output directory
+    Push $OUTDIR
+    
+    ; 2. (Compile-time) Package all matching rule files into a temporary folder
+    SetOutPath "$INSTDIR\install_files\rules"
+    File "${TRANSFER_RULESDIR}\${SRC_BASE}*.t1x"
+    
+    ; 3. Restore the target output directory
+    Pop $0
+    SetOutPath $0
+
+    ; 4. (Run-time) Copy and rename the correct file based on the selected language
+    ${If} ${FileExists} "$INSTDIR\install_files\rules\${SRC_BASE}_$LANGCODE.t1x"
+        CopyFiles /SILENT "$INSTDIR\install_files\rules\${SRC_BASE}_$LANGCODE.t1x" "$OUTDIR\${DEST_NAME}"
     ${Else}
-        File /oname=${DEST_NAME} "${TRANSFER_RULESDIR}\${SRC_BASE}.t1x"
+        ; Fall back to the base (English) file if the localized version isn't found
+        CopyFiles /SILENT "$INSTDIR\install_files\rules\${SRC_BASE}.t1x" "$OUTDIR\${DEST_NAME}"
     ${EndIf}
 !macroend
 
@@ -123,40 +157,11 @@ Var /GLOBAL STR_INSTALL_XMLMIND
 Icon "${MUI_ICON}"
 Name "${PRODUCT_NAME}"
 
-OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
+OutFile "${OUT_FOLDER}\${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
 InstallDir "$PROGRAMFILES\FLExTrans_Installer"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
-
-# Set up variables to hold installation messages in different UI languages
-# English
-LangString Drafting       ${LANG_ENGLISH} "Drafting"
-LangString Run_Testbed    ${LANG_ENGLISH} "Run Testbed"
-LangString Tools          ${LANG_ENGLISH} "Tools"
-LangString Synthesis_Test ${LANG_ENGLISH} "Synthesis Test"
-LangString Clusters       ${LANG_ENGLISH} "Clusters"
-
-# German
-LangString Drafting       ${LANG_GERMAN} "Entwerfen"
-LangString Run_Testbed    ${LANG_GERMAN} "Tests durchführen"
-LangString Tools          ${LANG_GERMAN} "Werkzeuge"
-LangString Synthesis_Test ${LANG_GERMAN} "Synthesetest"
-LangString Clusters       ${LANG_GERMAN} "Clusters"
-
-# Spanish
-LangString Drafting       ${LANG_SPANISH} "Redacción"
-LangString Run_Testbed    ${LANG_SPANISH} "Ejecutar testbed"
-LangString Tools          ${LANG_SPANISH} "Herramientas"
-LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
-LangString Clusters       ${LANG_SPANISH} "Racimos"
-
-# French
-LangString Drafting       ${LANG_FRENCH} "Rédaction"
-LangString Run_Testbed    ${LANG_FRENCH} "Lancer le banc d`essai"
-LangString Tools          ${LANG_FRENCH} "Outils"
-LangString Synthesis_Test ${LANG_FRENCH} "Test de synthèse"
-LangString Clusters       ${LANG_FRENCH} "Grappes"
 
 Section "MainSection" SEC01
   InitPluginsDir
@@ -538,22 +543,20 @@ associate_extension:
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
 
-  # Retrieve all the XXE addons, including the language specific ones
+  # Bundle the base (English) XXE addon zip and all language-specific ones.
+  # (*) ADD A NEW LANGUAGE: add one File line here for the new language zip.
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   File "${GIT_FOLDER}\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
   File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
   File "${GIT_FOLDER}\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip"
-  
-  # Install the English one first
+
+  # Install the base (English) addon first, then overwrite with the
+  # language-specific zip if one exists. 
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
-  
-  # Now overwrite some of the files with the Language specific ones
-  ${If} $LANGUAGE == ${LANG_GERMAN}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
-  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
-  ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
-    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
+  ${If} $LANGCODE != "en"
+    ${If} ${FileExists} "$INSTDIR\install_files\AddOnsForXMLmind_$LANGCODE${PRODUCT_VERSION}.zip"
+      nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_$LANGCODE${PRODUCT_VERSION}.zip" "$REAL_USER_APPDATA\XMLmind\XMLEditor8\addon"
+    ${EndIf}
   ${EndIf}
   
   # Update the XXE properties file
@@ -900,16 +903,18 @@ Function LanguageDialogLeave
 FunctionEnd
 
 Function ShowLanguageDialog
+  ; (*) ADD A NEW LANGUAGE: add a Push ${LANG_XX} / Push ${XX_DISPLAY_NAME}
+  ;     pair before the final 'Push A' line. Order = dialog order.
 
   Push ""
-  Push ${LANG_ENGLISH} 
-  Push English
+  Push ${LANG_ENGLISH}
+  Push ${EN_DISPLAY_NAME}
   Push ${LANG_SPANISH}
-  Push Español
+  Push ${ES_DISPLAY_NAME}
   Push ${LANG_FRENCH}
-  Push Français
+  Push ${FR_DISPLAY_NAME}
   Push ${LANG_GERMAN}
-  Push Deutsch
+  Push ${DE_DISPLAY_NAME}
   Push A ; A means auto count languages
          ; for the auto count to work the first empty push (Push "") must remain
   LangDLL::LangDialog "Installer Language" "Please select the language to use with FLExTrans."
@@ -920,55 +925,36 @@ Function ShowLanguageDialog
   	
 FunctionEnd
 
+!macro ASSIGN_LANG_STRINGS PREFIX
+    StrCpy $LANGCODE             "${${PREFIX}_LANGCODE}"
+    StrCpy $STR_CHOOSE_FOLDER    "${${PREFIX}_CHOOSE_FOLDER}"
+    StrCpy $STR_BROWSE           "${${PREFIX}_BROWSE}"
+    StrCpy $STR_PROD_LABEL1      "${${PREFIX}_PROD_LABEL1}"
+    StrCpy $STR_PROD_LABEL2      "${${PREFIX}_PROD_LABEL2}"
+    StrCpy $STR_YES              "${${PREFIX}_YES}"
+    StrCpy $STR_NO               "${${PREFIX}_NO}"
+    StrCpy $STR_PYTHON_OLD       "${${PREFIX}_PYTHON_OLD}"
+    StrCpy $STR_INSTALL_PYTHON   "${${PREFIX}_INSTALL_PYTHON}"
+    StrCpy $STR_INSTALL_XMLMIND  "${${PREFIX}_INSTALL_XMLMIND}"
+!macroend
+
 Function SetLanguageCode
+  ; (*) ADD A NEW LANGUAGE: copy one ${ElseIf} block and fill in the new XX two letter code.
+  ;     the same code you are using in LangForInstallerScript\XX.nsh file.
   ${If} $LANGUAGE == ${LANG_ENGLISH}
-    StrCpy $LANGCODE "en"
-    StrCpy $STR_CHOOSE_FOLDER "Choose where to put FLExTrans folder."
-    StrCpy $STR_BROWSE "Browse"
-    StrCpy $STR_PROD_LABEL1 "Production use?"
-    StrCpy $STR_PROD_LABEL2 "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
-    StrCpy $STR_YES "Yes"
-    StrCpy $STR_NO "No"
-	StrCpy $STR_PYTHON_OLD "is installed, but FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION} now?"
-    StrCpy $STR_INSTALL_PYTHON "FLExTrans requires Python ${PYTHON_MAJOR}.${PYTHON_MINOR} to run. It is recommended that you install it now. When installing, use the 'Install now' option.$\nInstall Python ${PYTHON_VERSION}?"
-    StrCpy $STR_INSTALL_XMLMIND "FLExTrans relies on XMLmind XML Editor for editing transfer rule files. It is recommended that you install it now.$\nInstall XMLmind?"
+    !insertmacro ASSIGN_LANG_STRINGS "EN"
   ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
-    StrCpy $LANGCODE "de"
-    StrCpy $STR_CHOOSE_FOLDER "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
-    StrCpy $STR_BROWSE "Durchsuchen"
-    StrCpy $STR_PROD_LABEL1 "Produktivbetrieb?"
-    StrCpy $STR_PROD_LABEL2 "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie Ja. Für die FLExTrans-Entwicklung wählen Sie Nein."
-    StrCpy $STR_YES "Ja"
-    StrCpy $STR_NO "Nein"
-	StrCpy $STR_PYTHON_OLD "ist installiert, aber FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} jetzt installieren?"
-    StrCpy $STR_INSTALL_PYTHON "FLExTrans benötigt Python ${PYTHON_MAJOR}.${PYTHON_MINOR} zum Ausführen. Es wird empfohlen, es jetzt zu installieren. Verwenden Sie bei der Installation die Option 'Install now'.$\nPython ${PYTHON_VERSION} installieren?"
-    StrCpy $STR_INSTALL_XMLMIND "FLExTrans verwendet XMLmind XML Editor zum Bearbeiten von Transferregeldateien. Es wird empfohlen, es jetzt zu installieren.$\nXMLmind installieren?"
+    !insertmacro ASSIGN_LANG_STRINGS "DE"
   ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    StrCpy $LANGCODE "es"
-    StrCpy $STR_CHOOSE_FOLDER "Elija dónde colocar la carpeta FLExTrans."
-    StrCpy $STR_BROWSE "Navegar"
-    StrCpy $STR_PROD_LABEL1 "¿Uso en producción?"
-    StrCpy $STR_PROD_LABEL2 "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No."
-    StrCpy $STR_YES "Sí"
-    StrCpy $STR_NO "No"
-	StrCpy $STR_PYTHON_OLD "está instalado, pero FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION} ahora?"
-    StrCpy $STR_INSTALL_PYTHON "FLExTrans requiere Python ${PYTHON_MAJOR}.${PYTHON_MINOR} para ejecutarse. Se recomienda instalarlo ahora. Al instalar, use la opción 'Install now'.$\n¿Instalar Python ${PYTHON_VERSION}?"
-    StrCpy $STR_INSTALL_XMLMIND "FLExTrans utiliza XMLmind XML Editor para editar archivos de reglas de transferencia. Se recomienda instalarlo ahora.$\n¿Instalar XMLmind?"
+    !insertmacro ASSIGN_LANG_STRINGS "ES"
   ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
-    StrCpy $LANGCODE "fr"
-    StrCpy $STR_CHOOSE_FOLDER "Choisissez l'emplacement du dossier FLExTrans."
-    StrCpy $STR_BROWSE "Parcourir"
-    StrCpy $STR_PROD_LABEL1 "Utilisation en production?"
-    StrCpy $STR_PROD_LABEL2 "Pour installer une interface FLExTrans simplifiée destinée à une utilisation en production, choisissez Oui. Pour les travaux de développement sur FLExTrans, choisissez Non."
-    StrCpy $STR_YES "Oui"
-    StrCpy $STR_NO "Non"
-	StrCpy $STR_PYTHON_OLD "est installé, mais FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR}. Lors de l'installation, utilisez l'option 'Install now'$\nInstaller Python ${PYTHON_VERSION} maintenant?"
-    StrCpy $STR_INSTALL_PYTHON "FLExTrans nécessite Python ${PYTHON_MAJOR}.${PYTHON_MINOR} pour fonctionner. Il est recommandé de l'installer maintenant. Lors de l'installation, utilisez l'option 'Install now'.$\nInstaller Python ${PYTHON_VERSION}?"
-    StrCpy $STR_INSTALL_XMLMIND "FLExTrans utilise XMLmind XML Editor pour éditer les fichiers de règles de transfert. Il est recommandé de l'installer maintenant.$\nInstaller XMLmind?"
+    !insertmacro ASSIGN_LANG_STRINGS "FR"
   ${Else}
-    StrCpy $LANGCODE "en"
+    ; Fallback to English
+    !insertmacro ASSIGN_LANG_STRINGS "EN"
   ${EndIf}
 FunctionEnd
+
 ; ==========================================================
 ; StrStr - Searches for a string within another string
 ; Input: Top of stack = string to search for

@@ -1,4 +1,32 @@
 files:
-  - source: /Dev/**/translations/*.ts
-    translation: /Dev/**/translations/%file_name%_%two_letters_code%.ts
+  - source: /Dev/Lib/translations/*.ts
+    translation: /Dev/Lib/translations/%file_name%_%two_letters_code%.ts
     type: qt
+    ignore:
+      - /Dev/Lib/translations/*_de.ts
+      - /Dev/Lib/translations/*_es.ts
+      - /Dev/Lib/translations/*_fr.ts
+  - source: /Dev/Lib/Windows/translations/*.ts
+    translation: /Dev/Lib/Windows/translations/%file_name%_%two_letters_code%.ts
+    type: qt
+    ignore:
+      - /Dev/Lib/Windows/translations/*_de.ts
+      - /Dev/Lib/Windows/translations/*_es.ts
+      - /Dev/Lib/Windows/translations/*_fr.ts
+  - source: /Dev/Modules/translations/*.ts
+    translation: /Dev/Modules/translations/%file_name%_%two_letters_code%.ts
+    type: qt
+    ignore:
+      - /Dev/Modules/translations/*_de.ts
+      - /Dev/Modules/translations/*_es.ts
+      - /Dev/Modules/translations/*_fr.ts
+  - source: /Dev/TopLevel/translations/*.ts
+    ignore:
+      - /Dev/TopLevel/translations/*_de.ts
+      - /Dev/TopLevel/translations/*_es.ts
+      - /Dev/TopLevel/translations/*_fr.ts
+    translation: /Dev/TopLevel/translations/%file_name%_%two_letters_code%.ts
+    type: qt
+language_mapping:
+  - crowdin_language_id: es-ES
+    custom_code: es
