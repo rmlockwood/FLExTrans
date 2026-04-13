@@ -152,12 +152,12 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1408"/>
       <source>An error happened when running the STAMP tool.</source>
-      <translation type="unfinished">An error happened when running the STAMP tool.</translation>
+      <translation>An error happened when running the STAMP tool.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1439"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation type="unfinished">The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
     </message>
   </context>
 </TS>
