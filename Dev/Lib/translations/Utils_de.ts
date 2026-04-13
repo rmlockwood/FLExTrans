@@ -66,12 +66,12 @@
     <message>
       <location filename="../Utils.py" line="746"/>
       <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</source>
-      <translation type="unfinished">The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</translation>
+      <translation>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="762"/>
       <source>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
-      <translation type="unfinished">The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</translation>
+      <translation>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="770"/>
