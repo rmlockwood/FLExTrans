@@ -6,47 +6,47 @@
     <message>
       <location filename="../NewEntry.py" line="80"/>
       <source>Add New Target Entry</source>
-      <translation type="unfinished">Add New Target Entry</translation>
+      <translation>Add New Target Entry</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="81"/>
       <source>Lexeme Form</source>
-      <translation type="unfinished">Lexeme Form</translation>
+      <translation>Lexeme Form</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="82"/>
       <source>Morpheme Type</source>
-      <translation type="unfinished">Morpheme Type</translation>
+      <translation>Morpheme Type</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="83"/>
       <source>Grammatical Category</source>
-      <translation type="unfinished">Grammatical Category</translation>
+      <translation>Grammatical Category</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="90"/>
       <source>Add an entry to the target lexicon.</source>
-      <translation type="unfinished">Add an entry to the target lexicon.</translation>
+      <translation>Add an entry to the target lexicon.</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="86"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="88"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Cancel</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="89"/>
       <source>Gloss</source>
-      <translation type="unfinished">Gloss</translation>
+      <translation>Gloss</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="91"/>
       <source>Cluster Projects to Apply to</source>
-      <translation type="unfinished">Cluster Projects to Apply to</translation>
+      <translation>Cluster Projects to Apply to</translation>
     </message>
   </context>
 </TS>
