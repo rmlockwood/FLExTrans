@@ -6,37 +6,37 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="145"/>
       <source>Source/Target Viewer</source>
-      <translation type="unfinished">Source/Target Viewer</translation>
+      <translation>Source/Target Viewer</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="146"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Font</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="147"/>
       <source>Source</source>
-      <translation type="unfinished">Source</translation>
+      <translation>Source</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="148"/>
       <source>Target</source>
-      <translation type="unfinished">Target</translation>
+      <translation>Target</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="149"/>
       <source>Right to Left</source>
-      <translation type="unfinished">Right to Left</translation>
+      <translation>Right to Left</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="150"/>
       <source>Zoom:</source>
-      <translation type="unfinished">Zoom:</translation>
+      <translation>Zoom:</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="151"/>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
   </context>
 </TS>
