@@ -74,16 +74,8 @@ rem Create the modified config file line by line
 
 @echo on
 
-rem build Python requirements file
-echo flextoolslib==2026.2.26b0 >> %flextransfolder%\requirements.txt
-echo fuzzywuzzy >> %flextransfolder%\requirements.txt
-echo Levenshtein >> %flextransfolder%\requirements.txt
-echo mixpanel >> %flextransfolder%\requirements.txt
-echo PyQt6==6.10.2 >> %flextransfolder%\requirements.txt
-echo regex >> %flextransfolder%\requirements.txt
-rem Currently wildebeest doesn't work with python 3.13
-rem echo wildebeest-nlp >> %flextransfolder%\requirements.txt
-echo pygetwindow >> %flextransfolder%\requirements.txt
+rem copy pip installer requirements file for Python dependencies
+copy %installer_resources%\requirements.txt %flextransfolder%
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
 copy Dev\TopLevel\*.py %flextoolsfolder%
