@@ -1,65 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="de" sourcelanguage="en">
-<context>
+  <context>
     <name>FixFLExProjects</name>
     <message>
-        <location filename="../FixFLExProjects.py" line="200"/>
-        <source>Fix FLEx Projects</source>
-        <translation>FLEx-Projekte reparieren</translation>
+      <location filename="../FixFLExProjects.py" line="200"/>
+      <source>Fix FLEx Projects</source>
+      <translation type="unfinished">Fix FLEx Projects</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="81"/>
-        <source>Run the Find and Fix utility on the FLEx projects you choose.</source>
-        <translation>Führen Sie das Dienstprogramm &quot;Suchen und Beheben&quot; für die von Ihnen ausgewählten FLEx-Projekte aus.</translation>
+      <location filename="../FixFLExProjects.py" line="81"/>
+      <source>Run the Find and Fix utility on the FLEx projects you choose.</source>
+      <translation type="unfinished">Run the Find and Fix utility on the FLEx projects you choose.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="83"/>
-        <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
+      <location filename="../FixFLExProjects.py" line="83"/>
+      <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.</source>
-        <translation>Führen Sie das Dienstprogramm &quot;Suchen und Beheben&quot; für die von Ihnen ausgewählten FLEx-Projekte aus. Dies ist dasselbe Dienstprogramm, das in FLEx verfügbar ist. 
-Sie können dieses Dienstprogramm nicht für ein Projekt ausführen, das derzeit in FLEx geöffnet ist, oder für das aktuelle Quellprojekt, auch wenn es nicht geöffnet ist. Behobene Fehler werden im Berichtsbereich protokolliert.</translation>
+      <translation type="unfinished">Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
+You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
+it is not open. Fixed errors are logged to the report pane.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="209"/>
-        <source>FLEx project names (multi-select):</source>
-        <translation>FLEx-Projektnamen (Mehrfachauswahl):</translation>
+      <location filename="../FixFLExProjects.py" line="209"/>
+      <source>FLEx project names (multi-select):</source>
+      <translation type="unfinished">FLEx project names (multi-select):</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="219"/>
-        <source>OK</source>
-        <translation>OK</translation>
+      <location filename="../FixFLExProjects.py" line="219"/>
+      <source>OK</source>
+      <translation type="unfinished">OK</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="220"/>
-        <source>Cancel</source>
-        <translation>Abbrechen</translation>
+      <location filename="../FixFLExProjects.py" line="220"/>
+      <source>Cancel</source>
+      <translation type="unfinished">Cancel</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="289"/>
-        <source>Fixing {projName}...</source>
-        <translation>Beheben von {projName}...</translation>
+      <location filename="../FixFLExProjects.py" line="289"/>
+      <source>Fixing {projName}...</source>
+      <translation type="unfinished">Fixing {projName}...</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="300"/>
-        <source>{projName}: Project is open. Skipping.</source>
-        <translation>{projName}: Projekt ist geöffnet. Überspringen.</translation>
+      <location filename="../FixFLExProjects.py" line="300"/>
+      <source>{projName}: Project is open. Skipping.</source>
+      <translation type="unfinished">{projName}: Project is open. Skipping.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="307"/>
-        <source>{projName}: Skipping. {error}</source>
-        <translation>{projName}: Überspringen. {error}</translation>
+      <location filename="../FixFLExProjects.py" line="307"/>
+      <source>{projName}: Skipping. {error}</source>
+      <translation type="unfinished">{projName}: Skipping. {error}</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="310"/>
-        <source>{projName}: {errorCount} errors fixed.</source>
-        <translation>{projName}: {errorCount} Fehler behoben.</translation>
+      <location filename="../FixFLExProjects.py" line="310"/>
+      <source>{projName}: {errorCount} errors fixed.</source>
+      <translation type="unfinished">{projName}: {errorCount} errors fixed.</translation>
     </message>
     <message>
-        <location filename="../FixFLExProjects.py" line="312"/>
-        <source>{projName}: No errors found</source>
-        <translation>{projName}: Keine Fehler gefunden</translation>
+      <location filename="../FixFLExProjects.py" line="312"/>
+      <source>{projName}: No errors found</source>
+      <translation type="unfinished">{projName}: No errors found</translation>
     </message>
-</context>
+  </context>
 </TS>
