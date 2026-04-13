@@ -6,77 +6,77 @@
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="157"/>
       <source>Convert Text to Synthesizer Format</source>
-      <translation type="unfinished">Convert Text to Synthesizer Format</translation>
+      <translation>Convert Text to Synthesizer Format</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="160"/>
       <source>Convert the file produced by {runApert} into a text file in a Synthesizer format</source>
-      <translation type="unfinished">Convert the file produced by {runApert} into a text file in a Synthesizer format</translation>
+      <translation>Convert the file produced by {runApert} into a text file in a Synthesizer format</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="422"/>
       <source>Configuration file problem with {fileType}.</source>
-      <translation type="unfinished">Configuration file problem with {fileType}.</translation>
+      <translation>Configuration file problem with {fileType}.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="413"/>
       <source>Lexicon files folder: {fileType} does not exist.</source>
-      <translation type="unfinished">Lexicon files folder: {fileType} does not exist.</translation>
+      <translation>Lexicon files folder: {fileType} does not exist.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="442"/>
       <source>Failed to open the target project.</source>
-      <translation type="unfinished">Failed to open the target project.</translation>
+      <translation>Failed to open the target project.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1146"/>
       <source>The file: {fileName} was not found. Did you run the {runApert} module?</source>
-      <translation type="unfinished">The file: {fileName} was not found. Did you run the {runApert} module?</translation>
+      <translation>The file: {fileName} was not found. Did you run the {runApert} module?</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1232"/>
       <source>Lemma or grammatical category missing for a target word near word {wordNum}. Found only: {morphs}. The preceding two words were: {prevWords}. The following two words were: {follWords}. Processing stopped.</source>
-      <translation type="unfinished">Lemma or grammatical category missing for a target word near word {wordNum}. Found only: {morphs}. The preceding two words were: {prevWords}. The following two words were: {follWords}. Processing stopped.</translation>
+      <translation>Lemma or grammatical category missing for a target word near word {wordNum}. Found only: {morphs}. The preceding two words were: {prevWords}. The following two words were: {follWords}. Processing stopped.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1309"/>
       <source>Configuration file problem with targetANAFile or affixFile or transferResultsFile or sentPunct</source>
-      <translation type="unfinished">Configuration file problem with targetANAFile or affixFile or transferResultsFile or sentPunct</translation>
+      <translation>Configuration file problem with targetANAFile or affixFile or transferResultsFile or sentPunct</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1320"/>
       <source>Configuration file problem with: {property}.</source>
-      <translation type="unfinished">Configuration file problem with: {property}.</translation>
+      <translation>Configuration file problem with: {property}.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1370"/>
       <source>Error writing the output file.</source>
-      <translation type="unfinished">Error writing the output file.</translation>
+      <translation>Error writing the output file.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1397"/>
       <source>Converted target words put in the file: {filePath}.</source>
-      <translation type="unfinished">Converted target words put in the file: {filePath}.</translation>
+      <translation>Converted target words put in the file: {filePath}.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1398"/>
       <source>{count} records exported in ANA format.</source>
-      <translation type="unfinished">{count} records exported in ANA format.</translation>
+      <translation>{count} records exported in ANA format.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1400"/>
       <source>Converted target words put in the file: {filePath}</source>
-      <translation type="unfinished">Converted target words put in the file: {filePath}</translation>
+      <translation>Converted target words put in the file: {filePath}</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1401"/>
       <source>{count} records exported in HermitCrab format.</source>
-      <translation type="unfinished">{count} records exported in HermitCrab format.</translation>
+      <translation>{count} records exported in HermitCrab format.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1437"/>
       <source>Configuration file problem with: {fileType}.</source>
-      <translation type="unfinished">Configuration file problem with: {fileType}.</translation>
+      <translation>Configuration file problem with: {fileType}.</translation>
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="162"/>
@@ -84,7 +84,7 @@
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab synthesis program. The output file will be stored in different files depending on whether you are doing STAMP synthesis (default) or
 HermitCrab synthesis. For STAMP, the file is what you specified by the Target Output ANA File setting -- typically called target_text-ana.txt. For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
 target_words-HC.txt. Both files are usually in the Build folder. NOTE: messages and the task bar will show the source project as being used. Actually the target project is being used.</source>
-      <translation type="unfinished">This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for
+      <translation>This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab synthesis program. The output file will be stored in different files depending on whether you are doing STAMP synthesis (default) or
 HermitCrab synthesis. For STAMP, the file is what you specified by the Target Output ANA File setting -- typically called target_text-ana.txt. For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
 target_words-HC.txt. Both files are usually in the Build folder. NOTE: messages and the task bar will show the source project as being used. Actually the target project is being used.</translation>
@@ -92,7 +92,7 @@ target_words-HC.txt. Both files are usually in the Build folder. NOTE: messages 
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1420"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation type="unfinished">The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
     </message>
   </context>
 </TS>
