@@ -21,7 +21,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
       <source>Could not find the Paratext data folder in the registry.</source>
-      <translation>Impossible de trouver le dossier de données Paratext dans le registre.</translation>
+      <translation>Impossible de trouver le dossier de données dans le registre de Paratext</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="502"/>
@@ -31,7 +31,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="471"/>
       <source>Could not find the Paratext path: {paratextPath}.</source>
-      <translation>Impossible de trouver le chemin Paratext : {paratextPath}.</translation>
+      <translation>Impossible de trouver le chemin de Paratext : {paratextPath}.</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="486"/>
