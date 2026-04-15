@@ -51,7 +51,7 @@
     <message>
       <location filename="../InterlinData.py" line="678"/>
       <source>Couldn't find the sense for source headword: </source>
-      <translation>Impossible de trouver le sens pour l'entrée principale source : </translation>
+      <translation>Impossible de trouver le sens associé à l'entrée de dictionnaire source : </translation>
     </message>
     <message>
       <location filename="../InterlinData.py" line="691"/>
