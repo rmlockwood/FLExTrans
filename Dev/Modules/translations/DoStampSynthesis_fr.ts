@@ -57,7 +57,7 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1069"/>
       <source>Skipping sense that is of class: {className} for headword: {headword}.</source>
-      <translation>Saut de la sens qui est de classe : {className} pour le mot principal : {headword}.</translation>
+      <translation>Sens ignoré qui est de classe : {className} pour l'entrée de dictionnaire : {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1072"/>
