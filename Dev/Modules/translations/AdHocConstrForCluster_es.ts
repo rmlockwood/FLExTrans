@@ -76,7 +76,7 @@
     <message>
       <location filename="../AdHocConstrForCluster.py" line="386"/>
       <source>You need to set the key field and at least the 1st other field!</source>
-      <translation>¡Debe establecer el campo y al menos el primer otro campo!</translation>
+      <translation>¡Debe establecer el campo y al menos el primero de los otros campos!</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="407"/>
@@ -92,7 +92,7 @@
       <location filename="../AdHocConstrForCluster.py" line="479"/>
       <source>The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
 </source>
-      <translation>No se pudo encontrar la {selectedType} {key} en el proyecto {proj}. Si el morfema era un tallo, podría ser la url del enlace a ese tallo no era válido.
+      <translation>No se pudo encontrar la {selectedType} {key} en el proyecto {proj}. Si el morfema era una raíz, podría ser que la url del enlace a esa raíz no fuera válida.
 </translation>
     </message>
     <message>
@@ -106,7 +106,7 @@
       <location filename="../AdHocConstrForCluster.py" line="499"/>
       <source>The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
 </source>
-      <translation>No se pudo encontrar la {selectedType} {otherStr} en el proyecto {proj}. Si el morfema era un tallo, podría ser la url del enlace a ese tallo no era válido.
+      <translation>No se pudo encontrar la {selectedType} {otherStr} en el proyecto {proj}. Si el morfema era una raíz, podría ser la url del enlace a esa raíz no fuera válida.
 </translation>
     </message>
     <message>
