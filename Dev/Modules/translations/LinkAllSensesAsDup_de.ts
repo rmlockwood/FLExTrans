@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="de" sourcelanguage="en">
-  <context>
+<context>
     <name>LinkAllSensesAsDup</name>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="80"/>
-      <source>Link All Senses As Duplicate</source>
-      <translation type="unfinished">Link All Senses As Duplicate</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="80"/>
+        <source>Link All Senses As Duplicate</source>
+        <translation>Alle Sinne als Duplikat verknüpfen</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="83"/>
-      <source>Link all senses to the same ID in the target.</source>
-      <translation type="unfinished">Link all senses to the same ID in the target.</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="83"/>
+        <source>Link all senses to the same ID in the target.</source>
+        <translation>Alle Bedeutungen mit derselben ID im Ziel verknüpfen.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="85"/>
-      <source>This module will link all senses to the same ID in the target. CAUTION: This will 
+        <location filename="../LinkAllSensesAsDup.py" line="85"/>
+        <source>This module will link all senses to the same ID in the target. CAUTION: This will 
 overwrite all senses in the source project!
 This assumes the target project was copied from the source and all the senses have the same
 unique identifier (guid).</source>
-      <translation type="unfinished">This module will link all senses to the same ID in the target. CAUTION: This will 
-overwrite all senses in the source project!
-This assumes the target project was copied from the source and all the senses have the same
-unique identifier (guid).</translation>
+        <translation>Dieses Modul verknüpft alle Bedeutungen mit derselben ID im Ziel. ACHTUNG: Dies wird 
+alle Bedeutungen im Quellprojekt überschreiben!
+Dies setzt voraus, dass das Zielprojekt aus der Quelle kopiert wurde und alle Bedeutungen den gleichen
+eindeutigen Bezeichner (GUID) haben.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="106"/>
-      <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation type="unfinished">You need to run this module in &quot;modify mode.&quot;</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="106"/>
+        <source>You need to run this module in &quot;modify mode.&quot;</source>
+        <translation type="unfinished">You need to run this module in &quot;modify mode.&quot;</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="126"/>
-      <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Source Text Name has been set. Please go to Settings and fix this.</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="126"/>
+        <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
+        <translation>Es wurde kein Quelltextname festgelegt. Bitte gehen Sie zu den Einstellungen und beheben Sie dies.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="131"/>
-      <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="131"/>
+        <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
+        <translation>Es wurde kein benutzerdefiniertes Quellfeld für den Eintragslink festgelegt. Bitte gehen Sie zu den Einstellungen und beheben Sie dies.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="139"/>
-      <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-      <translation type="unfinished">No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="139"/>
+        <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
+        <translation>Es wurden keine Quellmorphemtypen ausgewählt, die als Wurzeln gezählt werden. Bitte gehen Sie zu den Einstellungen und beheben Sie dies.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="177"/>
-      <source>Skipped this guid that was not found: {guidSubStr}.</source>
-      <translation type="unfinished">Skipped this guid that was not found: {guidSubStr}.</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="177"/>
+        <source>Skipped this guid that was not found: {guidSubStr}.</source>
+        <translation>Diese GUID wurde übersprungen, da sie nicht gefunden wurde: {guidSubStr}.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="183"/>
-      <source>{entryIndex} entries processed.</source>
-      <translation type="unfinished">{entryIndex} entries processed.</translation>
+        <location filename="../LinkAllSensesAsDup.py" line="183"/>
+        <source>{entryIndex} entries processed.</source>
+        <translation>{entryIndex} Einträge verarbeitet.</translation>
     </message>
-  </context>
+</context>
 </TS>

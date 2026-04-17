@@ -1,96 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="de" sourcelanguage="en">
-  <context>
+<context>
     <name>RestoreFLExProjects</name>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="96"/>
-      <source>Restore Multiple FLEx Projects</source>
-      <translation type="unfinished">Restore Multiple FLEx Projects</translation>
+        <location filename="../RestoreFLExProjects.py" line="96"/>
+        <source>Restore Multiple FLEx Projects</source>
+        <translation>Mehrere FLEx-Projekte wiederherstellen</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="72"/>
-      <source>Select one or more FLEx backup files and automatically restore them one by one.</source>
-      <translation type="unfinished">Select one or more FLEx backup files and automatically restore them one by one.</translation>
+        <location filename="../RestoreFLExProjects.py" line="72"/>
+        <source>Select one or more FLEx backup files and automatically restore them one by one.</source>
+        <translation>Wählen Sie eine oder mehrere FLEx-Sicherungsdateien aus und stellen Sie sie nacheinander automatisch wieder her.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="74"/>
-      <source>Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
+        <location filename="../RestoreFLExProjects.py" line="74"/>
+        <source>Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
 window that comes up to complete the restore. 
 The tool waits until one project is open before restoring the next.</source>
-      <translation type="unfinished">Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
-window that comes up to complete the restore. 
-The tool waits until one project is open before restoring the next.</translation>
+        <translation>Wählen Sie eine oder mehrere FLEx-Sicherungsdateien aus und stellen Sie sie nacheinander automatisch wieder her. Sie müssen im angezeigten Fenster auf OK klicken, um die Wiederherstellung abzuschließen. Das Tool wartet, bis ein Projekt geöffnet ist, bevor es das nächste wiederherstellt.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="105"/>
-      <source>Backup Folder: </source>
-      <translation type="unfinished">Backup Folder: </translation>
+        <location filename="../RestoreFLExProjects.py" line="105"/>
+        <source>Backup Folder: </source>
+        <translation>Sicherungsordner: </translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="112"/>
-      <source>Browse for Folder</source>
-      <translation type="unfinished">Browse for Folder</translation>
+        <location filename="../RestoreFLExProjects.py" line="112"/>
+        <source>Browse for Folder</source>
+        <translation>Ordner durchsuchen</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="123"/>
-      <source>FLEx project backup files (multi-select):</source>
-      <translation type="unfinished">FLEx project backup files (multi-select):</translation>
+        <location filename="../RestoreFLExProjects.py" line="123"/>
+        <source>FLEx project backup files (multi-select):</source>
+        <translation>FLEx-Projekt-Sicherungsdateien (Mehrfachauswahl):</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="132"/>
-      <source>OK</source>
-      <translation type="unfinished">OK</translation>
+        <location filename="../RestoreFLExProjects.py" line="132"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="133"/>
-      <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+        <location filename="../RestoreFLExProjects.py" line="133"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="155"/>
-      <source>Select Folder</source>
-      <translation type="unfinished">Select Folder</translation>
+        <location filename="../RestoreFLExProjects.py" line="155"/>
+        <source>Select Folder</source>
+        <translation>Ordner auswählen</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="165"/>
-      <source>Selected Folder: </source>
-      <translation type="unfinished">Selected Folder: </translation>
+        <location filename="../RestoreFLExProjects.py" line="165"/>
+        <source>Selected Folder: </source>
+        <translation>Ausgewählter Ordner: </translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="221"/>
-      <source>Could not find the sample projects folder: {defaultFolder}.</source>
-      <translation type="unfinished">Could not find the sample projects folder: {defaultFolder}.</translation>
+        <location filename="../RestoreFLExProjects.py" line="221"/>
+        <source>Could not find the sample projects folder: {defaultFolder}.</source>
+        <translation>Der Ordner für Beispielprojekte konnte nicht gefunden werden: {defaultFolder}.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="239"/>
-      <source>Could not extract project name from {backupName}. Skipping.</source>
-      <translation type="unfinished">Could not extract project name from {backupName}. Skipping.</translation>
+        <location filename="../RestoreFLExProjects.py" line="239"/>
+        <source>Could not extract project name from {backupName}. Skipping.</source>
+        <translation>Der Projektname konnte nicht aus {backupName} extrahiert werden. Überspringen.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="243"/>
-      <source>The {proj} project is already open. Skipping. Close the project and try again.</source>
-      <translation type="unfinished">The {proj} project is already open. Skipping. Close the project and try again.</translation>
+        <location filename="../RestoreFLExProjects.py" line="243"/>
+        <source>The {proj} project is already open. Skipping. Close the project and try again.</source>
+        <translation>Das Projekt {proj} ist bereits geöffnet. Überspringen. Schließen Sie das Projekt und versuchen Sie es erneut.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="255"/>
-      <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
-      <translation type="unfinished">Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</translation>
+        <location filename="../RestoreFLExProjects.py" line="255"/>
+        <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
+        <translation>Das Projekt {proj} konnte nach {secs} Sekunden nicht als geöffnet erkannt werden. Überspringen.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="259"/>
-      <source>The {proj} project took about {secs} seconds to open.</source>
-      <translation type="unfinished">The {proj} project took about {secs} seconds to open.</translation>
+        <location filename="../RestoreFLExProjects.py" line="259"/>
+        <source>The {proj} project took about {secs} seconds to open.</source>
+        <translation>Das Projekt {proj} benötigte etwa {secs} Sekunden zum Öffnen.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="262"/>
-      <source>{count} projects processed.</source>
-      <translation type="unfinished">{count} projects processed.</translation>
+        <location filename="../RestoreFLExProjects.py" line="262"/>
+        <source>{count} projects processed.</source>
+        <translation>{count} Projekte verarbeitet.</translation>
     </message>
     <message>
-      <location filename="../RestoreFLExProjects.py" line="264"/>
-      <source>No projects selected or window cancelled.</source>
-      <translation type="unfinished">No projects selected or window cancelled.</translation>
+        <location filename="../RestoreFLExProjects.py" line="264"/>
+        <source>No projects selected or window cancelled.</source>
+        <translation>Keine Projekte ausgewählt oder Fenster abgebrochen.</translation>
     </message>
-  </context>
+</context>
 </TS>
