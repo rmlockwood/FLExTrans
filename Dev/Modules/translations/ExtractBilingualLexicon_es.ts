@@ -25,13 +25,12 @@ This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.</source>
-      <translation>Este módulo creará un diccionario bilingüe para dos proyectos. El proyecto que FlexTools está configurado es su proyecto fuente. Establezca el Proyecto Objetivo en Configuración al nombre de su proyecto objetivo.
-Este módulo construye el diccionario bilingüe basado en los enlaces de sentidos fuente a sentidos objetivo
-que están en su proyecto fuente. Use el Módulo de Enlazador de Sentidos para crear estos enlaces.
-El diccionario bilingüe se almacenará en el archivo especificado por la configuración del Archivo de Salida del Diccionario Bilingüe.
-Esto típicamente se llama bilingual.dix y se encuentra normalmente en la carpeta Output.
+      <translation>Este módulo creará un léxico bilingüe para dos proyectos. El proyecto configurado en FlexTools es su proyecto de origen. Configure el Proyecto de destino en Configuración con el nombre de su proyecto de destino.
+Este módulo crea el léxico bilingüe basándose en los enlaces entre los sentidos de origen y los sentidos de destino presentes en su proyecto de origen. Utilice el módulo Sense Linker para crear estos enlaces.
+El léxico bilingüe se almacenará en el archivo especificado en la configuración del archivo de salida del diccionario bilingüe.
+Este archivo se suele llamar bilingual.dix y suele estar en la carpeta de salida.
 
-Puede hacer cambios personalizados al diccionario bilingüe usando el {replEditorModule}. Consulte el documento de ayuda para más detalles.</translation>
+Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEditorModule}. Consulte el documento de ayuda para obtener más información.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="273"/>
