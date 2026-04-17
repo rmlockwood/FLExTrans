@@ -16,7 +16,7 @@
     <message>
       <location filename="../FixUpSynthText.py" line="128"/>
       <source>The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.</source>
-      <translation>No se pudo encontrar el archivo de reglas: {textOutRulesFile}. Utilice el módulo &quot;Text Out Rules&quot; para definir las reglas.</translation>
+      <translation>No se pudo encontrar el archivo de reglas: {textOutRulesFile}. Utilice el módulo "Text Out Rules" para definir las reglas.</translation>
     </message>
     <message>
       <location filename="../FixUpSynthText.py" line="141"/>
@@ -38,9 +38,9 @@
       <source>This module will run a set of search and replace operations to fix up the text that comes out of 
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
 Fix Up Synthesis Text Rules File as specified in the Settings.</source>
-      <translation>This module will run a set of search and replace operations to fix up the text that comes out of 
-synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
-Fix Up Synthesis Text Rules File as specified in the Settings.</translation>
+      <translation>Este módulo ejecutará un conjunto de operaciones de búsqueda y reemplazo para corregir el texto 
+resultante de la síntesis. Las operaciones se definen con el módulo {textOutRulesModule}. Las reglas se almacenan 
+en el archivo de reglas de texto de corrección de síntesis, como se especifica en la configuración.</translation>
     </message>
   </context>
 </TS>
