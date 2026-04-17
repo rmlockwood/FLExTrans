@@ -92,14 +92,14 @@
       <location filename="../Linker.py" line="247"/>
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation type="unfinished">Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
+      <translation>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="260"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</source>
-      <translation type="unfinished">Export a list of unlinked senses to a file. If Hide Proper Nouns 
+      <translation>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</translation>
     </message>
   </context>
