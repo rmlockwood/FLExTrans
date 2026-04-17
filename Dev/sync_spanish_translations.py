@@ -73,6 +73,29 @@ def get_text(element: ET.Element, tag: str) -> str:
     return node.text or ""
 
 
+def ensure_ts_header(path: Path) -> None:
+    text = path.read_text(encoding="utf-8")
+    declaration = '<?xml version="1.0" encoding="utf-8"?>'
+
+    if "?>" in text:
+        header, rest = text.split("?>", 1)
+        if header.strip().startswith("<?xml"):
+            text = f"{declaration}{rest}"
+        else:
+            text = f"{declaration}{rest}"
+    else:
+        text = f"{declaration}\n{text}"
+
+    if "<!DOCTYPE TS>" not in text:
+        if declaration in text:
+            parts = text.split(declaration, 1)
+            text = f"{declaration}\n<!DOCTYPE TS>{parts[1]}"
+        else:
+            text = f"{declaration}\n<!DOCTYPE TS>\n{text}"
+
+    path.write_text(text, encoding="utf-8")
+
+
 def update_translations_in_target(
     target_path: Path,
     source_text: str,
@@ -105,6 +128,7 @@ def update_translations_in_target(
 
     if updated:
         tree.write(target_path, encoding="utf-8", xml_declaration=True)
+        ensure_ts_header(target_path)
 
     return found, updated
 
