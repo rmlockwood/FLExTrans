@@ -50,7 +50,7 @@ def find_target_translation_file(root_file: Path, location_filename: str) -> Opt
     elif root_file.name == "Modules_es.ts":
         candidate_dir = ROOT_DIR / "Modules" / "translations"
     elif root_file.name == "Windows_es.ts":
-        candidate_dir = ROOT_DIR / "Windows" / "translations"
+        candidate_dir = ROOT_DIR / "Lib" / "Windows" / "translations"
     else:
         return None
 
