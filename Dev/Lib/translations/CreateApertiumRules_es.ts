@@ -31,17 +31,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="848"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
-      <translation>Clear the variable to be sure we don't accidentally retain a prior value</translation>
+      <translation>Limpie la variable para asegurarse de que no se retenga accidentalmente un valor anterior</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="650"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
-      <translation>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</translation>
+      <translation>No se encontraron afijos de destino para la característica '{trgSpec.label}' de la categoría gramatical {trgSpec.category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
       <source>There are no target affixes, so there's nothing further to do here.</source>
-      <translation>There are no target affixes, so there's nothing further to do here.</translation>
+      <translation>No hay afijos de destino, por lo que no hay nada más que hacer aquí.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="655"/>
@@ -56,27 +56,27 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="761"/>
       <source>We should check for the appropriate singular noun class if one of the following is true:</source>
-      <translation>Deberíamos verificar la clase de sustantivo singular adecuada si se cumple una de las siguientes condiciones:</translation>
+      <translation>Deberíamos verificar la clase de sustantivo singular adecuada si se cumple alguna de las siguientes condiciones:</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="763"/>
       <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
-      <translation>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</translation>
+      <translation>El sustantivo fuente no tiene un afijo plural adjunto. (Probablemente tenga un afijo singular.)</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="767"/>
       <source>The target noun doesn't take plural agreement (marked as such).</source>
-      <translation>The target noun doesn't take plural agreement (marked as such).</translation>
+      <translation>El sustantivo indicado no toma concordancia plural (marcado como tal).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="771"/>
       <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
-      <translation>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</translation>
+      <translation>Pero si el sustantivo indicado no toma concordancia singular (marcado como tal), entonces tendremos una clase de sustantivo plural.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="778"/>
       <source>Check for the appropriate plural noun class.</source>
-      <translation>Verifique la clase de sustantivo plural adecuada.</translation>
+      <translation>Verifique la clase de sustantivo en plural adecuada.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="823"/>
@@ -96,7 +96,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="836"/>
       <source>Item {n} is part-of-speech {cat}.</source>
-      <translation>El elemento {n} es la categoría gramatical {cat}.</translation>
+      <translation>El elemento {n} forma parte de la categoría gramatical {cat}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="966"/>
@@ -106,7 +106,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="972"/>
       <source>There is only one possible value for {source.label} here: {source.default}.</source>
-      <translation>Solo hay un valor posible para {source.label} aquí: {source.default}.</translation>
+      <translation>Hay un solo valor posible para {source.label} aquí: {source.default}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="974"/>
@@ -161,7 +161,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1210"/>
       <source>Missing category for inserted word {wid} in rule {ruleName}.</source>
-      <translation>Falta la categoría para la palabra insertada {wid} en la regla {ruleName}.</translation>
+      <translation>No existe categoría para la palabra insertada {wid} en la regla {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1216"/>
@@ -171,7 +171,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1240"/>
       <source>Missing source for feature {label} on inserted word {wid} in rule {ruleName}.</source>
-      <translation>Falta la fuente para la característica {label} en la palabra insertada {wid} en la regla {ruleName}.</translation>
+      <translation>No existe la fuente para la característica {label} en la palabra insertada {wid} en la regla {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1252"/>
@@ -186,7 +186,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
       <source>Unable to find source for feature {label} on word {wid} in rule {ruleName}.</source>
-      <translation>No se pudo encontrar la fuente para la característica {label} en la palabra {wid} en la regla {ruleName}.</translation>
+      <translation>No se pudo encontrar la fuente para la característica {label} en la palabra {wid} dentro de la regla {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
@@ -226,7 +226,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1585"/>
       <source>No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool</source>
-      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecute la herramienta &quot;Configurar categorías y atributos de reglas de transferencia&quot;</translation>
+      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecute la herramienta Configurar categorías y Atributos de Reglas</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1594"/>
