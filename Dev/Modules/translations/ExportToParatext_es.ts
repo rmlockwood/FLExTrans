@@ -41,7 +41,7 @@ toma el borrador de este archivo y copia los capítulos en Paratext al proyecto 
     <message>
       <location filename="../ExportToParatext.py" line="278"/>
       <source>Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.</source>
-      <translation>No se pudo encontrar el archivo de síntesis. ¿Ha ejecutado el módulo &quot;Sintetizar Texto&quot;? Archivo faltante: {synFile}.</translation>
+      <translation>No se pudo encontrar el archivo de síntesis. ¿Ha ejecutado el módulo "Sintetizar Texto"? Archivo faltante: {synFile}.</translation>
     </message>
     <message>
       <location filename="../ExportToParatext.py" line="294"/>
