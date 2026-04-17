@@ -1086,14 +1086,15 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
                                         textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
             
             newCompANAlist.append(newAna)
+            currentAna = newAna
         else:
             newCompANAlist.append(myAnaInfo)
+            currentAna = myAnaInfo
             
-        # Set the capitalization of the first new ANA object to be the same as the original complex form ANA object
+        # Set the capitalization of the first ANA object to be the same as the original complex form ANA object
         # This is because a complex form that is normally lower case might be capitalized in the text.
         if firstRoot:
-
-            newAna.setCapitalization(textAnaInfo.getCapitalization())
+            currentAna.setCapitalization(textAnaInfo.getCapitalization())
 
         firstRoot = False
         
