@@ -11,7 +11,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
-      <translation>Impossible de trouver des balises pour la caractéristique {label} de la catégorie grammaticale {category}.</translation>
+      <translation>Aucune étiquette disponible pour cette fonctionnalité {label} de catégorie grammaticale {category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="582"/>
@@ -31,17 +31,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="848"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
-      <translation>Effacer la variable pour s'assurer que nous ne conservons pas accidentellement une valeur antérieure</translation>
+      <translation>Effacer la variable pour s’assurer de ne pas conserver accidentellement une valeur précédente</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="650"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
-      <translation>Aucun affixe cible trouvé pour la caractéristique '{trgSpec.label}' sur la catégorie grammaticale {trgSpec.category}.</translation>
+      <translation>Aucun affixe cible trouvé pour la fonctionnalité '{trgSpec.label}' sur la catégorie grammaticale {trgSpec.category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
       <source>There are no target affixes, so there's nothing further to do here.</source>
-      <translation>Il n'y a pas d'affixes cibles, donc il n'y a rien de plus à faire ici.</translation>
+      <translation>Il n’y a aucun affixe cible, donc il n’y a rien d’autre à faire ici.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="655"/>
@@ -56,22 +56,22 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="761"/>
       <source>We should check for the appropriate singular noun class if one of the following is true:</source>
-      <translation>Nous devons vérifier la classe nominale singulière appropriée si l'une des conditions suivantes est vraie :</translation>
+      <translation>Nous devons vérifier la classe nominale singulière appropriée si l’une des conditions suivantes est vraie :</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="763"/>
       <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
-      <translation>Le nom source n'a pas d'affixe pluriel attaché. (Il a probablement un affixe singulier.)</translation>
+      <translation>Le nom source n’a pas de suffixe de pluriel attaché (il a probablement un suffixe de singulier).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="767"/>
       <source>The target noun doesn't take plural agreement (marked as such).</source>
-      <translation>Le nom cible ne prend pas l'accord au pluriel (marqué comme tel).</translation>
+      <translation>Le nom cible ne prend pas l’accord du pluriel (il est marqué comme tel).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="771"/>
       <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
-      <translation>Mais si le nom cible ne prend pas l'accord au singulier (marqué comme tel), alors nous aurons une classe nominale plurielle.</translation>
+      <translation>Mais si le nom cible ne prend pas l’accord du singulier (comme indiqué), alors nous aurons une classe nominale plurielle.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="778"/>
@@ -101,7 +101,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="966"/>
       <source> given {specs}</source>
-      <translation> étant donné {specs}</translation>
+      <translation>donné {specs}</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="972"/>

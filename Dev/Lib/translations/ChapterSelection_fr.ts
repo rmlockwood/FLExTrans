@@ -16,7 +16,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
       <source>Registry Error</source>
-      <translation>Erreur de registre</translation>
+      <translation>Erreur du registre</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
@@ -51,7 +51,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="613"/>
       <source>Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</source>
-      <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} de {bookName} dans le projet {projAbbrev} ?</translation>
+      <translation>Êtes-vous sûr de vouloir écraser {chapStr} {digitsStr} du {bookName} dans le projet {projAbbrev} ?</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="614"/>
@@ -246,12 +246,12 @@
     <message>
       <location filename="../ChapterSelection.py" line="767"/>
       <source>Nahum</source>
-      <translation>Nahum</translation>
+      <translation>Nahoum</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="768"/>
       <source>Habakkuk</source>
-      <translation>Habacuc</translation>
+      <translation>Habaquq</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="769"/>
@@ -411,7 +411,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="800"/>
       <source>Tobit</source>
-      <translation>Tobie</translation>
+      <translation>Tobit</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="801"/>
@@ -576,37 +576,37 @@
     <message>
       <location filename="../ChapterSelection.py" line="833"/>
       <source>Extra A</source>
-      <translation>Extra A</translation>
+      <translation>Annexe A</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="834"/>
       <source>Extra B</source>
-      <translation>Extra B</translation>
+      <translation>Annexe B</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="835"/>
       <source>Extra C</source>
-      <translation>Extra C</translation>
+      <translation>Annexe C</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="836"/>
       <source>Extra D</source>
-      <translation>Extra D</translation>
+      <translation>Annexe D</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="837"/>
       <source>Extra E</source>
-      <translation>Extra E</translation>
+      <translation>Annexe E</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="838"/>
       <source>Extra F</source>
-      <translation>Extra F</translation>
+      <translation>Annexe F</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="839"/>
       <source>Extra G</source>
-      <translation>Extra G</translation>
+      <translation>Annexe G</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="840"/>
