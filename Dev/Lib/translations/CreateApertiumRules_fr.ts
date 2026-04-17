@@ -131,7 +131,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1065"/>
       <source>Multiple source words have ID {wid} in rule &quot;{ruleName}&quot;.</source>
-      <translation>Plusieurs mots sources ont l'ID {wid} dans la règle &quot;{ruleName}&quot;.</translation>
+      <translation>Plusieurs mots sources ont l'indentifiant {wid} dans la règle &quot;{ruleName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1070"/>
