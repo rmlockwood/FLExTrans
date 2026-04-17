@@ -26,7 +26,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="502"/>
       <source>Not Found Error</source>
-      <translation>Error de no encontrado</translation>
+      <translation>Error / No encontrado</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="471"/>
@@ -71,7 +71,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="640"/>
       <source>Could not find the book file: {bookPath}</source>
-      <translation>No se pudo encontrar el archivo del libro: {bookPath}</translation>
+      <translation>No se pudo encontrar el libro: {bookPath}</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="722"/>
