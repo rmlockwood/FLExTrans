@@ -23,8 +23,13 @@ If you want to use the full name of the book in the text name, instead of the ab
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
 cluster projects in the main FLExTrans Settings, then come back to this module.</source>
-      <translation>Este módulo le pregunta qué proyecto de Paratext, qué libro y qué capítulos deben ser importados. El nombre del libro debe darse como una abreviatura de tres letras, tal como en Paratext. Esos capítulos se recopilan y se insertan en el proyecto FLEx actual como un nuevo texto. Si desea incluir varias cosas, haga clic en la casilla correspondiente. Si desea usar el nombre completo del libro en el nombre del texto, en lugar de la abreviatura, haga clic en la casilla. Si desea que el texto recién importado sea el texto activo en FLExTrans, haga clic en la casilla.
-Es posible importar en múltiples proyectos FLEx desde múltiples proyectos Paratext. Primero seleccione sus proyectos de clúster en la configuración principal de FLExTrans y luego regrese a este módulo.</translation>
+      <translation>Este módulo le pregunta qué proyecto de Paratext, qué libro y qué capítulos deben importarse. 
+El nombre del libro debe indicarse como una abreviatura de tres letras, como en Paratext. Estos capítulos se recopilan y 
+se insertan en el proyecto FLEx actual como un nuevo texto. Si desea incluir varios elementos, marque la casilla correspondiente.
+Si desea usar el nombre completo del libro en el nombre del texto, en lugar de la abreviatura, marque la casilla.
+Si desea que el texto recién importado sea el texto activo en FLExTrans, marque la casilla.
+Es posible importar a varios proyectos FLEx desde varios proyectos Paratext. Primero, seleccione sus proyectos de 
+clúster en la configuración principal de FLExTrans y luego regrese a este módulo.</translation>
     </message>
     <message>
       <location filename="../ImportFromParatext.py" line="221"/>
