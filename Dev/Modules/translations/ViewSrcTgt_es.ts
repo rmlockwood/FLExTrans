@@ -20,11 +20,7 @@ file. The lexical units are color coded as follows: black-lemma, blue-grammatica
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.</source>
-      <translation>Este módulo mostrará una vista más legible del archivo fuente o de destino de Apertium. 
-Las unidades léxicas están codificadas por colores de la siguiente manera: negro-lema, azul-categoría 
-gramatical, verde-afijo o característica o clase, amarillo-puntuación fuera de oración, 
-rosa oscuro-lema desconocido, rosa-categoría desconocida, rojo-lema no encontrado. ¡Importante! Debe
-ejecutar los módulos hasta y además {runApert} antes de ejecutar este módulo.</translation>
+      <translation>Este módulo mostrará una vista más legible del archivo fuente o de destino de Apertium. Las unidades léxicas están codificadas por colores de la siguiente manera: negro: lema; azul: categoría gramatical; verde: afijo, rasgo o clase; amarillo: puntuación no oracional; rosa oscuro: lema desconocido; rosa: categoría desconocida; rojo: lema no encontrado. ¡Importante! Debe ejecutar los módulos hasta {runApert} (inclusive) antes de ejecutar este módulo.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="235"/>
