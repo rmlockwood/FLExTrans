@@ -20,11 +20,7 @@ which allows you to override the links created by the {linkSenseToolModule}
 in the presence of particular affixes. For example, if you have a noun that
 is generally translated one way, but has a different translation in the
 vocative singular, you can specify that here.</source>
-      <translation>Este módulo proporciona una interfaz para editar el diccionario de reemplazo,
-lo que le permite sobrescribir los enlaces creados por la herramienta {linkSenseToolModule}
-en presencia de ciertos afijos. Por ejemplo, si tiene un sustantivo que
-generalmente se traduce de una manera, pero tiene una traducción diferente en el
-vocativo singular, puede especificarlo aquí.</translation>
+      <translation>Este módulo proporciona una interfaz para editar el diccionario de reemplazo, lo que permite anular los enlaces creados por {linkSenseToolModule} en presencia de afijos específicos. Por ejemplo, si tiene un sustantivo que generalmente se traduce de una manera, pero tiene una traducción diferente en el vocativo singular, puede especificarlo aquí.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditor.py" line="559"/>
