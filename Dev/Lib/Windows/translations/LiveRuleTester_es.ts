@@ -16,7 +16,7 @@
     <message>
       <location filename="../LiveRuleTester.py" line="607"/>
       <source>Refresh Source Lexicon</source>
-      <translation>Actualizar léxico de origen</translation>
+      <translation>Actualizar el Léxico Origen</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="608"/>
