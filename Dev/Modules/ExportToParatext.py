@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15.3 -4/17/26 - Ron Lockwood
+#    Fixes #1312. Translate book names when checking for valid names.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -75,6 +78,7 @@
 
 import os
 import re
+import unicodedata
 import xml.etree.ElementTree as ET
 
 from PyQt6 import QtGui
@@ -117,7 +121,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.15.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -189,14 +193,19 @@ def parseSourceTextName(report, sourceText, infoMap):
         # If it is not an abbreviation, then we need to find the abbreviation
         for key, val in ChapterSelection.bookMap.items():
             
-            if book == val:
+            translatedStr = _translate("ChapterSelection", val)
+
+            # Normalize to NFD to match FLEx text names which are always NFD
+            translatedStr = unicodedata.normalize("NFD", translatedStr)
+
+            if book == translatedStr:
                 bookAbbrev = key
                 break
         
         # If we didn't find it (bookAbbrev didn't change), then the book is not valid
         if bookAbbrev == book:
-            
-            report.Error(_translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book))
+            nameStr = _translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book)
+            report.Error(nameStr)
             return False
         
     if re.search('-', chapters):
