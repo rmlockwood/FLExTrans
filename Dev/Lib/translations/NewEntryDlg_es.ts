@@ -26,7 +26,7 @@
     <message>
       <location filename="../NewEntryDlg.py" line="238"/>
       <source>Cluster Project Selection Error</source>
-      <translation>Error de Selección de Proyecto en Clúster</translation>
+      <translation>Error de selección de proyecto en clúster</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="238"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../NewEntryDlg.py" line="271"/>
       <source>Not Found Error</source>
-      <translation>Error No Encontrado</translation>
+      <translation>Error no encontrado</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="271"/>
