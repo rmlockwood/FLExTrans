@@ -22,13 +22,8 @@ file. The TreeTran Rules file is in the Output folder also. This module assumes
 that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
 button is used. </source>
-      <translation>Este módulo ejecutará el programa TreeTran para modificar un árbol sintáctico. El archivo
-resultante se coloca en la carpeta de Salida que luego es utilizada por el módulo
-{extractSourceTextModule} para modificar el orden de palabras de la oración según el archivo
-de reglas TreeTran. El archivo de Reglas TreeTran también está en la carpeta de Salida.
-Este módulo asume que el archivo invocador Invoker.xml existe en la carpeta temporal
-del sistema (%TEMP%). Este archivo es creado por el programa PC-PATR con FLEx cuando
-se usa el botón de la barra de herramientas del árbol. </translation>
+      <translation>Este módulo ejecutará el programa TreeTran para modificar un árbol sintáctico. El archivo resultante se almacena en la carpeta de salida, donde el módulo {extractSourceTextModule} lo utiliza para modificar el orden de las palabras de la oración según el archivo de reglas de TreeTran. El archivo de reglas de TreeTran también se encuentra en la carpeta de salida. Este módulo asume que el archivo de invocación Invoker.xml existe en la carpeta temporal del sistema (%TEMP%).
+Este archivo lo crea el programa PC-PATR con FLEx al usar el botón de la barra de herramientas del árbol.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="124"/>
