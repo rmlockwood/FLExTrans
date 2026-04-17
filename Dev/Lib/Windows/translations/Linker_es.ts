@@ -16,12 +16,12 @@
     <message>
       <location filename="../Linker.py" line="245"/>
       <source>All Target Senses:</source>
-      <translation>Todos los sentidos objetivo:</translation>
+      <translation>Todos los sentidos objetivos:</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="246"/>
       <source>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation>Después de seleccionar el sentido deseado aquí, haga doble clic en la columna &quot;Palabra principal objetivo&quot; para la fila deseada para vincularla.</translation>
+      <translation>Después de seleccionar el sentido deseado aquí, haga doble clic en la columna "Palabra principal objetivo" para la fila deseada para vincularla.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="249"/>
@@ -99,8 +99,7 @@ then double-click in the Target Head Word column for the desired row to link to 
       <location filename="../Linker.py" line="260"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</source>
-      <translation>Export a list of unlinked senses to a file. If Hide Proper Nouns 
-is checked, Proper Nouns will not be exported.</translation>
+      <translation>Exportar una lista de sentidos no vinculados a un archivo. Si "Ocultar nombres propios" está marcado, los nombres propios no se exportarán.</translation>
     </message>
   </context>
 </TS>
