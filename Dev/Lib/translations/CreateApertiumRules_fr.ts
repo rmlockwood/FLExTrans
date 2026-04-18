@@ -186,22 +186,22 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
       <source>Unable to find source for feature {label} on word {wid} in rule {ruleName}.</source>
-      <translation>Impossible de trouver la source pour la caractéristique {label} sur le mot {wid} dans la règle {ruleName}.</translation>
+      <translation>Impossible de trouver la source pour la fonctionnalité {label} du mot {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
       <source>Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Déterminer l'affixe approprié pour {cat} et le stocker dans une variable nommée {spec.varid}.</translation>
+      <translation>Déterminer l'affixe approprié pour {cat} et le stocker dans la variable nommée {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1367"/>
       <source>No tag found for value {value} of feature {label} in rule &quot;{ruleName}&quot;.</source>
-      <translation>Aucune balise trouvée pour la valeur {value} de la caractéristique {label} dans la règle &quot;{ruleName}&quot;.</translation>
+      <translation>Balise introuvable pour la valeur {value} de la fonctionnalité {label} dans la règle &quot;{ruleName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1393"/>
       <source>Determine the appropriate {label} tag for {cat} and store it in a variable named {varid}.</source>
-      <translation>Déterminer la balise {label} appropriée pour {cat} et la stocker dans une variable nommée {varid}.</translation>
+      <translation>Déterminer la balise {label} appropriée pour {cat} et l'enregistrer dans la variable {varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
