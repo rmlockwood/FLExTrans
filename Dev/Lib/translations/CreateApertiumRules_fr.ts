@@ -206,7 +206,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Une co-caractéristique avec le nom exact &quot;number&quot; est attendue. Veuillez corriger ceci.</translation>
+      <translation>Un attribut portant le nom exact &quot;numéro&quot; Veuillez corriger.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
