@@ -166,22 +166,22 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1216"/>
       <source>Generate and output {cat}</source>
-      <translation>Générer et produire {cat}</translation>
+      <translation>Générer et afficher {cat}</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1240"/>
       <source>Missing source for feature {label} on inserted word {wid} in rule {ruleName}.</source>
-      <translation>Source manquante pour la caractéristique {label} sur le mot inséré {wid} dans la règle {ruleName}.</translation>
+      <translation>Source manquante pour la fonctionnalité {label} du mot inséré {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1252"/>
       <source>Unable to generate lemma for inserted word {wid} in rule {ruleName}.</source>
-      <translation>Impossible de générer le lemme pour le mot inséré {wid} dans la règle {ruleName}.</translation>
+      <translation>Impossible de générer le lemme du mot inséré {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1272"/>
       <source>Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Déterminer le lemme approprié pour {cat} et le stocker dans une variable nommée {spec.varid}.</translation>
+      <translation>Déterminer le lemme approprié pour {cat} et le stocker dans la variable nommée {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
