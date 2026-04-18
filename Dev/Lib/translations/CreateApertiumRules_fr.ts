@@ -146,7 +146,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1106"/>
       <source>Rule name &quot;{ruleName}&quot; already exists in the rule file. Renaming added rule to &quot;{altName}&quot;.</source>
-      <translation>Le nom de règle &quot;{ruleName}&quot; existe déjà dans le fichier de règles. Renommage de la règle ajoutée en &quot;{altName}&quot;.</translation>
+      <translation>Le nom de règle &quot;{ruleName}&quot; existe déjà dans le fichier de règles. La règle ajoutée a été renommée en &quot;{altName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
