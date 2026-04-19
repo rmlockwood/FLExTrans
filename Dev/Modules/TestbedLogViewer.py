@@ -151,7 +151,7 @@ class BaseTreeItem(object):
         self.rtl = rtl
         self.children = []
         self.index = None
-        self.widget = [None, None, None]
+        self.widget = [None, None, None, None]
     
     def isRTL(self):
         return self.rtl
@@ -190,7 +190,7 @@ class RootTreeItem(BaseTreeItem):
         super(RootTreeItem, self).__init__(None, False)
         
     def ColumnCount(self):
-        return 3
+        return 4
     
     def Data(self, inColumn):
         # These become the column headers
@@ -200,6 +200,8 @@ class RootTreeItem(BaseTreeItem):
             return _translate("TestbedLogViewer", "Expected Result")
         if inColumn == 2:
             return _translate("TestbedLogViewer", "Actual Result")
+        if inColumn == 3:
+            return _translate("TestbedLogViewer", "Comment")
         return ""
     
 class TestStatsItem(BaseTreeItem):
@@ -249,7 +251,7 @@ class TestStatsItem(BaseTreeItem):
 
 class TestResultItem(BaseTreeItem):
     
-    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason, greenCheck, redX, yellowTriangle):
+    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason, comment, greenCheck, redX, yellowTriangle):
         super(TestResultItem, self).__init__(inParent, rtl)
         self.unformattedLexicalUnitsString = LUString
         self.formattedLexicalUnitsString = formattedLexicalUnitsString
@@ -258,6 +260,7 @@ class TestResultItem(BaseTreeItem):
         self.invalid = not valid
         self.origin = origin
         self.invalidReason = invalidReason
+        self.comment = comment
         self.greenCheck = greenCheck
         self.redX = redX
         self.yellowTriangle = yellowTriangle
@@ -278,7 +281,7 @@ class TestResultItem(BaseTreeItem):
         return self.unformattedLexicalUnitsString
     
     def ColumnCount(self):
-        return 3
+        return 4
     
     def Data(self, inColumn):
         # Lexical units
@@ -311,6 +314,9 @@ class TestResultItem(BaseTreeItem):
                 p = ET.Element('p')
                 outputLUSpan(p, SUCCESS_COLOR, self.expectedStr, False) #rtl
                 return ET.tostring(p, encoding='unicode')
+        # Comment column
+        elif inColumn == 3:
+            return self.comment
         return ''
     
     def createTheWidget(self, col):
@@ -464,7 +470,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                     # Otherwise build the TestResultItem object and then add it to the cache
                     else:
                         resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
-                                  test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
+                                  test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), test.getComment(), self.greenCheck, self.redX, self.yellowTriangle)
                         
                         #self.__cache[myHash] = resultItem
                                      
