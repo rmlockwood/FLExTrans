@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 REM Define language codes
-set lang_codes=fr
+set lang_codes=de es fr
 
 REM Define directories to process
 set directories=TopLevel Modules Lib Lib\Windows
@@ -11,7 +11,7 @@ REM Define excluded files
 set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py
 
 REM Define target folder
-set destination="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
+set destination="C:\Users\rlboo\GitHub\FLExTrans\Dev\CompiledTranslations"
 
 REM Loop through each directory
 for %%D in (%directories%) do (
@@ -36,6 +36,11 @@ for %%D in (%directories%) do (
 			for %%L in (%lang_codes%) do (
 			
 				pylupdate5 -verbose -noobsolete %%F -ts translations\!filename!_%%L.ts
+				lrelease translations\!filename!_%%L.ts -qm %destination%\!filename!_%%L.qm
+				
+				if "%%L"=="fr" (
+					copy translations\!filename!_%%L.ts translations\!filename!.ts
+				)
 			)
         )
 

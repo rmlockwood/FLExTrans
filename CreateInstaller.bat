@@ -74,16 +74,8 @@ rem Create the modified config file line by line
 
 @echo on
 
-rem build Python requirements file
-echo flextoolslib==2026.2.26b0 >> %flextransfolder%\requirements.txt
-echo fuzzywuzzy >> %flextransfolder%\requirements.txt
-echo Levenshtein >> %flextransfolder%\requirements.txt
-echo mixpanel >> %flextransfolder%\requirements.txt
-echo PyQt6==6.10.2 >> %flextransfolder%\requirements.txt
-echo regex >> %flextransfolder%\requirements.txt
-rem Currently wildebeest doesn't work with python 3.13
-rem echo wildebeest-nlp >> %flextransfolder%\requirements.txt
-echo pygetwindow >> %flextransfolder%\requirements.txt
+rem copy pip installer requirements file for Python dependencies
+copy %installer_resources%\requirements.txt %flextransfolder%
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
 copy Dev\TopLevel\*.py %flextoolsfolder%
@@ -166,23 +158,23 @@ del %ZIP_FILE%
 cd ..
 
 rem Zip the HermitCrab tools
-SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
-cd %installer_resources%\HermitCrabSynthesis
-7z a %HC_ZIP_FILE% *
-copy /Y %HC_ZIP_FILE% ..\..
+rem SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
+rem cd %installer_resources%\HermitCrabSynthesis
+rem 7z a %HC_ZIP_FILE% *
+rem copy /Y %HC_ZIP_FILE% ..\..
 rem copy /Y %HC_ZIP_FILE% ..\"previous versions"
-del %HC_ZIP_FILE%
-cd ..\..
+rem del %HC_ZIP_FILE%
+rem cd ..\..
 
 if %COMPUTERNAME% == RONS-XPS (
-  cd C:\Data\Flextrans\Installer
-  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
-  cd C:\Users\rlboo\GitHub\FLExTrans
+rem  cd C:\Data\Flextrans\Installer
+  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer -DOUT_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+rem  cd C:\Users\rlboo\GitHub\FLExTrans
 ) else (
   echo listing the FLExTrans folder:
   dir c:\FLExTrans
   echo calling makensis now ...
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans -DOUT_FOLDER=. FLExTrans-installer.nsi
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
 

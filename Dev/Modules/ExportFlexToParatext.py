@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.15.2 -4/17/26 - Ron Lockwood
+#    Fixes #1312. Translate book names when checking for valid names.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -45,6 +48,7 @@
 import os
 import re
 import sys
+import unicodedata
 
 import ClusterUtils
 from SIL.LCModel import * # type: ignore                                                  
@@ -85,7 +89,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.15.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
@@ -222,9 +226,15 @@ def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
 
         # Otherwise find the abbreviation for the full name
         else:
+            normalizedBookStr = unicodedata.normalize("NFD", bookStr)
+
             for key, val in ChapterSelection.bookMap.items():
-                
-                if bookStr == val:
+
+                translatedStr = _translate("ChapterSelection", val)
+                translatedStr = unicodedata.normalize("NFD", translatedStr)
+
+                if normalizedBookStr == translatedStr:
+
                     bookAbbrev = key
                     break
         

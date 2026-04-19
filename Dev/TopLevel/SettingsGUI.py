@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.15.2 - 4/8/26 - Ron Lockwood
+#    Fixes #1056. Don't call center window each time the view changes. This was causing the setttings 
+#    window to move to the primary monitor if the user had moved it to a secondary monitor and then changed the view. 
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -159,7 +163,7 @@ from PyQt6.QtCore import QCoreApplication, QTranslator, QLibraryInfo
 from PyQt6.QtGui import QIcon
 
 from flextoolslib import FlexToolsModuleClass
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type: ignore
 
@@ -1248,7 +1252,7 @@ class Main(QMainWindow):
         from PyQt6.QtGui import QGuiApplication
 
         primScreen = QGuiApplication.primaryScreen()
-        screen = primScreen.geometry()
+        screen = primScreen.geometry() # type: ignore
 
 
         #screen = QtWidgets.QDesktopWidget().screenGeometry()
@@ -1298,7 +1302,7 @@ class Main(QMainWindow):
         else:
             self.resize(800, 630)
 
-        self.centerWindow()
+        # self.centerWindow()
 
     def disableTargetWidgets(self):
         
@@ -1443,6 +1447,7 @@ class Main(QMainWindow):
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
+            outStr = ''
 
             if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
                 continue
@@ -1461,7 +1466,7 @@ class Main(QMainWindow):
                 if widgInfo[CONFIG_NAME] == ReadConfig.SOURCE_TEXT_NAME:
                     
                     # Set the global variable
-                    FTPaths.CURRENT_SRC_TEXT = mySettingVal
+                    FTPaths.CURRENT_SRC_TEXT = mySettingVal # type: ignore
  
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 

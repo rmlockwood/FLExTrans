@@ -106,6 +106,12 @@
         <property name="maxVisibleItems">
          <number>30</number>
         </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
+        </property>
+        <property name="minimumContentsLength">
+         <number>1</number>
+        </property>
        </widget>
       </item>
       <item>
@@ -286,7 +292,14 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QComboBox" name="SentCombo"/>
+         <widget class="QComboBox" name="SentCombo">
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>1</number>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QScrollArea" name="scrollArea">
