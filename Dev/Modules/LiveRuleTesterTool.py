@@ -1297,13 +1297,13 @@ class Main(QMainWindow):
         # Get the lexical units from the parser
         return lexParser.getLexicalUnits()
 
-    def buildTestNodeFromInput(self, lexUnitList, synthesisResult, comment="NEW TEST"):
+    def buildTestNodeFromInput(self, lexUnitList, synthesisResult, comment):
         # Get the name of the text this lu came from
         origin = self.__sourceText
 
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
-        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult, comment=comment)
+        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult, comment)
 
         return myObj
 
@@ -1549,7 +1549,13 @@ class Main(QMainWindow):
                 result = resultList[i]
 
                 # take the lexical unit and result and build a Test XML node
-                myTestXMLObj = self.buildTestNodeFromInput([luObj], result) # first parameter is a list
+                comment_text = self.ui.commentTestField.toPlainText().strip()
+
+                myTestXMLObj = self.buildTestNodeFromInput(
+                    [luObj],
+                    synResult,
+                    comment_text
+                ) # first parameter is a list
 
                 # We'll get None if there was an error
                 if myTestXMLObj == None:
@@ -1588,8 +1594,13 @@ class Main(QMainWindow):
                 return
 
             # take the lexical unit(s) and result and build a Test XML node
-            myTestXMLObj = self.buildTestNodeFromInput(luObjList, synResult)
+            comment_text = self.ui.commentTestField.toPlainText().strip()
 
+            myTestXMLObj = self.buildTestNodeFromInput(
+                luObjList,
+                synResult,
+                comment_text
+                )
             # We'll get None if there was an error
             if myTestXMLObj == None:
                 return
