@@ -131,7 +131,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1065"/>
       <source>Multiple source words have ID {wid} in rule &quot;{ruleName}&quot;.</source>
-      <translation>Plusieurs mots sources ont l'ID {wid} dans la règle &quot;{ruleName}&quot;.</translation>
+      <translation>Plusieurs mots sources ont l'indentifiant {wid} dans la règle &quot;{ruleName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1070"/>
@@ -146,7 +146,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1106"/>
       <source>Rule name &quot;{ruleName}&quot; already exists in the rule file. Renaming added rule to &quot;{altName}&quot;.</source>
-      <translation>Le nom de règle &quot;{ruleName}&quot; existe déjà dans le fichier de règles. Renommage de la règle ajoutée en &quot;{altName}&quot;.</translation>
+      <translation>Le nom de règle &quot;{ruleName}&quot; existe déjà dans le fichier de règles. La règle ajoutée a été renommée en &quot;{altName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
@@ -166,47 +166,47 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1216"/>
       <source>Generate and output {cat}</source>
-      <translation>Générer et produire {cat}</translation>
+      <translation>Générer et afficher {cat}</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1240"/>
       <source>Missing source for feature {label} on inserted word {wid} in rule {ruleName}.</source>
-      <translation>Source manquante pour la caractéristique {label} sur le mot inséré {wid} dans la règle {ruleName}.</translation>
+      <translation>Source manquante pour la fonctionnalité {label} du mot inséré {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1252"/>
       <source>Unable to generate lemma for inserted word {wid} in rule {ruleName}.</source>
-      <translation>Impossible de générer le lemme pour le mot inséré {wid} dans la règle {ruleName}.</translation>
+      <translation>Impossible de générer le lemme du mot inséré {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1272"/>
       <source>Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Déterminer le lemme approprié pour {cat} et le stocker dans une variable nommée {spec.varid}.</translation>
+      <translation>Déterminer le lemme approprié pour {cat} et le stocker dans la variable nommée {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
       <source>Unable to find source for feature {label} on word {wid} in rule {ruleName}.</source>
-      <translation>Impossible de trouver la source pour la caractéristique {label} sur le mot {wid} dans la règle {ruleName}.</translation>
+      <translation>Impossible de trouver la source pour la fonctionnalité {label} du mot {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
       <source>Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Déterminer l'affixe approprié pour {cat} et le stocker dans une variable nommée {spec.varid}.</translation>
+      <translation>Déterminer l'affixe approprié pour {cat} et le stocker dans la variable nommée {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1367"/>
       <source>No tag found for value {value} of feature {label} in rule &quot;{ruleName}&quot;.</source>
-      <translation>Aucune balise trouvée pour la valeur {value} de la caractéristique {label} dans la règle &quot;{ruleName}&quot;.</translation>
+      <translation>Balise introuvable pour la valeur {value} de la fonctionnalité {label} dans la règle &quot;{ruleName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1393"/>
       <source>Determine the appropriate {label} tag for {cat} and store it in a variable named {varid}.</source>
-      <translation>Déterminer la balise {label} appropriée pour {cat} et la stocker dans une variable nommée {varid}.</translation>
+      <translation>Déterminer la balise {label} appropriée pour {cat} et l'enregistrer dans la variable {varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Une co-caractéristique avec le nom exact &quot;number&quot; est attendue. Veuillez corriger ceci.</translation>
+      <translation>Un attribut portant le nom exact &quot;numéro&quot; Veuillez corriger.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
