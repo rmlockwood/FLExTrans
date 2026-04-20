@@ -31,7 +31,7 @@ Unicode True
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
 !define EXPORTFROMFLEX "FLExTrans.Export Text from Target FLEx to Paratext"
-!define INSTALLER_RESOURCES "InstallerResources"
+!define INSTALLER_RESOURCES "Installer\InstallerResources"
 !define GIT_RESOURCES "${GIT_FOLDER}\${INSTALLER_RESOURCES}"
 !define MAKEFILESDIR "${GIT_RESOURCES}\Makefiles"
 !define TRANSFER_RULESDIR "${GIT_RESOURCES}\TransferRules"
@@ -231,7 +231,7 @@ Section "MainSection" SEC01
   Var /GLOBAL OUT_FOLDER
   # Unzip FLExTrans to the desired folder
   # GIT_FOLDER needs to be set to your local git FLExTrans folder in the compiler settings
-  File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
+  File "${GIT_FOLDER}\Installer\${PRODUCT_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
   # Create empty Output folders
@@ -545,10 +545,10 @@ associate_extension:
 
   # Bundle the base (English) XXE addon zip and all language-specific ones.
   # (*) ADD A NEW LANGUAGE: add one File line here for the new language zip.
-  File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
-  File "${GIT_FOLDER}\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
-  File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
-  File "${GIT_FOLDER}\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip"
+  File "${GIT_FOLDER}\Installer\${ADD_ON_ZIP_FILE}"
+  File "${GIT_FOLDER}\Installer\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
+  File "${GIT_FOLDER}\Installer\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
+  File "${GIT_FOLDER}\Installer\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip"
 
   # Install the base (English) addon first, then overwrite with the
   # language-specific zip if one exists. 
