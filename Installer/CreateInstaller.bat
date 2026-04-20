@@ -177,7 +177,7 @@ rem  cd C:\Users\rlboo\GitHub\FLExTrans
   echo listing the FLExTrans folder:
   dir c:\FLExTrans
   echo calling makensis now ...
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans\Installer -DOUT_FOLDER=. FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=.. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans\Installer -DOUT_FOLDER=. FLExTrans-installer.nsi
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
 
