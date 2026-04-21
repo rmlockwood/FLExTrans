@@ -188,7 +188,7 @@ if %COMPUTERNAME% == RONS-XPS (
   dir .
   dir ..
   echo calling makensis now ...
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=.. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi -DOUT_FOLDER=..
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=.. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans -DOUT_FOLDER=.. FLExTrans-installer.nsi
   dir ..
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
