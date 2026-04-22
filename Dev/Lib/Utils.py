@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.15.3 - 4/22/26 - Ron Lockwood
+#    Fixes #1328. Use the new PyQt6 enums for language and country under locale.
+#
 #   Version 3.15.2 - 3/12/26 - Ron Lockwood
 #    Fixes #1273. Handle non-ASCII characters in paths when creating the batch file to run the makefile. 
 #    Use the Windows short path to avoid encoding issues with non-ASCII characters in the batch file.
@@ -1384,20 +1387,20 @@ class LocalizedDateTimeFormatter:
         if langCode not in self.localeCache:
 
             localeMap = {
-                'de': QLocale(QLocale.German, QLocale.Germany),
-                'es': QLocale(QLocale.Spanish, QLocale.Spain),
-                'en': QLocale(QLocale.English, QLocale.UnitedStates),
-                'fr': QLocale(QLocale.French, QLocale.France),   
+                'de': QLocale(QLocale.Language.German, QLocale.Country.Germany),
+                'es': QLocale(QLocale.Language.Spanish, QLocale.Country.Spain),
+                'en': QLocale(QLocale.Language.English, QLocale.Country.UnitedStates),
+                'fr': QLocale(QLocale.Language.French, QLocale.Country.France),   
             }
             self.localeCache[langCode] = localeMap.get(langCode, QLocale())
         
         return self.localeCache[langCode]
     
-    def formatDateTime(self, datetimeObj, formatType="d MMM yyyy hh:mm:ss"):
+    def formatDateTime(self, datetimeObj):
         """Format datetime according to language locale"""
 
         locale = self.getLocale(getInterfaceLangCode())
-        return locale.toString(datetimeObj, formatType)
+        return locale.toString(datetimeObj, QLocale.FormatType.ShortFormat)
     
 def getInterfaceLangCode():
 
