@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.15.4 - 4/15/26 - Ron Lockwood
+#    Fixes #1304. Set capitalization based on the original complex form.
+#
 #   Version 3.15.3 - 3/10/26 - Ron Lockwood
 #    Regular expression syntax fixes that showed up with Python 3.13.
 #
@@ -155,7 +158,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.15.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -1081,11 +1084,18 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
                                         myAnaInfo.getAnalysisRootPOS(), 
                                         myAnaInfo.getCapitalizedAnalysisRoot(),
                                         textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
-
+            
             newCompANAlist.append(newAna)
+            currentAna = newAna
         else:
             newCompANAlist.append(myAnaInfo)
+            currentAna = myAnaInfo
             
+        # Set the capitalization of the first ANA object to be the same as the original complex form ANA object
+        # This is because a complex form that is normally lower case might be capitalized in the text.
+        if firstRoot:
+            currentAna.setCapitalization(textAnaInfo.getCapitalization())
+
         firstRoot = False
         
     return newCompANAlist

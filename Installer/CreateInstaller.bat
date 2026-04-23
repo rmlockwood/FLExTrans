@@ -1,23 +1,25 @@
 SET FLEXTRANS_VERSION=3.15
-rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
-rem  2) we create a folder named this in the install
-SET INSTALL_FOLDER_VERSION=2.3.2
 
 rem User interface language codes
 set LANG_CODES=de es fr
 
-rem Delete everything in Install%INSTALL_FOLDER_VERSION%
-rd /s /q Install%INSTALL_FOLDER_VERSION%
+rem Delete everything in InstallerImage
+set image=InstallerImageFolder
+rd /s /q %image%
 
 rem A second time just to be sure
-rd /s /q Install%INSTALL_FOLDER_VERSION%
+rd /s /q %image%
+
+set dev=..\Dev
 
 rem Installer Resources folder
 set installer_resources=InstallerResources
  set makefiles=%installer_resources%\makefiles
  
+set doc=%installer_resources%\Doc
+
 rem Name the folders
-set flextransfolder=Install%INSTALL_FOLDER_VERSION%\FLExTrans
+set flextransfolder=%image%\FLExTrans
  set flextransdoc=  "%flextransfolder%\FLExTrans Documentation"
  set sampleproject= "%flextransfolder%\SampleFLExProjects"
  set flextoolsfolder=%flextransfolder%\FlexTools
@@ -78,22 +80,22 @@ rem copy pip installer requirements file for Python dependencies
 copy %installer_resources%\requirements.txt %flextransfolder%
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
-copy Dev\TopLevel\*.py %flextoolsfolder%
+copy %dev%\TopLevel\*.py %flextoolsfolder%
 
 rem sub directory paths file to Modules
 copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 
 rem copy all module code files
-copy Dev\Modules\*.py %modulesflextrans%
+copy %dev%\Modules\*.py %modulesflextrans%
 
 rem copy all shared code files
-copy Dev\Lib\*.py %flextranslib%
+copy %dev%\Lib\*.py %flextranslib%
 
 rem copy all window ui code files
-copy Dev\Lib\Windows\*.py %flextranslib%
+copy %dev%\Lib\Windows\*.py %flextranslib%
 
 rem copy compiled translation files
-copy Dev\CompiledTranslations\*.qm %translations%
+copy %dev%\CompiledTranslations\*.qm %translations%
 
 rem UI resources and supporting executables to Tools
 copy %installer_resources%\DialogImages\* %toolsflextools%
@@ -104,11 +106,11 @@ copy %installer_resources%\Apertium4Windows\*.* %toolsflextools%
 copy %installer_resources%\Make4Windows\*.* %toolsflextools%
 
 rem documentation
-copy Doc\*.htm %flextransdoc%
+copy %doc%\*.htm %flextransdoc%
 
 for %%d in (Images Agreement "Irregular Form" "Synthesis Self-Test" "Transfer Rules Tutorial") do (
     mkdir %flextransdoc%\%%d
-    xcopy Doc\%%d\* %flextransdoc%\%%d   /s /e
+    xcopy %doc%\%%d\* %flextransdoc%\%%d   /s /e
 )
 rem use the same .vbs file for Croatian sample
 copy %installer_resources%\VBS\FLExTrans.vbs %flextransdoc%\"Transfer Rules Tutorial\Croatian-English"
@@ -150,12 +152,11 @@ cd ..\..
 
 rem Zip the FlexTools folder
 SET ZIP_FILE=FLExToolsWithFLExTrans%FLEXTRANS_VERSION%.zip
-cd Install%INSTALL_FOLDER_VERSION%
+cd %image%
 7z a %ZIP_FILE% FLExTrans
 copy /Y %ZIP_FILE% ..
 rem copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
-cd ..
 
 rem Zip the HermitCrab tools
 rem SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
@@ -166,27 +167,32 @@ rem copy /Y %HC_ZIP_FILE% ..\"previous versions"
 rem del %HC_ZIP_FILE%
 rem cd ..\..
 
+cd ..
+
 if %COMPUTERNAME% == RONS-XPS (
-rem  cd C:\Data\Flextrans\Installer
-  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer -DOUT_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
-rem  cd C:\Users\rlboo\GitHub\FLExTrans
+  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\Installer -DOUT_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+
+	rem remove zip files once the installer is built
+	del %ADD_ON_ZIP_FILE%
+	del %ZIP_FILE%
+	rem del %HC_ZIP_FILE%
+
+	setlocal enabledelayedexpansion
+	for %%L in (%LANG_CODES%) do (
+
+		del "AddOnsForXMLmind_%%L%FLEXTRANS_VERSION%.zip"
+	)
 ) else (
   echo listing the FLExTrans folder:
   dir c:\FLExTrans
+  dir .
+  dir ..
   echo calling makensis now ...
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans -DOUT_FOLDER=. FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=.. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans -DOUT_FOLDER=.. FLExTrans-installer.nsi
+  dir ..
+  cd ..
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
 
-rem remove zip files once the installer is built
-del %ADD_ON_ZIP_FILE%
-del %ZIP_FILE%
-del %HC_ZIP_FILE%
-
-setlocal enabledelayedexpansion
-for %%L in (%LANG_CODES%) do (
-
-    del "AddOnsForXMLmind_%%L%FLEXTRANS_VERSION%.zip"
-)
 endlocal
 pause

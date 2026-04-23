@@ -1,72 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="es-ES" sourcelanguage="en">
-<context>
+  <context>
     <name>ReplacementEditor</name>
     <message>
-        <location filename="../ReplacementEditor.py" line="90"/>
-        <source>Replacement Dictionary Editor</source>
-        <translation>Editor de diccionario de reemplazo</translation>
+      <location filename="../ReplacementEditor.py" line="90" />
+      <source>Replacement Dictionary Editor</source>
+      <translation>Editor de diccionario de reemplazo</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="93"/>
-        <source>Edit manual overrides for the bilingual dictionary.</source>
-        <translation>Editar sobrescrituras manuales para el diccionario bilingüe.</translation>
+      <location filename="../ReplacementEditor.py" line="93" />
+      <source>Edit manual overrides for the bilingual dictionary.</source>
+      <translation>Editar sobrescrituras manuales para el diccionario bilingüe.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="95"/>
-        <source>This module provides an interface for editing the replacement dictionary
+      <location filename="../ReplacementEditor.py" line="95" />
+      <source>This module provides an interface for editing the replacement dictionary
 which allows you to override the links created by the {linkSenseToolModule}
 in the presence of particular affixes. For example, if you have a noun that
 is generally translated one way, but has a different translation in the
 vocative singular, you can specify that here.</source>
-        <translation>Este módulo proporciona una interfaz para editar el diccionario de reemplazo,
-lo que le permite sobrescribir los enlaces creados por la herramienta {linkSenseToolModule}
-en presencia de ciertos afijos. Por ejemplo, si tiene un sustantivo que
-generalmente se traduce de una manera, pero tiene una traducción diferente en el
-vocativo singular, puede especificarlo aquí.</translation>
+      <translation>Este módulo proporciona una interfaz para editar el diccionario de reemplazo, lo que permite anular los enlaces creados por {linkSenseToolModule} en presencia de afijos específicos. Por ejemplo, si tiene un sustantivo que generalmente se traduce de una manera, pero tiene una traducción diferente en el vocativo singular, puede especificarlo aquí.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="559"/>
-        <source>There are unsaved changes.</source>
-        <translation>Hay cambios no guardados.</translation>
+      <location filename="../ReplacementEditor.py" line="559" />
+      <source>There are unsaved changes.</source>
+      <translation>Hay cambios no guardados.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="574"/>
-        <source>The following sets of rows are identical on the source side and only the first one will have any effect:
+      <location filename="../ReplacementEditor.py" line="574" />
+      <source>The following sets of rows are identical on the source side and only the first one will have any effect:
 </source>
-        <translation>Los siguientes conjuntos de filas son idénticos en el lado de origen y solo la primera tendrá algún efecto:
+      <translation>Los siguientes conjuntos de filas son idénticos en el lado de origen y solo la primera tendrá algún efecto:
 </translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="576"/>
-        <source>The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </source>
-        <translation>Las siguientes filas no tienen afijos y, por lo tanto, son redundantes con los enlaces creados por la herramienta Sense Linker: </translation>
+      <location filename="../ReplacementEditor.py" line="576" />
+      <source>The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </source>
+      <translation>Las siguientes filas no tienen afijos y, por lo tanto, son redundantes con los enlaces creados por la herramienta Sense Linker: </translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="579"/>
-        <source>Useless Lines:</source>
-        <translation>Filas inútiles:</translation>
+      <location filename="../ReplacementEditor.py" line="579" />
+      <source>Useless Lines:</source>
+      <translation>Filas inútiles:</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="591"/>
-        <source>Replacement dictionary file saved.</source>
-        <translation>Archivo del diccionario de reemplazo guardado.</translation>
+      <location filename="../ReplacementEditor.py" line="591" />
+      <source>Replacement dictionary file saved.</source>
+      <translation>Archivo del diccionario de reemplazo guardado.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="597"/>
-        <source>Unsaved Changes</source>
-        <translation>Cambios no guardados</translation>
+      <location filename="../ReplacementEditor.py" line="597" />
+      <source>Unsaved Changes</source>
+      <translation>Cambios no guardados</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="597"/>
-        <source>Save changes before exiting?</source>
-        <translation>¿Guardar los cambios antes de salir?</translation>
+      <location filename="../ReplacementEditor.py" line="597" />
+      <source>Save changes before exiting?</source>
+      <translation>¿Guardar los cambios antes de salir?</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="627"/>
-        <source>A value for {configValue} not found in the configuration file.</source>
-        <translation>No se encontró un valor para {configValue} en el archivo de configuración.</translation>
+      <location filename="../ReplacementEditor.py" line="627" />
+      <source>A value for {configValue} not found in the configuration file.</source>
+      <translation>No se encontró un valor para {configValue} en el archivo de configuración.</translation>
     </message>
-</context>
+  </context>
 </TS>
