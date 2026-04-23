@@ -559,34 +559,61 @@ associate_extension:
     ${EndIf}
   ${EndIf}
   
-  # Update the XXE properties file
-  # Define paths
+  ; Update the XXE properties file
+  ; Define paths
   StrCpy $R0 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\preferences.properties"
   StrCpy $R1 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\prefs_temp.properties"
-
+  
   ${If} ${FileExists} "$R0"
-    FileOpen $R2 "$R0" "r"               ; Open original for reading
-    FileOpen $R3 $R1 "w"                 ; Open temp for writing
-    
+    ; --- File exists: read through it, replace/track keys, then append missing ones ---
+    StrCpy $R5 "0"   ; flag: xxeVersion found
+    StrCpy $R6 "0"   ; flag: autoCheckForUpdates found
+  
+    FileOpen $R2 "$R0" "r"
+    FileOpen $R3 "$R1" "w"
+  
     loop_lines:
-      FileRead $R2 $R4                   ; Read one line (up to 1024 chars)
+      FileRead $R2 $R4
       IfErrors done_lines
       
-      # Check if this line contains our target string
-      # If so, replace it using the macro
-      ${StrRep} $R4 "$R4" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+      ; Track whether we have seen the xxeVersion key
+      ${StrStr} $R7 "$R4" "xxeVersion="
+      ${If} $R7 != ""
+        StrCpy $R5 "1"
+      ${EndIf}
       
-      FileWrite $R3 "$R4"                ; Write the (potentially modified) line
-      Goto loop_lines
-
+      ; Track & fix autoCheckForUpdates
+      ${StrStr} $R7 "$R4" "autoCheckForUpdates="
+      ${If} $R7 != ""
+        StrCpy $R6 "1"
+        ${StrRep} $R4 "$R4" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
+      ${EndIf}
+      
+      FileWrite $R3 "$R4"
+  	Goto loop_lines
+  
     done_lines:
+    ; Append any keys that were never seen in the file
+    ${If} $R5 == "0"
+  	FileWrite $R3 "xxeVersion=8.2.0$\r$\n"
+    ${EndIf}
+    ${If} $R6 == "0"
+  	FileWrite $R3 "autoCheckForUpdates=false$\r$\n"
+    ${EndIf}
+  
     FileClose $R3
     FileClose $R2
-
-    # Copy the temp file back to the original location
-    # This is safer than 'Rename' for non-admins as it only requires Write permission
+  
     CopyFiles /SILENT "$R1" "$R0"
     Delete "$R1"
+  
+  ${Else}
+    ; --- File does not exist: create it with both required lines ---
+    FileOpen $R2 "$R0" "w"
+    FileWrite $R2 "xxeVersion=8.2.0$\r$\n"
+    FileWrite $R2 "autoCheckForUpdates=false$\r$\n"
+    FileClose $R2
+  
   ${EndIf}
 #  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
 
