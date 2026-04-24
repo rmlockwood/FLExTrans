@@ -559,35 +559,39 @@ associate_extension:
     ${EndIf}
   ${EndIf}
   
-  # Update the XXE properties file
-  # Define paths
-  StrCpy $R0 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\preferences.properties"
-  StrCpy $R1 "$REAL_USER_APPDATA\XMLmind\XMLEditor8\prefs_temp.properties"
 
-  ${If} ${FileExists} "$R0"
-    FileOpen $R2 "$R0" "r"               ; Open original for reading
-    FileOpen $R3 $R1 "w"                 ; Open temp for writing
-    
-    loop_lines:
-      FileRead $R2 $R4                   ; Read one line (up to 1024 chars)
-      IfErrors done_lines
-      
-      # Check if this line contains our target string
-      # If so, replace it using the macro
-      ${StrRep} $R4 "$R4" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
-      
-      FileWrite $R3 "$R4"                ; Write the (potentially modified) line
-      Goto loop_lines
 
-    done_lines:
-    FileClose $R3
-    FileClose $R2
+# Write PowerShell script to temp file that will add xxeVersion=8.2.0 and autoCheckForUpdates=false if not present
+# autoCheckForUpdates=false gets written if its not false.
+# ReadFile was having problems so Claude and I went with this solution
+FileOpen $R0 "$TEMP\xxe_prefs.ps1" "w"
+FileWrite $R0 '$$prefs = "$$env:APPDATA\XMLmind\XMLEditor8\preferences.properties"$\r$\n'
+FileWrite $R0 '$$dir = Split-Path $$prefs$\r$\n'
+FileWrite $R0 'if (-not (Test-Path $$dir)) { New-Item -ItemType Directory -Path $$dir | Out-Null }$\r$\n'
+FileWrite $R0 'if (Test-Path $$prefs) {$\r$\n'
+FileWrite $R0 '    $$lines = Get-Content $$prefs$\r$\n'
+FileWrite $R0 '    $$hasVersion = ($$lines -match "^xxeVersion=").Count -gt 0$\r$\n'
+FileWrite $R0 '    $$hasAutoCheck = ($$lines -match "^autoCheckForUpdates=").Count -gt 0$\r$\n'
+FileWrite $R0 '    $$lines = $$lines -replace "autoCheckForUpdates=true","autoCheckForUpdates=false"$\r$\n'
+FileWrite $R0 '    if (-not $$hasVersion) { $$lines += "xxeVersion=8.2.0" }$\r$\n'
+FileWrite $R0 '    if (-not $$hasAutoCheck) { $$lines += "autoCheckForUpdates=false" }$\r$\n'
+FileWrite $R0 '    $$lines | Set-Content $$prefs -Encoding ASCII$\r$\n'
+FileWrite $R0 '} else {$\r$\n'
+FileWrite $R0 '    $$lines = @("xxeVersion=8.2.0", "autoCheckForUpdates=false")$\r$\n'
+FileWrite $R0 '    $$lines | Set-Content $$prefs -Encoding ASCII$\r$\n'
+FileWrite $R0 '}$\r$\n'
+FileWrite $R0 'Write-Output "Done"$\r$\n'
+FileClose $R0
 
-    # Copy the temp file back to the original location
-    # This is safer than 'Rename' for non-admins as it only requires Write permission
-    CopyFiles /SILENT "$R1" "$R0"
-    Delete "$R1"
-  ${EndIf}
+; Execute it and log the output
+nsExec::ExecToLog 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$TEMP\xxe_prefs.ps1"'
+Pop $R1
+FileWrite $9 "PowerShell exit code: $R1$\r$\n"
+
+; Clean up
+Delete "$TEMP\xxe_prefs.ps1"
+
+
 #  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
 
   # --- Create Desktop Shortcut ---
