@@ -1,4 +1,4 @@
-flextoolslib==2026.2.26b0   
+flextoolslib==2026.4.24b0
 fuzzywuzzy 					
 Levenshtein 				
 mixpanel 			    	
