@@ -190,7 +190,7 @@ class RootTreeItem(BaseTreeItem):
         super(RootTreeItem, self).__init__(None, False)
         
     def ColumnCount(self):
-        return 4
+        return 3
     
     def Data(self, inColumn):
         # These become the column headers
@@ -200,8 +200,6 @@ class RootTreeItem(BaseTreeItem):
             return _translate("TestbedLogViewer", "Expected Result")
         if inColumn == 2:
             return _translate("TestbedLogViewer", "Actual Result")
-        if inColumn == 3:
-            return _translate("TestbedLogViewer", "Comment")
         return ""
     
 class TestStatsItem(BaseTreeItem):
@@ -251,7 +249,7 @@ class TestStatsItem(BaseTreeItem):
 
 class TestResultItem(BaseTreeItem):
     
-    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason, comment, greenCheck, redX, yellowTriangle):
+    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason, greenCheck, redX, yellowTriangle):
         super(TestResultItem, self).__init__(inParent, rtl)
         self.unformattedLexicalUnitsString = LUString
         self.formattedLexicalUnitsString = formattedLexicalUnitsString
@@ -260,7 +258,6 @@ class TestResultItem(BaseTreeItem):
         self.invalid = not valid
         self.origin = origin
         self.invalidReason = invalidReason
-        self.comment = comment
         self.greenCheck = greenCheck
         self.redX = redX
         self.yellowTriangle = yellowTriangle
@@ -281,7 +278,7 @@ class TestResultItem(BaseTreeItem):
         return self.unformattedLexicalUnitsString
     
     def ColumnCount(self):
-        return 4
+        return 3
     
     def Data(self, inColumn):
         # Lexical units
@@ -314,9 +311,6 @@ class TestResultItem(BaseTreeItem):
                 p = ET.Element('p')
                 outputLUSpan(p, SUCCESS_COLOR, self.expectedStr, False) #rtl
                 return ET.tostring(p, encoding='unicode')
-        # Comment column
-        elif inColumn == 3:
-            return self.comment
         return ''
     
     def createTheWidget(self, col):
@@ -349,6 +343,32 @@ class TestResultItem(BaseTreeItem):
             myWidget = QtWidgets.QLabel(self.Data(col))
             
         return myWidget
+
+# A tree item for a comment.
+class CommentTreeItem(BaseTreeItem):
+
+    def __init__(self, inParent, rtl, commentText):
+        super(CommentTreeItem, self).__init__(inParent, rtl)
+        self.commentText = commentText
+
+    def ColumnCount(self):
+        return 1 
+
+    def Data(self, inColumn):
+
+        if inColumn == 0:
+            return "Comment: " + self.commentText
+
+        return ""
+
+    def createTheWidget(self, col):
+
+        label = QtWidgets.QLabel(self.Data(col))
+
+        # Optional: style it visually
+        label.setStyleSheet("color: gray; font-style: italic;")
+
+        return label
 
 # A widget for an icon and text
 class ITWidget(QtWidgets.QWidget):
@@ -470,8 +490,19 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                     # Otherwise build the TestResultItem object and then add it to the cache
                     else:
                         resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
-                                  test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), test.getComment(), self.greenCheck, self.redX, self.yellowTriangle)
+                                  test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
                         
+                                            # Add comment child
+                        commentText = test.getComment()
+
+                        if commentText:
+                            commentItem = CommentTreeItem(
+                            resultItem,
+                            self.getRTL(),
+                            commentText
+                        )
+
+                        resultItem.AddChild(commentItem)
                         #self.__cache[myHash] = resultItem
                                      
                     # Add the result item to the current stats item

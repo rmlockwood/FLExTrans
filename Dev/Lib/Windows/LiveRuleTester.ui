@@ -1382,19 +1382,6 @@ background-color: rgb(254, 194,194);</string>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="addMultipleCheckBox">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Add multiple words to the testbed word by word</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="editTestbedButton">
         <property name="enabled">
          <bool>true</bool>
@@ -1435,6 +1422,13 @@ background-color: rgb(254, 194,194);</string>
         </property>
         <property name="text">
          <string>&amp;View Testbed Log</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Comment:</string>
         </property>
        </widget>
       </item>
