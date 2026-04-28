@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.15.3 - 4/28/26 - Ron Lockwood
+#    Fixes #836. Check for null targetDB before trying to load settings that require it. Add new settings that require 
+#    the targetDB to the list of settings that get hidden if there is no targetDB. 
+#
 #   Version 3.15.2 - 4/8/26 - Ron Lockwood
 #    Fixes #1056. Don't call center window each time the view changes. This was causing the setttings 
 #    window to move to the primary monitor if the user had moved it to a secondary monitor and then changed the view. 
@@ -330,7 +334,7 @@ def loadTargetEntryCustomField(widget, wind, settingName):
     # Get the name of an entry-level custom field to find in the target project
     customEntryField = wind.read(settingName)
     
-    if customEntryField is not None:
+    if wind.targetDB and customEntryField is not None:
 
         # Add (none) as the first option
         widget.addItem(_translate("SettingsGUI", "(none)"))
@@ -352,7 +356,7 @@ def loadTargetSenseCustomField(widget, wind, settingName):
     # Get the name of a sense-level custom field to find in the target project
     customSenseFieldTarget = wind.read(settingName)
     
-    if customSenseFieldTarget is not None:
+    if wind.targetDB and customSenseFieldTarget is not None:
 
         # Add (none) as the first option
         widget.addItem(_translate("SettingsGUI", "(none)"))
@@ -371,21 +375,23 @@ def loadTargetSenseCustomField(widget, wind, settingName):
 
 def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
 
-    # code copied from __GetCustomFieldsOfType in FLExProject.py
-    mdc = IFwMetaDataCacheManaged(targetDB.project.MetaDataCacheAccessor)
-    
-    for flid in mdc.GetFields(MoFormTags.kClassId, False, int(CellarPropertyTypeFilter.All)):
+    if targetDB:
 
-        if targetDB.project.GetIsCustomField(flid):
+        # code copied from __GetCustomFieldsOfType in FLExProject.py
+        mdc = IFwMetaDataCacheManaged(targetDB.project.MetaDataCacheAccessor)
+        
+        for flid in mdc.GetFields(MoFormTags.kClassId, False, int(CellarPropertyTypeFilter.All)):
 
-            yield ((flid, mdc.GetFieldLabel(flid)))
+            if targetDB.project.GetIsCustomField(flid):
+
+                yield ((flid, mdc.GetFieldLabel(flid)))
 
 def loadTargetAllomorphCustomField(widget, wind, settingName):
     
     # Get the name of an allomorph-level custom field to find in the target project
     customAlloField = wind.read(settingName)
     
-    if customAlloField is not None:
+    if wind.targetDB and customAlloField is not None:
 
         # Add (none) as the first option
         widget.addItem(_translate("SettingsGUI", "(none)"))
@@ -414,7 +420,8 @@ def loadTargetSenseCustomList(widget, wind, settingName):
         if not fieldName:
             multiID = None
 
-        else:
+        elif wind.targetDB:
+
             print(f"Looking for possible values for {fieldName} field")
             # Get the possible values for this custom list field
             multiID = wind.targetDB.LexiconGetSenseCustomFieldNamed(fieldName)
@@ -1316,6 +1323,17 @@ class Main(QMainWindow):
                                               "limit_pos",
                                               "custom_field_entry",
                                               "custom_field_allomorph",
+                                              "genstc_customfield",
+                                              "genstc_stem_num",
+                                              "genstc_limit_lemma_n",
+                                              "genstc_limit_pos_n",
+                                              "genstc_limit_semdomain_1",
+                                              "genstc_limit_lemma_1",
+                                              "genstc_limit_pos_1",
+                                              "genstc_limit_semdomain_1",
+                                              "genstc_limit_lemma_2",
+                                              "genstc_limit_pos_2",
+                                              "genstc_limit_semdomain_2",
                                               ]:
                 
                 widgInfo[WIDGET1_OBJ].setEnabled(False)
