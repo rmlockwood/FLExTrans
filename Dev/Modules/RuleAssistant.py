@@ -98,7 +98,7 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData', 'RuleAssistantLib']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:

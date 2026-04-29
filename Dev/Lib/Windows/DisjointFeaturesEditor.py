@@ -9,8 +9,7 @@ from PyQt6.QtCore import Qt, QSize
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from flex_trans_rule_generator import FLExTransRuleGenerator
-    from flex_data import FLExData
+    from RAutils import FLExTransRuleGenerator, FLExData
 
 
 class DisjointFeaturesEditorDialog(QDialog):
@@ -242,7 +241,7 @@ class DisjointFeaturesEditorDialog(QDialog):
         if self._updating:
             return
         if 0 <= self._selected_index < len(self.generator.disjoint_features):
-            from enums import PhraseType
+            from RAutils import PhraseType
             lang = PhraseType.source if self.language_combo.currentText() == "Source" else PhraseType.target
             self.generator.disjoint_features[self._selected_index].language = lang
 
@@ -291,15 +290,14 @@ class DisjointFeaturesEditorDialog(QDialog):
         ds = self.generator.disjoint_features[self._selected_index]
         new_count = self.pairing_slider.value()
         while len(ds.pairings) < new_count:
-            from disjoint_feature_set import DisjointFeatureValuePairing
+            from RAutils import DisjointFeatureValuePairing
             ds.pairings.append(DisjointFeatureValuePairing())
         while len(ds.pairings) > new_count:
             ds.pairings.pop()
         self._update_pairing_row_visibility(new_count)
 
     def _on_add_set(self) -> None:
-        from disjoint_feature_set import DisjointFeatureSet, DisjointFeatureValuePairing
-        from enums import PhraseType
+        from RAutils import DisjointFeatureSet, DisjointFeatureValuePairing, PhraseType
         new_set = DisjointFeatureSet(
             name="New Set",
             co_feature_name="",

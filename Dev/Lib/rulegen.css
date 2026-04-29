@@ -1,0 +1,78 @@
+/**
+ * Copyright (c) 2023-2024 SIL International
+ * This software is licensed under the LGPL, version 2.1 or later
+ * (http://www.gnu.org/licenses/lgpl-2.1.html)
+ */
+/* rulegen.css for FLExTrans rule assistant */
+
+.arrow:before {
+    content:" → ";
+}
+.arrow {
+    font-size:x-large;
+    font-size:250%;
+}
+
+.affix {
+    color:maroon;
+}
+
+.category {
+    color:red;
+}
+
+.categorytgt {
+    color:red;
+    font-style: italic;
+/*    opacity: 0.75;  not using because it makes underscores not show */
+    filter: grayscale(50%);
+}
+
+.feature {
+    color:blue;
+}
+
+.head:before {
+    content:"(head)";    
+}
+.head {
+    font-style:italic;
+}
+
+.headfeature {
+	font-weight:bold;
+}
+
+.headword {
+	font-weight:bold;
+}
+
+.index {
+    font-size:x-small;
+    font-style:italic;
+    vertical-align:sub;
+}
+
+.language {
+    font-size:smaller;
+    font-style:italic;
+    vertical-align:sub;
+}
+
+.ranking:before {
+	content:" (rank:"
+}
+.ranking {
+	margin-left:1em;
+	font-weight:normal;
+	font-size:smaller;
+}
+.ranking:after {
+	content:")"
+}
+
+.unmarked {
+	margin-left:1em;
+	font-weight:normal;
+	font-size:smaller;
+}

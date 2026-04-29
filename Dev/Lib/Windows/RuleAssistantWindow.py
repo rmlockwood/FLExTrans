@@ -10,7 +10,7 @@ import tempfile
 from datetime import datetime
 
 # Fallback crash log
-_crash_log = Path(__file__).parent.parent / 'window_CRASH.log'
+_crash_log = Path(__file__).parent.parent.parent / 'Dev' / 'Modules' / 'RuleAssistantLib' / 'window_CRASH.log'
 
 def _write_crash_log(msg):
     """Direct file write as fallback"""
@@ -32,10 +32,7 @@ for handler in _logger.handlers[:]:
     _logger.removeHandler(handler)
 
 try:
-    # Add file handler to temp directory
     _log_file = __file__.replace('.py', '.log')
-    # Try to write to temp directory instead for consistency
-    _log_file = __file__.replace('main_window.py', 'view.log')
     _file_handler = logging.FileHandler(_log_file, mode='w')
     _file_handler.setLevel(logging.DEBUG)
     _file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
@@ -44,8 +41,8 @@ except Exception:
     pass
 
 _logger.propagate = True
-_write_crash_log("[INIT] main_window.py module loaded")
-_logger.info("main_window.py module loaded")
+_write_crash_log("[INIT] RuleAssistantWindow.py module loaded")
+_logger.info("RuleAssistantWindow.py module loaded")
 
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
@@ -59,21 +56,15 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QShortcut
 
-from flex_trans_rule_generator import FLExTransRuleGenerator
-from enums import PhraseType, HeadValue, PermutationsValue
-from word import Word
-from flex_data import FLExData
-from xml_backend_provider import XMLBackEndProvider
-from xml_flex_data_provider import XMLFLExDataBackEndProvider
-from rule_id_parent_setter import RuleIdentifierAndParentSetter
-from constituent_finder import ConstituentFinder
-from validity_checker import ValidityChecker
-from web_page_producer import WebPageProducer
-from web_page_interactor import WebPageInteractor
-from application_preferences import ApplicationPreferences
-from category_chooser import CategoryChooserDialog
-from feature_value_chooser import FeatureValueChooserDialog
-from disjoint_features_editor import DisjointFeaturesEditorDialog
+from RAutils import (
+    FLExTransRuleGenerator, PhraseType, HeadValue, PermutationsValue, Word,
+    FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
+    RuleIdentifierAndParentSetter, ConstituentFinder, ValidityChecker,
+    WebPageProducer, WebPageInteractor, ApplicationPreferences,
+)
+from CategoryChooser import CategoryChooserDialog
+from FeatureValueChooser import FeatureValueChooserDialog
+from DisjointFeaturesEditor import DisjointFeaturesEditorDialog
 
 
 class WindowResult(NamedTuple):
@@ -933,7 +924,7 @@ class RuleAssistantWindow(QMainWindow):
 
     def _on_overwrite_toggled(self) -> None:
         """Handle overwrite checkbox toggle."""
-        from enums import OverwriteRulesValue
+        from RAutils import OverwriteRulesValue
         if self._generator:
             self._generator.overwrite_rules = (
                 OverwriteRulesValue.yes if self.overwrite_checkbox.isChecked()
@@ -1069,7 +1060,7 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word:
             return
 
-        from enums import HeadValue
+        from RAutils import HeadValue
         self._selected_word.head = HeadValue.no
         self._mark_dirty()
         self._refresh_rule_view()
@@ -1113,8 +1104,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word:
             return
 
-        from affix import Affix
-        from enums import AffixType
+        from RAutils import Affix
+        from RAutils import AffixType
         new_affix = Affix(affix_type=AffixType.prefix)
         self._selected_word.affixes.append(new_affix)
         self._mark_dirty()
@@ -1125,8 +1116,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word:
             return
 
-        from affix import Affix
-        from enums import AffixType
+        from RAutils import Affix
+        from RAutils import AffixType
         new_affix = Affix(affix_type=AffixType.suffix)
         self._selected_word.affixes.append(new_affix)
         self._mark_dirty()
@@ -1157,7 +1148,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         # Get current category for pre-selection
-        from category import Category
+        from RAutils import Category
         current_category = Category(name=self._selected_word.word_category) if self._selected_word.word_category else None
 
         dialog = CategoryChooserDialog(unique_categories, current_category, self)
@@ -1190,7 +1181,7 @@ class RuleAssistantWindow(QMainWindow):
             result = dialog.get_chosen_value()
             if result:
                 flex_feature, flex_value = result
-                from feature import Feature
+                from RAutils import Feature
                 new_feature = Feature(
                     label=flex_feature.name,
                     value=flex_value.abbreviation
@@ -1274,7 +1265,7 @@ class RuleAssistantWindow(QMainWindow):
         if not unique_categories:
             return
 
-        from category import Category
+        from RAutils import Category
         current_category = Category(name=self._selected_category.name) if self._selected_category.name else None
 
         dialog = CategoryChooserDialog(unique_categories, current_category, self)
@@ -1312,7 +1303,7 @@ class RuleAssistantWindow(QMainWindow):
         if not all_features:
             return
 
-        from feature import Feature
+        from RAutils import Feature
         # Pre-select current feature for dialog
         current_feature = Feature(
             label=self._selected_feature.label,
@@ -1406,7 +1397,7 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix:
             return
 
-        from enums import AffixType
+        from RAutils import AffixType
         self._selected_affix.affix_type = (
             AffixType.suffix if self._selected_affix.affix_type == AffixType.prefix
             else AffixType.prefix
@@ -1435,7 +1426,7 @@ class RuleAssistantWindow(QMainWindow):
             result = dialog.get_chosen_value()
             if result:
                 flex_feature, flex_value = result
-                from feature import Feature
+                from RAutils import Feature
                 new_feature = Feature(
                     label=flex_feature.name,
                     value=flex_value.abbreviation
@@ -1449,8 +1440,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from affix import Affix
-        from enums import AffixType
+        from RAutils import Affix
+        from RAutils import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.prefix)
         self._selected_word.affixes.insert(index, new_affix)
@@ -1462,8 +1453,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from affix import Affix
-        from enums import AffixType
+        from RAutils import Affix
+        from RAutils import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.prefix)
         self._selected_word.affixes.insert(index + 1, new_affix)
@@ -1475,8 +1466,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from affix import Affix
-        from enums import AffixType
+        from RAutils import Affix
+        from RAutils import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.suffix)
         self._selected_word.affixes.insert(index, new_affix)
@@ -1488,8 +1479,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._selected_word:
             return
 
-        from affix import Affix
-        from enums import AffixType
+        from RAutils import Affix
+        from RAutils import AffixType
         index = self._selected_word.affixes.index(self._selected_affix)
         new_affix = Affix(affix_type=AffixType.suffix)
         self._selected_word.affixes.insert(index + 1, new_affix)
@@ -1543,8 +1534,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._generator:
             return
 
-        from flex_trans_rule import FLExTransRule
-        from source_target import Source, Target
+        from RAutils import FLExTransRule
+        from RAutils import Source, Target
 
         new_rule = FLExTransRule(
             name=f"Rule {len(self._generator.flex_trans_rules) + 1}",
@@ -1560,8 +1551,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._generator:
             return
 
-        from flex_trans_rule import FLExTransRule
-        from source_target import Source, Target
+        from RAutils import FLExTransRule
+        from RAutils import Source, Target
 
         new_rule = FLExTransRule(
             name=f"Rule {len(self._generator.flex_trans_rules) + 1}",
@@ -1659,7 +1650,7 @@ class RuleAssistantWindow(QMainWindow):
             # Compare by name since category objects may not be the same instance
             if word.category_constituent and word.category_constituent.name == category.name:
                 word.word_category = ""
-                from category import Category
+                from RAutils import Category
                 word.category_constituent = Category(name="")
                 return
 
