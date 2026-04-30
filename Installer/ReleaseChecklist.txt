@@ -2,7 +2,7 @@ Do these things when making a new release (when a beta release is not already se
 =====================================================================================
 -Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
 -Finish code changes and commit
--Edit createInstallFolder2.0.bat and set FLEXTRANS_VERSION at the top to the new version #.
+-Edit CreateInstaller.bat and set FLEXTRANS_VERSION at the top to the new version #.
 -Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
 -Also change VIProductVersion in the .nsi file  to the new version #. This has to always have the 3rd # so make it 0 if needed. E.g. 3.12.0.${BUILD_NUM}
 -Change Copyright date if necessary in the .nsi file. 
@@ -22,6 +22,7 @@ Do these things when you are going live with the release
 =========================================================
 -Make a new .download_info file changing the relevant data. 3 changes.
 -Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
+-Check in last changes
 -Create the release in Git with the new version string. 
  -Go to Code
  -Go to tags, switch to Releases
