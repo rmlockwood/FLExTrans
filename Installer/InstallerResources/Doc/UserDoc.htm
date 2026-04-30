@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>27 January 2026</small></center>
-      <center><small>Version: 3.14</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>29 April 2026</small></center>
+      <center><small>Version: 3.15</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -1025,7 +1025,7 @@
       </h3>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
-      <p>You may have noticed that there is a <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Manual Entry</span> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">15</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
+      <p>You may have noticed that there is a <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Manual Entry</span> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">16</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">Interchunk</span> and <span style="font-style:normal; font-weight:bold; ">Postchunk</span> tabs are for use in testing rules using the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
       </p>
@@ -1421,17 +1421,13 @@
       </p>
       <p>If the search and replace lines are Regular Expressions, check the <span style="font-style:normal; font-weight:bold; ">Regular Expression</span> check box. See the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> help on how to use Regular Expressions or various websites that explain the Regular Expression language.
       </p>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Wildebeest cleanup tool</span> is something that can fix or normalize many character problems. For example, it can repair characters that have encoding
-         errors. Click the link to find out more about what can be normalized with it. You can use the default cleanup steps that come
-         with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Wildebeest cleanup tool</span>, all of the steps or mix and match steps using the <span style="font-style:normal; font-weight:bold; ">Add</span> and <span style="font-style:normal; font-weight:bold; ">Skip</span> boxes. For example, put the step <span style="font-style:italic; font-weight:bold; ">look-alike</span> into the <span style="font-style:normal; font-weight:bold; ">Add</span> box to add this normalization step. For multiple <span style="font-style:normal; font-weight:bold; ">Add</span> or <span style="font-style:normal; font-weight:bold; ">Skip</span> steps, separate the steps with spaces. Some steps require an ISO 639-3 language code. Note: <span style="font-family:Courier New; font-weight:bold; color:navy; ">Wildebeest cleanup tool</span> steps are run <span style="font-style:italic; ">before</span> the rules you define.
-      </p>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Test</span> button to check that your rules are doing what you expect.
       </p>
       <h2 style=""><a name="sTextOut"></a>4.9&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span> helps you test a set of search and replace operations to be used to fix up the text that comes out of the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text</span> module. It basically is identical to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span>, except it is used in a different part of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> process, namely the end of the process. The rules created here are distinct from the other rules. Use this tool to make any
-         changes to the translated text before you bring it into another tool like <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>. This tool does not have the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Wildebeest cleanup tool</span>, since it is assumed the text has been normalized previously.
+         changes to the translated text before you bring it into another tool like <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>.
       </p>
-      <p>There is a separate module that must be added to the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Drafting</span> collection of modules (typically after <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text</span>) to make use of the rules defined in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span>. This module is called <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Fix Up Synthesis Text</span>. This module will run all the rules you have defined. See Section&nbsp;<a href="#sCollections">3.3</a> for help on adding a module to a collection.
+      <p>When the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Insert Target Text</span> or <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Export FLExTrans Draft to Paratext</span> module is run, Text Out rules are automatically applied<span style="font-size:65%; vertical-align:super">[<a href="#nOldFixup">4</a>]</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1620,7 +1616,7 @@
             </tr>
          </table>
       </div>
-      <h1 style=""><a name="sTransferTutorial"></a>6&nbsp;A Tutorial on Writing Transfer Rules<span style="font-size:65%; vertical-align:super">[<a href="#nReproducing">4</a>]</span></h1>
+      <h1 style=""><a name="sTransferTutorial"></a>6&nbsp;A Tutorial on Writing Transfer Rules<span style="font-size:65%; vertical-align:super">[<a href="#nReproducing">5</a>]</span></h1>
       <p>Writing transfer rules is not as tricky as it might seem. People generally understand the basic concepts, but they sometimes
          struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural
          statements. This tutorial should help you get used to writing transfer rules.
@@ -1782,7 +1778,7 @@
       </p>
       <h3 style=""><a name="sPrelim"></a>6.1.4&nbsp;Some Preliminaries
       </h3>
-      <p>The transfer rule file is written in an XML format and in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> it is named <span style="font-style:italic; ">transfer_rules.t1x</span><span style="font-size:65%; vertical-align:super">[<a href="#nT1X">5</a>]</span>. We could do all the editing of the transfer rules in a text editor, but by using the structured editor <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> we not only get a graphical user interface, but also verification that the rule file we are writing is valid. In fact the
+      <p>The transfer rule file is written in an XML format and in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> it is named <span style="font-style:italic; ">transfer_rules.t1x</span><span style="font-size:65%; vertical-align:super">[<a href="#nT1X">6</a>]</span>. We could do all the editing of the transfer rules in a text editor, but by using the structured editor <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> we not only get a graphical user interface, but also verification that the rule file we are writing is valid. In fact the
          <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> and the add-ons for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> make it hard to write an invalid rule file.
       </p>
       <h3 style=""><a name="sFileOverview"></a>6.1.5&nbsp;Overview of a Transfer File
@@ -1916,7 +1912,7 @@
                   <td style="padding-left: .25em">
                      <table style="" border="1">
                         <tr style="">
-                           <th align="left" valign="top" style="padding-left:.2em; ">Input:<span style="font-size:65%; vertical-align:super">[<a href="#nInputFile">6</a>]</span></th>
+                           <th align="left" valign="top" style="padding-left:.2em; ">Input:<span style="font-size:65%; vertical-align:super">[<a href="#nInputFile">7</a>]</span></th>
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Otic&#769;i<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span></td>
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">biti<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">cop</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">prs</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">2</span></span></td>
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">tiho<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">adv</span></span></td>
@@ -1925,7 +1921,7 @@
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pozdrav<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">gen_sg</span> </span></td>
                         </tr>
                         <tr style="">
-                           <th align="left" valign="top" style="padding-left:.2em; ">Output:<span style="font-size:65%; vertical-align:super">[<a href="#nOutputFile">7</a>]</span></th>
+                           <th align="left" valign="top" style="padding-left:.2em; ">Output:<span style="font-size:65%; vertical-align:super">[<a href="#nOutputFile">8</a>]</span></th>
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span> </span></td>
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">be<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">cop</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">prs</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">2</span> </span></td>
                            <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">quietly<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">adv</span> </span></td>
@@ -1947,7 +1943,7 @@
       <h4 style=""><a name="sProc"></a>6.2.3.1&nbsp;Procedures
       </h4>
       <ol style="list-style-type:decimal; ">
-         <li>If the source language grammatical category tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">8</a>]</span></li>
+         <li>If the source language grammatical category tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">9</a>]</span></li>
       </ol>
       <h4 style=""><a name="sDecl"></a>6.2.3.2&nbsp;Declarations
       </h4>
@@ -2312,7 +2308,7 @@
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Define the features that we want to output.<br><br>We have already defined the attribute &#8220;tense&#8221;: the only remaining tag we need to output is the grammatical category, i.e.
-            <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span></span> meaning verb. So, make a new attribute element for grammatical category.<span style="font-size:65%; vertical-align:super">[<a href="#nUseSetUpTxfrRulGramCatTool">9</a>]</span><div style="margin-left: 0.25in; margin-right: 0.25in">
+            <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span></span> meaning verb. So, make a new attribute element for grammatical category.<span style="font-size:65%; vertical-align:super">[<a href="#nUseSetUpTxfrRulGramCatTool">10</a>]</span><div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
                      <td valign="top"><a name="xAttrGramCat">(66)</a></td>
@@ -2486,7 +2482,7 @@
                      </td>
                   </tr>
                </table>
-            </div>The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> statement means we are outputting a word<span style="font-size:65%; vertical-align:super">[<a href="#nLexUnit">10</a>]</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element outputs the given string of characters, and the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element outputs a tag sequence<span style="font-size:65%; vertical-align:super">[<a href="#nTagSeq">11</a>]</span>. Multiple tags are separated by a period, so in this case we are outputting two tags: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span></span> and <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom</span></span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element outputs a single space character.<br><br></li>
+            </div>The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> statement means we are outputting a word<span style="font-size:65%; vertical-align:super">[<a href="#nLexUnit">11</a>]</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element outputs the given string of characters, and the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element outputs a tag sequence<span style="font-size:65%; vertical-align:super">[<a href="#nTagSeq">12</a>]</span>. Multiple tags are separated by a period, so in this case we are outputting two tags: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span></span> and <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom</span></span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element outputs a single space character.<br><br></li>
          <li>Define features for person and number. <br><br>The next step is to declare the features from the verb &#8220;be&#8221; to output. To do this we need to again define some attributes
             and their possible values. Add this:
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -3106,7 +3102,7 @@
       <h4 style=""><a name="sApend"></a>8.2.12.2&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">append to</span></h4>
       <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element you normally copy the value of the second element to the first element. See <a href="#sDeleteAffix">8.2.7</a>, method 1 for an example. With this element you can add to the end of the first element whatever is in the second element.
          For lemmas and <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal strings</span> this is straightforward. For example, you could append <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">1.1</span> to the end of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">praise</span> to end up with the value <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">praise1.1</span>. For tags this is little different. You can't use append to add on to a tag, you can only use it to add a second tag. You
-         could add the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span> after the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> so that there is now two tags <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> and <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span>. You can't create a combined tag of <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3pl</span> this way.<span style="font-size:65%; vertical-align:super">[<a href="#nappend">12</a>]</span> The easiest way to produce this element is to simply use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Insert</span> command, to put it into your rule.
+         could add the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span> after the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> so that there is now two tags <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> and <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span>. You can't create a combined tag of <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3pl</span> this way.<span style="font-size:65%; vertical-align:super">[<a href="#nappend">13</a>]</span> The easiest way to produce this element is to simply use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Insert</span> command, to put it into your rule.
       </p>
       <p>Note: you can append multiple things to your primary element. Just add more elements under <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">append to</span>.
       </p>
@@ -3475,7 +3471,7 @@
                <li>Set the <span style="color:#cc9900; ">Morph Type</span> to phrase
                </li>
                <li>Set the <span style="color:#cc9900; ">Grammatical Info.</span> to <span style="color:#0070c0; ">Verb Phrasal</span></li>
-               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">13</a>]</span></li>
+               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">14</a>]</span></li>
                <li>Set the <span style="color:#cc9900; ">Complex Form Type</span> to <span style="color:#990099; ">Phrasal Verb</span></li>
             </ol>
          </li>
@@ -3502,7 +3498,7 @@
                <li>Set the <span style="color:#cc9900; ">Morph Type</span> to phrase
                </li>
                <li>Set the <span style="color:#cc9900; ">Grammatical Info.</span> to <span style="color:#0070c0; ">Verb Phrasal</span></li>
-               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">13</a>]</span></li>
+               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">14</a>]</span></li>
                <li>Set the <span style="color:#cc9900; ">Complex Form Type</span> to <span style="color:#990099; ">Phrasal Verb</span></li>
             </ol>
          </li>
@@ -3720,8 +3716,8 @@
       </h1>
       <p>The <a name="gDataStream"></a><span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> data stream format consists of one or more lexical units. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, a lexical unit looks something like this:
       </p>
-      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">14</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">15</a>]</span></span></p>
-      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">16</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
+      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">15</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">16</a>]</span></span></p>
+      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">17</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
          in green.
       </p>
       <hr size="3"><a name="rXLingPapEndnotes"></a><p style=""><big><big><big><b>Endnotes</b></big></big></big></p>
@@ -3748,14 +3744,21 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nReproducing">[4]</a></td>
+            <td valign="top"><a name="nOldFixup">[4]</a></td>
+            <td>
+               <p>Previously, you had to add a separate module to your collections, but that is no longer necessary. If you have the  <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Fix Up Synthesis Text</span> module in your <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Drafting</span> or <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Testbed</span> collections, you should remove them. 
+               </p>
+            </td>
+         </tr>
+         <tr>
+            <td valign="top"><a name="nReproducing">[5]</a></td>
             <td>
                <p>For this tutorial I am basically reproducing the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> article <a href="http://wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules">A long introduction to transfer rules</a>. I am mainly modifying it to show the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> method of editing the transfer rules, but also the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> process is assumed instead of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> process.
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nT1X">[5]</a></td>
+            <td valign="top"><a name="nT1X">[6]</a></td>
             <td>
                <p>The 1 in .t1x stands for the first structural transfer pass. This is the only file we worry about when doing a shallow-transfer
                   system. For advanced-transfer, you use three rule files, and the extensions .t2x and .t3x are also used.
@@ -3763,26 +3766,26 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nInputFile">[6]</a></td>
+            <td valign="top"><a name="nInputFile">[7]</a></td>
             <td>
                <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">View Source/Target Apertium File Tool</span>. It is the friendly view of the file <span style="font-style:italic; ">source_text-aper.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Build</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Otic&#769;i1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nOutputFile">[7]</a></td>
+            <td valign="top"><a name="nOutputFile">[8]</a></td>
             <td>
                <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">View Source/Target Apertium File Tool</span> and click the <span style="font-style:normal; font-weight:bold; ">Target</span> button. It is the friendly view of the file <span style="font-style:italic; ">target_text-aper.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nPastSuf">[8]</a></td>
+            <td valign="top"><a name="nPastSuf">[9]</a></td>
             <td>
                <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> corresponds to the past suffix in the English <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project (and also the past tense feature).
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nUseSetUpTxfrRulGramCatTool">[9]</a></td>
+            <td valign="top"><a name="nUseSetUpTxfrRulGramCatTool">[10]</a></td>
             <td>
                <p>It can be arduous to type in all the grammatical categories that you need for your transfer rules. That&#8217;s why there is the
                   <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> tool called <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories</span>. This tool will insert all possible source and target categories for the <span style="font-weight:bold; ">a_gram_cat</span> attribute. See section <a href="#sSetupGramCat">4.5</a> for more details.
@@ -3790,40 +3793,40 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nLexUnit">[10]</a></td>
+            <td valign="top"><a name="nLexUnit">[11]</a></td>
             <td>
                <p>In our <span style="font-style:italic; ">target_text.txt</span> file it puts a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^</span> and <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">$</span> before and after the contents contained within it.
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nTagSeq">[11]</a></td>
+            <td valign="top"><a name="nTagSeq">[12]</a></td>
             <td>
                <p>In our <span style="font-style:italic; ">target_text.txt</span> file each tag starts with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&lt;</span>, ends with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&gt;.</span></p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nappend">[12]</a></td>
+            <td valign="top"><a name="nappend">[13]</a></td>
             <td>
                <p>You could achieve this by taking a literal string with a value of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">3</span> and appending another literal string with a value of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pl</span>. But you couldn't start with a tag that has a value of <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span>. This is because under the hood, the value of a tag includes the angle brackets. Tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> is actually <span style="font-family:Courier New; font-size:100%; ">&lt;3&gt;</span>.
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nMoveComponent">[13]</a></td>
+            <td valign="top"><a name="nMoveComponent">[14]</a></td>
             <td>
                <p>You can right-click on a component word and select Move Left or Move Right.</p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nToolToView">[14]</a></td>
+            <td valign="top"><a name="nToolToView">[15]</a></td>
             <td>
                <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.txt</span> and <span style="font-style:italic; ">target_text.txt</span>.
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nRawDataStream">[15]</a></td>
+            <td valign="top"><a name="nRawDataStream">[16]</a></td>
             <td>
                <p>In the plain format the stream format can be explained as follows:</p>
                <table>
@@ -3839,7 +3842,7 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nNoOneHomograph">[16]</a></td>
+            <td valign="top"><a name="nNoOneHomograph">[17]</a></td>
             <td>
                <p>Technically <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> only displays a subscript 1 if there is a homograph that exists with subscript 2. Without any homograph the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> headword is just plain -- without any subscript.
                </p>
