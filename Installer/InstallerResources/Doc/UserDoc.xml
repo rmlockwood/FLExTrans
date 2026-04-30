@@ -480,11 +480,9 @@ type="tFlexx"
 ></table
 ></li
 ><li
->Click the <img
-cssSpecial="Width:10%"
-height="60%"
-src="Images/ApplyAndCloseButton.png"
-></img
+>Click the <object
+type="tButton"
+>Apply and Close</object
 > button.</li
 ></ol
 ></li
@@ -548,6 +546,14 @@ type="tMenu"
 type="tFlexxTools"
 ></object
 > menu.</li
+><li
+>Click on <object
+type="tSettingsValue"
+>Basic</object
+> under <object
+type="tSettingsProperty"
+>View Mode</object
+>.</li
 ><li
 >Click <object
 type="tSettingsValue"
@@ -1267,7 +1273,7 @@ num="xSettings"
 XeLaTeXSpecial="scaled='600'"
 cssSpecial=" height:60%"
 height="60%"
-src="Images/SettingsWindowBasic.png"
+src="Images/SettingsWindowBasic2.png"
 ></img
 ><comment
 >For further detail about each setting, see [a section that hasn't been written yet].</comment
@@ -1670,13 +1676,7 @@ type="tButton"
 > button. Uncheck them all with the <object
 type="tButton"
 >Unselect All</object
-> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons. Moving the rules in the <object
-type="tLiveRuleTester"
-></object
-> will not affect the order of the rules in the transfer rules file, and is only possible here for testing purposes. Note that rules are run in the order that they are listed, both in the <object
-type="tLiveRuleTester"
-></object
-> and when the transfer rules file is in use.</li
+> button. </li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -1747,7 +1747,17 @@ showTitle="full"
 ><section3
 id="sTesterOther"
 ><secTitle
->Other Parts of the Tool</secTitle
+>Advanced Parts of the Tool</secTitle
+><example
+num="xTesterImage2"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
+src="Images/LiveRuleTesterAdvanced.png"
+></img
+></chart
+></example
 ><p
 >By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
 type="tSettingsTool"
@@ -1789,6 +1799,14 @@ type="tButton"
 type="tButton"
 >Refresh Rules</object
 > button.</p
+><p
+>Move a rule up or down by clicking on it and clicking the up or down arrow buttons. Moving the rules in the <object
+type="tLiveRuleTester"
+></object
+> will not affect the order of the rules in the transfer rules file, and is only possible here for testing purposes. Note that rules are run in the order that they are listed, both in the <object
+type="tLiveRuleTester"
+></object
+> and when the transfer rules file is in use.</p
 ><p
 >The <object
 type="tButton"
@@ -2477,11 +2495,9 @@ sec="sSettings"
 >In the top section, set the Target Project to the <object
 type="tFlexx"
 ></object
-> project you want to use for the synthesis test. Click the <img
-cssSpecial="Width:10%"
-height="60%"
-src="Images/ApplyAndCloseButton.png"
-></img
+> project you want to use for the synthesis test. Click the <object
+type="tButton"
+>Apply and Close</object
 > button to register the change. Then reopen the <object
 type="tSettingsTool"
 ></object
@@ -2504,11 +2520,9 @@ src="Images/SynthTestSettings.png"
 ><li
 >Select the Part of Speech you want to test. The test currently requires at least one POS value to be selected.</li
 ><li
->You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.) Click the <img
-cssSpecial="Width:10%"
-height="60%"
-src="Images/ApplyAndCloseButton.png"
-></img
+>You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.) Click the <object
+type="tButton"
+>Apply and Close</object
 > button.</li
 ><li
 >Back in the <object
@@ -2742,16 +2756,6 @@ type="tCollection"
 > collections, you should remove them. </p
 ></endnote
 >.</p
-><example
-num="xTextOutimage"
-><chart
-><img
-XeLaTeXSpecial="scaled='500'"
-cssSpecial=" height:50%"
-src="Images/TextOutRules.png"
-></img
-></chart
-></example
 ></section2
 ><section2
 id="sReplEditTool"

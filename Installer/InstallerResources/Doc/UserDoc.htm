@@ -62,7 +62,7 @@
                   <li><a href="#sTesterQuickGuide">4.2.1&nbsp;Quick Guide</a></li>
                   <li><a href="#sLRTChangeSource">4.2.2&nbsp;Change Source Text</a></li>
                   <li><a href="#sHover">4.2.3&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
-                  <li><a href="#sTesterOther">4.2.4&nbsp;Other Parts of the Tool</a></li>
+                  <li><a href="#sTesterOther">4.2.4&nbsp;Advanced Parts of the Tool</a></li>
                </ul>
                <li><a href="#sViewSrcTgt">4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium Text Tool</span></a></li>
                <li><a href="#sParatext">4.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools</a></li>
@@ -391,7 +391,7 @@
                      </table>
                   </div>
                </li>
-               <li>Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.png"> button.
+               <li>Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button.
                </li>
             </ol>
          </li>
@@ -406,6 +406,8 @@
          <li>Turn on the setting to enable <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> for synthesis.
             <ol style="list-style-type:lower-alpha; ">
                <li>Launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu.
+               </li>
+               <li>Click on <span style="font-style:italic; ">Basic</span> under <span style="font-weight:bold; color:#964B00; ">View Mode</span>.
                </li>
                <li>Click <span style="font-style:italic; ">Yes</span> for <span style="font-weight:bold; color:#964B00; ">Use HermitCrab synthesis</span> as shown in <a href="#xHermitCrabYesNo">(3)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -780,7 +782,7 @@
                <td>
                   <table>
                      <tr>
-                        <td><img style=" height:60%" src="Images/SettingsWindowBasic.png"></td>
+                        <td><img style=" height:60%" src="Images/SettingsWindowBasic2.png"></td>
                      </tr>
                   </table>
                </td>
@@ -998,8 +1000,7 @@
             words and, when you do, the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Sentences</span> tab and clicking on the sentence you want.
          </li>
          <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
-            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons. Moving the rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will not affect the order of the rules in the transfer rules file, and is only possible here for testing purposes. Note that
-            rules are run in the order that they are listed, both in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and when the transfer rules file is in use.
+            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button. 
          </li>
          <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored <span style="font-style:italic; ">Target Text</span> area.
          </li>
@@ -1021,8 +1022,22 @@
          feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well.
          If you have used &#8220;<a href="#sReplEditTool">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span></a>&#8221;, you may see multiple mappings in the pop-up image.
       </p>
-      <h3 style=""><a name="sTesterOther"></a>4.2.4&nbsp;Other Parts of the Tool
+      <h3 style=""><a name="sTesterOther"></a>4.2.4&nbsp;Advanced Parts of the Tool
       </h3>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xTesterImage2">(21)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:50%" src="Images/LiveRuleTesterAdvanced.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
       <p>You may have noticed that there is a <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Manual Entry</span> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">16</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
@@ -1031,6 +1046,9 @@
       </p>
       <p>You can&#8217;t edit the transfer rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and even when you change the order of the rules in the tool that doesn&#8217;t change your transfer rules file. Make your changes
          in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. You can launch the editor by clicking on the <span style="font-style:normal; font-weight:bold; ">Edit Transfer Rules</span> button. To reload the transfer rules after you have changed them, click on the <span style="font-style:normal; font-weight:bold; ">Refresh Rules</span> button.
+      </p>
+      <p>Move a rule up or down by clicking on it and clicking the up or down arrow buttons. Moving the rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will not affect the order of the rules in the transfer rules file, and is only possible here for testing purposes. Note that
+         rules are run in the order that they are listed, both in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and when the transfer rules file is in use.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing the bilingual lexicon. The <span style="font-style:normal; font-weight:bold; ">Replacement Dictionary Editor</span> button will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span> module.
       </p>
@@ -1053,12 +1071,12 @@
          box will only be visible if you have already selected <span style="font-style:italic; ">Yes</span> for the <span style="font-weight:bold; color:#964B00; ">Clean Up Unknown Target Words</span> setting in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>.
       </p>
       <h2 style=""><a name="sViewSrcTgt"></a>4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium Text Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium Text Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text-aper.txt</span> or <span style="font-style:italic; ">target_text-aper.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(21)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(22)</a>.
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium Text Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text-aper.txt</span> or <span style="font-style:italic; ">target_text-aper.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(22)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(23)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xViewSrcTgt">(21)</a></td>
+               <td valign="top"><a name="xViewSrcTgt">(22)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1072,7 +1090,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in; margin-top:.2in">
          <table>
             <tr>
-               <td valign="top"><a name="xDataStream">(22)</a></td>
+               <td valign="top"><a name="xDataStream">(23)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1118,7 +1136,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xParatextImport">(23)</a></td>
+               <td valign="top"><a name="xParatextImport">(24)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1162,7 +1180,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xParatextExport">(24)</a></td>
+               <td valign="top"><a name="xParatextExport">(25)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1182,7 +1200,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xParatextExportFromFLEx">(25)</a></td>
+               <td valign="top"><a name="xParatextExportFromFLEx">(26)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1197,12 +1215,12 @@
       </p>
       <h2 style=""><a name="sSetupGramCat"></a>4.5&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> will populate categories and attributes in your transfer rule file. Use this tool when you are first setting up your transfer
-         rules. You are given a choice for populating attributes as shown in <a href="#xSetupCatAttrib">(26)</a>. Source categories &amp; the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute are always processed.
+         rules. You are given a choice for populating attributes as shown in <a href="#xSetupCatAttrib">(27)</a>. Source categories &amp; the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute are always processed.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xSetupCatAttrib">(26)</a></td>
+               <td valign="top"><a name="xSetupCatAttrib">(27)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1225,12 +1243,12 @@
          transfer rules file that comes with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has just a few sample grammatical categories. This tool will take the categories that are in the source and target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects and insert them as tags under the specific attribute called <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> in the transfer rules file. The list of grammatical categories will be a complete list of all the unique categories in both
          projects.
       </p>
-      <p><a href="#xSetupGramCat">(27)</a> shows what the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute might look like after running this tool.
+      <p><a href="#xSetupGramCat">(28)</a> shows what the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute might look like after running this tool.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xSetupGramCat">(27)</a></td>
+               <td valign="top"><a name="xSetupGramCat">(28)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1243,17 +1261,17 @@
       </div>
       <h3 style=""><a name="sInflectionFeatures"></a>4.5.3&nbsp;Inflection Features
       </h3>
-      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(26)</a> to populate attributes in your transfer rules that correspond to the inflection features in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection features
+      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(27)</a> to populate attributes in your transfer rules that correspond to the inflection features in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection features
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
       <h3 style=""><a name="sInflectionClasses"></a>4.5.4&nbsp;Inflection Classes
       </h3>
-      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(26)</a> to populate attributes in your transfer rules that correspond to the inflection classes in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection classes
+      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(27)</a> to populate attributes in your transfer rules that correspond to the inflection classes in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection classes
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
       <h3 style=""><a name="sTemplateSlots"></a>4.5.5&nbsp;Template Slots
       </h3>
-      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(26)</a> to populate attributes in your transfer rules that correspond to template slots in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the template slots
+      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(27)</a> to populate attributes in your transfer rules that correspond to template slots in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the template slots
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
       <h2 style=""><a name="sSynthTest"></a>4.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Synthesis Test Tool</span></h2>
@@ -1282,12 +1300,12 @@
       </p>
       <h3 style=""><a name="sRunSynthTest"></a>4.6.1&nbsp;Running the Test
       </h3>
-      <p>To use this tool, change to the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Synthesis Test</span> collection. This will bring up the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules that are needed for synthesis, plus the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses</span> module, as shown in <a href="#xSynthTestSteps">(28)</a>.
+      <p>To use this tool, change to the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Synthesis Test</span> collection. This will bring up the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules that are needed for synthesis, plus the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses</span> module, as shown in <a href="#xSynthTestSteps">(29)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xSynthTestSteps">(28)</a></td>
+               <td valign="top"><a name="xSynthTestSteps">(29)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1302,13 +1320,13 @@
       <ol style="list-style-type:decimal; ">
          <li>First open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> (as described in <a href="#sSettings">3.2</a>).
          </li>
-         <li>In the top section, set the Target Project to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project you want to use for the synthesis test. Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.png"> button to register the change. Then reopen the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> to update the setting values that apply to the Target Project. (The Source Project has no effect for the Synthesis Test.)
+         <li>In the top section, set the Target Project to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project you want to use for the synthesis test. Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button to register the change. Then reopen the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> to update the setting values that apply to the Target Project. (The Source Project has no effect for the Synthesis Test.)
          </li>
-         <li>Scroll down to the Synthesis Test section, as shown in <a href="#xSynthTestSettings">(29)</a>.
+         <li>Scroll down to the Synthesis Test section, as shown in <a href="#xSynthTestSettings">(30)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xSynthTestSettings">(29)</a></td>
+                     <td valign="top"><a name="xSynthTestSettings">(30)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1323,7 +1341,7 @@
          <li>Select the Part of Speech you want to test. The test currently requires at least one POS value to be selected.</li>
          <li>You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting
             it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and
-            it uses the same criteria each time.) Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.png"> button.
+            it uses the same criteria each time.) Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button.
          </li>
          <li>Back in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> window, click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the modules. It will choose which synthesis module to use based on the value for the <span style="font-weight:bold; color:#964B00; ">Use HermitCrab synthesis</span> setting (see section <a href="#sHermitCrabSetup">2.1.2</a>).
          </li>
@@ -1377,7 +1395,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xRAimage">(30)</a></td>
+               <td valign="top"><a name="xRAimage">(31)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1401,7 +1419,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xTextInimage">(31)</a></td>
+               <td valign="top"><a name="xTextInimage">(32)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1429,20 +1447,6 @@
       </p>
       <p>When the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Insert Target Text</span> or <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Export FLExTrans Draft to Paratext</span> module is run, Text Out rules are automatically applied<span style="font-size:65%; vertical-align:super">[<a href="#nOldFixup">4</a>]</span>.
       </p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xTextOutimage">(32)</a></td>
-               <td>
-                  <table>
-                     <tr>
-                        <td><img style=" height:50%" src="Images/TextOutRules.png"></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
       <h2 style=""><a name="sReplEditTool"></a>4.10&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span> allows you to link source senses in certain inflections to target senses that are different than the normal link for the
          sense. Likewise you can link certain uninflected source senses to inflected target senses that are different than the normal
