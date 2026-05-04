@@ -45,9 +45,9 @@ x-Update the user documentation
  -Publish, then delete the release, the tag will remain
 x-Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
 -Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
--Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
--Update the instructions on the download and installation web pages as necessary.
--announce the new release on the FLEx list
+x-Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
+x-Update the instructions on the download and installation web pages as necessary.
+x-announce the new release on the FLEx list
 -Send out the FLExTrans newsletter
 -Setup things for the next release (so that new builds don't overwrite the just released one.)
  -See steps at the top
