@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.15
+SET FLEXTRANS_VERSION=3.15.1
 
 rem User interface language codes
 set LANG_CODES=de es fr
