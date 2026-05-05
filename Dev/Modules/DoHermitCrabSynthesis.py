@@ -8,6 +8,9 @@
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
+#   Version 3.15.3 - 5/4/26 - Ron Lockwood
+#    Fixes #1262. Pass the extra language code to HC tools.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -671,6 +674,8 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
         # Do the operation with a dll differently than with the normal exe.
         if DLLobj:
 
+            DLLobj.LocaleCode = Utils.getInterfaceLangCode()
+
             if trace:
                 DLLobj.DoTracing = True
                 DLLobj.ShowTracing = True
@@ -700,7 +705,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
                 errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}').format(e=e), 2))
                 return errorList
         else:
-            params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
+            params = [FTPaths.HC_SYNTHESIZE, Utils.getInterfaceLangCode(), '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
 
             # We could add a Settings option to allow tracing
             # If we are to trace the HC synthesis, we need the -t -s parameters
