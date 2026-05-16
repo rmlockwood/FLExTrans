@@ -178,9 +178,6 @@ from PyQt6.QtCore import QCoreApplication
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
-def getInterfaceLangCode():
-    return 'de'
-
 def openConfigFile(report, info):
     
     try:
