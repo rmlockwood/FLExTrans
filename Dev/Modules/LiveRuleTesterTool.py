@@ -1671,6 +1671,7 @@ class Main(QMainWindow):
 
     def SynthesizeButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
+        self.ui.warningTextEdit.setPlainText('')
         errorList = []
 
         # Check if the target text is empty give a warning
