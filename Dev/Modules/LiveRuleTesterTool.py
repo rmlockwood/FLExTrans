@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.1 - 5/16/26 - Ron Lockwood
+#    Fixes #1248. Clear the warning text box when the Synthesize button is pressed.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -285,7 +288,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
