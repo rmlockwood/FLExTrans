@@ -6,7 +6,7 @@
 #   7/2/16
 #
 #   Version 3.16.1 - 5/16/26 - Ron Lockwood
-#    Fixes #1248. Clear the warning text box when the Synthesize button is pressed.
+#    Fixes #1248. Clear the warning text box when the Transfer or Synthesize button is pressed.
 #
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
@@ -2689,6 +2689,7 @@ class Main(QMainWindow):
 
     def TransferClicked(self):
 
+        self.ui.warningTextEdit.setPlainText('')
         self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
