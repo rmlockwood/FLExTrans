@@ -2,16 +2,9 @@ import unittest
 import sys
 import os
 
-# Add the path to the lib directory to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.append('C:\\Program Files\\SIL\\FieldWorks 9\\')
-sys.path.append('C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\')
+import net_stubs  # noqa: F401 — mock .NET/SIL before Testbed loads
 
-# Import and initialize pythonnet
-import clr
-clr.AddReference("System")
-clr.AddReference("SIL.LCModel")
-clr.AddReference("SIL.LCModel.Core")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Lib')))
 
 from Testbed import parseString
 
