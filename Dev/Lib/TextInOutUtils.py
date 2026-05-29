@@ -5,7 +5,7 @@
 #   SIL International
 #   7/1/24
 #
-#   Version 3.15.6 - 5/29/26 - Ron Lockwood
+#   Version 3.16 - 5/29/26 - Ron Lockwood
 #    Fixes #1350. Support \l, \u, \L...\E, \U...\E case modifiers in search/replace
 #    replacement strings via a create_replacer() callable passed to regex.sub.
 #
@@ -308,25 +308,31 @@ def create_replacer(pattern):
                     result += match.group(group_num) or ""
                     i += 2
 
-                # Handle \l\1 - lowercase the backreference
+                # Handle \l — lowercase the NEXT CHARACTER only:
+                #   \l\N  → first char of group N lowercased, rest of group unchanged
+                #   \lX   → literal char X lowercased
                 elif next_char == 'l' and i + 2 < len(pattern):
 
                     if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
-                        
+
                         group_num = int(pattern[i+3])
-                        result += (match.group(group_num) or "").lower()
+                        group_str = match.group(group_num) or ""
+                        result += group_str[:1].lower() + group_str[1:]
                         i += 4
                     else:
                         result += pattern[i+2].lower()
                         i += 3
 
-                # Handle \u\1 - uppercase the backreference
+                # Handle \u — uppercase the NEXT CHARACTER only:
+                #   \u\N  → first char of group N uppercased, rest of group unchanged
+                #   \uX   → literal char X uppercased
                 elif next_char == 'u' and i + 2 < len(pattern):
 
                     if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
 
                         group_num = int(pattern[i+3])
-                        result += (match.group(group_num) or "").upper()
+                        group_str = match.group(group_num) or ""
+                        result += group_str[:1].upper() + group_str[1:]
                         i += 4
                     else:
                         result += pattern[i+2].upper()

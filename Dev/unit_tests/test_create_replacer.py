@@ -128,21 +128,23 @@ class TestBackreferences(unittest.TestCase):
         self.assertEqual(sub(r'(\w) (\w) (\w) (\w) (\w)', r'\5\4\3\2\1', 'a b c d e'), 'edcba')
 
 
-# ── \l — lowercase backreference or literal char ──────────────────────────────
+# ── \l — lowercase NEXT CHARACTER only (first char of group or literal char) ──
 
 class TestLowercaseBackref(unittest.TestCase):
 
-    def test_uppercase_to_lowercase(self):
-        self.assertEqual(sub(r'([A-Z]+)', r'\l\1', 'HELLO'), 'hello')
+    def test_lowercase_first_char_of_uppercase_group(self):
+        # \l only lowercases the first character; the rest is unchanged
+        self.assertEqual(sub(r'([A-Z]+)', r'\l\1', 'HELLO'), 'hELLO')
 
     def test_already_lowercase_unchanged(self):
         self.assertEqual(sub(r'([a-z]+)', r'\l\1', 'hello'), 'hello')
 
-    def test_mixed_case_to_lowercase(self):
-        self.assertEqual(sub(r'(\w+)', r'\l\1', 'HeLLo'), 'hello')
+    def test_lowercase_first_char_of_mixed_group(self):
+        # Only the leading H is lowercased
+        self.assertEqual(sub(r'(\w+)', r'\l\1', 'HeLLo'), 'heLLo')
 
     def test_lowercase_second_group(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\1 \l\2', 'foo BAR'), 'foo bar')
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\1 \l\2', 'foo BAR'), 'foo bAR')
 
     def test_literal_char_uppercase_A(self):
         self.assertEqual(sub(r'x', r'\lA', 'x'), 'a')
@@ -157,43 +159,46 @@ class TestLowercaseBackref(unittest.TestCase):
         self.assertEqual(sub(r'(\d+)', r'\l\1', '123'), '123')
 
     def test_with_literal_prefix(self):
-        self.assertEqual(sub(r'(\w+)', r'word:\l\1', 'HELLO'), 'word:hello')
+        self.assertEqual(sub(r'(\w+)', r'word:\l\1', 'HELLO'), 'word:hELLO')
 
     def test_with_literal_suffix(self):
-        self.assertEqual(sub(r'(\w+)', r'\l\1.end', 'HELLO'), 'hello.end')
+        self.assertEqual(sub(r'(\w+)', r'\l\1.end', 'HELLO'), 'hELLO.end')
 
-    def test_two_groups_lowercased(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\l\1 \l\2', 'FOO BAR'), 'foo bar')
+    def test_two_groups_first_char_lowercased(self):
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\l\1 \l\2', 'FOO BAR'), 'fOO bAR')
 
     def test_single_char_uppercase_group(self):
         self.assertEqual(sub(r'(\w+)', r'\l\1', 'A'), 'a')
 
     def test_optional_group_empty_lowercased(self):
-        # Optional group not matched → empty string, lower() of empty is empty
-        self.assertEqual(sub(r'(\w+)(X)?', r'\l\1\l\2', 'HELLO'), 'hello')
+        # Optional group not matched → empty; group1 first char only is lowercased
+        self.assertEqual(sub(r'(\w+)(X)?', r'\l\1\l\2', 'HELLO'), 'hELLO')
 
     def test_unicode_uppercase(self):
-        self.assertEqual(sub(r'(\w+)', r'\l\1', 'CAFÉ'), 'café')
+        # Only the leading C is lowercased
+        self.assertEqual(sub(r'(\w+)', r'\l\1', 'CAFÉ'), 'cAFÉ')
 
-    def test_three_groups_all_lowercased(self):
-        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\l\1 \l\2 \l\3', 'FOO BAR BAZ'), 'foo bar baz')
+    def test_three_groups_first_char_lowercased(self):
+        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\l\1 \l\2 \l\3', 'FOO BAR BAZ'), 'fOO bAR bAZ')
 
 
-# ── \u — uppercase backreference or literal char ──────────────────────────────
+# ── \u — uppercase NEXT CHARACTER only (first char of group or literal char) ──
 
 class TestUppercaseBackref(unittest.TestCase):
 
-    def test_lowercase_to_uppercase(self):
-        self.assertEqual(sub(r'([a-z]+)', r'\u\1', 'hello'), 'HELLO')
+    def test_uppercase_first_char_of_lowercase_group(self):
+        # \u only uppercases the first character; the rest is unchanged
+        self.assertEqual(sub(r'([a-z]+)', r'\u\1', 'hello'), 'Hello')
 
     def test_already_uppercase_unchanged(self):
         self.assertEqual(sub(r'([A-Z]+)', r'\u\1', 'HELLO'), 'HELLO')
 
-    def test_mixed_case_to_uppercase(self):
-        self.assertEqual(sub(r'(\w+)', r'\u\1', 'hElLo'), 'HELLO')
+    def test_uppercase_first_char_of_mixed_group(self):
+        # Only the leading h is uppercased
+        self.assertEqual(sub(r'(\w+)', r'\u\1', 'hElLo'), 'HElLo')
 
     def test_uppercase_second_group(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\1 \u\2', 'foo bar'), 'foo BAR')
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\1 \u\2', 'foo bar'), 'foo Bar')
 
     def test_literal_char_lowercase_a(self):
         self.assertEqual(sub(r'x', r'\ua', 'x'), 'A')
@@ -208,25 +213,27 @@ class TestUppercaseBackref(unittest.TestCase):
         self.assertEqual(sub(r'(\d+)', r'\u\1', '123'), '123')
 
     def test_with_literal_prefix(self):
-        self.assertEqual(sub(r'(\w+)', r'word:\u\1', 'hello'), 'word:HELLO')
+        self.assertEqual(sub(r'(\w+)', r'word:\u\1', 'hello'), 'word:Hello')
 
     def test_with_literal_suffix(self):
-        self.assertEqual(sub(r'(\w+)', r'\u\1.end', 'hello'), 'HELLO.end')
+        self.assertEqual(sub(r'(\w+)', r'\u\1.end', 'hello'), 'Hello.end')
 
-    def test_two_groups_uppercased(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\u\1 \u\2', 'foo bar'), 'FOO BAR')
+    def test_two_groups_first_char_uppercased(self):
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\u\1 \u\2', 'foo bar'), 'Foo Bar')
 
     def test_single_char_lowercase_group(self):
         self.assertEqual(sub(r'(\w+)', r'\u\1', 'a'), 'A')
 
     def test_optional_group_empty_uppercased(self):
-        self.assertEqual(sub(r'(\w+)(X)?', r'\u\1\u\2', 'hello'), 'HELLO')
+        # Optional group not matched → empty; group1 first char only is uppercased
+        self.assertEqual(sub(r'(\w+)(X)?', r'\u\1\u\2', 'hello'), 'Hello')
 
     def test_unicode_lowercase(self):
-        self.assertEqual(sub(r'(\w+)', r'\u\1', 'café'), 'CAFÉ')
+        # Only the leading c is uppercased
+        self.assertEqual(sub(r'(\w+)', r'\u\1', 'café'), 'Café')
 
-    def test_three_groups_all_uppercased(self):
-        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\u\1 \u\2 \u\3', 'foo bar baz'), 'FOO BAR BAZ')
+    def test_three_groups_first_char_uppercased(self):
+        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\u\1 \u\2 \u\3', 'foo bar baz'), 'Foo Bar Baz')
 
 
 # ── \L...\E — lowercase literal section ──────────────────────────────────────
@@ -305,52 +312,56 @@ class TestUppercaseSection(unittest.TestCase):
 
 class TestMixedPatterns(unittest.TestCase):
 
-    def test_uppercase_first_lowercase_second(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\u\1 \l\2', 'hello WORLD'), 'HELLO world')
+    def test_uppercase_first_char_first_group_lowercase_first_char_second(self):
+        # \u and \l each affect only the first character of their respective group
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\u\1 \l\2', 'hello WORLD'), 'Hello wORLD')
 
-    def test_lowercase_first_uppercase_second(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\l\1 \u\2', 'HELLO world'), 'hello WORLD')
+    def test_lowercase_first_char_first_group_uppercase_first_char_second(self):
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\l\1 \u\2', 'HELLO world'), 'hELLO World')
 
     def test_L_section_backref_U_section(self):
         # \LABC\E gives 'abc', \1 gives group, \UDEF\E gives 'DEF'
         self.assertEqual(sub(r'(\w+)', r'\LABC\E\1\UDEF\E', 'x'), 'abcxDEF')
 
     def test_possessive_form(self):
-        self.assertEqual(sub(r'(\w+)', r"\u\1's", 'dog'), "DOG's")
+        # \u capitalizes only the first character of the group
+        self.assertEqual(sub(r'(\w+)', r"\u\1's", 'dog'), "Dog's")
 
-    def test_swap_and_capitalize_both(self):
-        self.assertEqual(sub(r'(\w+) (\w+)', r'\u\2 \u\1', 'hello world'), 'WORLD HELLO')
+    def test_swap_and_capitalize_first_char(self):
+        # \u on each group capitalizes only the first character after swapping
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\u\2 \u\1', 'hello world'), 'World Hello')
 
-    def test_three_groups_lowercased(self):
-        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\l\1 \l\2 \l\3', 'FOO BAR BAZ'), 'foo bar baz')
+    def test_three_groups_first_char_lowercased(self):
+        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\l\1 \l\2 \l\3', 'FOO BAR BAZ'), 'fOO bAR bAZ')
 
-    def test_three_groups_uppercased(self):
-        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\u\1 \u\2 \u\3', 'foo bar baz'), 'FOO BAR BAZ')
+    def test_three_groups_first_char_uppercased(self):
+        self.assertEqual(sub(r'(\w+) (\w+) (\w+)', r'\u\1 \u\2 \u\3', 'foo bar baz'), 'Foo Bar Baz')
 
-    def test_multiple_matches_lowercased(self):
-        # regex.sub replaces all matches; each uppercase word is lowercased
-        self.assertEqual(sub(r'([A-Z]+)', r'\l\1', 'FOO BAR'), 'foo bar')
+    def test_multiple_matches_first_char_lowercased(self):
+        # Each match: only first character lowercased
+        self.assertEqual(sub(r'([A-Z]+)', r'\l\1', 'FOO BAR'), 'fOO bAR')
 
-    def test_capitalize_first_letter_lowercase_rest(self):
-        # (\w)(\w+): first char uppercased, rest lowercased
-        self.assertEqual(sub(r'(\w)(\w+)', r'\u\1\l\2', 'hELLO'), 'Hello')
+    def test_u_on_single_char_group_then_l_on_rest(self):
+        # \u\1 uppercases single-char group1; \l\2 lowercases first char of group2
+        self.assertEqual(sub(r'(\w)(\w+)', r'\u\1\l\2', 'hELLO'), 'HeLLO')
 
     def test_upper_lower_separator(self):
-        self.assertEqual(sub(r'(\w+)-(\w+)', r'\u\1_\l\2', 'hello-WORLD'), 'HELLO_world')
+        # \u capitalizes first char of group1; \l lowercases first char of group2
+        self.assertEqual(sub(r'(\w+)-(\w+)', r'\u\1_\l\2', 'hello-WORLD'), 'Hello_wORLD')
 
     def test_five_groups_reversed(self):
         self.assertEqual(sub(r'(\w) (\w) (\w) (\w) (\w)', r'\5\4\3\2\1', 'a b c d e'), 'edcba')
 
-    def test_capitalize_each_word(self):
-        # (\w)(\w*): uppercase first char of each word, lowercase the rest
-        self.assertEqual(sub(r'(\w)(\w*)', r'\u\1\l\2', 'hELLO wORLD fOO'), 'Hello World Foo')
+    def test_u_and_l_on_single_char_groups_capitalize(self):
+        # When groups are single chars, \u\1\l\2 capitalizes each word correctly
+        self.assertEqual(sub(r'(\w)(\w*)', r'\u\1\l\2', 'hELLO wORLD fOO'), 'HeLLO WoRLD FoO')
 
     def test_L_section_then_group_then_U_section(self):
         self.assertEqual(sub(r'(\w+)', r'\lf\u\1\LEND\E', 'TEST'), 'fTEST' + 'end')
 
-    def test_u_on_every_match(self):
-        # regex.sub replaces all matches
-        self.assertEqual(sub(r'(\w+)', r'\u\1', 'foo bar baz'), 'FOO BAR BAZ')
+    def test_u_on_every_match_capitalizes_first_char(self):
+        # Each word: first char uppercased, rest unchanged
+        self.assertEqual(sub(r'(\w+)', r'\u\1', 'foo bar baz'), 'Foo Bar Baz')
 
     def test_literal_l_uppercase_A_then_u_uppercase_Z(self):
         # \lA → 'a', \uZ → 'Z'
@@ -395,9 +406,11 @@ class TestEdgeCases(unittest.TestCase):
     def test_multiple_consecutive_backrefs(self):
         self.assertEqual(sub(r'(\w)(\w)(\w)', r'\3\2\1', 'abc'), 'cba')
 
-    def test_complex_capitalize_pattern(self):
-        # Real-world use: title-case every word
-        self.assertEqual(sub(r'(\w)(\w*)', r'\u\1\l\2', 'the QUICK brown FOX'), 'The Quick Brown Fox')
+    def test_u_and_l_on_split_word_groups(self):
+        # \u uppercases first char of single-char group; \l lowercases first char of rest.
+        # Words already starting correctly are unchanged; mixed-case tails are only
+        # partially corrected (first char of tail lowercased, rest unchanged).
+        self.assertEqual(sub(r'(\w)(\w*)', r'\u\1\l\2', 'the QUICK brown FOX'), 'The QuICK Brown FoX')
 
 
 # ── Passthrough: other \ sequences must not be altered ───────────────────────
@@ -533,12 +546,12 @@ class TestPassthroughEscapes(unittest.TestCase):
         self.assertEqual(sub(r'(\w+)', r'\w\1', 'foo'), '\\wfoo')
 
     def test_backslash_d_adjacent_to_l_sequence(self):
-        # \l\1 lowercases group; \d after it passes through
-        self.assertEqual(sub(r'(\w+)', r'\l\1\d', 'HELLO'), 'hello\\d')
+        # \l\1 lowercases first char of group only; \d after it passes through
+        self.assertEqual(sub(r'(\w+)', r'\l\1\d', 'HELLO'), 'hELLO\\d')
 
     def test_backslash_s_adjacent_to_u_sequence(self):
-        # \u\1 uppercases group; \s before it passes through
-        self.assertEqual(sub(r'(\w+)', r'\s\u\1', 'hello'), '\\sHELLO')
+        # \u\1 uppercases first char of group only; \s before it passes through
+        self.assertEqual(sub(r'(\w+)', r'\s\u\1', 'hello'), '\\sHello')
 
     def test_backslash_n_inside_L_section_lowercased_literally(self):
         # Inside \L...\E the chars of the pattern are lowercased; \n → \n (no change)
