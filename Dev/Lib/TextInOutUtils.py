@@ -275,14 +275,18 @@ def create_replacer(pattern):
       \1 .. \9   Insert the text matched by capture group N.  \0 inserts
                  the entire match (same as group 0).
 
-      \l\1       Lowercase the text from group N entirely.
-      \u\1       Uppercase the text from group N entirely.
+      \l\1       Lowercase the FIRST CHARACTER of group N; the rest of the
+                 group is inserted unchanged.  e.g. \l\1 on "HELLO" → "hELLO".
+      \u\1       Uppercase the FIRST CHARACTER of group N; the rest of the
+                 group is inserted unchanged.  e.g. \u\1 on "hello" → "Hello".
       \lX        Lowercase the single literal character X (not a group).
       \uX        Uppercase the single literal character X (not a group).
 
       \L...\E    Lowercase every literal character between \L and \E.
                  Backreferences inside this section are NOT expanded —
                  the two characters \ and 1 are each lowercased in place.
+                 Use \l\1 to lowercase the first char of a group, or a
+                 future \L\1\E extension to lowercase a whole group.
       \U...\E    Uppercase every literal character between \U and \E.
                  Same caveat: backreferences are not expanded inside.
 
