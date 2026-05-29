@@ -5,8 +5,12 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.15.6 - 5/29/26 - Ron Lockwood
+#    Fixes #1350. Support \l, \u, \L...\E, \U...\E case modifiers in search/replace
+#    replacement strings via a create_replacer() callable passed to regex.sub.
+#
 #   Version 3.15.5 - 3/10/26 - Ron Lockwood
-#    Fixes #1246. Check for valid index before trying to use it. This was causing a crash if the user 
+#    Fixes #1246. Check for valid index before trying to use it. This was causing a crash if the user
 #    checked or unchecked the select all box when there were no rules.
 #
 #   Version 3.15.4 - 3/9/26 - Ron Lockwood
@@ -257,6 +261,112 @@ def numRules(tree):
     else:
         return 0
 
+def create_replacer(pattern):
+
+    r"""Return a callable replacement function for use with regex.sub().
+
+    Python's regex.sub() normally interprets the replacement string itself,
+    which only supports \1-\9 backreferences.  This factory parses the
+    replacement pattern manually so that the same case-modifier escapes
+    supported by regex101.com's substitution box work here too.
+
+    Supported escape sequences in the replacement pattern:
+
+      \1 .. \9   Insert the text matched by capture group N.  \0 inserts
+                 the entire match (same as group 0).
+
+      \l\1       Lowercase the text from group N entirely.
+      \u\1       Uppercase the text from group N entirely.
+      \lX        Lowercase the single literal character X (not a group).
+      \uX        Uppercase the single literal character X (not a group).
+
+      \L...\E    Lowercase every literal character between \L and \E.
+                 Backreferences inside this section are NOT expanded —
+                 the two characters \ and 1 are each lowercased in place.
+      \U...\E    Uppercase every literal character between \U and \E.
+                 Same caveat: backreferences are not expanded inside.
+
+    Any other backslash sequence (e.g. \n, \t, \s, \w) is passed through
+    unchanged as the two-character string \x, matching regex101 behaviour.
+    """
+    
+    def replacer(match):
+
+        result = ""
+        i = 0
+
+        while i < len(pattern):
+
+            if pattern[i] == '\\' and i + 1 < len(pattern):
+
+                next_char = pattern[i+1]
+
+                # Handle backreferences \1, \2, etc.
+                if next_char.isdigit():
+
+                    group_num = int(next_char)
+                    result += match.group(group_num) or ""
+                    i += 2
+
+                # Handle \l\1 - lowercase the backreference
+                elif next_char == 'l' and i + 2 < len(pattern):
+
+                    if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
+                        
+                        group_num = int(pattern[i+3])
+                        result += (match.group(group_num) or "").lower()
+                        i += 4
+                    else:
+                        result += pattern[i+2].lower()
+                        i += 3
+
+                # Handle \u\1 - uppercase the backreference
+                elif next_char == 'u' and i + 2 < len(pattern):
+
+                    if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
+
+                        group_num = int(pattern[i+3])
+                        result += (match.group(group_num) or "").upper()
+                        i += 4
+                    else:
+                        result += pattern[i+2].upper()
+                        i += 3
+
+                # Handle \L...\E - lowercase section
+                elif next_char == 'L':
+
+                    i += 2
+
+                    while i < len(pattern) and pattern[i:i+2] != '\\E':
+
+                        result += pattern[i].lower()
+                        i += 1
+
+                    i += 2  # Skip \E
+
+                # Handle \U...\E - uppercase section
+                elif next_char == 'U':
+
+                    i += 2
+
+                    while i < len(pattern) and pattern[i:i+2] != '\\E':
+
+                        result += pattern[i].upper()
+                        i += 1
+                        
+                    i += 2  # Skip \E
+
+                else:
+                    result += pattern[i]
+                    i += 1
+            else:
+                result += pattern[i]
+                i += 1
+
+        return result
+
+    return replacer
+
 def applySearchReplaceRules(inputStr, tree):
     
     errorMsg = ""
@@ -290,7 +400,7 @@ def applySearchReplaceRules(inputStr, tree):
             try:
                 if searchReplObj.isRegEx:
 
-                    newStr = regex.sub(newSearch, searchReplObj.replStr, newStr)
+                    newStr = regex.sub(newSearch, create_replacer(searchReplObj.replStr), newStr)
                 else:
                     newStr = newStr.replace(newSearch, searchReplObj.replStr)
             except:
