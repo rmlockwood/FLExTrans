@@ -1302,7 +1302,7 @@ class TextInOutRulesWindow(QMainWindow):
                     try:
                         if searchReplDataObj.isRegEx:
 
-                            newStr = regex.sub(searchReplDataObj.searchStr, searchReplDataObj.replStr, newStr)
+                            newStr = regex.sub(searchReplDataObj.searchStr, create_replacer(searchReplDataObj.replStr), newStr)
 
                         else:
                             newStr = newStr.replace(searchReplDataObj.searchStr, searchReplDataObj.replStr)
