@@ -44,8 +44,11 @@
 #   log and start the log viewer. Put in an end time in the log.
 #
 
+import os
+import re
+
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import *
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
@@ -54,6 +57,7 @@ from Testbed import *
 import Mixpanel
 import ReadConfig
 import Utils
+import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -128,6 +132,32 @@ def MainFunction(DB, report, modifyAllowed):
     
     # If we were successful write the end date-time and save the file
     if count > 0:
+
+        # Parse the Apertium log: "Applied rule N line M" where M is the test line number
+        logPath = os.path.join(FTPaths.BUILD_DIR, 'apertium_log.txt')
+        lineRuleMap = {}
+        try:
+            with open(logPath, encoding='utf-8') as logFile:
+                for logLine in logFile:
+                    m = re.search(r'Applied rule (\d+) line (\d+)', logLine)
+                    if m:
+                        ruleNum = int(m.group(1))
+                        lineNum = int(m.group(2))
+                        lineRuleMap.setdefault(lineNum, []).append(ruleNum)
+        except IOError:
+            pass
+
+        report.Info(_translate("EndTestbed", "Rule map from log: {lineRuleMap}").format(lineRuleMap=str(lineRuleMap)))
+
+        # Set rule numbers on each test — line number in log = test index (1-based)
+        testLine = 1
+        resultObj = resultsXMLObj.getTestbedResultXMLObjectList()[0]
+        for testbed in resultObj.getFLExTransTestbedXMLObjectList():
+            for test in testbed.getTestXMLObjectList():
+                if testLine in lineRuleMap:
+                    test.setRuleNumbers(lineRuleMap[testLine])
+                testLine += 1
+
         resultsXMLObj.endTest()
         resultsFileObj.write()
     

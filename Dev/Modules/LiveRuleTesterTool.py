@@ -223,6 +223,7 @@ import unicodedata
 import copy
 import xml.etree.ElementTree as ET
 import shutil
+from datetime import datetime
 from subprocess import call
 
 from SIL.LCModel import * # type: ignore
@@ -2710,6 +2711,15 @@ class Main(QMainWindow):
                     self.ui.warningTextEdit.setPlainText(triplet[0])
                 else:
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
+
+        # Copy the transfer rules file to the rule history folder
+        if self.__transfer_rules_file and os.path.isfile(self.__transfer_rules_file):
+            historyDir = os.path.join(FTPaths.OUTPUT_DIR, 'rule-history', 'created')
+            os.makedirs(historyDir, exist_ok=True)
+            stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            baseName = os.path.splitext(os.path.basename(self.__transfer_rules_file))
+            destName = f"{baseName[0]}_created_{stamp}{baseName[1]}"
+            shutil.copy2(self.__transfer_rules_file, os.path.join(historyDir, destName))
 
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash

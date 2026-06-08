@@ -551,6 +551,12 @@ class TestbedTestXMLObject():
         return self.__actResult
     def setActualResult(self, myStr):
         self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
+    def setRuleNumbers(self, ruleNums):
+        node = self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
+        node.set('ruleNumbers', ','.join(str(n) for n in ruleNums))
+    def getRuleNumbers(self):
+        node = self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
+        return node.get('ruleNumbers', '') if node is not None else ''
     def getTestNode(self):
         return self.__testNode
     def getComment(self):
