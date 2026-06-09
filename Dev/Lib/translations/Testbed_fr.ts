@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="fr" sourcelanguage="en">
-<context>
+  <context>
     <name>Testbed</name>
     <message>
-        <location filename="../Testbed.py" line="655"/>
-        <source>No more lines to read in the synthesis file.</source>
-        <translation>No more lines to read in the synthesis file.</translation>
+      <location filename="../Testbed.py" line="652"/>
+      <source>No more lines to read in the synthesis file.</source>
+      <translation>Plus de lignes à lire dans le fichier de synthèse.</translation>
     </message>
     <message>
-        <location filename="../Testbed.py" line="873"/>
-        <source>The testbed file: {filePath} could not be read or written.</source>
-        <translation>The testbed file: {filePath} could not be read or written.</translation>
+      <location filename="../Testbed.py" line="870"/>
+      <source>The testbed file: {filePath} could not be read or written.</source>
+      <translation>Le fichier testbed : {filePath} n'a pas pu être lu ou écrit.</translation>
     </message>
     <message>
-        <location filename="../Testbed.py" line="878"/>
-        <source>The testbed file: {filePath} is invalid.</source>
-        <translation>The testbed file: {filePath} is invalid.</translation>
+      <location filename="../Testbed.py" line="875"/>
+      <source>The testbed file: {filePath} is invalid.</source>
+      <translation>Le fichier testbed : {filePath} est invalide.</translation>
     </message>
     <message>
-        <location filename="../Testbed.py" line="1110"/>
-        <source>The testbed results file: {resultsPath} is invalid.</source>
-        <translation>The testbed results file: {resultsPath} is invalid.</translation>
+      <location filename="../Testbed.py" line="1107"/>
+      <source>The testbed results file: {resultsPath} is invalid.</source>
+      <translation>Le fichier de résultats testbed : {resultsPath} est invalide.</translation>
     </message>
-</context>
+  </context>
 </TS>

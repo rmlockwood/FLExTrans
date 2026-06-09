@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.2 - 3/10/26 - Ron Lockwood
 #    Regular expression syntax fixes that showed up with Python 3.13.
 #
@@ -96,7 +99,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'SrcTgtViewer']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ViewSrcTgt", "View Source/Target Apertium Text Tool"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),
         FTM_Help       : "",

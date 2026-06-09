@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.3 - 3/9/26 - Ron Lockwood
 #    Fix to checkbox not checking problem. Check the value of the CheckState enum.
 #
@@ -208,7 +211,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",

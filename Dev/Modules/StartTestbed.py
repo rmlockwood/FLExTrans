@@ -5,6 +5,12 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.16 - 6/9/26 - Laerke
+#    Testbed improvements phase 1. Comment can now be added for a test.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -26,8 +32,12 @@
 #   source text can be fed into the normal FLExTrans process.
 #
 
+import os
+import shutil
+from datetime import datetime
+
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import *
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
@@ -36,6 +46,7 @@ from Testbed import *
 import Mixpanel
 import ReadConfig
 import Utils
+import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -144,6 +155,16 @@ def MainFunction(DB, report, modifyAllowed):
     # Dump testbed source lexical units into the source_text.aper file
     count = resultsXMLObj.dump(f_out)
     f_out.close()
+
+    # Copy the transfer rules file to the rule history folder
+    ruleFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+    if ruleFileVal and os.path.isfile(ruleFileVal):
+        historyDir = os.path.join(FTPaths.OUTPUT_DIR, 'rule-history', 'run')
+        os.makedirs(historyDir, exist_ok=True)
+        stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        baseName = os.path.splitext(os.path.basename(ruleFileVal))
+        destName = f"{baseName[0]}_run_{stamp}{baseName[1]}"
+        shutil.copy2(ruleFileVal, os.path.join(historyDir, destName))
 
     # Let the user know how many valid/invalid tests were dumped
     report.Info(

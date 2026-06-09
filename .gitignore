@@ -48,3 +48,6 @@ Dev/TopLevel/translations/TopLevel_es.ts
 /Install2.3.2
 flextools.log
 /.vscode
+/Installer/InstallerImageFolder
+/Installer/InstallerResources/Doc/XLingPaperPDFTemp
+.claude/

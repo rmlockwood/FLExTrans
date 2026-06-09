@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15.3 -4/17/26 - Ron Lockwood
+#    Fixes #1312. Translate book names when checking for valid names.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -78,6 +81,7 @@
 
 import os
 import regex as re
+import unicodedata
 from shutil import copyfile
 import winreg
 import glob
@@ -581,10 +585,21 @@ def getScriptureText(report, textTitles):
             book = match.group('book')
             chap1 = match.group('chap1')
             chap2 = match.group('chap2')
+            normalizedBook = unicodedata.normalize("NFD", book)
 
             if book in bookMap or book in bookMap.values():
-                
+
                 filteredTitles.append(title)
+                continue
+
+            for val in bookMap.values():
+
+                translatedStr = _translate("ChapterSelection", val)
+
+                if normalizedBook == unicodedata.normalize("NFD", translatedStr):
+
+                    filteredTitles.append(title)
+                    break
 
     return sorted(filteredTitles)
 

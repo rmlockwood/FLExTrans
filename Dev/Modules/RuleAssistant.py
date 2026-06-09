@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -104,7 +107,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",

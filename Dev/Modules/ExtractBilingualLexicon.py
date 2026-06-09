@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.3 - 3/30/26 - Ron Lockwood
 #    Fixes for Python linter.
 #
@@ -139,7 +142,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
