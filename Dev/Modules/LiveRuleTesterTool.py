@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.2 - 6/9/26 - Laerke
+#    Testbed improvements phase 1. Comment can now be added for a test.
+#
 #   Version 3.16.1 - 5/16/26 - Ron Lockwood
 #    Fixes #1248. Clear the warning text box when the Transfer or Synthesize button is pressed.
 #
@@ -289,7 +292,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
