@@ -5,6 +5,21 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.1 - 5/16/26 - Ron Lockwood
+#    Fixes #1248. Clear the warning text box when the Transfer or Synthesize button is pressed.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
+#   Version 3.15.6 - 4/13/26 - Ron Lockwood
+#    Fixes #1287. Use HermitCrab tools that get installed with FLEx.
+#
+#   Version 3.15.5 - 4/7/26 - Ron Lockwood
+#    Take care of lint problems.
+#
+#   Version 3.15.4 - 4/1/26 - Ron Lockwood
+#    Fixes #1271. Show Apertium error output in the Target text box.
+#
 #   Version 3.15.3 - 3/7/26 - Ron Lockwood
 #    Overhaul of checkboxes against colored background using two different strategies.
 #
@@ -274,7 +289,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1597,6 +1612,7 @@ class Main(QMainWindow):
 
     def SynthesizeButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
+        self.ui.warningTextEdit.setPlainText('')
         errorList = []
 
         # Check if the target text is empty give a warning
@@ -2564,6 +2580,7 @@ class Main(QMainWindow):
 
     def TransferClicked(self):
 
+        self.ui.warningTextEdit.setPlainText('')
         self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'

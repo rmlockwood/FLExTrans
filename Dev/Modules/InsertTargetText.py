@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -108,7 +111,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",

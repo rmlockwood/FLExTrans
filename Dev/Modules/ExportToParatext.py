@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.3 -4/17/26 - Ron Lockwood
 #    Fixes #1312. Translate book names when checking for valid names.
 #
@@ -121,7 +124,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",

@@ -1,6 +1,9 @@
 #
 #   A shell module to launch FlexTools
 #
+#   Version 3.15.3 - 4/14/26 - Ron Lockwood
+#    Add icon path to the main function call.
+#
 #   Version 3.15.2 - 4/8/26 - Ron Lockwood
 #    Fix scaling issues. #65 in FlexTools GitHub repo.
 #    Move SetProcessDpiAwareness to the top of the file to ensure 
@@ -31,5 +34,5 @@ from Version import Title
 from FLExTransMenu import customMenu
 
 from FLExTransStatusbar import statusbarCallback
-   
-main(Title, customMenu, statusbarCallback)
+
+main(Title, customMenu, statusbarCallback, r"..\..\..\FlexTools\Tools\FLExTransWindowIcon.ico")
