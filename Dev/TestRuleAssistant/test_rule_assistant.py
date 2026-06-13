@@ -752,6 +752,74 @@ class SplitBantu(BaseTest, unittest.TestCase):
          '^S<n><14P>$ ^K<adj><14A>$'),
     ]
 
+class SplitBantuMany(BaseTest, unittest.TestCase):
+    RuleFile = 'SplitBantuMany.xml'
+    RuleCount = 2
+    Data = {
+        None: {
+            'BantuSG': {
+                'source_features': ['1', '3', '5'],
+            },
+            'BantuPL': {
+                'source_features': ['2', '4', '6'],
+            },
+            'BantuMany': {
+                'source_features': ['21', '22'],
+            },
+        },
+        'adj': {
+            'BantuSG': {
+                'target_affix': [('1A', '1'), ('5A', '5'), ('7A', '7'),
+                                 ('14A', '14')],
+            },
+            'BantuPL': {
+                'target_affix': [('2A', '2'), ('6A', '6'), ('8A', '8')],
+            },
+            'BantuMany': {
+                'target_affix': [('21A', '21'), ('22A', '22')],
+            },
+        },
+        'n': {
+            'BantuSG': {
+                'source_affix': [('1P', '1'), ('3P', '3'), ('5P', '5')],
+                'target_affix': [('1P', '1'), ('5P', '5'), ('7P', '7'),
+                                 ('14P', '14')],
+                'target_lemma': [('X', '1'), ('Y', '5'), ('S', '14')],
+            },
+            'BantuPL': {
+                'source_affix': [('2P', '2'), ('4P', '4'), ('6P', '6')],
+                'target_affix': [('2P', '2'), ('6P', '6'), ('8P', '8')],
+                'target_lemma': [('X', '2'), ('Y', '6'), ('S', 'NApl')],
+            },
+            'BantuMany': {
+                'source_affix': [('21P', '21'), ('22P', '22')],
+                'target_affix': [('21P', '21'), ('22P', '22')],
+                'target_lemma': [('X', '21'), ('Y', 'NAmany'), ('S', '22')],
+            },
+        },
+    }
+    TestPairs = [
+        # singular and plural still work as before
+        ('^N12<n><1><2><21><1P>/X<n><1><2><21><1P>$', '^X<n><1P>$'),
+        ('^N12<n><1><2><21><2P>/X<n><1><2><21><2P>$', '^X<n><2P>$'),
+        # many affix on the source noun
+        ('^N12<n><1><2><21><21P>/X<n><1><2><21><21P>$', '^X<n><21P>$'),
+        ('^N12<n><1><2><21><22P>/X<n><1><2><21><22P>$', '^X<n><21P>$'),
+        # target noun doesn't take many agreement: fall back to plural
+        ('^N12<n><1><2><21><21P>/Y<n><5><6><NAmany><21P>$', '^Y<n><6P>$'),
+        # target noun with no plural but with a many class
+        ('^N12<n><1><2><21><2P>/S<n><14><NApl><22><2P>$', '^S<n><14P>$'),
+        ('^N12<n><1><2><21><21P>/S<n><14><NApl><22><21P>$', '^S<n><22P>$'),
+
+        # adjectives
+        ('^N12<n><1><2><21><21P>/X<n><1><2><21><21P>$ ^J<adj><1A>/K<adj><21A>$',
+         '^X<n><21P>$ ^K<adj><21A>$'),
+        ('^N12<n><1><2><21><21P>/Y<n><5><6><NAmany><21P>$ ^J<adj><1A>/K<adj><21A>$',
+         '^Y<n><6P>$ ^K<adj><6A>$'),
+        ('^N12<n><1><2><21><21P>/S<n><14><NApl><22><21P>$ ^J<adj><1A>/K<adj><21A>$',
+         '^S<n><22P>$ ^K<adj><22A>$'),
+    ]
+
 class EnglishGermanTripleRanking(BaseTest, unittest.TestCase):
     RuleFile = 'EnglishGermanTripleRanking.xml'
     Data = {
