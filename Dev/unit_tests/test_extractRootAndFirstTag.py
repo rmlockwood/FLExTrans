@@ -2,21 +2,14 @@ import unittest
 import sys
 import os
 
-# Add the path to the modules directory to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib/Windows')))
+import net_stubs  # noqa: F401 — mock .NET/SIL before module-level SIL imports
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Lib')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Lib/Windows')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Modules')))
-sys.path.append('C:\\Program Files\\SIL\\FieldWorks 9\\')
-sys.path.append('C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\')
 
-# Import and initialize pythonnet
-import clr
-clr.AddReference("System")
-clr.AddReference("SIL.LCModel")
-clr.AddReference("SIL.LCModel.Core")
-
-import Utils
-from DoHermitCrabSynthesis import extractRootAndFirstTag as extract_root_and_first_tag_func
+import Utils  # noqa: F401 — DoHermitCrabSynthesis imports Utils at module level
+from DoHermitCrabSynthesis import extractRootAndFirstTag as extract_root_and_first_tag_func  # type: ignore
 
 class extractRootAndFirstTag(unittest.TestCase):
     # Alias the function so test methods can use it

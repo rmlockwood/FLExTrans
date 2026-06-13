@@ -4,12 +4,11 @@
 #
 
 FTName = "FLExTools"
-FTVersion = "2.3.2"
 
 Name = "FLExTrans"
 
-Version = "3.15"
+Version = "3.16"
 Build = "000"
 BuildDate = "Jan 1, 1964"
 
-Title = f"{FTName} {FTVersion} ({Name} {Version})"
+Title = f"{Name} {Version}"

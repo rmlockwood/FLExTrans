@@ -5,6 +5,15 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
+#   Version 3.15.3 - 3/30/26 - Ron Lockwood
+#    Fixes for Python linter.
+#
+#   Version 3.15.2 - 3/30/26 - Ron Lockwood
+#    Fixes #1282. Give an error when ERR comes back for an inflection feature.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -103,7 +112,7 @@ from SIL.LCModel import ( # type: ignore
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString  # type: ignore
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -133,7 +142,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -226,12 +235,21 @@ def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap)
 
     return False
 
-def getInflectionInfoSymbols(MSAobject):
+def getInflectionInfoSymbols(MSAobject, errorList, rawHeadWord, sourceURL):
 
     POS = Utils.as_string(MSAobject.PartOfSpeechRA.Abbreviation)
     POS = Utils.convertProblemChars(POS, Utils.catProbData)
 
-    return [POS] + Utils.getInflectionTags(MSAobject)
+    tagsList = Utils.getInflectionTags(MSAobject)
+
+    # Check if any of the tags have the value ERR and if so, log an error
+    # ERR can come from a feature that isn't properly defined.
+    for tag in tagsList:
+
+        if tag == 'ERR':
+            errorList.append((_translate("ExtractBilingualLexicon", "Encountered a sense that has an invalid feature while processing source headword: {rawHeadWord}").format(rawHeadWord=rawHeadWord), 2, sourceURL))
+
+    return [POS] + tagsList
 
 def addFeatureStringsToMap(myDB, myMap):
 
@@ -262,6 +280,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
     if not sentPunct:
         errorList.append((_translate("ExtractBilingualLexicon", "No Sentence Punctuation found. Review your Settings."), 2))
+        sentPunct = ''
 
     if len(errorList) > 0:
         return errorList
@@ -297,6 +316,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
     TargetDB = Utils.openTargetProject(configMap, report)
 
+    if not TargetDB:
+        return
+
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
         errorList.append((_translate("ExtractBilingualLexicon", "A value for {key} not found in the configuration file.").format(key=ReadConfig.CACHE_DATA), 2))
@@ -319,6 +341,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         posMap = {
             'sent': 'Sentence marker',
             'UNK': 'Unknown',
+            'ERR': 'Error in inflection class/feature',
         }
 
         outputTree = ET.Element('dictionary')
@@ -391,7 +414,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
 
                                 # Get source inflection strings (containing class and feature abbreviations)
-                                sourceTags = getInflectionInfoSymbols(sourceMsa)
+                                sourceTags = getInflectionInfoSymbols(sourceMsa, errorList, rawHeadWord, sourceURL)
                                 sourcePOSabbrev = sourceTags[0]
 
                             else:
@@ -441,7 +464,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                             targetFound = True
 
                                             # Get target inflection strings (containing class and feature abbreviations)
-                                            targetTags = getInflectionInfoSymbols(targetMsa)
+                                            targetTags = getInflectionInfoSymbols(targetMsa, errorList, rawHeadWord, sourceURL)
 
                                             pairElem = ET.SubElement(entryElem, 'p')
                                             leftElem = ET.SubElement(pairElem, 'l')
@@ -503,7 +526,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
         # Create a regular expression string for the punctuation characters
         # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
-        reStr = re.sub(r'([+?|*])',r'\\\1',sentPunct)
+        reStr = re.sub(r'([+?|*])', r'\\\1', sentPunct)
         reStr = '['+reStr+']+'
 
         # This notation in Apertium basically means that any combination of the given punctuation characters
