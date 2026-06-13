@@ -697,13 +697,13 @@ class SplitBantu(BaseTest, unittest.TestCase):
                 'target_affix': [('1P', '1'), ('5P', '5'), ('7P', '7'),
                                  ('14P', '14')],
                 'target_lemma': [('X', '1'), ('Y', '5'), ('Z', '7'),
-                                 ('S', '14')],
+                                 ('S', '14'), ('P', 'NAsg')],
             },
             'BantuPL': {
                 'source_affix': [('2P', '2'), ('4P', '4'), ('6P', '6')],
                 'target_affix': [('2P', '2'), ('6P', '6'), ('8P', '8')],
                 'target_lemma': [('X', '2'), ('Y', '6'), ('Z', '8'),
-                                 ('S', 'NApl')],
+                                 ('S', 'NApl'), ('P', '8')],
             },
         },
     }
@@ -719,9 +719,14 @@ class SplitBantu(BaseTest, unittest.TestCase):
         ('^N34<n><3><4><3P>/Z<n><7><8><3P>$', '^Z<n><7P>$'),
         ('^N34<n><3><4><4P>/Z<n><7><8><4P>$', '^Z<n><8P>$'),
 
-        # singletons
+        # singletons (no plural: NApl forces the singular class)
         ('^N12<n><1><2><1P>/S<n><14><NApl><1P>$', '^S<n><14P>$'),
         ('^N12<n><1><2><2P>/S<n><14><NApl><2P>$', '^S<n><14P>$'),
+
+        # plurale tantum (no singular: NAsg forces the plural class,
+        # regardless of the source affix)
+        ('^N12<n><1><2><1P>/P<n><NAsg><8><1P>$', '^P<n><8P>$'),
+        ('^N12<n><1><2><2P>/P<n><NAsg><8><2P>$', '^P<n><8P>$'),
 
         # adjectives
         ('^N12<n><1><2><1P>/X<n><1><2><1P>$ ^J<adj><1A>/K<adj><1A>$',
@@ -750,6 +755,98 @@ class SplitBantu(BaseTest, unittest.TestCase):
          '^S<n><14P>$ ^K<adj><14A>$'),
         ('^N12<n><1><2><2P>/S<n><14><NApl><2P>$ ^J<adj><1A>/K<adj><2A>$',
          '^S<n><14P>$ ^K<adj><14A>$'),
+
+        # plurale tantum with adjective (plural class drives 8A agreement)
+        ('^N12<n><1><2><1P>/P<n><NAsg><8><1P>$ ^J<adj><1A>/K<adj><1A>$',
+         '^P<n><8P>$ ^K<adj><8A>$'),
+        ('^N12<n><1><2><2P>/P<n><NAsg><8><2P>$ ^J<adj><1A>/K<adj><2A>$',
+         '^P<n><8P>$ ^K<adj><8A>$'),
+    ]
+
+class SplitBantuMany(BaseTest, unittest.TestCase):
+    RuleFile = 'SplitBantuMany.xml'
+    RuleCount = 2
+    Data = {
+        None: {
+            'BantuSG': {
+                'source_features': ['1', '3', '5'],
+            },
+            'BantuPL': {
+                'source_features': ['2', '4', '6'],
+            },
+            'BantuMany': {
+                'source_features': ['21', '22'],
+            },
+        },
+        'adj': {
+            'BantuSG': {
+                'target_affix': [('1A', '1'), ('5A', '5'), ('7A', '7'),
+                                 ('14A', '14')],
+            },
+            'BantuPL': {
+                'target_affix': [('2A', '2'), ('6A', '6'), ('8A', '8')],
+            },
+            'BantuMany': {
+                'target_affix': [('21A', '21'), ('22A', '22'), ('23A', '23')],
+            },
+        },
+        'n': {
+            'BantuSG': {
+                'source_affix': [('1P', '1'), ('3P', '3'), ('5P', '5')],
+                'target_affix': [('1P', '1'), ('5P', '5'), ('7P', '7'),
+                                 ('14P', '14')],
+                'target_lemma': [('X', '1'), ('Y', '5'), ('S', '14'),
+                                 ('T', 'NAsg'), ('P', 'NAsg')],
+            },
+            'BantuPL': {
+                'source_affix': [('2P', '2'), ('4P', '4'), ('6P', '6')],
+                'target_affix': [('2P', '2'), ('6P', '6'), ('8P', '8')],
+                'target_lemma': [('X', '2'), ('Y', '6'), ('S', 'NApl'),
+                                 ('T', 'NApl'), ('P', '8')],
+            },
+            'BantuMany': {
+                'source_affix': [('21P', '21'), ('22P', '22')],
+                'target_affix': [('21P', '21'), ('22P', '22'), ('23P', '23')],
+                'target_lemma': [('X', '21'), ('Y', 'NAmany'), ('S', '22'),
+                                 ('T', '23'), ('P', 'NAmany')],
+            },
+        },
+    }
+    TestPairs = [
+        # singular and plural still work as before
+        ('^N12<n><1><2><21><1P>/X<n><1><2><21><1P>$', '^X<n><1P>$'),
+        ('^N12<n><1><2><21><2P>/X<n><1><2><21><2P>$', '^X<n><2P>$'),
+        # many affix on the source noun
+        ('^N12<n><1><2><21><21P>/X<n><1><2><21><21P>$', '^X<n><21P>$'),
+        ('^N12<n><1><2><21><22P>/X<n><1><2><21><22P>$', '^X<n><21P>$'),
+        # target noun doesn't take many agreement: fall back to plural
+        ('^N12<n><1><2><21><21P>/Y<n><5><6><NAmany><21P>$', '^Y<n><6P>$'),
+        # target noun has no many class feature at all (not even an NAmany
+        # marker): still fall back to plural when the source is many
+        ('^N12<n><1><2><21><21P>/Y<n><5><6><21P>$', '^Y<n><6P>$'),
+        # target noun with no plural but with a many class
+        ('^N12<n><1><2><21><2P>/S<n><14><NApl><22><2P>$', '^S<n><14P>$'),
+        ('^N12<n><1><2><21><21P>/S<n><14><NApl><22><21P>$', '^S<n><22P>$'),
+        # target noun takes neither singular nor plural agreement, only many:
+        # use the many class regardless of the source affix
+        ('^N12<n><1><2><21><1P>/T<n><NAsg><NApl><23><1P>$', '^T<n><23P>$'),
+        ('^N12<n><1><2><21><2P>/T<n><NAsg><NApl><23><2P>$', '^T<n><23P>$'),
+        # plurale tantum: no singular (NAsg) but a real plural class and no
+        # many class, so it falls to the plural class regardless of source affix
+        ('^N12<n><1><2><21><1P>/P<n><NAsg><8><NAmany><1P>$', '^P<n><8P>$'),
+        ('^N12<n><1><2><21><2P>/P<n><NAsg><8><NAmany><2P>$', '^P<n><8P>$'),
+
+        # adjectives
+        ('^N12<n><1><2><21><21P>/X<n><1><2><21><21P>$ ^J<adj><1A>/K<adj><21A>$',
+         '^X<n><21P>$ ^K<adj><21A>$'),
+        ('^N12<n><1><2><21><21P>/Y<n><5><6><NAmany><21P>$ ^J<adj><1A>/K<adj><21A>$',
+         '^Y<n><6P>$ ^K<adj><6A>$'),
+        ('^N12<n><1><2><21><21P>/S<n><14><NApl><22><21P>$ ^J<adj><1A>/K<adj><21A>$',
+         '^S<n><22P>$ ^K<adj><22A>$'),
+        ('^N12<n><1><2><21><1P>/T<n><NAsg><NApl><23><1P>$ ^J<adj><1A>/K<adj><23A>$',
+         '^T<n><23P>$ ^K<adj><23A>$'),
+        ('^N12<n><1><2><21><1P>/P<n><NAsg><8><NAmany><1P>$ ^J<adj><1A>/K<adj><1A>$',
+         '^P<n><8P>$ ^K<adj><8A>$'),
     ]
 
 class EnglishGermanTripleRanking(BaseTest, unittest.TestCase):

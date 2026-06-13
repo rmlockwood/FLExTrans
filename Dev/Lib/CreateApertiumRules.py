@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16 - 6/12/26 - Ron Lockwood
+#    Support an optional third disjoint feature bucket with co-feature value
+#    "many" for Bantu noun class processing, in addition to "sg" and "pl".
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -194,7 +198,9 @@ class RuleGenerator:
         self.BantuVariable: Optional[str] = None
         self.BantuFeature: Optional[str] = None
         self.BantuValues: Optional[set[str]] = None
-        self.BantuParts: Optional[tuple[str, str]] = None
+        # The FLEx feature names for each disjoint bucket:
+        # (singular, plural) or (singular, plural, many)
+        self.BantuParts: Optional[tuple[str, ...]] = None
 
     def GetCategory(self, category: str, source: bool = True,
                     target: bool = True) -> set[str]:
@@ -381,12 +387,12 @@ class RuleGenerator:
 
     def AddSingleAttribute(self, suggested_name: str, items: set[str],
                            comment: Optional[str] = None,
-                           reject: Optional[set[str]] = None) -> str:
+                           reject: Optional[list[set[str]]] = None) -> str:
         '''Return the ID of a <def-attr> containing `items`, creating it
         if necessary.
 
         An existing <def-attr> will be returned if it contains all of `items`
-        and does not contain all of `reject`, it will be returned.
+        and does not contain all of any set in `reject`.
 
         If a new <def-attr> is created, the ID will be
         `GetAvailableID(suggested_name)`.
@@ -396,7 +402,7 @@ class RuleGenerator:
 
         for name, values in self.definedAttributes.items():
             if items <= values:
-                if reject and reject <= values:
+                if reject and any(r and r <= values for r in reject):
                     continue
                 return name
 
@@ -410,7 +416,7 @@ class RuleGenerator:
         self.definedAttributes[aid] = items
         return aid
 
-    def GetAttributeValues(self, spec: FeatureSpec) -> set[tuple[str, str]]:
+    def GetAttributeValues(self, spec: FeatureSpec) -> set[str]:
         '''Retrieve the set of tags corresponding to `spec`
 
         This function is intended for use in generating <def-attr>s and
@@ -487,10 +493,10 @@ class RuleGenerator:
         value so that we can match it up with the tags for other categories.'''
 
         if spec.label == self.BantuFeature:
-            sg, pl = self.BantuParts
-            sgTags = self.GetTags(dataclasses.replace(spec, label=sg), source)
-            plTags = self.GetTags(dataclasses.replace(spec, label=pl), source)
-            return sgTags | plTags
+            tags = set()
+            for label in self.BantuParts or ():
+                tags |= self.GetTags(dataclasses.replace(spec, label=label), source)
+            return tags
 
         if source or spec.isSource:
             if spec.isAffix:
@@ -715,9 +721,11 @@ class RuleGenerator:
 
                 section.remove(node)
 
-    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str, delete_old: bool) -> None:
+    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str, delete_old: bool,
+                       manyFeature: Optional[str] = None) -> None:
         '''Create the macro which extracts the Bantu noun class from an
-        input noun.'''
+        input noun. If `manyFeature` is given, also handle a third "many"
+        noun class bucket in addition to singular and plural.'''
 
         if delete_old:
             # Remove the old hand-crafted Bantu macros and associated variables
@@ -727,7 +735,7 @@ class RuleGenerator:
         self.BantuVariable = self.GetAvailableID('v_'+BANTU_NOUN_CLASS_FROM_N)
 
         # Manually create separate attributes so we don't accidentally reuse
-        # some existing attribute that contains both.
+        # some existing attribute that contains more than one bucket.
 
         sgAffixValues = self.GetAttributeValues(
             FeatureSpec('n', singularFeature, isAffix=True))
@@ -737,15 +745,28 @@ class RuleGenerator:
             FeatureSpec('n', singularFeature, isAffix=False))
         plStemValues = self.GetAttributeValues(
             FeatureSpec('n', pluralFeature, isAffix=False))
+        manyAffixValues = set()
+        manyStemValues = set()
+        if manyFeature:
+            manyAffixValues = self.GetAttributeValues(
+                FeatureSpec('n', manyFeature, isAffix=True))
+            manyStemValues = self.GetAttributeValues(
+                FeatureSpec('n', manyFeature, isAffix=False))
 
         sgAffix = self.AddSingleAttribute('a_n_singular_class_affixes',
-                                        sgAffixValues, reject=plAffixValues)
+                                        sgAffixValues, reject=[plAffixValues, manyAffixValues])
         plAffix = self.AddSingleAttribute('a_n_plural_class_affixes',
-                                        plAffixValues, reject=sgAffixValues)
+                                        plAffixValues, reject=[sgAffixValues, manyAffixValues])
         sgStem = self.AddSingleAttribute('a_n_singular_class_feature',
-                                        sgStemValues, reject=plStemValues)
+                                        sgStemValues, reject=[plStemValues, manyStemValues])
         plStem = self.AddSingleAttribute('a_n_plural_class_feature',
-                                        plStemValues, reject=sgStemValues)
+                                        plStemValues, reject=[sgStemValues, manyStemValues])
+        manyAffix, manyStem = '', ''
+        if manyFeature:
+            manyAffix = self.AddSingleAttribute('a_n_many_class_affixes',
+                                            manyAffixValues, reject=[sgAffixValues, plAffixValues])
+            manyStem = self.AddSingleAttribute('a_n_many_class_feature',
+                                            manyStemValues, reject=[sgStemValues, plStemValues])
 
         # Create the macro.
         self.AddVariable(self.BantuVariable)
@@ -758,6 +779,55 @@ class RuleGenerator:
         ET.SubElement(let, 'lit', v='')
 
         chooseNumber = ET.SubElement(macro, 'choose')
+
+        # If there's a "many" bucket, check for it first, since the singular
+        # check below relies on the absence of a plural affix, which would
+        # also be true for a noun with a many affix.
+        whenMany = None
+        if manyFeature:
+            whenMany = ET.SubElement(chooseNumber, 'when')
+            testMany = ET.SubElement(whenMany, 'test')
+            outerAndMany = ET.SubElement(testMany, 'and')
+            outerAndMany.append(ET.Comment(_translate('CreateApertiumRules', 'We should check for the appropriate many noun class if both of the following are true:')))
+
+            # First condition: the target noun has an actual many noun class
+            # value, i.e. one is present and it isn't the marker saying the
+            # noun takes no many agreement.
+            firstAndMany = ET.SubElement(outerAndMany, 'and')
+            firstAndMany.append(ET.Comment(_translate('CreateApertiumRules', 'The target noun has a many noun class feature.')))
+            notManyFeat = ET.SubElement(firstAndMany, 'not')
+            equalManyFeat = ET.SubElement(notManyFeat, 'equal')
+            ET.SubElement(equalManyFeat, 'clip', pos='1', part=manyStem, side='tl')
+            ET.SubElement(equalManyFeat, 'lit', v='')
+            firstAndMany.append(ET.Comment(_translate('CreateApertiumRules', "And the target noun takes many agreement (not marked as such).")))
+            notManyStem = ET.SubElement(firstAndMany, 'not')
+            equalManyStem = ET.SubElement(notManyStem, 'equal')
+            ET.SubElement(equalManyStem, 'clip', pos='1', part=manyStem, side='tl')
+            ET.SubElement(equalManyStem, 'lit-tag', v='NAmany')
+
+            # Second condition: one of the following two situations holds.
+            orMany = ET.SubElement(outerAndMany, 'or')
+            orMany.append(ET.Comment(_translate('CreateApertiumRules', 'And at least one of the following is true:')))
+
+            # Situation 1: the source noun has a many affix attached.
+            orMany.append(ET.Comment(_translate('CreateApertiumRules', 'The source noun has a many affix attached.')))
+            notManyAffix = ET.SubElement(orMany, 'not')
+            equalManyAffix = ET.SubElement(notManyAffix, 'equal')
+            ET.SubElement(equalManyAffix, 'clip', pos='1', part=manyAffix, side='tl')
+            ET.SubElement(equalManyAffix, 'lit', v='')
+
+            # Situation 2: the target noun takes neither singular nor plural
+            # agreement, so the many class is the only one left.
+            andManyNA = ET.SubElement(orMany, 'and')
+            andManyNA.append(ET.Comment(_translate('CreateApertiumRules', "The target noun doesn't take singular agreement (marked as such).")))
+            equalManyNAsg = ET.SubElement(andManyNA, 'equal')
+            ET.SubElement(equalManyNAsg, 'clip', pos='1', part=sgStem, side='tl')
+            ET.SubElement(equalManyNAsg, 'lit-tag', v='NAsg')
+            andManyNA.append(ET.Comment(_translate('CreateApertiumRules', "And the target noun doesn't take plural agreement (marked as such).")))
+            equalManyNApl = ET.SubElement(andManyNA, 'equal')
+            ET.SubElement(equalManyNApl, 'clip', pos='1', part=plStem, side='tl')
+            ET.SubElement(equalManyNApl, 'lit-tag', v='NApl')
+
         whenSg = ET.SubElement(chooseNumber, 'when')
         testSg = ET.SubElement(whenSg, 'test')
         andSg = ET.SubElement(testSg, 'and')
@@ -776,6 +846,14 @@ class RuleGenerator:
         equalSg3 = ET.SubElement(notSg, 'equal')
         ET.SubElement(equalSg3, 'clip', pos='1', part=sgStem, side='tl')
         ET.SubElement(equalSg3, 'lit-tag', v='NAsg')
+        if manyFeature:
+            # If the source noun has a many affix and we got past the when
+            # above, the target noun doesn't take many agreement, so we want
+            # the plural noun class rather than the singular one.
+            andSg.append(ET.Comment(_translate('CreateApertiumRules', "And the source noun doesn't have a many affix attached. (If it does, we'll use the plural noun class.)")))
+            equalSgMany = ET.SubElement(andSg, 'equal')
+            ET.SubElement(equalSgMany, 'clip', pos='1', part=manyAffix, side='tl')
+            ET.SubElement(equalSgMany, 'lit', v='')
 
         otherwisePl = ET.SubElement(chooseNumber, 'otherwise')
         otherwisePl.append(ET.Comment(_translate('CreateApertiumRules', 'Check for the appropriate plural noun class.')))
@@ -785,6 +863,10 @@ class RuleGenerator:
 
         trees = [(sgTags, sgStem, whenSg, 'sg'),
                 (plTags, plStem, otherwisePl, 'pl')]
+
+        if manyFeature and whenMany is not None:
+            manyTags = self.GetTags(FeatureSpec('n', manyFeature, isAffix=False))
+            trees.append((manyTags, manyStem, whenMany, 'many'))
 
         self.BantuValues = set()
 
@@ -1474,8 +1556,8 @@ class RuleGenerator:
         delete_old = (root.get('overwrite_rules', 'no') == 'yes')
 
         # Perhaps in future we can generalize this to work with whatever
-        # disjoint features the UI gives us, but for now we're hardcoding this to expect a co-feature named "number" 
-        # and we expect number to have values "sg" and "pl".
+        # disjoint features the UI gives us, but for now we're hardcoding this to expect a co-feature named "number"
+        # and we expect number to have values "sg" and "pl", plus an optional "many" value.
 
         # First check if we have a disjoint feature set. At least one DisjointFeatureSet under DisjointFeatureSets
         disjointFeatureSets = root.find('.//DisjointFeatureSet')
@@ -1491,7 +1573,7 @@ class RuleGenerator:
                 return 0
             else:
                 merged = bantuPair.get('disjoint_name')
-                sg, pl = None, None
+                sg, pl, many = None, None, None
 
                 for node in bantuPair.findall('.//DisjointFeatureValuePairing'):
 
@@ -1504,15 +1586,19 @@ class RuleGenerator:
                     elif val == 'pl':
 
                         pl = node.get('flex_feature_name')
+
+                    elif val == 'many':
+
+                        many = node.get('flex_feature_name')
                     else:
                         # Unexpected value found. Give a warning and ignore it.
-                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a disjoint feature set. Expected only "sg" or "pl". This value will be ignored.').format(val=val))
+                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a disjoint feature set. Expected only "sg", "pl" or "many". This value will be ignored.').format(val=val))
 
                 if merged and sg and pl:
 
                     self.BantuFeature = merged
-                    self.BantuParts = (sg, pl)
-                    self.MakeBantuMacro(sg, pl, delete_old)
+                    self.BantuParts = (sg, pl, many) if many else (sg, pl)
+                    self.MakeBantuMacro(sg, pl, delete_old, manyFeature=many)
                 else:
                     self.report.Error(_translate('CreateApertiumRules', 'Please ensure that the co-feature "number" has both "sg" and "pl" values.'))
                     return 0
