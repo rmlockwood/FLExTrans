@@ -8,8 +8,9 @@ from SIL.LCModel import (# type: ignore
     IFsClosedValue, 
     IPartOfSpeech, 
     IMoStemMsa, 
-    IMoInflAffMsa, 
+    IMoInflAffMsa,
     IMoInflAffixSlot,
+    IFsClosedFeature,
 )
 
 from flextoolslib import * # type: ignore
@@ -91,11 +92,13 @@ BANTU_SETTINGS_FILE = "BantuSettings.toml"
 def numeric_sort_key(s):
     """
     Sort key to handle numeric prefixes in strings (e.g., '9pl' before '14pl').
+    Values that do not start with a number (e.g. 'NAsg') sort after all
+    numerical values, alphabetically among themselves.
     """
-    match = re.search(r'(\d+)', s)
+    match = re.match(r'(\d+)', s)
     if match:
-        return (int(match.group(1)), s)
-    return (float('inf'), s)
+        return (0, int(match.group(1)), s)
+    return (1, float('inf'), s)
 
 
 def missing_nc_sort_key(issue):
@@ -410,7 +413,8 @@ def Main(project, report, modifyAllowed):
         "suffixes": [], 
         "affix_gloss": [],
         "duplicates": [],
-        "spaces": []
+        "spaces": [],
+        "dup_abbr": []
     }
     
     # Store unique features for summary
@@ -434,6 +438,15 @@ def Main(project, report, modifyAllowed):
     nameForPOSNoun = bantuData["bantu_info"]["name_for_POS_noun"]
     nounClassSlotName = bantuData["bantu_info"]["noun_class_slot"] # This is the saved combo box value
     slots_list = bantuData["bantu_info"]["slots_with_noun_class_affixes"]
+
+    # Configured gender feature groups (Many is optional / may be blank).
+    sgFeatName = bantuData["bantu_info"]["bantu_singular_feature_name"]
+    plFeatName = bantuData["bantu_info"]["bantu_plural_feature_name"]
+    manyFeatName = bantuData["bantu_info"].get("bantu_many_feature_name", "")
+
+    relevant_groups = [sgFeatName, plFeatName]
+    if manyFeatName:
+        relevant_groups.append(manyFeatName)
 
     # 1. Get all possible slot names (as a flat list)
     allNCslotNames = []
@@ -510,14 +523,6 @@ def Main(project, report, modifyAllowed):
                     
                     # Reduce this list to just the features in the chosen Bantu Sg, Pl
                     # and (optional) Many feature groups.
-                    sgFeatName = bantuData["bantu_info"]["bantu_singular_feature_name"]
-                    plFeatName = bantuData["bantu_info"]["bantu_plural_feature_name"]
-                    manyFeatName = bantuData["bantu_info"].get("bantu_many_feature_name", "")
-
-                    relevant_groups = [sgFeatName, plFeatName]
-                    if manyFeatName:
-                        relevant_groups.append(manyFeatName)
-
                     features_found = [(grp, val) for grp, val in features_found if grp in relevant_groups]
 
                     # Collect for summary
@@ -606,6 +611,11 @@ def Main(project, report, modifyAllowed):
 
                         entry_feat_abbrs.add(val.lower())
                         current_features_details.append("    - {}: {}".format(cat, val))
+
+                        # Include affix-borne gender values (e.g. an NC-prefix class)
+                        # in the summary even when no noun root carries that value.
+                        if cat in relevant_groups:
+                            global_noun_features[cat].add(val)
 
             if in_any_nc_slot and pos_owning_nc_slot:
 
@@ -755,6 +765,55 @@ def Main(project, report, modifyAllowed):
                     msg = "slot problem: missing prefix in '{}' NC slot for feature '{}'".format(pos_name, m_feat)
                     issues["missing_nc"].append((msg, None, []))
 
+    # Enumerate the *defined* value abbreviations for each configured feature
+    # group, regardless of whether any entry uses them. Used both for the
+    # "all possible values" summary and the Check 7 duplicate test below.
+    defined_feature_values = defaultdict(set)   # group name -> set of value abbreviations
+
+    for feature in feature_objects:
+
+        grp_name = project.BestStr(feature.Name)
+
+        if grp_name not in relevant_groups or feature.ClassName != "FsClosedFeature":
+            continue
+
+        closed = IFsClosedFeature(feature)
+
+        for val in closed.ValuesOC:
+
+            abbr = project.BestStr(val.Abbreviation)
+
+            if abbr and abbr != "***":
+                defined_feature_values[grp_name].add(abbr)
+
+    # Check 7: Duplicate value abbreviations across feature groups, based on the
+    # feature *definitions* (independent of usage). It is an error for the same
+    # abbreviation (e.g. '19') to be defined in more than one configured feature
+    # group. The '?' placeholder value is ignored.
+    abbr_to_groups = defaultdict(set)   # abbr (lower) -> set of group names
+    abbr_display = {}                   # abbr (lower) -> original abbr text
+
+    for grp, vals in defined_feature_values.items():
+
+        for val in vals:
+
+            if val == "?":
+                continue
+
+            key = val.lower()
+            abbr_to_groups[key].add(grp)
+            abbr_display.setdefault(key, val)
+
+    for key in sorted(abbr_to_groups.keys(), key=numeric_sort_key):
+
+        groups = abbr_to_groups[key]
+
+        if len(groups) > 1:
+
+            msg = "feature problem: value '{}' is defined in multiple feature groups: {}".format(
+                abbr_display[key], ", ".join(sorted(groups)))
+            issues["dup_abbr"].append((msg, None, []))
+
     # --- REPORTING ---
     
     report.Info("Detailed Problem Reports:")
@@ -813,12 +872,29 @@ def Main(project, report, modifyAllowed):
             report.Warning(msg, url)
         report.Blank()
 
+    # Detailed Duplicate Abbreviation Problems (Check 7)
+    if issues["dup_abbr"]:
+        report.Info("Duplicate Values (Check 7): Found {} value abbreviations shared across feature groups:".format(len(issues["dup_abbr"])))
+        for msg, url, details in issues["dup_abbr"]:
+            report.Warning(msg, url)
+        report.Blank()
+
     # --- NOUN FEATURE SUMMARY ---
     if global_noun_features:
-        report.Info("Noun Feature Value Summary (Sorted Numerically):")
+        report.Info("Noun Feature Value Summary - Values In Use:")
         report.Info("-----------------------------------------------------------------------------")
         for grp in sorted(global_noun_features.keys()):
             values = sorted(list(global_noun_features[grp]), key=numeric_sort_key)
+            report.Info("- {}: {}".format(grp, ", ".join(values)))
+        report.Blank()
+
+    # All possible values defined for each configured feature group, whether or
+    # not any entry uses them.
+    if defined_feature_values:
+        report.Info("Noun Feature Value Summary - All Possible Values:")
+        report.Info("-----------------------------------------------------------------------------")
+        for grp in sorted(defined_feature_values.keys()):
+            values = sorted(list(defined_feature_values[grp]), key=numeric_sort_key)
             report.Info("- {}: {}".format(grp, ", ".join(values)))
         report.Blank()
 
@@ -861,6 +937,12 @@ def Main(project, report, modifyAllowed):
     num_pos_nc = len(pos_with_nc_slot)
     report.Info("- Checked: {} Parts of Speech with NC slots".format(num_pos_nc))
     report.Info("- Problems: {}".format(len(issues["missing_nc"])))
+    report.Blank()
+
+    # Check 7 Summary
+    report.Info("Check 7: Duplicate value abbreviations across feature groups")
+    report.Info("- Checked: {} distinct value abbreviations".format(len(abbr_to_groups)))
+    report.Info("- Problems: {}".format(len(issues["dup_abbr"])))
     report.Blank()
 
 #----------------------------------------------------------------
