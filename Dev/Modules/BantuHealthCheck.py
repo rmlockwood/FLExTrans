@@ -49,9 +49,10 @@ docs = {
     FTM_Description : 
 _translate("BantuHealthCheck", """
 Bantu Health Check:
-1. Identifies Noun 'roots' (bound root, bound stem, discontiguous phrase, 
-   particle, phrase, root, stem) and verifies that they have exactly two
-   inflection feature values defined. (Skips nouns with 0 features).
+1. Identifies Noun 'roots' (bound root, bound stem, discontiguous phrase,
+   particle, phrase, root, stem) and verifies that they have exactly one
+   singular and one plural inflection feature value defined, with an
+   optional 'many' feature value. (Skips nouns with 0 features).
 2. Identifies prefixes in the 'NC' slot and verifies that they have 
    exactly one inflection feature defined.
 
@@ -204,6 +205,12 @@ class BantuConfigDialog(QDialog):
         self.pl_combo.addItems(feature_options)
         main_layout.addWidget(self.pl_combo)
 
+        # Optional 'many' feature: blank is a valid (default) choice.
+        main_layout.addWidget(QLabel("Feature containing many gender values:"))
+        self.many_combo = QComboBox()
+        self.many_combo.addItems([""] + feature_options)
+        main_layout.addWidget(self.many_combo)
+
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
@@ -262,6 +269,7 @@ class BantuConfigDialog(QDialog):
         set_val(self.pos_combo, self.current_data.get("name_for_POS_noun", ""))
         set_val(self.sg_combo, self.current_data.get("bantu_singular_feature_name", ""))
         set_val(self.pl_combo, self.current_data.get("bantu_plural_feature_name", ""))
+        set_val(self.many_combo, self.current_data.get("bantu_many_feature_name", ""))
 
     def get_results(self):
         """Prepares dictionary for TOML saving."""
@@ -283,7 +291,8 @@ class BantuConfigDialog(QDialog):
                 "noun_class_slot": self.noun_slot_combo.currentText(), # Explicitly saved
                 "slots_with_noun_class_affixes": others_list,
                 "bantu_singular_feature_name": self.sg_combo.currentText(),
-                "bantu_plural_feature_name": self.pl_combo.currentText()
+                "bantu_plural_feature_name": self.pl_combo.currentText(),
+                "bantu_many_feature_name": self.many_combo.currentText()
             }
         }
     
@@ -499,28 +508,53 @@ def Main(project, report, modifyAllowed):
                     if fs and fs.FeatureSpecsOC:
                         get_feat_abbr_list(project, fs.FeatureSpecsOC, features_found)
                     
-                    # Reduce this list to just the features in the chosen Bantu Sg and Pl feature groups
-                    features_found = [(grp, val) for grp, val in features_found if grp in [bantuData["bantu_info"]["bantu_singular_feature_name"], bantuData["bantu_info"]["bantu_plural_feature_name"]]]
+                    # Reduce this list to just the features in the chosen Bantu Sg, Pl
+                    # and (optional) Many feature groups.
+                    sgFeatName = bantuData["bantu_info"]["bantu_singular_feature_name"]
+                    plFeatName = bantuData["bantu_info"]["bantu_plural_feature_name"]
+                    manyFeatName = bantuData["bantu_info"].get("bantu_many_feature_name", "")
+
+                    relevant_groups = [sgFeatName, plFeatName]
+                    if manyFeatName:
+                        relevant_groups.append(manyFeatName)
+
+                    features_found = [(grp, val) for grp, val in features_found if grp in relevant_groups]
 
                     # Collect for summary
                     for grp, val in features_found:
 
                         global_noun_features[grp].add(val)
-                    
-                    if len(features_found) != 2 and len(features_found) > 0:
 
-                        gloss = project.LexiconGetSenseGloss(sense)
-                        sourceURL = project.BuildGotoURL(sense)
-                        
-                        msg = "root problem: only {} feature found (expected 2). lex: '{}', gloss: '{}'".format(len(features_found), lexeme_form, gloss)
-                        
-                        details = []
+                    # A valid noun root has exactly one singular and one plural value,
+                    # plus an optional (at most one) 'many' value. Skip nouns with 0 features.
+                    if features_found:
 
-                        for grp, val in features_found:
+                        sg_count = sum(1 for grp, val in features_found if grp == sgFeatName)
+                        pl_count = sum(1 for grp, val in features_found if grp == plFeatName)
+                        many_count = sum(1 for grp, val in features_found if manyFeatName and grp == manyFeatName)
 
-                            details.append("    - {}: {}".format(grp, val))
-                            
-                        issues["roots"].append((msg, sourceURL, details))
+                        problems = []
+                        if sg_count != 1:
+                            problems.append("singular ({} found, expected 1)".format(sg_count))
+                        if pl_count != 1:
+                            problems.append("plural ({} found, expected 1)".format(pl_count))
+                        if many_count > 1:
+                            problems.append("many ({} found, expected at most 1)".format(many_count))
+
+                        if problems:
+
+                            gloss = project.LexiconGetSenseGloss(sense)
+                            sourceURL = project.BuildGotoURL(sense)
+
+                            msg = "root problem: feature issue ({}). lex: '{}', gloss: '{}'".format("; ".join(problems), lexeme_form, gloss)
+
+                            details = []
+
+                            for grp, val in features_found:
+
+                                details.append("    - {}: {}".format(grp, val))
+
+                            issues["roots"].append((msg, sourceURL, details))
 
         # --- AFFIX DATA EXTRACTION (Features & NC slots) ---
         in_noun_nc_slot = False
@@ -793,7 +827,7 @@ def Main(project, report, modifyAllowed):
     report.Info("---------------------------------------------")
     
     # Check 1 Summary
-    report.Info("Check 1: Noun roots (expected exactly 2 features)")
+    report.Info("Check 1: Noun roots (expected 1 singular + 1 plural, optional 1 many)")
     report.Info("- Checked: {}".format(total_roots_checked))
     report.Info("- Problems: {}".format(len(issues["roots"])))
     report.Blank()
