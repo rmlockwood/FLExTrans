@@ -35,20 +35,24 @@
       <attr-item tags="14" />
       <attr-item tags="3" />
       <attr-item tags="5" />
+      <attr-item tags="NAsg" />
     </def-attr>
     <def-attr n="a_n_plural_class_feature">
       <attr-item tags="2" />
       <attr-item tags="4" />
       <attr-item tags="6" />
+      <attr-item tags="8" />
       <attr-item tags="NApl" />
     </def-attr>
     <def-attr n="a_n_many_class_affixes">
       <attr-item tags="21P" />
       <attr-item tags="22P" />
+      <attr-item tags="23P" />
     </def-attr>
     <def-attr n="a_n_many_class_feature">
       <attr-item tags="21" />
       <attr-item tags="22" />
+      <attr-item tags="23" />
       <attr-item tags="NAmany" />
     </def-attr>
   </section-def-attrs>
@@ -71,20 +75,44 @@
           <test>
             <and>
               <!--We should check for the appropriate many noun class if both of the following are true:-->
-              <!--The source noun has a many affix attached.-->
-              <not>
-                <equal>
-                  <clip pos="1" part="a_n_many_class_affixes" side="tl" />
-                  <lit v="" />
-                </equal>
-              </not>
-              <!--The target noun takes many agreement (not marked as such).-->
-              <not>
-                <equal>
-                  <clip pos="1" part="a_n_many_class_feature" side="tl" />
-                  <lit-tag v="NAmany" />
-                </equal>
-              </not>
+              <and>
+                <!--The target noun has a many noun class feature.-->
+                <not>
+                  <equal>
+                    <clip pos="1" part="a_n_many_class_feature" side="tl" />
+                    <lit v="" />
+                  </equal>
+                </not>
+                <!--And the target noun takes many agreement (not marked as such).-->
+                <not>
+                  <equal>
+                    <clip pos="1" part="a_n_many_class_feature" side="tl" />
+                    <lit-tag v="NAmany" />
+                  </equal>
+                </not>
+              </and>
+              <or>
+                <!--And at least one of the following is true:-->
+                <!--The source noun has a many affix attached.-->
+                <not>
+                  <equal>
+                    <clip pos="1" part="a_n_many_class_affixes" side="tl" />
+                    <lit v="" />
+                  </equal>
+                </not>
+                <and>
+                  <!--The target noun doesn't take singular agreement (marked as such).-->
+                  <equal>
+                    <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                    <lit-tag v="NAsg" />
+                  </equal>
+                  <!--And the target noun doesn't take plural agreement (marked as such).-->
+                  <equal>
+                    <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                    <lit-tag v="NApl" />
+                  </equal>
+                </and>
+              </or>
             </and>
           </test>
           <choose>
@@ -110,6 +138,18 @@
               <let>
                 <var n="v_Bantu_noun_class_from_n" />
                 <lit-tag v="22" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_many_class_feature" side="tl" />
+                  <lit-tag v="23" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="23" />
               </let>
             </when>
             <when>
@@ -199,6 +239,18 @@
                 <lit-tag v="5" />
               </let>
             </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_singular_class_feature" side="tl" />
+                  <lit-tag v="NAsg" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="NAsg" />
+              </let>
+            </when>
             <otherwise>
               <let>
                 <var n="v_Bantu_noun_class_from_n" />
@@ -238,6 +290,18 @@
               <test>
                 <equal>
                   <clip pos="1" part="a_n_plural_class_feature" side="tl" />
+                  <lit-tag v="8" />
+                </equal>
+              </test>
+              <let>
+                <var n="v_Bantu_noun_class_from_n" />
+                <lit-tag v="8" />
+              </let>
+            </when>
+            <when>
+              <test>
+                <equal>
+                  <clip pos="1" part="a_n_plural_class_feature" side="tl" />
                   <lit-tag v="NApl" />
                 </equal>
               </test>
@@ -271,60 +335,24 @@
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="2" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="2P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
               <lit-tag v="pl" />
             </equal>
           </test>
           <let>
             <var n="v_n_BantuNounClass" />
             <lit-tag v="pl-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="NApl" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_n_BantuNounClass" />
-            <lit-tag v="NApl-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="sg" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_n_BantuNounClass" />
-            <lit-tag v="sg-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="6" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_n_BantuNounClass" />
-            <lit-tag v="6P" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="22" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_n_BantuNounClass" />
-            <lit-tag v="22P" />
           </let>
         </when>
         <when>
@@ -343,36 +371,24 @@
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="many" />
+              <lit-tag v="8" />
             </equal>
           </test>
           <let>
             <var n="v_n_BantuNounClass" />
-            <lit-tag v="many-NOTAG" />
+            <lit-tag v="8P" />
           </let>
         </when>
         <when>
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="NAmany" />
+              <lit-tag v="NApl" />
             </equal>
           </test>
           <let>
             <var n="v_n_BantuNounClass" />
-            <lit-tag v="NAmany-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="2" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_n_BantuNounClass" />
-            <lit-tag v="2P" />
+            <lit-tag v="NApl-NOTAG" />
           </let>
         </when>
         <when>
@@ -391,12 +407,96 @@
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="NAmany" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="NAmany-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="23" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="23P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
               <lit-tag v="21" />
             </equal>
           </test>
           <let>
             <var n="v_n_BantuNounClass" />
             <lit-tag v="21P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="22" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="22P" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="sg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="sg-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="many" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="many-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="NAsg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="NAsg-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="6" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_n_BantuNounClass" />
+            <lit-tag v="6P" />
           </let>
         </when>
         <when>
@@ -434,60 +534,24 @@
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="2" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="2A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
               <lit-tag v="pl" />
             </equal>
           </test>
           <let>
             <var n="v_adj_BantuNounClass" />
             <lit-tag v="pl-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="NApl" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_adj_BantuNounClass" />
-            <lit-tag v="NApl-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="sg" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_adj_BantuNounClass" />
-            <lit-tag v="sg-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="6" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_adj_BantuNounClass" />
-            <lit-tag v="6A" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="22" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_adj_BantuNounClass" />
-            <lit-tag v="22A" />
           </let>
         </when>
         <when>
@@ -506,36 +570,24 @@
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="many" />
+              <lit-tag v="8" />
             </equal>
           </test>
           <let>
             <var n="v_adj_BantuNounClass" />
-            <lit-tag v="many-NOTAG" />
+            <lit-tag v="8A" />
           </let>
         </when>
         <when>
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="NAmany" />
+              <lit-tag v="NApl" />
             </equal>
           </test>
           <let>
             <var n="v_adj_BantuNounClass" />
-            <lit-tag v="NAmany-NOTAG" />
-          </let>
-        </when>
-        <when>
-          <test>
-            <equal>
-              <var n="v_Bantu_noun_class_from_n" />
-              <lit-tag v="2" />
-            </equal>
-          </test>
-          <let>
-            <var n="v_adj_BantuNounClass" />
-            <lit-tag v="2A" />
+            <lit-tag v="NApl-NOTAG" />
           </let>
         </when>
         <when>
@@ -554,12 +606,96 @@
           <test>
             <equal>
               <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="NAmany" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="NAmany-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="23" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="23A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
               <lit-tag v="21" />
             </equal>
           </test>
           <let>
             <var n="v_adj_BantuNounClass" />
             <lit-tag v="21A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="22" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="22A" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="sg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="sg-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="many" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="many-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="NAsg" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="NAsg-NOTAG" />
+          </let>
+        </when>
+        <when>
+          <test>
+            <equal>
+              <var n="v_Bantu_noun_class_from_n" />
+              <lit-tag v="6" />
+            </equal>
+          </test>
+          <let>
+            <var n="v_adj_BantuNounClass" />
+            <lit-tag v="6A" />
           </let>
         </when>
         <when>

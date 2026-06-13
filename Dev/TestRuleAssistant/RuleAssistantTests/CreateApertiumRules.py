@@ -5,7 +5,7 @@
 #   SIL International
 #   9/11/23
 #
-#   Version 3.16.3 - 6/12/26 - Ron Lockwood
+#   Version 3.16 - 6/12/26 - Ron Lockwood
 #    Support an optional third disjoint feature bucket with co-feature value
 #    "many" for Bantu noun class processing, in addition to "sg" and "pl".
 #
@@ -787,18 +787,46 @@ class RuleGenerator:
         if manyFeature:
             whenMany = ET.SubElement(chooseNumber, 'when')
             testMany = ET.SubElement(whenMany, 'test')
-            andMany = ET.SubElement(testMany, 'and')
-            andMany.append(ET.Comment(_translate('CreateApertiumRules', 'We should check for the appropriate many noun class if both of the following are true:')))
-            andMany.append(ET.Comment(_translate('CreateApertiumRules', 'The source noun has a many affix attached.')))
-            notManyAffix = ET.SubElement(andMany, 'not')
-            equalManyAffix = ET.SubElement(notManyAffix, 'equal')
-            ET.SubElement(equalManyAffix, 'clip', pos='1', part=manyAffix, side='tl')
-            ET.SubElement(equalManyAffix, 'lit', v='')
-            andMany.append(ET.Comment(_translate('CreateApertiumRules', "The target noun takes many agreement (not marked as such).")))
-            notManyStem = ET.SubElement(andMany, 'not')
+            outerAndMany = ET.SubElement(testMany, 'and')
+            outerAndMany.append(ET.Comment(_translate('CreateApertiumRules', 'We should check for the appropriate many noun class if both of the following are true:')))
+
+            # First condition: the target noun has an actual many noun class
+            # value, i.e. one is present and it isn't the marker saying the
+            # noun takes no many agreement.
+            firstAndMany = ET.SubElement(outerAndMany, 'and')
+            firstAndMany.append(ET.Comment(_translate('CreateApertiumRules', 'The target noun has a many noun class feature.')))
+            notManyFeat = ET.SubElement(firstAndMany, 'not')
+            equalManyFeat = ET.SubElement(notManyFeat, 'equal')
+            ET.SubElement(equalManyFeat, 'clip', pos='1', part=manyStem, side='tl')
+            ET.SubElement(equalManyFeat, 'lit', v='')
+            firstAndMany.append(ET.Comment(_translate('CreateApertiumRules', "And the target noun takes many agreement (not marked as such).")))
+            notManyStem = ET.SubElement(firstAndMany, 'not')
             equalManyStem = ET.SubElement(notManyStem, 'equal')
             ET.SubElement(equalManyStem, 'clip', pos='1', part=manyStem, side='tl')
             ET.SubElement(equalManyStem, 'lit-tag', v='NAmany')
+
+            # Second condition: one of the following two situations holds.
+            orMany = ET.SubElement(outerAndMany, 'or')
+            orMany.append(ET.Comment(_translate('CreateApertiumRules', 'And at least one of the following is true:')))
+
+            # Situation 1: the source noun has a many affix attached.
+            orMany.append(ET.Comment(_translate('CreateApertiumRules', 'The source noun has a many affix attached.')))
+            notManyAffix = ET.SubElement(orMany, 'not')
+            equalManyAffix = ET.SubElement(notManyAffix, 'equal')
+            ET.SubElement(equalManyAffix, 'clip', pos='1', part=manyAffix, side='tl')
+            ET.SubElement(equalManyAffix, 'lit', v='')
+
+            # Situation 2: the target noun takes neither singular nor plural
+            # agreement, so the many class is the only one left.
+            andManyNA = ET.SubElement(orMany, 'and')
+            andManyNA.append(ET.Comment(_translate('CreateApertiumRules', "The target noun doesn't take singular agreement (marked as such).")))
+            equalManyNAsg = ET.SubElement(andManyNA, 'equal')
+            ET.SubElement(equalManyNAsg, 'clip', pos='1', part=sgStem, side='tl')
+            ET.SubElement(equalManyNAsg, 'lit-tag', v='NAsg')
+            andManyNA.append(ET.Comment(_translate('CreateApertiumRules', "And the target noun doesn't take plural agreement (marked as such).")))
+            equalManyNApl = ET.SubElement(andManyNA, 'equal')
+            ET.SubElement(equalManyNApl, 'clip', pos='1', part=plStem, side='tl')
+            ET.SubElement(equalManyNApl, 'lit-tag', v='NApl')
 
         whenSg = ET.SubElement(chooseNumber, 'when')
         testSg = ET.SubElement(whenSg, 'test')
