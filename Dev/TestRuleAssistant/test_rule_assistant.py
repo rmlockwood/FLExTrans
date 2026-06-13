@@ -11,6 +11,10 @@ DataFolder = os.path.join(ParentFolder, 'Rule Assistant')
 TestFolder = os.path.join(ParentFolder, 'RuleAssistantTests')
 DevFolder = os.path.join(ParentFolder, '..')
 LibFolder = os.path.join(DevFolder, 'Lib')
+# Anchor the Apertium tools to this file's location rather than the current
+# working directory, so the tests pass no matter where they're launched from.
+ApertiumFolder = os.path.join(DevFolder, '..', 'Installer',
+                              'InstallerResources', 'Apertium4Windows')
 script = 'CreateApertiumRules.py'
 with open(os.path.join(LibFolder, script)) as fin:
     with open(os.path.join(TestFolder, script), 'w') as fout:
@@ -98,8 +102,8 @@ class BaseTest(unittest.TestCase):
         comp_cmd = 'apertium-preprocess-transfer'
         run_cmd = 'apertium-transfer'
         if os.name == 'nt':
-            comp_cmd = f'..\\..\\InstallerResources\\Apertium4Windows\\{comp_cmd}.exe'
-            run_cmd = f'..\\..\\InstallerResources\\Apertium4Windows\\{run_cmd}.exe'
+            comp_cmd = os.path.join(ApertiumFolder, comp_cmd + '.exe')
+            run_cmd = os.path.join(ApertiumFolder, run_cmd + '.exe')
 
         # Compile rules
         preproc = subprocess.run(
