@@ -10,7 +10,7 @@ import tempfile
 from datetime import datetime
 
 # Fallback crash log
-_crash_log = Path(__file__).parent.parent.parent / 'Dev' / 'Modules' / 'RuleAssistantLib' / 'window_CRASH.log'
+_crash_log = Path(tempfile.gettempdir()) / 'RuleAssistantWindow_CRASH.log'
 
 def _write_crash_log(msg):
     """Direct file write as fallback"""

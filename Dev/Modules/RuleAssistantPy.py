@@ -1,19 +1,26 @@
 #
 #   RuleAssistantPy
 #
-#   Python/PyQt6 version of Rule Assistant
-#   Replaces Java EXE with in-process Qt application
+#   Ron Lockwood
+#   SIL International
+#   9/11/23
 #
-#   Version 1.0.0 - April 2026 - Claude AI Port
+#   Version 3.16.1 - 6/15/26 - Ron Lockwood
+#    Fixes to not rely on the old RuleAssistantLib folder.
+#
+#   Version 3.16 - April 2026 - Claude AI Port
 #    Python/PyQt6 port of Rule Assistant from Java/JavaFX
 #    Calls Python version instead of Java EXE
 #
 #   Based on RuleAssistant.py v3.15.1
 #   Maintains same interface and structure as RuleAssistant.py
 #
+#   Python/PyQt6 version of Rule Assistant
+#   Replaces Java EXE with in-process Qt application
+#
 #   Runs the Python version of the Rule Assistant to create Apertium transfer rules.
 #
-from main_window import RuleAssistantWindow
+from RuleAssistantWindow import RuleAssistantWindow
 
 import os
 import sys
@@ -21,7 +28,6 @@ import subprocess
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from pathlib import Path
 import logging
 import tempfile
 from datetime import datetime
@@ -95,14 +101,11 @@ from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
     )
 
-# Add RuleAssistantLib to path
-_ra_lib_path = Path(__file__).parent / 'RuleAssistantLib'
-if _ra_lib_path.exists():
-    sys.path.insert(0, str(_ra_lib_path))
-    # Note: flextrans_integration is imported lazily in StartRuleAssistant
-    _HAS_PYTHON_RA = _ra_lib_path.exists()
-else:
-    _HAS_PYTHON_RA = False
+# The Python Rule Assistant library now lives in Dev/Lib (RAutils) and
+# Dev/Lib/Windows (RuleAssistantWindow). These are already on sys.path via
+# FlexTools, so the successful module-level import above guarantees it is
+# available.
+_HAS_PYTHON_RA = True
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -112,13 +115,13 @@ translators = []
 # Note: QApplication initialization moved to MainFunction (not module load time)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData']
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData', 'RuleAssistantLib']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant (Python)"),
-        FTM_Version    : "1.0.0",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Python/PyQt6 version of the tool for creating transfer rules."),
         FTM_Help       : "",
@@ -483,18 +486,6 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
         return (False, None, False)
 
     try:
-        # _logger.info("About to import flextrans_integration")
-        # # LAZY IMPORT: Import only when actually needed (not at module load time)
-        # # This prevents Qt initialization issues when imported by FlexTools
-        # try:
-        #     from RuleAssistantLib.flextrans_integration import start_rule_assistant
-        #     _logger.info("Imported start_rule_assistant from RuleAssistantLib.flextrans_integration")
-        # except ImportError as e:
-        #     _logger.warning(f"Failed to import from RuleAssistantLib: {e}, trying fallback")
-        #     # Fallback for when RuleAssistantLib is in sys.path
-        #     from flextrans_integration import start_rule_assistant
-        #     _logger.info("Imported start_rule_assistant from flextrans_integration (fallback)")
-
         # Get interface language from FLEx
         try:
             lang_code = Utils.getInterfaceLangCode()
@@ -514,18 +505,6 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
             _logger.info("QApplication created successfully")
         else:
             _logger.info("Reusing existing QApplication")
-
-        # _logger.info("About to call start_rule_assistant()")
-        # # Launch the Python Rule Assistant
-        # saved, rule_index, launch_lrt = start_rule_assistant(
-        #     rule_file=ruleAssistantFile,
-        #     flex_data_file=ruleAssistGUIinputfile,
-        #     test_data_file=testDataFile,
-        #     came_from_lrt=fromLRT,
-        #     ui_lang_code=lang_code,
-        # )
-        # _logger.info(f"start_rule_assistant() returned: saved={saved}, rule_index={rule_index}, launch_lrt={launch_lrt}")
-
 
         window = RuleAssistantWindow(
             rule_file=ruleAssistantFile,

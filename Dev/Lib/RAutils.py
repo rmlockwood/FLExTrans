@@ -897,12 +897,16 @@ class WebPageProducer:
         self._load_css_files(css_assets_dir)
 
     def _load_css_files(self, css_assets_dir: str = None) -> None:
-        base_dir = Path(css_assets_dir) if css_assets_dir else Path(__file__).parent
+        base_dir = Path(css_assets_dir) if css_assets_dir else Path(__file__).resolve().parent
         for attr, name in [("_treeflex_css", "treeflex.css"), ("_rulegen_css", "rulegen.css")]:
             f = base_dir / name
             try:
                 if f.exists():
                     setattr(self, attr, f.read_text(encoding="utf-8"))
+                else:
+                    # Without the CSS the tree renders as unstyled text, so make
+                    # a missing file loud rather than failing silently.
+                    print(f"Warning: Rule Assistant CSS not found: {f}")
             except Exception as e:
                 print(f"Warning: Could not load {name}: {e}")
 
