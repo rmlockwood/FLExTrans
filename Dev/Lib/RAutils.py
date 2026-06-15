@@ -6,6 +6,9 @@
 #   September 2023
 #
 #   Version 3.16.1 - 6/15/26 - Ron Lockwood
+#    Fixes #1359. Get the target category for a word from its source if necessary.
+#
+#   Version 3.16 - 6/15/26 - Ron Lockwood
 #    Fixed #1362. Start with correct word boxes for a new rule.
 #
 #  RuleAssistant utilities: combined model, flexmodel, and service classes.
@@ -501,9 +504,18 @@ class Word(RuleConstituent):
         return html
 
     def _produce_category_html(self) -> str:
-        if not self.category_constituent or not self.category_constituent.name:
+        if self.word_category:
+            # The word has its own category: editable, source-style span.
+            if self.category_constituent:
+                return self.category_constituent.produce_html()
             return ""
-        return self.category_constituent.produce_html()
+        # No category of its own: fall back to the corresponding source word's
+        # category, shown read-only under the (target) word box. Matches the Java
+        # version, which derives a target word's category from the source word.
+        cat = self.get_category_of_word_or_corresponding_source_word()
+        if cat and cat.name:
+            return cat.produce_html_target(self.identifier)
+        return ""
 
     def _produce_features_html(self) -> str:
         html = "<li><table class=\"tf-nc\">\n"
