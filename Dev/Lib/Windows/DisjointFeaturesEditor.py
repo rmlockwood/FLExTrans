@@ -5,11 +5,13 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QComboBox, QSlider, QPushButton, QGridLayout,
     QMessageBox
 )
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, QCoreApplication
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from RAutils import FLExTransRuleGenerator, FLExData
+
+_translate = QCoreApplication.translate
 
 
 class DisjointFeaturesEditorDialog(QDialog):
@@ -17,7 +19,7 @@ class DisjointFeaturesEditorDialog(QDialog):
 
     def __init__(self, generator: "FLExTransRuleGenerator", flex_data: "FLExData", parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Disjoint Features Editor")
+        self.setWindowTitle(_translate("RuleAssistantLib", "Disjoint Features Editor"))
         self.setModal(True)
         self.resize(700, 500)
 
@@ -37,7 +39,11 @@ class DisjointFeaturesEditorDialog(QDialog):
 
         self.sets_table = QTableWidget()
         self.sets_table.setColumnCount(3)
-        self.sets_table.setHorizontalHeaderLabels(["Name", "Language", "Co-Feature"])
+        self.sets_table.setHorizontalHeaderLabels([
+            _translate("RuleAssistantLib", "Name"),
+            _translate("RuleAssistantLib", "Language"),
+            _translate("RuleAssistantLib", "Distinguishing feature"),
+        ])
         self.sets_table.itemSelectionChanged.connect(self._on_set_selected)
         splitter.addWidget(self.sets_table)
 
@@ -48,17 +54,17 @@ class DisjointFeaturesEditorDialog(QDialog):
         main_layout.addWidget(splitter)
 
         button_layout = QHBoxLayout()
-        add_button = QPushButton("Add New Set")
+        add_button = QPushButton(_translate("RuleAssistantLib", "Add new set"))
         add_button.clicked.connect(self._on_add_set)
         button_layout.addWidget(add_button)
 
-        delete_button = QPushButton("Delete Set")
+        delete_button = QPushButton(_translate("RuleAssistantLib", "Delete selected set"))
         delete_button.clicked.connect(self._on_delete_set)
         button_layout.addWidget(delete_button)
 
         button_layout.addStretch()
 
-        close_button = QPushButton("Close")
+        close_button = QPushButton(_translate("RuleAssistantLib", "Close"))
         close_button.clicked.connect(self.accept)
         button_layout.addWidget(close_button)
 
@@ -69,34 +75,36 @@ class DisjointFeaturesEditorDialog(QDialog):
         pane = QWidget()
         layout = QVBoxLayout(pane)
 
-        layout.addWidget(QLabel("Cover term"))
+        layout.addWidget(QLabel(_translate("RuleAssistantLib", "Disjoint feature set")))
         name_layout = QHBoxLayout()
-        name_layout.addWidget(QLabel("Name:"))
+        name_layout.addWidget(QLabel(_translate("RuleAssistantLib", "Name")))
         self.name_field = QLineEdit()
         self.name_field.textChanged.connect(self._on_name_changed)
         name_layout.addWidget(self.name_field)
         layout.addLayout(name_layout)
 
         lang_layout = QHBoxLayout()
-        lang_layout.addWidget(QLabel("Language:"))
+        lang_layout.addWidget(QLabel(_translate("RuleAssistantLib", "Language")))
         self.language_combo = QComboBox()
-        self.language_combo.addItems(["Source", "Target"])
+        # Store the language code as item data so the display text can be translated
+        # without affecting the logic that reads the selection.
+        self.language_combo.addItem(_translate("RuleAssistantLib", "Source"), "source")
+        self.language_combo.addItem(_translate("RuleAssistantLib", "Target"), "target")
         self.language_combo.currentIndexChanged.connect(self._on_language_changed)
         lang_layout.addWidget(self.language_combo)
         layout.addLayout(lang_layout)
 
         cofeature_layout = QHBoxLayout()
-        cofeature_layout.addWidget(QLabel("Co-feature name:"))
+        cofeature_layout.addWidget(QLabel(_translate("RuleAssistantLib", "Distinguishing feature")))
         self.cofeature_combo = QComboBox()
         self._populate_cofeature_combo()
         self.cofeature_combo.currentIndexChanged.connect(self._on_cofeature_changed)
         cofeature_layout.addWidget(self.cofeature_combo)
         layout.addLayout(cofeature_layout)
 
-        layout.addWidget(QLabel("Pairings"))
         self._pairings_grid = QGridLayout()
-        self._pairings_grid.addWidget(QLabel("FLEx feature name"), 0, 0)
-        self._pairings_grid.addWidget(QLabel("Co-feature value"), 0, 1)
+        self._pairings_grid.addWidget(QLabel(_translate("RuleAssistantLib", "Subfeature")), 0, 0)
+        self._pairings_grid.addWidget(QLabel(_translate("RuleAssistantLib", "Feature value")), 0, 1)
 
         # Keep row widgets so we can show/hide them
         self._pairing_row_widgets: list[tuple[QWidget, QWidget]] = []
@@ -121,7 +129,7 @@ class DisjointFeaturesEditorDialog(QDialog):
         layout.addLayout(self._pairings_grid)
 
         slider_layout = QHBoxLayout()
-        slider_layout.addWidget(QLabel("Pairings:"))
+        slider_layout.addWidget(QLabel(_translate("RuleAssistantLib", "Number of subfeatures:")))
         self.pairing_slider = QSlider(Qt.Orientation.Horizontal)
         self.pairing_slider.setMinimum(3)  # Java constraint: minimum 3
         self.pairing_slider.setMaximum(6)
@@ -140,8 +148,11 @@ class DisjointFeaturesEditorDialog(QDialog):
         """Populate the disjoint feature sets table."""
         self.sets_table.setRowCount(len(self.generator.disjoint_features))
         for i, ds in enumerate(self.generator.disjoint_features):
+            lang_display = (_translate("RuleAssistantLib", "Source")
+                            if ds.language.value == "source"
+                            else _translate("RuleAssistantLib", "Target"))
             self.sets_table.setItem(i, 0, QTableWidgetItem(ds.name))
-            self.sets_table.setItem(i, 1, QTableWidgetItem(ds.language.value.capitalize()))
+            self.sets_table.setItem(i, 1, QTableWidgetItem(lang_display))
             self.sets_table.setItem(i, 2, QTableWidgetItem(ds.co_feature_name))
 
     def _populate_cofeature_combo(self) -> None:
@@ -202,9 +213,8 @@ class DisjointFeaturesEditorDialog(QDialog):
         try:
             ds = self.generator.disjoint_features[self._selected_index]
             self.name_field.setText(ds.name)
-            self.language_combo.setCurrentText(
-                "Source" if ds.language.value == "source" else "Target"
-            )
+            lang_index = self.language_combo.findData(ds.language.value)
+            self.language_combo.setCurrentIndex(lang_index if lang_index >= 0 else 0)
             self.cofeature_combo.setCurrentText(ds.co_feature_name)
 
             # Repopulate value combos for the loaded co-feature
@@ -242,7 +252,7 @@ class DisjointFeaturesEditorDialog(QDialog):
             return
         if 0 <= self._selected_index < len(self.generator.disjoint_features):
             from RAutils import PhraseType
-            lang = PhraseType.source if self.language_combo.currentText() == "Source" else PhraseType.target
+            lang = PhraseType.source if self.language_combo.currentData() == "source" else PhraseType.target
             self.generator.disjoint_features[self._selected_index].language = lang
 
     def _on_cofeature_changed(self) -> None:

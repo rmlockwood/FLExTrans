@@ -1,7 +1,7 @@
 """Category Chooser Dialog"""
 
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QListWidgetItem, QDialogButtonBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtGui import QKeySequence
 
 from typing import Optional, TYPE_CHECKING
@@ -9,13 +9,15 @@ from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from RAutils import FLExCategory, Category
 
+_translate = QCoreApplication.translate
+
 
 class CategoryChooserDialog(QDialog):
     """Modal dialog for choosing a FLEx category."""
 
     def __init__(self, categories: list["FLExCategory"], current_category: Optional["Category"] = None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Choose Category")
+        self.setWindowTitle(_translate("RuleAssistantLib", "FLEx Category Chooser"))
         self.setModal(True)
         self.resize(300, 400)
 

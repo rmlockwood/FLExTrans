@@ -53,8 +53,10 @@ from PyQt6.QtWidgets import (
 # LAZY IMPORT: QWebEngine moved to __init__ to avoid early initialization
 # from PyQt6.QtWebEngineWidgets import QWebEngineView
 # from PyQt6.QtWebChannel import QWebChannel
-from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal
+from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QKeySequence, QShortcut
+
+_translate = QCoreApplication.translate
 
 from RAutils import (
     FLExTransRuleGenerator, PhraseType, HeadValue, PermutationsValue, Word,
@@ -220,7 +222,7 @@ class RuleAssistantWindow(QMainWindow):
         _logger.info("Window state restored")
 
         _write_crash_log("[__init__] About to set window title")
-        self.setWindowTitle("FLExTrans Rule Assistant")
+        self.setWindowTitle(_translate("RuleAssistantLib", "FLExTrans Rule Assistant"))
         _write_crash_log("[__init__] Window title set successfully")
         _logger.info("Window title set")
         _write_crash_log("[__init__] RuleAssistantWindow.__init__() completed successfully")
@@ -260,11 +262,12 @@ class RuleAssistantWindow(QMainWindow):
         layout = QVBoxLayout(pane)
 
         # Title
-        title = QLabel("Rules:")
+        myTitle = _translate("RuleAssistantLib", "Rules")
+        title = QLabel(myTitle)
         layout.addWidget(title)
 
         # Hint label
-        hint = QLabel("(right-click to edit)")
+        hint = QLabel(_translate("RuleAssistantLib", "(Right-click to edit)"))
         hint.setStyleSheet("font-style: italic; color: gray;")
         layout.addWidget(hint)
 
@@ -276,12 +279,13 @@ class RuleAssistantWindow(QMainWindow):
         layout.addWidget(self.rule_list)
 
         # Overwrite rules checkbox
-        self.overwrite_checkbox = QCheckBox("Overwrite Rules")
+        self.overwrite_checkbox = QCheckBox(_translate("RuleAssistantLib", "Overwrite rules(s)"))
+        self.overwrite_checkbox.setToolTip(_translate("RuleAssistantLib", "Overwrite previous rule(s) that have the same name."))
         self.overwrite_checkbox.toggled.connect(self._on_overwrite_toggled)
         layout.addWidget(self.overwrite_checkbox)
 
         # Disjoint features button
-        self.disjoint_button = QPushButton("Disjoint Features...")
+        self.disjoint_button = QPushButton(_translate("RuleAssistantLib", "Set disjoint features"))
         self.disjoint_button.clicked.connect(self._on_disjoint_features)
         layout.addWidget(self.disjoint_button)
 
@@ -310,13 +314,13 @@ class RuleAssistantWindow(QMainWindow):
         # Left: name and description
         left_top = QVBoxLayout()
 
-        rule_name_label = QLabel("Rule Name:")
+        rule_name_label = QLabel(_translate("RuleAssistantLib", "Rule Name:"))
         self.rule_name_field = QLineEdit()
         self.rule_name_field.textChanged.connect(self._on_rule_name_changed)
         left_top.addWidget(rule_name_label)
         left_top.addWidget(self.rule_name_field)
 
-        rule_desc_label = QLabel("Rule Description:")
+        rule_desc_label = QLabel(_translate("RuleAssistantLib", "Description:"))
         self.rule_description_field = QPlainTextEdit()
         self.rule_description_field.setMaximumHeight(82)
         self.rule_description_field.textChanged.connect(self._on_rule_description_changed)
@@ -324,9 +328,13 @@ class RuleAssistantWindow(QMainWindow):
         left_top.addWidget(self.rule_description_field)
 
         perm_layout = QHBoxLayout()
-        perm_label = QLabel("Create Permutations:")
+        perm_label = QLabel(_translate("RuleAssistantLib", "Create permutations:"))
         self.permutations_combo = QComboBox()
-        self.permutations_combo.addItems(["no", "with head", "not head"])
+        # Store a stable key as item data so the displayed text can be translated
+        # without affecting the logic that reads the selection.
+        self.permutations_combo.addItem(_translate("RuleAssistantLib", "No"), "no")
+        self.permutations_combo.addItem(_translate("RuleAssistantLib", "Including head-only rule"), "with head")
+        self.permutations_combo.addItem(_translate("RuleAssistantLib", "Omitting head-only rule"), "not head")
         self.permutations_combo.currentIndexChanged.connect(self._on_permutations_changed)
         perm_layout.addWidget(perm_label)
         perm_layout.addWidget(self.permutations_combo)
@@ -343,25 +351,26 @@ class RuleAssistantWindow(QMainWindow):
 
         # Button bar
         button_layout = QHBoxLayout()
-        self.test_lrt_button = QPushButton("Test In LRT")
+        self.test_lrt_button = QPushButton(_translate("RuleAssistantLib", "Test in LRT"))
+        self.test_lrt_button.setToolTip(_translate("RuleAssistantLib", "Test in the Live Rule Tester tool."))
         self.test_lrt_button.clicked.connect(self._on_test_in_lrt)
         if self.came_from_lrt:
             self.test_lrt_button.setEnabled(False)
         button_layout.addWidget(self.test_lrt_button)
 
-        self.save_button = QPushButton("Save")
+        self.save_button = QPushButton(_translate("RuleAssistantLib", "Save"))
         self.save_button.clicked.connect(self._on_save)
         button_layout.addWidget(self.save_button)
 
-        self.save_create_button = QPushButton("Save/Create")
+        self.save_create_button = QPushButton(_translate("RuleAssistantLib", "Save & Write"))
         self.save_create_button.clicked.connect(self._on_save_create)
         button_layout.addWidget(self.save_create_button)
 
-        self.save_all_button = QPushButton("Save/Create All")
+        self.save_all_button = QPushButton(_translate("RuleAssistantLib", "Save & Write All"))
         self.save_all_button.clicked.connect(self._on_save_create_all)
         button_layout.addWidget(self.save_all_button)
 
-        self.help_button = QPushButton("Help")
+        self.help_button = QPushButton(_translate("RuleAssistantLib", "Help"))
         self.help_button.clicked.connect(self._on_help)
         button_layout.addWidget(self.help_button)
 
@@ -475,69 +484,69 @@ class RuleAssistantWindow(QMainWindow):
         # Word context menu
         self._word_menu = QMenu()
         _write_crash_log("[menu] Word menu created")
-        self._word_menu.addAction("Duplicate", self._on_word_duplicate)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Duplicate"), self._on_word_duplicate)
         self._word_menu.addSeparator()
-        self._word_menu.addAction("Change Number", self._on_word_change_number)
-        self._word_menu.addAction("Mark As Head", self._on_word_mark_as_head)
-        self._word_menu.addAction("Remove Head Marking", self._on_word_remove_head)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Change number"), self._on_word_change_number)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Mark as head"), self._on_word_mark_as_head)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Remove head marking"), self._on_word_remove_head)
         self._word_menu.addSeparator()
-        self._word_menu.addAction("Insert Before", self._on_word_insert_before)
-        self._word_menu.addAction("Insert After", self._on_word_insert_after)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert new before"), self._on_word_insert_before)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert new after"), self._on_word_insert_after)
         self._word_menu.addSeparator()
-        self._word_menu.addAction("Insert Prefix", self._on_word_insert_prefix)
-        self._word_menu.addAction("Insert Suffix", self._on_word_insert_suffix)
-        self._word_menu.addAction("Insert Category", self._on_word_insert_category)
-        self._word_menu.addAction("Insert Feature", self._on_word_insert_feature)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert prefix"), self._on_word_insert_prefix)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert suffix"), self._on_word_insert_suffix)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert category"), self._on_word_insert_category)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert feature"), self._on_word_insert_feature)
         self._word_menu.addSeparator()
-        self._word_menu.addAction("Move Left", self._on_word_move_left)
-        self._word_menu.addAction("Move Right", self._on_word_move_right)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Move left"), self._on_word_move_left)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Move right"), self._on_word_move_right)
         self._word_menu.addSeparator()
-        self._word_menu.addAction("Delete", self._on_word_delete)
+        self._word_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_word_delete)
 
         # Category context menu
         self._category_menu = QMenu()
-        self._category_menu.addAction("Edit", self._on_category_edit)
+        self._category_menu.addAction(_translate("RuleAssistantLib", "Edit"), self._on_category_edit)
         self._category_menu.addSeparator()
-        self._category_menu.addAction("Delete", self._on_category_delete)
+        self._category_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_category_delete)
 
         # Feature context menu
         self._feature_menu = QMenu()
-        self._feature_menu.addAction("Edit", self._on_feature_edit)
-        self._feature_menu.addAction("Edit Unmarked", self._on_feature_edit_unmarked)
-        self._feature_menu.addAction("Edit Ranking", self._on_feature_edit_ranking)
+        self._feature_menu.addAction(_translate("RuleAssistantLib", "Edit"), self._on_feature_edit)
+        self._feature_menu.addAction(_translate("RuleAssistantLib", "Edit unmarked"), self._on_feature_edit_unmarked)
+        self._feature_menu.addAction(_translate("RuleAssistantLib", "Edit ranking"), self._on_feature_edit_ranking)
         self._feature_menu.addSeparator()
-        self._feature_menu.addAction("Delete", self._on_feature_delete)
-        self._feature_menu.addAction("Delete Unmarked", self._on_feature_delete_unmarked)
-        self._feature_menu.addAction("Delete Ranking", self._on_feature_delete_ranking)
+        self._feature_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_feature_delete)
+        self._feature_menu.addAction(_translate("RuleAssistantLib", "Delete unmarked"), self._on_feature_delete_unmarked)
+        self._feature_menu.addAction(_translate("RuleAssistantLib", "Delete ranking"), self._on_feature_delete_ranking)
 
         # Affix context menu
         self._affix_menu = QMenu()
-        self._affix_menu.addAction("Duplicate", self._on_affix_duplicate)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Duplicate"), self._on_affix_duplicate)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction("Toggle Affix Type", self._on_affix_toggle_type)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Toggle affix type"), self._on_affix_toggle_type)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction("Insert Feature", self._on_affix_insert_feature)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert feature"), self._on_affix_insert_feature)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction("Insert Prefix Before", self._on_affix_insert_prefix_before)
-        self._affix_menu.addAction("Insert Prefix After", self._on_affix_insert_prefix_after)
-        self._affix_menu.addAction("Insert Suffix Before", self._on_affix_insert_suffix_before)
-        self._affix_menu.addAction("Insert Suffix After", self._on_affix_insert_suffix_after)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new prefix before"), self._on_affix_insert_prefix_before)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new prefix after"), self._on_affix_insert_prefix_after)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new suffix before"), self._on_affix_insert_suffix_before)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new suffix after"), self._on_affix_insert_suffix_after)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction("Move Left", self._on_affix_move_left)
-        self._affix_menu.addAction("Move Right", self._on_affix_move_right)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Move left"), self._on_affix_move_left)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Move right"), self._on_affix_move_right)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction("Delete", self._on_affix_delete)
+        self._affix_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_affix_delete)
 
         # Rule list context menu
         self._rule_menu = QMenu()
-        self._rule_menu.addAction("Duplicate", self._on_rule_duplicate)
-        self._rule_menu.addAction("Insert Before", self._on_rule_insert_before)
-        self._rule_menu.addAction("Insert After", self._on_rule_insert_after)
+        self._rule_menu.addAction(_translate("RuleAssistantLib", "Duplicate"), self._on_rule_duplicate)
+        self._rule_menu.addAction(_translate("RuleAssistantLib", "Insert new before"), self._on_rule_insert_before)
+        self._rule_menu.addAction(_translate("RuleAssistantLib", "Insert new after"), self._on_rule_insert_after)
         self._rule_menu.addSeparator()
-        self._rule_menu.addAction("Move Up", self._on_rule_move_up)
-        self._rule_menu.addAction("Move Down", self._on_rule_move_down)
+        self._rule_menu.addAction(_translate("RuleAssistantLib", "Move up"), self._on_rule_move_up)
+        self._rule_menu.addAction(_translate("RuleAssistantLib", "Move down"), self._on_rule_move_down)
         self._rule_menu.addSeparator()
-        self._rule_menu.addAction("Delete", self._on_rule_delete)
+        self._rule_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_rule_delete)
 
     def _setup_keyboard_shortcuts(self) -> None:
         """Setup keyboard shortcuts."""
@@ -616,7 +625,11 @@ class RuleAssistantWindow(QMainWindow):
             import traceback
             _logger.error(f"Exception in _load_data: {e}")
             _logger.error(traceback.format_exc())
-            QMessageBox.critical(self, "Error Loading Data", f"Failed to load data: {e}")
+            QMessageBox.critical(
+                self,
+                _translate("RuleAssistantLib", "Could not load data"),
+                _translate("RuleAssistantLib", "Could not load data from file:\n") + str(e),
+            )
 
     def _populate_rule_list(self) -> None:
         """Populate the rule list from generator."""
@@ -685,13 +698,13 @@ class RuleAssistantWindow(QMainWindow):
             _write_crash_log("[show_rule] Rule description field updated")
 
             _write_crash_log("[show_rule] About to update permutations combo")
-            self.permutations_combo.setCurrentText(
-                {
-                    PermutationsValue.no: "no",
-                    PermutationsValue.not_head: "not head",
-                    PermutationsValue.with_head: "with head",
-                }.get(rule.create_permutations, "with head")
-            )
+            perm_key = {
+                PermutationsValue.no: "no",
+                PermutationsValue.not_head: "not head",
+                PermutationsValue.with_head: "with head",
+            }.get(rule.create_permutations, "with head")
+            perm_index = self.permutations_combo.findData(perm_key)
+            self.permutations_combo.setCurrentIndex(perm_index if perm_index >= 0 else 0)
             _write_crash_log("[show_rule] Permutations combo updated")
 
             # Generate and show HTML
@@ -912,13 +925,13 @@ class RuleAssistantWindow(QMainWindow):
     def _on_permutations_changed(self) -> None:
         """Handle permutations combo change."""
         if self._generator and 0 <= self._current_rule_index < len(self._generator.flex_trans_rules):
-            text_to_enum = {
+            key_to_enum = {
                 "no": PermutationsValue.no,
                 "with head": PermutationsValue.with_head,
                 "not head": PermutationsValue.not_head,
             }
             self._generator.flex_trans_rules[self._current_rule_index].create_permutations = (
-                text_to_enum.get(self.permutations_combo.currentText(), PermutationsValue.with_head)
+                key_to_enum.get(self.permutations_combo.currentData(), PermutationsValue.with_head)
             )
             self._mark_dirty()
 
@@ -941,7 +954,7 @@ class RuleAssistantWindow(QMainWindow):
             current_title = self.windowTitle()
             if current_title.endswith("*"):
                 self.setWindowTitle(current_title[:-1])
-            QMessageBox.information(self, "Saved", "Rules saved successfully")
+            QMessageBox.information(self, _translate("RuleAssistantLib", "Saved"), _translate("RuleAssistantLib", "Rules saved successfully"))
 
     def _on_save_create(self) -> None:
         """Handle Save/Create button."""
@@ -950,7 +963,7 @@ class RuleAssistantWindow(QMainWindow):
         rule = self._generator.flex_trans_rules[self._current_rule_index]
         is_valid, error_msg = ValidityChecker.validate_rule(rule)
         if not is_valid:
-            QMessageBox.critical(self, f"Invalid Rule: {rule.name}", error_msg)
+            QMessageBox.critical(self, _translate("RuleAssistantLib", "Problem with rule"), error_msg)
             return
         self._on_save()
         self._result = WindowResult(saved=True, rule_index=self._current_rule_index, launch_lrt=False)
@@ -963,7 +976,7 @@ class RuleAssistantWindow(QMainWindow):
         for i, rule in enumerate(self._generator.flex_trans_rules):
             is_valid, error_msg = ValidityChecker.validate_rule(rule)
             if not is_valid:
-                QMessageBox.critical(self, f"Invalid Rule: {rule.name}", error_msg)
+                QMessageBox.critical(self, _translate("RuleAssistantLib", "Problem with rule"), error_msg)
                 return
         self._on_save()
         self._result = WindowResult(saved=True, rule_index=None, launch_lrt=False)
@@ -976,12 +989,12 @@ class RuleAssistantWindow(QMainWindow):
 
     def _on_help(self) -> None:
         """Handle Help button."""
-        QMessageBox.information(self, "Help", "See documentation for help")
+        QMessageBox.information(self, _translate("RuleAssistantLib", "Help"), _translate("RuleAssistantLib", "See documentation for help"))
 
     def _on_disjoint_features(self) -> None:
         """Handle Disjoint Features button."""
         if not self._generator or not self._flex_data:
-            QMessageBox.warning(self, "Error", "No data loaded")
+            QMessageBox.warning(self, _translate("RuleAssistantLib", "Error"), _translate("RuleAssistantLib", "No data loaded"))
             return
 
         dialog = DisjointFeaturesEditorDialog(self._generator, self._flex_data, self)
@@ -1021,8 +1034,8 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         new_id, ok = QInputDialog.getText(
-            self, "Change Word Number",
-            "Enter new word number:",
+            self, _translate("RuleAssistantLib", "Word Number"),
+            _translate("RuleAssistantLib", "Choose word number:"),
             text=self._selected_word.word_id
         )
         if ok and new_id:
@@ -1144,7 +1157,7 @@ class RuleAssistantWindow(QMainWindow):
                 seen.add(cat.abbreviation)
 
         if not unique_categories:
-            QMessageBox.warning(self, "Error", "No categories available")
+            QMessageBox.warning(self, _translate("RuleAssistantLib", "Error"), _translate("RuleAssistantLib", "No categories available"))
             return
 
         # Get current category for pre-selection
@@ -1173,7 +1186,7 @@ class RuleAssistantWindow(QMainWindow):
             all_features.extend(self._flex_data.target_data.features)
 
         if not all_features:
-            QMessageBox.warning(self, "Error", "No features available")
+            QMessageBox.warning(self, _translate("RuleAssistantLib", "Error"), _translate("RuleAssistantLib", "No features available"))
             return
 
         dialog = FeatureValueChooserDialog(all_features, parent=self)
@@ -1327,8 +1340,8 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         text, ok = QInputDialog.getText(
-            self, "Edit Unmarked Value",
-            "Enter unmarked value:",
+            self, _translate("RuleAssistantLib", "Edit unmarked"),
+            _translate("RuleAssistantLib", "Enter unmarked value:"),
             text=self._selected_feature.unmarked
         )
         if ok:
@@ -1342,8 +1355,8 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         value, ok = QInputDialog.getInt(
-            self, "Edit Ranking",
-            "Enter ranking (0 = no ranking):",
+            self, _translate("RuleAssistantLib", "Ranking for Feature"),
+            _translate("RuleAssistantLib", "Choose ranking:"),
             self._selected_feature.ranking,
             0, 9999, 1
         )
@@ -1418,7 +1431,7 @@ class RuleAssistantWindow(QMainWindow):
             all_features.extend(self._flex_data.target_data.features)
 
         if not all_features:
-            QMessageBox.warning(self, "Error", "No features available")
+            QMessageBox.warning(self, _translate("RuleAssistantLib", "Error"), _translate("RuleAssistantLib", "No features available"))
             return
 
         dialog = FeatureValueChooserDialog(all_features, parent=self)
@@ -1595,7 +1608,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         if len(self._generator.flex_trans_rules) == 1:
-            QMessageBox.warning(self, "Error", "Cannot delete the last rule")
+            QMessageBox.warning(self, _translate("RuleAssistantLib", "Error"), _translate("RuleAssistantLib", "Cannot delete the last rule"))
             return
 
         self._generator.flex_trans_rules.pop(self._current_rule_index)
@@ -1668,8 +1681,8 @@ class RuleAssistantWindow(QMainWindow):
         try:
             if self._dirty:
                 reply = QMessageBox.question(
-                    self, "Unsaved Changes",
-                    "You have unsaved changes. Save before closing?",
+                    self, _translate("RuleAssistantLib", "Changes may have been made."),
+                    _translate("RuleAssistantLib", "Do you want to save any changes?"),
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
                 )
                 if reply == QMessageBox.StandardButton.Yes:

@@ -16,16 +16,20 @@
         <translation>Es wurden möglicherweise Änderungen vorgenommen.</translation>
     </message>
     <message>
-        <source>Could not load data from file:\n</source>
-        <translation>Daten konnten nicht aus der Datei geladen werden:\n</translation>
+        <source>Could not load data from file:
+</source>
+        <translation>Daten konnten nicht aus der Datei geladen werden:
+</translation>
     </message>
     <message>
         <source>Could not load data</source>
         <translation>Daten konnten nicht geladen werden</translation>
     </message>
     <message>
-        <source>Could not save data to file:\n</source>
-        <translation>Daten konnten nicht in die Datei gespeichert werden:\n</translation>
+        <source>Could not save data to file:
+</source>
+        <translation>Daten konnten nicht in die Datei gespeichert werden:
+</translation>
     </message>
     <message>
         <source>Could not save data</source>
@@ -44,7 +48,7 @@
         <translation>Der "came from LTR"-Indikator konnte nicht gefunden werden; bitte verwenden Sie y oder n.</translation>
     </message>
     <message>
-        <source>FLExTransRuleAssistant &lt;rule-file&gt; &lt;source/target-FLEx-category/features&gt; &lt;test-data-file&gt; &lt;came-from-LRT&gt; (&lt;max vars&gt;)</source>
+        <source>FLExTransRuleAssistant &lt;rule-file&gt; &lt;source/target-FLEx-category/features&gt; &lt;test-data-file&gt; &lt;came-from-LRT&gt; (&lt;UI-lang-code&gt;) (&lt;max vars&gt;)</source>
         <translation>FLExTransRuleAssistant &lt;rule-file&gt; &lt;source/target-FLEx-category/features&gt; &lt;test-data-file&gt; &lt;came-from-LRT&gt; (&lt;UI-lang-code&gt;) (&lt;max vars&gt;)</translation>
     </message>
     <message>
@@ -64,7 +68,7 @@
         <translation>Der &lt;max vars&gt;-Wert ist keine Ganzzahl; er war "{0}"</translation>
     </message>
     <message>
-        <source>(max vars&gt; Specifies the optional max number of variables to show in values (default is 4)</source>
+        <source>&lt;max vars&gt; Specifies the optional max number of variables to show in values (default is 4)</source>
         <translation>&lt;max vars&gt; Gibt die optionale maximale Anzahl von Variablen an, die in Werten angezeigt werden sollen (Standard ist 4)</translation>
     </message>
     <message>
@@ -104,6 +108,10 @@
         <translation>Regel-Assistent für FLExTrans</translation>
     </message>
     <message>
+        <source>&lt;UI-lang-code&gt; Specifies the language code to use for the user interface.  Use en for English, de for German, es for Spanish, or fr for French.</source>
+        <translation>&lt;UI-lang-code&gt; Gibt den Sprachcode für die Benutzeroberfläche an.  Verwenden Sie \u201Een\u201D für Englisch, \u201Ede\u201D für Deutsch, \u201Ees\u201D für Spanisch oder \u201Efr\u201D für Französisch.</translation>
+    </message>
+    <message>
         <source>FeatureX</source>
         <translation>MerkmalX</translation>
     </message>
@@ -132,8 +140,8 @@
         <translation>präfix</translation>
     </message>
     <message>
-        <source>- Copy</source>
-        <translation>- Kopie</translation>
+        <source> - Copy</source>
+        <translation> - Kopie</translation>
     </message>
     <message>
         <source>src</source>
@@ -176,8 +184,8 @@
         <translation>Permutationen erstellen:</translation>
     </message>
     <message>
-        <source>Set disjoint gender features</source>
-        <translation>Disjunkte Geschlechtsmerkmale setzen</translation>
+        <source>Set disjoint features</source>
+        <translation>Disjunkte Merkmalsmerkmale  setzen</translation>
     </message>
     <message>
         <source>Feature Chooser</source>
@@ -186,10 +194,6 @@
     <message>
         <source>Feature Value Chooser</source>
         <translation>Merkmalwertauswahl</translation>
-    </message>
-    <message>
-        <source>FLExTrans Rule Assistant</source>
-        <translation>FLExTrans Regel-Assistent</translation>
     </message>
     <message>
         <source>Help</source>
@@ -220,10 +224,6 @@
         <translation>Regelname:</translation>
     </message>
     <message>
-        <source>This rule needs a name</source>
-        <translation>Diese Regel benötigt einen Namen</translation>
-    </message>
-    <message>
         <source>Rules</source>
         <translation>Regeln</translation>
     </message>
@@ -232,28 +232,32 @@
         <translation>Speichern</translation>
     </message>
     <message>
-        <source>Save &amp; Create</source>
+        <source>Save &amp; Write</source>
         <translation>Speichern &amp; Schreiben</translation>
     </message>
     <message>
-        <source>Save &amp; Create All</source>
+        <source>Save &amp; Write All</source>
         <translation>Speichern &amp; Alle Schreiben</translation>
     </message>
     <message>
-        <source>Save &amp; \nCreate All</source>
-        <translation>Speichern &amp; \nAlle Schreiben</translation>
+        <source>Save &amp; 
+Write All</source>
+        <translation>Speichern &amp; 
+Alle Schreiben</translation>
     </message>
     <message>
-        <source>Save &amp; \nCreate</source>
-        <translation>Speichern &amp; \nSchreiben</translation>
+        <source>Save &amp; 
+Write</source>
+        <translation>Speichern &amp; 
+Schreiben</translation>
     </message>
     <message>
         <source>Test in LRT</source>
         <translation>In LRT testen</translation>
     </message>
     <message>
-        <source>Use disjoint gender features</source>
-        <translation>Disjunkte Geschlechtsmerkmale verwenden</translation>
+        <source>Use disjoint features</source>
+        <translation>Disjunkte Merkmale verwenden</translation>
     </message>
     <message>
         <source>User Documentation</source>
@@ -376,8 +380,10 @@
         <translation>FLEx Merkmalwertauswahl</translation>
     </message>
     <message>
-        <source>When this feature is absent,\n use the following feature : value by default.</source>
-        <translation>Wenn dieses Merkmal fehlt,\n verwenden Sie standardmäßig das folgende Merkmal : Wert.</translation>
+        <source>When this feature is absent,
+ use the following feature : value by default.</source>
+        <translation>Wenn dieses Merkmal fehlt,
+ verwenden Sie standardmäßig das folgende Merkmal : Wert.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -396,12 +402,20 @@
         <translation>Im Live Rule Tester testen</translation>
     </message>
     <message>
-        <source>About FLExTrans Rule Assistant</source>
-        <translation>Über FLExTrans Regel-Assistent</translation>
-    </message>
-    <message>
-        <source>A tool for writing FLExTrans transfer rules.\n\nVersion: {0}\n\n© 2023-2025 SIL International\nThis software is licensed under the LGPL, version 2.1 or later\n(http://www.gnu.org/licenses/lgpl-2.1.html)</source>
-        <translation>Ein Werkzeug zum Schreiben von FLExTrans-Transferregeln.\n\nVersion: {0}\n\n© 2023-2025 SIL International\nDiese Software ist unter der LGPL, Version 2.1 oder später lizenziert\n(http://www.gnu.org/licenses/lgpl-2.1.html)</translation>
+        <source>A tool for writing FLExTrans transfer rules.
+
+Version: {0}
+
+© 2023-2026 SIL International
+This software is licensed under the LGPL, version 2.1 or later
+(http://www.gnu.org/licenses/lgpl-2.1.html)</source>
+        <translation>Ein Werkzeug zum Schreiben von FLExTrans-Transferregeln.
+
+Version: {0}
+
+© 2023-2026 SIL International
+Diese Software ist unter der LGPL, Version 2.1 oder später lizenziert
+(http://www.gnu.org/licenses/lgpl-2.1.html)</translation>
     </message>
     <message>
         <source>Word Number</source>
@@ -468,16 +482,16 @@
         <translation>Schließen</translation>
     </message>
     <message>
-        <source>Co-Feature name</source>
-        <translation>Co-Merkmalname</translation>
+        <source>Distinguishing feature</source>
+        <translation>Unterscheidungsmerkmal</translation>
     </message>
     <message>
-        <source>Co-Feature value</source>
-        <translation>Co-Merkmalwert</translation>
+        <source>Feature value</source>
+        <translation>Merkmalwert</translation>
     </message>
     <message>
-        <source>Disjoint gender feature set</source>
-        <translation>Disjunktes Geschlechtsmerkmalset</translation>
+        <source>Disjoint feature set</source>
+        <translation>Disjunkte Merkmalsmenge</translation>
     </message>
     <message>
         <source>Delete selected pairing</source>
@@ -488,8 +502,8 @@
         <translation>Ausgewähltes Set löschen</translation>
     </message>
     <message>
-        <source>FLEx feature</source>
-        <translation>FLEx-Merkmal</translation>
+        <source>Subfeature</source>
+        <translation>Untermerkmale</translation>
     </message>
     <message>
         <source>Language</source>
@@ -500,8 +514,8 @@
         <translation>Name</translation>
     </message>
     <message>
-        <source>FLEx feature / co-feature value pairings:</source>
-        <translation>FLEx-Merkmal / Co-Merkmalwert-Zuordnungen:</translation>
+        <source>Number of subfeatures:</source>
+        <translation>Anzahl der Untermerkmale:</translation>
     </message>
     <message>
         <source>Source</source>
@@ -512,8 +526,24 @@
         <translation>Ziel</translation>
     </message>
     <message>
-        <source>Disjoint Gender Features Editor</source>
-        <translation>Editor für disjunkte Geschlechtsmerkmale</translation>
+        <source>Disjoint Features Editor</source>
+        <translation>Editor für disjunkte Merkmale</translation>
+    </message>
+    <message>
+        <source>The target language is missing a FLEx feature named "number" and/or that feature does not have both a "sg" value and a "pl" value.  This feature and these two values must be spelled exactly this way.
+You must have such a feature in order to use this editor.
+Add this feature to your target FLEx project and then re-run the Rule Assistant.</source>
+        <translation>In der Zielsprache fehlt eine FLEx-Funktion namens \u201Enumber\u201C und/oder diese Funktion hat nicht sowohl einen \u201Esg\u201C-Wert als auch einen \u201Epl\u201C-Wert.  Diese Funktion und diese beiden Werte müssen genau so geschrieben werden.
+Sie benötigen eine solche Funktion, um diesen Editor verwenden zu können.
+Fügen Sie diese Funktion zu Ihrem FLEx-Zielprojekt hinzu und führen Sie anschließend den Regelassistenten erneut aus.</translation>
+    </message>
+    <message>
+        <source>Missing required FLEx feature</source>
+        <translation>Fehlende erforderliche FLEx-Funktion</translation>
+    </message>
+    <message>
+        <source>Missing FLEx feature</source>
+        <translation>Fehlende FLEx-Funktion</translation>
     </message>
     <message>
         <source>Please copy the exception information below, email it to blackhandrew@gmail.com along with a description of what you were doing.</source>
@@ -538,10 +568,6 @@
     <message>
         <source>Test in the Live Rule Tester tool.</source>
         <translation>Im Live Rule Tester-Werkzeug testen.</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Nein</translation>
     </message>
     <message>
         <source>Omitting head-only rule</source>

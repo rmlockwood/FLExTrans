@@ -16,16 +16,20 @@
         <translation>Des modifications ont pu être apportées.</translation>
     </message>
     <message>
-        <source>Could not load data from file:\n</source>
-        <translation>Impossible de charger les données du fichier :\n</translation>
+        <source>Could not load data from file:
+</source>
+        <translation>Impossible de charger les données du fichier :
+</translation>
     </message>
     <message>
         <source>Could not load data</source>
         <translation>Impossible de charger les données</translation>
     </message>
     <message>
-        <source>Could not save data to file:\n</source>
-        <translation>Impossible d'enregistrer les données dans le fichier :\n</translation>
+        <source>Could not save data to file:
+</source>
+        <translation>Impossible d'enregistrer les données dans le fichier :
+</translation>
     </message>
     <message>
         <source>Could not save data</source>
@@ -44,7 +48,7 @@
         <translation>Impossible de trouver l'indicateur « came from LTR » ; veuillez utiliser y ou n.</translation>
     </message>
     <message>
-        <source>FLExTransRuleAssistant &lt;rule-file&gt; &lt;source/target-FLEx-category/features&gt; &lt;test-data-file&gt; &lt;came-from-LRT&gt; (&lt;max vars&gt;)</source>
+        <source>FLExTransRuleAssistant &lt;rule-file&gt; &lt;source/target-FLEx-category/features&gt; &lt;test-data-file&gt; &lt;came-from-LRT&gt; (&lt;UI-lang-code&gt;) (&lt;max vars&gt;)</source>
         <translation>FLExTransRuleAssistant &lt;rule-file&gt; &lt;source/target-FLEx-category/features&gt; &lt;test-data-file&gt; &lt;came-from-LRT&gt; (&lt;UI-lang-code&gt;) (&lt;max vars&gt;)</translation>
     </message>
     <message>
@@ -64,7 +68,7 @@
         <translation>La valeur &lt;max vars&gt; n'est pas un entier ; c'était « {0} »</translation>
     </message>
     <message>
-        <source>(max vars&gt; Specifies the optional max number of variables to show in values (default is 4)</source>
+        <source>&lt;max vars&gt; Specifies the optional max number of variables to show in values (default is 4)</source>
         <translation>&lt;max vars&gt; Spécifie le nombre maximum optionnel de variables à afficher dans les valeurs (par défaut 4)</translation>
     </message>
     <message>
@@ -104,6 +108,10 @@
         <translation>Assistant de règles pour FLExTrans</translation>
     </message>
     <message>
+        <source>&lt;UI-lang-code&gt; Specifies the language code to use for the user interface.  Use en for English, de for German, es for Spanish, or fr for French.</source>
+        <translation>&lt;UI-lang-code&gt; Spécifie le code de langue à utiliser pour l'interface utilisateur.  Utilisez en pour l'anglais, de pour l'allemand, es pour l'espagnol ou fr pour le français.</translation>
+    </message>
+    <message>
         <source>FeatureX</source>
         <translation>TraitX</translation>
     </message>
@@ -132,8 +140,8 @@
         <translation>préfixe</translation>
     </message>
     <message>
-        <source>- Copy</source>
-        <translation>- Copie</translation>
+        <source> - Copy</source>
+        <translation> - Copie</translation>
     </message>
     <message>
         <source>src</source>
@@ -176,7 +184,7 @@
         <translation>Créer des permutations :</translation>
     </message>
     <message>
-        <source>Set disjoint gender features</source>
+        <source>Set disjoint features</source>
         <translation>Définir les traits disjoints</translation>
     </message>
     <message>
@@ -186,10 +194,6 @@
     <message>
         <source>Feature Value Chooser</source>
         <translation>Sélecteur de valeur de trait</translation>
-    </message>
-    <message>
-        <source>FLExTrans Rule Assistant</source>
-        <translation>Assistant de règles FLExTrans</translation>
     </message>
     <message>
         <source>Help</source>
@@ -220,10 +224,6 @@
         <translation>Nom de la règle :</translation>
     </message>
     <message>
-        <source>This rule needs a name</source>
-        <translation>Cette règle a besoin d'un nom</translation>
-    </message>
-    <message>
         <source>Rules</source>
         <translation>Règles</translation>
     </message>
@@ -232,27 +232,31 @@
         <translation>Enregistrer</translation>
     </message>
     <message>
-        <source>Save &amp; Create</source>
+        <source>Save &amp; Write</source>
         <translation>Enregistrer et écrire</translation>
     </message>
     <message>
-        <source>Save &amp; Create All</source>
+        <source>Save &amp; Write All</source>
         <translation>Tout enregistrer et écrire</translation>
     </message>
     <message>
-        <source>Save &amp; \nCreate All</source>
-        <translation>Tout enregistrer \net écrire</translation>
+        <source>Save &amp; 
+Write All</source>
+        <translation>Tout enregistrer 
+et écrire</translation>
     </message>
     <message>
-        <source>Save &amp; \nCreate</source>
-        <translation>Enregistrer \net écrire</translation>
+        <source>Save &amp; 
+Write</source>
+        <translation>Enregistrer 
+et écrire</translation>
     </message>
     <message>
         <source>Test in LRT</source>
         <translation>Tester dans le OTR</translation>
     </message>
     <message>
-        <source>Use disjoint gender features</source>
+        <source>Use disjoint features</source>
         <translation>Utiliser des traits disjoints</translation>
     </message>
     <message>
@@ -376,8 +380,10 @@
         <translation>Sélecteur de valeur de trait FLEx</translation>
     </message>
     <message>
-        <source>When this feature is absent,\n use the following feature : value by default.</source>
-        <translation>Lorsque ce trait est absent,\n utiliser le trait : valeur suivant par défaut.</translation>
+        <source>When this feature is absent,
+ use the following feature : value by default.</source>
+        <translation>Lorsque ce trait est absent,
+ utiliser le trait : valeur suivant par défaut.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -396,12 +402,20 @@
         <translation>Tester dans le Outil de testeur de règles en direct</translation>
     </message>
     <message>
-        <source>About FLExTrans Rule Assistant</source>
-        <translation>À propos de l'Assistant de règles FLExTrans</translation>
-    </message>
-    <message>
-        <source>A tool for writing FLExTrans transfer rules.\n\nVersion: {0}\n\n© 2023-2025 SIL International\nThis software is licensed under the LGPL, version 2.1 or later\n(http://www.gnu.org/licenses/lgpl-2.1.html)</source>
-        <translation>Un outil pour rédiger des règles de transfert FLExTrans.\n\nVersion : {0}\n\n© 2023-2026 SIL International\nCe logiciel est sous licence LGPL, version 2.1 ou ultérieure\n(http://www.gnu.org/licenses/lgpl-2.1.html)</translation>
+        <source>A tool for writing FLExTrans transfer rules.
+
+Version: {0}
+
+© 2023-2026 SIL International
+This software is licensed under the LGPL, version 2.1 or later
+(http://www.gnu.org/licenses/lgpl-2.1.html)</source>
+        <translation>Un outil pour rédiger des règles de transfert FLExTrans.
+
+Version : {0}
+
+© 2023-2026 SIL International
+Ce logiciel est sous licence LGPL, version 2.1 ou ultérieure
+(http://www.gnu.org/licenses/lgpl-2.1.html)</translation>
     </message>
     <message>
         <source>Word Number</source>
@@ -468,15 +482,15 @@
         <translation>Fermer</translation>
     </message>
     <message>
-        <source>Co-Feature name</source>
+        <source>Distinguishing feature</source>
         <translation>Trait distinctif</translation>
     </message>
     <message>
-        <source>Co-Feature value</source>
+        <source>Feature value</source>
         <translation>Valeur du trait</translation>
     </message>
     <message>
-        <source>Disjoint gender feature set</source>
+        <source>Disjoint feature set</source>
         <translation>Ensemble de traits disjoints</translation>
     </message>
     <message>
@@ -488,7 +502,7 @@
         <translation>Supprimer l'ensemble sélectionné</translation>
     </message>
     <message>
-        <source>FLEx feature</source>
+        <source>Subfeature</source>
         <translation>Sous-trait</translation>
     </message>
     <message>
@@ -500,7 +514,7 @@
         <translation>Nom</translation>
     </message>
     <message>
-        <source>FLEx feature / co-feature value pairings:</source>
+        <source>Number of subfeatures:</source>
         <translation>Nombre de sous-traits :</translation>
     </message>
     <message>
@@ -512,8 +526,24 @@
         <translation>Cible</translation>
     </message>
     <message>
-        <source>Disjoint Gender Features Editor</source>
+        <source>Disjoint Features Editor</source>
         <translation>Éditeur de traits disjoints</translation>
+    </message>
+    <message>
+        <source>The target language is missing a FLEx feature named "number" and/or that feature does not have both a "sg" value and a "pl" value.  This feature and these two values must be spelled exactly this way.
+You must have such a feature in order to use this editor.
+Add this feature to your target FLEx project and then re-run the Rule Assistant.</source>
+        <translation>La langue cible n'a pas de trait FLEx nommé « number » et/ou ce trait ne possède pas à la fois une valeur « sg » et une valeur « pl ». Ce trait et ces deux valeurs doivent être orthographiés exactement de cette façon.
+Vous devez avoir un tel trait pour utiliser cet éditeur.
+Ajoutez ce trait à votre projet FLEx cible, puis relancez l'Assistant de règles.</translation>
+    </message>
+    <message>
+        <source>Missing required FLEx feature</source>
+        <translation>Trait FLEx requis manquant</translation>
+    </message>
+    <message>
+        <source>Missing FLEx feature</source>
+        <translation>Trait FLEx manquant</translation>
     </message>
     <message>
         <source>Please copy the exception information below, email it to blackhandrew@gmail.com along with a description of what you were doing.</source>
@@ -538,10 +568,6 @@
     <message>
         <source>Test in the Live Rule Tester tool.</source>
         <translation>Tester dans l'outil Outil de testeur de règles en direct.</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Non</translation>
     </message>
     <message>
         <source>Omitting head-only rule</source>

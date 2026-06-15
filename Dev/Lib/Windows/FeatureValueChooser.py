@@ -1,11 +1,13 @@
 """Feature Value Chooser Dialog"""
 
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QDialogButtonBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QCoreApplication
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from RAutils import FLExFeature, FLExFeatureValue, Feature
+
+_translate = QCoreApplication.translate
 
 
 class FeatureValueChooserDialog(QDialog):
@@ -14,7 +16,7 @@ class FeatureValueChooserDialog(QDialog):
     def __init__(self, features: list["FLExFeature"], current_feature: Optional["Feature"] = None,
                  show_unmarked_label: bool = False, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Choose Feature Value")
+        self.setWindowTitle(_translate("RuleAssistantLib", "FLEx Feature Value Chooser"))
         self.setModal(True)
         self.resize(350, 400)
 
@@ -30,7 +32,7 @@ class FeatureValueChooserDialog(QDialog):
         layout = QVBoxLayout(self)
 
         if self.show_unmarked_label:
-            label = QLabel("Unmarked Feature Notice")
+            label = QLabel(_translate("RuleAssistantLib", "When this feature is absent,\n use the following feature : value by default."))
             label.setStyleSheet("font-weight: bold; color: red;")
             layout.addWidget(label)
 

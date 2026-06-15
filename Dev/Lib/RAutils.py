@@ -8,7 +8,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional, TYPE_CHECKING
 
-from PyQt6.QtCore import QSettings, QObject, pyqtSlot
+from PyQt6.QtCore import QSettings, QObject, pyqtSlot, QCoreApplication
+
+_translate = QCoreApplication.translate
 
 
 # ============================================================
@@ -225,7 +227,7 @@ class Feature(RuleConstituent):
         def _t(s: str) -> str:
             try:
                 from PyQt6.QtCore import QCoreApplication
-                return QCoreApplication.translate("RuleAssistant", s)
+                return QCoreApplication.translate("RuleAssistantLib", s)
             except ImportError:
                 return {"FeatureX": "Feature"}.get(s, s)
 
@@ -347,7 +349,7 @@ class Phrase(RuleConstituent):
         def _t(s: str) -> str:
             try:
                 from PyQt6.QtCore import QCoreApplication
-                return QCoreApplication.translate("RuleAssistant", s)
+                return QCoreApplication.translate("RuleAssistantLib", s)
             except ImportError:
                 return {"phrase": "phrase", "src": "src", "tgt": "tgt"}.get(s, s)
 
@@ -459,7 +461,7 @@ class Word(RuleConstituent):
         def _t(s: str) -> str:
             try:
                 from PyQt6.QtCore import QCoreApplication
-                return QCoreApplication.translate("RuleAssistant", s)
+                return QCoreApplication.translate("RuleAssistantLib", s)
             except ImportError:
                 return {"word": "word", "head": "head"}.get(s, s)
 
@@ -815,7 +817,7 @@ class ValidityChecker:
     def check_source_words_have_categories(rule: FLExTransRule) -> tuple[bool, str]:
         for word in rule.source.words:
             if not word.word_category:
-                return False, f"Source word {word.word_id or '?'} is missing a category"
+                return False, _translate("RuleAssistantLib", "One or more source words do not have a category.  Please insert a category for every source word.")
         return True, ""
 
     @staticmethod
@@ -826,7 +828,7 @@ class ValidityChecker:
             for affix in word.affixes:
                 if affix.features:
                     return True, ""
-        return False, "Target phrase must have at least one feature"
+        return False, _translate("RuleAssistantLib", "No word or affix in the target has a feature.  Please insert at least one feature.")
 
     @staticmethod
     def check_target_word_marked_as_head(rule: FLExTransRule) -> tuple[bool, str]:
@@ -837,8 +839,8 @@ class ValidityChecker:
         if head_count == 1:
             return True, ""
         elif head_count == 0:
-            return False, "Target phrase must have one word marked as head"
-        return False, f"Target phrase has {head_count} head words; only one allowed"
+            return False, _translate("RuleAssistantLib", "No word has been marked as the head in the target phrase.  Please mark one word as the head.")
+        return False, _translate("RuleAssistantLib", "Target phrase has {0} head words; only one allowed").format(head_count)
 
     @staticmethod
     def validate_rule(rule: FLExTransRule) -> tuple[bool, str]:
