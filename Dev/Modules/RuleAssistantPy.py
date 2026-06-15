@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.3 - 6/15/26 - Ron Lockwood
+#    Remove logging code.
+#
 #   Version 3.16.2 - 6/15/26 - Ron Lockwood
 #    Refactored: widgets/layout now live in .ui files and logid separated to controler files.
 #
@@ -26,68 +29,16 @@
 from RuleAssistantMainWindow import RuleAssistantWindow
 
 import os
-import sys
 import subprocess
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-import logging
-import tempfile
-from datetime import datetime
-
-
-# Fallback crash log - writes directly to file if logging fails
-_crash_log = os.path.join(tempfile.gettempdir(), 'RuleAssistantPy_CRASH.log')
-
-def _write_crash_log(msg):
-    """Direct file write as fallback if logging fails"""
-    try:
-        with open(_crash_log, 'a') as f:
-            f.write(f"{datetime.now().isoformat()} - {msg}\n")
-            f.flush()
-    except:
-        pass
-
-_write_crash_log(f"[INIT] RuleAssistantPy module loading at {datetime.now()}")
-
-# Setup logging for debugging - robust version that works even if logging already initialized
-_log_file = os.path.join(tempfile.gettempdir(), 'RuleAssistantPy.log')
-
-# Always set up our own logger with file handler (don't rely on basicConfig)
-_logger = logging.getLogger(__name__)
-_logger.setLevel(logging.DEBUG)
-
-# Remove any existing handlers to avoid duplicates
-for handler in _logger.handlers[:]:
-    _logger.removeHandler(handler)
-
-# Add file handler
-_file_handler = logging.FileHandler(_log_file, mode='w')
-_file_handler.setLevel(logging.DEBUG)
-_file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-_logger.addHandler(_file_handler)
-
-# Add console handler
-_console_handler = logging.StreamHandler(sys.stderr)
-_console_handler.setLevel(logging.DEBUG)
-_console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-_logger.addHandler(_console_handler)
-
-# Also propagate to parent to catch any root logger messages
-_logger.propagate = True
-
-_logger.info("=" * 80)
-_logger.info("RuleAssistantPy.py loaded")
-_logger.info(f"Log file: {_log_file}")
-_logger.info("=" * 80)
 
 from flextoolslib import * # type: ignore
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
-
-_logger.info("PyQt6 imports successful")
 
 # LAZY IMPORTS: Do NOT import QWebEngine at module load time
 # It causes crashes when imported by FlexTools before proper Qt initialization
@@ -126,10 +77,10 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
-docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant (Python)"),
+docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
         FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RuleAssistant", "Runs the Python/PyQt6 version of the tool for creating transfer rules."),
+        FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
         FTM_Description:    descr}
 
@@ -478,16 +429,8 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
         Tuple of (saved: bool, rule_index: Optional[int], launch_lrt: bool)
     """
 
-    _write_crash_log("[START] StartRuleAssistant() called")
-    _logger.info("StartRuleAssistant() called")
-    _logger.info(f"  ruleAssistantFile: {ruleAssistantFile}")
-    _logger.info(f"  ruleAssistGUIinputfile: {ruleAssistGUIinputfile}")
-    _logger.info(f"  testDataFile: {testDataFile}")
-    _logger.info(f"  fromLRT: {fromLRT}")
-
     if not _HAS_PYTHON_RA:
         error_msg = "Python Rule Assistant library not found at expected location"
-        _logger.error(error_msg)
         report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=error_msg, ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
@@ -495,22 +438,13 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
         # Get interface language from FLEx
         try:
             lang_code = Utils.getInterfaceLangCode()
-            _logger.info(f"Got interface language code: {lang_code}")
-        except Exception as e:
-            _logger.warning(f"Failed to get interface language code: {e}")
+        except Exception:
             lang_code = "en"
 
         # Ensure QApplication exists before creating window (QWebEngineView needs it)
-        _logger.info("About to get or create QApplication")
         app = QApplication.instance()
-        _logger.info(f"QApplication.instance() returned: {app}")
-
         if app is None:
-            _logger.info("Creating new QApplication")
             app = QApplication(['RuleAssistant'])
-            _logger.info("QApplication created successfully")
-        else:
-            _logger.info("Reusing existing QApplication")
 
         # Application-wide icon so every window, dialog and message box (including
         # parentless ones) shows the FLExTrans icon in its title bar.
@@ -523,56 +457,28 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
             came_from_lrt=fromLRT,
             ui_lang_code=lang_code,
         )
-        _logger.info("[WINDOW] RuleAssistantWindow created")
-        print("[WINDOW] Window created OK", file=sys.stderr)
 
         # Show and run
-        _logger.info("[SHOW] Calling window.show()")
-        print("[SHOW] Showing window...", file=sys.stderr)
-
         window.show()
-        _logger.info("[SHOW] window.show() returned")
-        print("[EXEC] Running app.exec()...", file=sys.stderr)
-
         if app:
             app.exec()
 
         # Get and save result
-        _logger.info("[RESULT] Getting result from window")
         result = window.get_result()
-
-        _logger.info(f"[RESULT] Result: saved={result.saved}, rule_index={result.rule_index}, launch_lrt={result.launch_lrt}")
-
         return (result.saved, result.rule_index, result.launch_lrt)
 
     except Exception as e:
-        import traceback
         error_msg = str(e)
-        _logger.error(f"Exception in StartRuleAssistant: {error_msg}")
-        _logger.error(traceback.format_exc())
-        print(f"Python Rule Assistant error: {error_msg}")
         report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=error_msg, ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True, fromLRT=False):
-    _write_crash_log("[MAIN] MainFunction() called")
-    _logger.info("=" * 80)
-    _logger.info("MainFunction() called - FLExTrans Rule Assistant module entry point")
-    _logger.info("=" * 80)
-
     translators = []
-    _logger.info("About to get or create QApplication")
     app = QApplication.instance()
-    _logger.info(f"QApplication.instance() returned: {app}")
-
     if app is None:
-        _logger.info("Creating new QApplication")
         app = QApplication(['FLExTrans'])
-        _logger.info("QApplication created successfully")
-    else:
-        _logger.info("Reusing existing QApplication")
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME],
                            translators, loadBase=True)
