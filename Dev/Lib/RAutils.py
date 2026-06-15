@@ -1,4 +1,14 @@
-"""RuleAssistant utilities: combined model, flexmodel, and service classes."""
+#
+#   RAutils.py
+#
+#   Matthew Lee, Ron Lockwood - original Java version by Andy Black
+#   SIL International
+#   September 2023
+#
+#   Version 3.16.1 - 6/15/26 - Ron Lockwood
+#    Fixed #1362. Start with correct word boxes for a new rule.
+#
+#  RuleAssistant utilities: combined model, flexmodel, and service classes.
 
 # ---- External imports ----
 import xml.etree.ElementTree as ET
@@ -626,6 +636,24 @@ class FLExTransRule(RuleConstituent):
             return r
         return self.target.find_constituent(identifier)
 
+    @staticmethod
+    def new_with_word_boxes(name: str) -> "FLExTransRule":
+        """Create a new rule that already has one source word and one target word
+        (each parented) so the tree view shows editable word boxes, matching the
+        Java version. Without this a new rule renders empty and can't be edited."""
+        rule = FLExTransRule(name=name)
+        rule.source = Source()
+        rule.target = Target()
+        word_s = Word(word_id="1")
+        word_t = Word(word_id="1")
+        rule.source.words = [word_s]
+        rule.target.words = [word_t]
+        word_s.parent = rule.source
+        word_t.parent = rule.target
+        rule.source.parent = rule
+        rule.target.parent = rule
+        return rule
+
     def duplicate(self) -> "FLExTransRule":
         new_rule = FLExTransRule(
             name=self.name + " (duplicate)",
@@ -677,6 +705,13 @@ class FLExTransRuleGenerator:
     def duplicate_rule(self, rule_index: int) -> None:
         if 0 <= rule_index < len(self.flex_trans_rules):
             self.flex_trans_rules.insert(rule_index, self.flex_trans_rules[rule_index].duplicate())
+
+    def insert_new_rule(self, index: int, name: str) -> "FLExTransRule":
+        """Create a new editable rule (with word boxes) and insert it at index."""
+        rule = FLExTransRule.new_with_word_boxes(name)
+        rule.parent = self
+        self.flex_trans_rules.insert(index, rule)
+        return rule
 
 
 
@@ -979,15 +1014,8 @@ class XMLBackEndProvider:
         file_path = Path(filename)
         if not file_path.exists():
             generator = FLExTransRuleGenerator()
-            rule = FLExTransRule(name="Rule 1")
-            rule.source = Source()
-            rule.target = Target()
-            word_s = Word(word_id="1")
-            word_t = Word(word_id="1")
-            rule.source.words = [word_s]
-            rule.target.words = [word_t]
-            word_s.parent = rule.source
-            word_t.parent = rule.target
+            rule = FLExTransRule.new_with_word_boxes("Rule 1")
+            rule.parent = generator
             generator.flex_trans_rules = [rule]
             XMLBackEndProvider.save_data_to_file(generator, filename)
             return generator

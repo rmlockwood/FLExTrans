@@ -1,5 +1,5 @@
 #
-#   RuleAssistantPy
+#   RuleAssistantWindow.py
 #
 #   Matthew Lee, Ron Lockwood - original Java version by Andy Black
 #   SIL International
@@ -8,8 +8,9 @@
 #   Version 3.16 - 6/15/26 - Ron Lockwood
 #    Fixed #1361. Grey out context menu items in the tree view when the
 #    operation doesn't apply to the clicked-on item (matching the Java version).
+#
+#  Main window for the FLExTrans Rule Assistant application.
 
-"""Main Window for FLExTrans Rule Assistant"""
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
 
@@ -1660,33 +1661,24 @@ class RuleAssistantWindow(QMainWindow):
         if not self._generator:
             return
 
-        from RAutils import FLExTransRule
-        from RAutils import Source, Target
-
-        new_rule = FLExTransRule(
-            name=f"Rule {len(self._generator.flex_trans_rules) + 1}",
-            source=Source(),
-            target=Target()
-        )
-        self._generator.flex_trans_rules.insert(self._current_rule_index, new_rule)
-        self._populate_rule_list()
-        self._mark_dirty()
+        self._insert_new_rule_at(self._current_rule_index)
 
     def _on_rule_insert_after(self) -> None:
         """Insert new rule after selected."""
         if not self._generator:
             return
 
-        from RAutils import FLExTransRule
-        from RAutils import Source, Target
+        self._insert_new_rule_at(self._current_rule_index + 1)
 
-        new_rule = FLExTransRule(
-            name=f"Rule {len(self._generator.flex_trans_rules) + 1}",
-            source=Source(),
-            target=Target()
-        )
-        self._generator.flex_trans_rules.insert(self._current_rule_index + 1, new_rule)
+    def _insert_new_rule_at(self, index: int) -> None:
+        """Insert a new, editable rule (with word boxes) at the given index and
+        select it so it is shown in the editor."""
+        if not self._generator:
+            return
+        self._generator.insert_new_rule(
+            index, f"Rule {len(self._generator.flex_trans_rules) + 1}")
         self._populate_rule_list()
+        self.rule_list.setCurrentRow(index)
         self._mark_dirty()
 
     def _on_rule_move_up(self) -> None:
