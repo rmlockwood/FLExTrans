@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RuleAssistantWindow</class>
+ <widget class="QMainWindow" name="RuleAssistantWindow">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1100</width><height>800</height></rect>
+  </property>
+  <property name="windowTitle">
+   <string>FLExTrans Rule Assistant</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="outerLayout">
+    <item>
+     <widget class="QSplitter" name="main_splitter">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <!-- Left pane: rule list -->
+      <widget class="QWidget" name="leftPane">
+       <layout class="QVBoxLayout" name="leftLayout">
+        <item><widget class="QLabel" name="rulesLabel"><property name="text"><string>Rules</string></property></widget></item>
+        <item><widget class="QListWidget" name="rule_list"/></item>
+        <item><widget class="QLabel" name="hintLabel"><property name="text"><string>(right-click to edit)</string></property></widget></item>
+        <item><widget class="QLabel" name="ruleNameLabel"><property name="text"><string>Rule name:</string></property></widget></item>
+        <item><widget class="QLineEdit" name="rule_name_field"/></item>
+        <item><widget class="QLabel" name="ruleDescLabel"><property name="text"><string>Rule description:</string></property></widget></item>
+        <item><widget class="QPlainTextEdit" name="rule_description_field"/></item>
+        <item>
+         <layout class="QHBoxLayout" name="permLayout">
+          <item><widget class="QLabel" name="permLabel"><property name="text"><string>Create Permutations:</string></property></widget></item>
+          <item>
+           <widget class="QComboBox" name="permutations_combo">
+            <item><property name="text"><string>no</string></property></item>
+            <item><property name="text"><string>with head</string></property></item>
+            <item><property name="text"><string>not head</string></property></item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <!-- Right pane: top controls + diagram -->
+      <widget class="QWidget" name="rightPane">
+       <layout class="QVBoxLayout" name="rightLayout">
+        <item>
+         <widget class="QSplitter" name="v_splitter">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <!-- Top 25%: test data web view -->
+          <widget class="QWidget" name="topWidget">
+           <layout class="QVBoxLayout" name="topLayout">
+            <item>
+             <layout class="QHBoxLayout" name="testDataLayout">
+              <!-- Test data web view placeholder -->
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="buttonBar">
+              <item><widget class="QPushButton" name="test_lrt_button"><property name="text"><string>Test In LRT</string></property></widget></item>
+              <item><widget class="QPushButton" name="save_button"><property name="text"><string>Save</string></property></widget></item>
+              <item><widget class="QPushButton" name="save_create_button"><property name="text"><string>Save/Create</string></property></widget></item>
+              <item><widget class="QPushButton" name="save_all_button"><property name="text"><string>Save/Create All</string></property></widget></item>
+              <item><widget class="QPushButton" name="help_button"><property name="text"><string>Help</string></property></widget></item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <!-- Bottom 75%: rule tree diagram (QWebEngineView, set programmatically) -->
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
