@@ -1,3 +1,14 @@
+#
+#   RuleAssistantPy
+#
+#   Matthew Lee, Ron Lockwood - original Java version by Andy Black
+#   SIL International
+#   September 2023
+#
+#   Version 3.16 - 6/15/26 - Ron Lockwood
+#    Fixed #1361. Grey out context menu items in the tree view when the
+#    operation doesn't apply to the clicked-on item (matching the Java version).
+
 """Main Window for FLExTrans Rule Assistant"""
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
@@ -54,7 +65,7 @@ from PyQt6.QtWidgets import (
 # from PyQt6.QtWebEngineWidgets import QWebEngineView
 # from PyQt6.QtWebChannel import QWebChannel
 from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal, QCoreApplication
-from PyQt6.QtGui import QKeySequence, QShortcut
+from PyQt6.QtGui import QKeySequence, QShortcut, QAction
 
 _translate = QCoreApplication.translate
 
@@ -478,6 +489,13 @@ class RuleAssistantWindow(QMainWindow):
             _logger.error(traceback.format_exc())
             raise
 
+    @staticmethod
+    def _add_action(menu: QMenu, text: str, slot) -> QAction:
+        """Add a menu action and return it (typed; QMenu.addAction never returns None here)."""
+        action = menu.addAction(text, slot)
+        assert action is not None
+        return action
+
     def _create_context_menus(self) -> None:
         """Create all context menus."""
         _write_crash_log("[menu] Creating word menu")
@@ -487,21 +505,21 @@ class RuleAssistantWindow(QMainWindow):
         self._word_menu.addAction(_translate("RuleAssistantLib", "Duplicate"), self._on_word_duplicate)
         self._word_menu.addSeparator()
         self._word_menu.addAction(_translate("RuleAssistantLib", "Change number"), self._on_word_change_number)
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Mark as head"), self._on_word_mark_as_head)
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Remove head marking"), self._on_word_remove_head)
+        self._cm_word_mark_as_head = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Mark as head"), self._on_word_mark_as_head)
+        self._cm_word_remove_head = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Remove head marking"), self._on_word_remove_head)
         self._word_menu.addSeparator()
         self._word_menu.addAction(_translate("RuleAssistantLib", "Insert new before"), self._on_word_insert_before)
         self._word_menu.addAction(_translate("RuleAssistantLib", "Insert new after"), self._on_word_insert_after)
         self._word_menu.addSeparator()
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert prefix"), self._on_word_insert_prefix)
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert suffix"), self._on_word_insert_suffix)
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert category"), self._on_word_insert_category)
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Insert feature"), self._on_word_insert_feature)
+        self._cm_word_insert_prefix = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Insert prefix"), self._on_word_insert_prefix)
+        self._cm_word_insert_suffix = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Insert suffix"), self._on_word_insert_suffix)
+        self._cm_word_insert_category = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Insert category"), self._on_word_insert_category)
+        self._cm_word_insert_feature = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Insert feature"), self._on_word_insert_feature)
         self._word_menu.addSeparator()
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Move left"), self._on_word_move_left)
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Move right"), self._on_word_move_right)
+        self._cm_word_move_left = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Move left"), self._on_word_move_left)
+        self._cm_word_move_right = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Move right"), self._on_word_move_right)
         self._word_menu.addSeparator()
-        self._word_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_word_delete)
+        self._cm_word_delete = self._add_action(self._word_menu, _translate("RuleAssistantLib", "Delete"), self._on_word_delete)
 
         # Category context menu
         self._category_menu = QMenu()
@@ -513,11 +531,11 @@ class RuleAssistantWindow(QMainWindow):
         self._feature_menu = QMenu()
         self._feature_menu.addAction(_translate("RuleAssistantLib", "Edit"), self._on_feature_edit)
         self._feature_menu.addAction(_translate("RuleAssistantLib", "Edit unmarked"), self._on_feature_edit_unmarked)
-        self._feature_menu.addAction(_translate("RuleAssistantLib", "Edit ranking"), self._on_feature_edit_ranking)
+        self._cm_feature_edit_ranking = self._add_action(self._feature_menu, _translate("RuleAssistantLib", "Edit ranking"), self._on_feature_edit_ranking)
         self._feature_menu.addSeparator()
         self._feature_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_feature_delete)
-        self._feature_menu.addAction(_translate("RuleAssistantLib", "Delete unmarked"), self._on_feature_delete_unmarked)
-        self._feature_menu.addAction(_translate("RuleAssistantLib", "Delete ranking"), self._on_feature_delete_ranking)
+        self._cm_feature_delete_unmarked = self._add_action(self._feature_menu, _translate("RuleAssistantLib", "Delete unmarked"), self._on_feature_delete_unmarked)
+        self._cm_feature_delete_ranking = self._add_action(self._feature_menu, _translate("RuleAssistantLib", "Delete ranking"), self._on_feature_delete_ranking)
 
         # Affix context menu
         self._affix_menu = QMenu()
@@ -525,15 +543,15 @@ class RuleAssistantWindow(QMainWindow):
         self._affix_menu.addSeparator()
         self._affix_menu.addAction(_translate("RuleAssistantLib", "Toggle affix type"), self._on_affix_toggle_type)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert feature"), self._on_affix_insert_feature)
+        self._cm_affix_insert_feature = self._add_action(self._affix_menu, _translate("RuleAssistantLib", "Insert feature"), self._on_affix_insert_feature)
         self._affix_menu.addSeparator()
         self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new prefix before"), self._on_affix_insert_prefix_before)
         self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new prefix after"), self._on_affix_insert_prefix_after)
         self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new suffix before"), self._on_affix_insert_suffix_before)
         self._affix_menu.addAction(_translate("RuleAssistantLib", "Insert new suffix after"), self._on_affix_insert_suffix_after)
         self._affix_menu.addSeparator()
-        self._affix_menu.addAction(_translate("RuleAssistantLib", "Move left"), self._on_affix_move_left)
-        self._affix_menu.addAction(_translate("RuleAssistantLib", "Move right"), self._on_affix_move_right)
+        self._cm_affix_move_left = self._add_action(self._affix_menu, _translate("RuleAssistantLib", "Move left"), self._on_affix_move_left)
+        self._cm_affix_move_right = self._add_action(self._affix_menu, _translate("RuleAssistantLib", "Move right"), self._on_affix_move_right)
         self._affix_menu.addSeparator()
         self._affix_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_affix_delete)
 
@@ -543,8 +561,8 @@ class RuleAssistantWindow(QMainWindow):
         self._rule_menu.addAction(_translate("RuleAssistantLib", "Insert new before"), self._on_rule_insert_before)
         self._rule_menu.addAction(_translate("RuleAssistantLib", "Insert new after"), self._on_rule_insert_after)
         self._rule_menu.addSeparator()
-        self._rule_menu.addAction(_translate("RuleAssistantLib", "Move up"), self._on_rule_move_up)
-        self._rule_menu.addAction(_translate("RuleAssistantLib", "Move down"), self._on_rule_move_down)
+        self._cm_rule_move_up = self._add_action(self._rule_menu, _translate("RuleAssistantLib", "Move up"), self._on_rule_move_up)
+        self._cm_rule_move_down = self._add_action(self._rule_menu, _translate("RuleAssistantLib", "Move down"), self._on_rule_move_down)
         self._rule_menu.addSeparator()
         self._rule_menu.addAction(_translate("RuleAssistantLib", "Delete"), self._on_rule_delete)
 
@@ -863,19 +881,113 @@ class RuleAssistantWindow(QMainWindow):
         # Show appropriate context menu based on type
         if type_code == "w":
             self._selected_word = constituent
+            self._enable_disable_word_menu_items(constituent)
             self._word_menu.exec(pos)
         elif type_code == "c":
             self._selected_category = constituent
             self._category_menu.exec(pos)
         elif type_code == "f":
             self._selected_feature = constituent
+            self._enable_disable_feature_menu_items(constituent)
             self._feature_menu.exec(pos)
         elif type_code == "a":
             self._selected_affix = constituent
+            self._enable_disable_affix_menu_items(constituent)
             self._affix_menu.exec(pos)
         elif type_code == "p":
             # Phrase click does nothing
             pass
+
+    # ------------------------------------------------------------------
+    # Context-menu item enable/disable (mirrors the Java MainController so
+    # operations that don't apply to the clicked-on item are greyed out).
+    # ------------------------------------------------------------------
+    def _flex_category_has_valid_features(self, word, phrase_type) -> bool:
+        """True if the word's (or corresponding source word's) category exists in
+        the FLEx data for this phrase and that category has valid features."""
+        if not self._flex_data:
+            return False
+        cat = word.get_category_of_word_or_corresponding_source_word()
+        if not cat or not cat.name:
+            return False
+        for flex_cat in self._flex_data.get_flex_categories_for_phrase(phrase_type):
+            if flex_cat.abbreviation == cat.name:
+                return len(flex_cat.valid_features) > 0
+        return False
+
+    def _enable_disable_word_menu_items(self, word) -> None:
+        from RAutils import PhraseType, HeadValue
+        phrase = word.parent
+        if phrase is None:
+            return
+        phrase_type = phrase.phrase_type
+        index = phrase.words.index(word)
+
+        self._cm_word_move_left.setEnabled(index != 0)
+        self._cm_word_move_right.setEnabled(index != len(phrase.words) - 1)
+        self._cm_word_delete.setEnabled(not (index == 0 and len(phrase.words) == 1))
+
+        # Can only insert a category if the word doesn't already have one.
+        cat = word.get_category_of_word_or_corresponding_source_word()
+        self._cm_word_insert_category.setEnabled(not (cat and cat.name))
+
+        if phrase_type == PhraseType.source:
+            self._cm_word_mark_as_head.setEnabled(False)
+            self._cm_word_remove_head.setEnabled(False)
+        elif word.head == HeadValue.yes:
+            self._cm_word_mark_as_head.setEnabled(False)
+            self._cm_word_remove_head.setEnabled(True)
+        else:
+            self._cm_word_mark_as_head.setEnabled(True)
+            self._cm_word_remove_head.setEnabled(False)
+
+        # Affixes can only be inserted on a word that has none yet.
+        no_affixes = len(word.affixes) == 0
+        self._cm_word_insert_prefix.setEnabled(no_affixes)
+        self._cm_word_insert_suffix.setEnabled(no_affixes)
+
+        self._cm_word_insert_feature.setEnabled(
+            self._flex_category_has_valid_features(word, phrase_type))
+
+    def _enable_disable_affix_menu_items(self, affix) -> None:
+        word = affix.parent
+        if word is None:
+            return
+        index = word.affixes.index(affix)
+        self._cm_affix_move_left.setEnabled(index != 0)
+        self._cm_affix_move_right.setEnabled(index != len(word.affixes) - 1)
+
+        phrase = word.parent
+        phrase_type = phrase.phrase_type if phrase is not None else None
+        self._cm_affix_insert_feature.setEnabled(
+            self._flex_category_has_valid_features(word, phrase_type))
+
+    def _enable_disable_feature_menu_items(self, feature) -> None:
+        from RAutils import PhraseType, Word, Affix
+        # Find the word that owns this feature (directly, or via an affix).
+        owner = feature.parent
+        this_word = None
+        if isinstance(owner, Word):
+            this_word = owner
+        elif isinstance(owner, Affix) and isinstance(owner.parent, Word):
+            this_word = owner.parent
+
+        phrase = this_word.parent if this_word is not None else None
+        if phrase is not None and phrase.phrase_type == PhraseType.target and this_word is not None:
+            # Ranking only makes sense when the word has more than one feature
+            # (counting features on the word and on all its affixes).
+            feature_count = len(this_word.features) + sum(len(a.features) for a in this_word.affixes)
+            self._cm_feature_edit_ranking.setEnabled(feature_count > 1)
+        else:
+            self._cm_feature_edit_ranking.setEnabled(False)
+
+        self._cm_feature_delete_unmarked.setEnabled(len(feature.unmarked) > 0)
+        self._cm_feature_delete_ranking.setEnabled(feature.ranking > 0)
+
+    def _enable_disable_rule_menu_items(self) -> None:
+        self._cm_rule_move_up.setEnabled(self._current_rule_index != 0)
+        last = len(self._generator.flex_trans_rules) - 1 if self._generator else 0
+        self._cm_rule_move_down.setEnabled(self._current_rule_index != last)
 
     def _mark_dirty(self) -> None:
         """Mark the document as changed."""
@@ -1006,6 +1118,7 @@ class RuleAssistantWindow(QMainWindow):
         """Handle rule list context menu."""
         item = self.rule_list.itemAt(pos)
         if item:
+            self._enable_disable_rule_menu_items()
             self._rule_menu.exec(self.rule_list.mapToGlobal(pos))
 
     # Word menu handlers
