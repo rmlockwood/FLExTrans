@@ -13,9 +13,14 @@
 
 """Generic single-item list chooser dialog."""
 
+import os
+
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QListWidgetItem, QDialogButtonBox
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 from typing import Optional, Sequence, Tuple, Any
+
+import FTPaths
 
 
 class ListChooserDialog(QDialog):
@@ -29,6 +34,7 @@ class ListChooserDialog(QDialog):
                  current_index: int = 0, parent=None):
         super().__init__(parent)
         self.setWindowTitle(title)
+        self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         self.setModal(True)
         self.resize(350, 400)
 

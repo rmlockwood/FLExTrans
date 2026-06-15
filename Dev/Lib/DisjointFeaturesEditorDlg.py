@@ -13,12 +13,16 @@
 #  Controller for the Disjoint Features Editor dialog.
 """Disjoint Features Editor Dialog"""
 
+import os
+
 from PyQt6.QtWidgets import (
     QDialog, QTableWidgetItem, QLabel, QComboBox, QAbstractItemView, QHeaderView
 )
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, QCoreApplication
 from typing import Optional, TYPE_CHECKING
 
+import FTPaths
 from RAutils import PhraseType, DISJOINT_NUMBER, DISJOINT_SG, DISJOINT_PL
 
 if TYPE_CHECKING:
@@ -40,6 +44,7 @@ class DisjointFeaturesEditorDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_DisjointFeaturesEditorDialog()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         self.generator = generator
         self.flex_data = flex_data

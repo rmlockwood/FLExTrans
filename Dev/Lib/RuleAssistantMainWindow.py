@@ -67,7 +67,9 @@ from PyQt6.QtWidgets import (
 # from PyQt6.QtWebEngineWidgets import QWebEngineView
 # from PyQt6.QtWebChannel import QWebChannel
 from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal, QCoreApplication
-from PyQt6.QtGui import QKeySequence, QShortcut, QAction
+from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon
+
+import FTPaths
 
 _translate = QCoreApplication.translate
 
@@ -184,6 +186,7 @@ class RuleAssistantWindow(QMainWindow):
         _logger.info("About to set up UI")
         self.ui = Ui_RuleAssistantWindow()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         self._alias_widgets()
         self._create_web_views()
         self._populate_permutations_combo()

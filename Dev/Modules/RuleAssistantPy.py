@@ -85,6 +85,7 @@ from flextoolslib import * # type: ignore
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
 
 _logger.info("PyQt6 imports successful")
 
@@ -510,6 +511,10 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
             _logger.info("QApplication created successfully")
         else:
             _logger.info("Reusing existing QApplication")
+
+        # Application-wide icon so every window, dialog and message box (including
+        # parentless ones) shows the FLExTrans icon in its title bar.
+        QApplication.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         window = RuleAssistantWindow(
             rule_file=ruleAssistantFile,
