@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.3 - 6/15/26 - Ron Lockwood
+#    Get the LRT button working.
+#
 #   Version 3.16.2 - 6/15/26 - Ron Lockwood
 #    Fix logic for which feature to add to the list. Made same as Java version.
 #
@@ -582,7 +585,7 @@ class RuleAssistantWindow(QMainWindow):
             current_title = self.windowTitle()
             if current_title.endswith("*"):
                 self.setWindowTitle(current_title[:-1])
-            QMessageBox.information(self, _translate("RuleAssistantWindow", "Saved"), _translate("RuleAssistantWindow", "Rules saved successfully"))
+            #QMessageBox.information(self, _translate("RuleAssistantWindow", "Saved"), _translate("RuleAssistantWindow", "Rules saved successfully"))
 
     def _on_save_create(self) -> None:
         """Handle Save/Create button."""
@@ -611,9 +614,61 @@ class RuleAssistantWindow(QMainWindow):
         self.close()
 
     def _on_test_in_lrt(self) -> None:
-        """Handle Test In LRT button."""
-        # TODO: Implement with a confirmation dialog
-        pass
+        """Handle Test In LRT button: ask which save option to use, then save and
+        close, flagging that the Live Rule Tester should be launched afterward
+        (mirrors the Java MainController.handleTestInLRT)."""
+        if not self._generator:
+            return
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Question)
+        box.setWindowTitle(_translate("RuleAssistantWindow", "Test in the Live Rule Tester"))
+        box.setText(_translate("RuleAssistantWindow", "Choose which save option you want."))
+        box.setInformativeText(_translate("RuleAssistantWindow", "Choose your option."))
+
+        save_btn = box.addButton(
+            _translate("RuleAssistantWindow", "Save"), QMessageBox.ButtonRole.AcceptRole)
+        save_create_btn = box.addButton(
+            _translate("RuleAssistantWindow", "Save & Write"), QMessageBox.ButtonRole.AcceptRole)
+        save_create_all_btn = box.addButton(
+            _translate("RuleAssistantWindow", "Save & Write All"), QMessageBox.ButtonRole.AcceptRole)
+        box.addButton(
+            _translate("RuleAssistantWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
+
+        box.exec()
+        clicked = box.clickedButton()
+
+        if clicked is save_create_btn:
+            # Validate and create just the current rule, then launch LRT.
+            rule = self._generator.flex_trans_rules[self._current_rule_index]
+            is_valid, error_msg = ValidityChecker.validate_rule(rule)
+            if not is_valid:
+                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+                return
+            self._on_save()
+            self._result = WindowResult(saved=True, rule_index=self._current_rule_index, launch_lrt=True)
+            self.close()
+        elif clicked is save_create_all_btn:
+            # Validate and create all rules, then launch LRT.
+            for rule in self._generator.flex_trans_rules:
+                is_valid, error_msg = ValidityChecker.validate_rule(rule)
+                if not is_valid:
+                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+                    return
+            self._on_save()
+            self._result = WindowResult(saved=True, rule_index=None, launch_lrt=True)
+            self.close()
+        elif clicked is save_btn:
+            # Save the rule file only (no rule generation), then launch LRT.
+            for rule in self._generator.flex_trans_rules:
+                is_valid, error_msg = ValidityChecker.validate_rule(rule)
+                if not is_valid:
+                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+                    return
+            self._on_save()
+            self._result = WindowResult(saved=False, rule_index=None, launch_lrt=True)
+            self.close()
+        # Cancel: do nothing.
 
     def _on_help(self) -> None:
         """Handle Help button."""

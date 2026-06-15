@@ -4,8 +4,24 @@
 <context>
     <name>RuleAssistantWindow</name>
     <message>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
         <source>Cannot delete the last rule</source>
         <translation>Cannot delete the last rule</translation>
+    </message>
+    <message>
+        <source>Choose which save option you want.</source>
+        <translation>Elija qué opción de guardado desea.</translation>
+    </message>
+    <message>
+        <source>Choose your option.</source>
+        <translation>Elija su opción.</translation>
+    </message>
+    <message>
+        <source>Test in the Live Rule Tester</source>
+        <translation>Probar en el Live Rule Tester</translation>
     </message>
     <message>
         <source>Change number</source>
