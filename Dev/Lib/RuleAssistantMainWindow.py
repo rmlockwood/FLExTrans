@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.2 - 6/15/26 - Ron Lockwood
+#    Fix logic for which feature to add to the list. Made same as Java version.
+#
 #   Version 3.16.1 - 6/15/26 - Ron Lockwood
 #    Remove logging code.
 #
@@ -23,15 +26,13 @@ from typing import Optional, NamedTuple
 from pathlib import Path
 
 from PyQt6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QLabel, QListWidget, QListWidgetItem, QLineEdit, QPlainTextEdit,
-    QCheckBox, QPushButton, QMenu, QComboBox, QMessageBox,
+    QMainWindow,  QListWidgetItem, QMenu, QMessageBox,
     QInputDialog, QDialog
 )
 # LAZY IMPORT: QWebEngine moved to __init__ to avoid early initialization
 # from PyQt6.QtWebEngineWidgets import QWebEngineView
 # from PyQt6.QtWebChannel import QWebChannel
-from PyQt6.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal, QCoreApplication
+from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon
 
 import FTPaths
@@ -39,9 +40,9 @@ import FTPaths
 _translate = QCoreApplication.translate
 
 from RAutils import (
-    FLExTransRuleGenerator, PhraseType, HeadValue, PermutationsValue, Word,
+    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word,
     FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
-    RuleIdentifierAndParentSetter, ConstituentFinder, ValidityChecker,
+    ConstituentFinder, ValidityChecker,
     WebPageProducer, WebPageInteractor, ApplicationPreferences,
 )
 from DisjointFeaturesEditorDlg import DisjointFeaturesEditorDialog
@@ -778,6 +779,57 @@ class RuleAssistantWindow(QMainWindow):
             self, _translate("RuleAssistantWindow", "FLEx Category Chooser"),
             items, current_index)
 
+    def _flex_features_for_word(self, word):
+        """FLEx features to offer for a word, filtered to the word's category and
+        phrase. Mirrors the Java MainController.processInsertFeature, which shows
+        only the features valid for the word's category: features already in use
+        first, then any applicable disjoint feature sets, then the rest of the
+        category's features (rather than every feature in the project)."""
+        if not self._flex_data or word is None:
+            return []
+        phrase = word.parent
+        if phrase is None:
+            return []
+        phrase_type = phrase.phrase_type
+        cat = word.get_category_of_word_or_corresponding_source_word()
+        cat_abbr = cat.name if cat else ""
+
+        features_for_category = self._flex_data.get_features_in_phrase_for_category(phrase_type, cat_abbr)
+        features_in_use = phrase.get_features_in_use_for_category(features_for_category, cat_abbr)
+        disjoint_features = self._disjoint_features_for(features_for_category, phrase_type)
+
+        # Order matches Java: features in use, then disjoint sets, then the rest of
+        # the category's features. Dedup by feature name.
+        seen = set()
+        ordered = []
+        for f in list(features_in_use) + disjoint_features + list(features_for_category):
+            if f.name not in seen:
+                seen.add(f.name)
+                ordered.append(f)
+        return ordered
+
+    def _disjoint_features_for(self, features_for_category, phrase_type):
+        """Build a synthetic FLEx feature for each disjoint feature set whose
+        sub-features are all present in this category. Mirrors the Java
+        MainController.addAnyDisjointFeatures: each qualifying set becomes one
+        feature named after the set, with the Greek variable values."""
+        if not self._generator or not self._flex_data:
+            return []
+        from RAutils import FLExFeature, FLExFeatureValue, GREEK_VARIABLES
+        # Number of variable values comes from the phrase's FLEx data.
+        if phrase_type == PhraseType.source:
+            max_vars = self._flex_data.source_data.max_variables
+        else:
+            max_vars = self._flex_data.target_data.max_variables
+        result = []
+        for df_set in self._generator.disjoint_features:
+            if df_set.has_flex_feature_in_list(features_for_category):
+                ff = FLExFeature(name=df_set.name)
+                for i in range(min(max_vars, len(GREEK_VARIABLES))):
+                    ff.values.append(FLExFeatureValue(abbreviation=GREEK_VARIABLES[i], feature=ff))
+                result.append(ff)
+        return result
+
     def _choose_feature_value(self, features, current_feature=None):
         """Ask the user to pick a feature:value pair from a list. Returns
         (FLExFeature, FLExFeatureValue) or None if cancelled."""
@@ -834,12 +886,8 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_word or not self._flex_data:
             return
 
-        # Get all available features
-        all_features = []
-        if self._flex_data.source_data:
-            all_features.extend(self._flex_data.source_data.features)
-        if self._flex_data.target_data:
-            all_features.extend(self._flex_data.target_data.features)
+        # Only offer features valid for the word's category (matches Java).
+        all_features = self._flex_features_for_word(self._selected_word)
 
         if not all_features:
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
@@ -958,12 +1006,17 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_feature or not self._flex_data:
             return
 
-        # Get all available features
-        all_features = []
-        if self._flex_data.source_data:
-            all_features.extend(self._flex_data.source_data.features)
-        if self._flex_data.target_data:
-            all_features.extend(self._flex_data.target_data.features)
+        # Filter by the owning word's category (matches Java). The feature's owner
+        # is either the word directly or an affix on the word.
+        from RAutils import Word, Affix
+        owner = self._selected_feature.parent
+        if isinstance(owner, Word):
+            owner_word = owner
+        elif isinstance(owner, Affix):
+            owner_word = owner.parent
+        else:
+            owner_word = None
+        all_features = self._flex_features_for_word(owner_word)
 
         if not all_features:
             return
@@ -1073,12 +1126,9 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selected_affix or not self._flex_data:
             return
 
-        # Get all available features
-        all_features = []
-        if self._flex_data.source_data:
-            all_features.extend(self._flex_data.source_data.features)
-        if self._flex_data.target_data:
-            all_features.extend(self._flex_data.target_data.features)
+        # Filter by the owning word's category (matches Java, which derives the
+        # word from the affix's parent).
+        all_features = self._flex_features_for_word(self._selected_affix.parent)
 
         if not all_features:
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
