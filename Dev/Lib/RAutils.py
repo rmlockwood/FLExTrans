@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.2 - 6/15/26 - Ron Lockwood
+#    Refactored: widgets/layout now live in .ui files and logid separated to controler files.
+#
 #   Version 3.16.1 - 6/15/26 - Ron Lockwood
 #    Fixes #1359. Get the target category for a word from its source if necessary.
 #
@@ -209,12 +212,14 @@ class Category(RuleConstituent):
         super().__init__()
 
     def produce_html(self) -> str:
-        return f'{self.produce_span("category", "c")}cat:{self.name}</span>'
+        cat = _translate("RuleAssistantLib", "cat")
+        return f'{self.produce_span("category", "c")}{cat}:{self.name}</span>'
 
     def produce_html_target(self, word_identifier: int) -> str:
+        cat = _translate("RuleAssistantLib", "cat")
         return (
             f'<span class="categorytgt" id="w.{word_identifier}" '
-            f'onclick="toApp(\'w.{word_identifier}\',event)">cat:{self.name}</span>'
+            f'onclick="toApp(\'w.{word_identifier}\',event)">{cat}:{self.name}</span>'
         )
 
 
@@ -308,7 +313,10 @@ class Affix(RuleConstituent):
         super().__init__()
 
     def produce_html(self, is_head: bool = False) -> str:
-        affix_type_str = "prefix" if self.affix_type == AffixType.prefix else "suffix"
+        if self.affix_type == AffixType.prefix:
+            affix_type_str = _translate("RuleAssistantLib", "prefix")
+        else:
+            affix_type_str = _translate("RuleAssistantLib", "suffix")
         html = "<li>"
         html += self.produce_span("tf-nc affix", "a")
         html += affix_type_str + "</span>"

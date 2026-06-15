@@ -3,7 +3,12 @@
  <class>DisjointFeaturesEditorDialog</class>
  <widget class="QDialog" name="DisjointFeaturesEditorDialog">
   <property name="geometry">
-   <rect><x>0</x><y>0</y><width>700</width><height>500</height></rect>
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>500</height>
+   </rect>
   </property>
   <property name="windowTitle">
    <string>Disjoint Features Editor</string>
@@ -20,60 +25,128 @@
      <widget class="QTableWidget" name="sets_table">
       <column><property name="text"><string>Name</string></property></column>
       <column><property name="text"><string>Language</string></property></column>
-      <column><property name="text"><string>Co-Feature</string></property></column>
+      <column><property name="text"><string>Distinguishing feature</string></property></column>
      </widget>
-     <widget class="QWidget" name="editorPane">
+     <widget class="QWidget" name="editorPane" native="true">
       <layout class="QVBoxLayout" name="editorLayout">
-       <item><widget class="QLabel" name="coverTermLabel"><property name="text"><string>Cover term</string></property></widget></item>
+       <item>
+        <widget class="QLabel" name="coverTermLabel">
+         <property name="text"><string>Disjoint feature set</string></property>
+        </widget>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="nameLayout">
-         <item><widget class="QLabel" name="nameLabel"><property name="text"><string>Name:</string></property></widget></item>
+         <item><widget class="QLabel" name="nameLabel"><property name="text"><string>Name</string></property></widget></item>
          <item><widget class="QLineEdit" name="name_field"/></item>
         </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="langLayout">
-         <item><widget class="QLabel" name="langLabel"><property name="text"><string>Language:</string></property></widget></item>
+         <item>
+          <widget class="QLabel" name="langLabel">
+           <property name="enabled"><bool>false</bool></property>
+           <property name="text"><string>Language</string></property>
+          </widget>
+         </item>
          <item>
           <widget class="QComboBox" name="language_combo">
-           <item><property name="text"><string>Source</string></property></item>
-           <item><property name="text"><string>Target</string></property></item>
+           <property name="enabled"><bool>false</bool></property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="cofeatureLayout">
-         <item><widget class="QLabel" name="cofeatureLabel"><property name="text"><string>Co-feature name:</string></property></widget></item>
+         <item><widget class="QLabel" name="cofeatureLabel"><property name="text"><string>Distinguishing feature</string></property></widget></item>
          <item><widget class="QComboBox" name="cofeature_combo"/></item>
         </layout>
        </item>
-       <item><widget class="QLabel" name="pairingsLabel"><property name="text"><string>Pairings</string></property></widget></item>
+       <item>
+        <widget class="QFrame" name="separator">
+         <property name="frameShape"><enum>QFrame::Shape::HLine</enum></property>
+         <property name="frameShadow"><enum>QFrame::Shadow::Sunken</enum></property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="pairingsGrid">
+         <item row="0" column="0"><widget class="QLabel" name="subfeatureHeader"><property name="text"><string>Subfeature</string></property></widget></item>
+         <item row="0" column="1"><widget class="QLabel" name="valueHeader"><property name="text"><string>Feature value</string></property></widget></item>
+         <item row="1" column="0"><widget class="QComboBox" name="feature_combo_1"/></item>
+         <item row="1" column="1"><widget class="QComboBox" name="value_combo_1"/></item>
+         <item row="2" column="0"><widget class="QComboBox" name="feature_combo_2"/></item>
+         <item row="2" column="1"><widget class="QComboBox" name="value_combo_2"/></item>
+         <item row="3" column="0"><widget class="QComboBox" name="feature_combo_3"/></item>
+         <item row="3" column="1"><widget class="QComboBox" name="value_combo_3"/></item>
+         <item row="4" column="0"><widget class="QComboBox" name="feature_combo_4"/></item>
+         <item row="4" column="1"><widget class="QComboBox" name="value_combo_4"/></item>
+         <item row="5" column="0"><widget class="QComboBox" name="feature_combo_5"/></item>
+         <item row="5" column="1"><widget class="QComboBox" name="value_combo_5"/></item>
+         <item row="6" column="0"><widget class="QComboBox" name="feature_combo_6"/></item>
+         <item row="6" column="1"><widget class="QComboBox" name="value_combo_6"/></item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="sliderLayout">
-         <item><widget class="QLabel" name="sliderLabel"><property name="text"><string>Pairings:</string></property></widget></item>
          <item>
-          <widget class="QSlider" name="pairing_slider">
-           <property name="minimum"><number>3</number></property>
-           <property name="maximum"><number>6</number></property>
-           <property name="value"><number>3</number></property>
-           <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
-           <property name="tickPosition"><enum>QSlider::TickPosition::TicksBelow</enum></property>
-           <property name="tickInterval"><number>1</number></property>
+          <widget class="QLabel" name="sliderLabel">
+           <property name="enabled"><bool>false</bool></property>
+           <property name="text"><string>Number of subfeatures:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="sliderBox" native="true">
+           <layout class="QVBoxLayout" name="sliderBoxLayout">
+            <property name="spacing"><number>0</number></property>
+            <property name="leftMargin"><number>0</number></property>
+            <property name="topMargin"><number>0</number></property>
+            <property name="rightMargin"><number>0</number></property>
+            <property name="bottomMargin"><number>0</number></property>
+            <item>
+             <widget class="QSlider" name="pairing_slider">
+              <property name="enabled"><bool>false</bool></property>
+              <property name="minimum"><number>2</number></property>
+              <property name="maximum"><number>6</number></property>
+              <property name="value"><number>2</number></property>
+              <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+              <property name="tickPosition"><enum>QSlider::TickPosition::TicksBelow</enum></property>
+              <property name="tickInterval"><number>1</number></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="sliderNumbersContainer" native="true">
+              <layout class="QHBoxLayout" name="sliderNumbersLayout">
+               <property name="leftMargin"><number>0</number></property>
+               <property name="topMargin"><number>0</number></property>
+               <property name="rightMargin"><number>0</number></property>
+               <property name="bottomMargin"><number>0</number></property>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
        </item>
-       <item><spacer><property name="orientation"><enum>Qt::Orientation::Vertical</enum></property></spacer></item>
+       <item>
+        <spacer name="editorSpacer">
+         <property name="orientation"><enum>Qt::Orientation::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="buttonLayout">
-     <item><widget class="QPushButton" name="add_button"><property name="text"><string>Add New Set</string></property></widget></item>
-     <item><widget class="QPushButton" name="delete_button"><property name="text"><string>Delete Set</string></property></widget></item>
-     <item><spacer><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="add_button"><property name="text"><string>Add new set</string></property></widget></item>
+     <item><widget class="QPushButton" name="delete_button"><property name="text"><string>Delete selected set</string></property></widget></item>
+     <item>
+      <spacer name="buttonSpacer">
+       <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
      <item><widget class="QPushButton" name="close_button"><property name="text"><string>Close</string></property></widget></item>
     </layout>
    </item>

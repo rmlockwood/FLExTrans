@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.2 - 6/15/26 - Ron Lockwood
+#    Refactored: widgets/layout now live in .ui files and logid separated to controler files.
+#
 #   Version 3.16.1 - 6/15/26 - Ron Lockwood
 #    Fixes to not rely on the old RuleAssistantLib folder.
 #
@@ -20,7 +23,7 @@
 #
 #   Runs the Python version of the Rule Assistant to create Apertium transfer rules.
 #
-from RuleAssistantWindow import RuleAssistantWindow
+from RuleAssistantMainWindow import RuleAssistantWindow
 
 import os
 import sys
@@ -115,13 +118,15 @@ translators = []
 # Note: QApplication initialization moved to MainFunction (not module load time)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData', 'RuleAssistantLib']
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData',
+                        'RAutils', 'RuleAssistantWindow', 'RuleAssistantMainWindow',
+                        'DisjointFeaturesEditor', 'DisjointFeaturesEditorDlg']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant (Python)"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Python/PyQt6 version of the tool for creating transfer rules."),
         FTM_Help       : "",
