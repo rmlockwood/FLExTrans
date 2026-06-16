@@ -5,6 +5,15 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.4 - 6/16/26 - Ron Lockwood
+#    Apply coding conventions; camelCase naming.
+#
+#   Version 3.16.3 - 6/15/26 - Ron Lockwood
+#    Remove logging code.
+#
+#   Version 3.16.2 - 6/15/26 - Ron Lockwood
+#    Refactored: widgets/layout now live in .ui files and logid separated to controler files.
+#
 #   Version 3.16.1 - 6/15/26 - Ron Lockwood
 #    Fixes to not rely on the old RuleAssistantLib folder.
 #
@@ -20,70 +29,19 @@
 #
 #   Runs the Python version of the Rule Assistant to create Apertium transfer rules.
 #
-from RuleAssistantWindow import RuleAssistantWindow
+from RuleAssistantMainWindow import RuleAssistantWindow
 
 import os
-import sys
 import subprocess
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-import logging
-import tempfile
-from datetime import datetime
-
-
-# Fallback crash log - writes directly to file if logging fails
-_crash_log = os.path.join(tempfile.gettempdir(), 'RuleAssistantPy_CRASH.log')
-
-def _write_crash_log(msg):
-    """Direct file write as fallback if logging fails"""
-    try:
-        with open(_crash_log, 'a') as f:
-            f.write(f"{datetime.now().isoformat()} - {msg}\n")
-            f.flush()
-    except:
-        pass
-
-_write_crash_log(f"[INIT] RuleAssistantPy module loading at {datetime.now()}")
-
-# Setup logging for debugging - robust version that works even if logging already initialized
-_log_file = os.path.join(tempfile.gettempdir(), 'RuleAssistantPy.log')
-
-# Always set up our own logger with file handler (don't rely on basicConfig)
-_logger = logging.getLogger(__name__)
-_logger.setLevel(logging.DEBUG)
-
-# Remove any existing handlers to avoid duplicates
-for handler in _logger.handlers[:]:
-    _logger.removeHandler(handler)
-
-# Add file handler
-_file_handler = logging.FileHandler(_log_file, mode='w')
-_file_handler.setLevel(logging.DEBUG)
-_file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-_logger.addHandler(_file_handler)
-
-# Add console handler
-_console_handler = logging.StreamHandler(sys.stderr)
-_console_handler.setLevel(logging.DEBUG)
-_console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-_logger.addHandler(_console_handler)
-
-# Also propagate to parent to catch any root logger messages
-_logger.propagate = True
-
-_logger.info("=" * 80)
-_logger.info("RuleAssistantPy.py loaded")
-_logger.info(f"Log file: {_log_file}")
-_logger.info("=" * 80)
 
 from flextoolslib import * # type: ignore
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
-
-_logger.info("PyQt6 imports successful")
+from PyQt6.QtGui import QIcon
 
 # LAZY IMPORTS: Do NOT import QWebEngine at module load time
 # It causes crashes when imported by FlexTools before proper Qt initialization
@@ -115,15 +73,17 @@ translators = []
 # Note: QApplication initialization moved to MainFunction (not module load time)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData', 'RuleAssistantLib']
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules', 'TextClasses', 'InterlinData',
+                        'RAutils', 'RuleAssistantWindow', 'RuleAssistantMainWindow',
+                        'DisjointFeaturesEditor', 'DisjointFeaturesEditorDlg']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
-docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant (Python)"),
-        FTM_Version    : "3.16.1",
+docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RuleAssistant", "Runs the Python/PyQt6 version of the tool for creating transfer rules."),
+        FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
         FTM_Description:    descr}
 
@@ -156,7 +116,6 @@ class DBStartData:
     def toXml(self, root, tag):
 
         parent = ET.SubElement(root, tag, {NAME: self.projectName})
-
         catsEl = ET.SubElement(parent, CATEGORIES)
 
         for cat in self.categoryList:
@@ -165,16 +124,17 @@ class DBStartData:
             dct = self.categoryFeatures.get(cat)
 
             if not dct:
+
                 continue
 
             group = ET.SubElement(elem, 'ValidFeatures')
 
             for feat, types in sorted(dct.items()):
 
-                ET.SubElement(group, 'ValidFeature', name=feat,
-                              type='|'.join(sorted(types)))
+                ET.SubElement(group, 'ValidFeature', name=feat, type='|'.join(sorted(types)))
 
         if not self.featureList:
+
             return
 
         featsEl = ET.SubElement(parent, FEATURES)
@@ -272,16 +232,15 @@ def GetStartData(report, DB, configMap):
 
 def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
 
-    return StartData(GetStartData(report, DB, configMap),
-                     GetStartData(report, TargetDB, configMap))
+    return StartData(GetStartData(report, DB, configMap), GetStartData(report, TargetDB, configMap))
 
 def ProcessLine(line):
 
     readings = []
     loc = 'blank'
     esc = False
-    cur_reading = []
-    cur_string = ''
+    curReading = []
+    curString = ''
 
     for c in line:
 
@@ -291,7 +250,7 @@ def ProcessLine(line):
 
             if loc != 'blank':
 
-                cur_string += c
+                curString += c
 
         elif c == '\\':
 
@@ -304,43 +263,43 @@ def ProcessLine(line):
         elif loc == 'lu' and c == '$' and not esc:
 
             loc = 'blank'
-            cur_reading.append(cur_string)
-            cur_string = ''
-            readings.append(cur_reading)
-            cur_reading = []
+            curReading.append(curString)
+            curString = ''
+            readings.append(curReading)
+            curReading = []
 
             if len(readings) >= 2:
 
-                yield ([p for p in readings[0] if p],
-                       [p for p in readings[1] if p])
+                yield ([p for p in readings[0] if p], [p for p in readings[1] if p])
+
             readings = []
 
         elif loc == 'lu' and c == '/' and not esc:
 
-            cur_reading.append(cur_string)
-            cur_string = ''
-            readings.append(cur_reading)
-            cur_reading = []
+            curReading.append(curString)
+            curString = ''
+            readings.append(curReading)
+            curReading = []
 
         elif loc == 'lu':
 
             if c == '<':
 
                 loc = 'tag'
-                cur_reading.append(cur_string)
-                cur_string = ''
+                curReading.append(curString)
+                curString = ''
             else:
-                cur_string += c
+                curString += c
 
         elif loc == 'tag':
 
             if c == '>':
 
                 loc = 'lu'
-                cur_reading.append(cur_string)
-                cur_string = ''
+                curReading.append(curString)
+                curString = ''
             else:
-                cur_string += c
+                curString += c
 
 readingNumberRegex = re.compile(r'(\d+\.\d+)$')
 
@@ -360,6 +319,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
     if not (sourceText or bidixDix):
+
         return False
 
     if not os.path.isfile(bidixDix):
@@ -382,6 +342,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     params = InterlinData.initInterlinParams(configMap, report, content)
 
     if params is None:
+
         return False
 
     text = InterlinData.getInterlinData(DB, report, params)
@@ -389,6 +350,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
 
     with open(fsrc, 'w', encoding='utf-8') as fout:
+
         text.write(fout)
 
     # Compile the bilingual dictionary
@@ -413,11 +375,12 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 </style></head><body>
 ''')
             fout.write(_translate('RuleAssistant', '<p><b>Source Text:</b> ')+sourceText+'</p>\n')
-            line_count = 0
+            lineCount = 0
 
             for line in fin:
 
                 if not line.strip():
+
                     continue
 
                 srcLine = ''
@@ -431,14 +394,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
                         tgtLine += ReadingToHTML(tgt)
 
                 fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
-                line_count += 1
+                lineCount += 1
 
-                if line_count >= 30:
+                if lineCount >= 30:
+
                     break
 
             fout.write('</body></html>\n')
 
     except Exception as e:
+
         return False
 
     return True
@@ -455,8 +420,8 @@ def GetTestDataFile(report, DB, configMap):
 
     return fhtml
 
-
 def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDataFile, fromLRT=False):
+
     """Launch the Python/PyQt6 Rule Assistant GUI.
 
     This function calls the Python version of the Rule Assistant (no fallback to Java).
@@ -472,103 +437,69 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
         Tuple of (saved: bool, rule_index: Optional[int], launch_lrt: bool)
     """
 
-    _write_crash_log("[START] StartRuleAssistant() called")
-    _logger.info("StartRuleAssistant() called")
-    _logger.info(f"  ruleAssistantFile: {ruleAssistantFile}")
-    _logger.info(f"  ruleAssistGUIinputfile: {ruleAssistGUIinputfile}")
-    _logger.info(f"  testDataFile: {testDataFile}")
-    _logger.info(f"  fromLRT: {fromLRT}")
-
     if not _HAS_PYTHON_RA:
-        error_msg = "Python Rule Assistant library not found at expected location"
-        _logger.error(error_msg)
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=error_msg, ruleAssistant=docs[FTM_Name]))
+
+        errorMsg = "Python Rule Assistant library not found at expected location"
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=errorMsg, ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
     try:
         # Get interface language from FLEx
         try:
-            lang_code = Utils.getInterfaceLangCode()
-            _logger.info(f"Got interface language code: {lang_code}")
-        except Exception as e:
-            _logger.warning(f"Failed to get interface language code: {e}")
-            lang_code = "en"
+            langCode = Utils.getInterfaceLangCode()
+
+        except Exception:
+
+            langCode = "en"
 
         # Ensure QApplication exists before creating window (QWebEngineView needs it)
-        _logger.info("About to get or create QApplication")
         app = QApplication.instance()
-        _logger.info(f"QApplication.instance() returned: {app}")
 
         if app is None:
-            _logger.info("Creating new QApplication")
-            app = QApplication(['RuleAssistant'])
-            _logger.info("QApplication created successfully")
-        else:
-            _logger.info("Reusing existing QApplication")
 
-        window = RuleAssistantWindow(
-            rule_file=ruleAssistantFile,
-            flex_data_file=ruleAssistGUIinputfile,
-            test_data_file=testDataFile,
-            came_from_lrt=fromLRT,
-            ui_lang_code=lang_code,
-        )
-        _logger.info("[WINDOW] RuleAssistantWindow created")
-        print("[WINDOW] Window created OK", file=sys.stderr)
+            app = QApplication(['RuleAssistant'])
+
+        # Application-wide icon so every window, dialog and message box (including
+        # parentless ones) shows the FLExTrans icon in its title bar.
+        QApplication.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+
+        window = RuleAssistantWindow(ruleFile=ruleAssistantFile, flexDataFile=ruleAssistGUIinputfile, testDataFile=testDataFile, cameFromLrt=fromLRT, uiLangCode=langCode)
 
         # Show and run
-        _logger.info("[SHOW] Calling window.show()")
-        print("[SHOW] Showing window...", file=sys.stderr)
-
         window.show()
-        _logger.info("[SHOW] window.show() returned")
-        print("[EXEC] Running app.exec()...", file=sys.stderr)
 
         if app:
+
             app.exec()
 
         # Get and save result
-        _logger.info("[RESULT] Getting result from window")
-        result = window.get_result()
+        result = window.getResult()
 
-        _logger.info(f"[RESULT] Result: saved={result.saved}, rule_index={result.rule_index}, launch_lrt={result.launch_lrt}")
-
-        return (result.saved, result.rule_index, result.launch_lrt)
+        return (result.saved, result.ruleIndex, result.launchLrt)
 
     except Exception as e:
-        import traceback
-        error_msg = str(e)
-        _logger.error(f"Exception in StartRuleAssistant: {error_msg}")
-        _logger.error(traceback.format_exc())
-        print(f"Python Rule Assistant error: {error_msg}")
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=error_msg, ruleAssistant=docs[FTM_Name]))
+
+        errorMsg = str(e)
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=errorMsg, ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True, fromLRT=False):
-    _write_crash_log("[MAIN] MainFunction() called")
-    _logger.info("=" * 80)
-    _logger.info("MainFunction() called - FLExTrans Rule Assistant module entry point")
-    _logger.info("=" * 80)
 
     translators = []
-    _logger.info("About to get or create QApplication")
     app = QApplication.instance()
-    _logger.info(f"QApplication.instance() returned: {app}")
 
     if app is None:
-        _logger.info("Creating new QApplication")
-        app = QApplication(['FLExTrans'])
-        _logger.info("QApplication created successfully")
-    else:
-        _logger.info("Reusing existing QApplication")
 
-    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME],
-                           translators, loadBase=True)
+        app = QApplication(['FLExTrans'])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], translators, loadBase=True)
 
     configMap = ReadConfig.readConfig(report)
+
     if not configMap:
+
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
@@ -588,6 +519,7 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
 
     if not tranferRulePath:
+
         return
 
     TargetDB = Utils.openTargetProject(configMap, report)
@@ -607,11 +539,13 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     ruleCount = None
 
     if saved:
+
         ruleCount = CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
     else:
         report.Info(_translate('RuleAssistant', 'No rules created.'))
 
     if lrt:
+
         from LiveRuleTesterTool import MainFunction as LRT
         LRT(DB, report, modify, ruleCount=ruleCount)
 
@@ -625,4 +559,5 @@ FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
+
     FlexToolsModule.Help()
