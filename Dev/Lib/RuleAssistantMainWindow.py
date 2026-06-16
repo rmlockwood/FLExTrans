@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.5 - 6/16/26 - Ron Lockwood
+#    Locate features/affixes/words by object identity, not dataclass value-equality, so edits act on the clicked item.
+#
 #   Version 3.16.4 - 6/16/26 - Ron Lockwood
 #    Apply coding conventions; camelCase naming.
 #
@@ -521,7 +524,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         phraseType = phrase.phraseType
-        index = phrase.words.index(word)
+        index = self._indexByIdentity(phrase.words, word)
 
         self._cmWordMoveLeft.setEnabled(index != 0)
         self._cmWordMoveRight.setEnabled(index != len(phrase.words) - 1)
@@ -559,7 +562,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = word.affixes.index(affix)
+        index = self._indexByIdentity(word.affixes, affix)
         self._cmAffixMoveLeft.setEnabled(index != 0)
         self._cmAffixMoveRight.setEnabled(index != len(word.affixes) - 1)
 
@@ -854,7 +857,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
         newWord = deepcopy(self._selectedWord)
         phrase.words.insert(index + 1, newWord)
         self._markDirty()
@@ -936,7 +939,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
         phrase.insertNewWordAt(index)
         self._markDirty()
         self._refreshRuleView()
@@ -954,7 +957,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
         phrase.insertNewWordAt(index + 1)
         self._markDirty()
         self._refreshRuleView()
@@ -1194,7 +1197,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
 
         if index > 0:
 
@@ -1215,7 +1218,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
 
         if index < len(phrase.words) - 1:
 
@@ -1234,7 +1237,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if phrase:
 
-            index = phrase.words.index(self._selectedWord)
+            index = self._indexByIdentity(phrase.words, self._selectedWord)
             phrase.words.pop(index)
             self._markDirty()
             self._refreshRuleView()
@@ -1424,7 +1427,7 @@ class RuleAssistantWindow(QMainWindow):
 
         from copy import deepcopy
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = deepcopy(self._selectedAffix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
         self._markDirty()
@@ -1483,7 +1486,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.prefix)
         self._selectedWord.affixes.insert(index, newAffix)
         self._markDirty()
@@ -1499,7 +1502,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.prefix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
         self._markDirty()
@@ -1515,7 +1518,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.suffix)
         self._selectedWord.affixes.insert(index, newAffix)
         self._markDirty()
@@ -1531,7 +1534,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.suffix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
         self._markDirty()
@@ -1544,7 +1547,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
 
         if index > 0:
 
@@ -1559,7 +1562,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
 
         if index < len(self._selectedWord.affixes) - 1:
 
@@ -1574,7 +1577,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         self._selectedWord.affixes.pop(index)
         self._markDirty()
         self._refreshRuleView()
@@ -1675,6 +1678,25 @@ class RuleAssistantWindow(QMainWindow):
         self._markDirty()
 
     # Helper methods
+    def _indexByIdentity(self, items, target) -> int:
+        """Return the position of target within items, matched by object identity.
+
+        The rule constituents (Word, Affix, Feature, ...) are @dataclasses, so their
+        auto-generated __eq__ compares by field values. list.index()/in/remove therefore match
+        the first *value-equal* item, which is the wrong one when value-equal duplicates coexist
+        (e.g. a duplicated affix, or two blank words/affixes). The selected constituent is always
+        the exact instance the user clicked, so identity is the correct comparison. Returns -1 if
+        not found, though the selected object should always be present.
+        """
+
+        for index, item in enumerate(items):
+
+            if item is target:
+
+                return index
+
+        return -1
+
     def _findPhraseContainingWord(self, rule, word) -> Optional["Phrase"]:
         """Find which phrase contains the given word.
 
@@ -1686,11 +1708,13 @@ class RuleAssistantWindow(QMainWindow):
             The Phrase containing the word, or None
         """
 
-        if word in rule.source.words:
+        # Identity, not value-equality: a source word and a target word can be value-equal
+        # (e.g. same wordId and content), so "in" could report the wrong phrase.
+        if self._indexByIdentity(rule.source.words, word) != -1:
 
             return rule.source
 
-        if word in rule.target.words:
+        if self._indexByIdentity(rule.target.words, word) != -1:
 
             return rule.target
 
@@ -1704,21 +1728,29 @@ class RuleAssistantWindow(QMainWindow):
             feature: The Feature to remove
         """
 
+        # Match by object identity, not value equality. Feature is a @dataclass, so its
+        # auto-generated __eq__ compares field values; two boxes can hold value-equal features
+        # (e.g. the same BantuNounGender:β on both a word and its prefix). Using "in"/remove would
+        # then delete the first value-equal match found (the word's), not the one the user clicked.
         for word in rule.source.words + rule.target.words:
 
-            if feature in word.features:
+            for index, wordFeature in enumerate(word.features):
 
-                word.features.remove(feature)
+                if wordFeature is feature:
 
-                return
+                    del word.features[index]
+
+                    return
 
             for affix in word.affixes:
 
-                if feature in affix.features:
+                for index, affixFeature in enumerate(affix.features):
 
-                    affix.features.remove(feature)
+                    if affixFeature is feature:
 
-                    return
+                        del affix.features[index]
+
+                        return
 
     def _findAndClearCategory(self, rule, category) -> None:
         """Find and clear a category from its parent word.
