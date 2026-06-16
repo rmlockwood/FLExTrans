@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.4 - 6/16/26 - Ron Lockwood
+#    Apply coding conventions; camelCase naming.
+#
 #   Version 3.16.3 - 6/15/26 - Ron Lockwood
 #    Remove logging code.
 #
@@ -113,7 +116,6 @@ class DBStartData:
     def toXml(self, root, tag):
 
         parent = ET.SubElement(root, tag, {NAME: self.projectName})
-
         catsEl = ET.SubElement(parent, CATEGORIES)
 
         for cat in self.categoryList:
@@ -122,16 +124,17 @@ class DBStartData:
             dct = self.categoryFeatures.get(cat)
 
             if not dct:
+
                 continue
 
             group = ET.SubElement(elem, 'ValidFeatures')
 
             for feat, types in sorted(dct.items()):
 
-                ET.SubElement(group, 'ValidFeature', name=feat,
-                              type='|'.join(sorted(types)))
+                ET.SubElement(group, 'ValidFeature', name=feat, type='|'.join(sorted(types)))
 
         if not self.featureList:
+
             return
 
         featsEl = ET.SubElement(parent, FEATURES)
@@ -229,16 +232,15 @@ def GetStartData(report, DB, configMap):
 
 def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
 
-    return StartData(GetStartData(report, DB, configMap),
-                     GetStartData(report, TargetDB, configMap))
+    return StartData(GetStartData(report, DB, configMap), GetStartData(report, TargetDB, configMap))
 
 def ProcessLine(line):
 
     readings = []
     loc = 'blank'
     esc = False
-    cur_reading = []
-    cur_string = ''
+    curReading = []
+    curString = ''
 
     for c in line:
 
@@ -248,7 +250,7 @@ def ProcessLine(line):
 
             if loc != 'blank':
 
-                cur_string += c
+                curString += c
 
         elif c == '\\':
 
@@ -261,43 +263,43 @@ def ProcessLine(line):
         elif loc == 'lu' and c == '$' and not esc:
 
             loc = 'blank'
-            cur_reading.append(cur_string)
-            cur_string = ''
-            readings.append(cur_reading)
-            cur_reading = []
+            curReading.append(curString)
+            curString = ''
+            readings.append(curReading)
+            curReading = []
 
             if len(readings) >= 2:
 
-                yield ([p for p in readings[0] if p],
-                       [p for p in readings[1] if p])
+                yield ([p for p in readings[0] if p], [p for p in readings[1] if p])
+
             readings = []
 
         elif loc == 'lu' and c == '/' and not esc:
 
-            cur_reading.append(cur_string)
-            cur_string = ''
-            readings.append(cur_reading)
-            cur_reading = []
+            curReading.append(curString)
+            curString = ''
+            readings.append(curReading)
+            curReading = []
 
         elif loc == 'lu':
 
             if c == '<':
 
                 loc = 'tag'
-                cur_reading.append(cur_string)
-                cur_string = ''
+                curReading.append(curString)
+                curString = ''
             else:
-                cur_string += c
+                curString += c
 
         elif loc == 'tag':
 
             if c == '>':
 
                 loc = 'lu'
-                cur_reading.append(cur_string)
-                cur_string = ''
+                curReading.append(curString)
+                curString = ''
             else:
-                cur_string += c
+                curString += c
 
 readingNumberRegex = re.compile(r'(\d+\.\d+)$')
 
@@ -317,6 +319,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
     if not (sourceText or bidixDix):
+
         return False
 
     if not os.path.isfile(bidixDix):
@@ -339,6 +342,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     params = InterlinData.initInterlinParams(configMap, report, content)
 
     if params is None:
+
         return False
 
     text = InterlinData.getInterlinData(DB, report, params)
@@ -346,6 +350,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
 
     with open(fsrc, 'w', encoding='utf-8') as fout:
+
         text.write(fout)
 
     # Compile the bilingual dictionary
@@ -370,11 +375,12 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 </style></head><body>
 ''')
             fout.write(_translate('RuleAssistant', '<p><b>Source Text:</b> ')+sourceText+'</p>\n')
-            line_count = 0
+            lineCount = 0
 
             for line in fin:
 
                 if not line.strip():
+
                     continue
 
                 srcLine = ''
@@ -388,14 +394,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
                         tgtLine += ReadingToHTML(tgt)
 
                 fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
-                line_count += 1
+                lineCount += 1
 
-                if line_count >= 30:
+                if lineCount >= 30:
+
                     break
 
             fout.write('</body></html>\n')
 
     except Exception as e:
+
         return False
 
     return True
@@ -412,8 +420,8 @@ def GetTestDataFile(report, DB, configMap):
 
     return fhtml
 
-
 def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDataFile, fromLRT=False):
+
     """Launch the Python/PyQt6 Rule Assistant GUI.
 
     This function calls the Python version of the Rule Assistant (no fallback to Java).
@@ -430,61 +438,68 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
     """
 
     if not _HAS_PYTHON_RA:
-        error_msg = "Python Rule Assistant library not found at expected location"
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=error_msg, ruleAssistant=docs[FTM_Name]))
+
+        errorMsg = "Python Rule Assistant library not found at expected location"
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=errorMsg, ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
     try:
         # Get interface language from FLEx
         try:
-            lang_code = Utils.getInterfaceLangCode()
+            langCode = Utils.getInterfaceLangCode()
+
         except Exception:
-            lang_code = "en"
+
+            langCode = "en"
 
         # Ensure QApplication exists before creating window (QWebEngineView needs it)
         app = QApplication.instance()
+
         if app is None:
+
             app = QApplication(['RuleAssistant'])
 
         # Application-wide icon so every window, dialog and message box (including
         # parentless ones) shows the FLExTrans icon in its title bar.
         QApplication.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
-        window = RuleAssistantWindow(
-            rule_file=ruleAssistantFile,
-            flex_data_file=ruleAssistGUIinputfile,
-            test_data_file=testDataFile,
-            came_from_lrt=fromLRT,
-            ui_lang_code=lang_code,
-        )
+        window = RuleAssistantWindow(ruleFile=ruleAssistantFile, flexDataFile=ruleAssistGUIinputfile, testDataFile=testDataFile, cameFromLrt=fromLRT, uiLangCode=langCode)
 
         # Show and run
         window.show()
+
         if app:
+
             app.exec()
 
         # Get and save result
-        result = window.get_result()
-        return (result.saved, result.rule_index, result.launch_lrt)
+        result = window.getResult()
+
+        return (result.saved, result.ruleIndex, result.launchLrt)
 
     except Exception as e:
-        error_msg = str(e)
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=error_msg, ruleAssistant=docs[FTM_Name]))
+
+        errorMsg = str(e)
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=errorMsg, ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True, fromLRT=False):
+
     translators = []
     app = QApplication.instance()
+
     if app is None:
+
         app = QApplication(['FLExTrans'])
 
-    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME],
-                           translators, loadBase=True)
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], translators, loadBase=True)
 
     configMap = ReadConfig.readConfig(report)
+
     if not configMap:
+
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
@@ -504,6 +519,7 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
 
     if not tranferRulePath:
+
         return
 
     TargetDB = Utils.openTargetProject(configMap, report)
@@ -523,11 +539,13 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     ruleCount = None
 
     if saved:
+
         ruleCount = CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
     else:
         report.Info(_translate('RuleAssistant', 'No rules created.'))
 
     if lrt:
+
         from LiveRuleTesterTool import MainFunction as LRT
         LRT(DB, report, modify, ruleCount=ruleCount)
 
@@ -541,4 +559,5 @@ FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
+
     FlexToolsModule.Help()

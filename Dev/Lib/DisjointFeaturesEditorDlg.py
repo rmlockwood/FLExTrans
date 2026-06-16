@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.1 - 6/16/26 - Ron Lockwood
+#    Apply coding conventions; camelCase naming.
+#
 #   Version 3.16 - 6/15/26 - Ron Lockwood
 #    Refactored: widgets/layout now live in DisjointFeaturesEditor.ui (compiled to
 #    DisjointFeaturesEditor.py as Ui_DisjointFeaturesEditorDialog). This controller
@@ -26,12 +29,12 @@ import FTPaths
 from RAutils import PhraseType, DISJOINT_NUMBER, DISJOINT_SG, DISJOINT_PL
 
 if TYPE_CHECKING:
+
     from RAutils import FLExTransRuleGenerator, FLExData
 
 from DisjointFeaturesEditor import Ui_DisjointFeaturesEditorDialog
 
 _translate = QCoreApplication.translate
-
 
 class DisjointFeaturesEditorDialog(QDialog):
     """Modal dialog for editing disjoint feature sets."""
@@ -40,301 +43,399 @@ class DisjointFeaturesEditorDialog(QDialog):
     # (matches the Java editor's minimumPairings = 2).
     MINIMUM_PAIRINGS = 2
 
-    def __init__(self, generator: "FLExTransRuleGenerator", flex_data: "FLExData", parent=None):
+    def __init__(self, generator: "FLExTransRuleGenerator", flexData: "FLExData", parent=None):
+
         super().__init__(parent)
         self.ui = Ui_DisjointFeaturesEditorDialog()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         self.generator = generator
-        self.flex_data = flex_data
-        self._selected_index = -1
-        self._updating = False  # guard against re-entrant signal handlers
+        self.flexData = flexData
+        self._selectedIndex = -1
 
-        self._setup_widgets()
-        self._connect_signals()
+        # Guard against re-entrant signal handlers.
+        self._updating = False
 
-        self._populate_list()
-        self._update_button_states()
+        self._setupWidgets()
+        self._connectSignals()
+
+        self._populateList()
+        self._updateButtonStates()
 
         # Load the first set automatically when the editor opens (matches Java).
-        if self.generator.disjoint_features:
-            self.sets_table.selectRow(0)
+        if self.generator.disjointFeatures:
 
-    def _setup_widgets(self) -> None:
+            self.setsTable.selectRow(0)
+
+    def _setupWidgets(self) -> None:
         """Alias the .ui widgets, apply behavioral tweaks the .ui can't express, and
         populate the combos/slider that are driven by data."""
-        self.sets_table = self.ui.sets_table
-        self.name_field = self.ui.name_field
-        self.language_combo = self.ui.language_combo
-        self.cofeature_combo = self.ui.cofeature_combo
-        self.pairing_slider = self.ui.pairing_slider
-        self._add_button = self.ui.add_button
-        self._delete_button = self.ui.delete_button
+
+        # Alias the generated UI widgets to shorter controller-side names.
+        self.setsTable = self.ui.sets_table
+        self.nameField = self.ui.name_field
+        self.languageCombo = self.ui.language_combo
+        self.cofeatureCombo = self.ui.cofeature_combo
+        self.pairingSlider = self.ui.pairing_slider
+        self._addButton = self.ui.add_button
+        self._deleteButton = self.ui.delete_button
 
         # Read-only summary grid: no editing, row selection, no focus rectangle, and a
         # stylesheet so Qt draws its own selection (removing the Win11 accent bar).
-        self.sets_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.sets_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.sets_table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.sets_table.setStyleSheet(
+        self.setsTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.setsTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setsTable.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.setsTable.setStyleSheet(
             "QTableView { outline: 0; }"
             "QTableView::item { border: 0; }"
             "QTableView::item:selected {"
             " background-color: palette(highlight); color: palette(highlighted-text); }"
         )
-        header = self.sets_table.horizontalHeader()
+        header = self.setsTable.horizontalHeader()
+
         if header is not None:
+
             header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
         self.ui.splitter.setSizes([300, 350])
 
         # Language combo: store the language code as item data so the display text can
         # be translated without affecting the logic that reads the selection.
-        self.language_combo.addItem(_translate("DisjointFeaturesEditorDialog", "Source"), "source")
-        self.language_combo.addItem(_translate("DisjointFeaturesEditorDialog", "Target"), "target")
+        self.languageCombo.addItem(_translate("DisjointFeaturesEditorDialog", "Source"), "source")
+        self.languageCombo.addItem(_translate("DisjointFeaturesEditorDialog", "Target"), "target")
 
         # Collect the .ui pairing combos into the lists the logic uses.
-        self.pairing_fields: list[tuple[QComboBox, QComboBox]] = []
-        self._pairing_row_widgets: list[tuple[QComboBox, QComboBox]] = []
+        self.pairingFields: list[tuple[QComboBox, QComboBox]] = []
+        self._pairingRowWidgets: list[tuple[QComboBox, QComboBox]] = []
+
         for i in range(1, 7):
+
             fc = getattr(self.ui, f"feature_combo_{i}")
             vc = getattr(self.ui, f"value_combo_{i}")
-            self.pairing_fields.append((fc, vc))
-            self._pairing_row_widgets.append((fc, vc))
+            self.pairingFields.append((fc, vc))
+            self._pairingRowWidgets.append((fc, vc))
 
-        self._populate_cofeature_combo(PhraseType.target)
-        current_cofeature = self.cofeature_combo.currentText()
-        for fc, vc in self.pairing_fields:
-            self._populate_feature_combo(fc, PhraseType.target, current_cofeature)
-            self._populate_value_combo(vc, PhraseType.target, current_cofeature)
+        self._populateCofeatureCombo(PhraseType.target)
+        currentCofeature = self.cofeatureCombo.currentText()
+
+        for fc, vc in self.pairingFields:
+
+            self._populateFeatureCombo(fc, PhraseType.target, currentCofeature)
+            self._populateValueCombo(vc, PhraseType.target, currentCofeature)
 
         # Numbers under the (disabled) slider; Qt sliders don't render tick labels.
         for n in range(self.MINIMUM_PAIRINGS, 7):
+
             if n > self.MINIMUM_PAIRINGS:
+
                 self.ui.sliderNumbersLayout.addStretch()
+
             self.ui.sliderNumbersLayout.addWidget(QLabel(str(n)))
 
-        self._update_pairing_row_visibility(self.MINIMUM_PAIRINGS)
+        self._updatePairingRowVisibility(self.MINIMUM_PAIRINGS)
 
-    def _connect_signals(self) -> None:
+    def _connectSignals(self) -> None:
         """Wire the .ui widgets to the controller's handlers."""
-        self.sets_table.itemSelectionChanged.connect(self._on_set_selected)
-        self.name_field.textChanged.connect(self._on_name_changed)
-        self.language_combo.currentIndexChanged.connect(self._on_language_changed)
-        self.cofeature_combo.currentIndexChanged.connect(self._on_cofeature_changed)
-        self.pairing_slider.sliderMoved.connect(self._on_pairing_slider_changed)
-        self._add_button.clicked.connect(self._on_add_set)
-        self._delete_button.clicked.connect(self._on_delete_set)
+
+        self.setsTable.itemSelectionChanged.connect(self._onSetSelected)
+        self.nameField.textChanged.connect(self._onNameChanged)
+        self.languageCombo.currentIndexChanged.connect(self._onLanguageChanged)
+        self.cofeatureCombo.currentIndexChanged.connect(self._onCofeatureChanged)
+        self.pairingSlider.sliderMoved.connect(self._onPairingSliderChanged)
+        self._addButton.clicked.connect(self._onAddSet)
+        self._deleteButton.clicked.connect(self._onDeleteSet)
         self.ui.close_button.clicked.connect(self.accept)
-        for i, (fc, vc) in enumerate(self.pairing_fields):
-            fc.currentIndexChanged.connect(lambda _idx, row=i: self._on_pairing_feature_changed(row))
-            vc.currentIndexChanged.connect(lambda _idx, row=i: self._on_pairing_value_changed(row))
+
+        for i, (fc, vc) in enumerate(self.pairingFields):
+
+            fc.currentIndexChanged.connect(lambda _idx, row=i: self._onPairingFeatureChanged(row))
+            vc.currentIndexChanged.connect(lambda _idx, row=i: self._onPairingValueChanged(row))
 
     @staticmethod
-    def _make_cell(text: str) -> QTableWidgetItem:
+    def _makeCell(text: str) -> QTableWidgetItem:
         """A read-only (non-editable) grid cell."""
+
         item = QTableWidgetItem(text)
         item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+
         return item
 
-    def _populate_list(self) -> None:
+    def _populateList(self) -> None:
         """Populate the disjoint feature sets table."""
-        self.sets_table.setRowCount(len(self.generator.disjoint_features))
-        for i, ds in enumerate(self.generator.disjoint_features):
-            lang_display = (_translate("DisjointFeaturesEditorDialog", "Source")
-                            if ds.language.value == "source"
-                            else _translate("DisjointFeaturesEditorDialog", "Target"))
-            self.sets_table.setItem(i, 0, self._make_cell(ds.name))
-            self.sets_table.setItem(i, 1, self._make_cell(lang_display))
-            self.sets_table.setItem(i, 2, self._make_cell(ds.co_feature_name))
 
-    def _features_for_language(self, language) -> list:
+        self.setsTable.setRowCount(len(self.generator.disjointFeatures))
+
+        for i, ds in enumerate(self.generator.disjointFeatures):
+
+            langDisplay = (_translate("DisjointFeaturesEditorDialog", "Source") if ds.language.value == "source" else _translate("DisjointFeaturesEditorDialog", "Target"))
+            self.setsTable.setItem(i, 0, self._makeCell(ds.name))
+            self.setsTable.setItem(i, 1, self._makeCell(langDisplay))
+            self.setsTable.setItem(i, 2, self._makeCell(ds.coFeatureName))
+
+    def _featuresForLanguage(self, language) -> list:
         """FLEx features for the given phrase (source vs target), matching Java,
         which draws on the source or target features depending on the set."""
-        if not self.flex_data:
-            return []
-        if language == PhraseType.source:
-            return self.flex_data.source_data.features
-        return self.flex_data.target_data.features
 
-    def _populate_cofeature_combo(self, language) -> None:
+        if not self.flexData:
+
+            return []
+
+        if language == PhraseType.source:
+
+            return self.flexData.sourceData.features
+
+        return self.flexData.targetData.features
+
+    def _populateCofeatureCombo(self, language) -> None:
         """Distinguishing feature combo: limited to the "number" feature, as in
         the Java editor (the only feature the disjoint editor currently supports)."""
-        self.cofeature_combo.clear()
-        names = [f.name for f in self._features_for_language(language)
-                 if f.name == DISJOINT_NUMBER]
-        self.cofeature_combo.addItems(names)
 
-    def _populate_feature_combo(self, combo: QComboBox, language, co_feature_name: str) -> None:
+        self.cofeatureCombo.clear()
+        names = [f.name for f in self._featuresForLanguage(language)
+                 if f.name == DISJOINT_NUMBER]
+        self.cofeatureCombo.addItems(names)
+
+    def _populateFeatureCombo(self, combo: QComboBox, language, coFeatureName: str) -> None:
         """Subfeature combo: all FLEx feature names except the distinguishing
         (co-)feature, matching the Java flexFeatureMinusCoFeatureNames list."""
+
         combo.clear()
-        names = sorted({f.name for f in self._features_for_language(language)
-                        if f.name != co_feature_name})
+        names = sorted({f.name for f in self._featuresForLanguage(language)
+                        if f.name != coFeatureName})
         combo.addItems(names)
 
-    def _populate_value_combo(self, combo: QComboBox, language, co_feature_name: str) -> None:
+    def _populateValueCombo(self, combo: QComboBox, language, coFeatureName: str) -> None:
         """Feature value combo: the co-feature's values, limited to "sg"/"pl", as
         in the Java editor (the only values the disjoint editor currently supports)."""
+
         combo.clear()
-        if not co_feature_name:
+
+        if not coFeatureName:
+
             return
-        for feature in self._features_for_language(language):
-            if feature.name == co_feature_name:
+
+        for feature in self._featuresForLanguage(language):
+
+            if feature.name == coFeatureName:
+
                 for v in feature.values:
+
                     if v.abbreviation in (DISJOINT_SG, DISJOINT_PL):
+
                         combo.addItem(v.abbreviation)
+
                 break
 
-    def _update_pairing_row_visibility(self, count: int) -> None:
+    def _updatePairingRowVisibility(self, count: int) -> None:
         """Show rows 0..count-1, hide rows count..5."""
-        for i, (fc, vc) in enumerate(self._pairing_row_widgets):
+
+        for i, (fc, vc) in enumerate(self._pairingRowWidgets):
+
             visible = i < count
             fc.setVisible(visible)
             vc.setVisible(visible)
 
-    def _on_set_selected(self) -> None:
-        rows = self.sets_table.selectedIndexes()
-        if rows:
-            self._selected_index = rows[0].row()
-            self._update_editor_from_selection()
-        else:
-            self._selected_index = -1
+    def _onSetSelected(self) -> None:
 
-    def _update_editor_from_selection(self) -> None:
+        rows = self.setsTable.selectedIndexes()
+
+        if rows:
+
+            self._selectedIndex = rows[0].row()
+            self._updateEditorFromSelection()
+        else:
+            self._selectedIndex = -1
+
+    def _updateEditorFromSelection(self) -> None:
         """Load selected set into editor widgets (blocks signals to avoid write-back)."""
-        if not (0 <= self._selected_index < len(self.generator.disjoint_features)):
+
+        if not (0 <= self._selectedIndex < len(self.generator.disjointFeatures)):
+
             return
+
         self._updating = True
+
         try:
-            ds = self.generator.disjoint_features[self._selected_index]
-            self.name_field.setText(ds.name)
-            lang_index = self.language_combo.findData(ds.language.value)
-            self.language_combo.setCurrentIndex(lang_index if lang_index >= 0 else 0)
+            ds = self.generator.disjointFeatures[self._selectedIndex]
+            self.nameField.setText(ds.name)
+            langIndex = self.languageCombo.findData(ds.language.value)
+            self.languageCombo.setCurrentIndex(langIndex if langIndex >= 0 else 0)
 
             # Repopulate the combos (limited like Java) for this set's language.
-            self._populate_cofeature_combo(ds.language)
-            self.cofeature_combo.setCurrentText(ds.co_feature_name)
-            for fc, vc in self.pairing_fields:
-                self._populate_feature_combo(fc, ds.language, ds.co_feature_name)
-                self._populate_value_combo(vc, ds.language, ds.co_feature_name)
+            self._populateCofeatureCombo(ds.language)
+            self.cofeatureCombo.setCurrentText(ds.coFeatureName)
+
+            for fc, vc in self.pairingFields:
+
+                self._populateFeatureCombo(fc, ds.language, ds.coFeatureName)
+                self._populateValueCombo(vc, ds.language, ds.coFeatureName)
 
             count = max(len(ds.pairings), self.MINIMUM_PAIRINGS)
-            self.pairing_slider.setValue(count)
+            self.pairingSlider.setValue(count)
 
             for i in range(6):
-                fc, vc = self.pairing_fields[i]
+
+                fc, vc = self.pairingFields[i]
+
                 if i < len(ds.pairings):
+
                     pairing = ds.pairings[i]
-                    fc.setCurrentText(pairing.flex_feature_name)
-                    vc.setCurrentText(pairing.co_feature_value)
+                    fc.setCurrentText(pairing.flexFeatureName)
+                    vc.setCurrentText(pairing.coFeatureValue)
                 else:
                     fc.setCurrentIndex(0)
                     vc.setCurrentIndex(0)
 
-            self._update_pairing_row_visibility(count)
+            self._updatePairingRowVisibility(count)
         finally:
             self._updating = False
 
-    def _on_name_changed(self) -> None:
-        if self._updating:
-            return
-        if 0 <= self._selected_index < len(self.generator.disjoint_features):
-            self.generator.disjoint_features[self._selected_index].name = self.name_field.text()
-            item = self.sets_table.item(self._selected_index, 0)
-            if item:
-                item.setText(self.name_field.text())
+    def _onNameChanged(self) -> None:
 
-    def _on_language_changed(self) -> None:
         if self._updating:
-            return
-        if 0 <= self._selected_index < len(self.generator.disjoint_features):
-            lang = PhraseType.source if self.language_combo.currentData() == "source" else PhraseType.target
-            self.generator.disjoint_features[self._selected_index].language = lang
 
-    def _on_cofeature_changed(self) -> None:
-        if self._updating:
             return
-        if 0 <= self._selected_index < len(self.generator.disjoint_features):
-            ds = self.generator.disjoint_features[self._selected_index]
-            new_name = self.cofeature_combo.currentText()
-            ds.co_feature_name = new_name
-            item = self.sets_table.item(self._selected_index, 2)
+
+        if 0 <= self._selectedIndex < len(self.generator.disjointFeatures):
+
+            self.generator.disjointFeatures[self._selectedIndex].name = self.nameField.text()
+            item = self.setsTable.item(self._selectedIndex, 0)
+
             if item:
-                item.setText(new_name)
+
+                item.setText(self.nameField.text())
+
+    def _onLanguageChanged(self) -> None:
+
+        if self._updating:
+
+            return
+
+        if 0 <= self._selectedIndex < len(self.generator.disjointFeatures):
+
+            lang = PhraseType.source if self.languageCombo.currentData() == "source" else PhraseType.target
+            self.generator.disjointFeatures[self._selectedIndex].language = lang
+
+    def _onCofeatureChanged(self) -> None:
+
+        if self._updating:
+
+            return
+
+        if 0 <= self._selectedIndex < len(self.generator.disjointFeatures):
+
+            ds = self.generator.disjointFeatures[self._selectedIndex]
+            newName = self.cofeatureCombo.currentText()
+            ds.coFeatureName = newName
+            item = self.setsTable.item(self._selectedIndex, 2)
+
+            if item:
+
+                item.setText(newName)
+
             # Repopulate the subfeature and value combos for the new co-feature
             # (subfeature list excludes the co-feature; values are limited to sg/pl).
             self._updating = True
+
             try:
-                for fc, vc in self.pairing_fields:
-                    current_feat = fc.currentText()
-                    current_val = vc.currentText()
-                    self._populate_feature_combo(fc, ds.language, new_name)
-                    self._populate_value_combo(vc, ds.language, new_name)
-                    fc.setCurrentText(current_feat)
-                    vc.setCurrentText(current_val)
+                for fc, vc in self.pairingFields:
+
+                    currentFeat = fc.currentText()
+                    currentVal = vc.currentText()
+                    self._populateFeatureCombo(fc, ds.language, newName)
+                    self._populateValueCombo(vc, ds.language, newName)
+                    fc.setCurrentText(currentFeat)
+                    vc.setCurrentText(currentVal)
             finally:
                 self._updating = False
 
-    def _on_pairing_feature_changed(self, row: int) -> None:
+    def _onPairingFeatureChanged(self, row: int) -> None:
         """Write pairing feature name back to model."""
-        if self._updating:
-            return
-        if not (0 <= self._selected_index < len(self.generator.disjoint_features)):
-            return
-        ds = self.generator.disjoint_features[self._selected_index]
-        if row < len(ds.pairings):
-            ds.pairings[row].flex_feature_name = self.pairing_fields[row][0].currentText()
 
-    def _on_pairing_value_changed(self, row: int) -> None:
+        if self._updating:
+
+            return
+
+        if not (0 <= self._selectedIndex < len(self.generator.disjointFeatures)):
+
+            return
+
+        ds = self.generator.disjointFeatures[self._selectedIndex]
+
+        if row < len(ds.pairings):
+
+            ds.pairings[row].flexFeatureName = self.pairingFields[row][0].currentText()
+
+    def _onPairingValueChanged(self, row: int) -> None:
         """Write pairing co-feature value back to model."""
-        if self._updating:
-            return
-        if not (0 <= self._selected_index < len(self.generator.disjoint_features)):
-            return
-        ds = self.generator.disjoint_features[self._selected_index]
-        if row < len(ds.pairings):
-            ds.pairings[row].co_feature_value = self.pairing_fields[row][1].currentText()
 
-    def _on_pairing_slider_changed(self) -> None:
-        if not (0 <= self._selected_index < len(self.generator.disjoint_features)):
+        if self._updating:
+
             return
-        ds = self.generator.disjoint_features[self._selected_index]
-        new_count = self.pairing_slider.value()
-        while len(ds.pairings) < new_count:
+
+        if not (0 <= self._selectedIndex < len(self.generator.disjointFeatures)):
+
+            return
+
+        ds = self.generator.disjointFeatures[self._selectedIndex]
+
+        if row < len(ds.pairings):
+
+            ds.pairings[row].coFeatureValue = self.pairingFields[row][1].currentText()
+
+    def _onPairingSliderChanged(self) -> None:
+
+        if not (0 <= self._selectedIndex < len(self.generator.disjointFeatures)):
+
+            return
+
+        ds = self.generator.disjointFeatures[self._selectedIndex]
+        newCount = self.pairingSlider.value()
+
+        while len(ds.pairings) < newCount:
+
             from RAutils import DisjointFeatureValuePairing
             ds.pairings.append(DisjointFeatureValuePairing())
-        while len(ds.pairings) > new_count:
-            ds.pairings.pop()
-        self._update_pairing_row_visibility(new_count)
 
-    def _on_add_set(self) -> None:
+        while len(ds.pairings) > newCount:
+
+            ds.pairings.pop()
+
+        self._updatePairingRowVisibility(newCount)
+
+    def _onAddSet(self) -> None:
+
         from RAutils import DisjointFeatureSet, DisjointFeatureValuePairing, PhraseType
+
         # Default the distinguishing feature to "number" (the only supported one), so
         # the Feature value lists populate with its sg/pl values.
-        new_set = DisjointFeatureSet(
+        newSet = DisjointFeatureSet(
             name="New Set",
-            co_feature_name=DISJOINT_NUMBER,
+            coFeatureName=DISJOINT_NUMBER,
             language=PhraseType.target
         )
-        new_set.pairings = [DisjointFeatureValuePairing() for _ in range(self.MINIMUM_PAIRINGS)]
-        self.generator.disjoint_features.append(new_set)
-        self._populate_list()
-        self._update_button_states()
+        newSet.pairings = [DisjointFeatureValuePairing() for _ in range(self.MINIMUM_PAIRINGS)]
+        self.generator.disjointFeatures.append(newSet)
+        self._populateList()
+        self._updateButtonStates()
+
         # Select the newly added set so it loads in the editor for editing.
-        self.sets_table.selectRow(len(self.generator.disjoint_features) - 1)
+        self.setsTable.selectRow(len(self.generator.disjointFeatures) - 1)
 
-    def _on_delete_set(self) -> None:
-        if 0 <= self._selected_index < len(self.generator.disjoint_features):
-            self.generator.disjoint_features.pop(self._selected_index)
-            self._populate_list()
-            self._selected_index = -1
-            self._update_button_states()
+    def _onDeleteSet(self) -> None:
 
-    def _update_button_states(self) -> None:
+        if 0 <= self._selectedIndex < len(self.generator.disjointFeatures):
+
+            self.generator.disjointFeatures.pop(self._selectedIndex)
+            self._populateList()
+            self._selectedIndex = -1
+            self._updateButtonStates()
+
+    def _updateButtonStates(self) -> None:
         """At most one disjoint feature set is allowed: enable Add only when there
         are none, and enable Delete only when there is at least one."""
-        has_set = len(self.generator.disjoint_features) > 0
-        self._add_button.setEnabled(not has_set)
-        self._delete_button.setEnabled(has_set)
+
+        hasSet = len(self.generator.disjointFeatures) > 0
+        self._addButton.setEnabled(not hasSet)
+        self._deleteButton.setEnabled(hasSet)

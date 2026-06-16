@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.4 - 6/16/26 - Ron Lockwood
+#    Apply coding conventions; camelCase naming.
+#
 #   Version 3.16.3 - 6/15/26 - Ron Lockwood
 #    Get the LRT button working.
 #
@@ -54,13 +57,12 @@ from ListChooserDialog import ListChooserDialog
 # Generated from RuleAssistantWindow.ui by pyuic (do not hand-edit that file).
 from RuleAssistantWindow import Ui_RuleAssistantWindow
 
-
 class WindowResult(NamedTuple):
     """Result returned from main window."""
-    saved: bool
-    rule_index: Optional[int]
-    launch_lrt: bool
 
+    saved: bool
+    ruleIndex: Optional[int]
+    launchLrt: bool
 
 class RuleAssistantWindow(QMainWindow):
     """Main window for the Rule Assistant application.
@@ -71,33 +73,31 @@ class RuleAssistantWindow(QMainWindow):
     # Signal emitted when window finishes (for FlexTools integration)
     finished = pyqtSignal()
 
-
-    def __init__(self, rule_file: str, flex_data_file: str, test_data_file: str,
-                 came_from_lrt: bool = False, ui_lang_code: str = "en", parent=None):
+    def __init__(self, ruleFile: str, flexDataFile: str, testDataFile: str, cameFromLrt: bool = False, uiLangCode: str = "en", parent=None):
         """Initialize the main window.
 
         Args:
-            rule_file: Path to rule XML file
-            flex_data_file: Path to FLEx metadata XML file
-            test_data_file: Path to test data HTML file
-            came_from_lrt: Whether launched from Live Rule Tester
-            ui_lang_code: UI language code
+            ruleFile: Path to rule XML file
+            flexDataFile: Path to FLEx metadata XML file
+            testDataFile: Path to test data HTML file
+            cameFromLrt: Whether launched from Live Rule Tester
+            uiLangCode: UI language code
             parent: Parent widget
         """
         super().__init__(parent)
 
-        self.rule_file = rule_file
-        self.flex_data_file = flex_data_file
-        self.test_data_file = test_data_file
-        self.came_from_lrt = came_from_lrt
-        self.ui_lang_code = ui_lang_code
+        self.ruleFile = ruleFile
+        self.flexDataFile = flexDataFile
+        self.testDataFile = testDataFile
+        self.cameFromLrt = cameFromLrt
+        self.uiLangCode = uiLangCode
 
         # Data and state
         self._generator: Optional[FLExTransRuleGenerator] = None
-        self._flex_data: Optional[FLExData] = None
-        self._current_rule_index = 0
+        self._flexData: Optional[FLExData] = None
+        self._currentRuleIndex = 0
         self._dirty = False
-        self._result = WindowResult(saved=False, rule_index=None, launch_lrt=False)
+        self._result = WindowResult(saved=False, ruleIndex=None, launchLrt=False)
 
         # Services
         self._producer = WebPageProducer()
@@ -105,285 +105,325 @@ class RuleAssistantWindow(QMainWindow):
         self._preferences = ApplicationPreferences()
 
         # Selected constituents for context menu operations
-        self._selected_word: Optional[Word] = None
-        self._selected_category = None
-        self._selected_feature = None
-        self._selected_affix = None
+        self._selectedWord: Optional[Word] = None
+        self._selectedCategory = None
+        self._selectedFeature = None
+        self._selectedAffix = None
 
         # Setup UI from the compiled .ui form
         self.ui = Ui_RuleAssistantWindow()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        self._alias_widgets()
-        self._create_web_views()
-        self._populate_permutations_combo()
-        self._connect_signals()
-        if self.came_from_lrt:
-            self.test_lrt_button.setEnabled(False)
+        self._aliasWidgets()
+        self._createWebViews()
+        self._populatePermutationsCombo()
+        self._connectSignals()
 
-        self._create_context_menus()
-        self._setup_keyboard_shortcuts()
-        self._setup_webview()
-        self._load_data()
-        self._restore_window_state()
+        if self.cameFromLrt:
+
+            self.testLrtButton.setEnabled(False)
+
+        self._createContextMenus()
+        self._setupKeyboardShortcuts()
+        self._setupWebview()
+        self._loadData()
+        self._restoreWindowState()
 
         self.setWindowTitle(_translate("RuleAssistantWindow", "FLExTrans Rule Assistant"))
 
-    def _alias_widgets(self) -> None:
+    def _aliasWidgets(self) -> None:
         """Expose the widgets created by the .ui under the names the rest of the
         controller uses."""
-        self.rule_list = self.ui.rule_list
-        self.overwrite_checkbox = self.ui.overwrite_checkbox
-        self.disjoint_button = self.ui.disjoint_button
-        self.rule_name_field = self.ui.rule_name_field
-        self.rule_description_field = self.ui.rule_description_field
-        self.permutations_combo = self.ui.permutations_combo
-        self.test_lrt_button = self.ui.test_lrt_button
-        self.save_button = self.ui.save_button
-        self.save_create_button = self.ui.save_create_button
-        self.save_all_button = self.ui.save_all_button
-        self.help_button = self.ui.help_button
+
+        # Alias each generated widget to a camelCase attribute used elsewhere in the controller.
+        self.ruleList = self.ui.rule_list
+        self.overwriteCheckbox = self.ui.overwrite_checkbox
+        self.disjointButton = self.ui.disjoint_button
+        self.ruleNameField = self.ui.rule_name_field
+        self.ruleDescriptionField = self.ui.rule_description_field
+        self.permutationsCombo = self.ui.permutations_combo
+        self.testLrtButton = self.ui.test_lrt_button
+        self.saveButton = self.ui.save_button
+        self.saveCreateButton = self.ui.save_create_button
+        self.saveAllButton = self.ui.save_all_button
+        self.helpButton = self.ui.help_button
+
         # Splitter proportions (runtime tweak, not expressible in the .ui).
         self.ui.main_splitter.setSizes([200, 460])
         self.ui.v_splitter.setSizes([250, 750])
 
-    def _create_web_views(self) -> None:
+    def _createWebViews(self) -> None:
         """Create the QWebEngineViews in code (kept out of the .ui to preserve the
         lazy initialization) and drop them into their placeholder layouts."""
-        self.test_data_view = QWebEngineView()
-        self.ui.testDataLayout.addWidget(self.test_data_view)
-        self.tree_view = QWebEngineView()
-        self.ui.treeLayout.addWidget(self.tree_view)
 
-    def _populate_permutations_combo(self) -> None:
+        self.testDataView = QWebEngineView()
+        self.ui.testDataLayout.addWidget(self.testDataView)
+        self.treeView = QWebEngineView()
+        self.ui.treeLayout.addWidget(self.treeView)
+
+    def _populatePermutationsCombo(self) -> None:
         """Fill the permutations combo. A stable key is stored as item data so the
         displayed text can be translated without affecting the logic that reads it."""
-        self.permutations_combo.addItem(_translate("RuleAssistantWindow", "No"), "no")
-        self.permutations_combo.addItem(_translate("RuleAssistantWindow", "Including head-only rule"), "with head")
-        self.permutations_combo.addItem(_translate("RuleAssistantWindow", "Omitting head-only rule"), "not head")
 
-    def _connect_signals(self) -> None:
+        self.permutationsCombo.addItem(_translate("RuleAssistantWindow", "No"), "no")
+        self.permutationsCombo.addItem(_translate("RuleAssistantWindow", "Including head-only rule"), "with head")
+        self.permutationsCombo.addItem(_translate("RuleAssistantWindow", "Omitting head-only rule"), "not head")
+
+    def _connectSignals(self) -> None:
         """Wire the .ui widgets to the controller's handlers."""
-        self.rule_list.itemSelectionChanged.connect(self._on_rule_selected)
-        self.rule_list.customContextMenuRequested.connect(self._on_rule_list_context_menu)
-        self.overwrite_checkbox.toggled.connect(self._on_overwrite_toggled)
-        self.disjoint_button.clicked.connect(self._on_disjoint_features)
-        self.rule_name_field.textChanged.connect(self._on_rule_name_changed)
-        self.rule_description_field.textChanged.connect(self._on_rule_description_changed)
-        self.permutations_combo.currentIndexChanged.connect(self._on_permutations_changed)
-        self.test_lrt_button.clicked.connect(self._on_test_in_lrt)
-        self.save_button.clicked.connect(self._on_save)
-        self.save_create_button.clicked.connect(self._on_save_create)
-        self.save_all_button.clicked.connect(self._on_save_create_all)
-        self.help_button.clicked.connect(self._on_help)
 
-    def _setup_webview(self) -> None:
+        self.ruleList.itemSelectionChanged.connect(self._onRuleSelected)
+        self.ruleList.customContextMenuRequested.connect(self._onRuleListContextMenu)
+        self.overwriteCheckbox.toggled.connect(self._onOverwriteToggled)
+        self.disjointButton.clicked.connect(self._onDisjointFeatures)
+        self.ruleNameField.textChanged.connect(self._onRuleNameChanged)
+        self.ruleDescriptionField.textChanged.connect(self._onRuleDescriptionChanged)
+        self.permutationsCombo.currentIndexChanged.connect(self._onPermutationsChanged)
+        self.testLrtButton.clicked.connect(self._onTestInLrt)
+        self.saveButton.clicked.connect(self._onSave)
+        self.saveCreateButton.clicked.connect(self._onSaveCreate)
+        self.saveAllButton.clicked.connect(self._onSaveCreateAll)
+        self.helpButton.clicked.connect(self._onHelp)
+
+    def _setupWebview(self) -> None:
         """Setup QWebEngineView with the QWebChannel bridge."""
+
         # Disable context menu on webview
-        self.tree_view.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+        self.treeView.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
         # Setup QWebChannel for full interactivity.
-        self._channel = QWebChannel(self.tree_view)
+        self._channel = QWebChannel(self.treeView)
         self._interactor = WebPageInteractor(self)
         self._channel.registerObject("ftRuleGenApp", self._interactor)
-        self.tree_view.page().setWebChannel(self._channel)
+        self.treeView.page().setWebChannel(self._channel)
 
     @staticmethod
-    def _add_action(menu: QMenu, text: str, slot) -> QAction:
+    def _addAction(menu: QMenu, text: str, slot) -> QAction:
         """Add a menu action and return it (typed; QMenu.addAction never returns None here)."""
+
         action = menu.addAction(text, slot)
         assert action is not None
+
         return action
 
-    def _create_context_menus(self) -> None:
+    def _createContextMenus(self) -> None:
         """Create all context menus."""
+
         # Word context menu
-        self._word_menu = QMenu()
-        self._word_menu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._on_word_duplicate)
-        self._word_menu.addSeparator()
-        self._word_menu.addAction(_translate("RuleAssistantWindow", "Change number"), self._on_word_change_number)
-        self._cm_word_mark_as_head = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Mark as head"), self._on_word_mark_as_head)
-        self._cm_word_remove_head = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Remove head marking"), self._on_word_remove_head)
-        self._word_menu.addSeparator()
-        self._word_menu.addAction(_translate("RuleAssistantWindow", "Insert new before"), self._on_word_insert_before)
-        self._word_menu.addAction(_translate("RuleAssistantWindow", "Insert new after"), self._on_word_insert_after)
-        self._word_menu.addSeparator()
-        self._cm_word_insert_prefix = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Insert prefix"), self._on_word_insert_prefix)
-        self._cm_word_insert_suffix = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Insert suffix"), self._on_word_insert_suffix)
-        self._cm_word_insert_category = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Insert category"), self._on_word_insert_category)
-        self._cm_word_insert_feature = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Insert feature"), self._on_word_insert_feature)
-        self._word_menu.addSeparator()
-        self._cm_word_move_left = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Move left"), self._on_word_move_left)
-        self._cm_word_move_right = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Move right"), self._on_word_move_right)
-        self._word_menu.addSeparator()
-        self._cm_word_delete = self._add_action(self._word_menu, _translate("RuleAssistantWindow", "Delete"), self._on_word_delete)
+        self._wordMenu = QMenu()
+        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onWordDuplicate)
+        self._wordMenu.addSeparator()
+        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Change number"), self._onWordChangeNumber)
+        self._cmWordMarkAsHead = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Mark as head"), self._onWordMarkAsHead)
+        self._cmWordRemoveHead = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Remove head marking"), self._onWordRemoveHead)
+        self._wordMenu.addSeparator()
+        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Insert new before"), self._onWordInsertBefore)
+        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Insert new after"), self._onWordInsertAfter)
+        self._wordMenu.addSeparator()
+        self._cmWordInsertPrefix = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Insert prefix"), self._onWordInsertPrefix)
+        self._cmWordInsertSuffix = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Insert suffix"), self._onWordInsertSuffix)
+        self._cmWordInsertCategory = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Insert category"), self._onWordInsertCategory)
+        self._cmWordInsertFeature = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Insert feature"), self._onWordInsertFeature)
+        self._wordMenu.addSeparator()
+        self._cmWordMoveLeft = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Move left"), self._onWordMoveLeft)
+        self._cmWordMoveRight = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Move right"), self._onWordMoveRight)
+        self._wordMenu.addSeparator()
+        self._cmWordDelete = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Delete"), self._onWordDelete)
 
         # Category context menu
-        self._category_menu = QMenu()
-        self._category_menu.addAction(_translate("RuleAssistantWindow", "Edit"), self._on_category_edit)
-        self._category_menu.addSeparator()
-        self._category_menu.addAction(_translate("RuleAssistantWindow", "Delete"), self._on_category_delete)
+        self._categoryMenu = QMenu()
+        self._categoryMenu.addAction(_translate("RuleAssistantWindow", "Edit"), self._onCategoryEdit)
+        self._categoryMenu.addSeparator()
+        self._categoryMenu.addAction(_translate("RuleAssistantWindow", "Delete"), self._onCategoryDelete)
 
         # Feature context menu
-        self._feature_menu = QMenu()
-        self._feature_menu.addAction(_translate("RuleAssistantWindow", "Edit"), self._on_feature_edit)
-        self._feature_menu.addAction(_translate("RuleAssistantWindow", "Edit unmarked"), self._on_feature_edit_unmarked)
-        self._cm_feature_edit_ranking = self._add_action(self._feature_menu, _translate("RuleAssistantWindow", "Edit ranking"), self._on_feature_edit_ranking)
-        self._feature_menu.addSeparator()
-        self._feature_menu.addAction(_translate("RuleAssistantWindow", "Delete"), self._on_feature_delete)
-        self._cm_feature_delete_unmarked = self._add_action(self._feature_menu, _translate("RuleAssistantWindow", "Delete unmarked"), self._on_feature_delete_unmarked)
-        self._cm_feature_delete_ranking = self._add_action(self._feature_menu, _translate("RuleAssistantWindow", "Delete ranking"), self._on_feature_delete_ranking)
+        self._featureMenu = QMenu()
+        self._featureMenu.addAction(_translate("RuleAssistantWindow", "Edit"), self._onFeatureEdit)
+        self._featureMenu.addAction(_translate("RuleAssistantWindow", "Edit unmarked"), self._onFeatureEditUnmarked)
+        self._cmFeatureEditRanking = self._addAction(self._featureMenu, _translate("RuleAssistantWindow", "Edit ranking"), self._onFeatureEditRanking)
+        self._featureMenu.addSeparator()
+        self._featureMenu.addAction(_translate("RuleAssistantWindow", "Delete"), self._onFeatureDelete)
+        self._cmFeatureDeleteUnmarked = self._addAction(self._featureMenu, _translate("RuleAssistantWindow", "Delete unmarked"), self._onFeatureDeleteUnmarked)
+        self._cmFeatureDeleteRanking = self._addAction(self._featureMenu, _translate("RuleAssistantWindow", "Delete ranking"), self._onFeatureDeleteRanking)
 
         # Affix context menu
-        self._affix_menu = QMenu()
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._on_affix_duplicate)
-        self._affix_menu.addSeparator()
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Toggle affix type"), self._on_affix_toggle_type)
-        self._affix_menu.addSeparator()
-        self._cm_affix_insert_feature = self._add_action(self._affix_menu, _translate("RuleAssistantWindow", "Insert feature"), self._on_affix_insert_feature)
-        self._affix_menu.addSeparator()
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Insert new prefix before"), self._on_affix_insert_prefix_before)
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Insert new prefix after"), self._on_affix_insert_prefix_after)
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Insert new suffix before"), self._on_affix_insert_suffix_before)
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Insert new suffix after"), self._on_affix_insert_suffix_after)
-        self._affix_menu.addSeparator()
-        self._cm_affix_move_left = self._add_action(self._affix_menu, _translate("RuleAssistantWindow", "Move left"), self._on_affix_move_left)
-        self._cm_affix_move_right = self._add_action(self._affix_menu, _translate("RuleAssistantWindow", "Move right"), self._on_affix_move_right)
-        self._affix_menu.addSeparator()
-        self._affix_menu.addAction(_translate("RuleAssistantWindow", "Delete"), self._on_affix_delete)
+        self._affixMenu = QMenu()
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onAffixDuplicate)
+        self._affixMenu.addSeparator()
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Toggle affix type"), self._onAffixToggleType)
+        self._affixMenu.addSeparator()
+        self._cmAffixInsertFeature = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Insert feature"), self._onAffixInsertFeature)
+        self._affixMenu.addSeparator()
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new prefix before"), self._onAffixInsertPrefixBefore)
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new prefix after"), self._onAffixInsertPrefixAfter)
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new suffix before"), self._onAffixInsertSuffixBefore)
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new suffix after"), self._onAffixInsertSuffixAfter)
+        self._affixMenu.addSeparator()
+        self._cmAffixMoveLeft = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Move left"), self._onAffixMoveLeft)
+        self._cmAffixMoveRight = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Move right"), self._onAffixMoveRight)
+        self._affixMenu.addSeparator()
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Delete"), self._onAffixDelete)
 
         # Rule list context menu
-        self._rule_menu = QMenu()
-        self._rule_menu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._on_rule_duplicate)
-        self._rule_menu.addAction(_translate("RuleAssistantWindow", "Insert new before"), self._on_rule_insert_before)
-        self._rule_menu.addAction(_translate("RuleAssistantWindow", "Insert new after"), self._on_rule_insert_after)
-        self._rule_menu.addSeparator()
-        self._cm_rule_move_up = self._add_action(self._rule_menu, _translate("RuleAssistantWindow", "Move up"), self._on_rule_move_up)
-        self._cm_rule_move_down = self._add_action(self._rule_menu, _translate("RuleAssistantWindow", "Move down"), self._on_rule_move_down)
-        self._rule_menu.addSeparator()
-        self._rule_menu.addAction(_translate("RuleAssistantWindow", "Delete"), self._on_rule_delete)
+        self._ruleMenu = QMenu()
+        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onRuleDuplicate)
+        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Insert new before"), self._onRuleInsertBefore)
+        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Insert new after"), self._onRuleInsertAfter)
+        self._ruleMenu.addSeparator()
+        self._cmRuleMoveUp = self._addAction(self._ruleMenu, _translate("RuleAssistantWindow", "Move up"), self._onRuleMoveUp)
+        self._cmRuleMoveDown = self._addAction(self._ruleMenu, _translate("RuleAssistantWindow", "Move down"), self._onRuleMoveDown)
+        self._ruleMenu.addSeparator()
+        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Delete"), self._onRuleDelete)
 
-    def _setup_keyboard_shortcuts(self) -> None:
+    def _setupKeyboardShortcuts(self) -> None:
         """Setup keyboard shortcuts."""
-        QShortcut(QKeySequence("Ctrl+S"), self, self._on_save)
 
-    def _load_data(self) -> None:
+        QShortcut(QKeySequence("Ctrl+S"), self, self._onSave)
+
+    def _loadData(self) -> None:
         """Load rule and FLEx data files."""
+
         # Load rules
-        self._generator = XMLBackEndProvider.load_data_from_file(self.rule_file)
+        self._generator = XMLBackEndProvider.loadDataFromFile(self.ruleFile)
 
         # Load FLEx data (optional)
-        if self.flex_data_file:
-            self._flex_data = XMLFLExDataBackEndProvider.load_data_from_file(self.flex_data_file)
+        if self.flexDataFile:
+
+            self._flexData = XMLFLExDataBackEndProvider.loadDataFromFile(self.flexDataFile)
 
         # Populate rule list
-        self._populate_rule_list()
+        self._populateRuleList()
 
         # Load test data
-        if self.test_data_file and Path(self.test_data_file).exists():
-            self.test_data_view.load(QUrl.fromLocalFile(self.test_data_file))
+        if self.testDataFile and Path(self.testDataFile).exists():
+
+            self.testDataView.load(QUrl.fromLocalFile(self.testDataFile))
 
         self._dirty = False
 
-    def _populate_rule_list(self) -> None:
+    def _populateRuleList(self) -> None:
         """Populate the rule list from generator."""
-        self.rule_list.clear()
+
+        self.ruleList.clear()
 
         if self._generator:
-            for i, rule in enumerate(self._generator.flex_trans_rules):
+
+            for i, rule in enumerate(self._generator.flexTransRules):
+
                 item = QListWidgetItem(rule.name or f"Rule {i+1}")
-                self.rule_list.addItem(item)
+                self.ruleList.addItem(item)
 
         # Select first rule
-        if self.rule_list.count() > 0:
-            self.rule_list.setCurrentRow(0)
+        if self.ruleList.count() > 0:
 
-    def _show_rule(self, index: int) -> None:
+            self.ruleList.setCurrentRow(0)
+
+    def _showRule(self, index: int) -> None:
         """Show a rule in the editor.
 
         Args:
             index: Rule index
         """
-        if not self._generator or index < 0 or index >= len(self._generator.flex_trans_rules):
+
+        if not self._generator or index < 0 or index >= len(self._generator.flexTransRules):
+
             return
 
-        self._current_rule_index = index
-        rule = self._generator.flex_trans_rules[index]
+        self._currentRuleIndex = index
+        rule = self._generator.flexTransRules[index]
 
         # Update fields
-        self.rule_name_field.setText(rule.name)
-        self.rule_description_field.setPlainText(rule.description)
+        self.ruleNameField.setText(rule.name)
+        self.ruleDescriptionField.setPlainText(rule.description)
 
-        perm_key = {
+        permKey = {
             PermutationsValue.no: "no",
             PermutationsValue.not_head: "not head",
             PermutationsValue.with_head: "with head",
-        }.get(rule.create_permutations, "with head")
-        perm_index = self.permutations_combo.findData(perm_key)
-        self.permutations_combo.setCurrentIndex(perm_index if perm_index >= 0 else 0)
+        }.get(rule.createPermutations, "with head")
+        permIndex = self.permutationsCombo.findData(permKey)
+        self.permutationsCombo.setCurrentIndex(permIndex if permIndex >= 0 else 0)
 
         # Generate and show HTML
-        html = self._producer.produce_web_page(rule)
-        self.tree_view.setHtml(html, QUrl("qrc:///"))
+        html = self._producer.produceWebPage(rule)
+        self.treeView.setHtml(html, QUrl("qrc:///"))
 
         # Update overwrite checkbox
-        self.overwrite_checkbox.setChecked(
-            self._generator.overwrite_rules.value == "yes"
+        self.overwriteCheckbox.setChecked(
+            self._generator.overwriteRules.value == "yes"
         )
 
-    def _refresh_rule_view(self) -> None:
+    def _refreshRuleView(self) -> None:
         """Refresh the current rule display after editing."""
-        if self._generator and 0 <= self._current_rule_index < len(self._generator.flex_trans_rules):
-            rule = self._generator.flex_trans_rules[self._current_rule_index]
-            # Update list item text
-            item = self.rule_list.item(self._current_rule_index)
-            if item:
-                item.setText(rule.name or f"Rule {self._current_rule_index + 1}")
-            # Re-render HTML
-            html = self._producer.produce_web_page(rule)
-            self.tree_view.setHtml(html, QUrl("qrc:///"))
 
-    def _restore_window_state(self) -> None:
+        if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
+
+            rule = self._generator.flexTransRules[self._currentRuleIndex]
+
+            # Update list item text
+            item = self.ruleList.item(self._currentRuleIndex)
+
+            if item:
+
+                item.setText(rule.name or f"Rule {self._currentRuleIndex + 1}")
+
+            # Re-render HTML
+            html = self._producer.produceWebPage(rule)
+            self.treeView.setHtml(html, QUrl("qrc:///"))
+
+    def _restoreWindowState(self) -> None:
         """Restore window size and position from preferences."""
-        x = self._preferences.get_window_position_x()
-        y = self._preferences.get_window_position_y()
-        w = self._preferences.get_window_width()
-        h = self._preferences.get_window_height()
-        maximized = self._preferences.get_window_maximized()
+
+        x = self._preferences.getWindowPositionX()
+        y = self._preferences.getWindowPositionY()
+        w = self._preferences.getWindowWidth()
+        h = self._preferences.getWindowHeight()
+        maximized = self._preferences.getWindowMaximized()
 
         # Ensure window is visible on screen (not above y=0)
         if y < 0:
+
             y = 50
+
         if x < 0:
+
             x = 50
+
         if w < 400:
+
             w = 1200
+
         if h < 300:
+
             h = 800
 
         self.setGeometry(x, y, w, h)
 
         if maximized:
+
             self.showMaximized()
         else:
             self.show()
 
         # Restore selected rule
-        last_rule = self._preferences.get_last_selected_rule()
-        if 0 <= last_rule < self.rule_list.count():
-            self.rule_list.setCurrentRow(last_rule)
+        lastRule = self._preferences.getLastSelectedRule()
 
-    def _save_window_state(self) -> None:
+        if 0 <= lastRule < self.ruleList.count():
+
+            self.ruleList.setCurrentRow(lastRule)
+
+    def _saveWindowState(self) -> None:
         """Save window state to preferences."""
-        self._preferences.set_window_position_x(self.x())
-        self._preferences.set_window_position_y(self.y())
-        self._preferences.set_window_width(self.width())
-        self._preferences.set_window_height(self.height())
-        self._preferences.set_window_maximized(self.isMaximized())
-        self._preferences.set_last_selected_rule(self._current_rule_index)
+
+        self._preferences.setWindowPositionX(self.x())
+        self._preferences.setWindowPositionY(self.y())
+        self._preferences.setWindowWidth(self.width())
+        self._preferences.setWindowHeight(self.height())
+        self._preferences.setWindowMaximized(self.isMaximized())
+        self._preferences.setLastSelectedRule(self._currentRuleIndex)
         self._preferences.sync()
 
-    def process_item_clicked_on(self, item: str, x: int, y: int) -> None:
+    def processItemClickedOn(self, item: str, x: int, y: int) -> None:
         """Process a click on a tree element.
 
         Args:
@@ -391,40 +431,56 @@ class RuleAssistantWindow(QMainWindow):
             x: Screen X coordinate
             y: Screen Y coordinate
         """
+
         if not self._generator:
+
             return
 
-        rule = self._generator.flex_trans_rules[self._current_rule_index]
-        type_code = item[0]
+        rule = self._generator.flexTransRules[self._currentRuleIndex]
+        typeCode = item[0]
+
         try:
             identifier = int(item[2:])
+
         except (ValueError, IndexError):
+
             return
 
         # Find the constituent
-        constituent = self._finder.find_constituent(rule, identifier)
+        constituent = self._finder.findConstituent(rule, identifier)
+
         if not constituent:
+
             return
 
         pos = QPoint(x, y)
 
         # Show appropriate context menu based on type
-        if type_code == "w":
-            self._selected_word = constituent
-            self._enable_disable_word_menu_items(constituent)
-            self._word_menu.exec(pos)
-        elif type_code == "c":
-            self._selected_category = constituent
-            self._category_menu.exec(pos)
-        elif type_code == "f":
-            self._selected_feature = constituent
-            self._enable_disable_feature_menu_items(constituent)
-            self._feature_menu.exec(pos)
-        elif type_code == "a":
-            self._selected_affix = constituent
-            self._enable_disable_affix_menu_items(constituent)
-            self._affix_menu.exec(pos)
-        elif type_code == "p":
+        if typeCode == "w":
+
+            self._selectedWord = constituent
+            self._enableDisableWordMenuItems(constituent)
+            self._wordMenu.exec(pos)
+
+        elif typeCode == "c":
+
+            self._selectedCategory = constituent
+            self._categoryMenu.exec(pos)
+
+        elif typeCode == "f":
+
+            self._selectedFeature = constituent
+            self._enableDisableFeatureMenuItems(constituent)
+            self._featureMenu.exec(pos)
+
+        elif typeCode == "a":
+
+            self._selectedAffix = constituent
+            self._enableDisableAffixMenuItems(constituent)
+            self._affixMenu.exec(pos)
+
+        elif typeCode == "p":
+
             # Phrase click does nothing
             pass
 
@@ -432,192 +488,257 @@ class RuleAssistantWindow(QMainWindow):
     # Context-menu item enable/disable (mirrors the Java MainController so
     # operations that don't apply to the clicked-on item are greyed out).
     # ------------------------------------------------------------------
-    def _flex_category_has_valid_features(self, word, phrase_type) -> bool:
+    def _flexCategoryHasValidFeatures(self, word, phraseType) -> bool:
         """True if the word's (or corresponding source word's) category exists in
         the FLEx data for this phrase and that category has valid features."""
-        if not self._flex_data:
+
+        if not self._flexData:
+
             return False
-        cat = word.get_category_of_word_or_corresponding_source_word()
+
+        cat = word.getCategoryOfWordOrCorrespondingSourceWord()
+
         if not cat or not cat.name:
+
             return False
-        for flex_cat in self._flex_data.get_flex_categories_for_phrase(phrase_type):
-            if flex_cat.abbreviation == cat.name:
-                return len(flex_cat.valid_features) > 0
+
+        for flexCat in self._flexData.getFlexCategoriesForPhrase(phraseType):
+
+            if flexCat.abbreviation == cat.name:
+
+                return len(flexCat.validFeatures) > 0
+
         return False
 
-    def _enable_disable_word_menu_items(self, word) -> None:
+    def _enableDisableWordMenuItems(self, word) -> None:
+
         from RAutils import PhraseType, HeadValue
+
         phrase = word.parent
+
         if phrase is None:
+
             return
-        phrase_type = phrase.phrase_type
+
+        phraseType = phrase.phraseType
         index = phrase.words.index(word)
 
-        self._cm_word_move_left.setEnabled(index != 0)
-        self._cm_word_move_right.setEnabled(index != len(phrase.words) - 1)
-        self._cm_word_delete.setEnabled(not (index == 0 and len(phrase.words) == 1))
+        self._cmWordMoveLeft.setEnabled(index != 0)
+        self._cmWordMoveRight.setEnabled(index != len(phrase.words) - 1)
+        self._cmWordDelete.setEnabled(not (index == 0 and len(phrase.words) == 1))
 
         # Can only insert a category if the word doesn't already have one.
-        cat = word.get_category_of_word_or_corresponding_source_word()
-        self._cm_word_insert_category.setEnabled(not (cat and cat.name))
+        cat = word.getCategoryOfWordOrCorrespondingSourceWord()
+        self._cmWordInsertCategory.setEnabled(not (cat and cat.name))
 
-        if phrase_type == PhraseType.source:
-            self._cm_word_mark_as_head.setEnabled(False)
-            self._cm_word_remove_head.setEnabled(False)
+        if phraseType == PhraseType.source:
+
+            self._cmWordMarkAsHead.setEnabled(False)
+            self._cmWordRemoveHead.setEnabled(False)
+
         elif word.head == HeadValue.yes:
-            self._cm_word_mark_as_head.setEnabled(False)
-            self._cm_word_remove_head.setEnabled(True)
+
+            self._cmWordMarkAsHead.setEnabled(False)
+            self._cmWordRemoveHead.setEnabled(True)
         else:
-            self._cm_word_mark_as_head.setEnabled(True)
-            self._cm_word_remove_head.setEnabled(False)
+            self._cmWordMarkAsHead.setEnabled(True)
+            self._cmWordRemoveHead.setEnabled(False)
 
         # Affixes can only be inserted on a word that has none yet.
-        no_affixes = len(word.affixes) == 0
-        self._cm_word_insert_prefix.setEnabled(no_affixes)
-        self._cm_word_insert_suffix.setEnabled(no_affixes)
+        noAffixes = len(word.affixes) == 0
+        self._cmWordInsertPrefix.setEnabled(noAffixes)
+        self._cmWordInsertSuffix.setEnabled(noAffixes)
 
-        self._cm_word_insert_feature.setEnabled(
-            self._flex_category_has_valid_features(word, phrase_type))
+        self._cmWordInsertFeature.setEnabled(self._flexCategoryHasValidFeatures(word, phraseType))
 
-    def _enable_disable_affix_menu_items(self, affix) -> None:
+    def _enableDisableAffixMenuItems(self, affix) -> None:
+
         word = affix.parent
+
         if word is None:
+
             return
+
         index = word.affixes.index(affix)
-        self._cm_affix_move_left.setEnabled(index != 0)
-        self._cm_affix_move_right.setEnabled(index != len(word.affixes) - 1)
+        self._cmAffixMoveLeft.setEnabled(index != 0)
+        self._cmAffixMoveRight.setEnabled(index != len(word.affixes) - 1)
 
         phrase = word.parent
-        phrase_type = phrase.phrase_type if phrase is not None else None
-        self._cm_affix_insert_feature.setEnabled(
-            self._flex_category_has_valid_features(word, phrase_type))
+        phraseType = phrase.phraseType if phrase is not None else None
+        self._cmAffixInsertFeature.setEnabled(self._flexCategoryHasValidFeatures(word, phraseType))
 
-    def _enable_disable_feature_menu_items(self, feature) -> None:
+    def _enableDisableFeatureMenuItems(self, feature) -> None:
+
         from RAutils import PhraseType, Word, Affix
+
         # Find the word that owns this feature (directly, or via an affix).
         owner = feature.parent
-        this_word = None
-        if isinstance(owner, Word):
-            this_word = owner
-        elif isinstance(owner, Affix) and isinstance(owner.parent, Word):
-            this_word = owner.parent
+        thisWord = None
 
-        phrase = this_word.parent if this_word is not None else None
-        if phrase is not None and phrase.phrase_type == PhraseType.target and this_word is not None:
+        if isinstance(owner, Word):
+
+            thisWord = owner
+
+        elif isinstance(owner, Affix) and isinstance(owner.parent, Word):
+
+            thisWord = owner.parent
+
+        phrase = thisWord.parent if thisWord is not None else None
+
+        if phrase is not None and phrase.phraseType == PhraseType.target and thisWord is not None:
+
             # Ranking only makes sense when the word has more than one feature
             # (counting features on the word and on all its affixes).
-            feature_count = len(this_word.features) + sum(len(a.features) for a in this_word.affixes)
-            self._cm_feature_edit_ranking.setEnabled(feature_count > 1)
+            featureCount = len(thisWord.features) + sum(len(a.features) for a in thisWord.affixes)
+            self._cmFeatureEditRanking.setEnabled(featureCount > 1)
         else:
-            self._cm_feature_edit_ranking.setEnabled(False)
+            self._cmFeatureEditRanking.setEnabled(False)
 
-        self._cm_feature_delete_unmarked.setEnabled(len(feature.unmarked) > 0)
-        self._cm_feature_delete_ranking.setEnabled(feature.ranking > 0)
+        self._cmFeatureDeleteUnmarked.setEnabled(len(feature.unmarked) > 0)
+        self._cmFeatureDeleteRanking.setEnabled(feature.ranking > 0)
 
-    def _enable_disable_rule_menu_items(self) -> None:
-        self._cm_rule_move_up.setEnabled(self._current_rule_index != 0)
-        last = len(self._generator.flex_trans_rules) - 1 if self._generator else 0
-        self._cm_rule_move_down.setEnabled(self._current_rule_index != last)
+    def _enableDisableRuleMenuItems(self) -> None:
 
-    def _mark_dirty(self) -> None:
+        self._cmRuleMoveUp.setEnabled(self._currentRuleIndex != 0)
+        last = len(self._generator.flexTransRules) - 1 if self._generator else 0
+        self._cmRuleMoveDown.setEnabled(self._currentRuleIndex != last)
+
+    def _markDirty(self) -> None:
         """Mark the document as changed."""
+
         if not self._dirty:
+
             self._dirty = True
+
             # Update title with asterisk
-            current_title = self.windowTitle()
-            if not current_title.endswith("*"):
-                self.setWindowTitle(current_title + "*")
+            currentTitle = self.windowTitle()
+
+            if not currentTitle.endswith("*"):
+
+                self.setWindowTitle(currentTitle + "*")
 
     # Signal handlers
-    def _on_rule_selected(self) -> None:
+    def _onRuleSelected(self) -> None:
         """Handle rule selection in list."""
-        row = self.rule_list.currentRow()
+
+        row = self.ruleList.currentRow()
+
         if row >= 0:
-            self._show_rule(row)
 
-    def _on_rule_name_changed(self) -> None:
+            self._showRule(row)
+
+    def _onRuleNameChanged(self) -> None:
         """Handle rule name text change."""
-        if self._generator and 0 <= self._current_rule_index < len(self._generator.flex_trans_rules):
-            self._generator.flex_trans_rules[self._current_rule_index].name = self.rule_name_field.text()
+
+        if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
+
+            self._generator.flexTransRules[self._currentRuleIndex].name = self.ruleNameField.text()
+
             # Update list
-            item = self.rule_list.item(self._current_rule_index)
+            item = self.ruleList.item(self._currentRuleIndex)
+
             if item:
-                item.setText(self.rule_name_field.text())
-            self._mark_dirty()
 
-    def _on_rule_description_changed(self) -> None:
+                item.setText(self.ruleNameField.text())
+
+            self._markDirty()
+
+    def _onRuleDescriptionChanged(self) -> None:
         """Handle rule description text change."""
-        if self._generator and 0 <= self._current_rule_index < len(self._generator.flex_trans_rules):
-            self._generator.flex_trans_rules[self._current_rule_index].description = (
-                self.rule_description_field.toPlainText()
-            )
-            self._mark_dirty()
 
-    def _on_permutations_changed(self) -> None:
+        if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
+
+            self._generator.flexTransRules[self._currentRuleIndex].description = (self.ruleDescriptionField.toPlainText())
+            self._markDirty()
+
+    def _onPermutationsChanged(self) -> None:
         """Handle permutations combo change."""
-        if self._generator and 0 <= self._current_rule_index < len(self._generator.flex_trans_rules):
-            key_to_enum = {
+
+        if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
+
+            keyToEnum = {
                 "no": PermutationsValue.no,
                 "with head": PermutationsValue.with_head,
                 "not head": PermutationsValue.not_head,
             }
-            self._generator.flex_trans_rules[self._current_rule_index].create_permutations = (
-                key_to_enum.get(self.permutations_combo.currentData(), PermutationsValue.with_head)
-            )
-            self._mark_dirty()
+            self._generator.flexTransRules[self._currentRuleIndex].createPermutations = (keyToEnum.get(self.permutationsCombo.currentData(), PermutationsValue.with_head))
+            self._markDirty()
 
-    def _on_overwrite_toggled(self) -> None:
+    def _onOverwriteToggled(self) -> None:
         """Handle overwrite checkbox toggle."""
-        from RAutils import OverwriteRulesValue
-        if self._generator:
-            self._generator.overwrite_rules = (
-                OverwriteRulesValue.yes if self.overwrite_checkbox.isChecked()
-                else OverwriteRulesValue.no
-            )
-            self._mark_dirty()
 
-    def _on_save(self) -> None:
-        """Handle Save button."""
+        from RAutils import OverwriteRulesValue
+
         if self._generator:
-            XMLBackEndProvider.save_data_to_file(self._generator, self.rule_file)
+
+            self._generator.overwriteRules = (OverwriteRulesValue.yes if self.overwriteCheckbox.isChecked() else OverwriteRulesValue.no)
+            self._markDirty()
+
+    def _onSave(self) -> None:
+        """Handle Save button."""
+
+        if self._generator:
+
+            XMLBackEndProvider.saveDataToFile(self._generator, self.ruleFile)
             self._dirty = False
+
             # Update title
-            current_title = self.windowTitle()
-            if current_title.endswith("*"):
-                self.setWindowTitle(current_title[:-1])
+            currentTitle = self.windowTitle()
+
+            if currentTitle.endswith("*"):
+
+                self.setWindowTitle(currentTitle[:-1])
+
             #QMessageBox.information(self, _translate("RuleAssistantWindow", "Saved"), _translate("RuleAssistantWindow", "Rules saved successfully"))
 
-    def _on_save_create(self) -> None:
+    def _onSaveCreate(self) -> None:
         """Handle Save/Create button."""
+
         if not self._generator:
+
             return
-        rule = self._generator.flex_trans_rules[self._current_rule_index]
-        is_valid, error_msg = ValidityChecker.validate_rule(rule)
-        if not is_valid:
-            QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+
+        rule = self._generator.flexTransRules[self._currentRuleIndex]
+        isValid, errorMsg = ValidityChecker.validateRule(rule)
+
+        if not isValid:
+
+            QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+
             return
-        self._on_save()
-        self._result = WindowResult(saved=True, rule_index=self._current_rule_index, launch_lrt=False)
+
+        self._onSave()
+        self._result = WindowResult(saved=True, ruleIndex=self._currentRuleIndex, launchLrt=False)
         self.close()
 
-    def _on_save_create_all(self) -> None:
+    def _onSaveCreateAll(self) -> None:
         """Handle Save/Create All button."""
+
         if not self._generator:
+
             return
-        for i, rule in enumerate(self._generator.flex_trans_rules):
-            is_valid, error_msg = ValidityChecker.validate_rule(rule)
-            if not is_valid:
-                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+
+        for i, rule in enumerate(self._generator.flexTransRules):
+
+            isValid, errorMsg = ValidityChecker.validateRule(rule)
+
+            if not isValid:
+
+                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+
                 return
-        self._on_save()
-        self._result = WindowResult(saved=True, rule_index=None, launch_lrt=False)
+
+        self._onSave()
+        self._result = WindowResult(saved=True, ruleIndex=None, launchLrt=False)
         self.close()
 
-    def _on_test_in_lrt(self) -> None:
+    def _onTestInLrt(self) -> None:
         """Handle Test In LRT button: ask which save option to use, then save and
         close, flagging that the Live Rule Tester should be launched afterward
         (mirrors the Java MainController.handleTestInLRT)."""
+
         if not self._generator:
+
             return
 
         box = QMessageBox(self)
@@ -626,745 +747,935 @@ class RuleAssistantWindow(QMainWindow):
         box.setText(_translate("RuleAssistantWindow", "Choose which save option you want."))
         box.setInformativeText(_translate("RuleAssistantWindow", "Choose your option."))
 
-        save_btn = box.addButton(
-            _translate("RuleAssistantWindow", "Save"), QMessageBox.ButtonRole.AcceptRole)
-        save_create_btn = box.addButton(
-            _translate("RuleAssistantWindow", "Save & Write"), QMessageBox.ButtonRole.AcceptRole)
-        save_create_all_btn = box.addButton(
-            _translate("RuleAssistantWindow", "Save & Write All"), QMessageBox.ButtonRole.AcceptRole)
-        box.addButton(
-            _translate("RuleAssistantWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
+        saveBtn = box.addButton(_translate("RuleAssistantWindow", "Save"), QMessageBox.ButtonRole.AcceptRole)
+        saveCreateBtn = box.addButton(_translate("RuleAssistantWindow", "Save & Write"), QMessageBox.ButtonRole.AcceptRole)
+        saveCreateAllBtn = box.addButton(_translate("RuleAssistantWindow", "Save & Write All"), QMessageBox.ButtonRole.AcceptRole)
+        box.addButton(_translate("RuleAssistantWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
 
         box.exec()
         clicked = box.clickedButton()
 
-        if clicked is save_create_btn:
+        if clicked is saveCreateBtn:
+
             # Validate and create just the current rule, then launch LRT.
-            rule = self._generator.flex_trans_rules[self._current_rule_index]
-            is_valid, error_msg = ValidityChecker.validate_rule(rule)
-            if not is_valid:
-                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+            rule = self._generator.flexTransRules[self._currentRuleIndex]
+            isValid, errorMsg = ValidityChecker.validateRule(rule)
+
+            if not isValid:
+
+                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+
                 return
-            self._on_save()
-            self._result = WindowResult(saved=True, rule_index=self._current_rule_index, launch_lrt=True)
+
+            self._onSave()
+            self._result = WindowResult(saved=True, ruleIndex=self._currentRuleIndex, launchLrt=True)
             self.close()
-        elif clicked is save_create_all_btn:
+
+        elif clicked is saveCreateAllBtn:
+
             # Validate and create all rules, then launch LRT.
-            for rule in self._generator.flex_trans_rules:
-                is_valid, error_msg = ValidityChecker.validate_rule(rule)
-                if not is_valid:
-                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+            for rule in self._generator.flexTransRules:
+
+                isValid, errorMsg = ValidityChecker.validateRule(rule)
+
+                if not isValid:
+
+                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+
                     return
-            self._on_save()
-            self._result = WindowResult(saved=True, rule_index=None, launch_lrt=True)
+
+            self._onSave()
+            self._result = WindowResult(saved=True, ruleIndex=None, launchLrt=True)
             self.close()
-        elif clicked is save_btn:
+
+        elif clicked is saveBtn:
+
             # Save the rule file only (no rule generation), then launch LRT.
-            for rule in self._generator.flex_trans_rules:
-                is_valid, error_msg = ValidityChecker.validate_rule(rule)
-                if not is_valid:
-                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), error_msg)
+            for rule in self._generator.flexTransRules:
+
+                isValid, errorMsg = ValidityChecker.validateRule(rule)
+
+                if not isValid:
+
+                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+
                     return
-            self._on_save()
-            self._result = WindowResult(saved=False, rule_index=None, launch_lrt=True)
+
+            self._onSave()
+            self._result = WindowResult(saved=False, ruleIndex=None, launchLrt=True)
             self.close()
+
         # Cancel: do nothing.
 
-    def _on_help(self) -> None:
+    def _onHelp(self) -> None:
         """Handle Help button."""
+
         QMessageBox.information(self, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "See documentation for help"))
 
-    def _on_disjoint_features(self) -> None:
+    def _onDisjointFeatures(self) -> None:
         """Handle Disjoint Features button."""
-        if not self._generator or not self._flex_data:
+
+        if not self._generator or not self._flexData:
+
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No data loaded"))
+
             return
 
-        dialog = DisjointFeaturesEditorDialog(self._generator, self._flex_data, self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
-            self._mark_dirty()
-            self._refresh_rule_view()
+        dialog = DisjointFeaturesEditorDialog(self._generator, self._flexData, self)
 
-    def _on_rule_list_context_menu(self, pos: QPoint) -> None:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onRuleListContextMenu(self, pos: QPoint) -> None:
         """Handle rule list context menu."""
-        item = self.rule_list.itemAt(pos)
+
+        item = self.ruleList.itemAt(pos)
+
         if item:
-            self._enable_disable_rule_menu_items()
-            self._rule_menu.exec(self.rule_list.mapToGlobal(pos))
+
+            self._enableDisableRuleMenuItems()
+            self._ruleMenu.exec(self.ruleList.mapToGlobal(pos))
 
     # Word menu handlers
-    def _on_word_duplicate(self) -> None:
+    def _onWordDuplicate(self) -> None:
         """Duplicate selected word."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
         from copy import deepcopy
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
+
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
+
         if not phrase:
+
             return
 
-        index = phrase.words.index(self._selected_word)
-        new_word = deepcopy(self._selected_word)
-        phrase.words.insert(index + 1, new_word)
-        self._mark_dirty()
-        self._refresh_rule_view()
+        index = phrase.words.index(self._selectedWord)
+        newWord = deepcopy(self._selectedWord)
+        phrase.words.insert(index + 1, newWord)
+        self._markDirty()
+        self._refreshRuleView()
 
-    def _on_word_change_number(self) -> None:
+    def _onWordChangeNumber(self) -> None:
         """Change selected word's number."""
-        if not self._selected_word:
+
+        if not self._selectedWord:
+
             return
 
-        new_id, ok = QInputDialog.getText(
-            self, _translate("RuleAssistantWindow", "Word Number"),
-            _translate("RuleAssistantWindow", "Choose word number:"),
-            text=self._selected_word.word_id
-        )
-        if ok and new_id:
-            old_id = self._selected_word.word_id
+        newId, ok = QInputDialog.getText(self, _translate("RuleAssistantWindow", "Word Number"), _translate("RuleAssistantWindow", "Choose word number:"), text=self._selectedWord.wordId)
+
+        if ok and newId:
+
+            oldId = self._selectedWord.wordId
+
             # Update in both source and target phrases
             if self._generator:
-                rule = self._generator.flex_trans_rules[self._current_rule_index]
+
+                rule = self._generator.flexTransRules[self._currentRuleIndex]
+
                 # Find and update source
                 for word in rule.source.words:
-                    if word.word_id == old_id:
-                        word.word_id = new_id
+
+                    if word.wordId == oldId:
+
+                        word.wordId = newId
+
                 # Find and update target
                 for word in rule.target.words:
-                    if word.word_id == old_id:
-                        word.word_id = new_id
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_word_mark_as_head(self) -> None:
+                    if word.wordId == oldId:
+
+                        word.wordId = newId
+
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onWordMarkAsHead(self) -> None:
         """Mark selected word as head."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
-        if phrase:
-            phrase.mark_word_as_head(self._selected_word)
-            self._mark_dirty()
-            self._refresh_rule_view()
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
 
-    def _on_word_remove_head(self) -> None:
+        if phrase:
+
+            phrase.markWordAsHead(self._selectedWord)
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onWordRemoveHead(self) -> None:
         """Remove head marking from selected word."""
-        if not self._selected_word:
+
+        if not self._selectedWord:
+
             return
 
         from RAutils import HeadValue
-        self._selected_word.head = HeadValue.no
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_word_insert_before(self) -> None:
+        self._selectedWord.head = HeadValue.no
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onWordInsertBefore(self) -> None:
         """Insert word before selected word."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
+
         if not phrase:
+
             return
 
-        index = phrase.words.index(self._selected_word)
-        phrase.insert_new_word_at(index)
-        self._mark_dirty()
-        self._refresh_rule_view()
+        index = phrase.words.index(self._selectedWord)
+        phrase.insertNewWordAt(index)
+        self._markDirty()
+        self._refreshRuleView()
 
-    def _on_word_insert_after(self) -> None:
+    def _onWordInsertAfter(self) -> None:
         """Insert word after selected word."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
+
         if not phrase:
+
             return
 
-        index = phrase.words.index(self._selected_word)
-        phrase.insert_new_word_at(index + 1)
-        self._mark_dirty()
-        self._refresh_rule_view()
+        index = phrase.words.index(self._selectedWord)
+        phrase.insertNewWordAt(index + 1)
+        self._markDirty()
+        self._refreshRuleView()
 
-    def _on_word_insert_prefix(self) -> None:
+    def _onWordInsertPrefix(self) -> None:
         """Insert prefix on selected word."""
-        if not self._selected_word:
+
+        if not self._selectedWord:
+
             return
 
         from RAutils import Affix
         from RAutils import AffixType
-        new_affix = Affix(affix_type=AffixType.prefix)
-        self._selected_word.affixes.append(new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_word_insert_suffix(self) -> None:
+        newAffix = Affix(affixType=AffixType.prefix)
+        self._selectedWord.affixes.append(newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onWordInsertSuffix(self) -> None:
         """Insert suffix on selected word."""
-        if not self._selected_word:
+
+        if not self._selectedWord:
+
             return
 
         from RAutils import Affix
         from RAutils import AffixType
-        new_affix = Affix(affix_type=AffixType.suffix)
-        self._selected_word.affixes.append(new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _choose_category(self, categories, current_category):
+        newAffix = Affix(affixType=AffixType.suffix)
+        self._selectedWord.affixes.append(newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _chooseCategory(self, categories, currentCategory):
         """Ask the user to pick a category from a list. Returns the chosen
         FLExCategory or None if cancelled."""
-        items = [(c.abbreviation, c) for c in categories]
-        current_index = 0
-        if current_category is not None:
-            for i, c in enumerate(categories):
-                if c.abbreviation == current_category.name:
-                    current_index = i
-                    break
-        return ListChooserDialog.choose(
-            self, _translate("RuleAssistantWindow", "FLEx Category Chooser"),
-            items, current_index)
 
-    def _flex_features_for_word(self, word):
+        items = [(c.abbreviation, c) for c in categories]
+        currentIndex = 0
+
+        if currentCategory is not None:
+
+            for i, c in enumerate(categories):
+
+                if c.abbreviation == currentCategory.name:
+
+                    currentIndex = i
+
+                    break
+
+        return ListChooserDialog.choose(self, _translate("RuleAssistantWindow", "FLEx Category Chooser"), items, currentIndex)
+
+    def _flexFeaturesForWord(self, word):
         """FLEx features to offer for a word, filtered to the word's category and
         phrase. Mirrors the Java MainController.processInsertFeature, which shows
         only the features valid for the word's category: features already in use
         first, then any applicable disjoint feature sets, then the rest of the
         category's features (rather than every feature in the project)."""
-        if not self._flex_data or word is None:
-            return []
-        phrase = word.parent
-        if phrase is None:
-            return []
-        phrase_type = phrase.phrase_type
-        cat = word.get_category_of_word_or_corresponding_source_word()
-        cat_abbr = cat.name if cat else ""
 
-        features_for_category = self._flex_data.get_features_in_phrase_for_category(phrase_type, cat_abbr)
-        features_in_use = phrase.get_features_in_use_for_category(features_for_category, cat_abbr)
-        disjoint_features = self._disjoint_features_for(features_for_category, phrase_type)
+        if not self._flexData or word is None:
+
+            return []
+
+        phrase = word.parent
+
+        if phrase is None:
+
+            return []
+
+        phraseType = phrase.phraseType
+        cat = word.getCategoryOfWordOrCorrespondingSourceWord()
+        catAbbr = cat.name if cat else ""
+
+        featuresForCategory = self._flexData.getFeaturesInPhraseForCategory(phraseType, catAbbr)
+        featuresInUse = phrase.getFeaturesInUseForCategory(featuresForCategory, catAbbr)
+        disjointFeatures = self._disjointFeaturesFor(featuresForCategory, phraseType)
 
         # Order matches Java: features in use, then disjoint sets, then the rest of
         # the category's features. Dedup by feature name.
         seen = set()
         ordered = []
-        for f in list(features_in_use) + disjoint_features + list(features_for_category):
+
+        for f in list(featuresInUse) + disjointFeatures + list(featuresForCategory):
+
             if f.name not in seen:
+
                 seen.add(f.name)
                 ordered.append(f)
+
         return ordered
 
-    def _disjoint_features_for(self, features_for_category, phrase_type):
+    def _disjointFeaturesFor(self, featuresForCategory, phraseType):
         """Build a synthetic FLEx feature for each disjoint feature set whose
         sub-features are all present in this category. Mirrors the Java
         MainController.addAnyDisjointFeatures: each qualifying set becomes one
         feature named after the set, with the Greek variable values."""
-        if not self._generator or not self._flex_data:
+
+        if not self._generator or not self._flexData:
+
             return []
+
         from RAutils import FLExFeature, FLExFeatureValue, GREEK_VARIABLES
+
         # Number of variable values comes from the phrase's FLEx data.
-        if phrase_type == PhraseType.source:
-            max_vars = self._flex_data.source_data.max_variables
+        if phraseType == PhraseType.source:
+
+            maxVars = self._flexData.sourceData.maxVariables
         else:
-            max_vars = self._flex_data.target_data.max_variables
+            maxVars = self._flexData.targetData.maxVariables
+
         result = []
-        for df_set in self._generator.disjoint_features:
-            if df_set.has_flex_feature_in_list(features_for_category):
-                ff = FLExFeature(name=df_set.name)
-                for i in range(min(max_vars, len(GREEK_VARIABLES))):
+
+        for dfSet in self._generator.disjointFeatures:
+
+            if dfSet.hasFlexFeatureInList(featuresForCategory):
+
+                ff = FLExFeature(name=dfSet.name)
+
+                for i in range(min(maxVars, len(GREEK_VARIABLES))):
+
                     ff.values.append(FLExFeatureValue(abbreviation=GREEK_VARIABLES[i], feature=ff))
+
                 result.append(ff)
+
         return result
 
-    def _choose_feature_value(self, features, current_feature=None):
+    def _chooseFeatureValue(self, features, currentFeature=None):
         """Ask the user to pick a feature:value pair from a list. Returns
         (FLExFeature, FLExFeatureValue) or None if cancelled."""
-        items = []
-        current_index = 0
-        cur_label = current_feature.label if current_feature else None
-        cur_value = current_feature.get_match_or_value() if current_feature else None
-        for feature in features:
-            for value in feature.values:
-                if cur_label and feature.name == cur_label and value.abbreviation == cur_value:
-                    current_index = len(items)
-                items.append((f"{feature.name}:{value.abbreviation}", (feature, value)))
-        return ListChooserDialog.choose(
-            self, _translate("RuleAssistantWindow", "FLEx Feature Value Chooser"),
-            items, current_index)
 
-    def _on_word_insert_category(self) -> None:
+        items = []
+        currentIndex = 0
+        curLabel = currentFeature.label if currentFeature else None
+        curValue = currentFeature.getMatchOrValue() if currentFeature else None
+
+        for feature in features:
+
+            for value in feature.values:
+
+                if curLabel and feature.name == curLabel and value.abbreviation == curValue:
+
+                    currentIndex = len(items)
+
+                items.append((f"{feature.name}:{value.abbreviation}", (feature, value)))
+
+        return ListChooserDialog.choose(self, _translate("RuleAssistantWindow", "FLEx Feature Value Chooser"), items, currentIndex)
+
+    def _onWordInsertCategory(self) -> None:
         """Insert category on selected word."""
-        if not self._selected_word or not self._flex_data:
+
+        if not self._selectedWord or not self._flexData:
+
             return
 
         # Get all available categories
-        all_categories = []
-        if self._flex_data.source_data:
-            all_categories.extend(self._flex_data.source_data.categories)
-        if self._flex_data.target_data:
-            all_categories.extend(self._flex_data.target_data.categories)
+        allCategories = []
+
+        if self._flexData.sourceData:
+
+            allCategories.extend(self._flexData.sourceData.categories)
+
+        if self._flexData.targetData:
+
+            allCategories.extend(self._flexData.targetData.categories)
 
         # Remove duplicates and sort
         seen = set()
-        unique_categories = []
-        for cat in all_categories:
+        uniqueCategories = []
+
+        for cat in allCategories:
+
             if cat.abbreviation not in seen:
-                unique_categories.append(cat)
+
+                uniqueCategories.append(cat)
                 seen.add(cat.abbreviation)
 
-        if not unique_categories:
+        if not uniqueCategories:
+
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No categories available"))
+
             return
 
         # Get current category for pre-selection
         from RAutils import Category
-        current_category = Category(name=self._selected_word.word_category) if self._selected_word.word_category else None
 
-        chosen = self._choose_category(unique_categories, current_category)
+        currentCategory = Category(name=self._selectedWord.wordCategory) if self._selectedWord.wordCategory else None
+
+        chosen = self._chooseCategory(uniqueCategories, currentCategory)
+
         if chosen:
-            self._selected_word.word_category = chosen.abbreviation
-            self._selected_word.category_constituent = Category(name=chosen.abbreviation)
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_word_insert_feature(self) -> None:
+            self._selectedWord.wordCategory = chosen.abbreviation
+            self._selectedWord.categoryConstituent = Category(name=chosen.abbreviation)
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onWordInsertFeature(self) -> None:
         """Insert feature on selected word."""
-        if not self._selected_word or not self._flex_data:
+
+        if not self._selectedWord or not self._flexData:
+
             return
 
         # Only offer features valid for the word's category (matches Java).
-        all_features = self._flex_features_for_word(self._selected_word)
+        allFeatures = self._flexFeaturesForWord(self._selectedWord)
 
-        if not all_features:
+        if not allFeatures:
+
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
+
             return
 
-        result = self._choose_feature_value(all_features)
+        result = self._chooseFeatureValue(allFeatures)
+
         if result:
-            flex_feature, flex_value = result
+
+            flexFeature, flexValue = result
+
             from RAutils import Feature
-            new_feature = Feature(
-                label=flex_feature.name,
-                value=flex_value.abbreviation
-            )
-            self._selected_word.features.append(new_feature)
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_word_move_left(self) -> None:
+            newFeature = Feature(label=flexFeature.name, value=flexValue.abbreviation)
+            self._selectedWord.features.append(newFeature)
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onWordMoveLeft(self) -> None:
         """Move selected word left."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
+
         if not phrase:
+
             return
 
-        index = phrase.words.index(self._selected_word)
+        index = phrase.words.index(self._selectedWord)
+
         if index > 0:
-            phrase.swap_position_of_words(index, index - 1)
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_word_move_right(self) -> None:
+            phrase.swapPositionOfWords(index, index - 1)
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onWordMoveRight(self) -> None:
         """Move selected word right."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
+
         if not phrase:
+
             return
 
-        index = phrase.words.index(self._selected_word)
+        index = phrase.words.index(self._selectedWord)
+
         if index < len(phrase.words) - 1:
-            phrase.swap_position_of_words(index, index + 1)
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_word_delete(self) -> None:
+            phrase.swapPositionOfWords(index, index + 1)
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onWordDelete(self) -> None:
         """Delete selected word."""
-        if not self._selected_word or not self._generator:
+
+        if not self._selectedWord or not self._generator:
+
             return
 
-        phrase = self._find_phrase_containing_word(
-            self._generator.flex_trans_rules[self._current_rule_index],
-            self._selected_word
-        )
+        phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
+
         if phrase:
-            index = phrase.words.index(self._selected_word)
+
+            index = phrase.words.index(self._selectedWord)
             phrase.words.pop(index)
-            self._mark_dirty()
-            self._refresh_rule_view()
+            self._markDirty()
+            self._refreshRuleView()
 
     # Category menu handlers
-    def _on_category_edit(self) -> None:
+    def _onCategoryEdit(self) -> None:
         """Edit selected category."""
-        if not self._selected_category or not self._flex_data:
+
+        if not self._selectedCategory or not self._flexData:
+
             return
 
         # Get all available categories
-        all_categories = []
-        if self._flex_data.source_data:
-            all_categories.extend(self._flex_data.source_data.categories)
-        if self._flex_data.target_data:
-            all_categories.extend(self._flex_data.target_data.categories)
+        allCategories = []
+
+        if self._flexData.sourceData:
+
+            allCategories.extend(self._flexData.sourceData.categories)
+
+        if self._flexData.targetData:
+
+            allCategories.extend(self._flexData.targetData.categories)
 
         # Remove duplicates
         seen = set()
-        unique_categories = []
-        for cat in all_categories:
+        uniqueCategories = []
+
+        for cat in allCategories:
+
             if cat.abbreviation not in seen:
-                unique_categories.append(cat)
+
+                uniqueCategories.append(cat)
                 seen.add(cat.abbreviation)
 
-        if not unique_categories:
+        if not uniqueCategories:
+
             return
 
         from RAutils import Category
-        current_category = Category(name=self._selected_category.name) if self._selected_category.name else None
 
-        chosen = self._choose_category(unique_categories, current_category)
+        currentCategory = Category(name=self._selectedCategory.name) if self._selectedCategory.name else None
+
+        chosen = self._chooseCategory(uniqueCategories, currentCategory)
+
         if chosen:
-            self._selected_category.name = chosen.abbreviation
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_category_delete(self) -> None:
+            self._selectedCategory.name = chosen.abbreviation
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onCategoryDelete(self) -> None:
         """Delete selected category."""
-        if not self._selected_category or not self._generator:
+
+        if not self._selectedCategory or not self._generator:
+
             return
 
-        rule = self._generator.flex_trans_rules[self._current_rule_index]
+        rule = self._generator.flexTransRules[self._currentRuleIndex]
+
         # Find parent word and clear its category
-        self._find_and_clear_category(rule, self._selected_category)
-        self._mark_dirty()
-        self._refresh_rule_view()
+        self._findAndClearCategory(rule, self._selectedCategory)
+        self._markDirty()
+        self._refreshRuleView()
 
     # Feature menu handlers
-    def _on_feature_edit(self) -> None:
+    def _onFeatureEdit(self) -> None:
         """Edit selected feature."""
-        if not self._selected_feature or not self._flex_data:
+
+        if not self._selectedFeature or not self._flexData:
+
             return
 
         # Filter by the owning word's category (matches Java). The feature's owner
         # is either the word directly or an affix on the word.
         from RAutils import Word, Affix
-        owner = self._selected_feature.parent
-        if isinstance(owner, Word):
-            owner_word = owner
-        elif isinstance(owner, Affix):
-            owner_word = owner.parent
-        else:
-            owner_word = None
-        all_features = self._flex_features_for_word(owner_word)
 
-        if not all_features:
+        owner = self._selectedFeature.parent
+
+        if isinstance(owner, Word):
+
+            ownerWord = owner
+
+        elif isinstance(owner, Affix):
+
+            ownerWord = owner.parent
+        else:
+            ownerWord = None
+
+        allFeatures = self._flexFeaturesForWord(ownerWord)
+
+        if not allFeatures:
+
             return
 
         from RAutils import Feature
+
         # Pre-select current feature for dialog
-        current_feature = Feature(
-            label=self._selected_feature.label,
-            value=self._selected_feature.value
-        ) if self._selected_feature.label else None
+        currentFeature = Feature(
+            label=self._selectedFeature.label,
+            value=self._selectedFeature.value
+        ) if self._selectedFeature.label else None
 
-        result = self._choose_feature_value(all_features, current_feature)
+        result = self._chooseFeatureValue(allFeatures, currentFeature)
+
         if result:
-            flex_feature, flex_value = result
-            self._selected_feature.label = flex_feature.name
-            self._selected_feature.value = flex_value.abbreviation
-            self._selected_feature.match = ""
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_feature_edit_unmarked(self) -> None:
+            flexFeature, flexValue = result
+            self._selectedFeature.label = flexFeature.name
+            self._selectedFeature.value = flexValue.abbreviation
+            self._selectedFeature.match = ""
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onFeatureEditUnmarked(self) -> None:
         """Edit unmarked value of selected feature."""
-        if not self._selected_feature:
+
+        if not self._selectedFeature:
+
             return
 
-        text, ok = QInputDialog.getText(
-            self, _translate("RuleAssistantWindow", "Edit unmarked"),
-            _translate("RuleAssistantWindow", "Enter unmarked value:"),
-            text=self._selected_feature.unmarked
-        )
-        if ok:
-            self._selected_feature.unmarked = text
-            self._mark_dirty()
-            self._refresh_rule_view()
+        text, ok = QInputDialog.getText(self, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "Enter unmarked value:"), text=self._selectedFeature.unmarked)
 
-    def _on_feature_edit_ranking(self) -> None:
+        if ok:
+
+            self._selectedFeature.unmarked = text
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onFeatureEditRanking(self) -> None:
         """Edit ranking of selected feature."""
-        if not self._selected_feature:
+
+        if not self._selectedFeature:
+
             return
 
-        value, ok = QInputDialog.getInt(
-            self, _translate("RuleAssistantWindow", "Ranking for Feature"),
-            _translate("RuleAssistantWindow", "Choose ranking:"),
-            self._selected_feature.ranking,
-            0, 9999, 1
-        )
+        value, ok = QInputDialog.getInt(self, _translate("RuleAssistantWindow", "Ranking for Feature"), _translate("RuleAssistantWindow", "Choose ranking:"), self._selectedFeature.ranking, 0, 9999, 1)
+
         if ok:
-            self._selected_feature.ranking = value
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_feature_delete(self) -> None:
+            self._selectedFeature.ranking = value
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onFeatureDelete(self) -> None:
         """Delete selected feature."""
-        if not self._selected_feature or not self._generator:
+
+        if not self._selectedFeature or not self._generator:
+
             return
 
-        rule = self._generator.flex_trans_rules[self._current_rule_index]
+        rule = self._generator.flexTransRules[self._currentRuleIndex]
+
         # Find parent word or affix and remove feature
-        self._find_and_remove_feature(rule, self._selected_feature)
-        self._mark_dirty()
-        self._refresh_rule_view()
+        self._findAndRemoveFeature(rule, self._selectedFeature)
+        self._markDirty()
+        self._refreshRuleView()
 
-    def _on_feature_delete_unmarked(self) -> None:
+    def _onFeatureDeleteUnmarked(self) -> None:
         """Delete unmarked value from selected feature."""
-        if not self._selected_feature:
-            return
-        self._selected_feature.unmarked = ""
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_feature_delete_ranking(self) -> None:
-        """Delete ranking from selected feature."""
-        if not self._selected_feature:
+        if not self._selectedFeature:
+
             return
-        self._selected_feature.ranking = 0
-        self._mark_dirty()
-        self._refresh_rule_view()
+
+        self._selectedFeature.unmarked = ""
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onFeatureDeleteRanking(self) -> None:
+        """Delete ranking from selected feature."""
+
+        if not self._selectedFeature:
+
+            return
+
+        self._selectedFeature.ranking = 0
+        self._markDirty()
+        self._refreshRuleView()
 
     # Affix menu handlers
-    def _on_affix_duplicate(self) -> None:
+    def _onAffixDuplicate(self) -> None:
         """Duplicate selected affix."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
         from copy import deepcopy
-        index = self._selected_word.affixes.index(self._selected_affix)
-        new_affix = deepcopy(self._selected_affix)
-        self._selected_word.affixes.insert(index + 1, new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_affix_toggle_type(self) -> None:
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+        newAffix = deepcopy(self._selectedAffix)
+        self._selectedWord.affixes.insert(index + 1, newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onAffixToggleType(self) -> None:
         """Toggle affix type (prefix <-> suffix)."""
-        if not self._selected_affix:
+
+        if not self._selectedAffix:
+
             return
 
         from RAutils import AffixType
-        self._selected_affix.affix_type = (
-            AffixType.suffix if self._selected_affix.affix_type == AffixType.prefix
-            else AffixType.prefix
-        )
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_affix_insert_feature(self) -> None:
+        self._selectedAffix.affixType = (AffixType.suffix if self._selectedAffix.affixType == AffixType.prefix else AffixType.prefix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onAffixInsertFeature(self) -> None:
         """Insert feature on selected affix."""
-        if not self._selected_affix or not self._flex_data:
+
+        if not self._selectedAffix or not self._flexData:
+
             return
 
         # Filter by the owning word's category (matches Java, which derives the
         # word from the affix's parent).
-        all_features = self._flex_features_for_word(self._selected_affix.parent)
+        allFeatures = self._flexFeaturesForWord(self._selectedAffix.parent)
 
-        if not all_features:
+        if not allFeatures:
+
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
+
             return
 
-        result = self._choose_feature_value(all_features)
+        result = self._chooseFeatureValue(allFeatures)
+
         if result:
-            flex_feature, flex_value = result
+
+            flexFeature, flexValue = result
+
             from RAutils import Feature
-            new_feature = Feature(
-                label=flex_feature.name,
-                value=flex_value.abbreviation
-            )
-            self._selected_affix.features.append(new_feature)
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_affix_insert_prefix_before(self) -> None:
+            newFeature = Feature(label=flexFeature.name, value=flexValue.abbreviation)
+            self._selectedAffix.features.append(newFeature)
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onAffixInsertPrefixBefore(self) -> None:
         """Insert prefix before selected affix."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
         from RAutils import Affix
         from RAutils import AffixType
-        index = self._selected_word.affixes.index(self._selected_affix)
-        new_affix = Affix(affix_type=AffixType.prefix)
-        self._selected_word.affixes.insert(index, new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_affix_insert_prefix_after(self) -> None:
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+        newAffix = Affix(affixType=AffixType.prefix)
+        self._selectedWord.affixes.insert(index, newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onAffixInsertPrefixAfter(self) -> None:
         """Insert prefix after selected affix."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
         from RAutils import Affix
         from RAutils import AffixType
-        index = self._selected_word.affixes.index(self._selected_affix)
-        new_affix = Affix(affix_type=AffixType.prefix)
-        self._selected_word.affixes.insert(index + 1, new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_affix_insert_suffix_before(self) -> None:
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+        newAffix = Affix(affixType=AffixType.prefix)
+        self._selectedWord.affixes.insert(index + 1, newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onAffixInsertSuffixBefore(self) -> None:
         """Insert suffix before selected affix."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
         from RAutils import Affix
         from RAutils import AffixType
-        index = self._selected_word.affixes.index(self._selected_affix)
-        new_affix = Affix(affix_type=AffixType.suffix)
-        self._selected_word.affixes.insert(index, new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_affix_insert_suffix_after(self) -> None:
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+        newAffix = Affix(affixType=AffixType.suffix)
+        self._selectedWord.affixes.insert(index, newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onAffixInsertSuffixAfter(self) -> None:
         """Insert suffix after selected affix."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
         from RAutils import Affix
         from RAutils import AffixType
-        index = self._selected_word.affixes.index(self._selected_affix)
-        new_affix = Affix(affix_type=AffixType.suffix)
-        self._selected_word.affixes.insert(index + 1, new_affix)
-        self._mark_dirty()
-        self._refresh_rule_view()
 
-    def _on_affix_move_left(self) -> None:
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+        newAffix = Affix(affixType=AffixType.suffix)
+        self._selectedWord.affixes.insert(index + 1, newAffix)
+        self._markDirty()
+        self._refreshRuleView()
+
+    def _onAffixMoveLeft(self) -> None:
         """Move selected affix left."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
-        index = self._selected_word.affixes.index(self._selected_affix)
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+
         if index > 0:
-            self._selected_word.affixes[index], self._selected_word.affixes[index - 1] = \
-                self._selected_word.affixes[index - 1], self._selected_word.affixes[index]
-            self._mark_dirty()
-            self._refresh_rule_view()
 
-    def _on_affix_move_right(self) -> None:
+            self._selectedWord.affixes[index], self._selectedWord.affixes[index - 1] = self._selectedWord.affixes[index - 1], self._selectedWord.affixes[index]
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onAffixMoveRight(self) -> None:
         """Move selected affix right."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
-        index = self._selected_word.affixes.index(self._selected_affix)
-        if index < len(self._selected_word.affixes) - 1:
-            self._selected_word.affixes[index], self._selected_word.affixes[index + 1] = \
-                self._selected_word.affixes[index + 1], self._selected_word.affixes[index]
-            self._mark_dirty()
-            self._refresh_rule_view()
+        index = self._selectedWord.affixes.index(self._selectedAffix)
 
-    def _on_affix_delete(self) -> None:
+        if index < len(self._selectedWord.affixes) - 1:
+
+            self._selectedWord.affixes[index], self._selectedWord.affixes[index + 1] = self._selectedWord.affixes[index + 1], self._selectedWord.affixes[index]
+            self._markDirty()
+            self._refreshRuleView()
+
+    def _onAffixDelete(self) -> None:
         """Delete selected affix."""
-        if not self._selected_affix or not self._selected_word:
+
+        if not self._selectedAffix or not self._selectedWord:
+
             return
 
-        index = self._selected_word.affixes.index(self._selected_affix)
-        self._selected_word.affixes.pop(index)
-        self._mark_dirty()
-        self._refresh_rule_view()
+        index = self._selectedWord.affixes.index(self._selectedAffix)
+        self._selectedWord.affixes.pop(index)
+        self._markDirty()
+        self._refreshRuleView()
 
     # Rule menu handlers
-    def _on_rule_duplicate(self) -> None:
+    def _onRuleDuplicate(self) -> None:
         """Duplicate selected rule."""
+
         if self._generator:
-            self._generator.duplicate_rule(self._current_rule_index)
-            self._populate_rule_list()
-            self._mark_dirty()
 
-    def _on_rule_insert_before(self) -> None:
+            self._generator.duplicateRule(self._currentRuleIndex)
+            self._populateRuleList()
+            self._markDirty()
+
+    def _onRuleInsertBefore(self) -> None:
         """Insert new rule before selected."""
+
         if not self._generator:
+
             return
 
-        self._insert_new_rule_at(self._current_rule_index)
+        self._insertNewRuleAt(self._currentRuleIndex)
 
-    def _on_rule_insert_after(self) -> None:
+    def _onRuleInsertAfter(self) -> None:
         """Insert new rule after selected."""
+
         if not self._generator:
+
             return
 
-        self._insert_new_rule_at(self._current_rule_index + 1)
+        self._insertNewRuleAt(self._currentRuleIndex + 1)
 
-    def _insert_new_rule_at(self, index: int) -> None:
+    def _insertNewRuleAt(self, index: int) -> None:
         """Insert a new, editable rule (with word boxes) at the given index and
         select it so it is shown in the editor."""
+
         if not self._generator:
-            return
-        self._generator.insert_new_rule(
-            index, f"Rule {len(self._generator.flex_trans_rules) + 1}")
-        self._populate_rule_list()
-        self.rule_list.setCurrentRow(index)
-        self._mark_dirty()
 
-    def _on_rule_move_up(self) -> None:
+            return
+
+        self._generator.insertNewRule(index, f"Rule {len(self._generator.flexTransRules) + 1}")
+        self._populateRuleList()
+        self.ruleList.setCurrentRow(index)
+        self._markDirty()
+
+    def _onRuleMoveUp(self) -> None:
         """Move selected rule up."""
-        if not self._generator or self._current_rule_index <= 0:
+
+        if not self._generator or self._currentRuleIndex <= 0:
+
             return
 
-        rules = self._generator.flex_trans_rules
-        rules[self._current_rule_index], rules[self._current_rule_index - 1] = \
-            rules[self._current_rule_index - 1], rules[self._current_rule_index]
-        self._current_rule_index -= 1
-        self._populate_rule_list()
-        self.rule_list.setCurrentRow(self._current_rule_index)
-        self._mark_dirty()
+        rules = self._generator.flexTransRules
+        rules[self._currentRuleIndex], rules[self._currentRuleIndex - 1] = rules[self._currentRuleIndex - 1], rules[self._currentRuleIndex]
+        self._currentRuleIndex -= 1
+        self._populateRuleList()
+        self.ruleList.setCurrentRow(self._currentRuleIndex)
+        self._markDirty()
 
-    def _on_rule_move_down(self) -> None:
+    def _onRuleMoveDown(self) -> None:
         """Move selected rule down."""
-        if not self._generator or self._current_rule_index >= len(self._generator.flex_trans_rules) - 1:
+
+        if not self._generator or self._currentRuleIndex >= len(self._generator.flexTransRules) - 1:
+
             return
 
-        rules = self._generator.flex_trans_rules
-        rules[self._current_rule_index], rules[self._current_rule_index + 1] = \
-            rules[self._current_rule_index + 1], rules[self._current_rule_index]
-        self._current_rule_index += 1
-        self._populate_rule_list()
-        self.rule_list.setCurrentRow(self._current_rule_index)
-        self._mark_dirty()
+        rules = self._generator.flexTransRules
+        rules[self._currentRuleIndex], rules[self._currentRuleIndex + 1] = rules[self._currentRuleIndex + 1], rules[self._currentRuleIndex]
+        self._currentRuleIndex += 1
+        self._populateRuleList()
+        self.ruleList.setCurrentRow(self._currentRuleIndex)
+        self._markDirty()
 
-    def _on_rule_delete(self) -> None:
+    def _onRuleDelete(self) -> None:
         """Delete selected rule."""
-        if not self._generator or self._current_rule_index < 0:
+
+        if not self._generator or self._currentRuleIndex < 0:
+
             return
 
-        if len(self._generator.flex_trans_rules) == 1:
+        if len(self._generator.flexTransRules) == 1:
+
             QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "Cannot delete the last rule"))
+
             return
 
-        self._generator.flex_trans_rules.pop(self._current_rule_index)
-        self._populate_rule_list()
-        if self._current_rule_index >= len(self._generator.flex_trans_rules):
-            self._current_rule_index = len(self._generator.flex_trans_rules) - 1
-        if self._current_rule_index >= 0:
-            self.rule_list.setCurrentRow(self._current_rule_index)
-        self._mark_dirty()
+        self._generator.flexTransRules.pop(self._currentRuleIndex)
+        self._populateRuleList()
+
+        if self._currentRuleIndex >= len(self._generator.flexTransRules):
+
+            self._currentRuleIndex = len(self._generator.flexTransRules) - 1
+
+        if self._currentRuleIndex >= 0:
+
+            self.ruleList.setCurrentRow(self._currentRuleIndex)
+
+        self._markDirty()
 
     # Helper methods
-    def _find_phrase_containing_word(self, rule, word) -> Optional["Phrase"]:
+    def _findPhraseContainingWord(self, rule, word) -> Optional["Phrase"]:
         """Find which phrase contains the given word.
 
         Args:
@@ -1374,62 +1685,86 @@ class RuleAssistantWindow(QMainWindow):
         Returns:
             The Phrase containing the word, or None
         """
+
         if word in rule.source.words:
+
             return rule.source
+
         if word in rule.target.words:
+
             return rule.target
+
         return None
 
-    def _find_and_remove_feature(self, rule, feature) -> None:
+    def _findAndRemoveFeature(self, rule, feature) -> None:
         """Find and remove a feature from a word or affix.
 
         Args:
             rule: The current FLExTransRule
             feature: The Feature to remove
         """
+
         for word in rule.source.words + rule.target.words:
+
             if feature in word.features:
+
                 word.features.remove(feature)
+
                 return
+
             for affix in word.affixes:
+
                 if feature in affix.features:
+
                     affix.features.remove(feature)
+
                     return
 
-    def _find_and_clear_category(self, rule, category) -> None:
+    def _findAndClearCategory(self, rule, category) -> None:
         """Find and clear a category from its parent word.
 
         Args:
             rule: The current FLExTransRule
             category: The Category to clear
         """
+
         for word in rule.source.words + rule.target.words:
+
             # Compare by name since category objects may not be the same instance
-            if word.category_constituent and word.category_constituent.name == category.name:
-                word.word_category = ""
+            if word.categoryConstituent and word.categoryConstituent.name == category.name:
+
+                word.wordCategory = ""
+
                 from RAutils import Category
-                word.category_constituent = Category(name="")
+
+                word.categoryConstituent = Category(name="")
+
                 return
 
-    def get_result(self) -> WindowResult:
+    def getResult(self) -> WindowResult:
         """Get the result from the window.
 
         Returns:
-            WindowResult tuple with (saved, rule_index, launch_lrt)
+            WindowResult tuple with (saved, ruleIndex, launchLrt)
         """
+
         return self._result
 
     def closeEvent(self, event) -> None:
         """Handle window close event."""
+
         if self._dirty:
+
             reply = QMessageBox.question(
                 self, _translate("RuleAssistantWindow", "Changes may have been made."),
                 _translate("RuleAssistantWindow", "Do you want to save any changes?"),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
             )
-            if reply == QMessageBox.StandardButton.Yes:
-                self._on_save()
 
-        self._save_window_state()
+            if reply == QMessageBox.StandardButton.Yes:
+
+                self._onSave()
+
+        self._saveWindowState()
         event.accept()
         self.finished.emit()
