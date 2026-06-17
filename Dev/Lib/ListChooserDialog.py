@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/26
 #
+#   Version 3.16.2 - 6/16/26 - Ron Lockwood
+#    Enable alternating row colors in the chooser list.
+#
 #   Version 3.16.1 - 6/16/26 - Ron Lockwood
 #    Refactored to coding conventions; camelCase naming.
 #
@@ -49,6 +52,9 @@ class ListChooserDialog(QDialog):
         # Build the list widget with one row per (display_text, data) pair. We stash the data object on the item itself (under UserRole) so the chosen
         # data can be returned later without having to re-derive it from the displayed text.
         self._list = QListWidget()
+
+        # Paint rows in alternating tones (Base / AlternateBase) so they're easier to scan, matching the rule list.
+        self._list.setAlternatingRowColors(True)
 
         for text, data in items:
 
