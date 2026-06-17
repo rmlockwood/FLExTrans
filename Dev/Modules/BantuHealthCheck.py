@@ -44,21 +44,30 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 5,
+    FTM_Version     : 6,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
-    FTM_Description : 
+    FTM_Description :
 _translate("BantuHealthCheck", """
-Bantu Health Check:
-1. Identifies Noun 'roots' (bound root, bound stem, discontiguous phrase,
-   particle, phrase, root, stem) and verifies that they have exactly one
-   singular and one plural inflection feature value defined, with an
-   optional 'many' feature value. (Skips nouns with 0 features).
-2. Identifies prefixes in the 'NC' slot and verifies that they have 
-   exactly one inflection feature defined.
+Bantu Health Check runs the following checks:
+1. Noun roots have exactly one singular and one plural gender value defined,
+   with an optional 'many' value. (Skips nouns with 0 features.)
+2. Each affix in the noun-class slot has exactly one gender feature.
+3. Affix glosses match the expected 'n.xyz' format and align with their
+   features/POS (e.g. 19.num).
+4. No two different affixes share the same gloss.
+5. Affix glosses contain no spaces.
+6. Every gender value in use has an affix in each part of speech's noun-class
+   slot.
+7. No value abbreviation is defined in more than one feature group (e.g. 19
+   cannot be in both the singular and plural groups).
+8. No affix slot name is used by more than one part of speech.
 
-Issues are grouped by morphological type (roots, then prefixes, then suffixes).
-Warnings use a gentler tone (primarily lowercase, "problem" instead of "fail").
+A configuration dialog lets you choose which of these checks to run; your
+selection is remembered between runs.
+
+Issues are grouped by check. Warnings use a gentler tone (primarily lowercase,
+"problem" instead of "fail").
 """)
 }
 
@@ -79,11 +88,11 @@ BANTU_SETTINGS_FILE = "BantuSettings.toml"
 CHECKS = [
     ("roots",       "Check 1: Noun roots",              "Each noun root has exactly one singular and one plural gender value (optional 'many')."),
     ("prefixes",    "Check 2: Noun-class slot affixes", "Each affix in the noun-class slot has exactly one gender feature."),
-    ("affix_gloss", "Check 3: Affix gloss consistency", "Affix glosses match the expected 'n.xyz' format and align with their features/POS."),
+    ("affix_gloss", "Check 3: Affix gloss consistency", "Affix glosses match the expected 'n.xyz' format and align with their features/POS. E.g. 19.num"),
     ("duplicates",  "Check 4: Duplicate glosses",       "No two different affixes share the same gloss."),
     ("spaces",      "Check 5: Spaces in glosses",       "Affix glosses contain no spaces."),
     ("missing_nc",  "Check 6: Missing NC affixes",      "Every gender value in use has an affix in each part of speech's noun-class slot."),
-    ("dup_abbr",    "Check 7: Duplicate value abbrevs", "No value abbreviation is defined in more than one feature group."),
+    ("dup_abbr",    "Check 7: Duplicate value abbrevs", "No value abbreviation is defined in more than one feature group. E.g. 19 can't be in the singular and plural groups."),
     ("dup_slots",   "Check 8: Duplicate slot names",    "No affix slot name is used by more than one part of speech."),
 ]
 
