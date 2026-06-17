@@ -76,7 +76,7 @@
     <message>
       <location filename="../TextInOut.py" line="440"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Projets de cluster auxquels appliquer</translation>
+      <translation>Projets du groupe à appliquer</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="441"/>
