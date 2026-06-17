@@ -5,6 +5,12 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.3 - 6/17/26 - Ron Lockwood
+#    Slider fix to allow 2 or 3 pairings and capture their values.
+#
+#   Version 3.16.2 - 6/17/26 - Ron Lockwood
+#    Hard code to 'number' for the co-feature and 'sg', 'pl' and 'many' for its values.
+#
 #   Version 3.16.1 - 6/16/26 - Ron Lockwood
 #    Apply coding conventions; camelCase naming.
 #
@@ -26,13 +32,20 @@ from PyQt6.QtCore import Qt, QCoreApplication
 from typing import Optional, TYPE_CHECKING
 
 import FTPaths
-from RAutils import PhraseType, DISJOINT_NUMBER, DISJOINT_SG, DISJOINT_PL
+from RAutils import PhraseType
 
 if TYPE_CHECKING:
 
     from RAutils import FLExTransRuleGenerator, FLExData
 
-from DisjointFeaturesEditor import Ui_DisjointFeaturesEditorDialog
+# Generated from DisjointFeaturesEditor.ui by pyuic (do not hand-edit that file).
+# Lives in Dev/Lib/Windows, which FlexTools puts on sys.path at runtime; the type checker can't see it.
+from DisjointFeaturesEditor import Ui_DisjointFeaturesEditorDialog # type: ignore
+
+DISJOINT_NUMBER = "number"
+DISJOINT_PL = "pl"
+DISJOINT_SG = "sg"
+DISJOINT_MANY = "many"
 
 _translate = QCoreApplication.translate
 
@@ -124,10 +137,13 @@ class DisjointFeaturesEditorDialog(QDialog):
             self._populateFeatureCombo(fc, PhraseType.target, currentCofeature)
             self._populateValueCombo(vc, PhraseType.target, currentCofeature)
 
-        # Numbers under the (disabled) slider; Qt sliders don't render tick labels.
-        for n in range(self.MINIMUM_PAIRINGS, 7):
+        # Numbers under the slider; Qt sliders don't render tick labels. Derive the range from the slider itself so the labels always match whatever min/max the .ui sets.
+        sliderMin = self.pairingSlider.minimum()
+        sliderMax = self.pairingSlider.maximum()
 
-            if n > self.MINIMUM_PAIRINGS:
+        for n in range(sliderMin, sliderMax + 1):
+
+            if n > sliderMin:
 
                 self.ui.sliderNumbersLayout.addStretch()
 
@@ -142,7 +158,8 @@ class DisjointFeaturesEditorDialog(QDialog):
         self.nameField.textChanged.connect(self._onNameChanged)
         self.languageCombo.currentIndexChanged.connect(self._onLanguageChanged)
         self.cofeatureCombo.currentIndexChanged.connect(self._onCofeatureChanged)
-        self.pairingSlider.sliderMoved.connect(self._onPairingSliderChanged)
+        # Use valueChanged, not sliderMoved: sliderMoved only fires while dragging the handle, but a 2/3-position slider is often changed by clicking the groove or using arrow keys, which only emit valueChanged.
+        self.pairingSlider.valueChanged.connect(self._onPairingSliderChanged)
         self._addButton.clicked.connect(self._onAddSet)
         self._deleteButton.clicked.connect(self._onDeleteSet)
         self.ui.close_button.clicked.connect(self.accept)
@@ -192,8 +209,12 @@ class DisjointFeaturesEditorDialog(QDialog):
         the Java editor (the only feature the disjoint editor currently supports)."""
 
         self.cofeatureCombo.clear()
-        names = [f.name for f in self._featuresForLanguage(language)
-                 if f.name == DISJOINT_NUMBER]
+
+        #names = [f.name for f in self._featuresForLanguage(language)]
+
+        # For now hard-code this to 'number'
+        names = [DISJOINT_NUMBER]
+
         self.cofeatureCombo.addItems(names)
 
     def _populateFeatureCombo(self, combo: QComboBox, language, coFeatureName: str) -> None:
@@ -215,17 +236,20 @@ class DisjointFeaturesEditorDialog(QDialog):
 
             return
 
-        for feature in self._featuresForLanguage(language):
+        # For now hard code a list of sg, pl, and many
+        combo.addItems([DISJOINT_SG, DISJOINT_PL, DISJOINT_MANY])
 
-            if feature.name == coFeatureName:
+        # for feature in self._featuresForLanguage(language):
 
-                for v in feature.values:
+        #     if feature.name == coFeatureName:
 
-                    if v.abbreviation in (DISJOINT_SG, DISJOINT_PL):
+        #         for v in feature.values:
 
-                        combo.addItem(v.abbreviation)
+        #             if v.abbreviation in (DISJOINT_SG, DISJOINT_PL):
 
-                break
+        #                 combo.addItem(v.abbreviation)
+
+        #         break
 
     def _updatePairingRowVisibility(self, count: int) -> None:
         """Show rows 0..count-1, hide rows count..5."""
@@ -386,17 +410,28 @@ class DisjointFeaturesEditorDialog(QDialog):
 
     def _onPairingSliderChanged(self) -> None:
 
+        # Ignore the programmatic setValue done while loading a set into the editor; that path sets row visibility itself.
+        if self._updating:
+
+            return
+
         if not (0 <= self._selectedIndex < len(self.generator.disjointFeatures)):
 
             return
 
+        from RAutils import DisjointFeatureValuePairing
+
         ds = self.generator.disjointFeatures[self._selectedIndex]
         newCount = self.pairingSlider.value()
 
+        # Initialize each newly added pairing from the combos that will represent it, so the values already shown
+        # in the now-visible row are persisted even if the user never touches those combos. (The combo change
+        # handlers only write back on an actual change, so a freshly revealed row would otherwise stay empty.)
         while len(ds.pairings) < newCount:
 
-            from RAutils import DisjointFeatureValuePairing
-            ds.pairings.append(DisjointFeatureValuePairing())
+            newIndex = len(ds.pairings)
+            featureCombo, valueCombo = self.pairingFields[newIndex]
+            ds.pairings.append(DisjointFeatureValuePairing(flexFeatureName=featureCombo.currentText(), coFeatureValue=valueCombo.currentText()))
 
         while len(ds.pairings) > newCount:
 

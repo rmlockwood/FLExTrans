@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.5 - 6/17/26 - Ron Lockwood
+#    Hard code to 'number' for the co-feature and 'sg', 'pl' and 'many' for its values.
+#
 #   Version 3.16.4 - 6/17/26 - Ron Lockwood
 #    Fix type-checker errors: broaden parent type, read head via getattr, narrow phrase with isinstance, Optional css-dir params.
 #
@@ -39,9 +42,6 @@ _translate = QCoreApplication.translate
 # ============================================================
 VERSION_NUMBER = "1.6.0"
 GREEK_VARIABLES = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ", "μ", "ν"]
-DISJOINT_NUMBER = "number"
-DISJOINT_PL = "pl"
-DISJOINT_SG = "sg"
 
 # ============================================================
 # Enums
