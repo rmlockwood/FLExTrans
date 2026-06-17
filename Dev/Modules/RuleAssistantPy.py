@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.5 - 6/17/26 - Ron Lockwood
+#    Remove dead _HAS_PYTHON_RA flag; the library import is unconditional.
+#
 #   Version 3.16.4 - 6/16/26 - Ron Lockwood
 #    Apply coding conventions; camelCase naming.
 #
@@ -43,10 +46,6 @@ from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
 
-# LAZY IMPORTS: Do NOT import QWebEngine at module load time
-# It causes crashes when imported by FlexTools before proper Qt initialization
-# Import only when needed in StartRuleAssistant()
-
 import Mixpanel
 import InterlinData
 import Utils
@@ -58,12 +57,6 @@ from RunApertium import docs as RunApertDocs
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
     )
-
-# The Python Rule Assistant library now lives in Dev/Lib (RAutils) and
-# Dev/Lib/Windows (RuleAssistantWindow). These are already on sys.path via
-# FlexTools, so the successful module-level import above guarantees it is
-# available.
-_HAS_PYTHON_RA = True
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -424,7 +417,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
 
     """Launch the Python/PyQt6 Rule Assistant GUI.
 
-    This function calls the Python version of the Rule Assistant (no fallback to Java).
+    This function calls the Python version of the Rule Assistant.
 
     Args:
         report: FLEx report object for logging
@@ -436,12 +429,6 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
     Returns:
         Tuple of (saved: bool, rule_index: Optional[int], launch_lrt: bool)
     """
-
-    if not _HAS_PYTHON_RA:
-
-        errorMsg = "Python Rule Assistant library not found at expected location"
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=errorMsg, ruleAssistant=docs[FTM_Name]))
-        return (False, None, False)
 
     try:
         # Get interface language from FLEx
