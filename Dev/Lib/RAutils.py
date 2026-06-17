@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.6 - 6/17/26 - Ron Lockwood
+#    Store ApplicationPreferences in a TOML file (Config/RuleAssistantSettings.txt) instead of QSettings/registry.
+#
 #   Version 3.16.5 - 6/17/26 - Ron Lockwood
 #    Hard code to 'number' for the co-feature and 'sg', 'pl' and 'many' for its values.
 #
@@ -26,14 +29,19 @@
 #  RuleAssistant utilities: combined model, flexmodel, and service classes.
 
 # ---- External imports ----
+import os
 import xml.etree.ElementTree as ET
 import io
+import tomllib
+import tomli_w
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Optional, TYPE_CHECKING
 
-from PyQt6.QtCore import QSettings, QObject, pyqtSlot, QCoreApplication
+from PyQt6.QtCore import QObject, pyqtSlot, QCoreApplication
+
+import FTPaths
 
 _translate = QCoreApplication.translate
 
@@ -1051,85 +1059,106 @@ class ApplicationPreferences:
     MAXIMIZED = "Maximized"
     LAST_SPLIT_PANE_POSITION = "lastSplitPanePosition"
 
+    # Settings live in this TOML-formatted file in the project's Config folder (replacing the old QSettings/registry storage).
+    SETTINGS_FILENAME = "RuleAssistantSettings.txt"
+
     def __init__(self):
 
-        self._settings = QSettings("SIL", "FLExTransRuleGenerator")
+        self._filePath = os.path.join(FTPaths.CONFIG_DIR, self.SETTINGS_FILENAME)
+        self._data = self._load()
+
+    # Read the TOML settings file into a flat dict; a missing or unreadable file just means "use defaults".
+    def _load(self) -> dict:
+
+        try:
+            with open(self._filePath, "rb") as f:
+
+                return tomllib.load(f)
+
+        except (FileNotFoundError, OSError, tomllib.TOMLDecodeError):
+
+            return {}
 
     def getLastLocaleLanguage(self, default: str = "en") -> str:
 
-        return self._settings.value(self.LAST_LOCALE_LANGUAGE, default)
+        return str(self._data.get(self.LAST_LOCALE_LANGUAGE, default))
 
     def setLastLocaleLanguage(self, langCode: str) -> None:
 
-        self._settings.setValue(self.LAST_LOCALE_LANGUAGE, langCode)
+        self._data[self.LAST_LOCALE_LANGUAGE] = langCode
 
     def getLastSelectedRule(self, default: int = 0) -> int:
 
-        return int(self._settings.value(self.LAST_SELECTED_RULE, default))
+        return int(self._data.get(self.LAST_SELECTED_RULE, default))
 
     def setLastSelectedRule(self, index: int) -> None:
 
-        self._settings.setValue(self.LAST_SELECTED_RULE, index)
+        self._data[self.LAST_SELECTED_RULE] = index
 
     def getLastSelectedDisjointFeatureSet(self, default: int = 0) -> int:
 
-        return int(self._settings.value(self.LAST_SELECTED_DISJOINT_FEATURE_SET, default))
+        return int(self._data.get(self.LAST_SELECTED_DISJOINT_FEATURE_SET, default))
 
     def setLastSelectedDisjointFeatureSet(self, index: int) -> None:
 
-        self._settings.setValue(self.LAST_SELECTED_DISJOINT_FEATURE_SET, index)
+        self._data[self.LAST_SELECTED_DISJOINT_FEATURE_SET] = index
 
     def getWindowPositionX(self, default: int = 100) -> int:
 
-        return int(self._settings.value(f"{self.LAST_WINDOW}{self.POSITION_X}", default))
+        return int(self._data.get(f"{self.LAST_WINDOW}{self.POSITION_X}", default))
 
     def setWindowPositionX(self, x: int) -> None:
 
-        self._settings.setValue(f"{self.LAST_WINDOW}{self.POSITION_X}", x)
+        self._data[f"{self.LAST_WINDOW}{self.POSITION_X}"] = x
 
     def getWindowPositionY(self, default: int = 100) -> int:
 
-        return int(self._settings.value(f"{self.LAST_WINDOW}{self.POSITION_Y}", default))
+        return int(self._data.get(f"{self.LAST_WINDOW}{self.POSITION_Y}", default))
 
     def setWindowPositionY(self, y: int) -> None:
 
-        self._settings.setValue(f"{self.LAST_WINDOW}{self.POSITION_Y}", y)
+        self._data[f"{self.LAST_WINDOW}{self.POSITION_Y}"] = y
 
     def getWindowWidth(self, default: int = 660) -> int:
 
-        return int(self._settings.value(f"{self.LAST_WINDOW}{self.WIDTH}", default))
+        return int(self._data.get(f"{self.LAST_WINDOW}{self.WIDTH}", default))
 
     def setWindowWidth(self, width: int) -> None:
 
-        self._settings.setValue(f"{self.LAST_WINDOW}{self.WIDTH}", width)
+        self._data[f"{self.LAST_WINDOW}{self.WIDTH}"] = width
 
     def getWindowHeight(self, default: int = 1000) -> int:
 
-        return int(self._settings.value(f"{self.LAST_WINDOW}{self.HEIGHT}", default))
+        return int(self._data.get(f"{self.LAST_WINDOW}{self.HEIGHT}", default))
 
     def setWindowHeight(self, height: int) -> None:
 
-        self._settings.setValue(f"{self.LAST_WINDOW}{self.HEIGHT}", height)
+        self._data[f"{self.LAST_WINDOW}{self.HEIGHT}"] = height
 
     def getWindowMaximized(self, default: bool = False) -> bool:
 
-        return self._settings.value(f"{self.LAST_WINDOW}{self.MAXIMIZED}", default, type=bool)
+        return bool(self._data.get(f"{self.LAST_WINDOW}{self.MAXIMIZED}", default))
 
     def setWindowMaximized(self, maximized: bool) -> None:
 
-        self._settings.setValue(f"{self.LAST_WINDOW}{self.MAXIMIZED}", maximized)
+        self._data[f"{self.LAST_WINDOW}{self.MAXIMIZED}"] = bool(maximized)
 
     def getSplitPanePosition(self, default: float = 0.3) -> float:
 
-        return float(self._settings.value(self.LAST_SPLIT_PANE_POSITION, default))
+        return float(self._data.get(self.LAST_SPLIT_PANE_POSITION, default))
 
     def setSplitPanePosition(self, position: float) -> None:
 
-        self._settings.setValue(self.LAST_SPLIT_PANE_POSITION, position)
+        self._data[self.LAST_SPLIT_PANE_POSITION] = position
 
+    # Persist the current settings to the TOML file, creating the Config folder if it doesn't exist yet.
     def sync(self) -> None:
 
-        self._settings.sync()
+        os.makedirs(os.path.dirname(self._filePath), exist_ok=True)
+
+        with open(self._filePath, "wb") as f:
+
+            tomli_w.dump(self._data, f)
 
 # ============================================================
 # ConstituentFinder
