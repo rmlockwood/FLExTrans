@@ -88,8 +88,9 @@ copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 rem copy all module code files
 copy %dev%\Modules\*.py %modulesflextrans%
 
-rem copy all shared code files
+rem copy all shared code and css files
 copy %dev%\Lib\*.py %flextranslib%
+copy %dev%\Lib\*.css %flextranslib%
 
 rem copy all window ui code files
 copy %dev%\Lib\Windows\*.py %flextranslib%
