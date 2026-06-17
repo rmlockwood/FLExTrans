@@ -5,6 +5,15 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.9 - 6/17/26 - Ron Lockwood
+#    Help button jumps to the Rule Assistant section (#sRuleAssist); widen message-box title padding to 180.
+#
+#   Version 3.16.8 - 6/17/26 - Ron Lockwood
+#    Edit unmarked excludes Greek agreement variables and warns when no real feature values exist.
+#
+#   Version 3.16.7 - 6/17/26 - Ron Lockwood
+#    Help button opens UserDoc; Edit unmarked picks from the feature's values; message boxes widened to show their titles.
+#
 #   Version 3.16.6 - 6/17/26 - Ron Lockwood
 #    Fix type-checker errors: type selected constituents to their subclasses, guard Optional accesses, match closeEvent signature.
 #
@@ -37,9 +46,9 @@ import os
 from typing import Optional, NamedTuple, cast
 from pathlib import Path
 
-from PyQt6.QtWidgets import (QMainWindow,  QListWidgetItem, QMenu, QMessageBox, QInputDialog, QDialog)
+from PyQt6.QtWidgets import (QMainWindow,  QListWidgetItem, QMenu, QMessageBox, QInputDialog, QDialog, QGridLayout, QSpacerItem, QSizePolicy)
 from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
-from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon, QCloseEvent
+from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon, QCloseEvent, QDesktopServices
 
 import FTPaths
 
@@ -62,6 +71,36 @@ class WindowResult(NamedTuple):
     saved: bool
     ruleIndex: Optional[int]
     launchLrt: bool
+
+def showMessageBox(parent, icon, title: str, text: str, buttons=QMessageBox.StandardButton.Ok, defaultButton=QMessageBox.StandardButton.NoButton):
+    """Show a message box that is guaranteed wide enough to display its (sometimes long) window title.
+
+    Qt sizes a message box to its message text, so a short message paired with a long window title leaves the title clipped in the
+    title bar. We add a horizontal spacer to the box's grid layout, sized to the title text plus window-chrome padding, which forces
+    a minimum width without shrinking a box that is already wider. Returns the StandardButton the user clicked.
+    """
+
+    box = QMessageBox(parent)
+    box.setIcon(icon)
+    box.setWindowTitle(title)
+    box.setText(text)
+    box.setStandardButtons(buttons)
+
+    if defaultButton != QMessageBox.StandardButton.NoButton:
+
+        box.setDefaultButton(defaultButton)
+
+    # Pad past the title text to leave room for the window icon, the min/max/close buttons, and frame margins in the title bar.
+    requiredWidth = box.fontMetrics().horizontalAdvance(title) + 180
+    grid = box.layout()
+
+    if isinstance(grid, QGridLayout):
+
+        spacer = QSpacerItem(requiredWidth, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        grid.addItem(spacer, grid.rowCount(), 0, 1, grid.columnCount())
+
+    box.exec()
+    return box.standardButton(box.clickedButton())
 
 class RuleAssistantWindow(QMainWindow):
     """Main window for the Rule Assistant application.
@@ -709,7 +748,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not isValid:
 
-            QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+            showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
             return
 
@@ -730,7 +769,7 @@ class RuleAssistantWindow(QMainWindow):
 
             if not isValid:
 
-                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                 return
 
@@ -769,7 +808,7 @@ class RuleAssistantWindow(QMainWindow):
 
             if not isValid:
 
-                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                 return
 
@@ -786,7 +825,7 @@ class RuleAssistantWindow(QMainWindow):
 
                 if not isValid:
 
-                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                    showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                     return
 
@@ -803,7 +842,7 @@ class RuleAssistantWindow(QMainWindow):
 
                 if not isValid:
 
-                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                    showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                     return
 
@@ -814,16 +853,28 @@ class RuleAssistantWindow(QMainWindow):
         # Cancel: do nothing.
 
     def _onHelp(self) -> None:
-        """Handle Help button."""
+        """Open the FLExTrans user documentation at the Rule Assistant section."""
 
-        QMessageBox.information(self, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "See documentation for help"))
+        helpFile = os.path.join(FTPaths.HELP_DIR, "UserDoc.htm")
+
+        # Guard so a missing file doesn't crash the tool.
+        if not os.path.exists(helpFile):
+
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "Help file not found: {file}").format(file=helpFile))
+
+            return
+
+        # Jump to the Rule Assistant section. os.startfile can't carry a #fragment, so build a file URL with the anchor and let Qt open it in the default browser.
+        url = QUrl.fromLocalFile(helpFile)
+        url.setFragment("sRuleAssist")
+        QDesktopServices.openUrl(url)
 
     def _onDisjointFeatures(self) -> None:
         """Handle Disjoint Features button."""
 
         if not self._generator or not self._flexData:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No data loaded"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No data loaded"))
 
             return
 
@@ -1140,7 +1191,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not uniqueCategories:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No categories available"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No categories available"))
 
             return
 
@@ -1170,7 +1221,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not allFeatures:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
 
             return
 
@@ -1355,17 +1406,77 @@ class RuleAssistantWindow(QMainWindow):
             self._refreshRuleView()
 
     def _onFeatureEditUnmarked(self) -> None:
-        """Edit unmarked value of selected feature."""
+        """Set the unmarked value of the selected feature by picking from the feature's FLEx values (matches Java).
 
-        if not self._selectedFeature:
+        The Java version shows a list of the feature's possible values, not a free-text box, so the user can only choose
+        a real value for the feature. (Clearing the unmarked value is handled separately by 'Delete unmarked'.)"""
+
+        if not self._selectedFeature or not self._flexData:
 
             return
 
-        text, ok = QInputDialog.getText(self, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "Enter unmarked value:"), text=self._selectedFeature.unmarked)
+        # The feature's owner is either the word directly or an affix on the word; we filter FLEx values by that word.
+        from RAutils import Word, Affix
 
-        if ok:
+        owner = self._selectedFeature.parent
 
-            self._selectedFeature.unmarked = text
+        if isinstance(owner, Word):
+
+            ownerWord = owner
+
+        elif isinstance(owner, Affix):
+
+            ownerWord = owner.parent
+        else:
+            ownerWord = None
+
+        # Find the FLEx feature whose name matches this feature's label, so we can offer its values.
+        flexFeature = None
+
+        for f in self._flexFeaturesForWord(ownerWord):
+
+            if f.name == self._selectedFeature.label:
+
+                flexFeature = f
+                break
+
+        if not flexFeature or not flexFeature.values:
+
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "No values available for this feature."))
+
+            return
+
+        # Build the value list, pre-selecting the current unmarked value if it is among them. Skip the Greek
+        # agreement variables (added to every feature for matching); an unmarked default must be a real value.
+        from RAutils import FLExFeatureValue
+
+        items = []
+        currentIndex = 0
+
+        for value in flexFeature.values:
+
+            if FLExFeatureValue.isGreek(value.abbreviation):
+
+                continue
+
+            if value.abbreviation == self._selectedFeature.unmarked:
+
+                currentIndex = len(items)
+
+            items.append((value.abbreviation, value.abbreviation))
+
+        # Everything may have been a Greek variable, leaving no real value to choose.
+        if not items:
+
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "No feature values found."))
+
+            return
+
+        chosen = ListChooserDialog.choose(self, _translate("RuleAssistantWindow", "Unmarked Value Chooser"), items, currentIndex)
+
+        if chosen is not None:
+
+            self._selectedFeature.unmarked = chosen
             self._markDirty()
             self._refreshRuleView()
 
@@ -1462,7 +1573,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not allFeatures:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
 
             return
 
@@ -1663,7 +1774,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if len(self._generator.flexTransRules) == 1:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "Cannot delete the last rule"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "Cannot delete the last rule"))
 
             return
 
@@ -1790,8 +1901,9 @@ class RuleAssistantWindow(QMainWindow):
 
         if self._dirty:
 
-            reply = QMessageBox.question(
-                self, _translate("RuleAssistantWindow", "Changes may have been made."),
+            reply = showMessageBox(
+                self, QMessageBox.Icon.Question,
+                _translate("RuleAssistantWindow", "Changes may have been made."),
                 _translate("RuleAssistantWindow", "Do you want to save any changes?"),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
             )
