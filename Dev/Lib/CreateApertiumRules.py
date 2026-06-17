@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.1 - 6/17/26 - Ron Lockwood
+#    Fixes #1118. Rename user-facing "disjoint feature set" to "split feature set" in the unexpected-value warning.
+#
 #   Version 3.16 - 6/12/26 - Ron Lockwood
 #    Support an optional third disjoint feature bucket with co-feature value
 #    "many" for Bantu noun class processing, in addition to "sg" and "pl".
@@ -1592,7 +1595,7 @@ class RuleGenerator:
                         many = node.get('flex_feature_name')
                     else:
                         # Unexpected value found. Give a warning and ignore it.
-                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a disjoint feature set. Expected only "sg", "pl" or "many". This value will be ignored.').format(val=val))
+                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a split feature set. Expected only "sg", "pl" or "many". This value will be ignored.').format(val=val))
 
                 if merged and sg and pl:
 

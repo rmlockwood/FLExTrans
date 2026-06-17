@@ -744,7 +744,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 Utils.loadTranslations(['ChapterSelection'], translators)
 

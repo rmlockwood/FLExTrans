@@ -26,7 +26,6 @@ Unicode True
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects"
 !define GERMAN_SWEDISHDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
 !define TEMPLATEDIR "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject"
-!define RULEASSISTANT "FLExTrans.Rule Assistant"
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
@@ -486,13 +485,7 @@ Section "MainSection" SEC01
   ${If} $0 != 0
     ExecWait '"$OUT_FOLDER\${FLEXTRANS_FOLDER}\Command.bat"'
   ${EndIf}
-  
-  # Install Rule Assistant in silent mode
-  SetOutPath "$INSTDIR\install_files"
-  # RESOURCE_FOLDER is a variable like GIT_FOLDER that is passed to the makensis program when compiling the installer
-  File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
-  ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
-  
+    
   SetOutPath "$INSTDIR\install_files"
 
 
@@ -723,7 +716,7 @@ Section Uninstall
   DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   
-  MessageBox MB_OK "Note: Python, XMLmind XML Editor and the FLExTrans Rule Assistant were installed separately. If you wish to remove them, please use the Windows 'Installed apps' setting."
+  MessageBox MB_OK "Note: Python and the XMLmind XML Editor were installed separately. If you wish to remove them, please use the Windows 'Installed apps' setting."
   
   SetAutoClose true
 SectionEnd
