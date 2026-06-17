@@ -46,7 +46,7 @@
     <message>
       <location filename="../NewEntry.py" line="91"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Projets de cluster auxquels appliquer</translation>
+      <translation>Projets du groupe à appliquer</translation>
     </message>
   </context>
 </TS>
