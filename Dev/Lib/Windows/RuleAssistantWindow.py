@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_RuleAssistantWindow(object):
     def setupUi(self, RuleAssistantWindow):
         RuleAssistantWindow.setObjectName("RuleAssistantWindow")
-        RuleAssistantWindow.resize(660, 1000)
+        RuleAssistantWindow.resize(1256, 656)
         self.centralwidget = QtWidgets.QWidget(parent=RuleAssistantWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.mainLayout = QtWidgets.QHBoxLayout(self.centralwidget)

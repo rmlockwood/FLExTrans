@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.10 - 6/17/26 - Ron Lockwood
+#    Default the window size to the .ui design geometry when none is saved (no hard-coded default size).
+#
 #   Version 3.16.9 - 6/17/26 - Ron Lockwood
 #    Help button jumps to the Rule Assistant section (#sRuleAssist); widen message-box title padding to 180.
 #
@@ -418,10 +421,15 @@ class RuleAssistantWindow(QMainWindow):
     def _restoreWindowState(self) -> None:
         """Restore window size and position from preferences."""
 
+        # setupUi() has already applied the design-time size from the .ui, so the current width/height
+        # IS the .ui default; use it whenever no size has been saved yet (and to repair bad saved sizes).
+        defaultWidth = self.width()
+        defaultHeight = self.height()
+
         x = self._preferences.getWindowPositionX()
         y = self._preferences.getWindowPositionY()
-        w = self._preferences.getWindowWidth()
-        h = self._preferences.getWindowHeight()
+        w = self._preferences.getWindowWidth(defaultWidth)
+        h = self._preferences.getWindowHeight(defaultHeight)
         maximized = self._preferences.getWindowMaximized()
 
         # Ensure window is visible on screen (not above y=0)
@@ -435,11 +443,11 @@ class RuleAssistantWindow(QMainWindow):
 
         if w < 400:
 
-            w = 1200
+            w = defaultWidth
 
         if h < 300:
 
-            h = 800
+            h = defaultHeight
 
         self.setGeometry(x, y, w, h)
 
