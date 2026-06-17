@@ -109,7 +109,7 @@ descr = _translate("RuleAssistant", """This module runs a tool which let's you c
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant Old"),
         FTM_Version    : "3.16",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
+        FTM_Synopsis   : _translate("RuleAssistant", "This module is obsolete."),
         FTM_Help       : "",
         FTM_Description:    descr}
 
