@@ -79,7 +79,7 @@
         <item>
          <widget class="QPushButton" name="disjoint_button">
           <property name="text">
-           <string>Set disjoint features</string>
+           <string>Set split features</string>
           </property>
          </widget>
         </item>

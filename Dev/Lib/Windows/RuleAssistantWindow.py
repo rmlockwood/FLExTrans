@@ -134,7 +134,7 @@ class Ui_RuleAssistantWindow(object):
         self.hintLabel.setText(_translate("RuleAssistantWindow", "(Right-click to edit)"))
         self.overwrite_checkbox.setToolTip(_translate("RuleAssistantWindow", "Overwrite previous rule(s) that have the same name."))
         self.overwrite_checkbox.setText(_translate("RuleAssistantWindow", "Overwrite rules(s)"))
-        self.disjoint_button.setText(_translate("RuleAssistantWindow", "Set disjoint features"))
+        self.disjoint_button.setText(_translate("RuleAssistantWindow", "Set split features"))
         self.test_lrt_button.setToolTip(_translate("RuleAssistantWindow", "Test in the Live Rule Tester tool."))
         self.test_lrt_button.setText(_translate("RuleAssistantWindow", "Test in LRT"))
         self.save_button.setText(_translate("RuleAssistantWindow", "Save"))

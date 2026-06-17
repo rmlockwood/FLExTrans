@@ -171,14 +171,14 @@ class Ui_DisjointFeaturesEditorDialog(object):
 
     def retranslateUi(self, DisjointFeaturesEditorDialog):
         _translate = QtCore.QCoreApplication.translate
-        DisjointFeaturesEditorDialog.setWindowTitle(_translate("DisjointFeaturesEditorDialog", "Disjoint Features Editor"))
+        DisjointFeaturesEditorDialog.setWindowTitle(_translate("DisjointFeaturesEditorDialog", "Split Features Editor"))
         item = self.sets_table.horizontalHeaderItem(0)
         item.setText(_translate("DisjointFeaturesEditorDialog", "Name"))
         item = self.sets_table.horizontalHeaderItem(1)
         item.setText(_translate("DisjointFeaturesEditorDialog", "Language"))
         item = self.sets_table.horizontalHeaderItem(2)
         item.setText(_translate("DisjointFeaturesEditorDialog", "Distinguishing feature"))
-        self.coverTermLabel.setText(_translate("DisjointFeaturesEditorDialog", "Disjoint feature set"))
+        self.coverTermLabel.setText(_translate("DisjointFeaturesEditorDialog", "Split feature set"))
         self.nameLabel.setText(_translate("DisjointFeaturesEditorDialog", "Name"))
         self.langLabel.setText(_translate("DisjointFeaturesEditorDialog", "Language"))
         self.cofeatureLabel.setText(_translate("DisjointFeaturesEditorDialog", "Distinguishing feature"))

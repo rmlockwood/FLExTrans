@@ -52,8 +52,8 @@
         <translation>Guardar y Escribir Todo</translation>
     </message>
     <message>
-        <source>Set disjoint features</source>
-        <translation>Establecer rásgos disjuntas</translation>
+        <source>Set split features</source>
+        <translation>Establecer rásgos divididos</translation>
     </message>
     <message>
         <source>Test in LRT</source>

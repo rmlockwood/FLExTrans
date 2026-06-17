@@ -52,8 +52,8 @@
         <translation>Speichern &amp; Alle Schreiben</translation>
     </message>
     <message>
-        <source>Set disjoint features</source>
-        <translation>Disjunkte Merkmalsmerkmale  setzen</translation>
+        <source>Set split features</source>
+        <translation>Geteilte Merkmale setzen</translation>
     </message>
     <message>
         <source>Test in LRT</source>

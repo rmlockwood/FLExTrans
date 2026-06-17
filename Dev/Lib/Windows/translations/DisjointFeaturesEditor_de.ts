@@ -16,12 +16,12 @@
         <translation>Ausgewähltes Set löschen</translation>
     </message>
     <message>
-        <source>Disjoint feature set</source>
-        <translation>Disjunkte Merkmalsmenge</translation>
+        <source>Split feature set</source>
+        <translation>Geteilte Merkmalsmenge</translation>
     </message>
     <message>
-        <source>Disjoint Features Editor</source>
-        <translation>Editor für disjunkte Merkmale</translation>
+        <source>Split Features Editor</source>
+        <translation>Editor für geteilte Merkmale</translation>
     </message>
     <message>
         <source>Distinguishing feature</source>

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Disjoint Features Editor</string>
+   <string>Split Features Editor</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -44,7 +44,7 @@
        <item>
         <widget class="QLabel" name="coverTermLabel">
          <property name="text">
-          <string>Disjoint feature set</string>
+          <string>Split feature set</string>
          </property>
         </widget>
        </item>
