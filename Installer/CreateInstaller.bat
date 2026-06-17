@@ -158,15 +158,6 @@ copy /Y %ZIP_FILE% ..
 rem copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
 
-rem Zip the HermitCrab tools
-rem SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
-rem cd %installer_resources%\HermitCrabSynthesis
-rem 7z a %HC_ZIP_FILE% *
-rem copy /Y %HC_ZIP_FILE% ..\..
-rem copy /Y %HC_ZIP_FILE% ..\"previous versions"
-rem del %HC_ZIP_FILE%
-rem cd ..\..
-
 cd ..
 
 if %COMPUTERNAME% == RONS-XPS (
