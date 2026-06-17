@@ -103,7 +103,7 @@ def numeric_sort_key(s):
 
 def missing_nc_sort_key(issue):
     msg = issue[0]
-    match = re.search(r"missing prefix in '([^']+)' NC slot for feature '([^']+)'", msg)
+    match = re.search(r"missing affix in '([^']+)' NC slot for feature '([^']+)'", msg)
     if match:
         pos_name = match.group(1)
         feature = match.group(2)
@@ -209,7 +209,7 @@ class BantuConfigDialog(QDialog):
         main_layout.addWidget(self.pl_combo)
 
         # Optional 'many' feature: blank is a valid (default) choice.
-        main_layout.addWidget(QLabel("Feature containing many gender values:"))
+        main_layout.addWidget(QLabel("Feature containing many gender values (optional):"))
         self.many_combo = QComboBox()
         self.many_combo.addItems([""] + feature_options)
         main_layout.addWidget(self.many_combo)
@@ -414,7 +414,8 @@ def Main(project, report, modifyAllowed):
         "affix_gloss": [],
         "duplicates": [],
         "spaces": [],
-        "dup_abbr": []
+        "dup_abbr": [],
+        "dup_slots": []
     }
     
     # Store unique features for summary
@@ -429,7 +430,7 @@ def Main(project, report, modifyAllowed):
     # Track POS that actually have an NC slot
     pos_with_nc_slot = set()
 
-    # 1. Find the NC slot for prefix checking (Noun specific)
+    # 1. Find the NC slot for affix checking (Noun specific)
     #posOps = POSOperations(project)
     #noun_pos_obj = posOps.Find(TARGET_POS)
 
@@ -459,6 +460,10 @@ def Main(project, report, modifyAllowed):
     # 2. Create a mapping for reverse lookup (Slot -> POS)
     slot_to_pos_map = {}
 
+    # POS -> list of its configured NC slot names (for reporting which slot an
+    # affix is missing from in Check 6).
+    pos_to_slots_map = defaultdict(list)
+
     for row in slots_list:
 
         current_pos = row['POS']
@@ -466,6 +471,7 @@ def Main(project, report, modifyAllowed):
         for slot in row['slots']:
 
             slot_to_pos_map[slot] = current_pos
+            pos_to_slots_map[current_pos].append(slot)
 
     noun_pos_obj = None
     pos_list = []
@@ -567,6 +573,9 @@ def Main(project, report, modifyAllowed):
         pos_owning_nc_slot = ""
         current_features_details = []
         entry_feat_abbrs = set()
+        # Values belonging only to the gender feature groups designated in the UI
+        # (singular / plural / many). Used by Check 2, which ignores other features.
+        entry_gender_feat_abbrs = set()
         is_noun_attaching = False
         target_pos_abbr = ""
 
@@ -616,6 +625,7 @@ def Main(project, report, modifyAllowed):
                         # in the summary even when no noun root carries that value.
                         if cat in relevant_groups:
                             global_noun_features[cat].add(val)
+                            entry_gender_feat_abbrs.add(val.lower())
 
             if in_any_nc_slot and pos_owning_nc_slot:
 
@@ -660,17 +670,19 @@ def Main(project, report, modifyAllowed):
 
                             is_noun_attaching = True
 
-        # --- CHECK 2: Noun NC-slot Prefixes (Inflection Features) ---
+        # --- CHECK 2: Noun NC-slot Affixes (Inflection Features) ---
         if in_noun_nc_slot:
 
             total_prefixes_checked += 1
-            feature_count = len(entry_feat_abbrs)
+            # Only count the designated gender features (singular / plural / many);
+            # other inflection features are ignored for this check.
+            feature_count = len(entry_gender_feat_abbrs)
 
             if feature_count != 1:
 
                 sourceURL = project.BuildGotoURL(entry)
                 gloss = project.LexiconGetSenseGloss(entry.SensesOS[0]) if entry.SensesOS.Count > 0 else ""
-                msg = "prefix problem: {} inflection features (expected exactly 1) for Noun NC-slot prefix '{}' with gloss: '{}'".format(feature_count, lexeme_form, gloss)
+                msg = "affix problem: {} gender features (expected exactly 1) for Noun NC-slot affix '{}' with gloss: '{}'".format(feature_count, lexeme_form, gloss)
                 issues["prefixes"].append((msg, sourceURL, current_features_details))
 
         # --- CHECKS 3, 4, 5: Affix Validation ---
@@ -758,11 +770,16 @@ def Main(project, report, modifyAllowed):
 
             found_features = found_nc_prefix_features[pos_name]
 
+            # Name the configured NC slot(s) for this POS so the user knows where
+            # the affix is missing.
+            slot_names = pos_to_slots_map.get(pos_name, [])
+            slot_label = ", ".join("'{}'".format(s) for s in slot_names) if slot_names else "(unknown)"
+
             for m_feat in sorted(list(master_features), key=numeric_sort_key):
 
                 if m_feat not in found_features and "na" not in m_feat.lower(): # Don't flag missing features that are explicitly marked as "NA"
 
-                    msg = "slot problem: missing prefix in '{}' NC slot for feature '{}'".format(pos_name, m_feat)
+                    msg = "slot problem: missing affix in '{}' Noun Class slot {} for feature '{}'".format(pos_name, slot_label, m_feat)
                     issues["missing_nc"].append((msg, None, []))
 
     # Enumerate the *defined* value abbreviations for each configured feature
@@ -814,6 +831,32 @@ def Main(project, report, modifyAllowed):
                 abbr_display[key], ", ".join(sorted(groups)))
             issues["dup_abbr"].append((msg, None, []))
 
+    # Check 8: Duplicate slot names. Slot matching in this module is name-based
+    # (see the SlotsRC / allNCslotNames checks above), so two affix slots sharing
+    # the same name make that matching ambiguous. Warn for any slot name that
+    # occurs more than once across all parts of speech.
+    slot_name_to_pos = defaultdict(list)   # slot name -> list of POS names
+
+    for pos in project.lp.AllPartsOfSpeech:
+
+        pos_slot_names = []
+        get_all_slots(project, pos, pos_slot_names)
+
+        pos_name = project.BestStr(IPartOfSpeech(pos).Name)
+
+        for sn in pos_slot_names:
+            slot_name_to_pos[sn].append(pos_name)
+
+    for sn in sorted(slot_name_to_pos.keys()):
+
+        pos_names = slot_name_to_pos[sn]
+
+        if len(pos_names) > 1:
+
+            msg = "slot problem: duplicate slot name '{}' defined {} times in: {}".format(
+                sn, len(pos_names), ", ".join(sorted(pos_names)))
+            issues["dup_slots"].append((msg, None, []))
+
     # --- REPORTING ---
     
     report.Info("Detailed Problem Reports:")
@@ -830,7 +873,7 @@ def Main(project, report, modifyAllowed):
 
     # Detailed Prefix Problems
     if issues["prefixes"]:
-        report.Info("Prefixes (Check 2): Found {} noun NC-slot prefixes with missing or extra features:".format(len(issues["prefixes"])))
+        report.Info("Affixes (Check 2): Found {} noun NC-slot affixes with missing or extra features:".format(len(issues["prefixes"])))
         for msg, url, details in issues["prefixes"]:
             report.Warning(msg, url)
             for detail in details:
@@ -879,6 +922,13 @@ def Main(project, report, modifyAllowed):
             report.Warning(msg, url)
         report.Blank()
 
+    # Detailed Duplicate Slot Name Problems (Check 8)
+    if issues["dup_slots"]:
+        report.Info("Duplicate Slots (Check 8): Found {} slot names used by more than one part of speech:".format(len(issues["dup_slots"])))
+        for msg, url, details in issues["dup_slots"]:
+            report.Warning(msg, url)
+        report.Blank()
+
     # --- NOUN FEATURE SUMMARY ---
     if global_noun_features:
         report.Info("Noun Feature Value Summary - Values In Use:")
@@ -909,7 +959,7 @@ def Main(project, report, modifyAllowed):
     report.Blank()
 
     # Check 2 Summary
-    report.Info("Check 2: Noun NC-slot Prefixes (expected exactly 1 feature)")
+    report.Info("Check 2: Noun Noun Class-slot Affixes (expected exactly 1 feature)")
     report.Info("- Checked: {}".format(total_prefixes_checked))
     report.Info("- Problems: {}".format(len(issues["prefixes"])))
     report.Blank()
@@ -933,9 +983,9 @@ def Main(project, report, modifyAllowed):
     report.Blank()
 
     # Check 6 Summary
-    report.Info("Check 6: Missing NC Affixes across all POS")
+    report.Info("Check 6: Missing Noun Class Affixes across all POS")
     num_pos_nc = len(pos_with_nc_slot)
-    report.Info("- Checked: {} Parts of Speech with NC slots".format(num_pos_nc))
+    report.Info("- Checked: {} Parts of Speech with Noun Class slots".format(num_pos_nc))
     report.Info("- Problems: {}".format(len(issues["missing_nc"])))
     report.Blank()
 
@@ -943,6 +993,12 @@ def Main(project, report, modifyAllowed):
     report.Info("Check 7: Duplicate value abbreviations across feature groups")
     report.Info("- Checked: {} distinct value abbreviations".format(len(abbr_to_groups)))
     report.Info("- Problems: {}".format(len(issues["dup_abbr"])))
+    report.Blank()
+
+    # Check 8 Summary
+    report.Info("Check 8: Duplicate slot names across parts of speech")
+    report.Info("- Checked: {} distinct slot names".format(len(slot_name_to_pos)))
+    report.Info("- Problems: {}".format(len(issues["dup_slots"])))
     report.Blank()
 
 #----------------------------------------------------------------
