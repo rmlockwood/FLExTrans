@@ -2,8 +2,10 @@ flextoolslib==2026.5.4
 fuzzywuzzy 					
 Levenshtein 				
 mixpanel 			    	
-PyQt6==6.10.2				
-regex 				        
-pygetwindow 				
+PyQt6==6.10.2
+PyQt6-WebEngine==6.10.0
+regex
+pygetwindow
+tomli_w
 # Currently wildebeest doesn't work with Python 3.13
 # echo wildebeest-nlp 
