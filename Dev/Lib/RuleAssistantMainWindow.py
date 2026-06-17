@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.11 - 6/17/26 - Ron Lockwood
+#    Save/restore the two splitter positions; stop marking a rule dirty while loading it (no false save prompt).
+#
 #   Version 3.16.10 - 6/17/26 - Ron Lockwood
 #    Default the window size to the .ui design geometry when none is saved (no hard-coded default size).
 #
@@ -138,6 +141,8 @@ class RuleAssistantWindow(QMainWindow):
         self._flexData: Optional[FLExData] = None
         self._currentRuleIndex = 0
         self._dirty = False
+        # True while we programmatically populate editor widgets, so their change signals don't mark the rule dirty.
+        self._updating = False
         self._result = WindowResult(saved=False, ruleIndex=None, launchLrt=False)
 
         # Services
@@ -379,26 +384,31 @@ class RuleAssistantWindow(QMainWindow):
         self._currentRuleIndex = index
         rule = self._generator.flexTransRules[index]
 
-        # Update fields
-        self.ruleNameField.setText(rule.name)
-        self.ruleDescriptionField.setPlainText(rule.description)
+        # Populate the editor widgets from the model. Setting these fires their change signals, so guard with
+        # _updating to keep the handlers from writing back and marking the (unchanged) rule dirty.
+        self._updating = True
 
-        permKey = {
-            PermutationsValue.no: "no",
-            PermutationsValue.not_head: "not head",
-            PermutationsValue.with_head: "with head",
-        }.get(rule.createPermutations, "with head")
-        permIndex = self.permutationsCombo.findData(permKey)
-        self.permutationsCombo.setCurrentIndex(permIndex if permIndex >= 0 else 0)
+        try:
+            self.ruleNameField.setText(rule.name)
+            self.ruleDescriptionField.setPlainText(rule.description)
+
+            permKey = {
+                PermutationsValue.no: "no",
+                PermutationsValue.not_head: "not head",
+                PermutationsValue.with_head: "with head",
+            }.get(rule.createPermutations, "with head")
+            permIndex = self.permutationsCombo.findData(permKey)
+            self.permutationsCombo.setCurrentIndex(permIndex if permIndex >= 0 else 0)
+
+            # Update overwrite checkbox
+            self.overwriteCheckbox.setChecked(self._generator.overwriteRules.value == "yes")
+
+        finally:
+            self._updating = False
 
         # Generate and show HTML
         html = self._producer.produceWebPage(rule)
         self.treeView.setHtml(html, QUrl("qrc:///"))
-
-        # Update overwrite checkbox
-        self.overwriteCheckbox.setChecked(
-            self._generator.overwriteRules.value == "yes"
-        )
 
     def _refreshRuleView(self) -> None:
         """Refresh the current rule display after editing."""
@@ -451,6 +461,19 @@ class RuleAssistantWindow(QMainWindow):
 
         self.setGeometry(x, y, w, h)
 
+        # Restore the two splitter positions if the user has saved them; otherwise keep the defaults set in _setupWidgets.
+        mainSizes = self._preferences.getMainSplitterSizes()
+
+        if mainSizes:
+
+            self.ui.main_splitter.setSizes(mainSizes)
+
+        vSizes = self._preferences.getVSplitterSizes()
+
+        if vSizes:
+
+            self.ui.v_splitter.setSizes(vSizes)
+
         if maximized:
 
             self.showMaximized()
@@ -473,6 +496,8 @@ class RuleAssistantWindow(QMainWindow):
         self._preferences.setWindowHeight(self.height())
         self._preferences.setWindowMaximized(self.isMaximized())
         self._preferences.setLastSelectedRule(self._currentRuleIndex)
+        self._preferences.setMainSplitterSizes(self.ui.main_splitter.sizes())
+        self._preferences.setVSplitterSizes(self.ui.v_splitter.sizes())
         self._preferences.sync()
 
     def processItemClickedOn(self, item: str, x: int, y: int) -> None:
@@ -683,6 +708,10 @@ class RuleAssistantWindow(QMainWindow):
     def _onRuleNameChanged(self) -> None:
         """Handle rule name text change."""
 
+        if self._updating:
+
+            return
+
         if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
 
             self._generator.flexTransRules[self._currentRuleIndex].name = self.ruleNameField.text()
@@ -699,6 +728,10 @@ class RuleAssistantWindow(QMainWindow):
     def _onRuleDescriptionChanged(self) -> None:
         """Handle rule description text change."""
 
+        if self._updating:
+
+            return
+
         if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
 
             self._generator.flexTransRules[self._currentRuleIndex].description = (self.ruleDescriptionField.toPlainText())
@@ -706,6 +739,10 @@ class RuleAssistantWindow(QMainWindow):
 
     def _onPermutationsChanged(self) -> None:
         """Handle permutations combo change."""
+
+        if self._updating:
+
+            return
 
         if self._generator and 0 <= self._currentRuleIndex < len(self._generator.flexTransRules):
 
@@ -719,6 +756,10 @@ class RuleAssistantWindow(QMainWindow):
 
     def _onOverwriteToggled(self) -> None:
         """Handle overwrite checkbox toggle."""
+
+        if self._updating:
+
+            return
 
         from RAutils import OverwriteRulesValue
 

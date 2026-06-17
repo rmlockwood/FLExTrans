@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.7 - 6/17/26 - Ron Lockwood
+#    Add preference storage for the two main-window splitter positions.
+#
 #   Version 3.16.6 - 6/17/26 - Ron Lockwood
 #    Store ApplicationPreferences in a TOML file (Config/RuleAssistantSettings.txt) instead of QSettings/registry.
 #
@@ -1058,6 +1061,8 @@ class ApplicationPreferences:
     HEIGHT = "Height"
     MAXIMIZED = "Maximized"
     LAST_SPLIT_PANE_POSITION = "lastSplitPanePosition"
+    MAIN_SPLITTER_SIZES = "mainSplitterSizes"
+    V_SPLITTER_SIZES = "vSplitterSizes"
 
     # Settings live in this TOML-formatted file in the project's Config folder (replacing the old QSettings/registry storage).
     SETTINGS_FILENAME = "RuleAssistantSettings.txt"
@@ -1150,6 +1155,23 @@ class ApplicationPreferences:
     def setSplitPanePosition(self, position: float) -> None:
 
         self._data[self.LAST_SPLIT_PANE_POSITION] = position
+
+    # Splitter sizes are stored as a list of pixel widths/heights (one per pane); an empty list means "not saved yet".
+    def getMainSplitterSizes(self) -> list:
+
+        return [int(s) for s in self._data.get(self.MAIN_SPLITTER_SIZES, [])]
+
+    def setMainSplitterSizes(self, sizes) -> None:
+
+        self._data[self.MAIN_SPLITTER_SIZES] = [int(s) for s in sizes]
+
+    def getVSplitterSizes(self) -> list:
+
+        return [int(s) for s in self._data.get(self.V_SPLITTER_SIZES, [])]
+
+    def setVSplitterSizes(self, sizes) -> None:
+
+        self._data[self.V_SPLITTER_SIZES] = [int(s) for s in sizes]
 
     # Persist the current settings to the TOML file, creating the Config folder if it doesn't exist yet.
     def sync(self) -> None:
