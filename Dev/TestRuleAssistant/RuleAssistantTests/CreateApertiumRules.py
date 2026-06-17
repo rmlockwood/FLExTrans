@@ -1592,7 +1592,7 @@ class RuleGenerator:
                         many = node.get('flex_feature_name')
                     else:
                         # Unexpected value found. Give a warning and ignore it.
-                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a disjoint feature set. Expected only "sg", "pl" or "many". This value will be ignored.').format(val=val))
+                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a split feature set. Expected only "sg", "pl" or "many". This value will be ignored.').format(val=val))
 
                 if merged and sg and pl:
 

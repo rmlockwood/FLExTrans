@@ -23,26 +23,46 @@
       <widget class="QWidget" name="leftPane">
        <layout class="QVBoxLayout" name="leftLayout">
         <item>
-         <widget class="QLabel" name="rulesLabel">
-          <property name="text">
-           <string>Rules</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="hintLabel">
-          <property name="styleSheet">
-           <string notr="true">font-style: italic; color: gray;</string>
-          </property>
-          <property name="text">
-           <string>(Right-click to edit)</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="rulesHeaderLayout">
+          <item>
+           <widget class="QLabel" name="rulesLabel">
+            <property name="text">
+             <string>Rules</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="hintLabel">
+            <property name="styleSheet">
+             <string notr="true">font-style: italic; color: gray;</string>
+            </property>
+            <property name="text">
+             <string>(Right-click to edit)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="rulesHeaderSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QListWidget" name="rule_list">
           <property name="contextMenuPolicy">
            <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -59,7 +79,7 @@
         <item>
          <widget class="QPushButton" name="disjoint_button">
           <property name="text">
-           <string>Set disjoint features</string>
+           <string>Set split features</string>
           </property>
          </widget>
         </item>
@@ -74,6 +94,48 @@
           </property>
           <widget class="QWidget" name="topWidget">
            <layout class="QVBoxLayout" name="topLayoutV">
+            <item>
+             <layout class="QHBoxLayout" name="buttonBar">
+              <item>
+               <widget class="QPushButton" name="test_lrt_button">
+                <property name="toolTip">
+                 <string>Test in the Live Rule Tester tool.</string>
+                </property>
+                <property name="text">
+                 <string>Test in LRT</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="save_button">
+                <property name="text">
+                 <string>Save</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="save_create_button">
+                <property name="text">
+                 <string>Save &amp; Write</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="save_all_button">
+                <property name="text">
+                 <string>Save &amp; Write All</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="help_button">
+                <property name="text">
+                 <string>Help</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
             <item>
              <layout class="QHBoxLayout" name="topLayout" stretch="1,0">
               <item>
@@ -143,48 +205,6 @@
                   <number>0</number>
                  </property>
                 </layout>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="buttonBar">
-              <item>
-               <widget class="QPushButton" name="test_lrt_button">
-                <property name="toolTip">
-                 <string>Test in the Live Rule Tester tool.</string>
-                </property>
-                <property name="text">
-                 <string>Test in LRT</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="save_button">
-                <property name="text">
-                 <string>Save</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="save_create_button">
-                <property name="text">
-                 <string>Save &amp; Write</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="save_all_button">
-                <property name="text">
-                 <string>Save &amp; Write All</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="help_button">
-                <property name="text">
-                 <string>Help</string>
-                </property>
                </widget>
               </item>
              </layout>

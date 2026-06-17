@@ -16,12 +16,12 @@
         <translation>Eliminar conjunto seleccionado</translation>
     </message>
     <message>
-        <source>Disjoint feature set</source>
-        <translation>Conjunto de rásgos disjuntas</translation>
+        <source>Split feature set</source>
+        <translation>Conjunto de rásgos divididos</translation>
     </message>
     <message>
-        <source>Disjoint Features Editor</source>
-        <translation>Editor de Rásgos Disjuntas</translation>
+        <source>Split Features Editor</source>
+        <translation>Editor de Rásgos Divididos</translation>
     </message>
     <message>
         <source>Distinguishing feature</source>

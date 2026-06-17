@@ -52,8 +52,8 @@
         <translation>Tout enregistrer et écrire</translation>
     </message>
     <message>
-        <source>Set disjoint features</source>
-        <translation>Définir les traits disjoints</translation>
+        <source>Set split features</source>
+        <translation>Définir les traits divisés</translation>
     </message>
     <message>
         <source>Test in LRT</source>

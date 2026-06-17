@@ -16,12 +16,12 @@
         <translation>Supprimer l'ensemble sélectionné</translation>
     </message>
     <message>
-        <source>Disjoint feature set</source>
-        <translation>Ensemble de traits disjoints</translation>
+        <source>Split feature set</source>
+        <translation>Ensemble de traits divisés</translation>
     </message>
     <message>
-        <source>Disjoint Features Editor</source>
-        <translation>Éditeur de traits disjoints</translation>
+        <source>Split Features Editor</source>
+        <translation>Éditeur de traits divisés</translation>
     </message>
     <message>
         <source>Distinguishing feature</source>

@@ -5,6 +5,15 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.7 - 6/17/26 - Ron Lockwood
+#    Cleared up lint issues.
+#
+#   Version 3.16.6 - 6/17/26 - Ron Lockwood
+#    Require both source text and bilingual dictionary before generating test data (fixes a None-arg crash).
+#
+#   Version 3.16.5 - 6/17/26 - Ron Lockwood
+#    Remove dead _HAS_PYTHON_RA flag; the library import is unconditional.
+#
 #   Version 3.16.4 - 6/16/26 - Ron Lockwood
 #    Apply coding conventions; camelCase naming.
 #
@@ -36,16 +45,13 @@ import subprocess
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from typing import cast
 
 from flextoolslib import * # type: ignore
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
-
-# LAZY IMPORTS: Do NOT import QWebEngine at module load time
-# It causes crashes when imported by FlexTools before proper Qt initialization
-# Import only when needed in StartRuleAssistant()
 
 import Mixpanel
 import InterlinData
@@ -54,16 +60,11 @@ import ReadConfig
 import CreateApertiumRules
 import FTPaths
 from RunApertium import docs as RunApertDocs
+from TextClasses import TextEntirety
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
     )
-
-# The Python Rule Assistant library now lives in Dev/Lib (RAutils) and
-# Dev/Lib/Windows (RuleAssistantWindow). These are already on sys.path via
-# FlexTools, so the successful module-level import above guarantees it is
-# available.
-_HAS_PYTHON_RA = True
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -316,9 +317,10 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bidixDix = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
-    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not (sourceText or bidixDix):
+    # Both are required: sourceText to locate the text to interlinearize, and bidixDix to compile the bilingual dictionary below. Bail (no test data) if either is
+    # missing - this also narrows bidixDix to a non-None str for the subprocess call further down.
+    if not (sourceText and bidixDix):
 
         return False
 
@@ -327,6 +329,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
 
+    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
     content = None
 
     for text in DB.ObjectsIn(ITextRepository):
@@ -345,7 +348,8 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
         return False
 
-    text = InterlinData.getInterlinData(DB, report, params)
+    # getInterlinData is dynamically typed (returns object), so cast to its real type for the .write() call below.
+    text = cast(TextEntirety, InterlinData.getInterlinData(DB, report, params))
 
     fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
 
@@ -424,7 +428,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
 
     """Launch the Python/PyQt6 Rule Assistant GUI.
 
-    This function calls the Python version of the Rule Assistant (no fallback to Java).
+    This function calls the Python version of the Rule Assistant.
 
     Args:
         report: FLEx report object for logging
@@ -437,18 +441,16 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
         Tuple of (saved: bool, rule_index: Optional[int], launch_lrt: bool)
     """
 
-    if not _HAS_PYTHON_RA:
-
-        errorMsg = "Python Rule Assistant library not found at expected location"
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=errorMsg, ruleAssistant=docs[FTM_Name]))
-        return (False, None, False)
-
     try:
         # Get interface language from FLEx
         try:
             langCode = Utils.getInterfaceLangCode()
 
         except Exception:
+
+            langCode = "en"
+
+        if not langCode:
 
             langCode = "en"
 

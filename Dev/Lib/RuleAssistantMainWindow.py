@@ -5,6 +5,21 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.9 - 6/17/26 - Ron Lockwood
+#    Help button jumps to the Rule Assistant section (#sRuleAssist); widen message-box title padding to 180.
+#
+#   Version 3.16.8 - 6/17/26 - Ron Lockwood
+#    Edit unmarked excludes Greek agreement variables and warns when no real feature values exist.
+#
+#   Version 3.16.7 - 6/17/26 - Ron Lockwood
+#    Help button opens UserDoc; Edit unmarked picks from the feature's values; message boxes widened to show their titles.
+#
+#   Version 3.16.6 - 6/17/26 - Ron Lockwood
+#    Fix type-checker errors: type selected constituents to their subclasses, guard Optional accesses, match closeEvent signature.
+#
+#   Version 3.16.5 - 6/16/26 - Ron Lockwood
+#    Locate features/affixes/words by object identity, not dataclass value-equality, so edits act on the clicked item.
+#
 #   Version 3.16.4 - 6/16/26 - Ron Lockwood
 #    Apply coding conventions; camelCase naming.
 #
@@ -28,34 +43,27 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
 
 import os
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, cast
 from pathlib import Path
 
-from PyQt6.QtWidgets import (
-    QMainWindow,  QListWidgetItem, QMenu, QMessageBox,
-    QInputDialog, QDialog
-)
-# LAZY IMPORT: QWebEngine moved to __init__ to avoid early initialization
-# from PyQt6.QtWebEngineWidgets import QWebEngineView
-# from PyQt6.QtWebChannel import QWebChannel
+from PyQt6.QtWidgets import (QMainWindow,  QListWidgetItem, QMenu, QMessageBox, QInputDialog, QDialog, QGridLayout, QSpacerItem, QSizePolicy)
 from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
-from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon
+from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon, QCloseEvent, QDesktopServices
 
 import FTPaths
 
 _translate = QCoreApplication.translate
 
 from RAutils import (
-    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word,
-    FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
-    ConstituentFinder, ValidityChecker,
-    WebPageProducer, WebPageInteractor, ApplicationPreferences,
+    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word, Feature, Category, Affix, Phrase, FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
+    ConstituentFinder, ValidityChecker, WebPageProducer, WebPageInteractor, ApplicationPreferences,
 )
 from DisjointFeaturesEditorDlg import DisjointFeaturesEditorDialog
 from ListChooserDialog import ListChooserDialog
 
 # Generated from RuleAssistantWindow.ui by pyuic (do not hand-edit that file).
-from RuleAssistantWindow import Ui_RuleAssistantWindow
+# Lives in Dev/Lib/Windows, which FlexTools puts on sys.path at runtime; the type checker can't see it.
+from RuleAssistantWindow import Ui_RuleAssistantWindow # type: ignore
 
 class WindowResult(NamedTuple):
     """Result returned from main window."""
@@ -63,6 +71,36 @@ class WindowResult(NamedTuple):
     saved: bool
     ruleIndex: Optional[int]
     launchLrt: bool
+
+def showMessageBox(parent, icon, title: str, text: str, buttons=QMessageBox.StandardButton.Ok, defaultButton=QMessageBox.StandardButton.NoButton):
+    """Show a message box that is guaranteed wide enough to display its (sometimes long) window title.
+
+    Qt sizes a message box to its message text, so a short message paired with a long window title leaves the title clipped in the
+    title bar. We add a horizontal spacer to the box's grid layout, sized to the title text plus window-chrome padding, which forces
+    a minimum width without shrinking a box that is already wider. Returns the StandardButton the user clicked.
+    """
+
+    box = QMessageBox(parent)
+    box.setIcon(icon)
+    box.setWindowTitle(title)
+    box.setText(text)
+    box.setStandardButtons(buttons)
+
+    if defaultButton != QMessageBox.StandardButton.NoButton:
+
+        box.setDefaultButton(defaultButton)
+
+    # Pad past the title text to leave room for the window icon, the min/max/close buttons, and frame margins in the title bar.
+    requiredWidth = box.fontMetrics().horizontalAdvance(title) + 180
+    grid = box.layout()
+
+    if isinstance(grid, QGridLayout):
+
+        spacer = QSpacerItem(requiredWidth, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        grid.addItem(spacer, grid.rowCount(), 0, 1, grid.columnCount())
+
+    box.exec()
+    return box.standardButton(box.clickedButton())
 
 class RuleAssistantWindow(QMainWindow):
     """Main window for the Rule Assistant application.
@@ -106,9 +144,9 @@ class RuleAssistantWindow(QMainWindow):
 
         # Selected constituents for context menu operations
         self._selectedWord: Optional[Word] = None
-        self._selectedCategory = None
-        self._selectedFeature = None
-        self._selectedAffix = None
+        self._selectedCategory: Optional[Category] = None
+        self._selectedFeature: Optional[Feature] = None
+        self._selectedAffix: Optional[Affix] = None
 
         # Setup UI from the compiled .ui form
         self.ui = Ui_RuleAssistantWindow()
@@ -195,7 +233,13 @@ class RuleAssistantWindow(QMainWindow):
         self._channel = QWebChannel(self.treeView)
         self._interactor = WebPageInteractor(self)
         self._channel.registerObject("ftRuleGenApp", self._interactor)
-        self.treeView.page().setWebChannel(self._channel)
+
+        # page() is Optional; it is always present here, but guard to satisfy the type checker and be safe.
+        treePage = self.treeView.page()
+
+        if treePage is not None:
+
+            treePage.setWebChannel(self._channel)
 
     @staticmethod
     def _addAction(menu: QMenu, text: str, slot) -> QAction:
@@ -456,26 +500,27 @@ class RuleAssistantWindow(QMainWindow):
         pos = QPoint(x, y)
 
         # Show appropriate context menu based on type
+        # The typeCode tells us the concrete constituent subclass, so cast accordingly (the finder returns the base type).
         if typeCode == "w":
 
-            self._selectedWord = constituent
+            self._selectedWord = cast(Word, constituent)
             self._enableDisableWordMenuItems(constituent)
             self._wordMenu.exec(pos)
 
         elif typeCode == "c":
 
-            self._selectedCategory = constituent
+            self._selectedCategory = cast(Category, constituent)
             self._categoryMenu.exec(pos)
 
         elif typeCode == "f":
 
-            self._selectedFeature = constituent
+            self._selectedFeature = cast(Feature, constituent)
             self._enableDisableFeatureMenuItems(constituent)
             self._featureMenu.exec(pos)
 
         elif typeCode == "a":
 
-            self._selectedAffix = constituent
+            self._selectedAffix = cast(Affix, constituent)
             self._enableDisableAffixMenuItems(constituent)
             self._affixMenu.exec(pos)
 
@@ -521,7 +566,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         phraseType = phrase.phraseType
-        index = phrase.words.index(word)
+        index = self._indexByIdentity(phrase.words, word)
 
         self._cmWordMoveLeft.setEnabled(index != 0)
         self._cmWordMoveRight.setEnabled(index != len(phrase.words) - 1)
@@ -559,7 +604,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = word.affixes.index(affix)
+        index = self._indexByIdentity(word.affixes, affix)
         self._cmAffixMoveLeft.setEnabled(index != 0)
         self._cmAffixMoveRight.setEnabled(index != len(word.affixes) - 1)
 
@@ -585,7 +630,7 @@ class RuleAssistantWindow(QMainWindow):
 
         phrase = thisWord.parent if thisWord is not None else None
 
-        if phrase is not None and phrase.phraseType == PhraseType.target and thisWord is not None:
+        if isinstance(phrase, Phrase) and phrase.phraseType == PhraseType.target and thisWord is not None:
 
             # Ranking only makes sense when the word has more than one feature
             # (counting features on the word and on all its affixes).
@@ -703,7 +748,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not isValid:
 
-            QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+            showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
             return
 
@@ -724,7 +769,7 @@ class RuleAssistantWindow(QMainWindow):
 
             if not isValid:
 
-                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                 return
 
@@ -763,7 +808,7 @@ class RuleAssistantWindow(QMainWindow):
 
             if not isValid:
 
-                QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                 return
 
@@ -780,7 +825,7 @@ class RuleAssistantWindow(QMainWindow):
 
                 if not isValid:
 
-                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                    showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                     return
 
@@ -797,7 +842,7 @@ class RuleAssistantWindow(QMainWindow):
 
                 if not isValid:
 
-                    QMessageBox.critical(self, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
+                    showMessageBox(self, QMessageBox.Icon.Critical, _translate("RuleAssistantWindow", "Problem with rule"), errorMsg)
 
                     return
 
@@ -808,16 +853,28 @@ class RuleAssistantWindow(QMainWindow):
         # Cancel: do nothing.
 
     def _onHelp(self) -> None:
-        """Handle Help button."""
+        """Open the FLExTrans user documentation at the Rule Assistant section."""
 
-        QMessageBox.information(self, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "See documentation for help"))
+        helpFile = os.path.join(FTPaths.HELP_DIR, "UserDoc.htm")
+
+        # Guard so a missing file doesn't crash the tool.
+        if not os.path.exists(helpFile):
+
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "Help file not found: {file}").format(file=helpFile))
+
+            return
+
+        # Jump to the Rule Assistant section. os.startfile can't carry a #fragment, so build a file URL with the anchor and let Qt open it in the default browser.
+        url = QUrl.fromLocalFile(helpFile)
+        url.setFragment("sRuleAssist")
+        QDesktopServices.openUrl(url)
 
     def _onDisjointFeatures(self) -> None:
         """Handle Disjoint Features button."""
 
         if not self._generator or not self._flexData:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No data loaded"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No data loaded"))
 
             return
 
@@ -854,7 +911,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
         newWord = deepcopy(self._selectedWord)
         phrase.words.insert(index + 1, newWord)
         self._markDirty()
@@ -936,7 +993,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
         phrase.insertNewWordAt(index)
         self._markDirty()
         self._refreshRuleView()
@@ -954,7 +1011,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
         phrase.insertNewWordAt(index + 1)
         self._markDirty()
         self._refreshRuleView()
@@ -1134,7 +1191,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not uniqueCategories:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No categories available"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No categories available"))
 
             return
 
@@ -1164,7 +1221,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not allFeatures:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
 
             return
 
@@ -1194,7 +1251,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
 
         if index > 0:
 
@@ -1215,7 +1272,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = phrase.words.index(self._selectedWord)
+        index = self._indexByIdentity(phrase.words, self._selectedWord)
 
         if index < len(phrase.words) - 1:
 
@@ -1234,7 +1291,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if phrase:
 
-            index = phrase.words.index(self._selectedWord)
+            index = self._indexByIdentity(phrase.words, self._selectedWord)
             phrase.words.pop(index)
             self._markDirty()
             self._refreshRuleView()
@@ -1349,17 +1406,77 @@ class RuleAssistantWindow(QMainWindow):
             self._refreshRuleView()
 
     def _onFeatureEditUnmarked(self) -> None:
-        """Edit unmarked value of selected feature."""
+        """Set the unmarked value of the selected feature by picking from the feature's FLEx values (matches Java).
 
-        if not self._selectedFeature:
+        The Java version shows a list of the feature's possible values, not a free-text box, so the user can only choose
+        a real value for the feature. (Clearing the unmarked value is handled separately by 'Delete unmarked'.)"""
+
+        if not self._selectedFeature or not self._flexData:
 
             return
 
-        text, ok = QInputDialog.getText(self, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "Enter unmarked value:"), text=self._selectedFeature.unmarked)
+        # The feature's owner is either the word directly or an affix on the word; we filter FLEx values by that word.
+        from RAutils import Word, Affix
 
-        if ok:
+        owner = self._selectedFeature.parent
 
-            self._selectedFeature.unmarked = text
+        if isinstance(owner, Word):
+
+            ownerWord = owner
+
+        elif isinstance(owner, Affix):
+
+            ownerWord = owner.parent
+        else:
+            ownerWord = None
+
+        # Find the FLEx feature whose name matches this feature's label, so we can offer its values.
+        flexFeature = None
+
+        for f in self._flexFeaturesForWord(ownerWord):
+
+            if f.name == self._selectedFeature.label:
+
+                flexFeature = f
+                break
+
+        if not flexFeature or not flexFeature.values:
+
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "No values available for this feature."))
+
+            return
+
+        # Build the value list, pre-selecting the current unmarked value if it is among them. Skip the Greek
+        # agreement variables (added to every feature for matching); an unmarked default must be a real value.
+        from RAutils import FLExFeatureValue
+
+        items = []
+        currentIndex = 0
+
+        for value in flexFeature.values:
+
+            if FLExFeatureValue.isGreek(value.abbreviation):
+
+                continue
+
+            if value.abbreviation == self._selectedFeature.unmarked:
+
+                currentIndex = len(items)
+
+            items.append((value.abbreviation, value.abbreviation))
+
+        # Everything may have been a Greek variable, leaving no real value to choose.
+        if not items:
+
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Edit unmarked"), _translate("RuleAssistantWindow", "No feature values found."))
+
+            return
+
+        chosen = ListChooserDialog.choose(self, _translate("RuleAssistantWindow", "Unmarked Value Chooser"), items, currentIndex)
+
+        if chosen is not None:
+
+            self._selectedFeature.unmarked = chosen
             self._markDirty()
             self._refreshRuleView()
 
@@ -1424,7 +1541,7 @@ class RuleAssistantWindow(QMainWindow):
 
         from copy import deepcopy
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = deepcopy(self._selectedAffix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
         self._markDirty()
@@ -1456,7 +1573,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if not allFeatures:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "No features available"))
 
             return
 
@@ -1483,7 +1600,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.prefix)
         self._selectedWord.affixes.insert(index, newAffix)
         self._markDirty()
@@ -1499,7 +1616,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.prefix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
         self._markDirty()
@@ -1515,7 +1632,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.suffix)
         self._selectedWord.affixes.insert(index, newAffix)
         self._markDirty()
@@ -1531,7 +1648,7 @@ class RuleAssistantWindow(QMainWindow):
         from RAutils import Affix
         from RAutils import AffixType
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.suffix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
         self._markDirty()
@@ -1544,7 +1661,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
 
         if index > 0:
 
@@ -1559,7 +1676,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
 
         if index < len(self._selectedWord.affixes) - 1:
 
@@ -1574,7 +1691,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        index = self._selectedWord.affixes.index(self._selectedAffix)
+        index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         self._selectedWord.affixes.pop(index)
         self._markDirty()
         self._refreshRuleView()
@@ -1657,7 +1774,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if len(self._generator.flexTransRules) == 1:
 
-            QMessageBox.warning(self, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "Cannot delete the last rule"))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Error"), _translate("RuleAssistantWindow", "Cannot delete the last rule"))
 
             return
 
@@ -1675,6 +1792,25 @@ class RuleAssistantWindow(QMainWindow):
         self._markDirty()
 
     # Helper methods
+    def _indexByIdentity(self, items, target) -> int:
+        """Return the position of target within items, matched by object identity.
+
+        The rule constituents (Word, Affix, Feature, ...) are @dataclasses, so their
+        auto-generated __eq__ compares by field values. list.index()/in/remove therefore match
+        the first *value-equal* item, which is the wrong one when value-equal duplicates coexist
+        (e.g. a duplicated affix, or two blank words/affixes). The selected constituent is always
+        the exact instance the user clicked, so identity is the correct comparison. Returns -1 if
+        not found, though the selected object should always be present.
+        """
+
+        for index, item in enumerate(items):
+
+            if item is target:
+
+                return index
+
+        return -1
+
     def _findPhraseContainingWord(self, rule, word) -> Optional["Phrase"]:
         """Find which phrase contains the given word.
 
@@ -1686,11 +1822,13 @@ class RuleAssistantWindow(QMainWindow):
             The Phrase containing the word, or None
         """
 
-        if word in rule.source.words:
+        # Identity, not value-equality: a source word and a target word can be value-equal
+        # (e.g. same wordId and content), so "in" could report the wrong phrase.
+        if self._indexByIdentity(rule.source.words, word) != -1:
 
             return rule.source
 
-        if word in rule.target.words:
+        if self._indexByIdentity(rule.target.words, word) != -1:
 
             return rule.target
 
@@ -1704,21 +1842,29 @@ class RuleAssistantWindow(QMainWindow):
             feature: The Feature to remove
         """
 
+        # Match by object identity, not value equality. Feature is a @dataclass, so its
+        # auto-generated __eq__ compares field values; two boxes can hold value-equal features
+        # (e.g. the same BantuNounGender:β on both a word and its prefix). Using "in"/remove would
+        # then delete the first value-equal match found (the word's), not the one the user clicked.
         for word in rule.source.words + rule.target.words:
 
-            if feature in word.features:
+            for index, wordFeature in enumerate(word.features):
 
-                word.features.remove(feature)
+                if wordFeature is feature:
 
-                return
+                    del word.features[index]
+
+                    return
 
             for affix in word.affixes:
 
-                if feature in affix.features:
+                for index, affixFeature in enumerate(affix.features):
 
-                    affix.features.remove(feature)
+                    if affixFeature is feature:
 
-                    return
+                        del affix.features[index]
+
+                        return
 
     def _findAndClearCategory(self, rule, category) -> None:
         """Find and clear a category from its parent word.
@@ -1750,13 +1896,14 @@ class RuleAssistantWindow(QMainWindow):
 
         return self._result
 
-    def closeEvent(self, event) -> None:
-        """Handle window close event."""
+    def closeEvent(self, a0: Optional[QCloseEvent]) -> None:
+        """Handle window close event. The parameter name/type match QWidget.closeEvent."""
 
         if self._dirty:
 
-            reply = QMessageBox.question(
-                self, _translate("RuleAssistantWindow", "Changes may have been made."),
+            reply = showMessageBox(
+                self, QMessageBox.Icon.Question,
+                _translate("RuleAssistantWindow", "Changes may have been made."),
                 _translate("RuleAssistantWindow", "Do you want to save any changes?"),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
             )
@@ -1766,5 +1913,9 @@ class RuleAssistantWindow(QMainWindow):
                 self._onSave()
 
         self._saveWindowState()
-        event.accept()
+
+        if a0 is not None:
+
+            a0.accept()
+
         self.finished.emit()
