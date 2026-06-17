@@ -5,6 +5,12 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.7 - 6/17/26 - Ron Lockwood
+#    Cleared up lint issues.
+#
+#   Version 3.16.6 - 6/17/26 - Ron Lockwood
+#    Require both source text and bilingual dictionary before generating test data (fixes a None-arg crash).
+#
 #   Version 3.16.5 - 6/17/26 - Ron Lockwood
 #    Remove dead _HAS_PYTHON_RA flag; the library import is unconditional.
 #
@@ -39,6 +45,7 @@ import subprocess
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from typing import cast
 
 from flextoolslib import * # type: ignore
 
@@ -53,6 +60,7 @@ import ReadConfig
 import CreateApertiumRules
 import FTPaths
 from RunApertium import docs as RunApertDocs
+from TextClasses import TextEntirety
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
@@ -309,9 +317,10 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bidixDix = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
-    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not (sourceText or bidixDix):
+    # Both are required: sourceText to locate the text to interlinearize, and bidixDix to compile the bilingual dictionary below. Bail (no test data) if either is
+    # missing - this also narrows bidixDix to a non-None str for the subprocess call further down.
+    if not (sourceText and bidixDix):
 
         return False
 
@@ -320,6 +329,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
 
+    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
     content = None
 
     for text in DB.ObjectsIn(ITextRepository):
@@ -338,7 +348,8 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
         return False
 
-    text = InterlinData.getInterlinData(DB, report, params)
+    # getInterlinData is dynamically typed (returns object), so cast to its real type for the .write() call below.
+    text = cast(TextEntirety, InterlinData.getInterlinData(DB, report, params))
 
     fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
 
@@ -436,6 +447,10 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
             langCode = Utils.getInterfaceLangCode()
 
         except Exception:
+
+            langCode = "en"
+
+        if not langCode:
 
             langCode = "en"
 

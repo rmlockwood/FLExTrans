@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.4 - 6/17/26 - Ron Lockwood
+#    Fix type-checker errors: broaden parent type, read head via getattr, narrow phrase with isinstance, Optional css-dir params.
+#
 #   Version 3.16.3 - 6/16/26 - Ron Lockwood
 #    Apply coding conventions; camelCase naming.
 #
@@ -210,7 +213,8 @@ class RuleConstituent:
     def __init__(self):
 
         self.identifier: int = 0
-        self.parent: Optional["RuleConstituent"] = None
+        # parent is usually another RuleConstituent, but a rule's parent is the FLExTransRuleGenerator (the root container), so type it broadly.
+        self.parent: Optional[object] = None
 
     # Produce the opening HTML span for this constituent, wired to call back into the app on click.
     def produceSpan(self, cssClass: str, typeCode: str) -> str:
@@ -457,7 +461,9 @@ class Affix(RuleConstituent):
 
             return False
 
-        return getattr(self.parent, "head", None) and str(self.parent.head).lower() == "yes"
+        # parent is typed broadly (object), so read head via getattr; return a real bool.
+        head = getattr(self.parent, "head", None)
+        return bool(head) and str(head).lower() == "yes"
 
 # ============================================================
 # Phrase
@@ -809,7 +815,7 @@ class Word(RuleConstituent):
 
         phrase = self.parent
 
-        if not hasattr(phrase, "phraseType"):
+        if not isinstance(phrase, Phrase):
 
             return None
 
@@ -1314,14 +1320,14 @@ class WebPageInteractor(QObject):
 # ============================================================
 class WebPageProducer:
 
-    def __init__(self, cssAssetsDir: str = None):
+    def __init__(self, cssAssetsDir: Optional[str] = None):
 
         self._treeflexCss = ""
         self._rulegenCss = ""
         self._loadCssFiles(cssAssetsDir)
 
     # Load the treeflex and rulegen CSS files from the assets directory (or this file's directory).
-    def _loadCssFiles(self, cssAssetsDir: str = None) -> None:
+    def _loadCssFiles(self, cssAssetsDir: Optional[str] = None) -> None:
 
         baseDir = Path(cssAssetsDir) if cssAssetsDir else Path(__file__).resolve().parent
 

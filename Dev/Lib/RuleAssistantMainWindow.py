@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.6 - 6/17/26 - Ron Lockwood
+#    Fix type-checker errors: type selected constituents to their subclasses, guard Optional accesses, match closeEvent signature.
+#
 #   Version 3.16.5 - 6/16/26 - Ron Lockwood
 #    Locate features/affixes/words by object identity, not dataclass value-equality, so edits act on the clicked item.
 #
@@ -31,34 +34,27 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
 
 import os
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, cast
 from pathlib import Path
 
-from PyQt6.QtWidgets import (
-    QMainWindow,  QListWidgetItem, QMenu, QMessageBox,
-    QInputDialog, QDialog
-)
-# LAZY IMPORT: QWebEngine moved to __init__ to avoid early initialization
-# from PyQt6.QtWebEngineWidgets import QWebEngineView
-# from PyQt6.QtWebChannel import QWebChannel
+from PyQt6.QtWidgets import (QMainWindow,  QListWidgetItem, QMenu, QMessageBox, QInputDialog, QDialog)
 from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
-from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon
+from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon, QCloseEvent
 
 import FTPaths
 
 _translate = QCoreApplication.translate
 
 from RAutils import (
-    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word,
-    FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
-    ConstituentFinder, ValidityChecker,
-    WebPageProducer, WebPageInteractor, ApplicationPreferences,
+    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word, Feature, Category, Affix, Phrase, FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
+    ConstituentFinder, ValidityChecker, WebPageProducer, WebPageInteractor, ApplicationPreferences,
 )
 from DisjointFeaturesEditorDlg import DisjointFeaturesEditorDialog
 from ListChooserDialog import ListChooserDialog
 
 # Generated from RuleAssistantWindow.ui by pyuic (do not hand-edit that file).
-from RuleAssistantWindow import Ui_RuleAssistantWindow
+# Lives in Dev/Lib/Windows, which FlexTools puts on sys.path at runtime; the type checker can't see it.
+from RuleAssistantWindow import Ui_RuleAssistantWindow # type: ignore
 
 class WindowResult(NamedTuple):
     """Result returned from main window."""
@@ -109,9 +105,9 @@ class RuleAssistantWindow(QMainWindow):
 
         # Selected constituents for context menu operations
         self._selectedWord: Optional[Word] = None
-        self._selectedCategory = None
-        self._selectedFeature = None
-        self._selectedAffix = None
+        self._selectedCategory: Optional[Category] = None
+        self._selectedFeature: Optional[Feature] = None
+        self._selectedAffix: Optional[Affix] = None
 
         # Setup UI from the compiled .ui form
         self.ui = Ui_RuleAssistantWindow()
@@ -198,7 +194,13 @@ class RuleAssistantWindow(QMainWindow):
         self._channel = QWebChannel(self.treeView)
         self._interactor = WebPageInteractor(self)
         self._channel.registerObject("ftRuleGenApp", self._interactor)
-        self.treeView.page().setWebChannel(self._channel)
+
+        # page() is Optional; it is always present here, but guard to satisfy the type checker and be safe.
+        treePage = self.treeView.page()
+
+        if treePage is not None:
+
+            treePage.setWebChannel(self._channel)
 
     @staticmethod
     def _addAction(menu: QMenu, text: str, slot) -> QAction:
@@ -459,26 +461,27 @@ class RuleAssistantWindow(QMainWindow):
         pos = QPoint(x, y)
 
         # Show appropriate context menu based on type
+        # The typeCode tells us the concrete constituent subclass, so cast accordingly (the finder returns the base type).
         if typeCode == "w":
 
-            self._selectedWord = constituent
+            self._selectedWord = cast(Word, constituent)
             self._enableDisableWordMenuItems(constituent)
             self._wordMenu.exec(pos)
 
         elif typeCode == "c":
 
-            self._selectedCategory = constituent
+            self._selectedCategory = cast(Category, constituent)
             self._categoryMenu.exec(pos)
 
         elif typeCode == "f":
 
-            self._selectedFeature = constituent
+            self._selectedFeature = cast(Feature, constituent)
             self._enableDisableFeatureMenuItems(constituent)
             self._featureMenu.exec(pos)
 
         elif typeCode == "a":
 
-            self._selectedAffix = constituent
+            self._selectedAffix = cast(Affix, constituent)
             self._enableDisableAffixMenuItems(constituent)
             self._affixMenu.exec(pos)
 
@@ -588,7 +591,7 @@ class RuleAssistantWindow(QMainWindow):
 
         phrase = thisWord.parent if thisWord is not None else None
 
-        if phrase is not None and phrase.phraseType == PhraseType.target and thisWord is not None:
+        if isinstance(phrase, Phrase) and phrase.phraseType == PhraseType.target and thisWord is not None:
 
             # Ranking only makes sense when the word has more than one feature
             # (counting features on the word and on all its affixes).
@@ -1782,8 +1785,8 @@ class RuleAssistantWindow(QMainWindow):
 
         return self._result
 
-    def closeEvent(self, event) -> None:
-        """Handle window close event."""
+    def closeEvent(self, a0: Optional[QCloseEvent]) -> None:
+        """Handle window close event. The parameter name/type match QWidget.closeEvent."""
 
         if self._dirty:
 
@@ -1798,5 +1801,9 @@ class RuleAssistantWindow(QMainWindow):
                 self._onSave()
 
         self._saveWindowState()
-        event.accept()
+
+        if a0 is not None:
+
+            a0.accept()
+
         self.finished.emit()
