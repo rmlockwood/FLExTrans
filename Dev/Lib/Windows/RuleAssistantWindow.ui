@@ -137,74 +137,91 @@
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="topLayout" stretch="1,0">
+             <layout class="QHBoxLayout" name="topLayout">
               <item>
-               <layout class="QVBoxLayout" name="leftTop">
-                <item>
-                 <widget class="QLabel" name="ruleNameLabel">
-                  <property name="text">
-                   <string>Rule Name:</string>
+               <widget class="QSplitter" name="h_splitter">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <widget class="QWidget" name="ruleInfoContainer" native="true">
+                 <layout class="QVBoxLayout" name="leftTop">
+                  <property name="leftMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="rule_name_field"/>
-                </item>
-                <item>
-                 <widget class="QLabel" name="ruleDescLabel">
-                  <property name="text">
-                   <string>Description:</string>
+                  <property name="topMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPlainTextEdit" name="rule_description_field">
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>82</height>
-                   </size>
+                  <property name="rightMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="permLayout">
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
                   <item>
-                   <widget class="QLabel" name="permLabel">
+                   <widget class="QLabel" name="ruleNameLabel">
                     <property name="text">
-                     <string>Create permutations:</string>
+                     <string>Rule Name:</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="permutations_combo"/>
+                   <widget class="QLineEdit" name="rule_name_field"/>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="ruleDescLabel">
+                    <property name="text">
+                     <string>Description:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPlainTextEdit" name="rule_description_field">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>82</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="permLayout">
+                    <item>
+                     <widget class="QLabel" name="permLabel">
+                      <property name="text">
+                       <string>Create permutations:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="permutations_combo"/>
+                    </item>
+                   </layout>
                   </item>
                  </layout>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="QWidget" name="testDataContainer" native="true">
-                <property name="minimumSize">
-                 <size>
-                  <width>300</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <layout class="QVBoxLayout" name="testDataLayout">
-                 <property name="leftMargin">
-                  <number>0</number>
+                </widget>
+                <widget class="QWidget" name="testDataContainer" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
                  </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                </layout>
+                 <layout class="QVBoxLayout" name="testDataLayout">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                 </layout>
+                </widget>
                </widget>
               </item>
              </layout>

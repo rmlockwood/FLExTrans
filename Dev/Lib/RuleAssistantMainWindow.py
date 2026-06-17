@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.12 - 6/17/26 - Ron Lockwood
+#    Add a horizontal splitter between the rule information pane and the example data web view; save/restore its position.
+#
 #   Version 3.16.11 - 6/17/26 - Ron Lockwood
 #    Save/restore the two splitter positions; stop marking a rule dirty while loading it (no false save prompt).
 #
@@ -197,6 +200,7 @@ class RuleAssistantWindow(QMainWindow):
         # Splitter proportions (runtime tweak, not expressible in the .ui).
         self.ui.main_splitter.setSizes([200, 460])
         self.ui.v_splitter.setSizes([250, 750])
+        self.ui.h_splitter.setSizes([400, 300])
 
     def _createWebViews(self) -> None:
         """Create the QWebEngineViews in code (kept out of the .ui to preserve the
@@ -461,7 +465,7 @@ class RuleAssistantWindow(QMainWindow):
 
         self.setGeometry(x, y, w, h)
 
-        # Restore the two splitter positions if the user has saved them; otherwise keep the defaults set in _setupWidgets.
+        # Restore the three splitter positions if the user has saved them; otherwise keep the defaults set in _setupWidgets.
         mainSizes = self._preferences.getMainSplitterSizes()
 
         if mainSizes:
@@ -473,6 +477,12 @@ class RuleAssistantWindow(QMainWindow):
         if vSizes:
 
             self.ui.v_splitter.setSizes(vSizes)
+
+        hSizes = self._preferences.getHSplitterSizes()
+
+        if hSizes:
+
+            self.ui.h_splitter.setSizes(hSizes)
 
         if maximized:
 
@@ -498,6 +508,7 @@ class RuleAssistantWindow(QMainWindow):
         self._preferences.setLastSelectedRule(self._currentRuleIndex)
         self._preferences.setMainSplitterSizes(self.ui.main_splitter.sizes())
         self._preferences.setVSplitterSizes(self.ui.v_splitter.sizes())
+        self._preferences.setHSplitterSizes(self.ui.h_splitter.sizes())
         self._preferences.sync()
 
     def processItemClickedOn(self, item: str, x: int, y: int) -> None:
