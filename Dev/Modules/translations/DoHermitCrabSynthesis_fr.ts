@@ -47,7 +47,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="228"/>
       <source>A value for {cacheData} not found in the configuration file.</source>
-      <translation>Une valeur pour {cacheData} non trouvée dans le fichier de configuration.</translation>
+      <translation>Une valeur pour {cacheData} est introuvable dans le fichier de configuration.</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="259"/>
@@ -102,7 +102,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="345"/>
       <source>The file: {transferResultsFile} was not found. Did you run the {runApertium} module?</source>
-      <translation>Le fichier : {transferResultsFile} n'a pas été trouvé. Avez-vous exécuté le module {runApertium} ?</translation>
+      <translation>Le fichier : {transferResultsFile} est introuvable. Avez-vous exécuté le module {runApertium} ?</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="360"/>
@@ -192,7 +192,7 @@ Ces formes sont ensuite utilisées pour créer le texte cible.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="798"/>
       <source>{master} or {parses} or {surface} or {transfer} not found in the configuration file.</source>
-      <translation>{master} ou {parses} ou {surface} ou {transfer} non trouvé dans le fichier de configuration.</translation>
+      <translation>{master} ou {parses} ou {surface} ou {transfer} introuvable dans le fichier de configuration.</translation>
     </message>
   </context>
 </TS>
