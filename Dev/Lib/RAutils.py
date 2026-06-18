@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.9 - 6/17/26 - Ron Lockwood
+#    Default new rules to no permutations and overwrite-rules to yes.
+#
 #   Version 3.16.8 - 6/17/26 - Ron Lockwood
 #    Add preference storage for the horizontal rule-info/example-data splitter position.
 #
@@ -920,7 +923,7 @@ class FLExTransRule(RuleConstituent):
 
     name: str = ""
     description: str = ""
-    createPermutations: PermutationsValue = PermutationsValue.with_head
+    createPermutations: PermutationsValue = PermutationsValue.no
     source: Source = field(default_factory=Source)
     target: Target = field(default_factory=Target)
 
@@ -991,7 +994,7 @@ class FLExTransRuleGenerator:
 
     flexTransRules: list[FLExTransRule] = field(default_factory=list)
     disjointFeatures: list[DisjointFeatureSet] = field(default_factory=list)
-    overwriteRules: OverwriteRulesValue = OverwriteRulesValue.no
+    overwriteRules: OverwriteRulesValue = OverwriteRulesValue.yes
 
     def __post_init__(self):
 
