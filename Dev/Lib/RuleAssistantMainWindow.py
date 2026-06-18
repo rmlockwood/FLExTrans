@@ -5,6 +5,15 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.15 - 6/18/26 - Ron Lockwood
+#    Hoist all the scattered inline imports (RAutils names, deepcopy) up to the top-of-file import block.
+#
+#   Version 3.16.14 - 6/18/26 - Ron Lockwood
+#    Share one helper for match/value assignment across edit/insert-feature handlers (word and affix insert now Greek-aware too).
+#
+#   Version 3.16.13 - 6/18/26 - Ron Lockwood
+#    Edit feature: put a Greek agreement variable on the match attribute (not value) when the chosen value is Greek.
+#
 #   Version 3.16.12 - 6/17/26 - Ron Lockwood
 #    Add a horizontal splitter between the rule information pane and the example data web view; save/restore its position.
 #
@@ -54,6 +63,7 @@ from PyQt6.QtWebChannel import QWebChannel
 import os
 from typing import Optional, NamedTuple, cast
 from pathlib import Path
+from copy import deepcopy
 
 from PyQt6.QtWidgets import (QMainWindow,  QListWidgetItem, QMenu, QMessageBox, QInputDialog, QDialog, QGridLayout, QSpacerItem, QSizePolicy)
 from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
@@ -64,8 +74,9 @@ import FTPaths
 _translate = QCoreApplication.translate
 
 from RAutils import (
-    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word, Feature, Category, Affix, Phrase, FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
+    FLExTransRuleGenerator, PhraseType, PermutationsValue, Word, Feature, Category, Affix, AffixType, Phrase, FLExData, XMLBackEndProvider, XMLFLExDataBackEndProvider,
     ConstituentFinder, ValidityChecker, WebPageProducer, WebPageInteractor, ApplicationPreferences,
+    HeadValue, OverwriteRulesValue, FLExFeature, FLExFeatureValue, GREEK_VARIABLES,
 )
 from DisjointFeaturesEditorDlg import DisjointFeaturesEditorDialog
 from ListChooserDialog import ListChooserDialog
@@ -601,8 +612,6 @@ class RuleAssistantWindow(QMainWindow):
 
     def _enableDisableWordMenuItems(self, word) -> None:
 
-        from RAutils import PhraseType, HeadValue
-
         phrase = word.parent
 
         if phrase is None:
@@ -657,8 +666,6 @@ class RuleAssistantWindow(QMainWindow):
         self._cmAffixInsertFeature.setEnabled(self._flexCategoryHasValidFeatures(word, phraseType))
 
     def _enableDisableFeatureMenuItems(self, feature) -> None:
-
-        from RAutils import PhraseType, Word, Affix
 
         # Find the word that owns this feature (directly, or via an affix).
         owner = feature.parent
@@ -771,8 +778,6 @@ class RuleAssistantWindow(QMainWindow):
         if self._updating:
 
             return
-
-        from RAutils import OverwriteRulesValue
 
         if self._generator:
 
@@ -963,8 +968,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from copy import deepcopy
-
         phrase = self._findPhraseContainingWord(self._generator.flexTransRules[self._currentRuleIndex], self._selectedWord)
 
         if not phrase:
@@ -1034,8 +1037,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from RAutils import HeadValue
-
         self._selectedWord.head = HeadValue.no
         self._markDirty()
         self._refreshRuleView()
@@ -1083,9 +1084,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from RAutils import Affix
-        from RAutils import AffixType
-
         newAffix = Affix(affixType=AffixType.prefix)
         self._selectedWord.affixes.append(newAffix)
         self._markDirty()
@@ -1097,9 +1095,6 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selectedWord:
 
             return
-
-        from RAutils import Affix
-        from RAutils import AffixType
 
         newAffix = Affix(affixType=AffixType.suffix)
         self._selectedWord.affixes.append(newAffix)
@@ -1173,8 +1168,6 @@ class RuleAssistantWindow(QMainWindow):
         if not self._generator or not self._flexData:
 
             return []
-
-        from RAutils import FLExFeature, FLExFeatureValue, GREEK_VARIABLES
 
         # Number of variable values comes from the phrase's FLEx data.
         if phraseType == PhraseType.source:
@@ -1256,8 +1249,6 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         # Get current category for pre-selection
-        from RAutils import Category
-
         currentCategory = Category(name=self._selectedWord.wordCategory) if self._selectedWord.wordCategory else None
 
         chosen = self._chooseCategory(uniqueCategories, currentCategory)
@@ -1291,9 +1282,11 @@ class RuleAssistantWindow(QMainWindow):
 
             flexFeature, flexValue = result
 
-            from RAutils import Feature
+            newFeature = Feature(label=flexFeature.name)
 
-            newFeature = Feature(label=flexFeature.name, value=flexValue.abbreviation)
+            # Assign the chosen abbreviation to the correct attribute based on whether it's a Greek variable or a concrete value.
+            self._assignFeatureMatchOrValue(newFeature, flexValue.abbreviation)
+
             self._selectedWord.features.append(newFeature)
             self._markDirty()
             self._refreshRuleView()
@@ -1390,8 +1383,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from RAutils import Category
-
         currentCategory = Category(name=self._selectedCategory.name) if self._selectedCategory.name else None
 
         chosen = self._chooseCategory(uniqueCategories, currentCategory)
@@ -1417,6 +1408,20 @@ class RuleAssistantWindow(QMainWindow):
         self._refreshRuleView()
 
     # Feature menu handlers
+    @staticmethod
+    def _assignFeatureMatchOrValue(feature, abbreviation: str) -> None:
+        """Assign a chosen feature abbreviation to the correct attribute (matches Java).
+
+        Greek agreement variables go on the match attribute (with value cleared); concrete feature values go on the value attribute (with match cleared)."""
+
+        if FLExFeatureValue.isGreek(abbreviation):
+
+            feature.match = abbreviation
+            feature.value = ""
+        else:
+            feature.value = abbreviation
+            feature.match = ""
+
     def _onFeatureEdit(self) -> None:
         """Edit selected feature."""
 
@@ -1426,8 +1431,6 @@ class RuleAssistantWindow(QMainWindow):
 
         # Filter by the owning word's category (matches Java). The feature's owner
         # is either the word directly or an affix on the word.
-        from RAutils import Word, Affix
-
         owner = self._selectedFeature.parent
 
         if isinstance(owner, Word):
@@ -1446,8 +1449,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from RAutils import Feature
-
         # Pre-select current feature for dialog
         currentFeature = Feature(
             label=self._selectedFeature.label,
@@ -1460,8 +1461,10 @@ class RuleAssistantWindow(QMainWindow):
 
             flexFeature, flexValue = result
             self._selectedFeature.label = flexFeature.name
-            self._selectedFeature.value = flexValue.abbreviation
-            self._selectedFeature.match = ""
+
+            # Assign the chosen abbreviation to the correct attribute based on whether it's a Greek variable or a concrete value.
+            self._assignFeatureMatchOrValue(self._selectedFeature, flexValue.abbreviation)
+
             self._markDirty()
             self._refreshRuleView()
 
@@ -1476,8 +1479,6 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         # The feature's owner is either the word directly or an affix on the word; we filter FLEx values by that word.
-        from RAutils import Word, Affix
-
         owner = self._selectedFeature.parent
 
         if isinstance(owner, Word):
@@ -1508,8 +1509,6 @@ class RuleAssistantWindow(QMainWindow):
 
         # Build the value list, pre-selecting the current unmarked value if it is among them. Skip the Greek
         # agreement variables (added to every feature for matching); an unmarked default must be a real value.
-        from RAutils import FLExFeatureValue
-
         items = []
         currentIndex = 0
 
@@ -1599,8 +1598,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from copy import deepcopy
-
         index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = deepcopy(self._selectedAffix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
@@ -1613,8 +1610,6 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selectedAffix:
 
             return
-
-        from RAutils import AffixType
 
         self._selectedAffix.affixType = (AffixType.suffix if self._selectedAffix.affixType == AffixType.prefix else AffixType.prefix)
         self._markDirty()
@@ -1643,9 +1638,11 @@ class RuleAssistantWindow(QMainWindow):
 
             flexFeature, flexValue = result
 
-            from RAutils import Feature
+            newFeature = Feature(label=flexFeature.name)
 
-            newFeature = Feature(label=flexFeature.name, value=flexValue.abbreviation)
+            # Assign the chosen abbreviation to the correct attribute based on whether it's a Greek variable or a concrete value.
+            self._assignFeatureMatchOrValue(newFeature, flexValue.abbreviation)
+            
             self._selectedAffix.features.append(newFeature)
             self._markDirty()
             self._refreshRuleView()
@@ -1656,9 +1653,6 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selectedAffix or not self._selectedWord:
 
             return
-
-        from RAutils import Affix
-        from RAutils import AffixType
 
         index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.prefix)
@@ -1673,9 +1667,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from RAutils import Affix
-        from RAutils import AffixType
-
         index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.prefix)
         self._selectedWord.affixes.insert(index + 1, newAffix)
@@ -1689,9 +1680,6 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        from RAutils import Affix
-        from RAutils import AffixType
-
         index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.suffix)
         self._selectedWord.affixes.insert(index, newAffix)
@@ -1704,9 +1692,6 @@ class RuleAssistantWindow(QMainWindow):
         if not self._selectedAffix or not self._selectedWord:
 
             return
-
-        from RAutils import Affix
-        from RAutils import AffixType
 
         index = self._indexByIdentity(self._selectedWord.affixes, self._selectedAffix)
         newAffix = Affix(affixType=AffixType.suffix)
@@ -1940,9 +1925,6 @@ class RuleAssistantWindow(QMainWindow):
             if word.categoryConstituent and word.categoryConstituent.name == category.name:
 
                 word.wordCategory = ""
-
-                from RAutils import Category
-
                 word.categoryConstituent = Category(name="")
 
                 return

@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.10 - 6/18/26 - Ron Lockwood
+#    Always write the DisjointFeatureSets, Features, and Affixes wrapper elements, even when empty.
+#
 #   Version 3.16.9 - 6/17/26 - Ron Lockwood
 #    Default new rules to no permutations and overwrite-rules to yes.
 #
@@ -1529,14 +1532,12 @@ class XMLBackEndProvider:
         root = ET.Element("FLExTransRuleGenerator")
         root.set("overwrite_rules", generator.overwriteRules.value)
 
-        # Write the disjoint feature sets, if any.
-        if generator.disjointFeatures:
+        # Write the disjoint feature sets. Always emit the wrapper element, even when empty, so the output matches the expected XML structure.
+        disjointSetsEl = ET.SubElement(root, "DisjointFeatureSets")
 
-            disjointSetsEl = ET.SubElement(root, "DisjointFeatureSets")
+        for ds in generator.disjointFeatures:
 
-            for ds in generator.disjointFeatures:
-
-                XMLBackEndProvider._createDisjointFeatureSetElement(ds, disjointSetsEl)
+            XMLBackEndProvider._createDisjointFeatureSetElement(ds, disjointSetsEl)
 
         rulesEl = ET.SubElement(root, "FLExTransRules")
 
@@ -1721,23 +1722,19 @@ class XMLBackEndProvider:
         wordEl.set("category", word.wordCategory)
         wordEl.set("head", word.head.value)
 
-        # Write the word's own features.
-        if word.features:
+        # Write the word's own features. Always emit the wrapper element, even when empty, so the output matches the expected XML structure.
+        featuresEl = ET.SubElement(wordEl, "Features")
 
-            featuresEl = ET.SubElement(wordEl, "Features")
+        for f in word.features:
 
-            for f in word.features:
+            XMLBackEndProvider._createFeatureElement(f, featuresEl)
 
-                XMLBackEndProvider._createFeatureElement(f, featuresEl)
+        # Write the word's affixes. Always emit the wrapper element, even when empty, so the output matches the expected XML structure.
+        affixesEl = ET.SubElement(wordEl, "Affixes")
 
-        # Write the word's affixes.
-        if word.affixes:
+        for a in word.affixes:
 
-            affixesEl = ET.SubElement(wordEl, "Affixes")
-
-            for a in word.affixes:
-
-                XMLBackEndProvider._createAffixElement(a, affixesEl)
+            XMLBackEndProvider._createAffixElement(a, affixesEl)
 
     # Build the XML element for a single feature.
     @staticmethod
@@ -1757,13 +1754,12 @@ class XMLBackEndProvider:
         affixEl = ET.SubElement(parentEl, "Affix")
         affixEl.set("type", affix.affixType.value)
 
-        if affix.features:
+        # Always emit the Features wrapper element, even when empty, so the output matches the expected XML structure.
+        featuresEl = ET.SubElement(affixEl, "Features")
 
-            featuresEl = ET.SubElement(affixEl, "Features")
+        for f in affix.features:
 
-            for f in affix.features:
-
-                XMLBackEndProvider._createFeatureElement(f, featuresEl)
+            XMLBackEndProvider._createFeatureElement(f, featuresEl)
 
     # Build the XML element for a disjoint feature set, including its value pairings.
     @staticmethod
