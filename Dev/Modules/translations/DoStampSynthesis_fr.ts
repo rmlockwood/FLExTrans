@@ -97,17 +97,17 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1367"/>
       <source>Configuration file problem.</source>
-      <translation>Problème avec le fichier de configuration.</translation>
+      <translation>Problème de fichier de configuration.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1211"/>
       <source>Configuration file problem with TargetProject.</source>
-      <translation>Problème avec le fichier de configuration pour TargetProject.</translation>
+      <translation>Problème de fichier de configuration avec TargetProject.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1382"/>
       <source>Configuration file problem with {folder}.</source>
-      <translation>Problème avec le fichier de configuration pour {folder}.</translation>
+      <translation>Problème de fichier de configuration avec {folder}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1387"/>
@@ -117,7 +117,7 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1231"/>
       <source>Configuration file problem with {cacheData}.</source>
-      <translation>Problème avec le fichier de configuration pour {cacheData}.</translation>
+      <translation>Problème de fichier de configuration avec {cacheData}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1238"/>
@@ -152,12 +152,12 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1408"/>
       <source>An error happened when running the STAMP tool.</source>
-      <translation>An error happened when running the STAMP tool.</translation>
+      <translation>Une erreur s'est produite lors de l'exécution de l'outil STAMP.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1439"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>Le module{modname} doit être exécuté avant ce module. Le fichier: ...\{filePath} n'existe pas.</translation>
     </message>
   </context>
 </TS>
