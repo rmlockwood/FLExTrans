@@ -62,17 +62,17 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1072"/>
       <source>Skipping sense that has no Morpho-syntax analysis. Headword: {headword}.</source>
-      <translation>Saut de la sens qui n'a pas d'analyse morphosyntaxique. Mot principal : {headword}.</translation>
+      <translation>Sens ignoré car il n'a pas d'analyse morphosyntaxique. Entrée de dictionnaire : {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1092"/>
       <source>No gloss. Skipping. Headword: {headword}.</source>
-      <translation>Pas de gloss. Ignoré. Mot principal : {headword}.</translation>
+      <translation>Pas de glose. Ignoré. Entrée de dictionnaire : {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1096"/>
       <source>No lexeme form. Skipping. Headword: {headword}.</source>
-      <translation>Pas de forme de lexème. Ignoré. Mot principal : {headword}.</translation>
+      <translation>Pas de forme de lexème. Ignoré. Entrée de dictionnaire : {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1100"/>
