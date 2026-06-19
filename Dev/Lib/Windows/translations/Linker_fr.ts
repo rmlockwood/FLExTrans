@@ -6,7 +6,7 @@
     <message>
       <location filename="../Linker.py" line="243"/>
       <source>FLExTrans Sense Linker Tool</source>
-      <translation>Outil de liaison de sens FLExTrans</translation>
+      <translation>Outil de liaison des sens FLExTrans</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="244"/>
@@ -92,8 +92,8 @@
       <location filename="../Linker.py" line="247"/>
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
-then double-click in the Target Head Word column for the desired row to link to it.</translation>
+      <translation>Saisissez le début d'une entrée ou un texte quelconque (si &apos;Filtrer sur tous les champs &apos; est coché), 
+puis double-cliquez dans la colonne Mot-vedette cible de la ligne souhaitée pour y créer un lien.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="260"/>
