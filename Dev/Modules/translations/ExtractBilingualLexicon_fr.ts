@@ -25,10 +25,10 @@ This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.</source>
-      <translation>Ce module construira un lexique bilingue pour deux projets. Le
+      <translation>Ce module crée un lexique bilingue pour deux projets. Le
 projet sur lequel FlexTools est configuré est votre projet source. Définissez le projet cible
 dans les paramètres avec le nom de votre projet cible.
-Ce module construit le lexique bilingue basé sur les liens entre les sens sources et les sens cibles
+Ce module crée le lexique bilingue basé sur les liens entre les sens sources et les sens cibles
 qui se trouvent dans votre projet source. Utilisez le module de liaison de sens pour créer ces liens.
 Le lexique bilingue sera stocké dans le fichier spécifié par le paramètre Fichier de sortie du dictionnaire bilingue.
 Il s'appelle généralement bilingual.dix et se trouve habituellement dans le dossier Output.
