@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.18 - 6/19/26 - Ron Lockwood
+#    Fix Edit unmarked: look up the feature's real values from the full feature list, not the chooser list whose single-value in-use entry shadowed it.
+#
 #   Version 3.16.17 - 6/19/26 - Ron Lockwood
 #    Feature chooser shows a space after the colon (e.g. "gender: pl"); strip spaces from the value before storing so the XML stays unspaced.
 #
@@ -1120,6 +1123,23 @@ class RuleAssistantWindow(QMainWindow):
 
         return ListChooserDialog.choose(self, _translate("RuleAssistantWindow", "FLEx Category Chooser"), items, currentIndex)
 
+    def _fullFlexFeaturesForWord(self, word):
+        """Return the complete FLEx features valid for the word's category, each with all its values. This is the raw list, without the single-value "in use" quick-picks or disjoint-set synthetics that _flexFeaturesForWord prepends for the feature chooser. Use this when you need a feature's real values (e.g. the unmarked-value editor)."""
+
+        if not self._flexData or word is None:
+
+            return []
+
+        phrase = word.parent
+
+        if phrase is None:
+
+            return []
+
+        cat = word.getCategoryOfWordOrCorrespondingSourceWord()
+        catAbbr = cat.name if cat else ""
+        return self._flexData.getFeaturesInPhraseForCategory(phrase.phraseType, catAbbr)
+
     def _flexFeaturesForWord(self, word):
         """FLEx features to offer for a word, filtered to the word's category and
         phrase. Mirrors the Java MainController.processInsertFeature, which shows
@@ -1138,10 +1158,7 @@ class RuleAssistantWindow(QMainWindow):
             return []
 
         phraseType = phrase.phraseType
-        cat = word.getCategoryOfWordOrCorrespondingSourceWord()
-        catAbbr = cat.name if cat else ""
-
-        featuresForCategory = self._flexData.getFeaturesInPhraseForCategory(phraseType, catAbbr)
+        featuresForCategory = self._fullFlexFeaturesForWord(word)
         featuresInUse = phrase.getFeaturesInUseForCategory(featuresForCategory)
         disjointFeatures = self._disjointFeaturesFor(featuresForCategory, phraseType)
 
@@ -1484,10 +1501,10 @@ class RuleAssistantWindow(QMainWindow):
         else:
             ownerWord = None
 
-        # Find the FLEx feature whose name matches this feature's label, so we can offer its values.
+        # Find the FLEx feature whose name matches this feature's label, so we can offer its values. Use the full feature list (not the chooser list, whose single-value "in use" entries would shadow the full feature and leave only the Greek value to offer).
         flexFeature = None
 
-        for f in self._flexFeaturesForWord(ownerWord):
+        for f in self._fullFlexFeaturesForWord(ownerWord):
 
             if f.name == self._selectedFeature.label:
 
