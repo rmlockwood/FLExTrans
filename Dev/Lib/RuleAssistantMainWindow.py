@@ -5,6 +5,12 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.17 - 6/19/26 - Ron Lockwood
+#    Feature chooser shows a space after the colon (e.g. "gender: pl"); strip spaces from the value before storing so the XML stays unspaced.
+#
+#   Version 3.16.16 - 6/19/26 - Ron Lockwood
+#    Features-in-use: stop deduping by name so the single-value in-use entries (e.g. gender:α) show at the top of the feature chooser.
+#
 #   Version 3.16.15 - 6/18/26 - Ron Lockwood
 #    Hoist all the scattered inline imports (RAutils names, deepcopy) up to the top-of-file import block.
 #
@@ -399,8 +405,7 @@ class RuleAssistantWindow(QMainWindow):
         self._currentRuleIndex = index
         rule = self._generator.flexTransRules[index]
 
-        # Populate the editor widgets from the model. Setting these fires their change signals, so guard with
-        # _updating to keep the handlers from writing back and marking the (unchanged) rule dirty.
+        # Populate the editor widgets from the model. Setting these fires their change signals, so guard with _updating to keep the handlers from writing back and marking the (unchanged) rule dirty.
         self._updating = True
 
         try:
@@ -446,8 +451,7 @@ class RuleAssistantWindow(QMainWindow):
     def _restoreWindowState(self) -> None:
         """Restore window size and position from preferences."""
 
-        # setupUi() has already applied the design-time size from the .ui, so the current width/height
-        # IS the .ui default; use it whenever no size has been saved yet (and to repair bad saved sizes).
+        # setupUi() has already applied the design-time size from the .ui, so the current width/height IS the .ui default; use it whenever no size has been saved yet (and to repair bad saved sizes).
         defaultWidth = self.width()
         defaultHeight = self.height()
 
@@ -585,8 +589,7 @@ class RuleAssistantWindow(QMainWindow):
             pass
 
     # ------------------------------------------------------------------
-    # Context-menu item enable/disable (mirrors the Java MainController so
-    # operations that don't apply to the clicked-on item are greyed out).
+    # Context-menu item enable/disable (mirrors the Java MainController so operations that don't apply to the clicked-on item are greyed out).
     # ------------------------------------------------------------------
     def _flexCategoryHasValidFeatures(self, word, phraseType) -> bool:
         """True if the word's (or corresponding source word's) category exists in
@@ -683,8 +686,7 @@ class RuleAssistantWindow(QMainWindow):
 
         if isinstance(phrase, Phrase) and phrase.phraseType == PhraseType.target and thisWord is not None:
 
-            # Ranking only makes sense when the word has more than one feature
-            # (counting features on the word and on all its affixes).
+            # Ranking only makes sense when the word has more than one feature (counting features on the word and on all its affixes).
             featureCount = len(thisWord.features) + sum(len(a.features) for a in thisWord.affixes)
             self._cmFeatureEditRanking.setEnabled(featureCount > 1)
         else:
@@ -798,8 +800,6 @@ class RuleAssistantWindow(QMainWindow):
             if currentTitle.endswith("*"):
 
                 self.setWindowTitle(currentTitle[:-1])
-
-            #QMessageBox.information(self, _translate("RuleAssistantWindow", "Saved"), _translate("RuleAssistantWindow", "Rules saved successfully"))
 
     def _onSaveCreate(self) -> None:
         """Handle Save/Create button."""
@@ -1142,22 +1142,12 @@ class RuleAssistantWindow(QMainWindow):
         catAbbr = cat.name if cat else ""
 
         featuresForCategory = self._flexData.getFeaturesInPhraseForCategory(phraseType, catAbbr)
-        featuresInUse = phrase.getFeaturesInUseForCategory(featuresForCategory, catAbbr)
+        featuresInUse = phrase.getFeaturesInUseForCategory(featuresForCategory)
         disjointFeatures = self._disjointFeaturesFor(featuresForCategory, phraseType)
 
-        # Order matches Java: features in use, then disjoint sets, then the rest of
-        # the category's features. Dedup by feature name.
-        seen = set()
-        ordered = []
-
-        for f in list(featuresInUse) + disjointFeatures + list(featuresForCategory):
-
-            if f.name not in seen:
-
-                seen.add(f.name)
-                ordered.append(f)
-
-        return ordered
+        # Order matches Java (MainController.processInsertFeature): the single-value "in use" features first (a quick-pick of values already used in the phrase, e.g. gender:α), then the disjoint-set features, then the full list of the category's features.
+        # No dedup here: the in-use entries are deliberately the same values that also appear in the full list below; surfacing them at the top is exactly the "easy access" behavior we want.
+        return list(featuresInUse) + disjointFeatures + list(featuresForCategory)
 
     def _disjointFeaturesFor(self, featuresForCategory, phraseType):
         """Build a synthetic FLEx feature for each disjoint feature set whose
@@ -1209,7 +1199,8 @@ class RuleAssistantWindow(QMainWindow):
 
                     currentIndex = len(items)
 
-                items.append((f"{feature.name}:{value.abbreviation}", (feature, value)))
+                # Display a space after the colon (e.g. "gender: pl") for readability; the data tuple keeps the unspaced abbreviation, so what is written to the XML is unaffected.
+                items.append((f"{feature.name}: {value.abbreviation}", (feature, value)))
 
         return ListChooserDialog.choose(self, _translate("RuleAssistantWindow", "FLEx Feature Value Chooser"), items, currentIndex)
 
@@ -1414,6 +1405,9 @@ class RuleAssistantWindow(QMainWindow):
 
         Greek agreement variables go on the match attribute (with value cleared); concrete feature values go on the value attribute (with match cleared)."""
 
+        # Strip any surrounding spaces so the value stored (and later written to the XML) never picks up display spacing.
+        abbreviation = abbreviation.strip()
+
         if FLExFeatureValue.isGreek(abbreviation):
 
             feature.match = abbreviation
@@ -1429,8 +1423,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        # Filter by the owning word's category (matches Java). The feature's owner
-        # is either the word directly or an affix on the word.
+        # Filter by the owning word's category (matches Java). The feature's owner is either the word directly or an affix on the word.
         owner = self._selectedFeature.parent
 
         if isinstance(owner, Word):
@@ -1507,8 +1500,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        # Build the value list, pre-selecting the current unmarked value if it is among them. Skip the Greek
-        # agreement variables (added to every feature for matching); an unmarked default must be a real value.
+        # Build the value list, pre-selecting the current unmarked value if it is among them. Skip the Greek agreement variables (added to every feature for matching); an unmarked default must be a real value.
         items = []
         currentIndex = 0
 
@@ -1622,8 +1614,7 @@ class RuleAssistantWindow(QMainWindow):
 
             return
 
-        # Filter by the owning word's category (matches Java, which derives the
-        # word from the affix's parent).
+        # Filter by the owning word's category (matches Java, which derives the word from the affix's parent).
         allFeatures = self._flexFeaturesForWord(self._selectedAffix.parent)
 
         if not allFeatures:
@@ -1867,8 +1858,7 @@ class RuleAssistantWindow(QMainWindow):
             The Phrase containing the word, or None
         """
 
-        # Identity, not value-equality: a source word and a target word can be value-equal
-        # (e.g. same wordId and content), so "in" could report the wrong phrase.
+        # Identity, not value-equality: a source word and a target word can be value-equal (e.g. same wordId and content), so "in" could report the wrong phrase.
         if self._indexByIdentity(rule.source.words, word) != -1:
 
             return rule.source
@@ -1887,10 +1877,7 @@ class RuleAssistantWindow(QMainWindow):
             feature: The Feature to remove
         """
 
-        # Match by object identity, not value equality. Feature is a @dataclass, so its
-        # auto-generated __eq__ compares field values; two boxes can hold value-equal features
-        # (e.g. the same BantuNounGender:β on both a word and its prefix). Using "in"/remove would
-        # then delete the first value-equal match found (the word's), not the one the user clicked.
+        # Match by object identity, not value equality. Feature is a @dataclass, so its auto-generated __eq__ compares field values; two boxes can hold value-equal features (e.g. the same BantuNounGender:β on both a word and its prefix). Using "in"/remove would then delete the first value-equal match found (the word's), not the one the user clicked.
         for word in rule.source.words + rule.target.words:
 
             for index, wordFeature in enumerate(word.features):
