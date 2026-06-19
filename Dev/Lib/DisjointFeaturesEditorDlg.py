@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.4 - 6/19/26 - Ron Lockwood
+#    Disable the right-side editor widgets when no disjoint feature set exists; enable them when a set is added, disable again when deleted.
+#
 #   Version 3.16.3 - 6/17/26 - Ron Lockwood
 #    Slider fix to allow 2 or 3 pairings and capture their values.
 #
@@ -74,7 +77,7 @@ class DisjointFeaturesEditorDialog(QDialog):
         self._connectSignals()
 
         self._populateList()
-        self._updateButtonStates()
+        self._updateControlStates()
 
         # Load the first set automatically when the editor opens (matches Java).
         if self.generator.disjointFeatures:
@@ -453,7 +456,7 @@ class DisjointFeaturesEditorDialog(QDialog):
         newSet.pairings = [DisjointFeatureValuePairing() for _ in range(self.MINIMUM_PAIRINGS)]
         self.generator.disjointFeatures.append(newSet)
         self._populateList()
-        self._updateButtonStates()
+        self._updateControlStates()
 
         # Select the newly added set so it loads in the editor for editing.
         self.setsTable.selectRow(len(self.generator.disjointFeatures) - 1)
@@ -465,12 +468,25 @@ class DisjointFeaturesEditorDialog(QDialog):
             self.generator.disjointFeatures.pop(self._selectedIndex)
             self._populateList()
             self._selectedIndex = -1
-            self._updateButtonStates()
+            self._updateControlStates()
 
-    def _updateButtonStates(self) -> None:
-        """At most one disjoint feature set is allowed: enable Add only when there
-        are none, and enable Delete only when there is at least one."""
+    def _updateControlStates(self) -> None:
+        """Update the Add/Delete buttons and the right-side editor widgets based on whether a disjoint feature set exists.
+
+        At most one set is allowed, so Add is enabled only when there are none and Delete only when there is one. The editor
+        widgets are editable only when a set exists; with no set there is nothing to edit, so they are disabled (adding a set
+        enables them, deleting it disables them again). The language and distinguishing-feature combos stay disabled in all
+        cases - they are fixed/hard-coded, as set in the .ui."""
 
         hasSet = len(self.generator.disjointFeatures) > 0
         self._addButton.setEnabled(not hasSet)
         self._deleteButton.setEnabled(hasSet)
+
+        # Enable the editable right-side widgets (name, subfeature-count slider, and the pairing combos) only when a set exists.
+        self.nameField.setEnabled(hasSet)
+        self.pairingSlider.setEnabled(hasSet)
+
+        for fc, vc in self.pairingFields:
+
+            fc.setEnabled(hasSet)
+            vc.setEnabled(hasSet)
