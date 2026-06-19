@@ -81,7 +81,7 @@
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="137"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Projets de cluster auxquels appliquer</translation>
+      <translation>Projets du groupe à appliquer</translation>
     </message>
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="140"/>
@@ -102,8 +102,7 @@
       <location filename="../ParatextChapSelectionDlg.py" line="138"/>
       <source>Overwrite a text that has the same name. For example, 
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
-      <translation>Overwrite a text that has the same name. For example, 
-if JHN 01 already exists, it will delete it and create JHN 01 again.</translation>
+      <translation>Écraser un texte portant le même nom. Par exemple, si JHN 01 existe déjà, il sera supprimé et recréé.</translation>
     </message>
   </context>
 </TS>
