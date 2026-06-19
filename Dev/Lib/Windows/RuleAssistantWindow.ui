@@ -116,14 +116,14 @@
               <item>
                <widget class="QPushButton" name="save_create_button">
                 <property name="text">
-                 <string>Save &amp; Write</string>
+                 <string>Save &amp;&amp; Write</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="save_all_button">
                 <property name="text">
-                 <string>Save &amp; Write All</string>
+                 <string>Save &amp;&amp; Write All</string>
                 </property>
                </widget>
               </item>

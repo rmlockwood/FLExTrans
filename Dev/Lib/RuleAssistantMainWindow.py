@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.20 - 6/19/26 - Ron Lockwood
+#    Fix the literal ampersand on the Save & Write / Save & Write All buttons (Qt eats a single & as a mnemonic; the .ui now uses &&); the LRT message-box buttons reuse the .ui button labels so the wording lives in one place.
+#
 #   Version 3.16.19 - 6/19/26 - Ron Lockwood
 #    Affix context menu: move Insert feature below the insert-new prefix/suffix block, matching the word menu's layout.
 #
@@ -864,9 +867,10 @@ class RuleAssistantWindow(QMainWindow):
         box.setText(_translate("RuleAssistantWindow", "Choose which save option you want."))
         box.setInformativeText(_translate("RuleAssistantWindow", "Choose your option."))
 
-        saveBtn = box.addButton(_translate("RuleAssistantWindow", "Save"), QMessageBox.ButtonRole.AcceptRole)
-        saveCreateBtn = box.addButton(_translate("RuleAssistantWindow", "Save & Write"), QMessageBox.ButtonRole.AcceptRole)
-        saveCreateAllBtn = box.addButton(_translate("RuleAssistantWindow", "Save & Write All"), QMessageBox.ButtonRole.AcceptRole)
+        # Reuse the main window button labels so the wording (and the && for a literal ampersand) is defined only in the .ui.
+        saveBtn = box.addButton(self.saveButton.text(), QMessageBox.ButtonRole.AcceptRole) # Currently "Save"
+        saveCreateBtn = box.addButton(self.saveCreateButton.text(), QMessageBox.ButtonRole.AcceptRole) # Currently "Save & Write"
+        saveCreateAllBtn = box.addButton(self.saveAllButton.text(), QMessageBox.ButtonRole.AcceptRole) # Currently "Save & Write All"
         box.addButton(_translate("RuleAssistantWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
 
         box.exec()
