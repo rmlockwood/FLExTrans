@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.19 - 6/19/26 - Ron Lockwood
+#    Affix context menu: move Insert feature below the insert-new prefix/suffix block, matching the word menu's layout.
+#
 #   Version 3.16.18 - 6/19/26 - Ron Lockwood
 #    Fix Edit unmarked: look up the feature's real values from the full feature list, not the chooser list whose single-value in-use entry shadowed it.
 #
@@ -328,12 +331,13 @@ class RuleAssistantWindow(QMainWindow):
         self._affixMenu.addSeparator()
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Toggle affix type"), self._onAffixToggleType)
         self._affixMenu.addSeparator()
-        self._cmAffixInsertFeature = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Insert feature"), self._onAffixInsertFeature)
-        self._affixMenu.addSeparator()
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new prefix before"), self._onAffixInsertPrefixBefore)
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new prefix after"), self._onAffixInsertPrefixAfter)
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new suffix before"), self._onAffixInsertSuffixBefore)
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Insert new suffix after"), self._onAffixInsertSuffixAfter)
+        self._affixMenu.addSeparator()
+        # Insert feature sits below the insert-new block, matching the position of "Insert feature" in the word context menu.
+        self._cmAffixInsertFeature = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Insert feature"), self._onAffixInsertFeature)
         self._affixMenu.addSeparator()
         self._cmAffixMoveLeft = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Move left"), self._onAffixMoveLeft)
         self._cmAffixMoveRight = self._addAction(self._affixMenu, _translate("RuleAssistantWindow", "Move right"), self._onAffixMoveRight)
