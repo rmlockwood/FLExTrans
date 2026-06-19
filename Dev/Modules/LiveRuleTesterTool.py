@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.3 - 6/19/26 - Ron Lockwood
+#    Launch the new Python Rule Assistant (RuleAssistantPy) instead of the old Java version.
+#
 #   Version 3.16.2 - 6/9/26 - Laerke
 #    Testbed improvements phase 1. Comment can now be added for a test.
 #
@@ -292,7 +295,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -3279,8 +3282,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         if retVal == START_RULE_ASSISTANT:
 
-            from RuleAssistant import MainFunction as RA
-            from RuleAssistant import docs as RA_docs
+            from RuleAssistantPy import MainFunction as RA
+            from RuleAssistantPy import docs as RA_docs
             report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RA_docs[FTM_Name], version=RA_docs[FTM_Version]))
             ruleCount = RA(DB, report, modify, fromLRT=True)
 
