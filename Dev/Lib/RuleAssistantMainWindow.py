@@ -5,6 +5,12 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.21 - 6/19/26 - Ron Lockwood
+#    Fix Edit category not saving: update the owning word's wordCategory (what the XML is written from), not just the category constituent's display name.
+#
+#   Version 3.16.20 - 6/19/26 - Ron Lockwood
+#    Fix the literal ampersand on the Save & Write / Save & Write All buttons (Qt eats a single & as a mnemonic; the .ui now uses &&); the LRT message-box buttons reuse the .ui button labels so the wording lives in one place.
+#
 #   Version 3.16.19 - 6/19/26 - Ron Lockwood
 #    Affix context menu: move Insert feature below the insert-new prefix/suffix block, matching the word menu's layout.
 #
@@ -864,9 +870,10 @@ class RuleAssistantWindow(QMainWindow):
         box.setText(_translate("RuleAssistantWindow", "Choose which save option you want."))
         box.setInformativeText(_translate("RuleAssistantWindow", "Choose your option."))
 
-        saveBtn = box.addButton(_translate("RuleAssistantWindow", "Save"), QMessageBox.ButtonRole.AcceptRole)
-        saveCreateBtn = box.addButton(_translate("RuleAssistantWindow", "Save & Write"), QMessageBox.ButtonRole.AcceptRole)
-        saveCreateAllBtn = box.addButton(_translate("RuleAssistantWindow", "Save & Write All"), QMessageBox.ButtonRole.AcceptRole)
+        # Reuse the main window button labels so the wording (and the && for a literal ampersand) is defined only in the .ui.
+        saveBtn = box.addButton(self.saveButton.text(), QMessageBox.ButtonRole.AcceptRole) # Currently "Save"
+        saveCreateBtn = box.addButton(self.saveCreateButton.text(), QMessageBox.ButtonRole.AcceptRole) # Currently "Save & Write"
+        saveCreateAllBtn = box.addButton(self.saveAllButton.text(), QMessageBox.ButtonRole.AcceptRole) # Currently "Save & Write All"
         box.addButton(_translate("RuleAssistantWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
 
         box.exec()
@@ -1402,6 +1409,14 @@ class RuleAssistantWindow(QMainWindow):
         if chosen:
 
             self._selectedCategory.name = chosen.abbreviation
+
+            # Also update the owning word's wordCategory: the XML is serialized from word.wordCategory, not from the category constituent's name, so without this the saved file keeps the old category. (Mirrors _onWordInsertCategory, which sets both.)
+            owner = self._selectedCategory.parent
+
+            if isinstance(owner, Word):
+
+                owner.wordCategory = chosen.abbreviation
+
             self._markDirty()
             self._refreshRuleView()
 

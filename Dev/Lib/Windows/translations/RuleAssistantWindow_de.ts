@@ -44,12 +44,12 @@
         <translation>Speichern</translation>
     </message>
     <message>
-        <source>Save &amp; Write</source>
-        <translation>Speichern &amp; Schreiben</translation>
+        <source>Save &amp;&amp; Write</source>
+        <translation>Speichern &amp;&amp; Schreiben</translation>
     </message>
     <message>
-        <source>Save &amp; Write All</source>
-        <translation>Speichern &amp; Alle Schreiben</translation>
+        <source>Save &amp;&amp; Write All</source>
+        <translation>Speichern &amp;&amp; Alle Schreiben</translation>
     </message>
     <message>
         <source>Set split features</source>

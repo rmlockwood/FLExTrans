@@ -5,6 +5,12 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.13 - 6/19/26 - Ron Lockwood
+#    Feature box: move padding onto the cells so the whole box is clickable; switch the tree to overflow:visible to stop premature horizontal/vertical scroll bars.
+#
+#   Version 3.16.12 - 6/19/26 - Ron Lockwood
+#    Make the whole word box clickable for its context menu (handler on the tf-nc table; toApp stops propagation).
+#
 #   Version 3.16.11 - 6/19/26 - Ron Lockwood
 #    Features-in-use: offer each feature:value pair already used in the phrase as a single quick-pick at the top of the chooser (mirrors Java).
 #
@@ -439,11 +445,12 @@ class Affix(RuleConstituent):
     # Produce the inner table HTML listing this affix's features.
     def _produceFeaturesHtml(self, isHead: bool = False) -> str:
 
-        html = "<li><table class=\"tf-nc\">\n"
+        html = "<li><table class=\"tf-nc featurebox\">\n"
 
         for feature in self.features:
 
-            html += "<tr>\n<td align=\"left\">" + feature.produceHtml(isHead) + "</td>\n</tr>\n"
+            # Put the feature's click handler on the whole row cell, not just the label, so clicking anywhere in the feature's area opens the feature context menu. The featurebox CSS moves the box padding onto the cell so the cell fills the box right up to the border.
+            html += f'<tr>\n<td align="left" onmousedown={feature.produceToApp("f")}>' + feature.produceHtml(isHead) + "</td>\n</tr>\n"
 
         html += "</table>\n</li>\n"
         return html
@@ -707,7 +714,9 @@ class Word(RuleConstituent):
                 return {"word": "word", "head": "head"}.get(s, s)
 
         headClass = "headword" if self.head == HeadValue.yes else ""
-        html = "<li><table class=\"tf-nc\">\n<tr>\n<td align=\"center\">"
+
+        # Put the word's click handler on the whole box (the tf-nc table), not just the label, so clicking anywhere in the square opens the word context menu. The category span inside keeps its own handler (clicks there stop propagating, so they open the category menu).
+        html = f'<li><table class="tf-nc" onmousedown={self.produceToApp("w")}>\n<tr>\n<td align="center">'
         html += self.produceSpan(headClass, "w") + _t("word")
 
         # Add a "(head)" annotation when this word is the head.
@@ -777,11 +786,12 @@ class Word(RuleConstituent):
     # Produce the inner table HTML listing this word's own features.
     def _produceFeaturesHtml(self) -> str:
 
-        html = "<li><table class=\"tf-nc\">\n"
+        html = "<li><table class=\"tf-nc featurebox\">\n"
 
         for feature in self.features:
 
-            html += "<tr>\n<td align=\"left\">" + feature.produceHtml(self.head == HeadValue.yes) + "</td>\n</tr>\n"
+            # Put the feature's click handler on the whole row cell, not just the label, so clicking anywhere in the feature's area opens the feature context menu. The featurebox CSS moves the box padding onto the cell so the cell fills the box right up to the border.
+            html += f'<tr>\n<td align="left" onmousedown={feature.produceToApp("f")}>' + feature.produceHtml(self.head == HeadValue.yes) + "</td>\n</tr>\n"
 
         html += "</table>\n</li>\n"
         return html
@@ -1483,6 +1493,8 @@ class WebPageProducer:
             "    });\n"
             "});\n\n"
             "function toApp(msg, event) {\n"
+            "    // Stop the click from bubbling up to an enclosing clickable element (e.g. a category span inside the word box should open the category menu, not the word's box-wide handler).\n"
+            "    if (event) { event.stopPropagation(); }\n"
             "    if (window.ftRuleGenApp) {\n"
             "        ftRuleGenApp.setXCoord(event.screenX);\n"
             "        ftRuleGenApp.setYCoord(event.screenY);\n"

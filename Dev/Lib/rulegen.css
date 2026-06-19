@@ -5,6 +5,31 @@
  */
 /* rulegen.css for FLExTrans rule assistant */
 
+/* Reset the default body margin so the document is exactly as tall as the tree; the browser's default 8px top/bottom margin otherwise pushes the content past the view height and shows a vertical scroll bar with empty space below the lowest box. */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* treeflex draws a downward connector line (:after) below every node and only hides it for an only-child. A leaf box that has siblings therefore gets a ~1em line dangling below it into empty space, which adds height under the lowest box and triggers a phantom vertical scroll bar. Hide that connector on leaf nodes (an li with no child ul). */
+.tf-tree li:not(:has(> ul)) > .tf-nc:after {
+    display: none;
+}
+
+/* treeflex's overflow:auto, on a shrink-to-fit tree whose connector lines are absolutely positioned a hair beyond its content box, shows premature horizontal and vertical scroll bars even when the tree visibly fits. Let it lay out normally; the page (web view) scrolls only when the tree is genuinely larger than the view. */
+.tf-tree {
+    overflow: visible;
+}
+
+/* Make the whole feature box clickable, not just the text. Each feature is a row whose <td> carries the click handler, so move the box's padding onto the cells and drop cell spacing; the cells then fill the box interior right up to the border (the table's tf-nc padding would otherwise be a dead, unclickable band). */
+.tf-tree .tf-nc.featurebox {
+    padding: 0;
+    border-spacing: 0;
+}
+.tf-tree .tf-nc.featurebox td {
+    padding: .25em .5em;
+}
+
 .arrow:before {
     content:" → ";
 }
