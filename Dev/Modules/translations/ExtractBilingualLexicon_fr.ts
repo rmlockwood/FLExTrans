@@ -139,7 +139,7 @@ d'aide pour plus de détails.</translation>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="577"/>
       <source>Creation complete to the file: {filePath}.</source>
-      <translation>Création terminée dans le fichier : {filePath}.</translation>
+      <translation>Fichier créé : {filePath}.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="578"/>
