@@ -89,17 +89,17 @@ d'aide pour plus de détails.</translation>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="418"/>
       <source>Encountered a sense that has unknown POS while processing source headword: {rawHeadWord}</source>
-      <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement du l'entrée de dictionnaire source : {rawHeadWord}</translation>
+      <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement du mot vedette source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="425"/>
       <source>Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}</source>
-      <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. Mot-vedette source : {rawHeadWord}</translation>
+      <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. L'entrée de dictionnaire source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="476"/>
       <source>Skipping sense because the target POS is undefined for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-      <translation>Sens ignoré car la catégorie grammaticale cible POS est indéfinie pour le mot-vedette cible : {targetHeadWord} lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}</translation>
+      <translation>Une acception a été ignorée car la catégorie grammaticale cible n'est pas définie pour le mot-vedette cible : {targetHeadWord} lors du traitement du mot-vedette source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="478"/>
