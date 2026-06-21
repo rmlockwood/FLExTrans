@@ -5,6 +5,12 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.15.5 - 6/20/26 - Ron Lockwood
+#    Fixes #1353. On export, overwrite the Paratext book's \id line with the one carried in the text (if present).
+#
+#   Version 3.15.4 - 6/20/26 - Ron Lockwood
+#    Fixes #1353. Keep the whole \id book-identifier line in the Vernacular WS when inserting paragraphs.
+#
 #   Version 3.15.3 -4/17/26 - Ron Lockwood
 #    Fixes #1312. Translate book names when checking for valid names.
 #
@@ -207,6 +213,7 @@ def splitSFMs(inputStr):
                     r'\\vp \S+ |'           # publication verse
                     r'\\c \d+|'             # chapter
                     r'\\rem.+?\n|'          # remark
+                    r'\\id.+?\n|'           # book identifier
                     r'\d+[:.]\d+[\p{Pd}]\d+|' # verse reference with dash
                     r'\d+[:.]\d+|'          # verse reference
                     r'\\\+\w+|'             # marker preceded by plus
@@ -244,9 +251,10 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
         
         if not (seg is None or len(seg) == 0 or seg == '\n'):
             
-            # Either an sfm marker or a verse ref should get marked as Analysis WS
-            if re.search(r'\\|\d+[.:]\d+', seg):
-                
+            # Either an sfm marker or a verse ref should get marked as Analysis WS. The exception is the \id book-identifier
+            # marker, whose whole line (marker included) must stay in the Vernacular WS so the book id travels through translation.
+            if re.search(r'\\|\d+[.:]\d+', seg) and seg != '\\id':
+
                 # make this in the Analysis WS
                 tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
@@ -663,9 +671,26 @@ def doExport(textContents, report, chapSelectObj, parent):
     
     # Read the Paratext file
     with open(bookPath, encoding='utf-8') as f:
-    
+
         bookContents = f.read()
-    
+
+    # If the incoming text carries an \id book-identifier line (import prepends it and keeps it in the Vernacular WS so it travels
+    # through translation), use it to overwrite the \id line in the Paratext book. Both export modules funnel through here, so doing
+    # this once covers them both. Its presence in textContents is the trigger - it's only there when chapter 1 was imported.
+    synIdMatch = re.search(r'\\id .+', textContents)
+
+    if synIdMatch:
+
+        idLine = synIdMatch.group(0).rstrip()
+
+        # Use a function replacement so the backslash in the \id line isn't interpreted as a group reference. Replace the book's
+        # existing \id line, or prepend the line if the book somehow has none.
+        if re.search(r'\\id .+', bookContents):
+
+            bookContents = re.sub(r'\\id .+', lambda m: idLine, bookContents, count=1)
+        else:
+            bookContents = idLine + '\n' + bookContents
+
     # Find all the chapter #s
     ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
     
