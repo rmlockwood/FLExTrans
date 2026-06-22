@@ -3,9 +3,13 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16 - 6/22/26 - Ron Lockwood
+#    Fixes #1376. Added the Lowercase/Uppercase pairs for special letters synthesis setting, with validation that
+#    it contains single letters separated by spaces and an even number of letters.
+#
 #   Version 3.15.3 - 4/28/26 - Ron Lockwood
-#    Fixes #836. Check for null targetDB before trying to load settings that require it. Add new settings that require 
-#    the targetDB to the list of settings that get hidden if there is no targetDB. 
+#    Fixes #836. Check for null targetDB before trying to load settings that require it. Add new settings that require
+#    the targetDB to the list of settings that get hidden if there is no targetDB.
 #
 #   Version 3.15.2 - 4/8/26 - Ron Lockwood
 #    Fixes #1056. Don't call center window each time the view changes. This was causing the setttings 
@@ -1393,9 +1397,11 @@ class Main(QMainWindow):
         self.close()
         
     def saveAndClose(self):
-        
-        self.save()
-        self.closeEvent(None)
+
+        # Only close if the save actually succeeded. A failed validation leaves the window open so the user can fix the problem.
+        if self.save():
+
+            self.closeEvent(None)
         
     def getLabelForName(self, name):
         
@@ -1455,7 +1461,46 @@ class Main(QMainWindow):
             msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msg.exec()
         
+    def validateLowercaseUppercasePairs(self):
+
+        # Get the current text the user typed for the lowercase/uppercase special letter pairs setting
+        widgInfo = self.nameToWidgetMap[ReadConfig.LOWERCASE_UPPERCASE_PAIRS]
+        pairsStr = widgInfo[WIDGET1_OBJ].text().strip()
+
+        # An empty value is valid since this setting is optional
+        if not pairsStr:
+
+            return True
+
+        # Split into individual letters on whitespace. The format is pairs of single letters separated by spaces, e.g. "x X u U w W".
+        letters = pairsStr.split()
+
+        # Every whitespace-separated token must be exactly one letter long
+        for letter in letters:
+
+            if len(letter) != 1:
+
+                return False
+
+        # There must be an even number of letters so each lowercase letter pairs with an uppercase letter
+        if len(letters) % 2 != 0:
+
+            return False
+
+        return True
+
     def save(self):
+
+        # Make sure the lowercase/uppercase special letter pairs are well formed before saving anything
+        if not self.validateLowercaseUppercasePairs():
+
+            msg = QMessageBox()
+            msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
+            msg.setText(_translate("SettingsGUI", "The Lowercase/Uppercase pairs for special letters setting is not valid.\nEnter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ"))
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msg.exec()
+            return False
 
         updatedConfigMap = {}
 
@@ -1529,7 +1574,9 @@ class Main(QMainWindow):
         self.modified = False
         self.changedSettingsSet.clear()
         self.configMap = updatedConfigMap
-        
+
+        return True
+
     def addCommas(self, array):
         retStr = ''
         if array:
@@ -1738,6 +1785,9 @@ widgetList = [
 
    [_translate("SettingsGUI", "Clean Up Unknown Target Words?"), "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
     _translate("SettingsGUI", "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."), GIVE_ERROR, BASIC_VIEW],\
+
+   [_translate("SettingsGUI", "Lowercase/Uppercase pairs for special letters"), "lowercase_uppercase_pairs", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOWERCASE_UPPERCASE_PAIRS, \
+    _translate("SettingsGUI", "Some special letters you may need to define the uppercase equivalent of lower case letters.\nGive the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ"), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Target Lexicon Files Folder"), "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
     _translate("SettingsGUI", "The path where lexicon files and other STAMP files are created"), GIVE_ERROR, FULL_VIEW],\
