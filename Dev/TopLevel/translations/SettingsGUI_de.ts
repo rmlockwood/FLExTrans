@@ -3,6 +3,25 @@
   <context>
     <name>SettingsGUI</name>
     <message>
+      <location filename="../SettingsGUI.py" line="1789"/>
+      <source>Lowercase/Uppercase pairs for special letters</source>
+      <translation>Klein-/Großbuchstabenpaare für Sonderzeichen</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1790"/>
+      <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
+Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
+      <translation>Bei einigen Sonderzeichen müssen Sie möglicherweise das Großbuchstaben-Äquivalent der Kleinbuchstaben definieren.
+Geben Sie den Kleinbuchstaben gefolgt vom zugehörigen Großbuchstaben an, mit einem einzelnen Leerzeichen zwischen allen Buchstaben. Z. B. ʋ Ʋ</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1499"/>
+      <source>The Lowercase/Uppercase pairs for special letters setting is not valid.
+Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</source>
+      <translation>Die Einstellung „Klein-/Großbuchstabenpaare für Sonderzeichen“ ist ungültig.
+Geben Sie einzelne durch Leerzeichen getrennte Buchstaben ein, mit einer geraden Anzahl von Buchstaben, sodass auf jeden Kleinbuchstaben sein Großbuchstabe folgt. Z. B. ʋ Ʋ</translation>
+    </message>
+    <message>
       <location filename="../SettingsGUI.py" line="1446"/>
       <source>(none)</source>
       <translation>(keine)</translation>
