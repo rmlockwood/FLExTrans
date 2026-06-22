@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.16.1 - 6/20/26 - Ron Lockwood
+#    Fixes #1353. When chapter 1 is imported, prepend the \id book-identifier line (kept in the Vernacular WS) to the text.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -183,7 +186,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -356,7 +359,19 @@ def do_import(DB, report, chapSelectObj, tree):
     with open(bookPath, encoding='utf-8') as f:
 
         bookContents = f.read()
-    
+
+    # If chapter 1 is being imported, grab the \id book-identifier line (the file's first line) so we can prepend it to the
+    # imported text below. fromChap == 1 is the only way chapter 1 can be in the imported range, so that's our trigger.
+    idLine = None
+
+    if chapSelectObj.fromChap == 1:
+
+        idMatch = re.search(r'(\\id .+)', bookContents)
+
+        if idMatch:
+
+            idLine = idMatch.group(1).rstrip()
+
     # Find all the chapter #s
     chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
     
@@ -465,6 +480,13 @@ def do_import(DB, report, chapSelectObj, tree):
     # Otherwise treat as one chapter (going to one text)
     else:
         byChapterList = [importText]
+
+    # If we found an \id line above (chapter 1 is being imported), prepend it as its own line to the first text. This works for
+    # both the single-text and one-text-per-chapter cases and is independent of whether intro material was included. The \n makes
+    # it a separate paragraph and insertParagraphs keeps the whole \id line in the Vernacular WS.
+    if idLine and byChapterList:
+
+        byChapterList[0] = idLine + '\n' + byChapterList[0]
 
     # Set the starting chapter number for the title which may get incremented
     titleChapNum = chapSelectObj.fromChap
