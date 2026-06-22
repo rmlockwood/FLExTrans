@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.1 - 6/22/26 - Ron Lockwood
+#    Use with statements for file handling in writeConfigValue.
+#
+#   Version 3.16 - 6/22/26 - Ron Lockwood
+#    Fixes #1376. Added the Lowercase/Uppercase pairs for special letters synthesis setting.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -90,6 +96,7 @@ LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
 LOG_STATISTICS = 'LogStatistics'
 LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
 LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
+LOWERCASE_UPPERCASE_PAIRS = 'LowercaseUppercasePairsForSpecialLetters'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
@@ -196,43 +203,57 @@ def openConfigFile(report, info):
 
 def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
     
-    f_handle = openConfigFile(report, 'r')
+    if settingName is None or settingValue is None:
+
+        if report is not None:
+            
+            report.Error(_translate("ReadConfig", 'Error writing to the file: "{file}". Setting name and value must not be empty.').format(file=CONFIG_FILE))
+        
+        return False
     
+    f_handle = openConfigFile(report, 'r')
+
     if f_handle is None:
         return False
 
-    myLines = f_handle.readlines()
-    f_handle.close()
-    
+    # Read in all the existing lines.
+    with f_handle:
+
+        myLines = f_handle.readlines()
+
     f_outHandle = openConfigFile(report, 'w')
-    
-    found = False
-    
-    for line in myLines:
 
-        # If we find a match at the beg. of the line, change the setting
-        if re.match(settingName+'=', line):
-            
-            f_outHandle.write(f'{settingName}={settingValue}\n')
-            found = True
-        else:
-            f_outHandle.write(line)
-    
-    if not found:
-        
-        if createIfMissing:
- 
-            f_outHandle.write(f'{settingName}={settingValue}\n') 
+    if f_outHandle is None:
+        return False
 
-        else:
-            if report is not None:
-                
-                report.Error(_translate("ReadConfig", 'Setting: "{setting}" not found in the configuration file.').format(setting=settingName))
-            
-            f_outHandle.close()
-            return False
-            
-    f_outHandle.close()
+    # Rewrite the file with the setting changed (or added).
+    with f_outHandle:
+
+        found = False
+
+        for line in myLines:
+
+            # If we find a match at the beg. of the line, change the setting
+            if re.match(settingName+'=', line):
+
+                f_outHandle.write(f'{settingName}={settingValue}\n')
+                found = True
+            else:
+                f_outHandle.write(line)
+
+        if not found:
+
+            if createIfMissing:
+
+                f_outHandle.write(f'{settingName}={settingValue}\n')
+
+            else:
+                if report is not None:
+
+                    report.Error(_translate("ReadConfig", 'Setting: "{setting}" not found in the configuration file.').format(setting=settingName))
+
+                return False
+
     return True
     
 def readConfig(report):

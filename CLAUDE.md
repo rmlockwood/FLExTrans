@@ -57,6 +57,9 @@ Group imports into these blocks, in this order, separated by a single blank line
 ### Other
 - Match the style of the file you're editing (indentation, naming, import order).
   Don't reformat code you aren't changing.
+- When adding a setting-name constant to the block of uppercase config variables
+  in `Dev/Lib/ReadConfig.py`, insert it in **alphabetical order** by variable name
+  (e.g. `LOG_STATISTICS` sorts before `LOWERCASE_UPPERCASE_PAIRS`).
 
 ## Versioning
 - Each module/lib file starts with a version-history header block:
@@ -66,6 +69,14 @@ Group imports into these blocks, in this order, separated by a single blank line
   bump the version (usually a patch bump, e.g. `3.16` → `3.16.1`), use today's
   date, and keep the description to a single brief line. Ron will correct the
   version number if needed.
+- **The new version must be at least as high as `Version` in
+  `Dev/TopLevel/Version.py`.** Check that file first. If the file's current
+  header is below it (e.g. file at `3.15.3` while `Version.py` is `3.16`), bump
+  straight to the `Version.py` value (`3.16`) rather than doing a patch bump
+  from the old header (`3.15.4`).
+- **When the file is a module with an `FTM_Version` value in its `docs`
+  dictionary, bump that value to match the new header version too.** The header
+  version and `FTM_Version` should stay in sync.
 
 ## Translations (Qt .ts → .qm pipeline)
 - A `.ts` lives in a `translations/` folder beside the `.py` whose strings it
