@@ -40,7 +40,7 @@ same name will not be overwritten. A copy will be created.</source>
     <message>
       <location filename="../InsertTargetText.py" line="196" />
       <source>Text: "{sourceTextName}" created in the {targetProj} project.</source>
-      <translation>Text: "{sourceTextName}" created in the {targetProj} project.</translation>
+      <translation>Texto: "{sourceTextName}" creado en el proyecto {targetProj}.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="205" />
