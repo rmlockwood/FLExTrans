@@ -1000,7 +1000,7 @@
             words and, when you do, the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Sentences</span> tab and clicking on the sentence you want.
          </li>
          <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
-            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button. 
+            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button.
          </li>
          <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored <span style="font-style:italic; ">Target Text</span> area.
          </li>
@@ -3611,7 +3611,7 @@
                            <td align="left" valign="top" style="padding-left:.2em">An error happened when running the Apertium tools.</td>
                            <td align="left" valign="top" style="padding-left:.2em"></td>
                            <td align="left" valign="top" style="padding-left:.2em">The rule engine failed when applying the rules.</td>
-                           <td align="left" valign="top" style="padding-left:.2em">Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Clean Files</span> module. Rebuild the bilingual lexicon. Re-open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
+                           <td align="left" valign="top" style="padding-left:.2em">Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Clean Files</span> module. Rebuild the bilingual lexicon. Re-open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. Also make sure no validation errors were reported when you last saved the transfer rules file in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>; a rule file that did not validate can cause this error. See <a href="#sOtherTips">9.3</a> for more detail.
                            </td>
                         </tr>
                      </table>
@@ -3624,6 +3624,18 @@
       </h2>
       <p>If a rule doesn't appear to be working, first check to see that the rule is listed in the <span style="font-style:italic; ">Rule Execution Information</span> area. If not, there is a problem with the category definition. Check your category definition to make sure it correctly matches
          the incoming data.
+      </p>
+      <p>If you see the error <span style="font-weight:bold; ">An error happened when running the Apertium tools.</span> in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, or a similar error when running the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Run Apertium</span> module, this usually means there is a problem with the transfer rules file. A common cause is that the rules file did not
+         validate the last time it was saved. When you save the transfer rules file in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>, make sure that no validation errors are reported. A rule file that did not validate cannot be compiled by the Apertium tools
+         and will produce this error.
+      </p>
+      <p>When the problem occurs while running the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Run Apertium</span> module, the error message includes the contents of apertium_error.txt and may look like this:
+      </p>
+      <p>An error happened when running the Apertium tools. The contents of apertium_error.txt is: Error at line 1, column 3655: Undefined
+         attr-item a_num_slot. make: *** [transfer_rules.t1x.bin] Error 1
+      </p>
+      <p>Here the <span style="font-weight:bold; ">Undefined attr-item</span> message indicates that the rules file references an attribute that is not defined. This is exactly the kind of problem that
+         the validation check would have caught when the file was saved, so re-open the transfer rules file in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>, correct any validation errors, and save it again.
       </p>
       <h1 style=""><a name="sLocalization"></a>10&nbsp;User Interface Languages
       </h1>
@@ -3750,7 +3762,7 @@
          <tr>
             <td valign="top"><a name="nOldFixup">[4]</a></td>
             <td>
-               <p>Previously, you had to add a separate module to your collections, but that is no longer necessary. If you have the  <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Fix Up Synthesis Text</span> module in your <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Drafting</span> or <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Testbed</span> collections, you should remove them. 
+               <p>Previously, you had to add a separate module to your collections, but that is no longer necessary. If you have the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Fix Up Synthesis Text</span> module in your <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Drafting</span> or <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Testbed</span> collections, you should remove them.
                </p>
             </td>
          </tr>
