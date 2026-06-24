@@ -50,6 +50,12 @@ Group imports into these blocks, in this order, separated by a single blank line
 ### Line length
 - **No 80-character limit.** Lines may run up to ~200 characters before wrapping.
   This applies to **comments too** — don't wrap a comment at 80; let it run to ~200.
+- **Multi-line comments should fill the width.** When a comment spans more than one
+  line, make each line run close to the ~200 char limit rather than wrapping early.
+  If it's only two lines and the total is a bit over 200, split it roughly in half so
+  the two lines are balanced rather than one full line and one short stub. Always
+  break at a point that makes sense linguistically (e.g. between clauses or
+  sentences, not mid-phrase) so each line still reads naturally.
 - **Keep function calls / signatures on one line** even if long. Do not split
   arguments across multiple lines — single-line calls are faster to step through
   in a debugger.
