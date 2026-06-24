@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>phrase</source>
-        <translation>phrase</translation>
+        <translation>Phrase</translation>
     </message>
     <message>
         <source>prefix</source>
@@ -41,11 +41,11 @@
     </message>
     <message>
         <source>suffix</source>
-        <translation>suffix</translation>
+        <translation>Suffix</translation>
     </message>
     <message>
         <source>Target phrase has {0} head words; only one allowed</source>
-        <translation>Target phrase has {0} head words; only one allowed</translation>
+        <translation>Die Zielphrase hat {0} Kopfwörter; nur eines ist erlaubt</translation>
     </message>
     <message>
         <source>tgt</source>

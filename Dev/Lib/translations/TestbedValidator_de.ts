@@ -6,22 +6,22 @@
     <message>
       <location filename="../TestbedValidator.py" line="108"/>
       <source>Word Sense: {wordSense} not found.</source>
-      <translation>Word Sense: {wordSense} not found.</translation>
+      <translation>Wortbedeutung: {wordSense} nicht gefunden.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="114"/>
       <source>Grammatical Category: {gramCat} not found.</source>
-      <translation>Grammatical Category: {gramCat} not found.</translation>
+      <translation>Grammatische Kategorie: {gramCat} nicht gefunden.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="120"/>
       <source>Tag: {tag} not found.</source>
-      <translation>Tag: {tag} not found.</translation>
+      <translation>Etikett: {tag} nicht gefunden.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="232"/>
       <source>Configuration File Problem. Morphnames not found.</source>
-      <translation>Configuration File Problem. Morphnames not found.</translation>
+      <translation>Problem mit der Konfigurationsdatei. Morphnamen nicht gefunden.</translation>
     </message>
   </context>
 </TS>
