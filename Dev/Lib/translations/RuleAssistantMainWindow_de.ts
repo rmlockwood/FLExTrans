@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>Cannot delete the last rule</source>
-        <translation>Cannot delete the last rule</translation>
+        <translation>Die letzte Regel kann nicht gelöscht werden</translation>
     </message>
     <message>
         <source>Choose which save option you want.</source>
@@ -83,7 +83,7 @@
     </message>
     <message>
         <source>Enter unmarked value:</source>
-        <translation>Enter unmarked value:</translation>
+        <translation>Unmarkierten Wert eingeben:</translation>
     </message>
     <message>
         <source>Error</source>
@@ -175,15 +175,15 @@
     </message>
     <message>
         <source>No categories available</source>
-        <translation>No categories available</translation>
+        <translation>Keine Kategorien verfügbar</translation>
     </message>
     <message>
         <source>No data loaded</source>
-        <translation>No data loaded</translation>
+        <translation>Keine Daten geladen</translation>
     </message>
     <message>
         <source>No features available</source>
-        <translation>No features available</translation>
+        <translation>Keine Merkmale verfügbar</translation>
     </message>
     <message>
         <source>Omitting head-only rule</source>
@@ -203,15 +203,15 @@
     </message>
     <message>
         <source>Rules saved successfully</source>
-        <translation>Rules saved successfully</translation>
+        <translation>Regeln erfolgreich gespeichert</translation>
     </message>
     <message>
         <source>Saved</source>
-        <translation>Saved</translation>
+        <translation>Gespeichert</translation>
     </message>
     <message>
         <source>See documentation for help</source>
-        <translation>See documentation for help</translation>
+        <translation>Siehe Dokumentation für Hilfe</translation>
     </message>
     <message>
         <source>Toggle affix type</source>

@@ -6,22 +6,22 @@
     <message>
       <location filename="../TextClasses.py" line="593"/>
       <source>No analysis found for the word: </source>
-      <translation>No analysis found for the word: </translation>
+      <translation>Keine Analyse für das Wort gefunden:</translation>
     </message>
     <message>
       <location filename="../TextClasses.py" line="593"/>
       <source> Treating this as an unknown word.</source>
-      <translation> Treating this as an unknown word.</translation>
+      <translation>Dies wird als unbekanntes Wort behandelt.</translation>
     </message>
     <message>
       <location filename="../TextClasses.py" line="821"/>
       <source>Could not find bundle Guid for word in the inserted word list.</source>
-      <translation>Could not find bundle Guid for word in the inserted word list.</translation>
+      <translation>Die Bündel-GUID für das Wort in der Liste der eingefügten Wörter konnte nicht gefunden werden.</translation>
     </message>
     <message>
       <location filename="../TextClasses.py" line="850"/>
       <source>Could not find the sense for word in the inserted word list.</source>
-      <translation>Could not find the sense for word in the inserted word list.</translation>
+      <translation>Die Bedeutung für das Wort in der Liste der eingefügten Wörter konnte nicht gefunden werden.</translation>
     </message>
   </context>
 </TS>
