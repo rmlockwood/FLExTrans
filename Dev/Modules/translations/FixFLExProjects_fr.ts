@@ -40,7 +40,7 @@ n'est pas ouvert. Les erreurs corrigées sont enregistrées dans le volet de rap
     <message>
       <location filename="../FixFLExProjects.py" line="289"/>
       <source>Fixing {projName}...</source>
-      <translation>Correction de {projName}...</translation>
+      <translation>Correction de {projName}en cours...</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="300"/>

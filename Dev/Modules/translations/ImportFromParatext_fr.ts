@@ -30,7 +30,7 @@ nouveau texte. Si vous voulez inclure diverses choses, cochez la case approprié
 Si vous voulez utiliser le nom complet du livre dans le nom du texte, au lieu de l'abréviation, cochez la case.
 Si vous voulez faire du texte nouvellement importé, le texte actif dans FLExTrans, cochez la case.
 L'importation dans plusieurs projets FLEx à partir de plusieurs projets Paratext est possible. Sélectionnez d'abord vos
-projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à ce module.</translation>
+projets groupés dans les paramètres principaux de FLExTrans, puis revenez à ce module.</translation>
     </message>
     <message>
       <location filename="../ImportFromParatext.py" line="221"/>
