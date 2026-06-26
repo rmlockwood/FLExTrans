@@ -6,12 +6,12 @@
     <message>
       <location filename="../LiveRuleTesterTool.py" line="281"/>
       <source>Live Rule Tester Tool</source>
-      <translation>Outil de testeur de règles en direct</translation>
+      <translation>Outil de test de règles en direct</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="284"/>
       <source>Test transfer rules and synthesis live against specific words.</source>
-      <translation>Tester les règles de transfert et la synthèse en direct contre des mots spécifiques.</translation>
+      <translation>Tester les règles de transfert et de synthèse en direct sur des mots spécifiques.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="286"/>
