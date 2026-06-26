@@ -4,6 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -77,7 +80,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'InterlinData', 'Mixpanel']
 # Documentation that the user sees:
 docs = {
     FTM_Name: _translate("GenStc", "Generate Sentences from Model"),
-    FTM_Version: "3.14.1",
+    FTM_Version: "3.16.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: _translate("GenStc", "Iterate over certain grammatical categories in a model sentence to produce variations."),
     FTM_Help: "",
@@ -567,6 +570,11 @@ def MainFunction(DB, report, modifyAllowed):
     # Load configuration
     configMap = loadConfiguration(report)
     if not configMap:
+        return
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("GenStc", "This module only works in Two Project mode."))
         return
 
     # Initialize settings and files

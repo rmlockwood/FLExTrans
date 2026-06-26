@@ -48,5 +48,9 @@
       <source>Export of {sourceName} complete.</source>
       <translation>Exportation de {sourceName} terminée.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Ce module fonctionne uniquement en mode deux projets.</translation>
+    </message>
   </context>
 </TS>
