@@ -44,7 +44,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 7,
+    FTM_Version     : 8,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description :
@@ -676,8 +676,8 @@ def Main(project, report, modifyAllowed):
                         global_noun_features[grp].add(val)
 
                     # A valid noun root has exactly one singular and one plural value,
-                    # plus an optional (at most one) 'many' value. Skip nouns with 0 features.
-                    if features_found:
+                    # plus an optional (at most one) 'many' value. Check all nouns.
+                    if True: #features_found:
 
                         sg_count = sum(1 for grp, val in features_found if grp == sgFeatName)
                         pl_count = sum(1 for grp, val in features_found if grp == plFeatName)
