@@ -44,7 +44,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 6,
+    FTM_Version     : 7,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description :
@@ -216,6 +216,9 @@ class BantuConfigDialog(QDialog):
         main_layout.addWidget(QLabel("Name for POS Noun:"))
         self.pos_combo = QComboBox()
         self.pos_combo.addItems(pos_options)
+        noun_index = self.pos_combo.findText("Noun")
+        if noun_index >= 0:
+            self.pos_combo.setCurrentIndex(noun_index)
         main_layout.addWidget(self.pos_combo)
 
         # 2. Single Noun Slot (Combo Box)
@@ -230,20 +233,42 @@ class BantuConfigDialog(QDialog):
         main_layout.addWidget(self.general_slot_list)
 
         # 4. Features
-        main_layout.addWidget(QLabel("Feature containing singular gender values:"))
+        main_layout.addWidget(QLabel("Feature containing singular noun class values:"))
         self.sg_combo = QComboBox()
         self.sg_combo.addItems(feature_options)
+        my_index = self.sg_combo.findText("Singular")
+        if my_index >= 0:
+            self.sg_combo.setCurrentIndex(my_index)
+        else:
+            my_index = self.sg_combo.findText("singular")
+            if my_index >= 0:
+                self.sg_combo.setCurrentIndex(my_index)
+                
         main_layout.addWidget(self.sg_combo)
 
-        main_layout.addWidget(QLabel("Feature containing plural gender values:"))
+        main_layout.addWidget(QLabel("Feature containing plural noun class values:"))
         self.pl_combo = QComboBox()
         self.pl_combo.addItems(feature_options)
+        my_index = self.pl_combo.findText("Plural")
+        if my_index >= 0:
+            self.pl_combo.setCurrentIndex(my_index)
+        else:
+            my_index = self.pl_combo.findText("plural")
+            if my_index >= 0:
+                self.pl_combo.setCurrentIndex(my_index)
         main_layout.addWidget(self.pl_combo)
 
         # Optional 'many' feature: blank is a valid (default) choice.
-        main_layout.addWidget(QLabel("Feature containing many gender values (optional):"))
+        main_layout.addWidget(QLabel("Feature containing many noun class values (optional):"))
         self.many_combo = QComboBox()
         self.many_combo.addItems([""] + feature_options)
+        my_index = self.many_combo.findText("Many")
+        if my_index >= 0:
+            self.many_combo.setCurrentIndex(my_index)
+        else:
+            my_index = self.many_combo.findText("many")
+            if my_index >= 0:
+                self.many_combo.setCurrentIndex(my_index)
         main_layout.addWidget(self.many_combo)
 
         main_layout.addStretch(1)
