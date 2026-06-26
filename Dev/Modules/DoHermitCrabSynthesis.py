@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    One project mode: generate the HermitCrab config from the source project, temporarily making the chosen target writing system the default vernacular WS (restored afterward).
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -159,8 +162,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.16",
-        FTM_ModifiesDB : False,
+        FTM_Version    : "3.16.1",
+        FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
         FTM_Description: _translate("DoHermitCrabSynthesis", 
@@ -207,27 +210,49 @@ def configFileOutOfDate(targetDB, HCconfigPath):
 
         return False
 
+# Return the CoreWritingSystemDefinition with the given language tag (or None). Used to switch the default vernacular WS in One project mode.
+def getWritingSystemByTag(DB, wsTag):
+
+    for ws in DB.project.ServiceLocator.WritingSystems.AllWritingSystems:
+
+        if ws.Id == wsTag:
+
+            return ws
+
+    return None
+
 def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIfAvailable=False, DLLobj=None):
 
     errorList = []
 
-    # Get the target project name
-    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+    # In One project mode there is no separate target project: the HermitCrab config is generated from the source project. So
+    # reuse the source DB (the caller, doHermitCrab, has already switched the default vernacular WS to the target WS). Otherwise
+    # open the configured target project.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
 
-    if not targetProj:
-        errorList.append((_translate("DoHermitCrabSynthesis", "Configuration file problem with TargetProject."), 2))
-        return errorList
-    
-    TargetDB = FLExProject()
+    if oneProjectMode:
 
-    try:
-        # Open the target database
-        TargetDB.OpenProject(targetProj, True)
+        TargetDB = DB
+        targetProj = DB.ProjectName()
+    else:
 
-    except: #FDA_DatabaseError, e:
+        # Get the target project name
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
-        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target project: {targetProj}.").format(targetProj=targetProj), 2))
-        return errorList
+        if not targetProj:
+            errorList.append((_translate("DoHermitCrabSynthesis", "Configuration file problem with TargetProject."), 2))
+            return errorList
+
+        TargetDB = FLExProject()
+
+        try:
+            # Open the target database
+            TargetDB.OpenProject(targetProj, True)
+
+        except: #FDA_DatabaseError, e:
+
+            errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target project: {targetProj}.").format(targetProj=targetProj), 2))
+            return errorList
 
     # Get fwdata file path
     fwdataPath = os.path.join(FWProjectsDir, TargetDB.ProjectName(), TargetDB.ProjectName() + '.fwdata')
@@ -788,11 +813,38 @@ def doHermitCrab(DB, report, configMap=None):
     HCconfigPath = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, report)
 
     if not (HCconfigPath and targetSynthesis):
-        return None 
+        return None
 
-    # Extract the target lexicon
-    errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
- 
+    # In One project mode the external HermitCrab config generator reads the project's default vernacular WS from the .fwdata
+    # file, so temporarily make the chosen target writing system the default vernacular WS, persisting it to disk so the generator
+    # sees it. It is always restored (and persisted again) in the finally block, even if config generation fails.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+    savedDefaultVernWs = None
+    wsContainer = DB.project.ServiceLocator.WritingSystems
+
+    if oneProjectMode:
+
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
+        newDefaultWs = getWritingSystemByTag(DB, targetWSTag) if targetWSTag else None
+
+        if newDefaultWs:
+
+            savedDefaultVernWs = wsContainer.DefaultVernacularWritingSystem
+            wsContainer.DefaultVernacularWritingSystem = newDefaultWs
+            DB.project.ServiceLocator.GetInstance(IUndoStackManager).Save()
+
+    try:
+        # Extract the target lexicon
+        errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
+
+    finally:
+
+        # Restore the default vernacular writing system (and persist it) whether or not config generation succeeded.
+        if savedDefaultVernWs is not None:
+
+            wsContainer.DefaultVernacularWritingSystem = savedDefaultVernWs
+            DB.project.ServiceLocator.GetInstance(IUndoStackManager).Save()
+
     # check for fatal errors
     fatal, _ = Utils.checkForFatalError(errorList, report)
    
