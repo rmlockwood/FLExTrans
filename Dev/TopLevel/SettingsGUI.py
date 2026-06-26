@@ -697,15 +697,17 @@ def loadCategorySubLists(widget1, widget2, wind, settingName):
                 
                 widget2.setCurrentIndex(i+1) # ... is the first item
 
-def loadWritingSystems(widget, wind, settingName):
+def loadTargetWritingSystems(widget, wind, settingName):
 
-    # Show the name of each vernacular writing system but store its language tag (saved via currentData in save()),
-    # so the setting survives a writing-system rename. GetWritingSystems returns (Name, language-tag, handle, isVernacular) tuples.
+    # Show each vernacular writing system except the default vernacular WS (that is the source side in One project mode), storing the language tag (saved via currentData in save()) so the setting 
+    # survives a rename. GetWritingSystems returns (Name, language-tag, handle, isVernacular) tuples and GetDefaultVernacularWS returns (language-tag, Name).
     widget.addItem("", "")
+
+    defaultVernTag = wind.DB.GetDefaultVernacularWS()[0]
 
     for wsName, wsTag, wsHandle, isVernacular in wind.DB.GetWritingSystems():
 
-        if isVernacular:
+        if isVernacular and wsTag != defaultVernTag:
 
             widget.addItem(wsName, wsTag)
 
@@ -1282,6 +1284,9 @@ class Main(QMainWindow):
         # Set the initial enabled/disabled state of the target and writing-system settings to match the saved project mode.
         self.updateModeUI()
 
+        # One project mode needs a second vernacular writing system to translate into, so disable the Project Mode radio when there isn't one.
+        self.disableModeIfOneWritingSystem()
+
     def calcViewSetting(self):
 
         if self.ui.miniRadioButton.isChecked():
@@ -1411,20 +1416,19 @@ class Main(QMainWindow):
 
         self.setTargetWidgetsEnabled(False)
 
-    # Enable or disable the source/target writing-system combos. They are only used (and only enabled) in One project mode.
+    # Enable or disable the target writing-system combo. It is only used (and only enabled) in One project mode.
     def setWritingSystemWidgetsEnabled(self, enabled):
 
         for i in range(0, len(widgetList)):
 
             widgInfo = widgetList[i]
 
-            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_source_ws", "choose_target_ws"]:
+            if widgInfo[WIDGET1_OBJ_NAME] == "choose_target_ws":
 
                 widgInfo[WIDGET1_OBJ].setEnabled(enabled)
 
-    # Reflect the current Project Mode radio selection: in One project mode the target-project settings are disabled and the
-    # writing-system combos are enabled; in the normal Two project mode it is the reverse. When switching back to Two project
-    # mode the target settings are only re-enabled if there is actually a valid target project.
+    # Reflect the current Project Mode radio selection: in One project mode the target-project settings are disabled and the writing-system combos are enabled; in the normal Two project mode it is 
+    # the reverse. When switching back to Two project mode the target settings are only re-enabled if there is actually a valid target project.
     def updateModeUI(self):
 
         # The right-hand radio (WIDGET2) is the "One project" choice; the left-hand one is the normal "Two projects".
@@ -1444,6 +1448,27 @@ class Main(QMainWindow):
             self.setTargetWidgetsEnabled(self.targetDB is not None)
             self.setWritingSystemWidgetsEnabled(False)
             targetProjectCombo.setEnabled(True)
+
+    # One project mode translates from the default vernacular writing system into another vernacular writing system. If the project has only one vernacular writing system, there is no second WS 
+    # to target, so disable the Project Mode radio entirely and the Target Writing System combo too (there is nothing to choose).
+    def disableModeIfOneWritingSystem(self):
+
+        if len(self.DB.GetAllVernacularWSs()) <= 1:
+
+            modeWidgInfo = self.nameToWidgetMap[ReadConfig.TWO_PROJECT_MODE]
+
+            # Force the normal Two projects choice (the left radio). Block the signal so just opening the dialog doesn't mark
+            # the settings as modified, then refresh the UI to the two-project state.
+            modeWidgInfo[WIDGET1_OBJ].blockSignals(True)
+            modeWidgInfo[WIDGET1_OBJ].setChecked(True)
+            modeWidgInfo[WIDGET1_OBJ].blockSignals(False)
+
+            self.updateModeUI()
+
+            # There is no second writing system to target, so disable the Project Mode radio and the Target Writing System combo.
+            modeWidgInfo[WIDGET1_OBJ].setEnabled(False)
+            modeWidgInfo[WIDGET2_OBJ].setEnabled(False)
+            self.setWritingSystemWidgetsEnabled(False)
 
     def setModifiedFlag(self):
         
@@ -1594,18 +1619,17 @@ class Main(QMainWindow):
 
     def validateProjectModeWritingSystems(self):
 
-        # When One project mode is selected, both the source and target writing systems must be chosen. The writing-system
-        # combos store the writing system's language tag in their item data, so a blank data value means nothing is selected.
+        # When One project mode is selected, the target writing system must be chosen. The combo stores the writing system's
+        # language tag in its item data, so a blank data value means nothing is selected.
         oneProjectMode = self.nameToWidgetMap[ReadConfig.TWO_PROJECT_MODE][WIDGET2_OBJ].isChecked()
 
         if not oneProjectMode:
 
             return True
 
-        sourceWS = self.nameToWidgetMap[ReadConfig.SOURCE_WRITING_SYSTEM][WIDGET1_OBJ].currentData()
         targetWS = self.nameToWidgetMap[ReadConfig.TARGET_WRITING_SYSTEM][WIDGET1_OBJ].currentData()
 
-        if not sourceWS or not targetWS:
+        if not targetWS:
 
             return False
 
@@ -1629,7 +1653,7 @@ class Main(QMainWindow):
 
             msg = QMessageBox()
             msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
-            msg.setText(_translate("SettingsGUI", "In One project mode you must choose both a Source Writing System and a Target Writing System."))
+            msg.setText(_translate("SettingsGUI", "In One project mode you must choose a Target Writing System."))
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msg.exec()
@@ -1650,8 +1674,8 @@ class Main(QMainWindow):
             
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
 
-                # The writing-system combos display the writing-system name but store its language tag (held in the item data).
-                if widgInfo[CONFIG_NAME] in [ReadConfig.SOURCE_WRITING_SYSTEM, ReadConfig.TARGET_WRITING_SYSTEM]:
+                # The target writing-system combo displays the writing-system name but stores its language tag (held in the item data).
+                if widgInfo[CONFIG_NAME] == ReadConfig.TARGET_WRITING_SYSTEM:
 
                     mySettingVal = widgInfo[WIDGET1_OBJ].currentData() or ''
                 else:
@@ -1877,11 +1901,9 @@ widgetList = [
    [_translate("SettingsGUI", "Project Mode"), "two_project_radio", "one_project_radio", YES_NO, object, object, object, loadTwoProjectMode, ReadConfig.TWO_PROJECT_MODE,\
     _translate("SettingsGUI", "Choose One project to translate from one writing system to another within a single FLEx project.\nChoose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   # Source/target writing systems, only used (and only enabled) in One project mode.
-   [_translate("SettingsGUI", "Source Writing System"), "choose_source_ws", "", COMBO_BOX, object, object, object, loadWritingSystems, ReadConfig.SOURCE_WRITING_SYSTEM,\
-    _translate("SettingsGUI", "In One project mode, the vernacular writing system in the FLEx project that text is translated from."), DONT_GIVE_ERROR, FULL_VIEW],\
-
-   [_translate("SettingsGUI", "Target Writing System"), "choose_target_ws", "", COMBO_BOX, object, object, object, loadWritingSystems, ReadConfig.TARGET_WRITING_SYSTEM,\
+   # Target writing system, only used (and only enabled) in One project mode. The source side is the default vernacular WS, so
+   # this list excludes the default vernacular WS - the user picks the vernacular WS to translate into.
+   [_translate("SettingsGUI", "Target Writing System"), "choose_target_ws", "", COMBO_BOX, object, object, object, loadTargetWritingSystems, ReadConfig.TARGET_WRITING_SYSTEM,\
     _translate("SettingsGUI", "In One project mode, the vernacular writing system in the FLEx project that text is translated to."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 

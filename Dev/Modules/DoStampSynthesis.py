@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    In One project mode, read target forms (allomorphs, graphemes, and the \m headword keys) in the chosen Target Writing System, and reuse the source project (naming the lexicon files after it) instead of opening a separate target project.
+#
 #   Version 3.16.1 - 6/22/26 - Ron Lockwood
 #    Fixes #1376. Support the Lowercase/Uppercase pairs for special letters setting by writing \luwfcs lines to the output text control file.
 #
@@ -195,7 +198,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -221,6 +224,31 @@ XAMPLE_ADD_ON_FILE = 'XAmpleAddonData.xml'
 stemNameList = []
 reqFeaturesMap = {}
 globalXAmplePropMap = {}
+
+# The vernacular writing-system handle to read target forms in. It is set per run in extract_target_lex from the Target
+# Writing System setting when in One project mode; when it is None (normal Two project mode) we use the default vernacular WS.
+targetVernWSHandle = None
+
+# Read a vernacular MultiString/MultiUnicode (e.g. an allomorph form or a grapheme representation) as text. In One project
+# mode we read the specific target writing system that was chosen; otherwise we fall back to the project's default vernacular WS.
+def getVernacularText(multiStr):
+
+    if targetVernWSHandle is not None:
+
+        return ITsString(multiStr.get_String(targetVernWSHandle)).Text
+
+    return ITsString(multiStr.VernacularDefaultWritingSystem).Text
+
+# Get an entry's headword in the writing system that synthesis is targeting. The \m keys written to the STAMP root dictionary
+# must match the target lemmas coming from transfer, so in One project mode they have to be in the chosen target writing system.
+# entry.HeadWord is only available in the default vernacular WS, so we rebuild it from the citation form (or the lexeme form when
+# there is no citation form) read in the target WS, plus the homograph number, mirroring what HeadWord produces. The caller still
+# lowercases the result and adds a homograph of 1 when needed, so this must stay consistent with the lemmas in the bilingual lexicon.
+def getVernacularHeadword(entry):
+
+    # Delegate to the shared Utils.getHeadwordStr so the \m keys here are built identically to the target lemmas in the
+    # bilingual lexicon (ExtractBilingualLexicon). When targetVernWSHandle is None this returns the default-vernacular HeadWord.
+    return Utils.getHeadwordStr(entry, targetVernWSHandle)
 
 #----------------------------------------------------------------
 
@@ -395,11 +423,11 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory, TargetDB, custXa
 
             xAmplePropList = []
 
-    amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
-    
-    # If there is nothing for any WS we get ***
-    # Also return if we have a Affix process
-    if amorph == '***' or amorph == None or morph.ClassName == 'MoAffixProcess':
+    amorph = getVernacularText(morph.Form)
+
+    # If there is nothing for any WS we get ***; if there is no form in the chosen target writing system we get an empty
+    # string. In both cases (and for an Affix process) there is nothing to write, so skip the allomorph.
+    if amorph == '***' or not amorph or morph.ClassName == 'MoAffixProcess':
         
         return
     
@@ -939,7 +967,7 @@ def output_nat_class_info(TargetDB, f_dec):
                 # Loop through all the graphemes for each segment
                 for graph in seg.CodesOS:
                     # Write out the grapheme string one after another on the line
-                    grapheme = ITsString(graph.Representation.VernacularDefaultWritingSystem).Text
+                    grapheme = getVernacularText(graph.Representation)
                     if not grapheme:
                         err_list.append((_translate("DoStampSynthesis", "Null grapheme found for natural class: {natClassName}. Skipping.").format(natClassName=natClassName), 1))
                         continue
@@ -1035,7 +1063,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             if got_one:                
                 
                 # Set the headword value and the homograph #, if necessary
-                headWord = ITsString(entry.HeadWord).Text
+                headWord = getVernacularHeadword(entry)
                 headWord = Utils.add_one(headWord)
                 headWord = headWord.lower()
 
@@ -1070,7 +1098,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 if entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph' and entry.LexemeFormOA.MorphTypeRA and morphType in morphNames:
                 
                     # Set the headword value and the homograph #, if necessary
-                    headWord = ITsString(entry.HeadWord).Text
+                    headWord = getVernacularHeadword(entry)
                     headWord = Utils.add_one(headWord)
                     headWord = headWord.lower()
                     
@@ -1120,7 +1148,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         
                     elif entry.LexemeFormOA.MorphTypeRA == None:
                         
-                        err_list.append((_translate("DoStampSynthesis", "No Morph Type. Skipping. {headword} Best Vern: {vernacular}.").format(headword=ITsString(entry.HeadWord).Text, vernacular=ITsString(entry.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text), 1, TargetDB.BuildGotoURL(entry)))
+                        err_list.append((_translate("DoStampSynthesis", "No Morph Type. Skipping. {headword} Best Vern: {vernacular}.").format(headword=ITsString(entry.HeadWord).Text, vernacular=getVernacularText(entry.LexemeFormOA.Form)), 1, TargetDB.BuildGotoURL(entry)))
                         
                     elif entry.LexemeFormOA.ClassName != 'MoStemAllomorph':
                         
@@ -1220,6 +1248,18 @@ def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cn
 
     return pf_cnt, sf_cnt, if_cnt
 
+# Return the project name used for the target lexicon (STAMP dictionary) files. In One project mode there is no separate target
+# project, so the files are based on the source project's name; in Two project mode it is the configured TargetProject setting.
+def getTargetProjectName(DB, configMap, report):
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+
+    if twoProjectMode == 'n' and DB is not None:
+
+        return DB.ProjectName()
+
+    return ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+
 def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list = []
         
@@ -1228,8 +1268,10 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
         error_list.append((_translate("DoStampSynthesis", "Configuration file problem."), 2))
         return error_list
     
-    # Get the target project name
-    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+    # Get the target project name. In One project mode this resolves to the source project (there is no separate target
+    # project), so the lexicon files are named after the source project and the source DB is reused below.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+    targetProj = getTargetProjectName(DB, configMap, report)
     if not targetProj:
         error_list.append((_translate("DoStampSynthesis", "Configuration file problem with TargetProject."), 2))
         return error_list
@@ -1254,26 +1296,46 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
         error_list.append((_translate("DoStampSynthesis", "Configuration file problem with {cacheData}.").format(cacheData=ReadConfig.CACHE_DATA), 2))
         return error_list
 
-    TargetDB = FLExProject()
+    # In One project mode reuse the source project as the target; otherwise open the configured target project.
+    if oneProjectMode:
 
-    # See if the target project is a valid database name.
-    if targetProj not in AllProjectNames():
-        error_list.append((_translate("DoStampSynthesis", "The target project does not exist. Please check the configuration file."), 2))
-        return error_list
-    try:
-        # Open the target project
-        if not targetProj:
-            error_list.append((_translate("DoStampSynthesis", 'Problem accessing the target project.'), 2))
+        TargetDB = DB
+    else:
+
+        TargetDB = FLExProject()
+
+        # See if the target project is a valid database name.
+        if targetProj not in AllProjectNames():
+            error_list.append((_translate("DoStampSynthesis", "The target project does not exist. Please check the configuration file."), 2))
             return error_list
-        TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
-        if report:
-            report.Error(_translate("DoStampSynthesis", 'Failed to open the target project.'))
-        raise
+        try:
+            # Open the target project
+            TargetDB.OpenProject(targetProj, True)
+        except: #FDA_DatabaseError, e:
+            if report:
+                report.Error(_translate("DoStampSynthesis", 'Failed to open the target project.'))
+            raise
+
+    # In One project mode, target forms are read in the chosen Target Writing System (a secondary vernacular WS in the same
+    # project) rather than the default vernacular WS. Resolve its handle once here; leave it None for normal Two project mode.
+    global targetVernWSHandle
+    targetVernWSHandle = None
+
+    if oneProjectMode:
+
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
+
+        if targetWSTag:
+
+            targetVernWSHandle = TargetDB.WSHandle(targetWSTag)
 
     # If the target project hasn't changed since we created the root database file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
-        TargetDB.CloseProject()
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         error_list.append((_translate("DoStampSynthesis", "Target lexicon files are up to date."), 0))
         return error_list
 
@@ -1322,8 +1384,11 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     f_rt.close() 
     f_dec.close()
 
-    TargetDB.CloseProject()
-    
+    # In One project mode TargetDB is the same object as the source DB, so don't close it here.
+    if TargetDB is not DB:
+
+        TargetDB.CloseProject()
+
     return error_list
 
 def tempLexiconGetAllomorphCustomFieldNamed(targetDB, allomLevelField): # returns a list
@@ -1376,7 +1441,7 @@ def fix_up_text(synFile, cleanUpText):
         f_s.write(line)
     f_s.close()
 
-def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
+def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False, DB=None):
     error_list = []
 
     global stemNameList
@@ -1384,7 +1449,9 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     stemNameList = []
     reqFeaturesMap = {}
 
-    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+    # Use the same project name that extract_target_lex used for the lexicon files. In One project mode that is the source
+    # project (resolved from DB); in Two project mode it is the configured TargetProject.
+    targetProject = getTargetProjectName(DB, configMap, report)
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
     if not (targetProject and clean):
         error_list.append((_translate("DoStampSynthesis", "Configuration file problem."), 2))
@@ -1466,7 +1533,7 @@ def doStamp(DB, report, configMap=None):
     anaFile = Utils.build_path_default_to_temp(targetANA)
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
     error_list = extract_target_lex(DB, configMap, report, useCacheIfAvailable=True)
-    err_list = synthesize(configMap, anaFile, synFile, report)
+    err_list = synthesize(configMap, anaFile, synFile, report, DB=DB)
     error_list.extend(err_list)
 
     if not Utils.processErrorList(error_list, report):

@@ -964,16 +964,6 @@ Choose Two projects (the normal mode) to translate from a source FLEx project to
 Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen a un proyecto FLEx de destino separado.</translation>
     </message>
     <message>
-      <location filename="../SettingsGUI.py" line="1852"/>
-      <source>Source Writing System</source>
-      <translation>Sistema de escritura de origen</translation>
-    </message>
-    <message>
-      <location filename="../SettingsGUI.py" line="1853"/>
-      <source>In One project mode, the vernacular writing system in the FLEx project that text is translated from.</source>
-      <translation>En el modo Un proyecto, el sistema de escritura vernáculo del proyecto FLEx desde el que se traduce el texto.</translation>
-    </message>
-    <message>
       <location filename="../SettingsGUI.py" line="1855"/>
       <source>Target Writing System</source>
       <translation>Sistema de escritura de destino</translation>
@@ -994,9 +984,9 @@ Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen
       <translation>Un proyecto</translation>
     </message>
     <message>
-      <location filename="../SettingsGUI.py" line="1626"/>
-      <source>In One project mode you must choose both a Source Writing System and a Target Writing System.</source>
-      <translation>En el modo Un proyecto debe elegir tanto un sistema de escritura de origen como uno de destino.</translation>
+      <location filename="../SettingsGUI.py" line="1634"/>
+      <source>In One project mode you must choose a Target Writing System.</source>
+      <translation>En el modo Un proyecto debe elegir un sistema de escritura de destino.</translation>
     </message>
   </context>
 </TS>

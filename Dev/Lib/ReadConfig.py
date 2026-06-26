@@ -6,7 +6,7 @@
 #   12/4/14
 #
 #   Version 3.16.2 - 6/24/26 - Ron Lockwood
-#    Added TwoProjectMode, SourceWritingSystem and TargetWritingSystem settings for one-project, two-writing-system mode.
+#    Added TwoProjectMode and TargetWritingSystem settings for one-project, two-writing-system mode.
 #
 #   Version 3.16.1 - 6/22/26 - Ron Lockwood
 #    Use with statements for file handling in writeConfigValue.
@@ -112,7 +112,6 @@ SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
 SOURCE_DISCONTIG_SKIPPED = 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'
 SOURCE_MORPHNAMES = 'SourceMorphNamesCountedAsRoots'
 SOURCE_TEXT_NAME = 'SourceTextName'
-SOURCE_WRITING_SYSTEM = 'SourceWritingSystem'
 REBUILD_BILING_LEX_BY_DEFAULT = 'RebuildBilingualLexiconByDefaultInSenseLinker'
 RULE_ASSISTANT_FILE = 'RuleAssistantRulesFile'
 SYNTHESIS_TEST_LIMIT_POS = 'SynthesisTestLimitPOS'

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16 - 6/24/26 - Ron Lockwood
+#    Added a writing-system option to getHeadwordStr/fixupLemma/getTargetSenseInfo so One project mode can read target headwords in a secondary vernacular WS.
+#
 #   Version 3.15.3 - 4/22/26 - Ron Lockwood
 #    Fixes #1328. Use the new PyQt6 enums for language and country under locale.
 #
@@ -499,8 +502,28 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             feat_abbr_list.append((featGrpName, abbValue))
     return
 
-def getHeadwordStr(e):
-    return ITsString(e.HeadWord).Text
+def getHeadwordStr(e, wsHandle=None):
+
+    # Normally the headword is read in the project's default vernacular writing system.
+    if wsHandle is None:
+
+        return ITsString(e.HeadWord).Text
+
+    # For One project mode we need the headword in a specific (secondary) vernacular writing system. HeadWord itself is only
+    # available in the default vernacular WS, so rebuild it from the citation form (or the lexeme form when there is no citation
+    # form) read in that WS, plus the homograph number, to mirror what HeadWord produces. Synthesis (DoStampSynthesis) builds its
+    # \m keys the same way via this function, so the bilingual lexicon and the synthesizer dictionaries stay in agreement.
+    headWord = ITsString(e.CitationForm.get_String(wsHandle)).Text
+
+    if not headWord and e.LexemeFormOA:
+
+        headWord = ITsString(e.LexemeFormOA.Form.get_String(wsHandle)).Text
+
+    if e.HomographNumber and e.HomographNumber > 0:
+
+        headWord = headWord + str(e.HomographNumber)
+
+    return headWord
 
 def GetEntryWithSense(e):
     # If the entry is a variant and it has no senses, loop through its references
@@ -900,7 +923,7 @@ def checkForError(errorList, report, errValue):
 
     return found, '\n'.join(retMsgList)
 
-def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None):
+def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None, targetWSHandle=None):
 
     retVal = (None, None, None)
 
@@ -975,8 +998,8 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
             senseNum = i+1
 
-        # Make the lemma in the form x.x (but remove if 1.1)
-        lem = fixupLemma(targetEntry, senseNum, remove1dot1Bool)
+        # Make the lemma in the form x.x (but remove if 1.1). In One project mode read it in the target writing system.
+        lem = fixupLemma(targetEntry, senseNum, remove1dot1Bool, wsHandle=targetWSHandle)
 
     return (targetSense, lem, senseNum)
 
@@ -984,9 +1007,9 @@ def remove1dot1(lem):
 
     return re.sub(r'1\.1', '', lem)
 
-def fixupLemma(entry, senseNum, remove1dot1Bool=False):
+def fixupLemma(entry, senseNum, remove1dot1Bool=False, wsHandle=None):
 
-    lem = getHeadwordStr(entry)
+    lem = getHeadwordStr(entry, wsHandle)
     lem = add_one(lem)
     lem = lem + '.' + str(senseNum) # add sense number
 
