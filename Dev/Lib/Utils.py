@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.1 - 6/27/26 - Ron Lockwood
+#    Adjustment to last fix. If both the citation and lexeme forms are missing, use ??? for the headword field.
+#
 #   Version 3.16 - 6/24/26 - Ron Lockwood
 #    Added a writing-system option to getHeadwordStr/fixupLemma/getTargetSenseInfo so One project mode can read target headwords in a secondary vernacular WS.
 #
@@ -518,6 +521,11 @@ def getHeadwordStr(e, wsHandle=None):
     if not headWord and e.LexemeFormOA:
 
         headWord = ITsString(e.LexemeFormOA.Form.get_String(wsHandle)).Text
+
+        if not headWord:
+
+            # FLEx normally shows ??? in the headword field when there is no citation form or lexeme form in the default vernacular WS.
+            headWord = '???' 
 
     if e.HomographNumber and e.HomographNumber > 0:
 
