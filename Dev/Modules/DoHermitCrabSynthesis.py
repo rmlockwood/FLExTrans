@@ -6,7 +6,7 @@
 #   3/8/23
 #
 #   Version 3.16.1 - 6/26/26 - Ron Lockwood
-#    One project mode: generate the HermitCrab config from the source project, temporarily making the chosen target writing system the default vernacular WS (restored afterward).
+#    One project mode: generate the HermitCrab config from a temporary copy of the project whose default vernacular WS is the chosen target writing system, so the live project is never modified.
 #
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
@@ -124,8 +124,10 @@
 #  Then we fix up the text if desired so there are no % @ signs.
 
 import os
-import re 
+import re
 import subprocess
+import shutil
+import tempfile
 from datetime import datetime
 import xml.etree.ElementTree as ET
 
@@ -163,7 +165,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
         FTM_Version    : "3.16.1",
-        FTM_ModifiesDB : True,
+        FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
         FTM_Description: _translate("DoHermitCrabSynthesis", 
@@ -210,30 +212,118 @@ def configFileOutOfDate(targetDB, HCconfigPath):
 
         return False
 
-# Return the CoreWritingSystemDefinition with the given language tag (or None). Used to switch the default vernacular WS in One project mode.
-def getWritingSystemByTag(DB, wsTag):
+# Build a temporary copy of the project whose default vernacular writing system is the chosen target WS, so the external HermitCrab
+# config generator (which reads the default vernacular WS from the .fwdata file) produces a config in the target WS WITHOUT
+# modifying the live project. Returns (tempFwdataPath, tempRootDir); the caller deletes tempRootDir when done. (None, None) on failure.
+def buildTempProjectInTargetWS(sourceFwdataPath, projName, targetWSTag, report):
 
-    for ws in DB.project.ServiceLocator.WritingSystems.AllWritingSystems:
+    sourceProjFolder = os.path.dirname(sourceFwdataPath)
+    tempRoot = tempfile.mkdtemp(prefix='FLExTransHC_')
+    tempProjFolder = os.path.join(tempRoot, projName)
 
-        if ws.Id == wsTag:
+    try:
+        # Copy the project, skipping media and lock files which the config generator does not need.
+        shutil.copytree(sourceProjFolder, tempProjFolder, ignore=shutil.ignore_patterns('LinkedFiles', '*.lock'))
 
-            return ws
+    except Exception as e:
 
-    return None
+        shutil.rmtree(tempRoot, ignore_errors=True)
+
+        if report:
+
+            report.Error(_translate("DoHermitCrabSynthesis", 'Could not copy the project for One project mode synthesis. Error: {e}').format(e=e))
+
+        return (None, None)
+
+    tempFwdata = os.path.join(tempProjFolder, projName + '.fwdata')
+
+    # Read the fwdata file.
+    with open(tempFwdata, encoding='utf-8') as f:
+
+        lines = f.readlines()
+
+    for i, line in enumerate(lines):
+
+        if re.search(r'<CurVernWss>', line):
+
+            # The next line has the writing system tags. Find the tags
+            tagStr = re.search(r'<Uni>(.*?)</Uni>', lines[i+1])
+
+            # Put the tags in a list
+            tags = tagStr.group(1).split() if tagStr else []
+
+            # Put the target WS first in the list, keeping any others after it.
+            reordered = [targetWSTag] + [tag for tag in tags if tag != targetWSTag]
+
+            # old tags with the new reordered tags
+            newLine = re.sub(r'(<Uni>)(.*?)(</Uni>)', r'\1' + ' '.join(reordered) + r'\3', lines[i+1])
+            lines[i+1] = newLine
+            break
+
+    # Write the lines back to the temporary .fwdata file
+    with open(tempFwdata, 'w', encoding='utf-8') as f:
+
+        f.writelines(lines)
+
+    return (tempFwdata, tempRoot)
+
+# Run the external HermitCrab config generator on genFwdataPath, writing HCconfigPath, then (re)load it into the DLL object. Errors
+# and warnings are appended to errorList. projName is only used for the KeyNotFoundException hint message.
+def generateHCConfigFile(genFwdataPath, HCconfigPath, projName, DLLobj, errorList):
+
+    try:
+        result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, genFwdataPath, HCconfigPath], capture_output=True)
+
+        if result.returncode == 0:
+
+            gatherWarnings(result, errorList)
+            errorList.append((_translate("DoHermitCrabSynthesis", "Generated the HermitCrab config. file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)), 0))
+        else:
+            errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
+
+            # Check for KeyNotFoundException from FLEx
+            if re.search('KeyNotFoundException', result.stderr.decode()):
+
+                errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.").format(projectName=projName), 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", "The full error message is:"), 2))
+
+            errorList.append((result.stderr.decode(), 2))
+            return
+
+        # Reload the config file into the dll object.
+        if DLLobj:
+
+            try:
+                if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+
+                    errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)'), 2))
+                    return
+
+            except Exception as e:
+
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}').format(e=e), 2))
+                return
+
+    except subprocess.CalledProcessError as e:
+
+        errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
+        errorList.append((e.stderr.decode(), 2))
 
 def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIfAvailable=False, DLLobj=None):
 
     errorList = []
 
-    # In One project mode there is no separate target project: the HermitCrab config is generated from the source project. So
-    # reuse the source DB (the caller, doHermitCrab, has already switched the default vernacular WS to the target WS). Otherwise
-    # open the configured target project.
+    # In One project mode there is no separate target project: the HermitCrab config is generated from a temporary copy of the
+    # source project whose default vernacular WS is the chosen target WS (done in the generation branch below), so the live
+    # project is never touched. Reuse the source DB and remember the target WS tag. Otherwise open the configured target project.
     oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+    targetWSTag = None
 
     if oneProjectMode:
 
         TargetDB = DB
         targetProj = DB.ProjectName()
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
     else:
 
         # Get the target project name
@@ -302,44 +392,29 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
         errorList.append((_translate("DoHermitCrabSynthesis", "The HermitCrab configuration file is up to date."), 0))
         return errorList
     else:
-        # Run the HermitCrab config generator
-        try:
-            result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, fwdataPath, HCconfigPath], capture_output=True)
+        # In One project mode, generate from a temporary copy of the project whose default vernacular writing system is the chosen
+        # target WS, so the live project is never modified. In Two project mode, generate from the target project's file directly.
+        tempRoot = None
+        genFwdataPath = fwdataPath
 
-            if result.returncode == 0:
+        if oneProjectMode and targetWSTag:
 
-                gatherWarnings(result, errorList)
-                errorList.append((_translate("DoHermitCrabSynthesis", "Generated the HermitCrab config. file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)), 0))
-            else:
-                errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
-                
-                # Check for KeyNotFoundException from FLEx
-                if re.search('KeyNotFoundException', result.stderr.decode()):
+            genFwdataPath, tempRoot = buildTempProjectInTargetWS(fwdataPath, TargetDB.ProjectName(), targetWSTag, report)
 
-                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.").format(projectName=TargetDB.ProjectName()), 2))
-                    errorList.append((_translate("DoHermitCrabSynthesis", "The full error message is:"), 2))
+            if genFwdataPath is None:
 
-                errorList.append((result.stderr.decode(), 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", "Could not prepare a temporary copy of the project for One project mode synthesis."), 2))
                 return errorList
 
-            # Reload the config file into the dll object.
-            if DLLobj:
+        try:
+            generateHCConfigFile(genFwdataPath, HCconfigPath, TargetDB.ProjectName(), DLLobj, errorList)
 
-                try:
-                    if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+        finally:
 
-                        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)'), 2))
-                        return errorList
-                
-                except Exception as e:
+            # Always remove the temporary project copy (if we made one).
+            if tempRoot:
 
-                    errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}').format(e=e), 2))
-                    return errorList
-
-        except subprocess.CalledProcessError as e:
-
-            errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
-            errorList.append((e.stderr.decode(), 2))
+                shutil.rmtree(tempRoot, ignore_errors=True)
 
     return errorList
 
@@ -815,35 +890,9 @@ def doHermitCrab(DB, report, configMap=None):
     if not (HCconfigPath and targetSynthesis):
         return None
 
-    # In One project mode the external HermitCrab config generator reads the project's default vernacular WS from the .fwdata
-    # file, so temporarily make the chosen target writing system the default vernacular WS, persisting it to disk so the generator
-    # sees it. It is always restored (and persisted again) in the finally block, even if config generation fails.
-    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
-    savedDefaultVernWs = None
-    wsContainer = DB.project.ServiceLocator.WritingSystems
-
-    if oneProjectMode:
-
-        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
-        newDefaultWs = getWritingSystemByTag(DB, targetWSTag) if targetWSTag else None
-
-        if newDefaultWs:
-
-            savedDefaultVernWs = wsContainer.DefaultVernacularWritingSystem
-            wsContainer.DefaultVernacularWritingSystem = newDefaultWs
-            DB.project.ServiceLocator.GetInstance(IUndoStackManager).Save()
-
-    try:
-        # Extract the target lexicon
-        errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
-
-    finally:
-
-        # Restore the default vernacular writing system (and persist it) whether or not config generation succeeded.
-        if savedDefaultVernWs is not None:
-
-            wsContainer.DefaultVernacularWritingSystem = savedDefaultVernWs
-            DB.project.ServiceLocator.GetInstance(IUndoStackManager).Save()
+    # Extract the target lexicon. In One project mode extractHermitCrabConfig generates the config from a temporary copy of the
+    # project (with the target writing system as the default vernacular WS), so the live project is never modified here.
+    errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
 
     # check for fatal errors
     fatal, _ = Utils.checkForFatalError(errorList, report)
