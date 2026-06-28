@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - dictionary files are named after the source project.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -89,7 +92,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  
@@ -212,7 +215,15 @@ def MainFunction(DB, report, modify=True):
     
     # Remove target dictionary files
     stampFiles = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report, giveError=False)
-    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
+
+    # In one project (two writing systems) mode the dictionary files are named after the source project (there is no separate target project), so glob on the source project name.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+    if oneProjectMode:
+
+        targetProject = DB.ProjectName()
+    else:
+        targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
     try:
         for p in Path(stampFiles).glob(targetProject+"*.*"):
             p.unlink()

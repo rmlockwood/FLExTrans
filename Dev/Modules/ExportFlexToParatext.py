@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - the target text is in the source project.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -92,7 +95,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
@@ -292,8 +295,15 @@ def MainFunction(DB, report, modify):
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
 
-    # Open the Target DB
-    targetDB = Utils.openTargetProject(configMap, report)
+    # In one project (two writing systems) mode the target text was inserted into the source project, so export from the source DB itself.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+    if oneProjectMode:
+
+        targetDB = DB
+    else:
+        # Open the Target DB
+        targetDB = Utils.openTargetProject(configMap, report)
 
     # Get a list of the text titles
     textTitles = Utils.getSourceTextList(targetDB)
@@ -337,7 +347,10 @@ def MainFunction(DB, report, modify):
         else:
             exportAllSelectedTitles(targetDB, report, window, targetDB.ProjectName())
 
-    targetDB.CloseProject()
+    # Only close the target project if it's a separate project (not in one project mode where target == source).
+    if targetDB is not DB:
+
+        targetDB.CloseProject()
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
