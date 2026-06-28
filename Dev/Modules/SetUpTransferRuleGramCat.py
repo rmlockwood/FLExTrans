@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    One project mode: the target is the same as the source project, so don't open or gather data from a separate target project.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -103,7 +106,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
@@ -427,8 +430,13 @@ def getSlot2AffixListMap(DB):
 def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thingType):        
         
     haveError = False
-    dbList = [(DB, 'source'), (TargetDB, 'target')]
-    
+    dbList = [(DB, 'source')]
+
+    # In One project mode the target is the same as the source project (TargetDB is None), so don't gather the same data twice.
+    if TargetDB is not None:
+
+        dbList.append((TargetDB, 'target'))
+
     for dbTup in dbList:
         
         dbObj = dbTup[0]
@@ -494,8 +502,24 @@ def MainFunction(DB, report, modify=True):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Open the target database
-    TargetDB = Utils.openTargetProject(configMap, report)
+    # In One project mode the target is the same as the source project, so there is no separate target project to open or read
+    # data from. Use None for the target; getThings and get_categories then gather only the (shared) source data.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+    if oneProjectMode:
+
+        TargetDB = None
+    else:
+
+        # Open the target database
+        TargetDB = Utils.openTargetProject(configMap, report)
+
+    # Close the target project if we opened one (nothing to close in One project mode).
+    def closeTarget():
+
+        if TargetDB:
+
+            TargetDB.CloseProject()
 
     # Get the different kinds of attributes
     if window.retVal == False:
@@ -506,21 +530,21 @@ def MainFunction(DB, report, modify=True):
         
         if not getThings(masterAttribList, window.overrideFeat, DB, TargetDB, report, processFeatures, 'feature'):
         
-            TargetDB.CloseProject()
+            closeTarget()
             return
 
     if window.doClass:
         
         if not getThings(masterAttribList, window.overrideClass, DB, TargetDB, report, processClassesForPos, 'class'):
             
-            TargetDB.CloseProject()
+            closeTarget()
             return
 
     if window.doSlot:
         
         if not getThings(masterAttribList, window.overrideSlot, DB, TargetDB, report, processSlots, 'slot'):
             
-            TargetDB.CloseProject()
+            closeTarget()
             return
 
     # Get the path to the transfer rules file
@@ -529,7 +553,7 @@ def MainFunction(DB, report, modify=True):
     # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
     if not transferRulesFile:
 
-        TargetDB.CloseProject()
+        closeTarget()
         return
     
     # Make a backup copy of the transfer rule file
@@ -537,7 +561,7 @@ def MainFunction(DB, report, modify=True):
         shutil.copy2(transferRulesFile, transferRulesFile+'.old')
     except:
         report.Error(_translate("SetUpTransferRuleGramCat", 'There was a problem finding the transfer rules file. Check your configuration.'))
-        TargetDB.CloseProject()
+        closeTarget()
         return
 
     # Parse the XML file using ElementTree
@@ -549,7 +573,7 @@ def MainFunction(DB, report, modify=True):
     except Exception as e:
 
         report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file is malformed or not valid XML.'))
-        TargetDB.CloseProject()
+        closeTarget()
         return
     
     # Find the section-def-cats and section-def-attrs elements
@@ -559,13 +583,13 @@ def MainFunction(DB, report, modify=True):
     if sectionDefCats is None or sectionDefAttrs is None:
 
         report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file is missing required sections.'))
-        TargetDB.CloseProject()
+        closeTarget()
         return
 
     # Get just source categories
     if Utils.get_categories(DB, report, srcPOSmap, TargetDB=None, numCatErrorsToShow=99, addInflectionClasses=False) == True:
 
-        TargetDB.CloseProject()
+        closeTarget()
         return
 
     # Process source categories
@@ -574,10 +598,10 @@ def MainFunction(DB, report, modify=True):
     # Get all source and target categories
     if Utils.get_categories(DB, report, POSmap, TargetDB, numCatErrorsToShow=99, addInflectionClasses=False) == True:
         
-        TargetDB.CloseProject()
+        closeTarget()
         return
 
-    TargetDB.CloseProject()
+    closeTarget()
     
     # Process attributes
     attrCount = fillOutDefAttr(sectionDefAttrs, POSmap, masterAttribList)
