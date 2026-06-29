@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    Made the "Source text:" tooltip translatable.
+#
 #   Version 3.16.1 - 6/9/26 - Laerke
 #    Testbed improvements phase 1. Comment can now be added for a test.
 #
@@ -98,7 +101,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -336,7 +339,7 @@ class TestResultItem(BaseTreeItem):
             myWidget.setIcon(myIcon)
             
             # Set the tool tip text
-            tip = 'Source text: ' + self.origin + '.'
+            tip = _translate("TestbedLogViewer", 'Source text: {origin}.').format(origin=self.origin)
             
             # if a lexical unit is invalid add the reason it's invalid to the tooltip
             if self.isInvalid():

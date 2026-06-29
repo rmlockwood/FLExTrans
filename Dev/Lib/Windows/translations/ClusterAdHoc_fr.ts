@@ -6,7 +6,7 @@
     <message>
       <location filename="../ClusterAdHoc.py" line="120"/>
       <source>Add Cluster Ad Hoc Rules</source>
-      <translation>Ajouter des règles ad hoc de cluster</translation>
+      <translation>Ajouter des règles ad hoc de groupe</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="121"/>
@@ -46,12 +46,12 @@
     <message>
       <location filename="../ClusterAdHoc.py" line="128"/>
       <source>Cannot Occur</source>
-      <translation>Ne peut pas se produire</translation>
+      <translation>Ne peut pas apparaître</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="129"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Projets de cluster auxquels appliquer</translation>
+      <translation>Projets de groupés auxquels appliquer</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="130"/>

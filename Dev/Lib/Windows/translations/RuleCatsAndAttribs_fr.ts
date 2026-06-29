@@ -16,7 +16,7 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="112"/>
       <source>Populate inflection features as attributes</source>
-      <translation>Remplir les traits de flexion en tant qu'attributs</translation>
+      <translation>Renseigner les traits de flexion en tant qu'attributs</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="119"/>
@@ -36,7 +36,7 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="114"/>
       <source>Populate inflection classes as attributes</source>
-      <translation>Remplir les classes de flexion en tant qu'attributs</translation>
+      <translation>Renseigner les classes de flexion en tant qu'attributs</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="116"/>
@@ -51,7 +51,7 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="118"/>
       <source>Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten.</source>
-      <translation>Les catégories sources et l'attribut a_gram_cat sont remplis automatiquement. Les catégories sources existantes ne sont pas écrasées.</translation>
+      <translation>Les catégories sources et l'attribut a_gram_cat sont renseignés automatiquement. Les catégories sources existantes ne sont pas écrasées.</translation>
     </message>
   </context>
 </TS>

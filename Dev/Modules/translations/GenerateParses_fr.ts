@@ -23,7 +23,7 @@ In FLExTrans &gt; Settings, under Synthesis Test settings, it is possible to lim
 a single POS or Citation Form, or to a specified number of stems (stems will be chosen
 randomly). This module also outputs a human readable version of the parses (with glosses of roots
 and affixes) to the Parses Output File specified in the settings.</source>
-      <translation>Ce module crée un fichier Apertium (qui peut être converti pour l'entrée dans un processus de synthétiseur) avec
+      <translation>Ce module crée un fichier Apertium (qui peut être converti pour l'entrée dans un processus de synthèse) avec
 toutes les analyses qui peuvent être générées à partir du projet FLEx cible, en fonction de ses modèles flexionnels.
 (Il ne génère pas à partir des informations de dérivation dans le projet et il ne gère pas encore
 les clitiques ou les variantes.)
@@ -50,7 +50,7 @@ et des affixes) dans le fichier de sortie des analyses spécifié dans les param
     <message>
       <location filename="../GenerateParses.py" line="317"/>
       <source>Logging to {logFile}</source>
-      <translation>Journalisation dans {logFile}</translation>
+      <translation>Enregistrement dans {logFile}</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="319"/>

@@ -5,6 +5,24 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.13 - 6/19/26 - Ron Lockwood
+#    Feature box: move padding onto the cells so the whole box is clickable; switch the tree to overflow:visible to stop premature horizontal/vertical scroll bars.
+#
+#   Version 3.16.12 - 6/19/26 - Ron Lockwood
+#    Make the whole word box clickable for its context menu (handler on the tf-nc table; toApp stops propagation).
+#
+#   Version 3.16.11 - 6/19/26 - Ron Lockwood
+#    Features-in-use: offer each feature:value pair already used in the phrase as a single quick-pick at the top of the chooser (mirrors Java).
+#
+#   Version 3.16.10 - 6/18/26 - Ron Lockwood
+#    Always write the DisjointFeatureSets, Features, and Affixes wrapper elements, even when empty.
+#
+#   Version 3.16.9 - 6/17/26 - Ron Lockwood
+#    Default new rules to no permutations and overwrite-rules to yes.
+#
+#   Version 3.16.8 - 6/17/26 - Ron Lockwood
+#    Add preference storage for the horizontal rule-info/example-data splitter position.
+#
 #   Version 3.16.7 - 6/17/26 - Ron Lockwood
 #    Add preference storage for the two main-window splitter positions.
 #
@@ -427,11 +445,12 @@ class Affix(RuleConstituent):
     # Produce the inner table HTML listing this affix's features.
     def _produceFeaturesHtml(self, isHead: bool = False) -> str:
 
-        html = "<li><table class=\"tf-nc\">\n"
+        html = "<li><table class=\"tf-nc featurebox\">\n"
 
         for feature in self.features:
 
-            html += "<tr>\n<td align=\"left\">" + feature.produceHtml(isHead) + "</td>\n</tr>\n"
+            # Put the feature's click handler on the whole row cell, not just the label, so clicking anywhere in the feature's area opens the feature context menu. The featurebox CSS moves the box padding onto the cell so the cell fills the box right up to the border.
+            html += f'<tr>\n<td align="left" onmousedown={feature.produceToApp("f")}>' + feature.produceHtml(isHead) + "</td>\n</tr>\n"
 
         html += "</table>\n</li>\n"
         return html
@@ -595,26 +614,49 @@ class Phrase(RuleConstituent):
 
         return ""
 
-    def getFeaturesInUse(self) -> list:
+    # Return synthetic single-value FLEx features for each distinct feature:value pair already used anywhere in the phrase (on any word or affix) that is also valid for the given category. These are offered at the top of the feature chooser so the user can quickly reuse a value they already picked (e.g. "gender:α"). Mirrors the Java Phrase.getFeaturesInUseForCategory.
+    def getFeaturesInUseForCategory(self, featuresForCategory) -> list:
 
-        return []
+        # A used feature is only offered if its label is one of the features valid for the category being inserted on.
+        validNames = {f.name for f in featuresForCategory}
+        featuresInUse = []
 
-    # Return the FLEx features in use for the given category, based on feature labels found in the phrase.
-    def getFeaturesInUseForCategory(self, allFlexFeatures, categoryAbbr: str) -> list:
-
-        phraseFeatureLabels = set()
-
+        # Look at every word in the phrase (not just words of this category); Java filters by feature validity, not by the owning word's category.
         for word in self.words:
 
-            if word.wordCategory == categoryAbbr:
+            for feature in word.getAllFeaturesInWord():
 
-                for feature in word.getAllFeaturesInWord():
+                # Skip a feature that was just inserted and not yet given a label or value.
+                if not feature.label and not feature.getMatchOrValue():
 
-                    if feature.label:
+                    continue
 
-                        phraseFeatureLabels.add(feature.label)
+                # Skip features whose label is not valid for this category.
+                if feature.label not in validNames:
 
-        return [f for f in allFlexFeatures if f.name in phraseFeatureLabels]
+                    continue
+
+                # Skip a feature:value pair we have already collected (dedup by both label and value, so gender:α and gender:β can both appear).
+                if self._featureAlreadyInUse(featuresInUse, feature):
+
+                    continue
+
+                # Build a synthetic feature carrying only the one value actually in use, so it shows as a single quick-pick entry rather than expanding to all the feature's values.
+                usedValue = FLExFeatureValue(abbreviation=feature.getMatchOrValue())
+                featuresInUse.append(FLExFeature(name=feature.label, values=[usedValue]))
+
+        return featuresInUse
+
+    # Return True if a feature with the same label and the same value is already present in the in-use list (mirrors the Java featureAlreadyInUse, which compares the label against the name and the value against the single stored value).
+    def _featureAlreadyInUse(self, featuresInUse, feature) -> bool:
+
+        for ff in featuresInUse:
+
+            if ff.name == feature.label and ff.values and ff.values[0].abbreviation == feature.getMatchOrValue():
+
+                return True
+
+        return False
 
 # ============================================================
 # Source / Target
@@ -672,7 +714,9 @@ class Word(RuleConstituent):
                 return {"word": "word", "head": "head"}.get(s, s)
 
         headClass = "headword" if self.head == HeadValue.yes else ""
-        html = "<li><table class=\"tf-nc\">\n<tr>\n<td align=\"center\">"
+
+        # Put the word's click handler on the whole box (the tf-nc table), not just the label, so clicking anywhere in the square opens the word context menu. The category span inside keeps its own handler (clicks there stop propagating, so they open the category menu).
+        html = f'<li><table class="tf-nc" onmousedown={self.produceToApp("w")}>\n<tr>\n<td align="center">'
         html += self.produceSpan(headClass, "w") + _t("word")
 
         # Add a "(head)" annotation when this word is the head.
@@ -730,9 +774,7 @@ class Word(RuleConstituent):
 
             return ""
 
-        # No category of its own: fall back to the corresponding source word's
-        # category, shown read-only under the (target) word box. Matches the Java
-        # version, which derives a target word's category from the source word.
+        # No category of its own: fall back to the corresponding source word's category, shown read-only under the (target) word box. Matches the Java version, which derives a target word's category from the source word.
         cat = self.getCategoryOfWordOrCorrespondingSourceWord()
 
         if cat and cat.name:
@@ -744,11 +786,12 @@ class Word(RuleConstituent):
     # Produce the inner table HTML listing this word's own features.
     def _produceFeaturesHtml(self) -> str:
 
-        html = "<li><table class=\"tf-nc\">\n"
+        html = "<li><table class=\"tf-nc featurebox\">\n"
 
         for feature in self.features:
 
-            html += "<tr>\n<td align=\"left\">" + feature.produceHtml(self.head == HeadValue.yes) + "</td>\n</tr>\n"
+            # Put the feature's click handler on the whole row cell, not just the label, so clicking anywhere in the feature's area opens the feature context menu. The featurebox CSS moves the box padding onto the cell so the cell fills the box right up to the border.
+            html += f'<tr>\n<td align="left" onmousedown={feature.produceToApp("f")}>' + feature.produceHtml(self.head == HeadValue.yes) + "</td>\n</tr>\n"
 
         html += "</table>\n</li>\n"
         return html
@@ -917,7 +960,7 @@ class FLExTransRule(RuleConstituent):
 
     name: str = ""
     description: str = ""
-    createPermutations: PermutationsValue = PermutationsValue.with_head
+    createPermutations: PermutationsValue = PermutationsValue.no
     source: Source = field(default_factory=Source)
     target: Target = field(default_factory=Target)
 
@@ -988,7 +1031,7 @@ class FLExTransRuleGenerator:
 
     flexTransRules: list[FLExTransRule] = field(default_factory=list)
     disjointFeatures: list[DisjointFeatureSet] = field(default_factory=list)
-    overwriteRules: OverwriteRulesValue = OverwriteRulesValue.no
+    overwriteRules: OverwriteRulesValue = OverwriteRulesValue.yes
 
     def __post_init__(self):
 
@@ -1063,6 +1106,7 @@ class ApplicationPreferences:
     LAST_SPLIT_PANE_POSITION = "lastSplitPanePosition"
     MAIN_SPLITTER_SIZES = "mainSplitterSizes"
     V_SPLITTER_SIZES = "vSplitterSizes"
+    H_SPLITTER_SIZES = "hSplitterSizes"
 
     # Settings live in this TOML-formatted file in the project's Config folder (replacing the old QSettings/registry storage).
     SETTINGS_FILENAME = "RuleAssistantSettings.txt"
@@ -1172,6 +1216,14 @@ class ApplicationPreferences:
     def setVSplitterSizes(self, sizes) -> None:
 
         self._data[self.V_SPLITTER_SIZES] = [int(s) for s in sizes]
+
+    def getHSplitterSizes(self) -> list:
+
+        return [int(s) for s in self._data.get(self.H_SPLITTER_SIZES, [])]
+
+    def setHSplitterSizes(self, sizes) -> None:
+
+        self._data[self.H_SPLITTER_SIZES] = [int(s) for s in sizes]
 
     # Persist the current settings to the TOML file, creating the Config folder if it doesn't exist yet.
     def sync(self) -> None:
@@ -1391,8 +1443,7 @@ class WebPageProducer:
 
                     setattr(self, attr, f.read_text(encoding="utf-8"))
                 else:
-                    # Without the CSS the tree renders as unstyled text, so make
-                    # a missing file loud rather than failing silently.
+                    # Without the CSS the tree renders as unstyled text, so make a missing file loud rather than failing silently.
                     print(f"Warning: Rule Assistant CSS not found: {f}")
 
             except Exception as e:
@@ -1442,6 +1493,8 @@ class WebPageProducer:
             "    });\n"
             "});\n\n"
             "function toApp(msg, event) {\n"
+            "    // Stop the click from bubbling up to an enclosing clickable element (e.g. a category span inside the word box should open the category menu, not the word's box-wide handler).\n"
+            "    if (event) { event.stopPropagation(); }\n"
             "    if (window.ftRuleGenApp) {\n"
             "        ftRuleGenApp.setXCoord(event.screenX);\n"
             "        ftRuleGenApp.setYCoord(event.screenY);\n"
@@ -1514,14 +1567,12 @@ class XMLBackEndProvider:
         root = ET.Element("FLExTransRuleGenerator")
         root.set("overwrite_rules", generator.overwriteRules.value)
 
-        # Write the disjoint feature sets, if any.
-        if generator.disjointFeatures:
+        # Write the disjoint feature sets. Always emit the wrapper element, even when empty, so the output matches the expected XML structure.
+        disjointSetsEl = ET.SubElement(root, "DisjointFeatureSets")
 
-            disjointSetsEl = ET.SubElement(root, "DisjointFeatureSets")
+        for ds in generator.disjointFeatures:
 
-            for ds in generator.disjointFeatures:
-
-                XMLBackEndProvider._createDisjointFeatureSetElement(ds, disjointSetsEl)
+            XMLBackEndProvider._createDisjointFeatureSetElement(ds, disjointSetsEl)
 
         rulesEl = ET.SubElement(root, "FLExTransRules")
 
@@ -1706,23 +1757,19 @@ class XMLBackEndProvider:
         wordEl.set("category", word.wordCategory)
         wordEl.set("head", word.head.value)
 
-        # Write the word's own features.
-        if word.features:
+        # Write the word's own features. Always emit the wrapper element, even when empty, so the output matches the expected XML structure.
+        featuresEl = ET.SubElement(wordEl, "Features")
 
-            featuresEl = ET.SubElement(wordEl, "Features")
+        for f in word.features:
 
-            for f in word.features:
+            XMLBackEndProvider._createFeatureElement(f, featuresEl)
 
-                XMLBackEndProvider._createFeatureElement(f, featuresEl)
+        # Write the word's affixes. Always emit the wrapper element, even when empty, so the output matches the expected XML structure.
+        affixesEl = ET.SubElement(wordEl, "Affixes")
 
-        # Write the word's affixes.
-        if word.affixes:
+        for a in word.affixes:
 
-            affixesEl = ET.SubElement(wordEl, "Affixes")
-
-            for a in word.affixes:
-
-                XMLBackEndProvider._createAffixElement(a, affixesEl)
+            XMLBackEndProvider._createAffixElement(a, affixesEl)
 
     # Build the XML element for a single feature.
     @staticmethod
@@ -1742,13 +1789,12 @@ class XMLBackEndProvider:
         affixEl = ET.SubElement(parentEl, "Affix")
         affixEl.set("type", affix.affixType.value)
 
-        if affix.features:
+        # Always emit the Features wrapper element, even when empty, so the output matches the expected XML structure.
+        featuresEl = ET.SubElement(affixEl, "Features")
 
-            featuresEl = ET.SubElement(affixEl, "Features")
+        for f in affix.features:
 
-            for f in affix.features:
-
-                XMLBackEndProvider._createFeatureElement(f, featuresEl)
+            XMLBackEndProvider._createFeatureElement(f, featuresEl)
 
     # Build the XML element for a disjoint feature set, including its value pairings.
     @staticmethod

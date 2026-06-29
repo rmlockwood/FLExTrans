@@ -26,12 +26,12 @@
     <message>
       <location filename="../NewEntryDlg.py" line="238"/>
       <source>Cluster Project Selection Error</source>
-      <translation>Erreur de sélection de projet de cluster</translation>
+      <translation>Erreur de sélection de projet du projet groupé</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="238"/>
       <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-      <translation>Vous devez au moins sélectionner le projet cible par défaut, {proj}, parmi vos projets de cluster.</translation>
+      <translation>Vous devez au moins sélectionner le projet cible par défaut, {proj}, parmi vos projets de groupé.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="251"/>

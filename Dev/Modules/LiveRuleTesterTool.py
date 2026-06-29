@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.4 - 6/24/26 - Ron Lockwood
+#    Fixes #1134. Focus the active source-selection widget when the tool opens so the arrow keys work right away.
+#
+#   Version 3.16.3 - 6/19/26 - Ron Lockwood
+#    Launch the new Python Rule Assistant (RuleAssistantPy) instead of the old Java version.
+#
 #   Version 3.16.2 - 6/9/26 - Laerke
 #    Testbed improvements phase 1. Comment can now be added for a test.
 #
@@ -292,7 +298,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1165,6 +1171,14 @@ class Main(QMainWindow):
     def showEvent(self, event):
         super().showEvent(event)
         self.positionZoomWidgets()
+
+        # The first time the window is shown, move keyboard focus off the source text combo box and onto the active source-selection widget. This lets the
+        # arrow keys navigate the selection right away instead of changing the source text (issue #1134). We do this in showEvent rather than __init__, and
+        # defer it with a 0 ms timer, because Qt gives focus to the first widget in the tab order as the window is shown, which would override an earlier change.
+        if not getattr(self, 'sourceFocusInitialized', False):
+
+            self.sourceFocusInitialized = True
+            QtCore.QTimer.singleShot(0, self.setFocusToActiveSourceTab)
 
     def positionZoomWidgets(self):
 
@@ -2162,6 +2176,22 @@ class Main(QMainWindow):
         self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
         self.ui.warningTextEdit.setPlainText('')
+
+    # Move keyboard focus to the active source-selection widget. Called when the tool opens (including when it restarts after the user picks a different source text) so the arrow keys work right away.
+    # Without this the source text combo box keeps the focus, so an arrow key press changes the source text again instead of navigating the selection. See issue #1134.
+    def setFocusToActiveSourceTab(self):
+
+        if self.ui.tabSource.currentIndex() == 0: # check boxes with words
+
+            self.ui.SentCombo.setFocus()
+
+        elif self.ui.tabSource.currentIndex() == 1: # sentence list
+
+            self.ui.listSentences.setFocus()
+
+        else: # manual entry
+
+            self.ui.ManualEdit.setFocus()
 
     def sourceTabClicked(self):
 
@@ -3279,8 +3309,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         if retVal == START_RULE_ASSISTANT:
 
-            from RuleAssistant import MainFunction as RA
-            from RuleAssistant import docs as RA_docs
+            from RuleAssistantPy import MainFunction as RA
+            from RuleAssistantPy import docs as RA_docs
             report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RA_docs[FTM_Name], version=RA_docs[FTM_Version]))
             ruleCount = RA(DB, report, modify, fromLRT=True)
 

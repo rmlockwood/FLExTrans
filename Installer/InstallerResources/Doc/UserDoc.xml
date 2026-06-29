@@ -7637,7 +7637,13 @@ type="tTool"
 > module. Rebuild the bilingual lexicon. Re-open the <object
 type="tLiveRuleTester"
 ></object
->.</td
+>. Also make sure no validation errors were reported when you last saved the transfer rules file in the <object
+type="tXMLmindXMLEditor"
+></object
+>; a rule file that did not validate can cause this error. See <sectionRef
+sec="sOtherTips"
+></sectionRef
+> for more detail.</td
 ></tr
 ></table
 ></example
@@ -7651,6 +7657,35 @@ id="sOtherTips"
 type="tArea"
 >Rule Execution Information</object
 > area. If not, there is a problem with the category definition. Check your category definition to make sure it correctly matches the incoming data.</p
+><p
+>If you see the error <object
+type="tBold"
+>An error happened when running the Apertium tools.</object
+> in the <object
+type="tLiveRuleTester"
+></object
+>, or a similar error when running the <object
+type="tTool"
+>Run Apertium</object
+> module, this usually means there is a problem with the transfer rules file. A common cause is that the rules file did not validate the last time it was saved. When you save the transfer rules file in the <object
+type="tXMLmindXMLEditor"
+></object
+>, make sure that no validation errors are reported. A rule file that did not validate cannot be compiled by the Apertium tools and will produce this error.</p
+><p
+>When the problem occurs while running the <object
+type="tTool"
+>Run Apertium</object
+> module, the error message includes the contents of apertium_error.txt and may look like this:</p
+><p
+>An error happened when running the Apertium tools. The contents of apertium_error.txt is: Error at line 1, column 3655: Undefined attr-item a_num_slot. make: *** [transfer_rules.t1x.bin] Error 1</p
+><p
+>Here the <object
+type="tBold"
+>Undefined attr-item</object
+> message indicates that the rules file references an attribute that is not defined. This is exactly the kind of problem that the validation check would have caught when the file was saved, so re-open the transfer rules file in the <object
+type="tXMLmindXMLEditor"
+></object
+>, correct any validation errors, and save it again.</p
 ></section2
 ></section1
 ><section1

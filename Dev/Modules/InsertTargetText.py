@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.1 - 6/24/26 - Ron Lockwood
+#    Fixes #1339. Load TextInOutUtils translations so the "rules applied" message is translated.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -106,12 +109,12 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection', 'TextInOutUtils']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",

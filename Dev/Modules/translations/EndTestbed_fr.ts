@@ -6,7 +6,7 @@
     <message>
       <location filename="../EndTestbed.py" line="76"/>
       <source>End Testbed</source>
-      <translation>End banc d'essai</translation>
+      <translation>Fin du banc d'essai</translation>
     </message>
     <message>
       <location filename="../EndTestbed.py" line="81"/>

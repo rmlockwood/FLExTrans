@@ -44,11 +44,11 @@
         <translation>Guardar</translation>
     </message>
     <message>
-        <source>Save &amp; Write</source>
+        <source>Save &amp;&amp; Write</source>
         <translation>Guardar y Escribir</translation>
     </message>
     <message>
-        <source>Save &amp; Write All</source>
+        <source>Save &amp;&amp; Write All</source>
         <translation>Guardar y Escribir Todo</translation>
     </message>
     <message>

@@ -21,7 +21,7 @@
     <message>
       <location filename="../TextInOutUtils.py" line="418"/>
       <source>Current Project not in Cluster Projects list, exiting.</source>
-      <translation>Le projet actuel ne figure pas dans la liste des projets de cluster, sortie.</translation>
+      <translation>Le projet actuel ne figure pas dans la liste des projets groupés, fermeture en cours.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="444"/>
@@ -66,7 +66,7 @@
     <message>
       <location filename="../TextInOutUtils.py" line="853"/>
       <source>For folder {foldName}, the rule: {ruleID} was not found.</source>
-      <translation>Pour le dossier {foldName}, la règle : {ruleID} n'a pas été trouvée.</translation>
+      <translation>Pour le dossier {foldName}, la règle : {ruleID} introuvable.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="1018"/>
@@ -86,7 +86,7 @@
     <message>
       <location filename="../TextInOutUtils.py" line="1471"/>
       <source>Error saving settings.</source>
-      <translation>Erreur lors de l'enregistrement des paramètres.</translation>
+      <translation>Erreur lors de la sauvegarde des paramètres.</translation>
     </message>
   </context>
 </TS>

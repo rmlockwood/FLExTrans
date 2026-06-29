@@ -37,7 +37,7 @@ HINWEIS: Die Meldungen geben an, dass das Quellprojekt verwendet wird. Tatsächl
     <message>
       <location filename="../DoStampSynthesis.py" line="963"/>
       <source>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</source>
-      <translation>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</translation>
+      <translation>Der Export des Ziellexikons wird abgebrochen, weil das benutzerdefinierte XAMPLE-Feld keine Liste ist. Wenn Sie das benutzerdefinierte XAMPLE-Feld definieren, muss es eine Liste sein.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="974"/>
@@ -152,12 +152,12 @@ HINWEIS: Die Meldungen geben an, dass das Quellprojekt verwendet wird. Tatsächl
     <message>
       <location filename="../DoStampSynthesis.py" line="1408"/>
       <source>An error happened when running the STAMP tool.</source>
-      <translation>An error happened when running the STAMP tool.</translation>
+      <translation>Beim Ausführen des STAMP-Werkzeugs ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1439"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>Das Modul {modname} muss vor diesem Modul ausgeführt werden. Die Datei: ...\{filePath} existiert nicht.</translation>
     </message>
   </context>
 </TS>
