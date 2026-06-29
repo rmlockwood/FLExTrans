@@ -44,7 +44,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 8,
+    FTM_Version     : 9,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description :
@@ -54,7 +54,8 @@ Bantu Health Check runs the following checks:
    with an optional 'many' value. (Skips nouns with 0 features.)
 2. Each affix in the noun-class slot has exactly one gender feature.
 3. Affix glosses match the expected 'n.xyz' format and align with their
-   features/POS (e.g. 19.num).
+   features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class
+   number (e.g. '5') unless the sub-option to enforce the full format is on.
 4. No two different affixes share the same gloss.
 5. Affix glosses contain no spaces.
 6. Every gender value in use has an affix in each part of speech's noun-class
@@ -236,39 +237,38 @@ class BantuConfigDialog(QDialog):
         main_layout.addWidget(QLabel("Feature containing singular noun class values:"))
         self.sg_combo = QComboBox()
         self.sg_combo.addItems(feature_options)
-        my_index = self.sg_combo.findText("Singular")
+
+        # MatchContains matches any item that contains the word (e.g. "Bantu Singular") and is case-insensitive, so no separate lowercase lookup is needed.
+        my_index = self.sg_combo.findText("Singular", Qt.MatchFlag.MatchContains)
+
         if my_index >= 0:
             self.sg_combo.setCurrentIndex(my_index)
-        else:
-            my_index = self.sg_combo.findText("singular")
-            if my_index >= 0:
-                self.sg_combo.setCurrentIndex(my_index)
-                
+
         main_layout.addWidget(self.sg_combo)
 
         main_layout.addWidget(QLabel("Feature containing plural noun class values:"))
         self.pl_combo = QComboBox()
         self.pl_combo.addItems(feature_options)
-        my_index = self.pl_combo.findText("Plural")
+
+        # MatchContains matches any item that contains the word (e.g. "Bantu Plural") and is case-insensitive.
+        my_index = self.pl_combo.findText("Plural", Qt.MatchFlag.MatchContains)
+
         if my_index >= 0:
             self.pl_combo.setCurrentIndex(my_index)
-        else:
-            my_index = self.pl_combo.findText("plural")
-            if my_index >= 0:
-                self.pl_combo.setCurrentIndex(my_index)
+
         main_layout.addWidget(self.pl_combo)
 
         # Optional 'many' feature: blank is a valid (default) choice.
         main_layout.addWidget(QLabel("Feature containing many noun class values (optional):"))
         self.many_combo = QComboBox()
         self.many_combo.addItems([""] + feature_options)
-        my_index = self.many_combo.findText("Many")
+
+        # MatchContains matches any item that contains the word (e.g. "Bantu Many") and is case-insensitive.
+        my_index = self.many_combo.findText("Many", Qt.MatchFlag.MatchContains)
+
         if my_index >= 0:
             self.many_combo.setCurrentIndex(my_index)
-        else:
-            my_index = self.many_combo.findText("many")
-            if my_index >= 0:
-                self.many_combo.setCurrentIndex(my_index)
+
         main_layout.addWidget(self.many_combo)
 
         main_layout.addStretch(1)
@@ -330,6 +330,10 @@ class BantuConfigDialog(QDialog):
 
             self.check_boxes[key] = cb
 
+            # Check 3 carries an indented sub-option: optionally enforce the 'n.xyz' gloss format on noun-class slot affixes too (off by default, since bare class numbers like '5' are normally allowed there).
+            if key == "affix_gloss":
+                group_layout.addLayout(self.build_nc_format_suboption())
+
         group_layout.addStretch(1)
         panel_layout.addWidget(group)
 
@@ -347,6 +351,37 @@ class BantuConfigDialog(QDialog):
         self.check_all_box.blockSignals(True)
         self.check_all_box.setChecked(bool(states) and all(states))
         self.check_all_box.blockSignals(False)
+
+    def build_nc_format_suboption(self):
+        """Indented sub-option under Check 3. When checked, noun-class slot affixes must also match the
+        'n.xyz' gloss format (e.g. '5.n'); when unchecked (the default) a bare class number like '5' is
+        accepted for the noun slot. It only applies when Check 3 itself is enabled."""
+
+        row = QHBoxLayout()
+
+        # Indent so the sub-option visually reads as belonging to Check 3.
+        row.addSpacing(30)
+
+        saved = self.current_data.get("enforce_noun_slot_gloss_format", False)
+
+        self.nc_format_box = QCheckBox()
+        self.nc_format_box.setChecked(saved)
+
+        label = QLabel("Also require 'n.xyz' format for noun-class slot affixes (e.g. '5.n'); otherwise a bare class number like '5' is allowed there.")
+        label.setWordWrap(True)
+
+        row.addWidget(self.nc_format_box, 0, Qt.AlignmentFlag.AlignTop)
+        row.addWidget(label, 1)
+
+        # The sub-option is meaningless when Check 3 is off, so grey it out in step with Check 3.
+        self.check_boxes["affix_gloss"].stateChanged.connect(self.sync_nc_format_enabled)
+        self.sync_nc_format_enabled()
+
+        return row
+
+    def sync_nc_format_enabled(self):
+        """Enable the noun-slot format sub-option only while Check 3 is checked."""
+        self.nc_format_box.setEnabled(self.check_boxes["affix_gloss"].isChecked())
 
     def update_ui_filtering(self):
         """Filters widgets based on the selected Noun POS."""
@@ -390,6 +425,11 @@ class BantuConfigDialog(QDialog):
 
     def set_initial_values(self, pos_options, feature_options):
         def set_val(combo, val):
+
+            # An empty val means nothing was saved, so leave the auto-selected default in place rather than snapping to the blank entry.
+            if not val:
+                return
+
             index = combo.findText(val)
             if index >= 0: combo.setCurrentIndex(index)
 
@@ -423,7 +463,8 @@ class BantuConfigDialog(QDialog):
                 "bantu_singular_feature_name": self.sg_combo.currentText(),
                 "bantu_plural_feature_name": self.pl_combo.currentText(),
                 "bantu_many_feature_name": self.many_combo.currentText(),
-                "checks_to_run": checks_to_run
+                "checks_to_run": checks_to_run,
+                "enforce_noun_slot_gloss_format": self.nc_format_box.isChecked()
             }
         }
     
@@ -583,6 +624,9 @@ def Main(project, report, modifyAllowed):
     checks_to_run = bantuData["bantu_info"].get("checks_to_run", [key for key, _, _ in CHECKS])
     enabled = {key: (key in checks_to_run) for key, _, _ in CHECKS}
 
+    # Sub-option of Check 3: when on, noun-class slot affixes must also match the 'n.xyz' gloss format rather than being allowed a bare class number like '5'. Defaults off to preserve the traditional bare-number convention.
+    enforceNounSlotGlossFormat = bantuData["bantu_info"].get("enforce_noun_slot_gloss_format", False)
+
     if not any(enabled.values()):
         report.Warning(_translate("BantuHealthCheck", "No checks selected - nothing to do."))
         return
@@ -698,11 +742,11 @@ def Main(project, report, modifyAllowed):
 
                             msg = "root problem: feature issue ({}). lex: '{}', gloss: '{}'".format("; ".join(problems), lexeme_form, gloss)
 
-                            details = []
+                            details = ["Features found for '{}':".format(lexeme_form)]
 
                             for grp, val in features_found:
 
-                                details.append("    - {}: {}".format(grp, val))
+                                details[0] += " - {}: {}".format(grp, val)
 
                             issues["roots"].append((msg, sourceURL, details))
 
@@ -861,8 +905,8 @@ def Main(project, report, modifyAllowed):
 
                 if not match:
 
-                    # Ignore Noun NC prefixes for format check
-                    if not in_noun_nc_slot:
+                    # Noun NC prefixes are conventionally glossed with a bare class number (e.g. '5'), so by default they are exempt from the 'n.xyz' format check. The Check 3 sub-option forces the full format on them too, in which case a bare number is flagged.
+                    if not in_noun_nc_slot or enforceNounSlotGlossFormat:
                         msg = "affix problem: does not match expected 'n.xyz' format (found '{}') for lex: '{}'".format(gloss, lexeme_form)
                         issues["affix_gloss"].append((msg, sourceURL, []))
                 else:
