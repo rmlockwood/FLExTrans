@@ -5,6 +5,21 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.4 - 6/24/26 - Ron Lockwood
+#    Fixes #1134. Focus the active source-selection widget when the tool opens so the arrow keys work right away.
+#
+#   Version 3.16.3 - 6/19/26 - Ron Lockwood
+#    Launch the new Python Rule Assistant (RuleAssistantPy) instead of the old Java version.
+#
+#   Version 3.16.2 - 6/9/26 - Laerke
+#    Testbed improvements phase 1. Comment can now be added for a test.
+#
+#   Version 3.16.1 - 5/16/26 - Ron Lockwood
+#    Fixes #1248. Clear the warning text box when the Transfer or Synthesize button is pressed.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.6 - 4/13/26 - Ron Lockwood
 #    Fixes #1287. Use HermitCrab tools that get installed with FLEx.
 #
@@ -232,6 +247,7 @@ import unicodedata
 import copy
 import xml.etree.ElementTree as ET
 import shutil
+from datetime import datetime
 from subprocess import call
 
 from SIL.LCModel import * # type: ignore
@@ -270,7 +286,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -282,7 +298,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.15.6",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -690,7 +706,6 @@ class Main(QMainWindow):
             self.ui.startRuleAssistant,
             self.ui.applyTextOutRulesCheckbox,
             self.ui.DoNotCleanupCheckbox,
-            self.ui.addMultipleCheckBox,
             self.ui.editTestbedButton,
             self.ui.viewTestbedLogButton,
         ]
@@ -968,7 +983,6 @@ class Main(QMainWindow):
         ## Testbed preparation
         # Disable buttons as needed.
         self.ui.addToTestbedButton.setEnabled(False)
-        self.ui.addMultipleCheckBox.setEnabled(False)
 
         # Get the path to the testbed file
         testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
@@ -1158,6 +1172,14 @@ class Main(QMainWindow):
         super().showEvent(event)
         self.positionZoomWidgets()
 
+        # The first time the window is shown, move keyboard focus off the source text combo box and onto the active source-selection widget. This lets the
+        # arrow keys navigate the selection right away instead of changing the source text (issue #1134). We do this in showEvent rather than __init__, and
+        # defer it with a 0 ms timer, because Qt gives focus to the first widget in the tab order as the window is shown, which would override an earlier change.
+        if not getattr(self, 'sourceFocusInitialized', False):
+
+            self.sourceFocusInitialized = True
+            QtCore.QTimer.singleShot(0, self.setFocusToActiveSourceTab)
+
     def positionZoomWidgets(self):
 
         mainWidth = self.width()
@@ -1310,13 +1332,13 @@ class Main(QMainWindow):
         # Get the lexical units from the parser
         return lexParser.getLexicalUnits()
 
-    def buildTestNodeFromInput(self, lexUnitList, synthesisResult):
+    def buildTestNodeFromInput(self, lexUnitList, synthesisResult, comment):
         # Get the name of the text this lu came from
         origin = self.__sourceText
 
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
-        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult)
+        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult, comment=comment)
 
         return myObj
 
@@ -1535,101 +1557,41 @@ class Main(QMainWindow):
         
         cnt = 0
 
-        # Check if add-multiple was selected
-        if self.ui.addMultipleCheckBox.isChecked():
+        luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
 
-            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
-            if luObjList == None:
-                return
+        if luObjList == None:
+            return
 
-            # Remove any <sent> LUs. It doesn't make sense to add a test of just a sentence punctuation mark mapped to it's result.
-            # If that's really needed it can be added without checking the Add multiple words checkbox.
-            self.removeSentLUs(luObjList)
+        # take the lexical unit(s) and result and build a Test XML node
+        comment_text = self.ui.commentTestField.text()
+        myTestXMLObj = self.buildTestNodeFromInput(luObjList, synResult, comment=comment_text)
 
-            # Remove all punctuation from the result.
-            synResult = regex.sub(r'\p{P}', '', synResult)
-            resultList = synResult.split(' ') 
+        # We'll get None if there was an error
+        if myTestXMLObj == None:
+            return
 
-            # Check for an equal amount of lexical units as synthesis results
-            if len(luObjList) != len(resultList):
-                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Testbed Error'), _translate('LiveRuleTesterTool', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.'))
-                return
-
-            retVal = None
-
-            # Loop through all the lexical units and results
-            for i in range (0, len(luObjList)):
-                luObj = luObjList[i]
-                result = resultList[i]
-
-                # take the lexical unit and result and build a Test XML node
-                myTestXMLObj = self.buildTestNodeFromInput([luObj], result) # first parameter is a list
-
-                # We'll get None if there was an error
-                if myTestXMLObj == None:
-                    return
-
-                # If we created a new testbed, just add the new test
-                if fileObj.isNew():
-                    testbedObj.addToTestbed(myTestXMLObj)
-                    cnt += 1
-                else:
-                    # Check if the lexical unit already exists for a test in the testbed
-                    # None gets returned if it wasn't found
-                    existingTestXMLObj = self.getExistingTest(testXMLObjList, myTestXMLObj)
-
-                    if existingTestXMLObj:
-                        # Get confirmation from the user if necessary.
-                        if retVal != QDialogButtonBox.StandardButton.YesToAll:
-                            retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString())
-
-                        # See if we should overwrite
-                        if retVal == QDialogButtonBox.StandardButton.Yes or retVal == QDialogButtonBox.StandardButton.YesToAll:
-                            testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
-                            cnt += 1
-
-                        # Break out of the loop if the user said no to all
-                        elif retVal == QDialogButtonBox.StandardButton.NoToAll:
-                            break
-                    else:
-                        testbedObj.addToTestbed(myTestXMLObj)
-                        cnt += 1
-
+        # If we created a new testbed, just add the new test
+        if fileObj.isNew():
+            testbedObj.addToTestbed(myTestXMLObj)
+            cnt += 1
         else:
-            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
+            # Check if the lexical unit already exists for a test in the testbed
+            # None gets returned if it wasn't found
+            existingTestXMLObj = self.getExistingTest(testXMLObjList, myTestXMLObj)
 
-            if luObjList == None:
-                return
+            if existingTestXMLObj:
 
-            # take the lexical unit(s) and result and build a Test XML node
-            myTestXMLObj = self.buildTestNodeFromInput(luObjList, synResult)
+                # Get confirmation from the user. Only display Yes and No buttons.
+                retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString(), showAllButtons=False)
 
-            # We'll get None if there was an error
-            if myTestXMLObj == None:
-                return
+                # See if we should overwrite
+                if retVal == QMessageBox.StandardButton.Yes:
 
-            # If we created a new testbed, just add the new test
-            if fileObj.isNew():
+                    testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
+                    cnt += 1
+            else:
                 testbedObj.addToTestbed(myTestXMLObj)
                 cnt += 1
-            else:
-                # Check if the lexical unit already exists for a test in the testbed
-                # None gets returned if it wasn't found
-                existingTestXMLObj = self.getExistingTest(testXMLObjList, myTestXMLObj)
-
-                if existingTestXMLObj:
-
-                    # Get confirmation from the user. Only display Yes and No buttons.
-                    retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString(), showAllButtons=False)
-
-                    # See if we should overwrite
-                    if retVal == QMessageBox.StandardButton.Yes:
-
-                        testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
-                        cnt += 1
-                else:
-                    testbedObj.addToTestbed(myTestXMLObj)
-                    cnt += 1
 
         # Tell the user how many tests were added.
         if cnt == 1:
@@ -1668,6 +1630,7 @@ class Main(QMainWindow):
 
     def SynthesizeButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
+        self.ui.warningTextEdit.setPlainText('')
         errorList = []
 
         # Check if the target text is empty give a warning
@@ -1906,14 +1869,8 @@ class Main(QMainWindow):
 
             self.ui.addToTestbedButton.setEnabled(True)
 
-            # See if we have multiple words, If so, enable the Add Multiple... checkbox
-            if re.search(r'\S+\s+\S+', synthText):
-                self.ui.addMultipleCheckBox.setEnabled(True)
-            else:
-                self.ui.addMultipleCheckBox.setEnabled(False)
         else:
             self.ui.addToTestbedButton.setEnabled(False)
-            self.ui.addMultipleCheckBox.setEnabled(False)
 
         self.unsetCursor()
         return
@@ -2219,6 +2176,22 @@ class Main(QMainWindow):
         self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
         self.ui.warningTextEdit.setPlainText('')
+
+    # Move keyboard focus to the active source-selection widget. Called when the tool opens (including when it restarts after the user picks a different source text) so the arrow keys work right away.
+    # Without this the source text combo box keeps the focus, so an arrow key press changes the source text again instead of navigating the selection. See issue #1134.
+    def setFocusToActiveSourceTab(self):
+
+        if self.ui.tabSource.currentIndex() == 0: # check boxes with words
+
+            self.ui.SentCombo.setFocus()
+
+        elif self.ui.tabSource.currentIndex() == 1: # sentence list
+
+            self.ui.listSentences.setFocus()
+
+        else: # manual entry
+
+            self.ui.ManualEdit.setFocus()
 
     def sourceTabClicked(self):
 
@@ -2682,6 +2655,7 @@ class Main(QMainWindow):
 
     def TransferClicked(self):
 
+        self.ui.warningTextEdit.setPlainText('')
         self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
 
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
@@ -2838,6 +2812,16 @@ class Main(QMainWindow):
                     self.ui.warningTextEdit.setPlainText(triplet[0])
                 else:
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
+
+        # Copy the transfer rules file to the rule history folder
+        if self.__transfer_rules_file and os.path.isfile(self.__transfer_rules_file):
+
+            historyDir = os.path.join(FTPaths.OUTPUT_DIR, 'rule-history', 'created')
+            os.makedirs(historyDir, exist_ok=True)
+            stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            baseName = os.path.splitext(os.path.basename(self.__transfer_rules_file))
+            destName = f"{baseName[0]}_created_{stamp}{baseName[1]}"
+            shutil.copy2(self.__transfer_rules_file, os.path.join(historyDir, destName))
 
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
@@ -3299,7 +3283,7 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -3325,8 +3309,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         if retVal == START_RULE_ASSISTANT:
 
-            from RuleAssistant import MainFunction as RA
-            from RuleAssistant import docs as RA_docs
+            from RuleAssistantPy import MainFunction as RA
+            from RuleAssistantPy import docs as RA_docs
             report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RA_docs[FTM_Name], version=RA_docs[FTM_Version]))
             ruleCount = RA(DB, report, modify, fromLRT=True)
 

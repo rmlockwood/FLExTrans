@@ -11,7 +11,7 @@
 
 <!ELEMENT tests (test+)>
 
-<!ELEMENT test (sourceInput, targetOutput)>
+<!ELEMENT test (sourceInput, targetOutput, comment?)>
 <!ATTLIST test id CDATA #IMPLIED 
                is_valid (yes|no) #IMPLIED
                invalidReason CDATA #IMPLIED> 
@@ -38,3 +38,5 @@
 <!ELEMENT expectedResult (#PCDATA)>
 
 <!ELEMENT actualResult EMPTY>
+
+<!ELEMENT comment (#PCDATA)>

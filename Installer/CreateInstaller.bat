@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.15
+SET FLEXTRANS_VERSION=3.16
 
 rem User interface language codes
 set LANG_CODES=de es fr
@@ -88,8 +88,9 @@ copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 rem copy all module code files
 copy %dev%\Modules\*.py %modulesflextrans%
 
-rem copy all shared code files
+rem copy all shared code and css files
 copy %dev%\Lib\*.py %flextranslib%
+copy %dev%\Lib\*.css %flextranslib%
 
 rem copy all window ui code files
 copy %dev%\Lib\Windows\*.py %flextranslib%
@@ -157,15 +158,6 @@ cd %image%
 copy /Y %ZIP_FILE% ..
 rem copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
-
-rem Zip the HermitCrab tools
-rem SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
-rem cd %installer_resources%\HermitCrabSynthesis
-rem 7z a %HC_ZIP_FILE% *
-rem copy /Y %HC_ZIP_FILE% ..\..
-rem copy /Y %HC_ZIP_FILE% ..\"previous versions"
-rem del %HC_ZIP_FILE%
-rem cd ..\..
 
 cd ..
 

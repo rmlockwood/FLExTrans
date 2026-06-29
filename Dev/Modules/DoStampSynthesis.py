@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.1 - 6/22/26 - Ron Lockwood
+#    Fixes #1376. Support the Lowercase/Uppercase pairs for special letters setting by writing \luwfcs lines to the output text control file.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.3 - 3/12/26 - Ron Lockwood
 #    Fixes #1273. Handle non-ASCII characters in paths when creating the batch file to run the makefile. 
 #    Use the Windows short path to avoid encoding issues with non-ASCII characters in the batch file.
@@ -169,7 +175,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -189,7 +195,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -724,7 +730,7 @@ def create_dictionary_files(partPath):
     
     return (f_pf, f_if, f_sf, f_rt, f_dec)
     
-def create_synthesis_files(partPath):
+def create_synthesis_files(partPath, configMap, report):
 
     (dicFileNameList, decFileName) = define_some_names(partPath)
 
@@ -767,6 +773,23 @@ def create_synthesis_files(partPath):
             f_sycd.write(r'\ch "\l" "L"'+'\n') # This is the infix location field
     f_sycd.close()
 
+    # Get the capitalization pairs setting and write the output text control file if we have any pairs defined
+    capitalizationPairsStr = ReadConfig.getConfigVal(configMap, ReadConfig.LOWERCASE_UPPERCASE_PAIRS, report)
+
+    if capitalizationPairsStr:
+
+        # The setting holds single letters separated by spaces (e.g. "x X u U w W"), where each lowercase letter is immediately followed by its uppercase equivalent.
+        # Split on whitespace and zip consecutive letters into (lowercase, uppercase) tuples, e.g. [('x', 'X'), ('u', 'U'), ('w', 'W')].
+        letters = capitalizationPairsStr.split()
+        capitalizationPairs = list(zip(letters[::2], letters[1::2]))
+
+        # Append the lowercase/uppercase first-character substitution lines to the output text control file.
+        with open(blankFileNameList[1], 'w', encoding="utf-8") as f_outctl:
+
+            for lower, upper in capitalizationPairs:
+
+                f_outctl.write(f'\\luwfcs {lower} {upper}\n')
+        
     # Write the Synthesis changes file.
     write_synt_file(syntFileName)
 
@@ -811,7 +834,7 @@ def write_synt_file(syntFileName):
     root = addOnTree.getroot()
     tests = root.find('SynthesisTests')
 
-    if tests is not None:
+    if tests and tests.text:
 
         with open(syntFileName, 'w', encoding="utf-8") as f:
 
@@ -1392,7 +1415,7 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     partPath = os.path.join(Utils.get_short_path(lexFolder), targetProject)
     
     # Create other files we need for STAMP
-    cmdFileName = create_synthesis_files(partPath)
+    cmdFileName = create_synthesis_files(partPath, configMap, report)
 
     # run STAMP to synthesize the results. E.g. stamp64" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
     try:
@@ -1458,7 +1481,7 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)

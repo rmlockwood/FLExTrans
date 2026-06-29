@@ -5,6 +5,12 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.16.1 - 6/9/26 - Laerke
+#    Testbed improvements phase 1. Comment can now be added for a test.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -44,8 +50,11 @@
 #   log and start the log viewer. Put in an end time in the log.
 #
 
+import os
+import re
+
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import *
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
@@ -54,6 +63,7 @@ from Testbed import *
 import Mixpanel
 import ReadConfig
 import Utils
+import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -63,7 +73,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -74,7 +84,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",
@@ -92,7 +102,7 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + ['EndTestbed'], 
                            translators, loadBase=True)
@@ -128,6 +138,32 @@ def MainFunction(DB, report, modifyAllowed):
     
     # If we were successful write the end date-time and save the file
     if count > 0:
+
+        # Parse the Apertium log: "Applied rule N line M" where M is the test line number
+        logPath = os.path.join(FTPaths.BUILD_DIR, 'apertium_log.txt')
+        lineRuleMap = {}
+        try:
+            with open(logPath, encoding='utf-8') as logFile:
+                for logLine in logFile:
+                    m = re.search(r'Applied rule (\d+) line (\d+)', logLine)
+                    if m:
+                        ruleNum = int(m.group(1))
+                        lineNum = int(m.group(2))
+                        lineRuleMap.setdefault(lineNum, []).append(ruleNum)
+        except IOError:
+            pass
+
+        report.Info(_translate("EndTestbed", "Rule map from log: {lineRuleMap}").format(lineRuleMap=str(lineRuleMap)))
+
+        # Set rule numbers on each test — line number in log = test index (1-based)
+        testLine = 1
+        resultObj = resultsXMLObj.getTestbedResultXMLObjectList()[0]
+        for testbed in resultObj.getFLExTransTestbedXMLObjectList():
+            for test in testbed.getTestXMLObjectList():
+                if testLine in lineRuleMap:
+                    test.setRuleNumbers(lineRuleMap[testLine])
+                testLine += 1
+
         resultsXMLObj.endTest()
         resultsFileObj.write()
     

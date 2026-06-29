@@ -5,6 +5,15 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    Made the "Source text:" tooltip translatable.
+#
+#   Version 3.16.1 - 6/9/26 - Laerke
+#    Testbed improvements phase 1. Comment can now be added for a test.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -81,7 +90,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -92,7 +101,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -151,7 +160,7 @@ class BaseTreeItem(object):
         self.rtl = rtl
         self.children = []
         self.index = None
-        self.widget = [None, None, None]
+        self.widget = [None, None, None, None]
     
     def isRTL(self):
         return self.rtl
@@ -215,7 +224,6 @@ class TestStatsItem(BaseTreeItem):
     def Data(self, inColumn):
         # Date and time of the test
         if inColumn == 0:
-            
             try:
                 # Reformat the time string according the locale
                 startDT = QDateTime.fromString(self.statsObj.dateTimeStart, XML_DATETIME_FORMAT_QT)
@@ -331,7 +339,7 @@ class TestResultItem(BaseTreeItem):
             myWidget.setIcon(myIcon)
             
             # Set the tool tip text
-            tip = 'Source text: ' + self.origin + '.'
+            tip = _translate("TestbedLogViewer", 'Source text: {origin}.').format(origin=self.origin)
             
             # if a lexical unit is invalid add the reason it's invalid to the tooltip
             if self.isInvalid():
@@ -343,6 +351,31 @@ class TestResultItem(BaseTreeItem):
             myWidget = QtWidgets.QLabel(self.Data(col))
             
         return myWidget
+
+class CommentTreeItem(BaseTreeItem):
+
+    def __init__(self, inParent, rtl, commentText, ruleNumber):
+        super(CommentTreeItem, self).__init__(inParent, rtl)
+        self.commentText = commentText
+        self.ruleNumber = ruleNumber
+
+    def ColumnCount(self):
+        return 2
+
+    def Data(self, inColumn):
+        if inColumn == 0:
+            return "Comment: " + self.commentText
+        if inColumn == 1:
+            return ("Rule: " + self.ruleNumber) if self.ruleNumber else ""
+        return ""
+
+    def createTheWidget(self, col):
+        label = QtWidgets.QLabel(self.Data(col))
+        if col == 0:
+            label.setStyleSheet("color: gray; font-style: italic;")
+        elif col == 1:
+            label.setStyleSheet("color: gray; font-weight: bold;")
+        return label
 
 # A widget for an icon and text
 class ITWidget(QtWidgets.QWidget):
@@ -377,24 +410,25 @@ class ITWidget(QtWidgets.QWidget):
         self.textLabel.setToolTip(myTip)
         
 class TestbedLogModel(QtCore.QAbstractItemModel):
-    
-    def __init__(self, resultsXMLObj, parent = None):
+
+    def __init__(self, resultsXMLObj, parent=None):
 
         self.__view = None
         self.rtl = resultsXMLObj.isRTL()
-        self.greenCheck = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, GREEN_CHECK)) 
+        self.greenCheck = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, GREEN_CHECK))
         self.redX = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, RED_X))
         self.yellowTriangle = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, YELLOW_TRIANGLE))
         self.__cache = {}
-        
+
+
         # initialize base class
         super(TestbedLogModel, self).__init__(parent)
-        
+
         self.resultsXMLObj = resultsXMLObj
-        
+
         # set the root item to add other items to
         self.rootItem = RootTreeItem()
-        
+
         # setup the data
         self.SetupModelData()
     
@@ -466,6 +500,13 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                         resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
                                   test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
                         
+                                            # Add comment child
+                        commentText = test.getComment()
+                        ruleNumStr = test.getRuleNumbers()
+
+                        if commentText or ruleNumStr:
+                            commentItem = CommentTreeItem(resultItem, self.getRTL(), commentText, ruleNumStr)
+                            resultItem.AddChild(commentItem)
                         #self.__cache[myHash] = resultItem
                                      
                     # Add the result item to the current stats item
@@ -560,9 +601,9 @@ class LogViewerMain(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_TestbedLogWindow()
         self.ui.setupUi(self)
-        
+
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        
+
         self.testbedPath = testbedPath
         self.__model = TestbedLogModel(resultsXMLObj)
         self.ui.logTreeView.setModel(self.__model)
@@ -624,7 +665,7 @@ def RunTestbedLogViewer(report):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)

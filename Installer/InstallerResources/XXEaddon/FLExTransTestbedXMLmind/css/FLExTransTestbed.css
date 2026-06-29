@@ -144,3 +144,14 @@ targetOutput
     display:block;
     margin-left:.05in;
 }
+comment:before
+{
+    content: " Comment: ";
+    color:Black;
+}
+comment
+{
+    display:block;
+    margin-left:.1in;
+    background-color:#FFFACD; /* light yellow */
+}

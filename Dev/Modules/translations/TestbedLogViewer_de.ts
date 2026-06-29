@@ -64,6 +64,11 @@
       <translation>Test abgeschlossen in {minutes} Minuten und {seconds} Sekunden</translation>
     </message>
     <message>
+      <location filename="../TestbedLogViewer.py" line="342"/>
+      <source>Source text: {origin}.</source>
+      <translation>Quelltext: {origin}.</translation>
+    </message>
+    <message>
       <location filename="../TestbedLogViewer.py" line="647"/>
       <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
       <translation>Testbett-Datei: {testbedPath} existiert nicht. Bitte fügen Sie Tests zum Testbett hinzu.</translation>

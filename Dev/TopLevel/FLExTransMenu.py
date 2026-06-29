@@ -48,18 +48,12 @@ import Utils
 import ctypes
 user32 = ctypes.windll.user32
 
+from flextoolslib import lockUI
+
 def RunSettings(sender, event):
-    form = sender.OwnerItem.Owner.Parent
-
-    form.Enabled = False
+    lockUI(True)
     SettingsGUI.MainFunction(None, None)
-    form.Enabled = True
-
-    # Bring the form back to the foreground after the settings dialog is closed
-    # Same code as in Flexlibs - UIMain.py
-    user32.keybd_event(0,0,0,0)
-    hwnd = form.Handle.ToInt32()
-    user32.SetForegroundWindow(hwnd)
+    lockUI(False)
     
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -69,7 +63,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -83,7 +77,7 @@ def RunEditTransferRules(sender, event):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
@@ -133,7 +127,7 @@ def RunAbout(sender, event):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)

@@ -4,6 +4,25 @@
 <context>
     <name>SettingsGUI</name>
     <message>
+        <location filename="../SettingsGUI.py" line="1789"/>
+        <source>Lowercase/Uppercase pairs for special letters</source>
+        <translation>Paires minuscule/majuscule pour les lettres spéciales</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1790"/>
+        <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
+Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
+        <translation>Pour certaines lettres spéciales, vous devrez peut-être définir l'équivalent majuscule des lettres minuscules.
+Indiquez la lettre minuscule suivie de sa lettre majuscule, avec une seule espace entre chaque lettre. Par exemple : ʋ Ʋ</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1499"/>
+        <source>The Lowercase/Uppercase pairs for special letters setting is not valid.
+Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</source>
+        <translation>Le paramètre « Paires minuscule/majuscule pour les lettres spéciales » n'est pas valide.
+Saisissez des lettres individuelles séparées par des espaces, avec un nombre pair de lettres, de sorte que chaque lettre minuscule soit suivie de sa lettre majuscule. Par exemple : ʋ Ʋ</translation>
+    </message>
+    <message>
         <location filename="../SettingsGUI.py" line="1460"/>
         <source>(none)</source>
         <translation>(aucun)</translation>

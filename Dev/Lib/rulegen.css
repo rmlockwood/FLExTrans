@@ -1,0 +1,103 @@
+/**
+ * Copyright (c) 2023-2024 SIL International
+ * This software is licensed under the LGPL, version 2.1 or later
+ * (http://www.gnu.org/licenses/lgpl-2.1.html)
+ */
+/* rulegen.css for FLExTrans rule assistant */
+
+/* Reset the default body margin so the document is exactly as tall as the tree; the browser's default 8px top/bottom margin otherwise pushes the content past the view height and shows a vertical scroll bar with empty space below the lowest box. */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* treeflex draws a downward connector line (:after) below every node and only hides it for an only-child. A leaf box that has siblings therefore gets a ~1em line dangling below it into empty space, which adds height under the lowest box and triggers a phantom vertical scroll bar. Hide that connector on leaf nodes (an li with no child ul). */
+.tf-tree li:not(:has(> ul)) > .tf-nc:after {
+    display: none;
+}
+
+/* treeflex's overflow:auto, on a shrink-to-fit tree whose connector lines are absolutely positioned a hair beyond its content box, shows premature horizontal and vertical scroll bars even when the tree visibly fits. Let it lay out normally; the page (web view) scrolls only when the tree is genuinely larger than the view. */
+.tf-tree {
+    overflow: visible;
+}
+
+/* Make the whole feature box clickable, not just the text. Each feature is a row whose <td> carries the click handler, so move the box's padding onto the cells and drop cell spacing; the cells then fill the box interior right up to the border (the table's tf-nc padding would otherwise be a dead, unclickable band). */
+.tf-tree .tf-nc.featurebox {
+    padding: 0;
+    border-spacing: 0;
+}
+.tf-tree .tf-nc.featurebox td {
+    padding: .25em .5em;
+}
+
+.arrow:before {
+    content:" → ";
+}
+.arrow {
+    font-size:x-large;
+    font-size:250%;
+}
+
+.affix {
+    color:maroon;
+}
+
+.category {
+    color:red;
+}
+
+.categorytgt {
+    color:red;
+    font-style: italic;
+/*    opacity: 0.75;  not using because it makes underscores not show */
+    filter: grayscale(50%);
+}
+
+.feature {
+    color:blue;
+}
+
+.head:before {
+    content:"(head)";    
+}
+.head {
+    font-style:italic;
+}
+
+.headfeature {
+	font-weight:bold;
+}
+
+.headword {
+	font-weight:bold;
+}
+
+.index {
+    font-size:x-small;
+    font-style:italic;
+    vertical-align:sub;
+}
+
+.language {
+    font-size:smaller;
+    font-style:italic;
+    vertical-align:sub;
+}
+
+.ranking:before {
+	content:" (rank:"
+}
+.ranking {
+	margin-left:1em;
+	font-weight:normal;
+	font-size:smaller;
+}
+.ranking:after {
+	content:")"
+}
+
+.unmarked {
+	margin-left:1em;
+	font-weight:normal;
+	font-size:smaller;
+}

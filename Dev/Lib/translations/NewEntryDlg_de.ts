@@ -6,52 +6,52 @@
     <message>
       <location filename="../NewEntryDlg.py" line="92"/>
       <source>Target FLEx project name</source>
-      <translation>Target FLEx project name</translation>
+      <translation>Name des Ziel-FLEx-Projekts</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="93"/>
       <source>Lexeme Form</source>
-      <translation>Lexeme Form</translation>
+      <translation>Lexemform</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="292"/>
       <source>Error Check</source>
-      <translation>Error Check</translation>
+      <translation>Fehlerprüfung</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="217"/>
       <source>You must enter a Gloss.</source>
-      <translation>You must enter a Gloss.</translation>
+      <translation>Sie müssen eine Glosse eingeben.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="238"/>
       <source>Cluster Project Selection Error</source>
-      <translation>Cluster Project Selection Error</translation>
+      <translation>Fehler bei der Cluster-Projektauswahl</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="238"/>
       <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-      <translation>You must at least select the default target project, {proj}, among your cluster projects.</translation>
+      <translation>Sie müssen mindestens das Standard-Zielprojekt {proj} unter Ihren Cluster-Projekten auswählen.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="251"/>
       <source>You must enter all the Lexeme Forms.</source>
-      <translation>You must enter all the Lexeme Forms.</translation>
+      <translation>Sie müssen alle Lexemformen eingeben.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="271"/>
       <source>Not Found Error</source>
-      <translation>Not Found Error</translation>
+      <translation>Nicht gefundener Fehler</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="271"/>
       <source>Failed to open the project: {proj}</source>
-      <translation>Failed to open the project: {proj}</translation>
+      <translation>Das Projekt konnte nicht geöffnet werden: {proj}</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="292"/>
       <source>You must enter a Lexeme Form.</source>
-      <translation>You must enter a Lexeme Form.</translation>
+      <translation>Sie müssen eine Lexemform eingeben.</translation>
     </message>
   </context>
 </TS>

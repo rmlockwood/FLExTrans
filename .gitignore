@@ -50,3 +50,4 @@ flextools.log
 /.vscode
 /Installer/InstallerImageFolder
 /Installer/InstallerResources/Doc/XLingPaperPDFTemp
+.claude/
