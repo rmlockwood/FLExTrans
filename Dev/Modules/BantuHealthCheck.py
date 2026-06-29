@@ -50,18 +50,13 @@ docs = {
     FTM_Description :
 _translate("BantuHealthCheck", """
 Bantu Health Check runs the following checks:
-1. Noun roots have exactly one singular and one plural gender value defined,
-   with an optional 'many' value. (Skips nouns with 0 features.)
+1. Noun roots have exactly one singular and one plural gender value defined, with an optional 'many' value. (Skips nouns with 0 features.)
 2. Each affix in the noun-class slot has exactly one gender feature.
-3. Affix glosses match the expected 'n.xyz' format and align with their
-   features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class
-   number (e.g. '5') unless the sub-option to enforce the full format is on.
+3. Affix glosses match the expected 'n.xyz' format and align with their features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class number (e.g. '5') unless the sub-option to enforce the full format is on.
 4. No two different affixes share the same gloss.
 5. Affix glosses contain no spaces.
-6. Every gender value in use has an affix in each part of speech's noun-class
-   slot.
-7. No value abbreviation is defined in more than one feature group (e.g. 19
-   cannot be in both the singular and plural groups).
+6. Every gender value in use has an affix in each part of speech's noun-class slot.
+7. No value abbreviation is defined in more than one feature group (e.g. 19 cannot be in both the singular and plural groups).
 8. No affix slot name is used by more than one part of speech.
 
 A configuration dialog lets you choose which of these checks to run; your
@@ -83,9 +78,8 @@ from PyQt6.QtCore import Qt
 # Constants
 BANTU_SETTINGS_FILE = "BantuSettings.toml"
 
-# The health checks, in run/report order. Each tuple is
-# (key, short title, one-line description). The key matches the issues[] bucket
-# the check fills and is what gets saved to / loaded from the settings file.
+# The health checks, in run/report order. Each tuple is (key, short title, one-line description).
+# The key matches the issues[] bucket the check fills and is what gets saved to / loaded from the settings file.
 CHECKS = [
     ("roots",       "Check 1: Noun roots",              "Each noun root has exactly one singular and one plural gender value (optional 'many')."),
     ("prefixes",    "Check 2: Noun-class slot affixes", "Each affix in the noun-class slot has exactly one gender feature."),
@@ -96,19 +90,6 @@ CHECKS = [
     ("dup_abbr",    "Check 7: Duplicate value abbrevs", "No value abbreviation is defined in more than one feature group. E.g. 19 can't be in the singular and plural groups."),
     ("dup_slots",   "Check 8: Duplicate slot names",    "No affix slot name is used by more than one part of speech."),
 ]
-
-# TARGET_POS = "Noun"
-# TARGET_SLOT = "NC"
-
-# ROOT_MORPH_TYPES = [
-#     "bound root",
-#     "bound stem",
-#     "discontiguous phrase",
-#     "particle",
-#     "phrase",
-#     "root",
-#     "stem"
-# ]
 
 #----------------------------------------------------------------
 # Helper Functions
@@ -147,8 +128,7 @@ def get_feat_abbr_list(project, SpecsOC, feat_abbr_list):
         if spec.ClassName == "FsComplexValue":
             spec_complex = IFsComplexValue(spec)
             if spec_complex.ValueOA:
-                # ValueOA returns a generic IFsAbstractStructure. 
-                # We MUST cast to IFsFeatStruc to access FeatureSpecsOC.
+                # ValueOA returns a generic IFsAbstractStructure. We MUST cast to IFsFeatStruc to access FeatureSpecsOC.
                 value_fs = IFsFeatStruc(spec_complex.ValueOA)
                 get_feat_abbr_list(project, value_fs.FeatureSpecsOC, feat_abbr_list)
         elif spec.ClassName == "FsClosedValue":
@@ -198,8 +178,7 @@ class BantuConfigDialog(QDialog):
         self.setWindowTitle("Bantu Feature Configuration")
         self.resize(800, 560)
 
-        # Outer layout: a row of two columns (config | checks) on top, the
-        # OK/Cancel buttons spanning the bottom.
+        # Outer layout: a row of two columns (config | checks) on top, the OK/Cancel buttons spanning the bottom.
         outer_layout = QVBoxLayout()
         self.setLayout(outer_layout)
 
@@ -295,8 +274,7 @@ class BantuConfigDialog(QDialog):
         group_layout = QVBoxLayout()
         group.setLayout(group_layout)
 
-        # Which checks were enabled last time. Default to all checks enabled when
-        # nothing has been saved yet.
+        # Which checks were enabled last time. Default to all checks enabled when nothing has been saved yet.
         saved_enabled = self.current_data.get("checks_to_run", None)
 
         self.check_all_box = QCheckBox("Check / Uncheck all")
@@ -330,7 +308,8 @@ class BantuConfigDialog(QDialog):
 
             self.check_boxes[key] = cb
 
-            # Check 3 carries an indented sub-option: optionally enforce the 'n.xyz' gloss format on noun-class slot affixes too (off by default, since bare class numbers like '5' are normally allowed there).
+            # Check 3 carries an indented sub-option: optionally enforce the 'n.xyz' gloss format on noun-class
+            # slot affixes too (off by default, since bare class numbers like '5' are normally allowed there).
             if key == "affix_gloss":
                 group_layout.addLayout(self.build_nc_format_suboption())
 
@@ -353,9 +332,8 @@ class BantuConfigDialog(QDialog):
         self.check_all_box.blockSignals(False)
 
     def build_nc_format_suboption(self):
-        """Indented sub-option under Check 3. When checked, noun-class slot affixes must also match the
-        'n.xyz' gloss format (e.g. '5.n'); when unchecked (the default) a bare class number like '5' is
-        accepted for the noun slot. It only applies when Check 3 itself is enabled."""
+        """Indented sub-option under Check 3. When checked, noun-class slot affixes must also match the 'n.xyz' gloss format (e.g. '5.n');
+        when unchecked (the default) a bare class number like '5' is accepted for the noun slot, and it only applies when Check 3 is enabled."""
 
         row = QHBoxLayout()
 
@@ -467,16 +445,13 @@ class BantuConfigDialog(QDialog):
                 "enforce_noun_slot_gloss_format": self.nc_format_box.isChecked()
             }
         }
-    
 
 def save_dialog_data(dialog, file_path):
-    # 1. Extract the dictionary from the dialog
-    # This should return: {"bantu_info": {...}}
+    # 1. Extract the dictionary from the dialog This should return: {"bantu_info": {...}}
     updated_data = dialog.get_results()
 
     try:
-        # 2. Open file in 'wb' (write binary) mode
-        # TOML requires UTF-8, and tomli_w handles this via binary streams
+        # 2. Open file in 'wb' (write binary) mode TOML requires UTF-8, and tomli_w handles this via binary streams
         with open(file_path, "wb") as f:
             # 3. Convert dict to TOML string and encode to bytes
             toml_string = tomli_w.dumps(updated_data,)
@@ -543,14 +518,6 @@ def Main(project, report, modifyAllowed):
             for slot_name in slots_list:
                 all_possible_slots.append({"POS": pos_name, "slot": slot_name})
 
-    # all_possible_slots = [
-    #     {"POS": "Noun", "slot": "NC"},
-    #     {"POS": "Demonstrative", "slot": "demNC"},
-    #     {"POS": "Verb", "slot": "objNC"},
-    #     {"POS": "Verb", "slot": "sbjNC"}
-    # ]
-    # features = ["BantuSg", "BantuPl", "Number", "Gender"]
-
     # Load existing TOML data
     settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), BANTU_SETTINGS_FILE)
 
@@ -593,16 +560,12 @@ def Main(project, report, modifyAllowed):
     # Check 4: Store glosses to find duplicates
     affix_glosses = defaultdict(list) # gloss -> list of (lexeme, sourceURL)
 
-    # Check 6: Track found features for all NC slots
-    # pos_name -> set of feature values
+    # Check 6: Track found features for all NC slots pos_name -> set of feature values
     found_nc_prefix_features = defaultdict(set)
     # Track POS that actually have an NC slot
     pos_with_nc_slot = set()
 
     # 1. Find the NC slot for affix checking (Noun specific)
-    #posOps = POSOperations(project)
-    #noun_pos_obj = posOps.Find(TARGET_POS)
-
     # This should return: {"bantu_info": {...}}
     bantuData = dialog.get_results()
     nameForPOSNoun = bantuData["bantu_info"]["name_for_POS_noun"]
@@ -618,13 +581,12 @@ def Main(project, report, modifyAllowed):
     if manyFeatName:
         relevant_groups.append(manyFeatName)
 
-    # Which checks the user enabled. Default to all checks if the setting is
-    # absent (e.g. an older settings file). enabled[key] gates both detection
-    # and reporting for each check.
+    # Which checks the user enabled. Default to all checks if the setting is absent (e.g. an older settings file). enabled[key] gates both detection and reporting for each check.
     checks_to_run = bantuData["bantu_info"].get("checks_to_run", [key for key, _, _ in CHECKS])
     enabled = {key: (key in checks_to_run) for key, _, _ in CHECKS}
 
-    # Sub-option of Check 3: when on, noun-class slot affixes must also match the 'n.xyz' gloss format rather than being allowed a bare class number like '5'. Defaults off to preserve the traditional bare-number convention.
+    # Sub-option of Check 3: when on, noun-class slot affixes must also match the 'n.xyz' gloss format rather than
+    # being allowed a bare class number like '5'. Defaults off to preserve the traditional bare-number convention.
     enforceNounSlotGlossFormat = bantuData["bantu_info"].get("enforce_noun_slot_gloss_format", False)
 
     if not any(enabled.values()):
@@ -642,8 +604,7 @@ def Main(project, report, modifyAllowed):
     # 2. Create a mapping for reverse lookup (Slot -> POS)
     slot_to_pos_map = {}
 
-    # POS -> list of its configured NC slot names (for reporting which slot an
-    # affix is missing from in Check 6).
+    # POS -> list of its configured NC slot names (for reporting which slot an affix is missing from in Check 6).
     pos_to_slots_map = defaultdict(list)
 
     for row in slots_list:
@@ -710,8 +671,7 @@ def Main(project, report, modifyAllowed):
                     if fs and fs.FeatureSpecsOC:
                         get_feat_abbr_list(project, fs.FeatureSpecsOC, features_found)
                     
-                    # Reduce this list to just the features in the chosen Bantu Sg, Pl
-                    # and (optional) Many feature groups.
+                    # Reduce this list to just the features in the chosen Bantu Sg, Pl and (optional) Many feature groups.
                     features_found = [(grp, val) for grp, val in features_found if grp in relevant_groups]
 
                     # Collect for summary
@@ -719,8 +679,7 @@ def Main(project, report, modifyAllowed):
 
                         global_noun_features[grp].add(val)
 
-                    # A valid noun root has exactly one singular and one plural value,
-                    # plus an optional (at most one) 'many' value. Check all nouns.
+                    # A valid noun root has exactly one singular and one plural value, plus an optional (at most one) 'many' value. Check all nouns.
                     if True: #features_found:
 
                         sg_count = sum(1 for grp, val in features_found if grp == sgFeatName)
@@ -756,8 +715,8 @@ def Main(project, report, modifyAllowed):
         pos_owning_nc_slot = ""
         current_features_details = []
         entry_feat_abbrs = set()
-        # Values belonging only to the gender feature groups designated in the UI
-        # (singular / plural / many). Used by Check 2, which ignores other features.
+
+        # Values belonging only to the gender feature groups designated in the UI (singular / plural / many). Used by Check 2, which ignores other features.
         entry_gender_feat_abbrs = set()
         is_noun_attaching = False
         target_pos_abbr = ""
@@ -804,8 +763,7 @@ def Main(project, report, modifyAllowed):
                         entry_feat_abbrs.add(val.lower())
                         current_features_details.append("    - {}: {}".format(cat, val))
 
-                        # Include affix-borne gender values (e.g. an NC-prefix class)
-                        # in the summary even when no noun root carries that value.
+                        # Include affix-borne gender values (e.g. an NC-prefix class) in the summary even when no noun root carries that value.
                         if cat in relevant_groups:
                             global_noun_features[cat].add(val)
                             entry_gender_feat_abbrs.add(val.lower())
@@ -857,8 +815,7 @@ def Main(project, report, modifyAllowed):
         if enabled["prefixes"] and in_noun_nc_slot:
 
             total_prefixes_checked += 1
-            # Only count the designated gender features (singular / plural / many);
-            # other inflection features are ignored for this check.
+            # Only count the designated gender features (singular / plural / many); other inflection features are ignored for this check.
             feature_count = len(entry_gender_feat_abbrs)
 
             if feature_count != 1:
@@ -905,7 +862,8 @@ def Main(project, report, modifyAllowed):
 
                 if not match:
 
-                    # Noun NC prefixes are conventionally glossed with a bare class number (e.g. '5'), so by default they are exempt from the 'n.xyz' format check. The Check 3 sub-option forces the full format on them too, in which case a bare number is flagged.
+                    # Noun NC prefixes are conventionally glossed with a bare class number (e.g. '5'), so by default they are exempt from the
+                    # 'n.xyz' format check. The Check 3 sub-option forces the full format on them too, in which case a bare number is flagged.
                     if not in_noun_nc_slot or enforceNounSlotGlossFormat:
                         msg = "affix problem: does not match expected 'n.xyz' format (found '{}') for lex: '{}'".format(gloss, lexeme_form)
                         issues["affix_gloss"].append((msg, sourceURL, []))
@@ -940,8 +898,7 @@ def Main(project, report, modifyAllowed):
                 msg = "affix problem: duplicate gloss '{}' shared by: {}".format(gloss, ", ".join("'{}'".format(l) for l in lexemes))
                 issues["duplicates"].append((msg, entries_list[0][1], []))
 
-    # Check 6: Missing NC Affixes for any POS with an NC slot
-    # Master reference list from the global_noun_features (union of all categories)
+    # Check 6: Missing NC Affixes for any POS with an NC slot. Master reference list from the global_noun_features (union of all categories)
     master_features = set()
 
     for cat in global_noun_features:
@@ -958,8 +915,7 @@ def Main(project, report, modifyAllowed):
 
             found_features = found_nc_prefix_features[pos_name]
 
-            # Name the configured NC slot(s) for this POS so the user knows where
-            # the affix is missing.
+            # Name the configured NC slot(s) for this POS so the user knows where the affix is missing.
             slot_names = pos_to_slots_map.get(pos_name, [])
             slot_label = ", ".join("'{}'".format(s) for s in slot_names) if slot_names else "(unknown)"
 
@@ -970,9 +926,8 @@ def Main(project, report, modifyAllowed):
                     msg = "slot problem: missing affix in '{}' Noun Class slot {} for feature '{}'".format(pos_name, slot_label, m_feat)
                     issues["missing_nc"].append((msg, None, []))
 
-    # Enumerate the *defined* value abbreviations for each configured feature
-    # group, regardless of whether any entry uses them. Used both for the
-    # "all possible values" summary and the Check 7 duplicate test below.
+    # Enumerate the *defined* value abbreviations for each configured feature group, regardless of whether any
+    # entry uses them. Used both for the "all possible values" summary and the Check 7 duplicate test below.
     defined_feature_values = defaultdict(set)   # group name -> set of value abbreviations
 
     for feature in feature_objects:
@@ -991,10 +946,8 @@ def Main(project, report, modifyAllowed):
             if abbr and abbr != "***":
                 defined_feature_values[grp_name].add(abbr)
 
-    # Check 7: Duplicate value abbreviations across feature groups, based on the
-    # feature *definitions* (independent of usage). It is an error for the same
-    # abbreviation (e.g. '19') to be defined in more than one configured feature
-    # group. The '?' placeholder value is ignored.
+    # Check 7: Duplicate value abbreviations across feature groups, based on the feature *definitions* (independent of usage). It is an error
+    # for the same abbreviation (e.g. '19') to be defined in more than one configured feature group. The '?' placeholder value is ignored.
     abbr_to_groups = defaultdict(set)   # abbr (lower) -> set of group names
     abbr_display = {}                   # abbr (lower) -> original abbr text
 
@@ -1021,10 +974,8 @@ def Main(project, report, modifyAllowed):
                     abbr_display[key], ", ".join(sorted(groups)))
                 issues["dup_abbr"].append((msg, None, []))
 
-    # Check 8: Duplicate slot names. Slot matching in this module is name-based
-    # (see the SlotsRC / allNCslotNames checks above), so two affix slots sharing
-    # the same name make that matching ambiguous. Warn for any slot name that
-    # occurs more than once across all parts of speech.
+    # Check 8: Duplicate slot names. Slot matching in this module is name-based (see the SlotsRC / allNCslotNames checks above), so two affix
+    # slots sharing the same name make that matching ambiguous. Warn for any slot name that occurs more than once across all parts of speech.
     slot_name_to_pos = defaultdict(list)   # slot name -> list of POS names
 
     if enabled["dup_slots"]:
