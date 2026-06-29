@@ -6,7 +6,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="582"/>
       <source>List values</source>
-      <translation type="unfinished">List values</translation>
+      <translation>Valeurs de liste</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
@@ -210,13 +210,13 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
-      <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
-      <translation>Valeur de co-caractéristique inattendue &quot;{val}&quot; trouvée dans un ensemble de caractéristiques divisées. Seules &quot;sg&quot;, &quot;pl&quot; ou &quot;many&quot; sont attendues. Cette valeur sera ignorée.</translation>
+      <source>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</source>
+      <translation>Valeur inattendue de trait associé &quot;{val}&quot; trouvée dans un ensemble de caractéristiques disjointes. Seules &quot;sg&quot; ou &quot;pl&quot; sont attendues. Cette valeur sera ignorée.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Veuillez vous assurer que la co-caractéristique &quot;number&quot; a les deux valeurs &quot;sg&quot; et &quot;pl&quot;.</translation>
+      <translation>Veuillez vous assurer que la caractéristique associée &quot;nombre&quot; a les deux valeurs &quot;sg&quot; et &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>

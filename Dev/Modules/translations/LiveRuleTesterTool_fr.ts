@@ -6,12 +6,12 @@
     <message>
       <location filename="../LiveRuleTesterTool.py" line="281"/>
       <source>Live Rule Tester Tool</source>
-      <translation>Outil de testeur de règles en direct</translation>
+      <translation>Outil de test de règles en direct</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="284"/>
       <source>Test transfer rules and synthesis live against specific words.</source>
-      <translation>Tester les règles de transfert et la synthèse en direct contre des mots spécifiques.</translation>
+      <translation>Tester les règles de transfert et de synthèse en direct sur des mots spécifiques.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="286"/>
@@ -24,15 +24,7 @@ against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.</source>
-      <translation>L'outil de testeur de règles en direct est un outil qui vous permet de tester des mots sources ou
-des phrases en direct contre les règles de transfert. Cet outil est particulièrement utile pour
-découvrir pourquoi les règles de transfert ne font pas ce que vous attendez d'elles.
-Vous pouvez cibler le problème en sélectionnant un seul mot source et en appliquant
-la règle de transfert pertinente. De cette façon, vous n'avez pas à exécuter tout le système
-contre le fichier texte entier et toutes les règles de transfert. Vous pouvez également tester que les
-résultats de transfert sont synthétisés correctement en mots cibles. Si vous le souhaitez, vous
-pouvez ajouter les éléments lexicaux sources associés aux résultats de synthèse à un banc d'essai.
-Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résultats attendus.</translation>
+      <translation>L'outil de test de règles en direct est un outil qui vous permet de tester des mots ou des phrases sources en temps réel par rapport aux règles de transfert. Cet outil est particulièrement utile pour comprendre pourquoi les règles de transfert ne produisent pas les résultats attendus. Vous pouvez cibler le problème en sélectionnant un seul mot source et en appliquant la règle de transfert pertinente. Ainsi, vous n'avez pas besoin d'exécuter l'ensemble du système sur la totalité du fichier texte et de toutes les règles de transfert. Vous pouvez également vérifier que les résultats du transfert sont correctement synthétisés en mots cibles. Si vous le souhaitez, vous pouvez ajouter les éléments lexicaux sources associés aux résultats de synthèse à un banc d'essai. Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résultats escomptés</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="638"/>
@@ -104,7 +96,7 @@ Exécutez le module Extraire le lexique bilingue séparément pour plus de déta
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1409"/>
       <source>Testbed file: {0} does not exist.</source>
-      <translation>Fichier de banc d'essai : {0} n'existe pas.</translation>
+      <translation>Fichier test : {0} n'existe pas.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1421"/>
@@ -118,7 +110,7 @@ Exécutez le module Extraire le lexique bilingue séparément pour plus de déta
 {0}
 
 Do you want to overwrite it?</source>
-      <translation>Il existe un test qui existe déjà dans le banc d'essai qui correspond à l'unité lexicale :
+      <translation>Il existe un test qui existe déjà dans le fichier test qui correspond à l'unité lexicale :
 
 {0}
 
@@ -127,17 +119,17 @@ Voulez-vous l'écraser ?</translation>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1506"/>
       <source>Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\testbed.xml</source>
-      <translation>Problème avec le fichier de banc d'essai. Vérifiez que TestbedFile est défini sur une valeur dans votre fichier de configuration. Normalement, il est défini sur ..\testbed.xml</translation>
+      <translation>Problème avec le fichier test. Vérifiez que le fichier test est défini sur une valeur dans votre fichier de configuration. Normalement, il est défini sur ..\testbed.xml</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1552"/>
       <source>Testbed Error</source>
-      <translation>Erreur de banc d'essai</translation>
+      <translation>Erreur de fichier test</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1552"/>
       <source>There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.</source>
-      <translation>Il n'y a pas un nombre égal de résultats de synthèse pour les unités lexicales que vous avez. Impossible d'ajouter au banc d'essai.</translation>
+      <translation>Il n'y a pas un nombre égal de résultats de synthèse pour les unités lexicales que vous avez. Impossible d'ajouter au fichier test.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1634"/>
@@ -365,7 +357,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2881"/>
       <source>Problem opening file: {tgt_file}.</source>
-      <translation>Problem opening file: {tgt_file}.</translation>
+      <translation>Problème lors de l'ouverture du fichier: {tgt_file}.</translation>
     </message>
   </context>
   <context>
@@ -373,7 +365,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2842"/>
       <source>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</source>
-      <translation>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
+      <translation>Une erreur s'est produite lors de l'exécution des outils Apertium. Le contenu de apertium_error.txt est :</translation>
     </message>
   </context>
 </TS>

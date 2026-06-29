@@ -39,7 +39,7 @@ même nom ne sera pas écrasé. Une copie sera créée.</translation>
     <message>
       <location filename="../InsertTargetText.py" line="161"/>
       <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
-      <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : &quot;</translation>
+      <translation>Le module Synthèse de texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : &quot;</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="196"/>

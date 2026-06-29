@@ -36,12 +36,12 @@
     <message>
       <location filename="../OpenFLExProjects.py" line="168"/>
       <source>The {proj} project is already open. Skipping.</source>
-      <translation>Le projet {proj} est déjà ouvert. Passage ignoré.</translation>
+      <translation>Le projet {proj} est déjà ouvert. Ignoré.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="180"/>
       <source>Couldn&apos;t detect the {proj} project as open after {secs} seconds. Skipping.</source>
-      <translation>Impossible de détecter le projet {proj} comme ouvert après {secs} secondes. Passage ignoré.</translation>
+      <translation>Impossible de détecter le projet {proj} comme ouvert après {secs} secondes. Ignoré.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="184"/>
