@@ -39,7 +39,7 @@ avec une liste de tous les sens dans le texte. Les lignes à fond blanc indiquen
 existent déjà. Les lignes à fond bleu indiquent des liens suggérés basés sur une correspondance exacte
 de la glose, les lignes à fond bleu clair indiquent des liens suggérés basés sur une correspondance proche
 de la glose (actuellement 75% similaire), les lignes à fond rouge
-n'ont pas encore de lien établi. Double-cliquez sur la colonne Mot-tête cible pour une ligne afin de copier
+n'ont pas encore de lien établi. Double-cliquez sur la colonne Mot-vedette cible pour une ligne afin de copier
 le sens cible actuellement sélectionné dans la liste déroulante supérieure dans cette ligne. Cliquez sur la case à cocher
 pour créer un lien pour cette ligne. C'est-à-dire que le sens source sera lié au sens cible.
 Décocher une case pour une ligne blanche déliera le sens spécifié de son sens cible.
@@ -205,7 +205,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
       <location filename="../LinkSenseTool.py" line="1962"/>
       <source>Source Head Word</source>
-      <translation>Mot-tête source</translation>
+      <translation>Mot-vedette source</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1963"/>
@@ -220,7 +220,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     <message>
       <location filename="../LinkSenseTool.py" line="1965"/>
       <source>Target Head Word</source>
-      <translation>Mot-tête cible</translation>
+      <translation>Mot-vedette cible</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1966"/>
