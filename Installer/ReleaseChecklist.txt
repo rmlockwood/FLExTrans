@@ -1,3 +1,19 @@
+Do these things when making a maintenance release 
+=================================================
+-Finish code changes and commit
+-Edit CreateInstaller.bat and set FLEXTRANS_VERSION at the top to the new version #.
+-Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
+-Also change VIProductVersion in the .nsi file  to the new version #. This has to always have the 3rd # so make it 0 if needed. E.g. 3.12.0.${BUILD_NUM}
+-Change Copyright date if necessary in the .nsi file. 
+-Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
+-Make a new .download_info file changing the relevant data. 3 changes.
+-Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
+-If just doing a minor release without release notes and want to create a tag
+ -Go to tags, switch to Releases
+ -Click draft new release
+ -Choose a tag (dropdown) and give new vx.x.xtag and click Create new tag xxx on publish
+ -Publish, then delete the release, the tag will remain
+
 Do these things when making a new release (when a beta release is not already set up)
 =====================================================================================
 -Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x

@@ -7,7 +7,7 @@ FTName = "FLExTools"
 
 Name = "FLExTrans"
 
-Version = "3.15.1"
+Version = "3.15.2"
 Build = "000"
 BuildDate = "Jan 1, 1964"
 
