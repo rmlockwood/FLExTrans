@@ -5,8 +5,8 @@
     <name>TextInOutUtils</name>
     <message>
         <location filename="../TextInOutUtils.py" line="282"/>
-        <source>Test stopped on failure of rule: {ruleString}</source>
-        <translation>Test arrêté en raison de l'échec de la règle : {ruleString}</translation>
+        <source>Applying Text In/Out rules stopped because of a failure of rule {ruleNumber}: {ruleString}</source>
+        <translation>L'application des règles Text In/Out s'est arrêtée en raison de l'échec de la règle {ruleNumber} : {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="342"/>
@@ -72,11 +72,6 @@
         <location filename="../TextInOutUtils.py" line="1018"/>
         <source>For folder {foldName}, the rule: {ruleID} not found.</source>
         <translation>Pour le dossier {foldName}, la règle : {ruleID} introuvable.</translation>
-    </message>
-    <message>
-        <location filename="../TextInOutUtils.py" line="1167"/>
-        <source>Test stopped on failure of rule {ruleNumber}: {ruleString}</source>
-        <translation>Test arrêté en raison de l'échec de la règle {ruleNumber} : {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="1367"/>

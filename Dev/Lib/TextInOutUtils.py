@@ -5,6 +5,10 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Factored the shared rule-applying loop into applyRulesToString(); applySearchReplaceRules and
+#    TestClicked now both call it, and improved the failure message.
+#
 #   Version 3.16 - 5/29/26 - Ron Lockwood
 #    Fixes #1350. Support \l, \u, \L...\E, \U...\E case modifiers in search/replace
 #    replacement strings via a create_replacer() callable passed to regex.sub.
@@ -377,10 +381,42 @@ def create_replacer(pattern):
 
     return replacer
 
-def applySearchReplaceRules(inputStr, tree):
-    
+def applyRulesToString(inputStr, numberedRules):
+
+    # Shared core used both for real application (applySearchReplaceRules) and the Test button (TestClicked). numberedRules is an iterable of (ruleNumber, ruleEl) pairs, where ruleNumber is the 
+    # 1-based rule position shown to the user. Inactive rules are skipped. Returns (newStr, errorMsg): on a rule failure newStr holds the text transformed by all rules up to (but not including) 
+    # the one that failed and errorMsg names that rule; on success errorMsg is the empty string.
     errorMsg = ""
     newStr = inputStr
+
+    for ruleNumber, ruleEl in numberedRules:
+
+        searchReplObj = getRuleFromElement(ruleEl)
+
+        # Skip a rule if it is marked inactive
+        if searchReplObj.isInactive:
+
+            continue
+
+        # Convert the search string and the string to replace to decomposed unicode. FLEx stores things as decomposed, but the user may not be inputting decomposed unicode.
+        newStr = unicodedata.normalize('NFD', newStr)
+        newSearch = unicodedata.normalize('NFD', searchReplObj.searchStr)
+
+        try:
+            if searchReplObj.isRegEx:
+
+                newStr = regex.sub(newSearch, create_replacer(searchReplObj.replStr), newStr)
+
+            else:
+                newStr = newStr.replace(newSearch, searchReplObj.replStr)
+
+        except:
+            errorMsg = _translate("TextInOutUtils", "Applying Text In/Out rules stopped because of a failure of rule {ruleNumber}: {ruleString}").format(ruleNumber=str(ruleNumber), ruleString=buildRuleStringFromElement(ruleEl))
+            break
+
+    return newStr, errorMsg
+
+def applySearchReplaceRules(inputStr, tree):
 
     # Get the parent element where the rules are listed.
     root = tree.getroot()
@@ -391,32 +427,17 @@ def applySearchReplaceRules(inputStr, tree):
 
     # Disabled for now because of python 3.13 incompatibility.
     # if wildebeestStr == 'yes':
-
     #    newStr = runWildebeest(root, newStr)
 
-    # Loop through each rule
-    for ruleEl in searchReplaceRulesElement:
+    # Apply every rule in document order, numbered 1-based so a failure can name the offending rule.
+    numberedRules = [(ruleNumber + 1, ruleEl) for ruleNumber, ruleEl in enumerate(searchReplaceRulesElement)]
 
-        searchReplObj = getRuleFromElement(ruleEl)
+    newStr, errorMsg = applyRulesToString(inputStr, numberedRules)
 
-        # Skip a rule if it is marked inactive
-        if searchReplObj.isInactive == False:
+    # Callers of this function detect failure by a None result, so collapse the partial string to None on error.
+    if errorMsg:
 
-            # Convert the search string and the string to replace to decomposed unicode. 
-            # FLEx stores things as decomposed, but the user may not be inputting decomposed unicode.
-            newStr = unicodedata.normalize('NFD', newStr)
-            newSearch = unicodedata.normalize('NFD', searchReplObj.searchStr)
-
-            try:
-                if searchReplObj.isRegEx:
-
-                    newStr = regex.sub(newSearch, create_replacer(searchReplObj.replStr), newStr)
-                else:
-                    newStr = newStr.replace(newSearch, searchReplObj.replStr)
-            except:
-                newStr = None
-                errorMsg = _translate("TextInOutUtils", "Test stopped on failure of rule: {ruleString}").format(ruleString=buildRuleStringFromElement(ruleEl))
-                break
+        newStr = None
 
     return newStr, errorMsg
 
@@ -1281,40 +1302,24 @@ class TextInOutRulesWindow(QMainWindow):
         self.writeXMLfile()
 
         inStr = self.ui.inputText.toPlainText()
-        newStr = inStr
 
         # Run Wildebeest if needed
         # Disabled for now because of python 3.13 incompatibility.
         # if self.ui.wildebeestCheckBox.isChecked():
-
         #     newStr = runWildebeest(self.defaultRoot, newStr)
 
-        # Loop through the rules and apply each checked one in turn
-        for ind, ruleEl in enumerate(self.xmlParentObjList[0]):
+        # Apply only the rules the user has checked, but keep each rule's real 1-based number for error reporting.
+        numberedRules = [(ind + 1, ruleEl) for ind, ruleEl in enumerate(self.xmlParentObjList[0]) if self.rulesModel.item(ind).checkState() == QtCore.Qt.CheckState.Checked]
 
-            # Process the rule if it is checked
-            if self.rulesModel.item(ind).checkState() == QtCore.Qt.CheckState.Checked:
+        newStr, errorMsg = applyRulesToString(inStr, numberedRules)
 
-                searchReplDataObj = getRuleFromElement(ruleEl)
+        if errorMsg:
 
-                if searchReplDataObj.isInactive == False:
+            self.ui.errorTextBox.setText(errorMsg)
 
-                    try:
-                        if searchReplDataObj.isRegEx:
-
-                            newStr = regex.sub(searchReplDataObj.searchStr, create_replacer(searchReplDataObj.replStr), newStr)
-
-                        else:
-                            newStr = newStr.replace(searchReplDataObj.searchStr, searchReplDataObj.replStr)
-                    except:
-                        self.ui.errorTextBox.setText(_translate(
-                                "TextInOutUtils",
-                                "Test stopped on failure of rule {ruleNumber}: {ruleString}"
-                            ).format(ruleNumber=str(ind + 1), ruleString=buildRuleStringFromElement(ruleEl))
-                        )
-                        break
-
+        # Show the (possibly partial) transformed text so the user can see how far the rules got before any failure.
         self.ui.outputText.setText(newStr)
+
         return
 
     def appendError(self, errorStr):
