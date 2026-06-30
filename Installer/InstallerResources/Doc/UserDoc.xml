@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->29 April 2026</date
+>29 June 2026</date
 ><version
->3.15</version
+>3.16</version
 ><contents
 showLevel="4"
 ></contents
@@ -1676,7 +1676,7 @@ type="tButton"
 > button. Uncheck them all with the <object
 type="tButton"
 >Unselect All</object
-> button. </li
+> button.</li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -2620,6 +2620,24 @@ type="tTool"
 ><li
 >Rearranging affix order – including deleting affixes or adding affixes.</li
 ></ol
+><p
+>For enforcing agreement between phrase constituents you must assign the appropriate feature in <object
+type="tFlexx"
+></object
+> to the affixes or stems involved.</p
+><section3
+id="sRuleAssistAppearance"
+><secTitle
+>Appearance</secTitle
+><p
+><object
+type="tTool"
+>Rule Assistant</object
+> looks something like what is shown in <exampleRef
+letter="xRAimage"
+num="xRAimage"
+></exampleRef
+>.</p
 ><example
 num="xRAimage"
 ><chart
@@ -2631,24 +2649,541 @@ src="Images/RuleAssistant.png"
 ></chart
 ></example
 ><p
->For enforcing agreement between phrase constituents you must assign the appropriate feature in <object
+>There are two panes. The left one contains one transfer rule per line. The right pane shows a tree diagram of the selected rule. The right pane has two phrases. The left one is the source phrase and the right is the target phrase. In the source phrase, when a word has a category, it is shown in red immediately below the word. In the target phrase, a word with a category is shown in a grayed out red and in italics. While one can edit the category of a word in the source phrase, one cannot edit the category of a word in the target phrase.</p
+><p
+>When a target word is marked as being the head, it is shown in bold, as are any of its features.</p
+><p
+>The “Test in LRT” button is to have <object
+type="tFlextrans"
+></object
+> open its “Live Rule Tester” module. When you click on this button, the dialog shown in example <exampleRef
+letter="xTestInLRT"
+num="xTestInLRT"
+></exampleRef
+> appears.</p
+><example
+num="xTestInLRT"
+><chart
+><img
+src="Images/TestinLRT.png"
+></img
+></chart
+></example
+><p
+>The “Save” button is used to save changes made to rules or newly added rules.</p
+><p
+>The <object
+type="tSaveCreate"
+></object
+> button is used to save changes made to rules or newly added rules and then create the currently selected rule in the <object
+type="tFlextrans"
+></object
+> rule file.<comment
+><endnote
+id="nCreate"
+><p
+>There will be two numbers separated by a space output to stdout with this option. The first will always be a 1. The second will be the zero-based index of the currently selected rule.</p
+></endnote
+></comment
+> A validity check will also be applied to this rule. If any issue is found, an error dialog message will be shown with an explanation of what the issue is. The dialog will not exit until all validity checks pass.</p
+><p
+>The <object
+type="tSaveCreateAll"
+></object
+> button is used to save changes made to rules or newly added rules and then create all the rules in the <object
+type="tFlextrans"
+></object
+> rule file.<comment
+><endnote
+id="nCreateAll"
+><p
+>The number 2 will be output to stdout.</p
+></endnote
+></comment
+> A validity check will also be applied to every rule. If any issue is found, an error dialog message will be shown with an explanation of what the issue is. It will also indicate which rule had the problem. The dialog will not exit until all validity checks pass.</p
+><p
+>The “Help” button is used to get this user documentation file or to show the “About” dialog box.</p
+><p
+>Whenever you use either the <object
+type="tSaveCreate"
+></object
+> or <object
+type="tSaveCreateAll"
+></object
+> buttons, <object
+type="tTool"
+>Rule Assistant</object
+> will close.</p
+><p
+>Under the set of buttons in the upper right corner is the data from the active source text as defined by <object
+type="tFlextrans"
+></object
+>. It is intended to display test data that you can consult as you define your rules in the <object
+type="tTool"
+>Rule Assistant</object
+>. Each line has source and target words and applicable features in data stream format which is similar to what you would see in the <object
+type="tLiveRuleTester"
+></object
+> module. Note that the target words (with features) are the words that have been linked from the source words. Also, source affixes are carried over to the target words. Important: no transfer rules have been run.</p
+><p
+>Under the list of rules is a check box labeled “Overwrite rule(s).” When this is checked, then any previous rules which have the same name will be overwritten.</p
+><p
+>Under this check box is a button labeled “Set disjoint features.” This is for a special case. See section <sectionRef
+sec="sRuleAssistDisjointFeatures"
+></sectionRef
+>.</p
+></section3
+><section3
+id="sRuleAssistEditRules"
+><secTitle
+>Editing rules</secTitle
+><p
+>You can create new rules, rearrange them, or delete them by right-clicking on one. You will then see a context menu like what is in <exampleRef
+letter="xRulesContextMenu"
+num="xRulesContextMenu"
+></exampleRef
+>.</p
+><example
+num="xRulesContextMenu"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/RuleContextMenu.png"
+></img
+></chart
+></example
+><p
+>Use the "Rule Name:" text box to add or edit the name of a rule.</p
+><p
+>Use the “Description” text box to more thoroughly describe the rule, indicate what motivated the rule, and/or give some examples.</p
+></section3
+><section3
+id="sRuleAssistEditTrees"
+><secTitle
+>Editing trees</secTitle
+><p
+>The right pane contains a simplified tree diagram. Each such diagram has two parts: a source phrase is on the left and the corresponding target phrase is on the right. Every phrase will always have at least one word in it.</p
+><section4
+id="sRuleAssistEditTreesWord"
+><secTitle
+>Editing a word</secTitle
+><p
+>When you click on a word item in the tree, the context menu shown in <exampleRef
+letter="xWordContextMenu"
+num="xWordContextMenu"
+></exampleRef
+> appears.</p
+><example
+num="xWordContextMenu"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/WordContextMenu.png"
+></img
+></chart
+></example
+><p
+>Select the item you wish to use. They are as follows:</p
+><ul
+><li
+><object
+type="tBold"
+>Duplicate</object
+>: creates a complete copy of the current word.</li
+><li
+><object
+type="tBold"
+>Change number</object
+>: modifies the word's number. If you choose a number of another word, then that other word will be set to the original number of the word you are changing.</li
+><li
+><object
+type="tBold"
+>Mark as head</object
+>: labels this word as being the head of the phrase. This is only available for target words. If another word had been marked as being the head, then that other word will no longer be marked as the head. That is, only one word can be marked as the head.</li
+><li
+><object
+type="tBold"
+>Remove head marking</object
+>: removes any head marking on this word. This is only available for target words.</li
+><li
+><object
+type="tBold"
+>Insert new before</object
+>: inserts a new word item before the selected word.</li
+><li
+><object
+type="tBold"
+>Insert new after</object
+>: inserts a new word item after the selected word.</li
+><li
+><object
+type="tBold"
+>Insert prefix</object
+>: inserts an affix item labeled as a prefix. This is available only if the selected word has no affix items yet.</li
+><li
+><object
+type="tBold"
+>Insert suffix</object
+>: inserts an affix item labeled as a suffix. This is available only if the selected word has no affix items yet.</li
+><li
+><object
+type="tBold"
+>Insert category</object
+>: inserts a category item. This is available only if the selected word has no category item yet.</li
+><li
+><object
+type="tBold"
+>Insert feature</object
+>: inserts a feature item. This is only available when a category has been set. The list of available features depends on the set of valid features defined in <object
 type="tFlexx"
 ></object
-> to the affixes or stems involved.</p
+> for the category of the word.</li
+><li
+><object
+type="tBold"
+>Move left</object
+>: moves the selected word to the left.</li
+><li
+><object
+type="tBold"
+>Move right</object
+>: moves the selected word to the right.</li
+><li
+><object
+type="tBold"
+>Delete</object
+>: removes the selected word.</li
+></ul
+></section4
+><section4
+id="sRuleAssistTreesCategory"
+><secTitle
+>Editing a category</secTitle
 ><p
->For detailed help on using the <object
+>When you click on a category item in a word in the source phrase, the context menu shown in <exampleRef
+letter="xCategoryContextMenu"
+num="xCategoryContextMenu"
+></exampleRef
+> appears.</p
+><example
+num="xCategoryContextMenu"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/CategoryContextMenu.png"
+></img
+></chart
+></example
+><p
+>The Category chooser appears if you choose “Edit.” Which categories are listed in the chooser depends on whether the category is in the source or the target portion of the tree diagram. <object
+type="tFlextrans"
+></object
+> gives <object
 type="tTool"
 >Rule Assistant</object
->, consult the help file the comes with the <object
-type="tTool"
->Rule Assistant</object
->. You can get to this help file by clicking on the <object
-type="tButton"
->Help</object
-> button, then on <object
-type="tButton"
->User Documentation</object
+> the list of categories for the source <object
+type="tFlexx"
+></object
+> project and the target <object
+type="tFlexx"
+></object
+> project. In one case, the category chooser looked like what is in example <exampleRef
+letter="xCategoryChooser"
+num="xCategoryChooser"
+></exampleRef
 >.</p
+><example
+num="xCategoryChooser"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/CategoryChooser.png"
+></img
+></chart
+></example
+><p
+>If you choose “Delete,” the category item will be deleted.</p
+><p
+>When you click on a category item in a word in the target phrase, the context menu shown in <exampleRef
+letter="xWordContextMenu"
+num="xWordContextMenu"
+></exampleRef
+> appears. This is the same as if you had clicked on the word item.</p
+></section4
+><section4
+id="sRuleAssistTreesFeature"
+><secTitle
+>Editing a feature</secTitle
+><p
+>When you click on a feature item in the tree, the context menu shown in <exampleRef
+letter="xFeatureContextMenu"
+num="xFeatureContextMenu"
+></exampleRef
+> appears.</p
+><example
+num="xFeatureContextMenu"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/FeatureContextMenu.png"
+></img
+></chart
+></example
+><p
+>The Feature chooser appears if you choose “Edit.” Which features are listed in the chooser depends on whether the feature is in the source or the target portion of the tree diagram. <object
+type="tFlextrans"
+></object
+> gives <object
+type="tTool"
+>Rule Assistant</object
+> the list of features for the source <object
+type="tFlexx"
+></object
+> project and the target <object
+type="tFlexx"
+></object
+> project. In one case, the feature value chooser looked like what is in example <exampleRef
+letter="xFeatureChooser"
+num="xFeatureChooser"
+></exampleRef
+>.</p
+><example
+num="xFeatureChooser"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/FeatureChooser.png"
+></img
+></chart
+></example
+><p
+>The number of Greek letter variable values shown defaults to four.<comment
+> You can set the number via the optional third command line parameter. See section invocation.</comment
+></p
+><p
+>If you choose “Delete,” the feature item will be deleted.</p
+><p
+>The “Edit unmarked” option allows you to choose an overt value (not a Greek variable) for this feature. Doing this indicates what the unmarked or default value is for this feature. “Delete unmarked” is enabled only when there is already an unmarked feature value. You can use this to remove or delete this unmarked value.</p
+><p
+>Further, if the word is in the target phrase and the total number of features specified in the word and any of its affixes is greater than one, then you can use the “Edit ranking” option to specify the relative ranking of the feature for when the value for a feature may be missing in a given instance. When you click on “Edit ranking,” it brings up a chooser dialog showing which ranking values are available. When there are multiple features in an affix or a word, once you set the ranking of one feature, <object
+type="tTool"
+>Rule Assistant</object
+> will seek to assign a ranking to all features. It also will try to ensure no two features have the same ranking. You can use “Delete ranking” to remove a ranking from a feature. In fact, when you remove a ranking from one feature in an affix or a word, all other features in that affix or word will lose their ranking. Please realize that if all the features on this word or affix do not each have a ranking value, ranking will be ignored by the <object
+type="tTool"
+>Rule Assistant</object
+> processing.</p
+></section4
+><section4
+id="sRuleAssistTreesAffix"
+><secTitle
+>Editing an affix</secTitle
+><p
+>When you click on an affix item in the tree, the context menu shown in <exampleRef
+letter="xAffixContextMenu"
+num="xAffixContextMenu"
+></exampleRef
+> appears.</p
+><example
+num="xAffixContextMenu"
+><chart
+><img
+XeLaTeXSpecial="scaled='1250'"
+src="Images/AffixContextMenu.png"
+></img
+></chart
+></example
+><p
+>Select the item you wish to use. They are as follows:</p
+><ul
+><li
+><object
+type="tBold"
+>Duplicate</object
+>: creates a complete copy of the current affix.</li
+><li
+><object
+type="tBold"
+>Toggle affix type</object
+>: changes the type from prefix to suffix or from suffix to prefix.</li
+><li
+><object
+type="tBold"
+>Insert feature</object
+>: inserts a feature item. This is only available when a category has been set for the word this affix is a part of. The list of available features depends on the set of valid features defined in <object
+type="tFlexx"
+></object
+> for the category of the word.</li
+><li
+><object
+type="tBold"
+>Insert new prefix before</object
+>: inserts a new affix item labeled as a prefix before the selected affix.</li
+><li
+><object
+type="tBold"
+>Insert new prefix after</object
+>: inserts a new affix item labeled as a prefix after the selected affix.</li
+><li
+><object
+type="tBold"
+>Insert new suffix before</object
+>: inserts a new affix item labeled as a suffix before the selected affix.</li
+><li
+><object
+type="tBold"
+>Insert new suffix after</object
+>: inserts a new affix item labeled as a suffix after the selected affix.</li
+><li
+><object
+type="tBold"
+>Move left</object
+>: moves the selected affix to the left.</li
+><li
+><object
+type="tBold"
+>Move right</object
+>: moves the selected affix to the right.</li
+><li
+><object
+type="tBold"
+>Delete</object
+>: removes the selected affix.</li
+></ul
+><p
+></p
+></section4
+></section3
+><section3
+id="sRuleAssistPermutations"
+><secTitle
+>Create permutations combo box</secTitle
+><p
+>Under the description box is a combo box labeled "Create permutations." This combo box is enabled only when the target portion has at least two words and one of them is marked as the head. There are three possible values for this combo box as shown in example <exampleRef
+letter="xCreatePermutationsValues"
+num="xCreatePermutationsValues"
+></exampleRef
+>.</p
+><example
+num="xCreatePermutationsValues"
+><table
+border="1"
+><tr
+><th
+>Value</th
+><th
+>Meaning</th
+></tr
+><tr
+><td
+>No</td
+><td
+>Do not create any permutations.</td
+></tr
+><tr
+><td
+>Omitting head-only rule</td
+><td
+>Create permutations omitting head-only rule.</td
+></tr
+><tr
+><td
+>Including head-only rule</td
+><td
+>Create permutations including head-only rule.</td
+></tr
+></table
+></example
+><p
+>If you want <object
+type="tFlextrans"
+></object
+> to create separate rules for each possible combination of the two or more word items, choose one of the latter two values. One excludes the head and the other includes it.</p
+></section3
+><section3
+id="sRuleAssistDisjointFeatures"
+><secTitle
+>Disjoint features</secTitle
+><p
+contentType="ctNumberOnly"
+>This is a special case and requires that the target language have a “number” feature with at least values of “sg” and “pl” (and the feature and these two values must be spelled exactly this way). If your target language does not have this feature with at least these two values, then <object
+type="tTool"
+>Rule Assistant</object
+> will show the error message dialog in example <exampleRef
+letter="xNumberSgPlMessage"
+num="xNumberSgPlMessage"
+></exampleRef
+>.</p
+><example
+contentType="ctNumberOnly"
+num="xNumberSgPlMessage"
+><chart
+><img
+src="Images/NumberSgPlMessage.png"
+></img
+></chart
+></example
+><p
+>In rare cases, you may need to use what we are calling “disjoint features.” Some <object
+type="tFlexx"
+></object
+> users implementing Bantu languages split the set of gender features into at least two sets. One set corresponds to the gender noun classes which also are marked as singular in number and the other set corresponds to the gender noun classes which are also marked as plural in number. When writing a rule via the <object
+type="tTool"
+>Rule Assistant</object
+>, the idea is to use a name that will cover both of these sets. Example <exampleRef
+letter="xFeatureSetEditor"
+num="xFeatureSetEditor"
+></exampleRef
+> shows what you might do for a case like this.</p
+><example
+num="xFeatureSetEditor"
+><chart
+><img
+XeLaTeXSpecial="scaled='650'"
+src="Images/DisjointGenderFeaturesEditor.png"
+></img
+></chart
+></example
+><p
+>The name that will be used in features in rules is in the “Name” field. You can think of this as a cover term.</p
+><p
+contentType="ctFull"
+>You can set this for either the source or the target language via the “Language” radio buttons.</p
+><p
+contentType="ctNumberOnly"
+>Currently, only the target language can be used.</p
+><p
+contentType="ctFull"
+>The “Co-feature name” combo box lists all the features available in this language. You select the one that is common to each set of disjoint features. In this Bantu case, this is the “number” feature.</p
+><p
+contentType="ctNumberOnly"
+>The “Distinguishing feature” combo box only allows for the “number” feature appropriate for Bantu. The combo boxes under “Feature value” only allow for either a “sg” or a “pl” value. When you set one, the other is automatically set to the other value.</p
+><p
+contentType="ctFull"
+>Below this is a slider control which lets you define between two and six pairs of a <object
+type="tFlexx"
+></object
+> feature and a value for this “co-feature.” Each pair has two combo boxes, one for the <object
+type="tFlexx"
+></object
+> feature and one for the value of the co-feature. As you can see in example <exampleRef
+letter="xFeatureSetEditor"
+num="xFeatureSetEditor"
+></exampleRef
+>, in this <object
+type="tFlexx"
+></object
+> project, the noun class gender feature has been split into two features: “Bantu1 singular” and “Bantu2 plural.”<endnote
+id="nBantu1AndBantu2"
+><p
+>The “1” and the “2” are used merely for sorting purposes. This enables the singular to appear before the plural.</p
+></endnote
+> Notice that the singular disjoint feature uses the “sg” value of the “number” feature while the plural disjoint feature uses the “pl” value of the “number” feature. This information enables the <object
+type="tTool"
+>Rule Assistant</object
+> to create appropriate transfer rules using the “BantuNounClass” cover term.</p
+><p
+>Whenever you have one of these disjoint feature sets defined and are choosing a feature to use in a word or affix, the name of the disjoint feature set will be listed in the possible feature values. You can then choose it as part of the rule like you would any other normal (non-disjoint) feature. In this example, you would see features like “BantuNounClass:α” and “BantuNounClass:β” in the list.</p
+></section3
 ></section2
 ><section2
 id="sTextIn"
@@ -2744,7 +3279,7 @@ type="tModule"
 > module is run, Text Out rules are automatically applied<endnote
 id="nOldFixup"
 ><p
->Previously, you had to add a separate module to your collections, but that is no longer necessary. If you have the  <object
+>Previously, you had to add a separate module to your collections, but that is no longer necessary. If you have the <object
 type="tModule"
 >Fix Up Synthesis Text</object
 > module in your <object
@@ -2753,7 +3288,7 @@ type="tCollection"
 > or <object
 type="tCollection"
 >Testbed</object
-> collections, you should remove them. </p
+> collections, you should remove them.</p
 ></endnote
 >.</p
 ></section2
@@ -8461,6 +8996,14 @@ id="tRuleAttribInXXE"
 types="tBold"
 ></type
 ><type
+before="“Save &amp; Write”"
+id="tSaveCreate"
+></type
+><type
+before="“Save &amp; Write All”"
+id="tSaveCreateAll"
+></type
+><type
 after="Sense Linker Tool"
 id="tSenseLinker"
 types="tTool"
@@ -8516,5 +9059,25 @@ id="tXMLmindXMLEditor"
 types="tTool"
 ></type
 ></types
+><contentControl
+><contentTypes
+><contentType
+id="ctFull"
+>Full</contentType
+><contentType
+id="ctNumberOnly"
+>Number only</contentType
+></contentTypes
+><contentControlChoices
+><contentControlChoice
+active="no"
+exclude="ctNumberOnly"
+>Full</contentControlChoice
+><contentControlChoice
+active="yes"
+exclude="ctFull"
+>Number only</contentControlChoice
+></contentControlChoices
+></contentControl
 ></lingPaper
 >
