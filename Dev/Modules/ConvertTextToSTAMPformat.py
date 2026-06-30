@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/28/26 - Ron Lockwood
 #    Handle one project (two writing systems) mode - use the source project as the target.
 #
@@ -164,7 +167,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -1175,7 +1178,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         fResults = open(outName, encoding='utf-8')
 
     except:
-        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the {runApert} module?').format(fileName=outName, runApert=RunApertDocs[FTM_Name]), 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the {runApert} module?').format(fileName=Utils.shortenPathForDisplay(outName), runApert=RunApertDocs[FTM_Name]), 2))
         return errorList, wordAnaInfoList
     
     resultsFileStr = fResults.read()
@@ -1426,10 +1429,10 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         count += 1
     
     if not doHermitCrabSynthesis:
-        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(targetANAFile)), 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(targetANAFile)), 0))
         errorList.append((_translate("ConvertTextToSTAMPformat", "{count} records exported in ANA format.").format(count=str(count)), 0))
     else:
-        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCmasterFile)), 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}").format(filePath=Utils.shortenPathForDisplay(HCmasterFile)), 0))
         errorList.append((_translate("ConvertTextToSTAMPformat", "{count} records exported in HermitCrab format.").format(count=str(count)), 0))
 
     fOutput.close()

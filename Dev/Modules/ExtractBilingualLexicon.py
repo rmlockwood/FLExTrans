@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/24/26 - Ron Lockwood
 #    One project mode: read target lemmas in the target writing system, treat a missing link as a link to the same sense, and reuse the source project as the target.
 #
@@ -145,7 +148,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -581,7 +584,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 text = unicodedata.normalize('NFD', text)
                 replTree = ET.parse(io.StringIO(text)).getroot()
         except:
-            errorList.append((_translate("ExtractBilingualLexicon", "There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.").format(replFile=replFile), 2))
+            errorList.append((_translate("ExtractBilingualLexicon", "There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.").format(replFile=Utils.shortenPathForDisplay(replFile)), 2))
 
         if replTree:
             # get rid of <leftdata> and <rightdata> (if present)
@@ -608,7 +611,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
                 fout.write(ET.tostring(outputTree, encoding='utf-8'))
         except IOError as err:
-            errorList.append((_translate("ExtractBilingualLexicon", "There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.").format(fullPathBilingFile=fullPathBilingFile), 2))
+            errorList.append((_translate("ExtractBilingualLexicon", "There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.").format(fullPathBilingFile=Utils.shortenPathForDisplay(fullPathBilingFile)), 2))
 
             if TargetDB is not DB:
 
@@ -616,7 +619,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
             return errorList
 
-        errorList.append((_translate("ExtractBilingualLexicon", "Creation complete to the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(fullPathBilingFile)), 0))
+        errorList.append((_translate("ExtractBilingualLexicon", "Creation complete to the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(fullPathBilingFile)), 0))
         errorList.append((_translate("ExtractBilingualLexicon", "{recordsDumpedCount} records created.").format(recordsDumpedCount=recordsDumpedCount), 0))
 
     # In One project mode TargetDB is the same object as DB, so don't close it here (the caller still needs the source project).

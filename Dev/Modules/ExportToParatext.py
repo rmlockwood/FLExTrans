@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/24/26 - Ron Lockwood
 #    Fixes #1339. Load TextInOutUtils translations so the "rules applied" message is translated.
 #
@@ -127,7 +130,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -290,7 +293,7 @@ def doExportToParatext(DB, configMap, report):
         try:
             f = open(synFile, 'r', encoding='utf-8')
         except:
-            report.Error(_translate("ExportToParatext", 'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.').format(synFile=synFile))
+            report.Error(_translate("ExportToParatext", 'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.').format(synFile=Utils.shortenPathForDisplay(synFile)))
             return None
             
         synFileContents = f.read()

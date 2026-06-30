@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 6/9/26 - Laerke
 #    Testbed improvements phase 1. Comment can now be added for a test.
 #
@@ -66,7 +69,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
-        FTM_Version: "3.15",
+        FTM_Version: "3.16.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
         FTM_Help: "",
@@ -143,7 +146,7 @@ def MainFunction(DB, report, modifyAllowed):
             _translate(
                 "StartTestbed",
                 "There is a problem with the Analyzed Text Output File path: {outFileVal}. Please check the configuration file setting."
-            ).format(outFileVal=outFileVal)
+            ).format(outFileVal=Utils.shortenPathForDisplay(outFileVal))
         )
         return
 

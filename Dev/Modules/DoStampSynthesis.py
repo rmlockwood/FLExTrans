@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.3 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.2 - 6/24/26 - Ron Lockwood
 #    In One project mode, read target forms (allomorphs, graphemes, and the \m headword keys) in the chosen Target Writing System, and reuse the source project (naming the lexicon files after it) instead of opening a separate target project.
 #
@@ -198,7 +201,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -1502,7 +1505,7 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False, DB
     # Replace underscores with spaces in the Synthesized file
     # Underscores were added for multiword entries that contained a space
     fix_up_text(synFile, cleanUpText)
-    error_list.append((_translate("DoStampSynthesis", "The synthesized target text is in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(synFile)), 0))
+    error_list.append((_translate("DoStampSynthesis", "The synthesized target text is in the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(synFile)), 0))
     error_list.append((_translate("DoStampSynthesis", "Synthesis complete."), 0))
     return error_list
 

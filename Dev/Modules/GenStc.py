@@ -4,6 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/26/26 - Ron Lockwood
 #    Prevent the module from starting in one-project mode.
 #
@@ -80,7 +83,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'InterlinData', 'Mixpanel']
 # Documentation that the user sees:
 docs = {
     FTM_Name: _translate("GenStc", "Generate Sentences from Model"),
-    FTM_Version: "3.16.1",
+    FTM_Version: "3.16.2",
     FTM_ModifiesDB: False,
     FTM_Synopsis: _translate("GenStc", "Iterate over certain grammatical categories in a model sentence to produce variations."),
     FTM_Help: "",
@@ -181,7 +184,7 @@ def initializeOutputFile(configMap, report, configKey):
     try:
         return open(filePath, 'w', encoding='utf-8')
     except IOError:
-        report.Error(_translate("GenStc", 'Problem with output file path: {filePath}. Please check configuration.').format(filePath=filePath))
+        report.Error(_translate("GenStc", 'Problem with output file path: {filePath}. Please check configuration.').format(filePath=Utils.shortenPathForDisplay(filePath)))
         return None
 
 #----------------------------------------------------------------

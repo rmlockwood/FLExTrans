@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 6/24/26 - Ron Lockwood
 #    Added an optional vernWs parameter to insertParagraphs so One project mode can insert text into a chosen vernacular writing system.
 #
@@ -492,7 +495,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         # Check if Paratext path exists
         if not os.path.exists(paratextPath): 
 
-            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=paratextPath))
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=Utils.shortenPathForDisplay(paratextPath)))
             return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
@@ -507,7 +510,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
         if not os.path.exists(projPath): 
             
-            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=projPath))
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=Utils.shortenPathForDisplay(projPath)))
             return
 
         if not fromFLEx:
@@ -523,7 +526,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
                 fileList = glob.glob(bookPathPattern)
 
             if checkBookPath and not fileList:
-                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=bookPathPattern))
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=Utils.shortenPathForDisplay(bookPathPattern)))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():
@@ -672,7 +675,7 @@ def doExport(textContents, report, chapSelectObj, parent):
 
     if not bookPath:
 
-        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=bookPath))
+        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=Utils.shortenPathForDisplay(bookPath)))
         return None
     
     # Create a backup of the paratext file

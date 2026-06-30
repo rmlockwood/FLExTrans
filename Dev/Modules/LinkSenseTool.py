@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/24/26 - Ron Lockwood
 #    One project mode: default each sense to a self-link shown in the target writing system, reuse the source project as the target, let the user override to a different target sense, and delete the link if the user sets the target back to the same sense.
 #
@@ -214,7 +217,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1845,11 +1848,11 @@ def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report
             etObj.write(htmlFileName)
             
         except PermissionError:
-            report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=htmlFileName))
+            report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=Utils.shortenPathForDisplay(htmlFileName)))
             return
         
         except:
-            report.Error(_translate("LinkSenseTool", "Error writing {htmlFileName}.").format(htmlFileName=htmlFileName))
+            report.Error(_translate("LinkSenseTool", "Error writing {htmlFileName}.").format(htmlFileName=Utils.shortenPathForDisplay(htmlFileName)))
             return
         
         # Report how many words were dumped
