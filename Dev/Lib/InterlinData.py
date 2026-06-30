@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.15.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -174,7 +177,7 @@ def getInsertedWordsList(inputFilename, report, DB):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError(_translate("InterlinData", "The Tree Tran Words to Insert File has invalid XML content.") + ' (' + inputFilename + ')')
+        raise ValueError(_translate("InterlinData", "The Tree Tran Words to Insert File has invalid XML content.") + ' (' + Utils.shortenPathForDisplay(inputFilename) + ')')
 
     myRoot = myETree.getroot()
 
@@ -220,7 +223,7 @@ def getTreeSents(inputFilename, report):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError(_translate("InterlinData", "The Tree Tran Result File has invalid XML content.") + ' (' + inputFilename + ')')
+        raise ValueError(_translate("InterlinData", "The Tree Tran Result File has invalid XML content.") + ' (' + Utils.shortenPathForDisplay(inputFilename) + ')')
 
     myRoot = myETree.getroot()
 

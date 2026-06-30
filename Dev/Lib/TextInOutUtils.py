@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay() (added import Utils).
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Factored the shared rule-applying loop into applyRulesToString(); applySearchReplaceRules and
 #    TestClicked now both call it, and improved the failure message.
@@ -82,6 +85,7 @@
 import unicodedata
 import FTPaths
 import ReadConfig
+import Utils
 import regex
 import os
 import shutil
@@ -497,7 +501,7 @@ def applyTextOutRulesFromConfig(inputStr, configMap, report, textOutModuleName):
             try:
                 tree = ET.parse(textOutRulesFile)
             except:
-                report.Error(_translate("TextInOutUtils", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
+                report.Error(_translate("TextInOutUtils", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=Utils.shortenPathForDisplay(textOutRulesFile)))
                 return None
 
     # Do user-defined search/replace rules if needed

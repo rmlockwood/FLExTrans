@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Used Utils.shortenPathForDisplay() for file paths in messages and removed getLastFolderAndFile().
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -74,6 +77,7 @@ from PyQt6.QtCore import QCoreApplication
 import Mixpanel
 from SrcTgtViewer import Ui_SrcTgtWindow
 import FTPaths
+import Utils
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import ReadConfig
 import ExtractSourceText
@@ -99,7 +103,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'SrcTgtViewer']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ViewSrcTgt", "View Source/Target Apertium Text Tool"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),
         FTM_Help       : "",
@@ -210,32 +214,16 @@ class Main(QMainWindow):
     def RTLClicked(self):
         self.load()
 
-    def getLastFolderAndFile(self, path):
-
-        # Get the base name (file name) from the path
-        fileName = os.path.basename(path)
-        
-        # Get the directory name from the path
-        dirName = os.path.dirname(path)
-        
-        # Get the last folder name from the directory path
-        lastFolder = os.path.basename(dirName)
-        
-        # Join the last folder and the file name
-        result = os.path.join(lastFolder, fileName)
-        
-        return result
-
     def load(self):
         # Open the input file
         try:
             f = open(self.viewFile, encoding='utf-8')
         except IOError:
             if self.viewFile == self.src:
-                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening the Source Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
+                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening the Source Apertium Text file: {fileName}. ').format(fileName=Utils.shortenPathForDisplay(self.viewFile)) + \
                                     _translate("ViewSrcTgt", 'Make sure you have run the {moduleName} module first.').format(moduleName=ExtractSourceText.docs[FTM_Name]))
             else:
-                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening a Target Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
+                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening a Target Apertium Text file: {fileName}. ').format(fileName=Utils.shortenPathForDisplay(self.viewFile)) + \
                                     _translate("ViewSrcTgt", 'Make sure you have run the modules up through {moduleName} first.').format(moduleName=RunApertium.docs[FTM_Name]))
             return
         

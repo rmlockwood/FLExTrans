@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -100,7 +103,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
-        FTM_Version    : "3.16",        
+        FTM_Version    : "3.16.1",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",
@@ -187,7 +190,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         f_out = open(myPath, 'w', encoding='utf-8') 
     except IOError as e:
         TargetDB.CloseProject()
-        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=myPath), 2))# 0=info,1=warn.,2=error
+        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=Utils.shortenPathForDisplay(myPath)), 2))# 0=info,1=warn.,2=error
         TargetDB.CloseProject()
         return error_list
     
@@ -280,7 +283,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         else:
             error_list.append((_translate("CatalogTargetAffixes", "Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.").format(gloss=re.sub("_", ".", tupGloss)), 1))
 
-    error_list.append((_translate("CatalogTargetAffixes", "Catalog created in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(filePath)), 0))
+    error_list.append((_translate("CatalogTargetAffixes", "Catalog created in the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(filePath)), 0))
     error_list.append((_translate("CatalogTargetAffixes", "{count} affixes/clitics exported to the catalog.").format(count=str(count)), 0))
 
     return error_list

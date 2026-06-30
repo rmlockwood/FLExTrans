@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.22 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened the help-file path shown in messages with Utils.shortenPathForDisplay() (added import Utils).
+#
 #   Version 3.16.21 - 6/19/26 - Ron Lockwood
 #    Fix Edit category not saving: update the owning word's wordCategory (what the XML is written from), not just the category constituent's display name.
 #
@@ -88,6 +91,7 @@ from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon, QCloseEvent, QDesktopServices
 
 import FTPaths
+import Utils
 
 _translate = QCoreApplication.translate
 
@@ -939,7 +943,7 @@ class RuleAssistantWindow(QMainWindow):
         # Guard so a missing file doesn't crash the tool.
         if not os.path.exists(helpFile):
 
-            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "Help file not found: {file}").format(file=helpFile))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "Help file not found: {file}").format(file=Utils.shortenPathForDisplay(helpFile)))
 
             return
 

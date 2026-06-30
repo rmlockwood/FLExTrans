@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -109,7 +112,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -233,7 +236,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         # of apertium-transfer)
         tree = ET.parse(transferRulePath).getroot()
     except:
-        report.Error(_translate("RunApertium", 'Error in opening the file: "{file}", check that it exists and that it is valid.').format(file=transferRulePath))
+        report.Error(_translate("RunApertium", 'Error in opening the file: "{file}", check that it exists and that it is valid.').format(file=Utils.shortenPathForDisplay(transferRulePath)))
         return True
 
     # Lemmas in <cat-item> are not compared for string equality,
@@ -272,7 +275,7 @@ def checkRuleAttributes(tranferRulePath):
     try:
         rulesTree = ET.parse(tranferRulePath)
     except:
-        error_list.append((_translate("RunApertium", 'Invalid File'), _translate("RunApertium", 'The transfer file: {file} is invalid.').format(file=tranferRulePath), 2))
+        error_list.append((_translate("RunApertium", 'Invalid File'), _translate("RunApertium", 'The transfer file: {file} is invalid.').format(file=Utils.shortenPathForDisplay(tranferRulePath)), 2))
         return error_list
 
     # Find the attributes element
@@ -434,7 +437,7 @@ def runApertium(DB, configMap, report):
     
     # See if the dictionary file exists.
     if not os.path.exists(dictionaryPath):
-        report.Error(_translate("RunApertium", 'The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}').format(file=dictionaryPath, buildLex=ExtrBilingDocs[FTM_Name]))
+        report.Error(_translate("RunApertium", 'The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}').format(file=Utils.shortenPathForDisplay(dictionaryPath), buildLex=ExtrBilingDocs[FTM_Name]))
         return True
     
     # Get the path to the analyzed text
@@ -444,7 +447,7 @@ def runApertium(DB, configMap, report):
     
     # See if the source text file exists.
     if not os.path.exists(analyzedTextPath):
-        report.Error(_translate("RunApertium", 'The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}').format(file=analyzedTextPath, extrSource=ExtrSourceDocs[FTM_Name]))
+        report.Error(_translate("RunApertium", 'The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}').format(file=Utils.shortenPathForDisplay(analyzedTextPath), extrSource=ExtrSourceDocs[FTM_Name]))
         return True
     
     # Get the path to the target apertium file
@@ -459,7 +462,7 @@ def runApertium(DB, configMap, report):
 
     # See if the transfer rules file exists.
     if not os.path.exists(tranferRulePath):
-        report.Error(_translate("RunApertium", 'The transfer rules file does not exist. The file should be at: {file}').format(file=tranferRulePath))
+        report.Error(_translate("RunApertium", 'The transfer rules file does not exist. The file should be at: {file}').format(file=Utils.shortenPathForDisplay(tranferRulePath)))
         return True
     
     # Get the modification date of the transfer rule file.
@@ -517,7 +520,7 @@ def runApertium(DB, configMap, report):
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
     unfixProblemCharsRuleFile(transferResultsPath)
     unfixProblemCharsDict(dictionaryPath)
-    report.Info(_translate("RunApertium", 'Transferred text put in the file: {file}.').format(file=Utils.getPathRelativeToWorkProjectsDir(transferResultsPath)))
+    report.Info(_translate("RunApertium", 'Transferred text put in the file: {file}.').format(file=Utils.shortenPathForDisplay(transferResultsPath)))
     report.Info(_translate("RunApertium", 'Apertium transfer complete.'))
     
     return 1

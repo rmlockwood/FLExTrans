@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.15.4 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Renamed getPathRelativeToWorkProjectsDir to shortenPathForDisplay and reimplemented it to return the path
+#    relative to the work project directory (FTPaths.WORK_DIR), passing non-absolute / outside-the-project values
+#    through unchanged. Wrapped it around the file paths shown in user-facing messages across the modules and libraries.
+#
 #   Version 3.15.3 - 4/22/26 - Ron Lockwood
 #    Fixes #1328. Use the new PyQt6 enums for language and country under locale.
 #
@@ -438,7 +443,7 @@ def decompose(myFile):
         # Open the file and read all the lines
         f = open(myFile , "r", encoding='utf-8')
     except:
-        raise ValueError(_translate("Utils", "Could not open the file {myFile} when converting to NFD.").format(myFile=myFile))
+        raise ValueError(_translate("Utils", "Could not open the file {myFile} when converting to NFD.").format(myFile=shortenPathForDisplay(myFile)))
 
     lines = f.readlines()
     f.close()
@@ -1344,17 +1349,27 @@ def containsInvalidLemmaChars(myStr):
 
     return True if reInvalidLemmaChars.search(myStr) else False
 
-def getPathRelativeToWorkProjectsDir(fullPath):
-    '''Get the path relative to the work projects directory.
-       If WorkProjects isn't found in the path, return the full path.'''
-    
-    # Look for 'WorkProjects' in the path
-    index = fullPath.find('WorkProjects')
-    if index == -1:
+def shortenPathForDisplay(fullPath):
+    '''Shorten an absolute file path for user-facing display by making it relative to the work project
+       directory (FTPaths.WORK_DIR). Anything that is not an absolute path below that directory - a bare
+       filename, an already-relative path, a path on another drive, or a non-path string - is returned
+       unchanged, so this is always safe to wrap around a value that is shown to the user.'''
+
+    # Only absolute paths can meaningfully be made relative; leave everything else (bare filenames, relative paths, non-path strings) untouched so relpath can't mangle it.
+    if not isinstance(fullPath, str) or not os.path.isabs(fullPath):
         return fullPath
-        
-    # Return the path starting from 'WorkProjects'
-    return "..."+fullPath[index:]
+
+    # os.path.relpath raises a ValueError on Windows when the two paths are on different drives.
+    try:
+        relPath = os.path.relpath(fullPath, FTPaths.WORK_DIR)
+    except ValueError:
+        return fullPath
+
+    # A leading '..' means fullPath climbs out of the work project directory, so it isn't below it.
+    if relPath.startswith('..'):
+        return fullPath
+
+    return relPath
 
 def loadTranslations(libList, translatorsList, loadBase=False):
 

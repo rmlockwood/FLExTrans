@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/20/26 - Ron Lockwood
 #    Fixes #1353. When chapter 1 is imported, prepend the \id book-identifier line (kept in the Vernacular WS) to the text.
 #
@@ -186,7 +189,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -352,7 +355,7 @@ def do_import(DB, report, chapSelectObj, tree):
 
     if not bookPath:
 
-        report.Error(_translate("ImportFromParatext", "Could not find the book file: {bookPath}").format(bookPath=bookPath))
+        report.Error(_translate("ImportFromParatext", "Could not find the book file: {bookPath}").format(bookPath=Utils.shortenPathForDisplay(bookPath)))
         return
     
     # Open the Paratext file and read the contents
@@ -601,7 +604,7 @@ def MainFunction(DB, report, modify=True):
             try:
                 tree = ET.parse(textInRulesFile)
             except:
-                report.Error(_translate("ImportFromParatext", "The rules file: {textInRulesFile} has invalid XML data.").format(textInRulesFile=textInRulesFile))
+                report.Error(_translate("ImportFromParatext", "The rules file: {textInRulesFile} has invalid XML data.").format(textInRulesFile=Utils.shortenPathForDisplay(textInRulesFile)))
                 return
 
     # Get the cluster projects
