@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.16.3 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.2 - 6/24/26 - Ron Lockwood
 #    Made the "Source text:" tooltip translatable.
 #
@@ -101,7 +104,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -685,7 +688,7 @@ def RunTestbedLogViewer(report):
     
     # We can't do anything if there is no testbed
     if os.path.exists(testbedPath) == False:
-        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=testbedPath))
+        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=Utils.shortenPathForDisplay(testbedPath)))
         return None
     
     ## Load the testbed results

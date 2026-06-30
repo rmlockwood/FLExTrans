@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 6/9/26 - Laerke
 #    Testbed improvements phase 1. Comment can now be added for a test.
 #
@@ -893,12 +896,12 @@ class FlexTransTestbedFile():
                 f.close()
                 
             except:
-                raise ValueError(_translate("Testbed", "The testbed file: {filePath} could not be read or written.").format(filePath=self.__testbedPath))
+                raise ValueError(_translate("Testbed", "The testbed file: {filePath} could not be read or written.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
             
             try:
                 self.__testbedTree = ET.parse(self.__testbedPath)
             except:
-                raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=self.__testbedPath))
+                raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -1130,7 +1133,7 @@ class FlexTransTestbedResultsFile():
             try:
                 self.__testbedResultsTree = ET.parse(resultsPath)
             except:
-                raise ValueError(_translate("Testbed", "The testbed results file: {resultsPath} is invalid.").format(resultsPath=resultsPath))
+                raise ValueError(_translate("Testbed", "The testbed results file: {resultsPath} is invalid.").format(resultsPath=Utils.shortenPathForDisplay(resultsPath)))
 
             self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
     

@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -159,7 +162,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -284,7 +287,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             if result.returncode == 0:
 
                 gatherWarnings(result, errorList)
-                errorList.append((_translate("DoHermitCrabSynthesis", "Generated the HermitCrab config. file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)), 0))
+                errorList.append((_translate("DoHermitCrabSynthesis", "Generated the HermitCrab config. file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(HCconfigPath)), 0))
             else:
                 errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
                 
@@ -352,7 +355,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the {runApertium} module?').format(transferResultsFile=transferResultsFile, runApertium=RunApertDocs[FTM_Name]), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the {runApertium} module?').format(transferResultsFile=Utils.shortenPathForDisplay(transferResultsFile), runApertium=RunApertDocs[FTM_Name]), 2))
         return errorList
     
     # Read the results file into a string
@@ -421,7 +424,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", 'Error writing the file: {synFile}.').format(synFile=synFile), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Error writing the file: {synFile}.').format(synFile=Utils.shortenPathForDisplay(synFile)), 2))
 
     fSyn.close()
     fSurfaceForms.close()
@@ -438,7 +441,7 @@ def createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemm
 
     except:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}').format(parsesFile=parsesFile), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}').format(parsesFile=Utils.shortenPathForDisplay(parsesFile)), 2))
         return errorList
 
     # Open parses file
@@ -735,7 +738,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
             LUsCount = len(nonEmptyLines)
     except:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when trying to open the file: {parsesFile}').format(parsesFile=parsesFile), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when trying to open the file: {parsesFile}').format(parsesFile=Utils.shortenPathForDisplay(parsesFile)), 2))
         return errorList
     
     errorList.append((_translate("DoHermitCrabSynthesis", 'Processing {LUsCount} unique lexical units.').format(LUsCount=LUsCount), 0))
@@ -768,7 +771,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     fixUpText(synFile, cleanUpText)
 
     # Tell the user which file was created
-    errorList.append((_translate("DoHermitCrabSynthesis", 'The synthesized target text is in the file: {file}.').format(file=Utils.getPathRelativeToWorkProjectsDir(synFile)), 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'The synthesized target text is in the file: {file}.').format(file=Utils.shortenPathForDisplay(synFile)), 0))
     errorList.append((_translate("DoHermitCrabSynthesis", 'Synthesis complete.'), 0))
     
     return errorList
