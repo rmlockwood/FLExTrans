@@ -17,7 +17,7 @@ type="tFlextrans"
 ><date
 >29 June 2026</date
 ><version
->3.15</version
+>3.16</version
 ><contents
 showLevel="4"
 ></contents
@@ -2769,12 +2769,12 @@ id="sRuleAssistEditTreesWord"
 >Editing a word</secTitle
 ><p
 >When you click on a word item in the tree, the context menu shown in <exampleRef
-letter="xWordContrextMenu"
-num="xWordContrextMenu"
+letter="xWordContextMenu"
+num="xWordContextMenu"
 ></exampleRef
 > appears.</p
 ><example
-num="xWordContrextMenu"
+num="xWordContextMenu"
 ><chart
 ><img
 XeLaTeXSpecial="scaled='1250'"
@@ -2905,8 +2905,8 @@ src="Images/CategoryChooser.png"
 >If you choose “Delete,” the category item will be deleted.</p
 ><p
 >When you click on a category item in a word in the target phrase, the context menu shown in <exampleRef
-letter="xWordContrextMenu"
-num="xWordContrextMenu"
+letter="xWordContextMenu"
+num="xWordContextMenu"
 ></exampleRef
 > appears. This is the same as if you had clicked on the word item.</p
 ></section4
@@ -2979,12 +2979,12 @@ id="sRuleAssistTreesAffix"
 >Editing an affix</secTitle
 ><p
 >When you click on an affix item in the tree, the context menu shown in <exampleRef
-letter="xAffixContrextMenu"
-num="xAffixContrextMenu"
+letter="xAffixContextMenu"
+num="xAffixContextMenu"
 ></exampleRef
 > appears.</p
 ><example
-num="xAffixContrextMenu"
+num="xAffixContextMenu"
 ><chart
 ><img
 XeLaTeXSpecial="scaled='1250'"
@@ -3139,7 +3139,7 @@ num="xFeatureSetEditor"
 ><chart
 ><img
 XeLaTeXSpecial="scaled='650'"
-src="Images/DisjointGenderFaturesEditor.png"
+src="Images/DisjointGenderFeaturesEditor.png"
 ></img
 ></chart
 ></example
@@ -3165,7 +3165,7 @@ type="tFlexx"
 > feature and a value for this “co-feature.” Each pair has two combo boxes, one for the <object
 type="tFlexx"
 ></object
-> feature and one for the value of the co-feature.. As you can see in example <exampleRef
+> feature and one for the value of the co-feature. As you can see in example <exampleRef
 letter="xFeatureSetEditor"
 num="xFeatureSetEditor"
 ></exampleRef
@@ -3177,7 +3177,7 @@ id="nBantu1AndBantu2"
 ><p
 >The “1” and the “2” are used merely for sorting purposes. This enables the singular to appear before the plural.</p
 ></endnote
-> Notice that the singular disjoint feature uses the “sg” value of the “number” feature while the plural disjoint feature uses the ”pl” value of the “number” feature. This information enables the <object
+> Notice that the singular disjoint feature uses the “sg” value of the “number” feature while the plural disjoint feature uses the “pl” value of the “number” feature. This information enables the <object
 type="tTool"
 >Rule Assistant</object
 > to create appropriate transfer rules using the “BantuNounClass” cover term.</p
