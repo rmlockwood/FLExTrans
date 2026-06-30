@@ -45,7 +45,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 9,
+    FTM_Version     : 10,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description :
@@ -60,15 +60,10 @@ Bantu Health Check runs the following checks:
 7. No value abbreviation is defined in more than one feature group (e.g. 19 cannot be in both the singular and plural groups).
 8. No affix slot name is used by more than one part of speech.
 
-A configuration dialog lets you choose which of these checks to run; your
-selection is remembered between runs.
-
-Issues are grouped by check. Warnings use a gentler tone (primarily lowercase,
-"problem" instead of "fail").
+A configuration dialog lets you choose which of these checks to run; your selection is remembered between runs.
 """)
 }
 
-import sys
 import os
 import tomllib
 import tomli_w 
@@ -788,22 +783,22 @@ def Main(project, report, modifyAllowed):
 
                         if sg_count != 1:
 
-                            problems.append("singular ({} found, expected 1)".format(sg_count))
+                            problems.append("expected 1 singular feature, found {}".format(sg_count))
 
                         if pl_count != 1:
 
-                            problems.append("plural ({} found, expected 1)".format(pl_count))
+                            problems.append("expected 1 plural feature, found {}".format(pl_count))
 
                         if many_count > 1:
 
-                            problems.append("many ({} found, expected at most 1)".format(many_count))
+                            problems.append("expected at most 1 many feature, found {}".format(many_count))
 
                         if problems and enabled["roots"]:
 
                             gloss = project.LexiconGetSenseGloss(sense)
                             sourceURL = project.BuildGotoURL(sense)
 
-                            msg = "root problem: feature issue ({}). lex: '{}', gloss: '{}'".format("; ".join(problems), lexeme_form, gloss)
+                            msg = "root problem: ({}). lex: '{}', gloss: '{}'".format("; ".join(problems), lexeme_form, gloss)
 
                             details = ["Features found for '{}':".format(lexeme_form)]
 
@@ -1127,11 +1122,11 @@ def Main(project, report, modifyAllowed):
 
         for msg, url, details in issues["roots"]:
 
-            report.Warning(msg, url)
-
             for detail in details:
 
                 report.Info(detail)
+
+            report.Warning(msg, url)
 
         report.Blank()
 
@@ -1157,11 +1152,11 @@ def Main(project, report, modifyAllowed):
 
         for msg, url, details in issues["affix_gloss"]:
 
-            report.Warning(msg, url)
-
             for detail in details:
 
                 report.Info(detail)
+
+            report.Warning(msg, url)
 
         report.Blank()
 
