@@ -7,8 +7,9 @@ from SIL.LCModel import (# type: ignore
     IFsFeatStruc, 
     IFsClosedValue, 
     IPartOfSpeech, 
-    IMoStemMsa, 
+    IMoStemMsa,
     IMoInflAffMsa,
+    IMoDerivAffMsa,
     IMoInflAffixSlot,
     IFsClosedFeature,
 )
@@ -45,7 +46,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 10,
+    FTM_Version     : 11,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description :
@@ -644,6 +645,10 @@ def Main(project, report, modifyAllowed):
     # Check 6: Track found features for all NC slots pos_name -> set of feature values
     found_nc_prefix_features = defaultdict(set)
 
+    # Check 6: Gender values (lowercased) that are realized by a derivational affix. Derivational affixes are not in
+    # a slot, so Check 6 must not flag these as "missing" from the noun class slot even though they are in-use values.
+    derivational_gender_values = set()
+
     # Track POS that actually have an NC slot
     pos_with_nc_slot = set()
 
@@ -824,36 +829,67 @@ def Main(project, report, modifyAllowed):
 
             for msa in entry.MorphoSyntaxAnalysesOC:
 
-                if msa.ClassName != "MoInflAffMsa":
+                msaClass = msa.ClassName
 
+                # Gather the feature structures this affix carries. An inflectional affix keeps a single "Inflection
+                # Features" set; a derivational affix keeps separate "From" and "To" inflection feature sets. Bantu
+                # noun-class affixes are often derivational (e.g. a prefix glossed 17.n derives a class-17 noun and
+                # carries 17 in its "To Inflection Features"), so we collect From/To features and treat them as valid
+                # gender features too - otherwise Check 3 flags the gloss because the class value isn't found.
+                featureStructs = []
+
+                if msaClass == "MoInflAffMsa":
+
+                    msa_c = IMoInflAffMsa(msa)
+
+                    # General NC Tracking (only inflectional affixes belong to slots).
+                    if hasattr(msa_c, "SlotsRC"):
+
+                        for slot in msa_c.SlotsRC:
+
+                            slot_name = project.BestStr(slot.Name)
+
+                            if slot_name in allNCslotNames:
+
+                                in_any_nc_slot = True
+
+                                if hasattr(slot, "Owner") and slot.Owner and slot.Owner.ClassName == "PartOfSpeech":
+
+                                    pos_owning_nc_slot = project.BestStr(IPartOfSpeech(slot.Owner).Name)
+
+                            # Specific Noun NC Slot tracking
+                            if slot_name == nounClassSlotName:
+
+                                in_noun_nc_slot = True
+
+                    if msa_c.InflFeatsOA:
+
+                        featureStructs.append(msa_c.InflFeatsOA)
+
+                elif msaClass == "MoDerivAffMsa":
+
+                    msa_c = IMoDerivAffMsa(msa)
+
+                    # A derivational affix has separate From and To inflection feature sets.
+                    if msa_c.FromMsFeaturesOA:
+
+                        featureStructs.append(msa_c.FromMsFeaturesOA)
+
+                    if msa_c.ToMsFeaturesOA:
+
+                        featureStructs.append(msa_c.ToMsFeaturesOA)
+
+                else:
                     continue
 
-                msa_c = IMoInflAffMsa(msa) 
+                # Feature Extraction (shared by inflectional and derivational affixes).
+                isDerivational = msaClass == "MoDerivAffMsa"
 
-                # General NC Tracking
-                if hasattr(msa_c, "SlotsRC"):
+                for fs in featureStructs:
 
-                    for slot in msa_c.SlotsRC:
+                    if not fs.FeatureSpecsOC:
 
-                        slot_name = project.BestStr(slot.Name)
-
-                        if slot_name in allNCslotNames:
-
-                            in_any_nc_slot = True
-
-                            if hasattr(slot, "Owner") and slot.Owner and slot.Owner.ClassName == "PartOfSpeech":
-
-                                pos_owning_nc_slot = project.BestStr(IPartOfSpeech(slot.Owner).Name)
-
-                        # Specific Noun NC Slot tracking
-                        if slot_name == nounClassSlotName:
-
-                            in_noun_nc_slot = True
-
-                # Feature Extraction
-                fs = getattr(msa_c, "InflFeatsOA", None) or getattr(msa_c, "MsFeaturesOA", None)
-
-                if fs and fs.FeatureSpecsOC:
+                        continue
 
                     fs_list = []
                     get_feat_abbr_list(project, fs.FeatureSpecsOC, fs_list)
@@ -868,6 +904,11 @@ def Main(project, report, modifyAllowed):
 
                             global_noun_features[cat].add(val)
                             entry_gender_feat_abbrs.add(val.lower())
+
+                            # Remember gender values realized by a derivational affix so Check 6 doesn't flag them as missing from the (slot-only) noun class slot.
+                            if isDerivational:
+
+                                derivational_gender_values.add(val.lower())
 
             if in_any_nc_slot and pos_owning_nc_slot:
 
@@ -1027,7 +1068,8 @@ def Main(project, report, modifyAllowed):
 
             for m_feat in sorted(list(master_features), key=numeric_sort_key):
 
-                if m_feat not in found_features and "na" not in m_feat.lower(): # Don't flag missing features that are explicitly marked as "NA"
+                # Don't flag a feature that is explicitly marked "NA", nor one that is realized by a derivational affix (which is never in a slot).
+                if m_feat not in found_features and "na" not in m_feat.lower() and m_feat not in derivational_gender_values:
 
                     msg = "slot problem: missing affix in '{}' Noun Class slot {} for feature '{}'".format(pos_name, slot_label, m_feat)
                     issues["missing_nc"].append((msg, None, []))
