@@ -52,7 +52,7 @@ from PyQt6.QtCore import QCoreApplication
 from SIL.LCModel import *
 from SIL.LCModel import ICmPossibilityRepository
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from SIL.LCModel import IMoStemMsa
 from dataclasses import dataclass
 import ReadConfig

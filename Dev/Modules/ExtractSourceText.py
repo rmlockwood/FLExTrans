@@ -76,7 +76,7 @@ from PyQt6.QtCore import QCoreApplication
 
 import InterlinData
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig

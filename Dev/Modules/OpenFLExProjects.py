@@ -41,7 +41,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListW
 from PyQt6.QtCore import QCoreApplication
 import pygetwindow as gw
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import AllProjectNames
 
 import Mixpanel

@@ -60,7 +60,7 @@ from pathlib import Path
 import tempfile
 import re
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication, QTranslator

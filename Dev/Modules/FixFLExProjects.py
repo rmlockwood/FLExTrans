@@ -36,7 +36,7 @@
 import os.path
 import clr
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import FWProjectsDir
 from flexlibs import AllProjectNames
 
