@@ -143,22 +143,22 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
       <location filename="../LiveRuleTester.py" line="634"/>
       <source>&amp;Add to Testbed</source>
-      <translation>&amp;Ajouter au banc d'essai</translation>
+      <translation>&amp;Ajouter au fichier test</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="635"/>
       <source>Add multiple words to the testbed word by word</source>
-      <translation>Ajouter plusieurs mots au banc d'essai mot par mot</translation>
+      <translation>Ajouter plusieurs mots au fichier test mot par mot</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="636"/>
       <source>&amp;Edit Testbed</source>
-      <translation>&amp;Modifier le banc d'essai</translation>
+      <translation>&amp;Modifier le fichier test</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="637"/>
       <source>&amp;View Testbed Log</source>
-      <translation>&amp;Afficher le journal du banc d'essai</translation>
+      <translation>&amp;Afficher le journal du fichier test</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="639"/>
