@@ -6,7 +6,7 @@
     <message>
       <location filename="../TextInRules.py" line="70"/>
       <source>Text In Rules</source>
-      <translation>Règles du texte en entrée</translation>
+      <translation>Tester dans les règles</translation>
     </message>
     <message>
       <location filename="../TextInRules.py" line="73"/>
@@ -18,7 +18,7 @@
       <source>This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 Paratext. Regular expressions and Wildebeest normalization can be used if desired.</source>
       <translation>Ce module est utilisé pour définir et tester un ensemble d'opérations de recherche et remplacement à utiliser pour corriger le texte qui sort de
-Paratext. Les expressions régulières et la normalisation Wildebeest peuvent être utilisées si désiré.</translation>
+Paratext. Les expressions régulières et la normalisation Wildebeest peuvent être utilisées si souhaité.</translation>
     </message>
   </context>
 </TS>

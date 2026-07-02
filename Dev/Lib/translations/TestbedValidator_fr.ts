@@ -21,7 +21,7 @@
     <message>
       <location filename="../TestbedValidator.py" line="232"/>
       <source>Configuration File Problem. Morphnames not found.</source>
-      <translation>Problème de fichier de configuration. Morphnames introuvable.</translation>
+      <translation>Problème de fichier de configuration. Noms de morphèmes introuvables.</translation>
     </message>
   </context>
 </TS>

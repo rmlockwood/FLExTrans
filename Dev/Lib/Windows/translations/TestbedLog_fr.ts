@@ -6,7 +6,7 @@
     <message>
       <location filename="../TestbedLog.py" line="74"/>
       <source>Testbed Log</source>
-      <translation>Journal du banc d'essai</translation>
+      <translation>Journal du fichier test</translation>
     </message>
     <message>
       <location filename="../TestbedLog.py" line="75"/>
@@ -16,7 +16,7 @@
     <message>
       <location filename="../TestbedLog.py" line="76"/>
       <source>Edit Testbed</source>
-      <translation>Modifier le banc d'essai</translation>
+      <translation>Modifier le fichier test</translation>
     </message>
     <message>
       <location filename="../TestbedLog.py" line="77"/>
