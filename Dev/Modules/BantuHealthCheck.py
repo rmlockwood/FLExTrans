@@ -46,7 +46,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 docs = {
     FTM_Name        : _translate("BantuHealthCheck", "Bantu Health Check"),
-    FTM_Version     : 11,
+    FTM_Version     : 12,
     FTM_ModifiesDB  : False,
     FTM_Synopsis    : _translate("BantuHealthCheck", "Flags various issues having to do with gender features in Bantu projects."),
     FTM_Description :
@@ -54,7 +54,7 @@ _translate("BantuHealthCheck", """
 Bantu Health Check runs the following checks:
 1. Noun roots have exactly one singular and one plural gender value defined, with an optional 'many' value. (Skips nouns with 0 features.)
 2. Each affix in the noun-class slot has exactly one gender feature.
-3. Affix glosses match the expected 'n.xyz' format and align with their features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class number (e.g. '5') unless the sub-option to enforce the full format is on.
+3. Affix glosses match the expected 'd.xyz' format and align with their features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class number (e.g. '5') unless the sub-option to enforce the full format is on.
 4. No two different affixes share the same gloss.
 5. Affix glosses contain no spaces.
 6. Every gender value in use has an affix in each part of speech's noun-class slot.
@@ -80,7 +80,7 @@ BANTU_SETTINGS_FILE = "BantuSettings.toml"
 CHECKS = [
     ("roots",       "Check 1: Noun roots",              "Each noun root has exactly one singular and one plural gender value (optional 'many')."),
     ("prefixes",    "Check 2: Noun-class slot affixes", "Each affix in the noun-class slot has exactly one gender feature."),
-    ("affix_gloss", "Check 3: Affix gloss consistency", "Affix glosses match the expected 'n.xyz' format and align with their features/POS. E.g. 19.num"),
+    ("affix_gloss", "Check 3: Affix gloss consistency", "Affix glosses match the expected 'd.xyz' format and align with their features/POS. E.g. 19.num"),
     ("duplicates",  "Check 4: Duplicate glosses",       "No two different affixes share the same gloss."),
     ("spaces",      "Check 5: Spaces in glosses",       "Affix glosses contain no spaces."),
     ("missing_nc",  "Check 6: Missing NC affixes",      "Every gender value in use has an affix in each part of speech's noun-class slot."),
@@ -90,6 +90,10 @@ CHECKS = [
 
 #----------------------------------------------------------------
 # Helper Functions
+
+# A gender / noun-class value is not always a bare number like '3'. It can carry a trailing letter ('3a'), parenthesize that letter ('3(a)'), or combine
+# two classes with a plus ('6+14a'). This character class matches any such value: it must start with a digit and may then contain digits, lowercase letters, parentheses, or a plus.
+GENDER_VALUE_PATTERN = r'[0-9][0-9a-z()+]*'
 
 def numeric_sort_key(s):
 
@@ -350,7 +354,7 @@ class BantuConfigDialog(QDialog):
 
             self.check_boxes[key] = cb
 
-            # Check 3 carries an indented sub-option: optionally enforce the 'n.xyz' gloss format on noun-class
+            # Check 3 carries an indented sub-option: optionally enforce the 'd.xyz' gloss format on noun-class
             # slot affixes too (off by default, since bare class numbers like '5' are normally allowed there).
             if key == "affix_gloss":
 
@@ -381,7 +385,7 @@ class BantuConfigDialog(QDialog):
 
     def build_nc_format_suboption(self):
 
-        """Indented sub-option under Check 3. When checked, noun-class slot affixes must also match the 'n.xyz' gloss format (e.g. '5.n');
+        """Indented sub-option under Check 3. When checked, noun-class slot affixes must also match the 'd.xyz' gloss format (e.g. '5.n');
         when unchecked (the default) a bare class number like '5' is accepted for the noun slot, and it only applies when Check 3 is enabled."""
 
         row = QHBoxLayout()
@@ -394,7 +398,7 @@ class BantuConfigDialog(QDialog):
         self.nc_format_box = QCheckBox()
         self.nc_format_box.setChecked(saved)
 
-        label = QLabel("Also require 'n.xyz' format for noun-class slot affixes (e.g. '5.n'); otherwise a bare class number like '5' is allowed there.")
+        label = QLabel("Also require 'd.xyz' format for noun-class slot affixes (e.g. '5.n'); otherwise a bare class number like '5' is allowed there.")
         label.setWordWrap(True)
 
         row.addWidget(self.nc_format_box, 0, Qt.AlignmentFlag.AlignTop)
@@ -674,7 +678,7 @@ def Main(project, report, modifyAllowed):
     checks_to_run = bantuData["bantu_info"].get("checks_to_run", [key for key, _, _ in CHECKS])
     enabled = {key: (key in checks_to_run) for key, _, _ in CHECKS}
 
-    # Sub-option of Check 3: when on, noun-class slot affixes must also match the 'n.xyz' gloss format rather than
+    # Sub-option of Check 3: when on, noun-class slot affixes must also match the 'd.xyz' gloss format rather than
     # being allowed a bare class number like '5'. Defaults off to preserve the traditional bare-number convention.
     enforceNounSlotGlossFormat = bantuData["bantu_info"].get("enforce_noun_slot_gloss_format", False)
 
@@ -1003,16 +1007,16 @@ def Main(project, report, modifyAllowed):
 
                     continue
 
-                # Get the gender feature then the rest of the gloss
-                match = re.match(r'^([0-9]+[a-z]*)\.(.+)', gloss)
+                # Get the gender feature then the rest of the gloss. The gender value can be more than a bare number (e.g. '3a', '3(a)', '6+14a'), so match the full GENDER_VALUE_PATTERN before the dot.
+                match = re.match(r'^(' + GENDER_VALUE_PATTERN + r')\.(.+)', gloss)
 
                 if not match:
 
                     # Noun NC prefixes are conventionally glossed with a bare class number (e.g. '5'), so by default they are exempt from the
-                    # 'n.xyz' format check. The Check 3 sub-option forces the full format on them too, in which case a bare number is flagged.
+                    # 'd.xyz' format check. The Check 3 sub-option forces the full format on them too, in which case a bare number is flagged.
                     if not in_noun_nc_slot or enforceNounSlotGlossFormat:
 
-                        msg = "affix problem: does not match expected 'n.xyz' format (found '{}') for lex: '{}'".format(gloss, lexeme_form)
+                        msg = "affix problem: does not match expected 'd.xyz' format (found '{}') for lex: '{}'".format(gloss, lexeme_form)
                         issues["affix_gloss"].append((msg, sourceURL, []))
                 else:
                     g_feat = match.group(1).lower()
