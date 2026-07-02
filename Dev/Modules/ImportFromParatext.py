@@ -154,7 +154,7 @@ from SIL.LCModel import ( # type: ignore
 )
 from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from PyQt6 import QtGui
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QMainWindow, QApplication, QComboBox, QMessageBox, QCheckBox

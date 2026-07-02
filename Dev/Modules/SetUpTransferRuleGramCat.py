@@ -72,7 +72,7 @@ from SIL.LCModel import ( # type: ignore
     IMoInflAffMsa,
     )
 
-from flextoolslib import *                                          
+from flextoolslib import * # type: ignore
 
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication

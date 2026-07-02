@@ -56,7 +56,7 @@ from unicodedata import normalize
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import AllProjectNames
 from SIL.LCModel import ( # type: ignore
     IMoAdhocProhibGrRepository, 

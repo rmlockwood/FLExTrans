@@ -54,7 +54,7 @@
 #   synthesis. Regular expression can be used if desired.
 #
 
-from flextoolslib import *                                          
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
