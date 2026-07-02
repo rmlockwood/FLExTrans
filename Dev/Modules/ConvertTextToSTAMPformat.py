@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.2 - 7/2/26 - Ron Lockwood
+#    Guard against a None anaObj before setting after-punctuation on the previous word.
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -132,7 +135,7 @@ from SIL.LCModel import ( # type: ignore
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString          # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import *  # type: ignore                                             
 from flexlibs import FLExProject
 
 from PyQt6.QtWidgets import QApplication
@@ -164,7 +167,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -243,16 +246,16 @@ class ANAInfo(object):
     def getAnalysis(self):
         return self.Analysis
     def getAnalysisPrefixes(self): # returns [] if no prefix
-        return re.search(r'(.*)\s*<',self.Analysis).group(1).split()
+        return re.search(r'(.*)\s*<',self.Analysis).group(1).split() # type: ignore
     def getAnalysisRoot(self):
-        return re.search(r'< .+ (.+) >',self.Analysis).group(1)
+        return re.search(r'< .+ (.+) >',self.Analysis).group(1) # type: ignore
     # Apply the capitalization code algoritm to possibly capitalize the root string.
     def getCapitalizedAnalysisRoot(self):
-        return self.capitalizeString(re.search(r'< .+ (.+) >',self.Analysis).group(1))
+        return self.capitalizeString(re.search(r'< .+ (.+) >',self.Analysis).group(1)) # type: ignore
     def getAnalysisRootPOS(self):
-        return re.search(r'< (.+) .+ >',self.Analysis).group(1)
+        return re.search(r'< (.+) .+ >',self.Analysis).group(1) # type: ignore
     def getAnalysisSuffixes(self):
-        return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
+        return re.search(r'>\s*(.*)',self.Analysis).group(1).split() # type: ignore
     def getBeforePunc(self):
         return self.BeforePunc
     def getCapitalization(self, foldForANA=False):
@@ -324,7 +327,7 @@ class ANAInfo(object):
     def getFirstCompForHCoutput(self):
         return self._firstComponentForHC
     def getSenseNum(self):
-        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
+        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match  # type: ignore
     def removeUnderscores(self, myStr):
         return re.sub(r'_', ' ', myStr)
     def removePeriods(self, myStr):
@@ -707,6 +710,9 @@ class ConversionData():
         # Get the date of target affixes file
         tgtAffixFile = ReadConfig.getConfigVal(self.configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, self.report, giveError=False) # don't give error yet
         
+        if not tgtAffixFile:
+            return True
+        
         try:
             affTime = os.path.getmtime(tgtAffixFile)
         except OSError:
@@ -943,6 +949,7 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
     numPfxs = len(pfxs)
     sfxs = myAnaInfo.getAnalysisSuffixes()
     tags = pfxs+sfxs
+    numFeatures = 0
     
     # loop through the irr. infl. form variant list for this main entry
     variantANAandFeatlist = rootVariantANAandFeatlistMap[myAnaInfo.getPreDotRoot()]
@@ -1012,7 +1019,7 @@ def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCr
         originalLexicalUnitStr = myAnaInfo.getOriginalLexicalUnitString()
 
         # see if the orignal LU string for is already in our map
-        if originalLexicalUnitStr not in HCparseStrMap:
+        if HCparseStrMap and originalLexicalUnitStr not in HCparseStrMap:
 
             # Get the string that we would write to the parses file
             HCparseStr = myAnaInfo.getHCparseStr()
@@ -1031,7 +1038,7 @@ def writeComponents(componentList, fOutput, theAnaInfo, rootVariantANAandFeatlis
         originalLexicalUnitStr = theAnaInfo.getOriginalLexicalUnitString()
 
         # see if the orignal LU string for this complex form is already in our map
-        if originalLexicalUnitStr not in HCparseStrMap:
+        if HCparseStrMap and originalLexicalUnitStr not in HCparseStrMap:
 
             for i, listAnaInfo in enumerate(componentList):
                 
@@ -1199,10 +1206,15 @@ def convertIt(pfxName, outName, report, sentPunct):
             anaObj.setBeforePunc(punc)
 
         else:
-            # Determine what part of the punctuation goes at the end of the last word 
+            # Determine what part of the punctuation goes at the end of the last word
             # and which goes to the beginning of the current word.
             pre, post = calculatePrePostPunctuation(punc)
-            anaObj.setAfterPunc(post)
+
+            # 'post' belongs to the previous word (anaObj isn't reassigned to the current word until below).
+            # Guard in case the previous word never produced a valid ANA object.
+            if anaObj is not None:
+
+                anaObj.setAfterPunc(post)
 
             # Process the lexical unit string and get an ANA object back
             anaObj, morphs = processLU(lu, affixMap)
@@ -1340,13 +1352,17 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     complexFormTypeMap = {}
     
     # Create a map that tracks which complex form types are for first or for last 
-    for cmplxType in complexForms1st:
+    if complexForms1st:
+
+        for cmplxType in complexForms1st:
+            
+            complexFormTypeMap[cmplxType] = 0  # 0 - inflection on first root
         
-        complexFormTypeMap[cmplxType] = 0  # 0 - inflection on first root
-        
-    for cmplxType in complexForms2nd:
-        
-        complexFormTypeMap[cmplxType] = 1  # 1 - inflection on last root
+    if complexForms2nd:
+
+        for cmplxType in complexForms2nd:
+            
+            complexFormTypeMap[cmplxType] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA list
     errList, anaInfoList = convertIt(affixFile, transferResultsFile, report, sentPunct)
@@ -1380,7 +1396,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
             fOutput.write('\n') # always need a blank line at the top
 
         else:
-            fOutput = open(HCmasterFile, 'w', encoding='utf-8')
+            fOutput = open(HCmasterFile, 'w', encoding='utf-8')  # type: ignore
     except:
 
         errorList.append((_translate("ConvertTextToSTAMPformat", "Error writing the output file."), 2))
@@ -1431,7 +1447,7 @@ def convertToSynthesizerFormat(DB, configMap, report):
         affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
         
     # Verify that the affix file exist.
-    if not os.path.exists(affixFile):
+    if affixFile and not os.path.exists(affixFile):
         
         report.Error(_translate("ConvertTextToSTAMPformat", "The {modname} module must be run before this module. The file: ...\\{filePath} does not exist.").format(
             modname=catalogDocs[FTM_Name], filePath=os.path.relpath(affixFile, FTPaths.WORK_PROJECTS_DIR)))
