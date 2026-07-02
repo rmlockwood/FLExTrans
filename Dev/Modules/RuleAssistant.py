@@ -70,7 +70,7 @@ import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication

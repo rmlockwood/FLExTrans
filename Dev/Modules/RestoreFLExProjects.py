@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -44,7 +47,7 @@ from PyQt6 import QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
 from PyQt6.QtCore import QCoreApplication
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import FTPaths
@@ -70,7 +73,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",
@@ -221,7 +224,7 @@ def mainFunction(DB, report, modifyAllowed):
     defaultFolder = FTPaths.SAMPLE_PROJECTS_DIR
 
     if not Path(defaultFolder).is_dir():
-        report.Error(_translate("RestoreFLExProjects", "Could not find the sample projects folder: {defaultFolder}.").format(defaultFolder=defaultFolder))
+        report.Error(_translate("RestoreFLExProjects", "Could not find the sample projects folder: {defaultFolder}.").format(defaultFolder=Utils.shortenPathForDisplay(defaultFolder)))
         return
 
     mainWindow = MainWindow(defaultFolder)

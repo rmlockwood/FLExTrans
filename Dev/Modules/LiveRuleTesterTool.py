@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.5 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.4 - 6/24/26 - Ron Lockwood
 #    Fixes #1134. Focus the active source-selection widget when the tool opens so the arrow keys work right away.
 #
@@ -298,7 +301,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.4",
+        FTM_Version    : "3.16.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1675,7 +1678,7 @@ class Main(QMainWindow):
                     os.chdir(fieldworksDir)
 
                 except OSError as e:
-                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format(fieldworksDir=fieldworksDir, e=e))
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format(fieldworksDir=Utils.shortenPathForDisplay(fieldworksDir), e=e))
                     self.unsetCursor()
                     return
 
@@ -2855,7 +2858,7 @@ class Main(QMainWindow):
         except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
 
             tgt_file = re.sub(r'\.txt', '.aper', tgt_file)
-            err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=tgt_file)
+            err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=Utils.shortenPathForDisplay(tgt_file))
 
             try:
                 tgtf = open(tgt_file, encoding='utf-8')
@@ -2868,7 +2871,7 @@ class Main(QMainWindow):
                 self.unsetCursor()
                 return
         except:
-            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgt_file}.').format(tgt_file=tgt_file)
+            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgt_file}.').format(tgt_file=Utils.shortenPathForDisplay(tgt_file))
             self.ui.TargetTextEdit.setPlainText(err_msg)
             self.unsetCursor()
             return
@@ -3118,7 +3121,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             f_treeTranResultFile = open(str(treeTranResultFile), encoding='utf-8')
             f_treeTranResultFile.close()
         except:
-            report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=treeTranResultFile))
+            report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=Utils.shortenPathForDisplay(treeTranResultFile)))
             return ERROR_HAPPENED
 
         # get the list of guids from the TreeTran results file
