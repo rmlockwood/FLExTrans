@@ -68,7 +68,7 @@ import sys
 import unicodedata
 import xml.etree.ElementTree as ET
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication

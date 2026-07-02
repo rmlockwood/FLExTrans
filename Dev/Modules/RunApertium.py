@@ -78,7 +78,7 @@ import unicodedata
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import Utils

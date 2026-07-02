@@ -85,7 +85,7 @@ from SIL.LCModel import ( # type: ignore
     IMoInflAffMsa,
     IMoDerivAffMsa,
     )
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig

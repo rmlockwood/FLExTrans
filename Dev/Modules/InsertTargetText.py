@@ -90,7 +90,7 @@ from SIL.LCModel import ( # type: ignore
 )
 from SIL.LCModel.Core.Text import TsStringUtils  # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject
 
 import ChapterSelection

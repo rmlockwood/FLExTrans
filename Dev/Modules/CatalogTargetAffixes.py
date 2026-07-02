@@ -79,7 +79,7 @@ from PyQt6.QtWidgets import QApplication
 
 from SIL.LCModel import * # type: ignore
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject
 
 import Mixpanel

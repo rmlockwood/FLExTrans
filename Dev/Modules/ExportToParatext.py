@@ -95,7 +95,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6.QtCore import QCoreApplication
 
 from SIL.LCModel import * # type: ignore                                                  
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig

@@ -184,7 +184,7 @@ from SIL.LCModel import ( # type: ignore
     ILexEntry,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore     
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 
 import InterlinData

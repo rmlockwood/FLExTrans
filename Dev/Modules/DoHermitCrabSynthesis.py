@@ -136,7 +136,7 @@ import xml.etree.ElementTree as ET
 
 from SIL.LCModel import *                                                    # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject, FWProjectsDir
 
 from PyQt6.QtCore import QCoreApplication, QTranslator
