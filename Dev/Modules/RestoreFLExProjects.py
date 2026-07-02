@@ -47,7 +47,7 @@ from PyQt6 import QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
 from PyQt6.QtCore import QCoreApplication
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import FTPaths

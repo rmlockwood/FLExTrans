@@ -63,7 +63,7 @@ import xml.etree.ElementTree as ET
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
 
-from flextoolslib import *                                          
+from flextoolslib import * # type: ignore
 
 import TextInOutUtils
 import Mixpanel

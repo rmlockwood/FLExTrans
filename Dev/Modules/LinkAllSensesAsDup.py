@@ -56,7 +56,7 @@ from System import Guid # type: ignore
 from System import String # type: ignore
 
 from SIL.LCModel import ICmObjectRepository, ILexSense # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig

@@ -76,7 +76,7 @@ from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
 from PyQt6.QtCore import QCoreApplication, QDateTime
 
 from SIL.LCModel import *   # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import FTPaths

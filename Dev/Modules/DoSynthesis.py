@@ -44,7 +44,7 @@
 #   switch synthesizing methods quickly. 
 #
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig

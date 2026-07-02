@@ -40,7 +40,7 @@ import shutil
 from datetime import datetime
 
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
