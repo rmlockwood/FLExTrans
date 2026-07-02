@@ -6,7 +6,7 @@
     <message>
       <location filename="../SetUpTransferRuleGramCat.py" line="102"/>
       <source>Set Up Transfer Rule Categories and Attributes</source>
-      <translation>Configurer les catégories et attributs de règles de transfert</translation>
+      <translation>Configurer les catégories et attributs des règles de transfert</translation>
     </message>
     <message>
       <location filename="../SetUpTransferRuleGramCat.py" line="105"/>
