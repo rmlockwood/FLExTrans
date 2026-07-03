@@ -149,6 +149,54 @@ SDKs are imported lazily inside each provider, so only the selected provider's S
   modifying, and the user's description.
 - `max_tokens` / `max_output_tokens` ~16000; non-streaming is fine for a single rule.
 
+### 8a. Adding a new AI provider
+
+The rest of the module (dialog, validation loop, preview, config, key handling, rate-limit UI) is provider-agnostic — everything flows through the `Engine` — so adding a provider is small. You
+touch two places in `AIRules.py` (plus optionally requirements/config), and nothing else changes.
+
+1. **Write a provider class** with these class attributes and two methods (model on `AnthropicProvider` / `GeminiProvider`):
+   - `name` — the value users put in the `AIRulesProvider` config setting (e.g. `'openai'`).
+   - `displayName` — shown in the consent dialog and error messages (e.g. `'OpenAI'`).
+   - `defaultModel` — used when `AIRulesModel` isn't set.
+   - `envVars` — a tuple of env var name(s) `resolveApiKey` checks (e.g. `('OPENAI_API_KEY',)`).
+   - `keyUrl` — where to get a key; shown in the "no key" dialog.
+   - `makeClient(self, apiKey)` — **import the SDK lazily inside this method** (so only the selected provider's SDK must be installed) and return the client.
+   - `generate(self, client, model, systemInstruction, userContent)` — call the API and **return exactly the tuple `(rule_xml: str, new_defs: list[str], explanation: str)`**. Use whatever the SDK
+     offers for structured output: a forced tool/function call (like Anthropic) or JSON-schema mode (like Gemini). Parse the response and return.
+
+   ```python
+   class MyProvider:
+       name = 'myprovider'
+       displayName = 'My Provider'
+       defaultModel = 'some-model-id'
+       envVars = ('MYPROVIDER_API_KEY',)
+       keyUrl = 'https://.../keys'
+
+       def makeClient(self, apiKey):
+           import myprovider_sdk                     # lazy import
+           return myprovider_sdk.Client(api_key=apiKey)
+
+       def generate(self, client, model, systemInstruction, userContent):
+           # ...call the API for structured output...
+           return rule_xml, new_defs, explanation    # (str, list[str], str)
+   ```
+
+2. **Register it** in the `PROVIDERS` dict (the only other change):
+   ```python
+   PROVIDERS = {
+       AnthropicProvider.name: AnthropicProvider(),
+       GeminiProvider.name: GeminiProvider(),
+       MyProvider.name: MyProvider(),                # ← add this line
+   }
+   ```
+
+**Two behaviours `generate()` should preserve** so the new provider acts like the others:
+- On **HTTP 429**, `raise RateLimitError(self.displayName, retryAfterSeconds_or_None)` — the dialog then shows the clean "try again in N s" message instead of a raw dump.
+- On a **blocked / empty / refused** response, `raise RuntimeError(...)` with a readable message (the dialog surfaces it via the "failed" path).
+
+**Outside `AIRules.py`:** add the SDK to `requirements.txt` (both copies; can be optional/documented since imports are lazy). No config or conventions-doc changes are needed — `AIRulesProvider`, `AIRulesModel`,
+and `AIRulesApiKey` already work generically, and the system instruction is provider-independent.
+
 ---
 
 ## 9. Validation-retry loop (the safety net)

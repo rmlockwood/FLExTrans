@@ -461,6 +461,7 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
     lastRule, lastDefs, lastExpl, lastErrors = '', [], '', ''
 
     workDir = tempfile.mkdtemp(prefix='airules_')
+    
     # apertium-preprocess-transfer resolves the DTD relative to the file.
     shutil.copyfile(dtdPath, os.path.join(workDir, 'transfer.dtd'))
 
