@@ -14,9 +14,7 @@ import os
 
 from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QRadioButton, QButtonGroup, QListWidget,
-    QPlainTextEdit, QPushButton, QLabel, QMessageBox, QApplication, QWidget)
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QRadioButton, QButtonGroup, QListWidget, QPlainTextEdit, QPushButton, QLabel, QMessageBox, QApplication, QWidget)
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
@@ -57,8 +55,7 @@ class GenerateWorker(QObject):
 class WorkOnRulesWithAIDlg(QDialog):
     '''Create or modify one Apertium transfer rule with AI assistance.'''
 
-    def __init__(self, transferPath, ruleNames, systemInstruction, defsSummary,
-                 projectData, engine, dtdPath, compilerExe, parent=None):
+    def __init__(self, transferPath, ruleNames, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
 
         super().__init__(parent)
 
@@ -184,8 +181,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         description = self.descriptionEdit.toPlainText().strip()
 
         if not description:
-            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'),
-                                _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
 
         mode = 'modify' if self.isModify() else 'create'
@@ -197,14 +193,12 @@ class WorkOnRulesWithAIDlg(QDialog):
             targetComment = self.selectedRuleComment()
 
             if not targetComment:
-                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'),
-                                    _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
                 return
 
             self.currentRuleXml = AIRules.getRuleXmlByComment(self.transferPath, targetComment)
 
-        userContent = AIRules.buildUserContent(mode, description, self.defsSummary,
-                                               self.projectData, self.currentRuleXml)
+        userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml)
 
         params = {
             'engine': self.engine,
@@ -317,8 +311,7 @@ class WorkOnRulesWithAIDlg(QDialog):
             QMessageBox.critical(self, _translate('WorkOnRulesWithAI', 'Error writing rule'), str(err))
             return
 
-        QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Rule written'),
-                                _translate('WorkOnRulesWithAI', 'The rule was written to the transfer file.\n\nBackup saved to:\n{path}').format(path=backupPath))
+        QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Rule written'), _translate('WorkOnRulesWithAI', 'The rule was written to the transfer file.\n\nBackup saved to:\n{path}').format(path=backupPath))
         self.accept()
 
     def onOpenInXxe(self):
@@ -334,12 +327,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         workDir = tempfile.mkdtemp(prefix='airules_xxe_')
         import shutil
         shutil.copyfile(self.dtdPath, os.path.join(workDir, 'transfer.dtd'))
-        tempPath = AIRules.spliceIntoTemp(self.transferPath, self.result.ruleXml,
-                                          self.result.newDefs, mode, targetComment, workDir)
+        tempPath = AIRules.spliceIntoTemp(self.transferPath, self.result.ruleXml, self.result.newDefs, mode, targetComment, workDir)
 
         try:
             os.startfile(tempPath)   # Windows: open with the registered handler (XXE)
 
         except Exception:
-            QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Open in XXE'),
-                                    _translate('WorkOnRulesWithAI', 'A copy with your rule was written to:\n{path}\n\nOpen it in XXE to review.').format(path=tempPath))
+            QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Open in XXE'), _translate('WorkOnRulesWithAI', 'A copy with your rule was written to:\n{path}\n\nOpen it in XXE to review.').format(path=tempPath))

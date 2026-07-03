@@ -142,14 +142,8 @@ class AnthropicProvider:
 
         try:
             response = client.messages.create(
-                model=model,
-                max_tokens=MAX_TOKENS,
-                thinking={'type': 'adaptive'},
-                system=[{'type': 'text', 'text': systemInstruction, 'cache_control': {'type': 'ephemeral'}}],
-                tools=[SUBMIT_RULE_TOOL],
-                tool_choice={'type': 'tool', 'name': 'submit_rule'},
-                messages=[{'role': 'user', 'content': userContent}],
-            )
+                model=model, max_tokens=MAX_TOKENS, thinking={'type': 'adaptive'}, system=[{'type': 'text', 'text': systemInstruction, 'cache_control': {'type': 'ephemeral'}}], tools=[SUBMIT_RULE_TOOL],
+                tool_choice={'type': 'tool', 'name': 'submit_rule'}, messages=[{'role': 'user', 'content': userContent}], )
 
         except anthropic.RateLimitError as err:
 
@@ -196,15 +190,8 @@ class GeminiProvider:
 
         try:
             response = client.models.generate_content(
-                model=model,
-                contents=userContent,
-                config=types.GenerateContentConfig(
-                    system_instruction=systemInstruction,
-                    max_output_tokens=MAX_TOKENS,
-                    response_mime_type='application/json',
-                    response_schema=RULE_SCHEMA,
-                ),
-            )
+                model=model, contents=userContent, config=types.GenerateContentConfig(
+                    system_instruction=systemInstruction, max_output_tokens=MAX_TOKENS, response_mime_type='application/json', response_schema=RULE_SCHEMA, ), )
 
         except errors.APIError as err:
 
@@ -224,9 +211,7 @@ class GeminiProvider:
 
 # Registry of available providers, keyed by the config value.
 PROVIDERS = {
-    AnthropicProvider.name: AnthropicProvider(),
-    GeminiProvider.name: GeminiProvider(),
-}
+    AnthropicProvider.name: AnthropicProvider(), GeminiProvider.name: GeminiProvider(), }
 
 def getProvider(name: Optional[str] = None):
     '''Return the provider for `name` (case-insensitive), falling back to the default when the name is missing or unknown.'''
@@ -313,14 +298,7 @@ def extractExistingDefs(transferPath: str) -> dict:
     lines.append('Existing rule names (comment): ' + ', '.join(ruleNames))
 
     return {
-        'cats': cats,
-        'attrs': attrs,
-        'variables': variables,
-        'lists': lists,
-        'macros': macros,
-        'ruleNames': ruleNames,
-        'summaryText': '\n'.join(lines),
-    }
+        'cats': cats, 'attrs': attrs, 'variables': variables, 'lists': lists, 'macros': macros, 'ruleNames': ruleNames, 'summaryText': '\n'.join(lines), }
 
 def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
     '''Return the XML text of the rule whose comment matches, or None.'''
@@ -335,8 +313,7 @@ def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
 
     return None
 
-def buildUserContent(mode: str, description: str, defsSummary: str,
-                     projectData: str, currentRuleXml: Optional[str]) -> str:
+def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str]) -> str:
     '''Assemble the volatile per-request part of the prompt: the project's real categories/features, the existing-definition summary, the current rule (when modifying), and the
     user's request.'''
 
@@ -361,8 +338,7 @@ def buildUserContent(mode: str, description: str, defsSummary: str,
 
     return '\n'.join(parts)
 
-def generateRule(engine: Engine, systemInstruction: str, userContent: str,
-                 priorErrors: Optional[str] = None) -> tuple:
+def generateRule(engine: Engine, systemInstruction: str, userContent: str, priorErrors: Optional[str] = None) -> tuple:
     '''Make one generation call through the engine and return (ruleXml, newDefs, explanation). On a validation retry the prior errors are appended so the model can fix them.'''
 
     text = userContent
@@ -383,8 +359,7 @@ def getSection(root: ET.Element, sectionName: str) -> ET.Element:
 
     return elem
 
-def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str],
-                   mode: str, targetComment: Optional[str], workDir: str) -> str:
+def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: str, targetComment: Optional[str], workDir: str) -> str:
     '''Insert the candidate rule and any new definitions into a copy of the transfer file, write it to workDir alongside a copy of the DTD, and return the temp file path. For "modify"
     the rule with targetComment is replaced; for "create" the rule is appended to section-rules (specific-before-general placement is a later refinement).'''
 
@@ -454,8 +429,7 @@ def validateFile(tempPath: str, dtdPath: str, compilerExe: Optional[str] = None)
     # failure on the return code, not on stderr being non-empty.
     if compilerExe and os.path.isfile(compilerExe):
 
-        result = subprocess.run([compilerExe, tempPath, os.path.join(os.path.dirname(tempPath), 'candidate.t1x.bin')],
-                                capture_output=True)
+        result = subprocess.run([compilerExe, tempPath, os.path.join(os.path.dirname(tempPath), 'candidate.t1x.bin')], capture_output=True)
         stderr = result.stderr.decode('utf-8', errors='replace').strip()
 
         if result.returncode != 0:
@@ -484,10 +458,7 @@ def markAuthorship(ruleXml: str, mode: str, now) -> str:
     elem.insert(0, ET.Comment(text))
     return ET.tostring(elem, encoding='unicode')
 
-def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str,
-                          transferPath: str, dtdPath: str,
-                          mode: str, targetComment: Optional[str],
-                          compilerExe: Optional[str] = None) -> RuleResult:
+def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, dtdPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None) -> RuleResult:
     '''The core loop: generate a rule, splice it into a temp copy, validate, and retry with the errors fed back up to MAX_VALIDATION_ATTEMPTS times. Returns the last candidate either
     way; the caller inspects .valid.'''
 

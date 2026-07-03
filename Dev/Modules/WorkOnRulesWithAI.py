@@ -100,10 +100,8 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
-        msgBox.setText(_translate('WorkOnRulesWithAI',
-            "This module sends your rule description, the transfer file's categories, and the project's "
-            "grammatical categories, features, and affixes to your configured AI provider ({provider}) to "
-            "generate transfer rules. Your lexicon glosses and texts are not sent. Do you want to allow this?").format(provider=providerDisplay))
+        msgBox.setText(_translate('WorkOnRulesWithAI', "This module sends your rule description, the transfer file's categories, and the project's grammatical categories, features, and affixes to " \
+                       "your configured AI provider ({provider}) to generate transfer rules. Your lexicon glosses and texts are not sent. Do you want to allow this?").format(provider=providerDisplay))
         msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
         allow = (msgBox.exec() == QMessageBox.StandardButton.Yes)
@@ -150,9 +148,11 @@ def MainFunction(DB, report, modify=True):
     if not apiKey:
 
         envName = provider.envVars[0]
-        report.Error(_translate('WorkOnRulesWithAI', 'No API key found for {provider}. Set the {env} environment variable or the {setting} setting in the configuration.').format(provider=provider.displayName, env=envName, setting=ReadConfig.AI_RULES_API_KEY))
+        report.Error(_translate('WorkOnRulesWithAI', 'No API key found for {provider}. Set the {env} environment variable or the {setting} setting in the configuration.').format(provider=provider.displayName, env=envName, 
+                                                                                                                                                                                  setting=ReadConfig.AI_RULES_API_KEY))
         QMessageBox.warning(None, docs[FTM_Name],
-                            _translate('WorkOnRulesWithAI', 'No API key found for {provider}.\n\nGet a key at {url}\nThen set the {env} environment variable, or add the key to the configuration, and run this module again.').format(provider=provider.displayName, url=provider.keyUrl, env=envName))
+                            _translate('WorkOnRulesWithAI', 'No API key found for {provider}.\n\nGet a key at {url}\nThen set the {env} environment variable, or add the key to the configuration, and \
+                                       run this module again.').format(provider=provider.displayName, url=provider.keyUrl, env=envName))
         return
 
     # Find the transfer rules file.
@@ -207,8 +207,7 @@ def MainFunction(DB, report, modify=True):
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
-FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
-                                       docs = docs)
+FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction, docs = docs)
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
