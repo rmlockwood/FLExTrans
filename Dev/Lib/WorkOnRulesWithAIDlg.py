@@ -14,7 +14,7 @@ import os
 
 from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QRadioButton, QButtonGroup, QListWidget, QPlainTextEdit, QPushButton, QLabel, QMessageBox, QApplication, QWidget)
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QRadioButton, QButtonGroup, QListWidget, QPlainTextEdit, QPushButton, QLabel, QMessageBox, QApplication, QWidget, QInputDialog, QLineEdit)
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
@@ -27,6 +27,29 @@ except ImportError:
     FTPaths = None
 
 _translate = QCoreApplication.translate
+
+def promptForApiKey(provider, parent=None):
+    '''Ask the user for an API key and store it in the OS credential vault (not a project file). `provider` is used only for the display name and key URL in the prompt. Returns the key,
+    or None if cancelled/empty. Shows an error and returns None if the vault is unavailable.'''
+
+    label = _translate('WorkOnRulesWithAI', 'Enter your {provider} API key. It is stored securely in the credential vault (Windows Credential Manager), not in any project file.\n\nGet a key at:\n{url}').format(provider=provider.displayName, url=provider.keyUrl)
+
+    key, ok = QInputDialog.getText(parent, _translate('WorkOnRulesWithAI', 'API key'), label, QLineEdit.EchoMode.Normal)
+    key = (key or '').strip()
+
+    if not ok or not key:
+        return None
+
+    try:
+        AIRules.setStoredApiKey(key)
+
+    except Exception as err:
+
+        QMessageBox.warning(parent, _translate('WorkOnRulesWithAI', 'API key'),
+                            _translate('WorkOnRulesWithAI', 'Could not save the key to the credential vault: {err}').format(err=err))
+        return None
+
+    return key
 
 class GenerateWorker(QObject):
     '''Runs the (slow) generate + validate loop off the UI thread.'''
@@ -155,6 +178,11 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.cancelButton = QPushButton(_translate('WorkOnRulesWithAI', 'Cancel'))
         self.cancelButton.clicked.connect(self.reject)
 
+        # A utility action (left side): change the stored API key at any time.
+        self.changeKeyButton = QPushButton(_translate('WorkOnRulesWithAI', 'Change API key…'))
+        self.changeKeyButton.clicked.connect(self.onChangeApiKey)
+
+        buttonRow.addWidget(self.changeKeyButton)
         buttonRow.addStretch()
         buttonRow.addWidget(self.xxeButton)
         buttonRow.addWidget(self.cancelButton)
@@ -296,6 +324,17 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.setBusy(False)
         self.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rate limited - try again shortly.'))
         QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Rate limited'), message)
+
+    def onChangeApiKey(self):
+
+        provider = self.engine.provider
+        newKey = promptForApiKey(provider, self)
+
+        if newKey:
+            # Rebuild the client so the new key takes effect immediately, not just next run.
+            self.engine.client = provider.makeClient(newKey)
+            QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'API key'),
+                                    _translate('WorkOnRulesWithAI', 'Your {provider} API key was updated.').format(provider=provider.displayName))
 
     def onApprove(self):
 

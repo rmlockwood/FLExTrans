@@ -222,18 +222,40 @@ def getProvider(name: Optional[str] = None):
 
     return PROVIDERS.get((name or DEFAULT_PROVIDER).strip().lower(), PROVIDERS[DEFAULT_PROVIDER])
 
-def resolveApiKey(provider, configApiKey: Optional[str] = None) -> Optional[str]:
-    '''Resolve the API key for `provider`: the provider's env var(s) win (a machine-wide key overrides a stale config value), then the config setting, then None so the caller can
-    prompt the user (BYOK).'''
+# A single API-key slot in the OS credential vault (Windows Credential Manager / macOS Keychain / Linux Secret Service). One entry, provider-agnostic: the user stores the key for whichever
+# provider they use; switching providers means changing the key. Never written to a project file.
+KEYRING_SERVICE = 'FLExTrans'
+KEYRING_USER = 'AIRulesApiKey'
+
+def getStoredApiKey() -> Optional[str]:
+    '''Read the API key from the OS credential vault. Returns None if none is stored, or if keyring / its backend is unavailable.'''
+
+    try:
+        import keyring
+        return keyring.get_password(KEYRING_SERVICE, KEYRING_USER)
+
+    except Exception:
+        return None
+
+def setStoredApiKey(apiKey: str) -> None:
+    '''Store the API key in the OS credential vault. Raises if keyring or its backend is unavailable (the caller reports it).'''
+
+    import keyring
+    keyring.set_password(KEYRING_SERVICE, KEYRING_USER, apiKey)
+
+def resolveApiKey(provider) -> Optional[str]:
+    '''Resolve the API key: the OS credential vault wins (set via the in-app dialog), then the provider's env var(s) as a fallback, then None so the caller can prompt the user (BYOK).
+    The key is never read from or written to a project file.'''
+
+    stored = getStoredApiKey()
+    if stored:
+        return stored
 
     for var in provider.envVars:
 
         value = os.environ.get(var)
         if value:
             return value
-
-    if configApiKey:
-        return configApiKey
 
     return None
 

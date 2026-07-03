@@ -141,18 +141,18 @@ def MainFunction(DB, report, modify=True):
         report.Info(_translate('WorkOnRulesWithAI', 'AI rule assistance was declined. No data was sent.'))
         return
 
-    # Resolve the API key for the selected provider (bring-your-own-key).
-    configKey = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_API_KEY, report, giveError=False)
-    apiKey = AIRules.resolveApiKey(provider, configKey)
+    # Resolve the API key for the selected provider: OS credential vault, then env var (bring-your-own-key).
+    apiKey = AIRules.resolveApiKey(provider)
+
+    # If none is stored yet, prompt for one and save it to the vault (never a project file).
+    if not apiKey:
+
+        from WorkOnRulesWithAIDlg import promptForApiKey
+        apiKey = promptForApiKey(provider)
 
     if not apiKey:
 
-        envName = provider.envVars[0]
-        report.Error(_translate('WorkOnRulesWithAI', 'No API key found for {provider}. Set the {env} environment variable or the {setting} setting in the configuration.').format(provider=provider.displayName, env=envName, 
-                                                                                                                                                                                  setting=ReadConfig.AI_RULES_API_KEY))
-        QMessageBox.warning(None, docs[FTM_Name],
-                            _translate('WorkOnRulesWithAI', 'No API key found for {provider}.\n\nGet a key at {url}\nThen set the {env} environment variable, or add the key to the configuration, and \
-                                       run this module again.').format(provider=provider.displayName, url=provider.keyUrl, env=envName))
+        report.Info(_translate('WorkOnRulesWithAI', 'No API key provided for {provider}; nothing was done.').format(provider=provider.displayName))
         return
 
     # Find the transfer rules file.
