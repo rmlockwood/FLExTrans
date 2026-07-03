@@ -254,12 +254,12 @@ def buildEngine(providerName: Optional[str], apiKey: str, model: Optional[str] =
     client = provider.makeClient(apiKey)
     return Engine(provider, client, model or provider.defaultModel)
 
-def buildSystemInstruction(conventionsText: str, dtdText: str, sampleRulesText: str) -> str:
-    '''Build the system instruction: the house conventions, the DTD, and a few real example rules. This prefix is identical across requests, so Gemini 2.5's implicit context caching
-    reuses it automatically (explicit caching via client.caches is a later optimization).'''
+def buildSystemInstruction(conventionsText: str, sampleRulesText: str) -> str:
+    '''Build the system instruction: the house conventions plus a few real example rules from the project. The transfer.dtd is intentionally NOT included - the model already knows the
+    Apertium transfer format, so the DTD is ~5k low-value tokens, and the validation-retry loop (well-formedness + apertium-preprocess-transfer) is the authoritative structural check.
+    This prefix is identical across requests, so it caches well (Anthropic cache_control / Gemini implicit caching).'''
 
     return (conventionsText
-            + '\n\nThe rule must validate against this DTD (transfer.dtd):\n\n' + dtdText
             + '\n\nExample rules from this project, for style reference:\n\n' + sampleRulesText)
 
 def extractExistingDefs(transferPath: str) -> dict:

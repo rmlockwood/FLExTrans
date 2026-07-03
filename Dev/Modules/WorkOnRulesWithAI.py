@@ -190,11 +190,10 @@ def MainFunction(DB, report, modify=True):
     defs = AIRules.extractExistingDefs(transferPath)
 
     conventionsText = open(conventionsPath, encoding='utf-8').read()
-    dtdText = open(dtdPath, encoding='utf-8').read()
     sampleRulesText = getSampleRulesText(transferPath)
 
     model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False) or None
-    systemInstruction = AIRules.buildSystemInstruction(conventionsText, dtdText, sampleRulesText)
+    systemInstruction = AIRules.buildSystemInstruction(conventionsText, sampleRulesText)
     engine = AIRules.buildEngine(providerName, apiKey, model)
 
     # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()

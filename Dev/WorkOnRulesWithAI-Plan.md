@@ -143,8 +143,9 @@ SDKs are imported lazily inside each provider, so only the selected provider's S
 - **Gemini:** `google-genai`, `client.models.generate_content(model="gemini-2.5-flash", …)`, **structured output** (`response_mime_type="application/json"` + `response_schema=RULE_SCHEMA`),
   `json.loads` the response. Guards a blocked/empty response (surfacing `prompt_feedback`).
 - **Shared:** both return the same `(rule_xml, new_defs, explanation)` tuple.
-- **System instruction:** the "how we write Apertium rules" conventions doc + `transfer.dtd` + one or two real sample rules from the file, concatenated by `buildSystemInstruction`. Identical across
-  requests (Anthropic caches it via the breakpoint; Gemini 2.5 reuses it via implicit caching).
+- **System instruction:** the "how we write Apertium rules" conventions doc + one or two real sample rules from the file, concatenated by `buildSystemInstruction`. The `transfer.dtd` is deliberately
+  NOT included — the model already knows the Apertium format, so it was ~5k low-value tokens (and counts against Gemini free-tier input quotas); the validation-retry loop is the authoritative check.
+  The prefix is identical across requests (Anthropic caches it via the breakpoint; Gemini 2.5 reuses it via implicit caching).
 - **Per-request content:** the project's real categories/features/tags, the existing definition *names* (so it reuses `a_gender_feature` etc. rather than inventing), the current rule XML when
   modifying, and the user's description.
 - `max_tokens` / `max_output_tokens` ~16000; non-streaming is fine for a single rule.
