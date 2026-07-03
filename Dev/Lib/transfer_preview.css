@@ -1,0 +1,127 @@
+/*
+ * transfer_preview.css
+ *
+ * Standard-CSS reskin of the XXE stylesheet
+ * (Installer/.../ApertiumTransferXMLmind/css/transfer.css) for a read-only,
+ * in-app preview rendered in QWebEngineView. It reuses transfer.css's colour
+ * palette and label text so a rule looks familiar to anyone who edits in XXE,
+ * but it is plain CSS: no XMLmind extensions (text-field/combo-box/collapser),
+ * no editable widgets, no collapsers. TransferPreview.py emits the HTML this
+ * styles and inlines this file into the document's <style>.
+ *
+ * Palette (from transfer.css @property-value):
+ *   attr  #F5DEB3 wheat        cat   #FFB6C1 lightpink   list  #CCFFCC lightgreen
+ *   macro #F09FF0 violet       rule  #BFD0FF paleblue    var   #AFEEEE paleturquoise
+ *   pos   #FFDAB9 peachpuff    lit   #98FB98 palegreen   littag#FFFFB5 paleyellow
+ *   chunk #AEC6CF pastelblue
+ */
+
+body {
+    font-family: "Segoe UI", "Calibri", sans-serif;
+    font-size: 13px;
+    color: #222;
+    margin: 8px;
+}
+
+/* Each Apertium element is a block with its own header row and nested children. */
+.el {
+    display: block;
+}
+
+.children {
+    padding-left: 1.1em;
+}
+
+/* The header row = the element's label plus its displayed attribute chips.
+   Diff highlighting backgrounds this row only, not the nested children. */
+.rowline {
+    display: block;
+    line-height: 1.7;
+}
+
+.label {
+    color: #555;
+}
+
+.attrlabel {
+    color: #777;
+}
+
+/* An attribute value shown as a coloured chip, matching the XXE field colours. */
+.chip {
+    display: inline-block;
+    padding: 0 5px;
+    margin: 0 2px;
+    border: 1px solid #9a9a9a;
+    border-radius: 2px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+}
+
+.c-attr   { background: #F5DEB3; }
+.c-cat    { background: #FFB6C1; }
+.c-list   { background: #CCFFCC; }
+.c-macro  { background: #F09FF0; }
+.c-rule   { background: #BFD0FF; }
+.c-var    { background: #AFEEEE; }
+.c-pos    { background: #FFDAB9; }
+.c-lit    { background: #98FB98; }
+.c-littag { background: #FFFFB5; }
+.c-chunk  { background: #AEC6CF; }
+
+/* A "plain" value (e.g. side: source/target) shown without a box. */
+.c-plain {
+    color: #a0522d;
+    font-style: italic;
+}
+
+/* XML comments the linguist wrote inside the rule. */
+.comment .rowline {
+    color: #2e7d32;
+    font-style: italic;
+}
+
+/* Best-effort diff highlighting for the before/after comparison. */
+.changed > .rowline { background: #FFF3B0; }
+.added   > .rowline { background: #CFF5D1; }
+.removed > .rowline { background: #F7CAC9; }
+
+/* Side-by-side comparison layout for the "modify" preview. */
+.compare {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.pane {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 10px;
+    overflow-x: auto;
+}
+
+.pane h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.legend {
+    font-size: 11px;
+    color: #666;
+    margin: 4px 0 10px;
+}
+
+.legend .sw {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #999;
+    vertical-align: middle;
+    margin: 0 3px 0 10px;
+}

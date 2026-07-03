@@ -1,0 +1,221 @@
+#
+#   TransferPreview
+#
+#   Ron Lockwood
+#   SIL International
+#   7/2/26
+#
+#   Version 3.16 - 7/2/26 - Ron Lockwood
+#    Prototype. Render an Apertium transfer <rule> (and supporting definitions) as read-only styled HTML for the "Work on Rules with AI" preview. Mirrors the XXE stylesheet's palette
+#    and labels via transfer_preview.css. Produces a single render (for creating a rule) or a side-by-side before/after comparison (for modifying one) with best-effort diff highlighting.
+#    No raw markup is ever shown to the user - only the rendered result goes into a QWebEngineView.
+
+import os
+import html
+import xml.etree.ElementTree as ET
+
+# realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder where transfer_preview.css actually sits.
+CSS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'transfer_preview.css')
+
+# Human-friendly value for the side attribute, matching the XXE combo-box labels.
+SIDE_LABELS = {'sl': 'source lang.', 'tl': 'target lang.'}
+
+# Per-element display spec: (labelText, [(attrName, attrLabel, colorClass), ...]). labelText is the element's ":before" text; each attribute is rendered as a labelled coloured chip.
+# Colours/labels are lifted from transfer.css. An element not listed falls back to showing its tag name and all its attributes generically.
+SPEC = {
+    'action':             ('action: ', []),
+    'and':                ('and: ', []),
+    'or':                 ('or: ', []),
+    'not':                ('not: ', []),
+    'choose':             ('choose: ', []),
+    'when':               ('when: ', []),
+    'otherwise':          ('otherwise: ', []),
+    'test':               ('test: ', []),
+    'equal':              ('equal: ', []),
+    'pattern':            ('pattern: ', []),
+    'pattern-item':       ('item: ', [('n', '', 'c-cat')]),
+    'let':                ('let: ', []),
+    'var':                ('variable: ', [('n', '', 'c-var')]),
+    'clip':               ('clip - ', [('pos', 'item: ', 'c-pos'), ('side', 'side: ', 'c-plain'), ('part', 'part: ', 'c-attr')]),
+    'lit':                ('literal string: ', [('v', '', 'c-lit')]),
+    'lit-tag':            ('literal tag: ', [('v', '', 'c-littag')]),
+    'out':                ('output: ', []),
+    'lu':                 ('lexical unit: ', []),
+    'mlu':                ('multi-word: ', []),
+    'b':                  ('blank space', []),
+    'call-macro':         ('call macro: ', [('n', '', 'c-macro')]),
+    'with-param':         ('with item: ', [('pos', '', 'c-pos')]),
+    'rule':               ('rule: ', [('comment', '', 'c-rule')]),
+    'cat-item':           ('tags: ', [('tags', '', 'c-chunk'), ('lemma', 'lemma: ', 'c-chunk')]),
+    'attr-item':          ('tags: ', [('tags', '', 'c-chunk')]),
+    'def-cat':            ('category: ', [('n', '', 'c-cat')]),
+    'def-attr':           ('attribute: ', [('n', '', 'c-attr')]),
+    'def-var':            ('variable: ', [('n', '', 'c-var')]),
+    'def-list':           ('list: ', [('n', '', 'c-list')]),
+    'list':               ('list: ', [('n', '', 'c-list')]),
+    'list-item':          ('item: ', [('v', '', 'c-lit')]),
+    'def-macro':          ('macro: ', [('n', '', 'c-macro'), ('npar', 'number of items = ', 'c-pos')]),
+    'chunk':              ('chunk - name: ', [('name', '', 'c-chunk'), ('namefrom', 'get name from variable: ', 'c-var')]),
+    'tag':                ('tag: ', []),
+    'get-case-from':      ('get case from item: ', [('pos', '', 'c-pos')]),
+    'case-of':            ('case of - ', [('pos', 'item: ', 'c-pos'), ('side', 'side: ', 'c-plain'), ('part', 'part: ', 'c-attr')]),
+    'modify-case':        ('modify case: ', []),
+    'append':            ('append to: ', [('n', '', 'c-var')]),
+    'concat':             ('concat: ', []),
+    'begins-with':        ('begins with: ', []),
+    'ends-with':          ('ends with: ', []),
+    'begins-with-list':   ('begins with something in list: ', []),
+    'ends-with-list':     ('ends with something in list: ', []),
+    'contains-substring': ('contains substring: ', []),
+    'in':                 ('in list: ', []),
+}
+
+def loadCss() -> str:
+    '''Read the reskin CSS so it can be inlined into the document.'''
+
+    return open(CSS_PATH, encoding='utf-8').read()
+
+def isComment(elem) -> bool:
+    '''ET represents comment nodes with a callable tag; detect them.'''
+
+    return callable(elem.tag)
+
+def renderChip(value: str, colorClass: str) -> str:
+    '''Render one attribute value as a coloured chip (or a plain italic value).'''
+
+    shown = html.escape(value)
+
+    if colorClass == 'c-plain':
+        return '<span class="c-plain">' + shown + '</span>'
+
+    return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown)
+
+def renderRowLine(elem: ET.Element) -> str:
+    '''Render an element's header row: its label plus its displayed attributes.'''
+
+    spec = SPEC.get(elem.tag)
+
+    if spec is None:
+        # Fallback: show the tag name and every attribute generically.
+        pieces = ['<span class="label">' + html.escape(elem.tag) + ': </span>']
+        for name, value in elem.attrib.items():
+            pieces.append('<span class="attrlabel">' + html.escape(name) + ': </span>' + renderChip(value, 'c-chunk'))
+        return '<span class="rowline">' + ''.join(pieces) + '</span>'
+
+    label, attrSpecs = spec
+    pieces = ['<span class="label">' + html.escape(label) + '</span>']
+
+    for name, attrLabel, colorClass in attrSpecs:
+
+        if name not in elem.attrib:
+            continue
+
+        value = elem.attrib[name]
+
+        if name == 'side':
+            value = SIDE_LABELS.get(value, value)
+
+        if attrLabel:
+            pieces.append('<span class="attrlabel">' + html.escape(attrLabel) + '</span>')
+
+        pieces.append(renderChip(value, colorClass))
+
+    return '<span class="rowline">' + ''.join(pieces) + '</span>'
+
+def diffClass(elem: ET.Element, other) -> str:
+    '''Diff class for an element vs. its positional counterpart: "changed" if the tag or attributes differ, else "".'''
+
+    if other is None:
+        return ''
+
+    if isComment(elem) or isComment(other):
+        return '' if (isComment(elem) and isComment(other) and (elem.text or '') == (other.text or '')) else 'changed'
+
+    if elem.tag != other.tag or elem.attrib != other.attrib:
+        return 'changed'
+
+    return ''
+
+def elementToHtml(elem, other=None, side: str = 'after', forced: str = '') -> str:
+    '''Recursively render an element to HTML.
+
+    `other` is the positional counterpart in the compared tree. `side` is which pane we are rendering ("before" or "after") so a child with no counterpart is marked "removed" on the
+    before side and "added" on the after side. `forced` propagates that marker down an added/removed subtree.'''
+
+    if isComment(elem):
+        text = (elem.text or '').strip()
+        cls = forced or diffClass(elem, other)
+        classAttr = 'el comment' + ((' ' + cls) if cls else '')
+        return '<div class="' + classAttr + '"><span class="rowline">// ' + html.escape(text) + '</span></div>'
+
+    cls = forced or diffClass(elem, other)
+    classAttr = 'el ' + elem.tag + ((' ' + cls) if cls else '')
+
+    out = ['<div class="' + classAttr + '">', renderRowLine(elem)]
+
+    children = [c for c in elem]
+
+    if children:
+
+        out.append('<div class="children">')
+        otherChildren = [c for c in other] if (other is not None and not forced) else []
+
+        for i, child in enumerate(children):
+
+            if forced:
+                counterpart, childForced = None, forced
+            elif i < len(otherChildren):
+                counterpart, childForced = otherChildren[i], ''
+            else:
+                # Past the other side's children: new on the after pane, gone on the before pane.
+                counterpart, childForced = None, ('added' if side == 'after' else 'removed')
+
+            out.append(elementToHtml(child, counterpart, side, childForced))
+
+        out.append('</div>')
+
+    out.append('</div>')
+    return ''.join(out)
+
+def parseFragment(xmlText: str):
+    '''Parse a rule/definition fragment, preserving comments.'''
+
+    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+    return ET.fromstring(xmlText, parser=parser)
+
+def wrapDocument(bodyHtml: str) -> str:
+    '''Wrap rendered body HTML in a full document with the inlined CSS.'''
+
+    return ('<!DOCTYPE html><html><head><meta charset="utf-8"><style>\n'
+            + loadCss()
+            + '\n</style></head><body>' + bodyHtml + '</body></html>')
+
+def renderRuleHtml(ruleXml: str, newDefs=None) -> str:
+    '''Render a single rule (plus any new definitions) - used for the "create" preview. Returns a complete HTML document.'''
+
+    body = []
+
+    if newDefs:
+        body.append('<div class="legend">New definitions to be added:</div>')
+        for defText in newDefs:
+            body.append(elementToHtml(parseFragment(defText)))
+
+    body.append(elementToHtml(parseFragment(ruleXml)))
+    return wrapDocument(''.join(body))
+
+def renderComparisonHtml(beforeXml: str, afterXml: str) -> str:
+    '''Render before/after side-by-side - used for the "modify" preview. Diff highlighting is best-effort (positional); the panes are always readable even if the highlighting is imperfect.'''
+
+    before = parseFragment(beforeXml)
+    after = parseFragment(afterXml)
+
+    legend = ('<div class="legend">'
+              '<span class="sw" style="background:#F7CAC9"></span>removed / changed on the left'
+              '<span class="sw" style="background:#CFF5D1"></span>added on the right'
+              '<span class="sw" style="background:#FFF3B0"></span>changed'
+              '</div>')
+
+    left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before') + '</div>'
+    right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after') + '</div>'
+
+    return wrapDocument(legend + '<div class="compare">' + left + right + '</div>')

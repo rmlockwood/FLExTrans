@@ -77,6 +77,11 @@ from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
+AI_RULES_API_KEY = 'AIRulesApiKey'
+AI_RULES_CONSENT = 'AIRulesConsentToSendData'
+AI_RULES_CONSENT_ASKED = 'AIRulesConsentQuestionAsked'
+AI_RULES_MODEL = 'AIRulesModel'
+AI_RULES_PROVIDER = 'AIRulesProvider'
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
 ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
 ALT_PARATEXT_FOLDER = 'AlternateParatextFolder'
