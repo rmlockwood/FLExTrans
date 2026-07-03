@@ -11,6 +11,7 @@
 #    No raw markup is ever shown to the user - only the rendered result goes into a QWebEngineView.
 
 import os
+import json
 import html
 import xml.etree.ElementTree as ET
 
@@ -70,6 +71,28 @@ SPEC = {
     'in':                 ('in list: ', []),
 }
 
+LIB_DIR = os.path.dirname(os.path.realpath(__file__))
+_specCache = {}
+
+def loadSpec(lang: str) -> dict:
+    '''Load the per-language display spec (labels + colours) that derive_preview_specs.py generated from transfer.css. Falls back to English, then to the built-in SPEC if no file is found,
+    so the preview always renders even before the derivation has been run.'''
+
+    lang = (lang or 'en').lower()
+
+    if lang in _specCache:
+        return _specCache[lang]
+
+    for candidate in (lang, 'en'):
+
+        path = os.path.join(LIB_DIR, 'preview_spec_{lang}.json'.format(lang=candidate))
+        if os.path.isfile(path):
+            _specCache[lang] = json.load(open(path, encoding='utf-8'))
+            return _specCache[lang]
+
+    _specCache[lang] = SPEC
+    return SPEC
+
 def loadCss() -> str:
     '''Read the reskin CSS so it can be inlined into the document.'''
 
@@ -90,19 +113,19 @@ def renderChip(value: str, colorClass: str) -> str:
 
     return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown)
 
-def renderRowLine(elem: ET.Element) -> str:
-    '''Render an element's header row: its label plus its displayed attributes.'''
+def renderRowLine(elem: ET.Element, spec: dict) -> str:
+    '''Render an element's header row: its label plus its displayed attributes, using the given per-language display spec.'''
 
-    spec = SPEC.get(elem.tag)
+    entry = spec.get(elem.tag)
 
-    if spec is None:
+    if entry is None:
         # Fallback: show the tag name and every attribute generically.
         pieces = ['<span class="label">' + html.escape(elem.tag) + ': </span>']
         for name, value in elem.attrib.items():
             pieces.append('<span class="attrlabel">' + html.escape(name) + ': </span>' + renderChip(value, 'c-chunk'))
         return '<span class="rowline">' + ''.join(pieces) + '</span>'
 
-    label, attrSpecs = spec
+    label, attrSpecs = entry
     pieces = ['<span class="label">' + html.escape(label) + '</span>']
 
     for name, attrLabel, colorClass in attrSpecs:
@@ -136,11 +159,14 @@ def diffClass(elem: ET.Element, other) -> str:
 
     return ''
 
-def elementToHtml(elem, other=None, side: str = 'after', forced: str = '') -> str:
+def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=None) -> str:
     '''Recursively render an element to HTML.
 
     `other` is the positional counterpart in the compared tree. `side` is which pane we are rendering ("before" or "after") so a child with no counterpart is marked "removed" on the
     before side and "added" on the after side. `forced` propagates that marker down an added/removed subtree.'''
+
+    if spec is None:
+        spec = SPEC
 
     if isComment(elem):
         text = (elem.text or '').strip()
@@ -151,7 +177,7 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '') -> st
     cls = forced or diffClass(elem, other)
     classAttr = 'el ' + elem.tag + ((' ' + cls) if cls else '')
 
-    out = ['<div class="' + classAttr + '">', renderRowLine(elem)]
+    out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec)]
 
     children = [c for c in elem]
 
@@ -170,7 +196,7 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '') -> st
                 # Past the other side's children: new on the after pane, gone on the before pane.
                 counterpart, childForced = None, ('added' if side == 'after' else 'removed')
 
-            out.append(elementToHtml(child, counterpart, side, childForced))
+            out.append(elementToHtml(child, counterpart, side, childForced, spec))
 
         out.append('</div>')
 
@@ -190,22 +216,25 @@ def wrapDocument(bodyHtml: str) -> str:
             + loadCss()
             + '\n</style></head><body>' + bodyHtml + '</body></html>')
 
-def renderRuleHtml(ruleXml: str, newDefs=None) -> str:
-    '''Render a single rule (plus any new definitions) - used for the "create" preview. Returns a complete HTML document.'''
+def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
+    '''Render a single rule (plus any new definitions) - used for the "create" preview. `lang` selects the label language. Returns a complete HTML document.'''
 
+    spec = loadSpec(lang)
     body = []
 
     if newDefs:
         body.append('<div class="legend">New definitions to be added:</div>')
         for defText in newDefs:
-            body.append(elementToHtml(parseFragment(defText)))
+            body.append(elementToHtml(parseFragment(defText), spec=spec))
 
-    body.append(elementToHtml(parseFragment(ruleXml)))
+    body.append(elementToHtml(parseFragment(ruleXml), spec=spec))
     return wrapDocument(''.join(body))
 
-def renderComparisonHtml(beforeXml: str, afterXml: str) -> str:
-    '''Render before/after side-by-side - used for the "modify" preview. Diff highlighting is best-effort (positional); the panes are always readable even if the highlighting is imperfect.'''
+def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
+    '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (positional); the panes are always readable even
+    if the highlighting is imperfect.'''
 
+    spec = loadSpec(lang)
     before = parseFragment(beforeXml)
     after = parseFragment(afterXml)
 
@@ -215,7 +244,7 @@ def renderComparisonHtml(beforeXml: str, afterXml: str) -> str:
               '<span class="sw" style="background:#FFF3B0"></span>changed'
               '</div>')
 
-    left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before') + '</div>'
-    right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after') + '</div>'
+    left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec) + '</div>'
+    right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec) + '</div>'
 
     return wrapDocument(legend + '<div class="compare">' + left + right + '</div>')

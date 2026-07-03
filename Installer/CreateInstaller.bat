@@ -88,9 +88,17 @@ copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 rem copy all module code files
 copy %dev%\Modules\*.py %modulesflextrans%
 
+rem regenerate the per-language rule-preview specs from the XXE transfer.css files so the derived specs match the current CSS
+python %dev%\derive_preview_specs.py
+
 rem copy all shared code and css files
 copy %dev%\Lib\*.py %flextranslib%
 copy %dev%\Lib\*.css %flextranslib%
+
+rem copy Work-on-Rules-with-AI runtime resources: the DTD (validation), the conventions doc (system prompt), and the derived per-language preview specs
+copy %dev%\Lib\*.dtd %flextranslib%
+copy %dev%\Lib\*.md %flextranslib%
+copy %dev%\Lib\*.json %flextranslib%
 
 rem copy all window ui code files
 copy %dev%\Lib\Windows\*.py %flextranslib%

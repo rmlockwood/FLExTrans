@@ -1,0 +1,375 @@
+{
+ "action": [
+  " Aktion: ",
+  []
+ ],
+ "and": [
+  " und: ",
+  []
+ ],
+ "append": [
+  " anhängen an: ",
+  [
+   [
+    "n",
+    "",
+    "c-var"
+   ]
+  ]
+ ],
+ "attr-item": [
+  "Tags:  ",
+  [
+   [
+    "tags",
+    "",
+    "c-chunk"
+   ]
+  ]
+ ],
+ "b": [
+  " Leerzeichen: ",
+  []
+ ],
+ "begins-with": [
+  " beginnt mit: ",
+  []
+ ],
+ "begins-with-list": [
+  " beginnt mit etwas aus Liste: ",
+  []
+ ],
+ "call-macro": [
+  "Makro aufrufen: ",
+  [
+   [
+    "n",
+    "",
+    "c-macro"
+   ]
+  ]
+ ],
+ "case-of": [
+  " Fall von -  element: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ],
+   [
+    "side",
+    "  seite: ",
+    "c-plain"
+   ],
+   [
+    "part",
+    "  teil: ",
+    "c-attr"
+   ]
+  ]
+ ],
+ "cat-item": [
+  "Tags:  ",
+  [
+   [
+    "tags",
+    "",
+    "c-chunk"
+   ],
+   [
+    "lemma",
+    " lemma: ",
+    "c-chunk"
+   ]
+  ]
+ ],
+ "choose": [
+  "wählen: ",
+  []
+ ],
+ "chunk": [
+  " Chunk - Name: ",
+  [
+   [
+    "name",
+    "",
+    "c-chunk"
+   ],
+   [
+    "namefrom",
+    " Chunk - Name aus Variable holen: ",
+    "c-var"
+   ]
+  ]
+ ],
+ "clip": [
+  " Clip -  element: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ],
+   [
+    "side",
+    " seite: ",
+    "c-plain"
+   ],
+   [
+    "part",
+    " teil: ",
+    "c-attr"
+   ]
+  ]
+ ],
+ "concat": [
+  " verketten: ",
+  []
+ ],
+ "contains-substring": [
+  " enthält Teilzeichenkette: ",
+  []
+ ],
+ "def-attr": [
+  " Attribut: ",
+  [
+   [
+    "n",
+    "",
+    "c-attr"
+   ]
+  ]
+ ],
+ "def-cat": [
+  " Kategorie: ",
+  [
+   [
+    "n",
+    "",
+    "c-cat"
+   ]
+  ]
+ ],
+ "def-list": [
+  " Liste: ",
+  [
+   [
+    "n",
+    "",
+    "c-list"
+   ]
+  ]
+ ],
+ "def-macro": [
+  " Makro: ",
+  [
+   [
+    "n",
+    "",
+    "c-macro"
+   ],
+   [
+    "npar",
+    " Anzahl der Elemente = ",
+    "c-pos"
+   ]
+  ]
+ ],
+ "def-var": [
+  " Variable: ",
+  [
+   [
+    "n",
+    "",
+    "c-var"
+   ]
+  ]
+ ],
+ "ends-with": [
+  " endet mit: ",
+  []
+ ],
+ "ends-with-list": [
+  " endet mit etwas aus Liste: ",
+  []
+ ],
+ "equal": [
+  " gleich: ",
+  []
+ ],
+ "get-case-from": [
+  " Fall holen von  element: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ]
+  ]
+ ],
+ "in": [
+  " in Liste: ",
+  []
+ ],
+ "let": [
+  " lassen: ",
+  []
+ ],
+ "list": [
+  " Liste:  ",
+  [
+   [
+    "n",
+    "",
+    "c-list"
+   ]
+  ]
+ ],
+ "list-item": [
+  "Element:  ",
+  [
+   [
+    "v",
+    "",
+    "c-lit"
+   ]
+  ]
+ ],
+ "lit": [
+  " Literalzeichenkette:  ",
+  [
+   [
+    "v",
+    "",
+    "c-lit"
+   ]
+  ]
+ ],
+ "lit-tag": [
+  " Literal-Tag:  ",
+  [
+   [
+    "v",
+    "",
+    "c-littag"
+   ]
+  ]
+ ],
+ "lu": [
+  " lexikalische Einheit: ",
+  []
+ ],
+ "mlu": [
+  " Mehrwort: ",
+  []
+ ],
+ "modify-case": [
+  " Fall ändern: ",
+  []
+ ],
+ "not": [
+  " nicht: ",
+  []
+ ],
+ "or": [
+  " oder: ",
+  []
+ ],
+ "otherwise": [
+  " ansonsten: ",
+  []
+ ],
+ "out": [
+  " Ausgabe: ",
+  []
+ ],
+ "pattern": [
+  " Muster: ",
+  []
+ ],
+ "pattern-item": [
+  "Element:  ",
+  [
+   [
+    "n",
+    "",
+    "c-cat"
+   ]
+  ]
+ ],
+ "rule": [
+  " Regel: ",
+  [
+   [
+    "comment",
+    "",
+    "c-rule"
+   ]
+  ]
+ ],
+ "section-def-attrs": [
+  " Attribute: ",
+  []
+ ],
+ "section-def-cats": [
+  " Kategorien: ",
+  []
+ ],
+ "section-def-lists": [
+  " Listen: ",
+  []
+ ],
+ "section-def-macros": [
+  " Makros: ",
+  []
+ ],
+ "section-def-vars": [
+  " Variablen: ",
+  []
+ ],
+ "section-rules": [
+  " Regeln: ",
+  []
+ ],
+ "tag": [
+  " Tag: ",
+  []
+ ],
+ "tags": [
+  " Tags: ",
+  []
+ ],
+ "test": [
+  " Test: ",
+  []
+ ],
+ "transfer": [
+  "",
+  []
+ ],
+ "var": [
+  " Variable:  ",
+  [
+   [
+    "n",
+    "",
+    "c-var"
+   ]
+  ]
+ ],
+ "when": [
+  " wenn: ",
+  []
+ ],
+ "with-param": [
+  " mit Element: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ]
+  ]
+ ]
+}

@@ -12,6 +12,7 @@ You return a single JSON object with exactly these fields:
 - `rule_xml`: one `<rule comment="…">…</rule>` element.
 - `new_defs`: an array of the supporting `<def-cat>` / `<def-attr>` / `<def-var>` / `<def-list>` / `<def-macro>` elements that do not already exist and that your rule needs (empty array if none).
 - `explanation`: one or two sentences describing what the rule does.
+- `language`: the two-letter ISO 639-1 code of the language your explanation and comments are written in — i.e. the language of the user's request (e.g. `en`, `es`, `de`, `fr`). It is used to localize the rule preview.
 
 Do not output the whole transfer file, the `<transfer>` wrapper, or the section elements — only the rule and any new definitions. Do not include the DOCTYPE.
 

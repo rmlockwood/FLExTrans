@@ -261,11 +261,12 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.setBusy(False)
         self.result = result
 
-        # Render the preview: single rule for create, before/after for modify.
+        # Render the preview: single rule for create, before/after for modify. The label
+        # language follows the language of the user's request, as reported by the model.
         if self.isModify() and self.currentRuleXml:
-            html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml)
+            html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language)
         else:
-            html = TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs)
+            html = TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language)
 
         self.ensurePreview().setHtml(html)
         self.xxeButton.setEnabled(True)

@@ -72,13 +72,17 @@ module.
 | File | Purpose |
 |---|---|
 | `Dev/Modules/WorkOnRulesWithAI.py` | Module entry: `docs`, `FlexToolsModuleClass`, `MainFunction(DB, report)`, consent gate, orchestration. |
-| `Dev/Lib/AIRules.py` | Pluggable provider layer (Anthropic default, Gemini selectable), prompt assembly, validation-retry loop, key resolution. No Qt. |
-| `Dev/Lib/TransferPreview.py` | XML→HTML renderer (element→div, displayed attributes→colored spans) + before/after diff-marking; inlines `transfer_preview.css`. No raw markup ever shown to the user. |
-| `Dev/Lib/Windows/transfer_preview.css` | Standard-CSS reskin of `transfer.css` (palette / `:before` labels / indentation), static and read-only. |
-| `Dev/Lib/Windows/WorkOnRulesWithAI.ui` (+ generated `.py`) | Dialog layout: mode toggle, rule-picker list, description box, preview area, buttons. |
-| `Dev/Lib/Windows/WorkOnRulesWithAIDlg.py` | Hand-written dialog logic wrapping the pyuic'd `.py`. |
-| `translations/*.ts` (de/es/fr) beside each new `.py` | New UI strings; aim for 0 unfinished, compile `.qm`. Crowdin syncs from master. |
+| `Dev/Lib/AIRules.py` | Pluggable provider layer (Anthropic default, Gemini selectable), prompt assembly, validation-retry loop, key resolution, surgical write. No Qt. |
+| `Dev/Lib/TransferPreview.py` | XML→HTML renderer + before/after diff-marking; loads the per-language display spec and inlines `transfer_preview.css`. No raw markup ever shown to the user. |
+| `Dev/Lib/WorkOnRulesWithAIDlg.py` | The PyQt6 dialog (code-based, no `.ui`): mode toggle, rule picker, description box, threaded generation, `QWebEngineView` preview, Approve / Open-in-XXE / Cancel. |
+| `Dev/Lib/transfer_preview.css` | Standard-CSS reskin of `transfer.css` — palette/chip/layout only (language-independent); labels come from the per-language spec. Inlined into the preview. |
+| `Dev/Lib/WorkOnRulesWithAI-Conventions.md` | The house-conventions system prompt (the cached grounding). Loaded at runtime via `realpath`. |
+| `Dev/Lib/transfer.dtd` | Bundled DTD for validation (no copy sits beside project files). |
+| `Dev/Lib/preview_spec_{en,de,es,fr}.json` | Per-language preview label/colour specs, derived from the XXE `transfer.css` files (not hand-edited). |
+| `Dev/derive_preview_specs.py` | Build tool: parses each XXE `transfer.css` (main + `translations/{de,es,fr}`) into `preview_spec_<lang>.json`. Re-run when the CSS changes; the installer runs it. |
 | `Dev/Lib/ReadConfig.py` | New config constants, inserted in alphabetical order in the uppercase block. |
+| `Installer/CreateInstaller.bat` | Runs `derive_preview_specs.py`, then copies `Dev/Lib/*.dtd`, `*.md`, `*.json` (not just `*.py`/`*.css`) into the deployed `Lib`. |
+| `translations/*.ts` (de/es/fr) beside each new `.py` | New UI strings; aim for 0 unfinished, compile `.qm`. Crowdin syncs from master. |
 | (no menu edit) | FlexTools auto-discovers modules in `Dev/Modules`, so dropping the file in is enough — no `FLExTransMenu.py` change needed. |
 | install / requirements | Add the `anthropic` dependency (and `google-genai` if the Gemini provider is used). |
 
@@ -127,6 +131,10 @@ shown.
 - *Enhancement (attempt in v1):* the transform walks both trees, tags changed / added / removed elements with a CSS class, and tints them in the rendered panes so the user sees what changed at a
   glance, still fully styled. If tree-diffing proves fiddly, v1 falls back to plain side-by-side and highlighting is added later.
 
+**Preview language.** The labels (`clip -`, `item:`, `side:`, …) come from a per-language spec (`preview_spec_<lang>.json`) that `derive_preview_specs.py` derives from the XXE `transfer.css` files.
+`renderRuleHtml` / `renderComparisonHtml` take a `lang` and load the matching spec (English fallback), so the preview shows XXE's labels in the request's language. The model returns that language as a
+two-letter code in its structured output (see §8); colours and layout are language-independent (shared CSS).
+
 **Buttons:** **Approve** (writes, with backup) / **Cancel** (discards) / **Open in XXE** (writes the candidate — or the full updated file — to disk and points the user to open it in XXE for
 full-fidelity, editable review).
 
@@ -142,7 +150,7 @@ SDKs are imported lazily inside each provider, so only the selected provider's S
   the system instruction wrapped in a `cache_control` block for prompt caching. Handles `stop_reason == "refusal"`.
 - **Gemini:** `google-genai`, `client.models.generate_content(model="gemini-2.5-flash", …)`, **structured output** (`response_mime_type="application/json"` + `response_schema=RULE_SCHEMA`),
   `json.loads` the response. Guards a blocked/empty response (surfacing `prompt_feedback`).
-- **Shared:** both return the same `(rule_xml, new_defs, explanation)` tuple.
+- **Shared:** both return the same `(rule_xml, new_defs, explanation, language)` tuple — `language` is the two-letter ISO 639-1 code of the request's language, used to localize the preview.
 - **System instruction:** the "how we write Apertium rules" conventions doc + one or two real sample rules from the file, concatenated by `buildSystemInstruction`. The `transfer.dtd` is deliberately
   NOT included — the model already knows the Apertium format, so it was ~5k low-value tokens (and counts against Gemini free-tier input quotas); the validation-retry loop is the authoritative check.
   The prefix is identical across requests (Anthropic caches it via the breakpoint; Gemini 2.5 reuses it via implicit caching).
@@ -195,8 +203,8 @@ touch two places in `AIRules.py` (plus optionally requirements/config), and noth
 - On **HTTP 429**, `raise RateLimitError(self.displayName, retryAfterSeconds_or_None)` — the dialog then shows the clean "try again in N s" message instead of a raw dump.
 - On a **blocked / empty / refused** response, `raise RuntimeError(...)` with a readable message (the dialog surfaces it via the "failed" path).
 
-**Outside `AIRules.py`:** add the SDK to `requirements.txt` (both copies; can be optional/documented since imports are lazy). No config or conventions-doc changes are needed — `AIRulesProvider`, `AIRulesModel`,
-and `AIRulesApiKey` already work generically, and the system instruction is provider-independent.
+**Outside `AIRules.py`:** add the SDK to `requirements.txt` (both copies; can be optional/documented since imports are lazy). No config or conventions-doc changes are needed —
+`AIRulesProvider`, `AIRulesModel`, and `AIRulesApiKey` already work generically, and the system instruction is provider-independent.
 
 ---
 

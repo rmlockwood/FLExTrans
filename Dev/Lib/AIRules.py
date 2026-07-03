@@ -77,6 +77,7 @@ DEF_TAG_TO_SECTION = {
 _RULE_XML_DESC = 'Exactly one <rule comment="...">...</rule> element. No wrapper, no DOCTYPE.'
 _NEW_DEFS_DESC = 'Each string is one new <def-cat>/<def-attr>/<def-var>/<def-list>/<def-macro> element the rule needs and that does not already exist. Empty list if none.'
 _EXPLANATION_DESC = 'One or two sentences describing what the rule does. Note here if the rule must be ordered before a more general rule.'
+_LANGUAGE_DESC = 'The ISO 639-1 two-letter code of the language the user\'s request is written in (e.g. "en", "es", "de", "fr"). Used to localize the rule preview.'
 
 # Gemini structured-output schema (response_mime_type=application/json + response_schema).
 RULE_SCHEMA = {
@@ -85,9 +86,10 @@ RULE_SCHEMA = {
         'rule_xml': {'type': 'string', 'description': _RULE_XML_DESC},
         'new_defs': {'type': 'array', 'items': {'type': 'string'}, 'description': _NEW_DEFS_DESC},
         'explanation': {'type': 'string', 'description': _EXPLANATION_DESC},
+        'language': {'type': 'string', 'description': _LANGUAGE_DESC},
     },
-    'required': ['rule_xml', 'new_defs', 'explanation'],
-    'propertyOrdering': ['rule_xml', 'new_defs', 'explanation'],
+    'required': ['rule_xml', 'new_defs', 'explanation', 'language'],
+    'propertyOrdering': ['rule_xml', 'new_defs', 'explanation', 'language'],
 }
 
 # Anthropic tool the model is forced to call (its input is the same JSON object).
@@ -100,8 +102,9 @@ SUBMIT_RULE_TOOL = {
             'rule_xml': {'type': 'string', 'description': _RULE_XML_DESC},
             'new_defs': {'type': 'array', 'items': {'type': 'string'}, 'description': _NEW_DEFS_DESC},
             'explanation': {'type': 'string', 'description': _EXPLANATION_DESC},
+            'language': {'type': 'string', 'description': _LANGUAGE_DESC},
         },
-        'required': ['rule_xml', 'new_defs', 'explanation'],
+        'required': ['rule_xml', 'new_defs', 'explanation', 'language'],
     },
 }
 
@@ -112,6 +115,7 @@ class RuleResult:
     ruleXml: str
     newDefs: list[str]
     explanation: str
+    language: str
     valid: bool
     errors: str
     attempts: int
@@ -162,7 +166,7 @@ class AnthropicProvider:
 
             if block.type == 'tool_use' and block.name == 'submit_rule':
                 data = block.input
-                return data['rule_xml'], data.get('new_defs', []), data.get('explanation', '')
+                return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
 
         raise RuntimeError('The model did not return a submit_rule tool call.')
 
@@ -207,7 +211,7 @@ class GeminiProvider:
             raise RuntimeError('The model returned no rule. {feedback}'.format(feedback=feedback or '(response was empty or blocked)'))
 
         data = json.loads(payload)
-        return data['rule_xml'], data.get('new_defs', []), data.get('explanation', '')
+        return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
 
 # Registry of available providers, keyed by the config value.
 PROVIDERS = {
@@ -458,27 +462,27 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
     way; the caller inspects .valid.'''
 
     priorErrors = None
-    lastRule, lastDefs, lastExpl, lastErrors = '', [], '', ''
+    lastRule, lastDefs, lastExpl, lastLang, lastErrors = '', [], '', 'en', ''
 
     workDir = tempfile.mkdtemp(prefix='airules_')
-    
+
     # apertium-preprocess-transfer resolves the DTD relative to the file.
     shutil.copyfile(dtdPath, os.path.join(workDir, 'transfer.dtd'))
 
     for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
-        lastRule, lastDefs, lastExpl = generateRule(engine, systemInstruction, userContent, priorErrors)
+        lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
         lastRule = markAuthorship(lastRule, mode, datetime.datetime.now())
 
         tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir)
         ok, lastErrors = validateFile(tempPath, os.path.join(workDir, 'transfer.dtd'), compilerExe)
 
         if ok:
-            return RuleResult(lastRule, lastDefs, lastExpl, True, '', attempt)
+            return RuleResult(lastRule, lastDefs, lastExpl, lastLang, True, '', attempt)
 
         priorErrors = lastErrors
 
-    return RuleResult(lastRule, lastDefs, lastExpl, False, lastErrors, MAX_VALIDATION_ATTEMPTS)
+    return RuleResult(lastRule, lastDefs, lastExpl, lastLang, False, lastErrors, MAX_VALIDATION_ATTEMPTS)
 
 def insertBefore(text: str, marker: str, insertion: str) -> str:
     '''Insert `insertion` (plus a newline) immediately before the first occurrence of `marker` in `text`.'''
