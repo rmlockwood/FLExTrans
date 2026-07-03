@@ -407,26 +407,21 @@ def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: st
     return tempPath
 
 def validateFile(tempPath: str, dtdPath: str, compilerExe: Optional[str] = None) -> tuple:
-    '''Validate the spliced file. Always runs an lxml DTD check; if a compiler executable is given and present, also runs apertium-preprocess-transfer. Returns (ok, errorText).'''
-
-    from lxml import etree
+    '''Validate the spliced file. Uses the standard-library parser for a well-formedness check (no third-party dependency) and, when a compiler executable is present, runs
+    apertium-preprocess-transfer, which parses against the transfer grammar and is the authoritative structural check. `dtdPath` is unused here but the caller keeps a copy of the DTD
+    beside the temp file for the compiler's relative lookup. Returns (ok, errorText).'''
 
     errors = []
 
-    # DTD validation with an explicit DTD object (no external-load path issues).
+    # Well-formedness via the standard library (expat is non-validating, so this catches malformed XML but not DTD-structure errors; the compiler below covers structure).
     try:
-        dtd = etree.DTD(dtdPath)
-        doc = etree.parse(tempPath)
+        ET.parse(tempPath)
 
-        if not dtd.validate(doc):
-            errors.append('DTD validation failed:')
-            errors.extend('  ' + str(e) for e in dtd.error_log)
-
-    except etree.XMLSyntaxError as e:
+    except ET.ParseError as e:
         errors.append('XML is not well-formed: ' + str(e))
 
-    # Optional real compile pass. The compiler exits non-zero only on real errors; it also emits warnings (e.g. "same pattern ... Skipping") to stderr with a zero exit, so gate
-    # failure on the return code, not on stderr being non-empty.
+    # Authoritative structural pass with the bundled Apertium compiler. It exits non-zero only on real errors; it also emits warnings (e.g. "same pattern ... Skipping") to stderr with
+    # a zero exit, so gate failure on the return code, not on stderr being non-empty.
     if compilerExe and os.path.isfile(compilerExe):
 
         result = subprocess.run([compilerExe, tempPath, os.path.join(os.path.dirname(tempPath), 'candidate.t1x.bin')], capture_output=True)

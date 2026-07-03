@@ -165,7 +165,7 @@ return last candidate + surface errors to the user
 ```
 
 `validate()`:
-1. `lxml` parse of the temp file against `transfer.dtd` (fast, structural).
+1. `elementtree` parse of the temp file to check well-formed xml.
 2. Run `apertium-preprocess-transfer` on the temp copy (real compile check), capture stderr.
 
 Both must pass. This is what makes direct-XML generation trustworthy.
