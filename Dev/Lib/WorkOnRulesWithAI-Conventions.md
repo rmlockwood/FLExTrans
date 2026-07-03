@@ -15,6 +15,14 @@ You return a single JSON object with exactly these fields:
 
 Do not output the whole transfer file, the `<transfer>` wrapper, or the section elements — only the rule and any new definitions. Do not include the DOCTYPE.
 
+## Language of your output
+
+Write every piece of human-readable text you produce in the **same language as the user's request** — the `explanation`, the descriptive part of each rule `comment` (the text after the
+`item + item :` prefix), and any XML comments you add inside a rule. If the user writes in Spanish, answer in Spanish; if in French, French; and so on.
+
+Never translate machine-readable content: XML element and attribute names, category names, tag / feature / affix values, variable / macro / list names, and lemmas all stay exactly as they appear
+in the project data. They are code, not prose — translating them would break the rule.
+
 ## How FLExTrans represents words
 
 A word in the Apertium stream is a **lexical unit**: a lemma followed by tags, e.g. `^dog<n><pl>$`. Rules match lexical units by category (via `<def-cat>`) and read/write their lemma and tags (via
