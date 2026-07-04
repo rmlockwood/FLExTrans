@@ -126,5 +126,15 @@ Open it in XXE to review.</source>
 
 Öffnen Sie sie zur Überprüfung in XXE.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="175"/>
+        <source>The AI Assistant added this rule on {when}.</source>
+        <translation>Der KI-Assistent hat diese Regel am {when} hinzugefügt.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
+        <source>The AI Assistant modified this rule on {when}.</source>
+        <translation>Der KI-Assistent hat diese Regel am {when} geändert.</translation>
+    </message>
 </context>
 </TS>

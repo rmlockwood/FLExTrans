@@ -126,5 +126,15 @@ Open it in XXE to review.</source>
 
 Ábrala en XXE para revisarla.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="175"/>
+        <source>The AI Assistant added this rule on {when}.</source>
+        <translation>El Asistente de IA agregó esta regla el {when}.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
+        <source>The AI Assistant modified this rule on {when}.</source>
+        <translation>El Asistente de IA modificó esta regla el {when}.</translation>
+    </message>
 </context>
 </TS>

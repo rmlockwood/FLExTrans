@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.3 - 7/4/26 - Ron Lockwood
+#    The authorship-stamp date/time is now localized to the interface language: markAuthorship / generateValidatedRule accept a preformatted whenStr from the Qt-side caller, with a
+#    plain English date as the standalone fallback. The authorship sentences are also whole localized sentences (chosen by mode) rather than a verb interpolated into a fixed frame.
+#
+#   Version 3.16.2 - 7/4/26 - Ron Lockwood
+#    API keys are now stored per provider in the credential vault (a slot per provider name), so switching providers no longer loses a previously entered key. The old single-slot key
+#    is migrated to the active provider's slot on first read.
+#
 #   Version 3.16.1 - 7/3/26 - Ron Lockwood
 #    Added the OpenAI (ChatGPT) provider, made Gemini's free model the default, per-provider model lists for the Settings tool, optional prompt/response logging for debugging, and
 #    prompt grounding with the project's longest rules and macros.
@@ -338,32 +346,60 @@ def findModelOwner(model: Optional[str]):
 
     return None
 
-# A single API-key slot in the OS credential vault (Windows Credential Manager / macOS Keychain / Linux Secret Service). One entry, provider-agnostic: the user stores the key for whichever
-# provider they use; switching providers means changing the key. Never written to a project file.
+# Per-provider API-key slots in the OS credential vault (Windows Credential Manager / macOS Keychain / Linux Secret Service). Each provider gets its own entry keyed by its short name,
+# so the user can store a key for each provider and switching back to a provider keeps its key. Keys are never written to a project file.
 KEYRING_SERVICE = 'FLExTrans'
-KEYRING_USER = 'AIRulesApiKey'
+KEYRING_USER_PREFIX = 'AIRulesApiKey'
+# The pre-per-provider single slot (its name is the bare prefix). It is migrated to the active provider's slot on first read so an existing user doesn't have to re-enter their key.
+LEGACY_KEYRING_USER = 'AIRulesApiKey'
 
-def getStoredApiKey() -> Optional[str]:
-    '''Read the API key from the OS credential vault. Returns None if none is stored, or if keyring / its backend is unavailable.'''
+def keyringUser(provider) -> str:
+    '''The vault entry name for a provider's API key, e.g. "AIRulesApiKey:anthropic".'''
+
+    return '{prefix}:{name}'.format(prefix=KEYRING_USER_PREFIX, name=provider.name)
+
+def getStoredApiKey(provider) -> Optional[str]:
+    '''Read the API key stored for `provider` from the OS credential vault. Returns None if none is stored, or if keyring / its backend is unavailable.'''
 
     try:
         import keyring
-        return keyring.get_password(KEYRING_SERVICE, KEYRING_USER)
+
+        key = keyring.get_password(KEYRING_SERVICE, keyringUser(provider))
+        if key:
+            return key
+
+        # One-time migration: an existing user's key was stored in a single, provider-agnostic slot. Treat it as belonging to the provider being asked about now (their configured
+        # provider) - move it into that provider's slot and delete the old one so it can't later be reused for a different provider.
+        legacy = keyring.get_password(KEYRING_SERVICE, LEGACY_KEYRING_USER)
+
+        if legacy:
+
+            keyring.set_password(KEYRING_SERVICE, keyringUser(provider), legacy)
+
+            try:
+                keyring.delete_password(KEYRING_SERVICE, LEGACY_KEYRING_USER)
+
+            except Exception:
+                pass
+
+            return legacy
+
+        return None
 
     except Exception:
         return None
 
-def setStoredApiKey(apiKey: str) -> None:
-    '''Store the API key in the OS credential vault. Raises if keyring or its backend is unavailable (the caller reports it).'''
+def setStoredApiKey(provider, apiKey: str) -> None:
+    '''Store `provider`'s API key in the OS credential vault. Raises if keyring or its backend is unavailable (the caller reports it).'''
 
     import keyring
-    keyring.set_password(KEYRING_SERVICE, KEYRING_USER, apiKey)
+    keyring.set_password(KEYRING_SERVICE, keyringUser(provider), apiKey)
 
 def resolveApiKey(provider) -> Optional[str]:
-    '''Resolve the API key: the OS credential vault wins (set via the in-app dialog), then the provider's env var(s) as a fallback, then None so the caller can prompt the user (BYOK).
-    The key is never read from or written to a project file.'''
+    '''Resolve `provider`'s API key: the OS credential vault wins (set via the in-app dialog), then the provider's env var(s) as a fallback, then None so the caller can prompt the user
+    (BYOK). Keys are never read from or written to a project file.'''
 
-    stored = getStoredApiKey()
+    stored = getStoredApiKey(provider)
     if stored:
         return stored
 
@@ -612,14 +648,26 @@ def validateFile(tempPath: str, dtdPath: str, compilerExe: Optional[str] = None)
 
     return (len(errors) == 0, '\n'.join(errors))
 
-def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime) -> str:
-    '''Prepend an XML comment to the <rule> recording that the AI Assistant added or modified it, and when. Placed as the rule's first child so it travels with the rule and shows in
-    the preview. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
+# The authorship-stamp sentences, as whole sentences with a single {when} placeholder for the date/time. Being complete sentences (rather than a verb interpolated into a fixed frame)
+# they translate cleanly to languages with different word order or date placement. English defaults; the caller passes localized versions (built with QCoreApplication.translate) so
+# AIRules itself stays Qt-free and usable standalone.
+DEFAULT_AUTHORSHIP_COMMENTS = {
+    'added':    'The AI Assistant added this rule on {when}.',
+    'modified': 'The AI Assistant modified this rule on {when}.',
+}
 
-    verb = 'modified' if mode == 'modify' else 'added'
-    # Format like "July 3, 2026 14:42" without a zero-padded day (cross-platform).
-    when = now.strftime('%B ') + str(now.day) + now.strftime(', %Y %H:%M')
-    text = ' The AI Assistant {verb} this rule on {when}. '.format(verb=verb, when=when)
+def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None) -> str:
+    '''Prepend an XML comment to the <rule> recording that the AI Assistant added or modified it, and when. Placed as the rule's first child so it travels with the rule and shows in
+    the preview. `authorshipComments` maps 'added'/'modified' to a whole localized sentence containing "{when}"; it defaults to English. `whenStr` is the date/time text, already
+    localized to the interface language by the Qt-side caller; when omitted, a plain English date is used so AIRules stays usable standalone. Returns the original text unchanged if it
+    can't be parsed (validation will then report the real XML error).'''
+
+    templates = authorshipComments or DEFAULT_AUTHORSHIP_COMMENTS
+    template = templates['modified' if mode == 'modify' else 'added']
+
+    # Prefer the caller's locale-formatted date/time. The standalone fallback is a plain English date like "July 3, 2026 14:42" with a non-zero-padded day (cross-platform).
+    when = whenStr or (now.strftime('%B ') + str(now.day) + now.strftime(', %Y %H:%M'))
+    text = ' ' + template.format(when=when) + ' '
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
 
@@ -633,9 +681,9 @@ def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime) -> str:
     elem.insert(0, cast(ET.Element, ET.Comment(text)))
     return ET.tostring(elem, encoding='unicode')
 
-def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, dtdPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None) -> RuleResult:
+def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, dtdPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None) -> RuleResult:
     '''The core loop: generate a rule, splice it into a temp copy, validate, and retry with the errors fed back up to MAX_VALIDATION_ATTEMPTS times. Returns the last candidate either
-    way; the caller inspects .valid.'''
+    way; the caller inspects .valid. `authorshipComments` and `whenStr` are passed to markAuthorship for the localized authorship stamp.'''
 
     priorErrors = None
     lastRule, lastDefs, lastExpl, lastLang, lastErrors = '', [], '', 'en', ''
@@ -648,7 +696,7 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
     for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
         lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
-        lastRule = markAuthorship(lastRule, mode, datetime.datetime.now())
+        lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr)
 
         tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir)
         ok, lastErrors = validateFile(tempPath, os.path.join(workDir, 'transfer.dtd'), compilerExe)

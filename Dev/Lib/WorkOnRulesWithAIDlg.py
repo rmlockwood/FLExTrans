@@ -5,6 +5,13 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.3 - 7/4/26 - Ron Lockwood
+#    Also localize the authorship-stamp date/time to the interface language (Utils.LocalizedDateTimeFormatter with a custom spelled-out-month format), passed to the generator as whenStr.
+#
+#   Version 3.16.2 - 7/4/26 - Ron Lockwood
+#    Pass the localized authorship-stamp sentences (whole sentences, so they translate cleanly across word orders) to the generator so the "AI Assistant added/modified this rule"
+#    comment follows the UI language.
+#
 #   Version 3.16.1 - 7/3/26 - Ron Lockwood
 #    The dialog layout now comes from WorkOnRulesWithAIWindow.ui compiled with pyuic (like the other module windows), and the status label word-wraps so a long explanation no longer
 #    forces the dialog wide.
@@ -23,7 +30,7 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
 import TransferPreview
-from WorkOnRulesWithAIWindow import Ui_WorkOnRulesWithAI
+from WorkOnRulesWithAIWindow import Ui_WorkOnRulesWithAI # type: ignore
 
 # FTPaths is only available inside the full FLExTrans install; tolerate its absence so the dialog can run standalone.
 try:
@@ -35,8 +42,8 @@ except ImportError:
 _translate = QCoreApplication.translate
 
 def promptForApiKey(provider, parent=None):
-    '''Ask the user for an API key and store it in the OS credential vault (not a project file). `provider` is used only for the display name and key URL in the prompt. Returns the key,
-    or None if cancelled/empty. Shows an error and returns None if the vault is unavailable.'''
+    '''Ask the user for an API key and store it in `provider`'s slot in the OS credential vault (not a project file). Each provider has its own slot, so a key entered here does not
+    overwrite another provider's key. Returns the key, or None if cancelled/empty. Shows an error and returns None if the vault is unavailable.'''
 
     label = _translate('WorkOnRulesWithAI', 'Enter your {provider} API key. It is stored securely in the credential vault (Windows Credential Manager), not in any project file.\n\nGet a key at:\n{url}').format(provider=provider.displayName, url=provider.keyUrl)
 
@@ -47,7 +54,7 @@ def promptForApiKey(provider, parent=None):
         return None
 
     try:
-        AIRules.setStoredApiKey(key)
+        AIRules.setStoredApiKey(provider, key)
 
     except Exception as err:
 
@@ -166,6 +173,24 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml)
 
+        # The authorship-stamp sentences, localized to the FLExTrans UI language. Whole sentences (with a {when} placeholder) so they translate cleanly regardless of word order.
+        authorshipComments = {
+            'added':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
+            'modified': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
+        }
+
+        # Localize the stamp's date/time to the interface language the same way the testbed log does (Utils.LocalizedDateTimeFormatter). The custom Qt format gives a spelled-out,
+        # localized month without the weekday/seconds/timezone the long format adds. If Utils/FTConfig aren't available (standalone runs), leave it None so AIRules uses its English fallback.
+        whenStr = None
+
+        try:
+            import Utils
+            from PyQt6.QtCore import QDateTime
+            whenStr = Utils.LocalizedDateTimeFormatter().formatDateTime(QDateTime.currentDateTime(), 'd MMMM yyyy HH:mm')
+
+        except Exception:
+            pass
+
         params = {
             'engine': self.engine,
             'systemInstruction': self.systemInstruction,
@@ -175,6 +200,8 @@ class WorkOnRulesWithAIDlg(QDialog):
             'mode': mode,
             'targetComment': targetComment,
             'compilerExe': self.compilerExe,
+            'authorshipComments': authorshipComments,
+            'whenStr': whenStr,
         }
 
         # Disable controls and run generation on a worker thread.
