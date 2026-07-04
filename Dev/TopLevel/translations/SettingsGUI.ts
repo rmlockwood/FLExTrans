@@ -946,5 +946,85 @@ mots qui peuvent être insérés avec une règle TreeTran.</translation>
         <source>Opt out of sending usage statistics.</source>
         <translation>Refuser l'envoi de statistiques d'utilisation.</translation>
     </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="7"/>
+        <source>AI Assistant</source>
+        <translation>Assistant IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2010"/>
+        <source>AI Provider</source>
+        <translation>Fournisseur d'IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2011"/>
+        <source>The AI service the Work on Rules with AI module sends requests to.
+You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
+        <translation>Le service d'IA auquel le module 'Travailler sur les règles avec l'IA' envoie les requêtes.
+Vous avez besoin de votre propre clé API pour le fournisseur choisi ; le module la demande la première fois que vous l'exécutez.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2013"/>
+        <source>AI Model</source>
+        <translation>Modèle d'IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2014"/>
+        <source>The model to use. Pick one that belongs to the chosen AI provider.
+gemini-2.5-flash is available on Google's free tier.</source>
+        <translation>Le modèle à utiliser. Choisissez-en un qui appartient au fournisseur d'IA choisi.
+gemini-2.5-flash est disponible dans l'offre gratuite de Google.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2016"/>
+        <source>Include FLEx project names in AI requests?</source>
+        <translation>Inclure les noms des projets FLEx dans les requêtes IA ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2017"/>
+        <source>If Yes, the source and target FLEx project names are included in what is sent to the AI provider.
+Choose No if the project names themselves are sensitive information.</source>
+        <translation>Si Oui, les noms des projets FLEx source et cible sont inclus dans ce qui est envoyé au fournisseur d'IA.
+Choisissez Non si les noms des projets sont eux-mêmes des informations sensibles.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2019"/>
+        <source>Log AI prompts for debugging?</source>
+        <translation>Journaliser les prompts IA pour le débogage ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2020"/>
+        <source>If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to
+AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
+        <translation>Si Oui, tout ce que le module 'Travailler sur les règles avec l'IA' envoie au fournisseur d'IA et en reçoit est ajouté à
+AIRulesPromptLog.txt dans le dossier Build du projet. Laissez Non sauf en cas de dépannage.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2022"/>
+        <source>How do I get an API key?</source>
+        <translation>Comment obtenir une clé API ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2023"/>
+        <source>Opens the FLExTrans documentation section that explains how to get an API key for each provider.</source>
+        <translation>Ouvre la section de la documentation FLExTrans qui explique comment obtenir une clé API pour chaque fournisseur.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2027"/>
+        <source>AI data consent</source>
+        <translation>Consentement aux données IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2030"/>
+        <source>AI data consent question asked</source>
+        <translation>Question de consentement aux données IA posée</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1596"/>
+        <source>The AI Model does not go with the selected AI Provider.
+Choose the AI Provider first, then pick one of the models offered for it.</source>
+        <translation>Le Modèle d'IA ne va pas avec le Fournisseur d'IA sélectionné.
+Choisissez d'abord le Fournisseur d'IA, puis choisissez l'un des modèles proposés pour celui-ci.</translation>
+    </message>
 </context>
 </TS>
