@@ -1011,8 +1011,8 @@ AIRulesPromptLog.txt dans le dossier Build du projet. Laissez Non sauf en cas de
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2027"/>
-      <source>AI data consent</source>
-      <translation>Consentement aux données IA</translation>
+      <source>Allow sending data to the AI provider?</source>
+      <translation>Autoriser l'envoi de données au fournisseur d'IA ?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2030"/>
@@ -1025,6 +1025,13 @@ AIRulesPromptLog.txt dans le dossier Build du projet. Laissez Non sauf en cas de
 Choose the AI Provider first, then pick one of the models offered for it.</source>
       <translation>Le Modèle d'IA ne va pas avec le Fournisseur d'IA sélectionné.
 Choisissez d'abord le Fournisseur d'IA, puis choisissez l'un des modèles proposés pour celui-ci.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2073"/>
+      <source>Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
+The module also asks this the first time you run it; you can review or change your answer here.</source>
+      <translation>Indique si le module « Travailler sur les règles avec l'IA » peut envoyer votre description de la règle et les catégories grammaticales, les traits et les affixes du projet au fournisseur d'IA.
+Le module pose aussi cette question la première fois que vous l'exécutez ; vous pouvez revoir ou modifier votre réponse ici.</translation>
     </message>
   </context>
 </TS>

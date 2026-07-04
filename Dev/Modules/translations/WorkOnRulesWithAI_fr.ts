@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="139"/>
-        <source>Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Basic and Full views). Then come back to this module; it will ask for your API key.</source>
-        <translation>Avant de pouvoir utiliser ce module, choisissez le Fournisseur d'IA et le Modèle d'IA dans l'outil Paramètres de FLExTrans, dans la section Assistant IA (visible dans les vues Basique et Complet). Revenez ensuite à ce module ; il vous demandera votre clé API.</translation>
+        <source>Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.</source>
+        <translation>Avant de pouvoir utiliser ce module, choisissez le Fournisseur d'IA et le Modèle d'IA dans l'outil Paramètres de FLExTrans, dans la section Assistant IA (visible dans la vue Complet). Revenez ensuite à ce module ; il vous demandera votre clé API.</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="161"/>

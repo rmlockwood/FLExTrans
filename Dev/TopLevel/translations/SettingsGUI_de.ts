@@ -1016,8 +1016,8 @@ AIRulesPromptLog.txt im Build-Ordner des Projekts angehängt. Lassen Sie dies au
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2027"/>
-      <source>AI data consent</source>
-      <translation>KI-Datenzustimmung</translation>
+      <source>Allow sending data to the AI provider?</source>
+      <translation>Senden von Daten an den KI-Anbieter erlauben?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2030"/>
@@ -1030,6 +1030,13 @@ AIRulesPromptLog.txt im Build-Ordner des Projekts angehängt. Lassen Sie dies au
 Choose the AI Provider first, then pick one of the models offered for it.</source>
       <translation>Das KI-Modell passt nicht zum ausgewählten KI-Anbieter.
 Wählen Sie zuerst den KI-Anbieter und dann eines der für ihn angebotenen Modelle.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2073"/>
+      <source>Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
+The module also asks this the first time you run it; you can review or change your answer here.</source>
+      <translation>Gibt an, ob das Modul „Regeln mit KI bearbeiten“ Ihre Regelbeschreibung und die grammatischen Kategorien, Merkmale und Affixe des Projekts an den KI-Anbieter senden darf.
+Das Modul stellt diese Frage auch beim ersten Ausführen; Sie können Ihre Antwort hier ansehen oder ändern.</translation>
     </message>
   </context>
 </TS>

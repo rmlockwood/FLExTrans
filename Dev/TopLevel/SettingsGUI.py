@@ -3,9 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
-#   Version 3.16.1 - 7/3/26 - Ron Lockwood
-#    Added the AI Assistant section for the Work on Rules with AI module: provider, model, include-project-names, and prompt-logging settings, an API-key help link (new LINK widget
-#    type that opens the user documentation at an anchor), and hidden rows that preserve the module's consent answers when settings are saved.
+#   Version 3.16.1 - 7/4/26 - Ron Lockwood
+#    Added the AI Assistant section (Full view) for the Work on Rules with AI module: provider, model, include-project-names, prompt-logging, and the data-consent answer as visible
+#    settings, plus an API-key help link (new LINK widget type that opens the user documentation at an anchor). The consent "question asked" bookkeeping flag stays hidden but is kept
+#    in the list so saving preserves it.
 #
 #   Version 3.16 - 6/22/26 - Ron Lockwood
 #    Fixes #1376. Added the Lowercase/Uppercase pairs for special letters synthesis setting, with validation that
@@ -2049,30 +2050,32 @@ widgetList = [
 
 
    [_translate("SettingsGUI", "AI Assistant"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, BASIC_VIEW],\
+    "", GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "AI Provider"), "choose_ai_provider", "", COMBO_BOX, object, object, object, loadAiProviders, ReadConfig.AI_RULES_PROVIDER,\
-    _translate("SettingsGUI", "The AI service the Work on Rules with AI module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, BASIC_VIEW],\
+    _translate("SettingsGUI", "The AI service the Work on Rules with AI module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "AI Model"), "choose_ai_model", "", COMBO_BOX, object, object, object, loadAiModels, ReadConfig.AI_RULES_MODEL,\
-    _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-2.5-flash is available on Google's free tier."), DONT_GIVE_ERROR, BASIC_VIEW],\
+    _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-2.5-flash is available on Google's free tier."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "How do I get an API key?"), "ai_key_help_link", "sAIApiKeys", LINK, object, object, object, loadLink, None,\
+    _translate("SettingsGUI", "Opens the FLExTrans documentation section that explains how to get an API key for each provider."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Include FLEx project names in AI requests?"), "ai_include_proj_yes", "ai_include_proj_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES,\
-    _translate("SettingsGUI", "If Yes, the source and target FLEx project names are included in what is sent to the AI provider.\nChoose No if the project names themselves are sensitive information."), DONT_GIVE_ERROR, BASIC_VIEW],\
+    _translate("SettingsGUI", "If Yes, the source and target FLEx project names are included in what is sent to the AI provider.\nChoose No if the project names themselves are sensitive information."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Log AI prompts for debugging?"), "ai_log_prompts_yes", "ai_log_prompts_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_LOG_PROMPTS,\
     _translate("SettingsGUI", "If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to\nAIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "How do I get an API key?"), "ai_key_help_link", "sAIApiKeys", LINK, object, object, object, loadLink, None,\
-    _translate("SettingsGUI", "Opens the FLExTrans documentation section that explains how to get an API key for each provider."), DONT_GIVE_ERROR, BASIC_VIEW],\
+   # The consent value the Work on Rules with AI module records. Shown here so the user can review or change their answer. If it was never set it shows No; the module still asks the
+   # one-time consent question (which carries the full explanation) the first time it runs, so a project that has not consented yet is not silently opted in.
+   [_translate("SettingsGUI", "Allow sending data to the AI provider?"), "ai_consent_yes", "ai_consent_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT,\
+    _translate("SettingsGUI", "Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.\nThe module also asks this the first time you run it; you can review or change your answer here."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   # These two values are written by the Work on Rules with AI module's one-time consent question. They are kept in the widget list (hidden from the user) only so that saving
-   # settings preserves them - the save code rewrites the whole config file from this list.
-   [_translate("SettingsGUI", "AI data consent"), "ai_consent_yes", "ai_consent_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT,\
-    "", DONT_GIVE_ERROR, HIDE_FROM_USER],\
-
+   # Bookkeeping flag written by the module's one-time consent question. Kept hidden (it is not something the user should toggle) but left in the list so saving settings preserves it -
+   # the save code rewrites the whole config file from this list.
    [_translate("SettingsGUI", "AI data consent question asked"), "ai_consent_asked_yes", "ai_consent_asked_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT_ASKED,\
-    "", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+    "", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 

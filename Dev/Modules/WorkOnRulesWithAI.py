@@ -136,7 +136,7 @@ def MainFunction(DB, report, modify=True):
 
     if not provider or not model:
 
-        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Basic and Full views). Then come back to this module; it will ask for your API key.')
+        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.')
         QMessageBox.information(None, _translate('WorkOnRulesWithAI', 'Work on Rules with AI'), msg)
         report.Info(msg)
         return

@@ -65,6 +65,11 @@ definitions you return will be placed in the correct section by the host code �
   - Output: `<out>` containing `<lu>…</lu>` lexical units separated by `<b></b>` (a blank space between words). A common output unit is `<lu><clip part="whole" pos="1" side="tl"/></lu>` (emit the
     whole target word unchanged).
 
+**The minimum output unit is lemma + category.** In this FLExTrans system, unless you emit a word with `<clip part="whole" …/>` (which already carries the lemma and every tag), a lexical unit you
+build piece by piece must output *at least* the lemma and the grammatical category — the category is referenced generically by the `a_gram_cat` attribute. So the smallest hand-built `<lu>` is
+`<lu><clip part="lem" pos="1" side="tl"/><clip part="a_gram_cat" pos="1" side="tl"/></lu>`, and any features/affixes you also want on the word are added as further `<clip>`/`<lit-tag>` children after
+those two. Never emit an `<lu>` with only the lemma (a word with no category is not a valid lexical unit).
+
 ## `<clip>` attributes
 
 - `pos` — 1-based position of the word in the `<pattern>` (so `pos="1"` is the first `pattern-item`).
