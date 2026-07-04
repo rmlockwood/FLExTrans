@@ -95,22 +95,6 @@ Obtenga una clave en:
         <translation>Error al escribir la regla</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="292"/>
-        <source>Rule written</source>
-        <translation>Regla escrita</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="292"/>
-        <source>The rule was written to the transfer file.
-
-Backup saved to:
-{path}</source>
-        <translation>La regla se escribió en el archivo de transferencia.
-
-Copia de seguridad guardada en:
-{path}</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="14"/>
         <source>Open in XXE</source>
         <translation>Abrir en XXE</translation>
@@ -135,6 +119,26 @@ Open it in XXE to review.</source>
         <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
         <source>The AI Assistant modified this rule on {when}.</source>
         <translation>El Asistente de IA modificó esta regla el {when}.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+        <source>Refresh Rules</source>
+        <translation>Actualizar reglas</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+        <source>Could not re-read the transfer rules file: {err}</source>
+        <translation>No se pudo volver a leer el archivo de reglas de transferencia: {err}</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="188"/>
+        <source>Rule list refreshed ({n} rules).</source>
+        <translation>Lista de reglas actualizada ({n} reglas).</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
+        <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
+        <translation>Regla escrita en el archivo de transferencia (copia de seguridad: {backup}). Genere o seleccione otra regla para continuar.</translation>
     </message>
 </context>
 </TS>

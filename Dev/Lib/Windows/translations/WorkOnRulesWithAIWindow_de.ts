@@ -60,13 +60,23 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="114"/>
-        <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <source>Close</source>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="115"/>
         <source>Approve &amp;&amp; Write to Rule File</source>
         <translation>Genehmigen &amp;&amp; in die Regeldatei schreiben</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="118"/>
+        <source>Refresh Rules</source>
+        <translation>Regeln aktualisieren</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="117"/>
+        <source>Re-read the transfer rules file to update the list of rules (e.g. after you edit the file in another window).</source>
+        <translation>Die Transferregeldatei erneut einlesen, um die Regelliste zu aktualisieren (z. B. nachdem Sie die Datei in einem anderen Fenster bearbeitet haben).</translation>
     </message>
 </context>
 </TS>

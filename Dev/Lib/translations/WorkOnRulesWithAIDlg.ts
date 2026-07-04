@@ -95,22 +95,6 @@ Obtenez une clé sur :
         <translation>Erreur lors de l'écriture de la règle</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="292"/>
-        <source>Rule written</source>
-        <translation>Règle écrite</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="292"/>
-        <source>The rule was written to the transfer file.
-
-Backup saved to:
-{path}</source>
-        <translation>La règle a été écrite dans le fichier de transfert.
-
-Sauvegarde enregistrée sous :
-{path}</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="14"/>
         <source>Open in XXE</source>
         <translation>Ouvrir dans XXE</translation>
@@ -135,6 +119,26 @@ Ouvrez-la dans XXE pour la relire.</translation>
         <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
         <source>The AI Assistant modified this rule on {when}.</source>
         <translation>L'Assistant IA a modifié cette règle le {when}.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+        <source>Refresh Rules</source>
+        <translation>Actualiser les règles</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+        <source>Could not re-read the transfer rules file: {err}</source>
+        <translation>Impossible de relire le fichier de règles de transfert : {err}</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="188"/>
+        <source>Rule list refreshed ({n} rules).</source>
+        <translation>Liste des règles actualisée ({n} règles).</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
+        <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
+        <translation>Règle écrite dans le fichier de transfert (sauvegarde : {backup}). Générez ou sélectionnez une autre règle pour continuer.</translation>
     </message>
 </context>
 </TS>

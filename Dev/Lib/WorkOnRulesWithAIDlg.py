@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.4 - 7/4/26 - Ron Lockwood
+#    Reworked the dialog to stay open for successive edits: Cancel became Close (only Close and the window X end it); Approve and Open-temp no longer close it; Approve disables itself
+#    after a write until the next rule is generated (no duplicate saves); approving re-reads the rule file; added a Refresh Rules button; success is now reported in the status line.
+#
 #   Version 3.16.3 - 7/4/26 - Ron Lockwood
 #    Also localize the authorship-stamp date/time to the interface language (Utils.LocalizedDateTimeFormatter with a custom spelled-out-month format), passed to the generator as whenStr.
 #
@@ -23,7 +27,7 @@
 
 import os
 
-from PyQt6.QtCore import QThread, QObject, pyqtSignal, QCoreApplication
+from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QDialog, QMessageBox, QInputDialog, QLineEdit
 from PyQt6.QtWebEngineWidgets import QWebEngineView
@@ -124,12 +128,13 @@ class WorkOnRulesWithAIDlg(QDialog):
         # sibling text widgets, so we keep it out of the window until a preview is needed.
         self.preview = None
 
-        # Hook up the widgets.
+        # Hook up the widgets. The window stays open across successive rule edits: only Close (and the window's X) end it; Generate / Open temp / Approve all leave it open.
         self.ui.createRadio.toggled.connect(self.onModeChanged)
         self.ui.generateButton.clicked.connect(self.onGenerate)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
-        self.ui.cancelButton.clicked.connect(self.reject)
+        self.ui.refreshButton.clicked.connect(self.onRefreshRules)
+        self.ui.closeButton.clicked.connect(self.close)
         self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
 
         self.onModeChanged()
@@ -148,6 +153,39 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         item = self.ui.ruleList.currentItem()
         return item.text() if item else None
+
+    def reloadRules(self):
+        '''Re-read the transfer file so the rule picker and the definition summary sent to the AI reflect the current on-disk state. Called after a rule is approved (a new/changed rule
+        must appear in the list) and by the Refresh Rules button (the user may have edited the file in another window). The current picker selection is preserved when it still exists.'''
+
+        try:
+            defs = AIRules.extractExistingDefs(self.transferPath)
+
+        except Exception as err:
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Refresh Rules'), _translate('WorkOnRulesWithAI', 'Could not re-read the transfer rules file: {err}').format(err=err))
+            return
+
+        self.ruleNames = defs['ruleNames']
+        self.defsSummary = defs['summaryText']
+
+        previous = self.selectedRuleComment()
+
+        self.ui.ruleList.clear()
+        self.ui.ruleList.addItems(self.ruleNames)
+
+        # Restore the previous selection if that rule still exists.
+        if previous:
+
+            matches = self.ui.ruleList.findItems(previous, Qt.MatchFlag.MatchExactly)
+
+            if matches:
+                self.ui.ruleList.setCurrentItem(matches[0])
+
+    def onRefreshRules(self):
+
+        self.reloadRules()
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule list refreshed ({n} rules).').format(n=len(self.ruleNames)))
 
     def onGenerate(self):
 
@@ -224,6 +262,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.modifyRadio.setEnabled(not busy)
         self.ui.ruleList.setEnabled(not busy)
         self.ui.descriptionEdit.setEnabled(not busy)
+        self.ui.refreshButton.setEnabled(not busy)
 
     def cleanupThread(self):
 
@@ -249,6 +288,13 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         super().showEvent(event)
         self.ui.descriptionEdit.setFocus()
+
+    def closeEvent(self, event):
+        '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
+        would crash - when the dialog is garbage-collected after the event loop returns.'''
+
+        self.cleanupThread()
+        super().closeEvent(event)
 
     def onGenerateFinished(self, result):
 
@@ -316,8 +362,12 @@ class WorkOnRulesWithAIDlg(QDialog):
             QMessageBox.critical(self, _translate('WorkOnRulesWithAI', 'Error writing rule'), str(err))
             return
 
-        QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Rule written'), _translate('WorkOnRulesWithAI', 'The rule was written to the transfer file.\n\nBackup saved to:\n{path}').format(path=backupPath))
-        self.accept()
+        # The window stays open for the next edit. Disable Approve until a new rule is generated so the same rule can't be written twice, and re-read the file so the picker and the
+        # definition summary include the rule just written. Report success in the status line rather than a modal box, which would be tedious across many successive edits.
+        self.ui.approveButton.setEnabled(False)
+        self.reloadRules()
+
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
 
     def onOpenInXxe(self):
 

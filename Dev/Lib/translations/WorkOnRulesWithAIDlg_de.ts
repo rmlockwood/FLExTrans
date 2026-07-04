@@ -95,22 +95,6 @@ Einen Schlüssel erhalten Sie unter:
         <translation>Fehler beim Schreiben der Regel</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="292"/>
-        <source>Rule written</source>
-        <translation>Regel geschrieben</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="292"/>
-        <source>The rule was written to the transfer file.
-
-Backup saved to:
-{path}</source>
-        <translation>Die Regel wurde in die Transferdatei geschrieben.
-
-Sicherungskopie gespeichert unter:
-{path}</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="14"/>
         <source>Open in XXE</source>
         <translation>In XXE öffnen</translation>
@@ -135,6 +119,26 @@ Open it in XXE to review.</source>
         <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
         <source>The AI Assistant modified this rule on {when}.</source>
         <translation>Der KI-Assistent hat diese Regel am {when} geändert.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+        <source>Refresh Rules</source>
+        <translation>Regeln aktualisieren</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+        <source>Could not re-read the transfer rules file: {err}</source>
+        <translation>Die Transferregeldatei konnte nicht erneut eingelesen werden: {err}</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="188"/>
+        <source>Rule list refreshed ({n} rules).</source>
+        <translation>Regelliste aktualisiert ({n} Regeln).</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
+        <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
+        <translation>Regel in die Transferdatei geschrieben (Sicherung: {backup}). Generieren oder wählen Sie eine weitere Regel, um fortzufahren.</translation>
     </message>
 </context>
 </TS>
