@@ -90,7 +90,9 @@ don't match the patterns below.
 - **Categories** (`<def-cat>`): `c_<category>` — e.g. `c_n`, `c_adj`, `c_v`. The standard body matches the bare category and the category with further tags: `<def-cat n="c_n"><cat-item
   tags="n"/><cat-item tags="n.*"/></def-cat>`.
 - **Attributes** (`<def-attr>`): `a_<feature>_feature` for stem/inflection features, `a_<category>_<feature>_affixes` for affix sets, `a_<slot>_slot` for positional affix slots. `a_gram_cat` is the
-  conventional attribute holding the grammatical category. Body is `<attr-item tags="…"/>` for each valid tag value.
+  conventional attribute holding the grammatical category. Body is `<attr-item tags="…"/>` for each valid tag value. A **slot** attribute (`a_<slot>_slot`) typically holds **affix glosses** — the
+  set of affix tags that can fill one morphological position on a word (e.g. the definite marker, a case suffix, a plural suffix) — so its `<attr-item>` tags are affix glosses, and clearing or
+  setting a slot with a `<let>` adds or removes that affix from the output word.
 - **Variables** (`<def-var>`): `v_<descriptive_name>`.
 - **Lists** (`<def-list>`): `l_<descriptive_name>`.
 - **Macros** (`<def-macro>`): `m_<descriptive_name>`, with `npar` set to the number of parameters.
