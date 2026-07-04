@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="108"/>
-        <source>e.g. Make adjectives agree in gender and number with the noun they modify.</source>
-        <translation>p. ej. Hacer que los adjetivos concuerden en género y número con el sustantivo que modifican.</translation>
+        <source>e.g. In a definite article + noun phrase, remove the article and add the definite singular common gender affix.</source>
+        <translation>p. ej. En un sintagma nominal con artículo definido, quite el artículo y agregue el afijo definido singular de género común.</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="109"/>
@@ -55,8 +55,8 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="113"/>
-        <source>Open in XXE</source>
-        <translation>Abrir en XXE</translation>
+        <source>Open a Temporary Version in XXE</source>
+        <translation>Abrir una versión temporal en XXE</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="114"/>
@@ -65,8 +65,8 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="115"/>
-        <source>Approve &amp;&amp; Write</source>
-        <translation>Aprobar &amp;&amp; escribir</translation>
+        <source>Approve &amp;&amp; Write to Rule File</source>
+        <translation>Aprobar &amp;&amp; escribir en el archivo de reglas</translation>
     </message>
 </context>
 </TS>

@@ -86,8 +86,11 @@
        <height>110</height>
       </size>
      </property>
+     <property name="centerOnScroll">
+      <bool>false</bool>
+     </property>
      <property name="placeholderText">
-      <string>e.g. Make adjectives agree in gender and number with the noun they modify.</string>
+      <string>e.g. In a definite article + noun phrase, remove the article and add the definite singular common gender affix.</string>
      </property>
     </widget>
    </item>
@@ -178,7 +181,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Open in XXE</string>
+        <string>Open a Temporary Version in XXE</string>
        </property>
       </widget>
      </item>
@@ -195,7 +198,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Approve &amp;&amp; Write</string>
+        <string>Approve &amp;&amp; Write to Rule File</string>
        </property>
       </widget>
      </item>
