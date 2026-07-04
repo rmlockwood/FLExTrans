@@ -55,7 +55,7 @@ for %%d in (German-Swedish TemplateProject) do (
 	copy %makefiles%\MakefileForLiveRuleTester %workprojects%\%%d\Build\LiveRuleTester\Makefile
 )
 
-rem TOFT
+rem  TOFT
 xcopy /s %TOFT_DIR%\WorkProjs\*.* %workprojects%
 
 rem copy the FlexTrans.config files
