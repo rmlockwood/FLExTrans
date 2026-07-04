@@ -51,7 +51,10 @@ def promptForApiKey(provider, parent=None):
 
     label = _translate('WorkOnRulesWithAI', 'Enter your {provider} API key. It is stored securely in the credential vault (Windows Credential Manager), not in any project file.\n\nGet a key at:\n{url}').format(provider=provider.displayName, url=provider.keyUrl)
 
-    key, ok = QInputDialog.getText(parent, _translate('WorkOnRulesWithAI', 'API key'), label, QLineEdit.EchoMode.Normal)
+    # Pre-fill with the key currently in effect for this provider (vault, or an env-var fallback) so "Change API key" shows the existing key rather than a blank box. Empty on first entry.
+    currentKey = AIRules.resolveApiKey(provider) or ''
+
+    key, ok = QInputDialog.getText(parent, _translate('WorkOnRulesWithAI', 'API key'), label, QLineEdit.EchoMode.Normal, currentKey)
     key = (key or '').strip()
 
     if not ok or not key:
