@@ -1,5 +1,10 @@
 SET FLEXTRANS_VERSION=3.16
 
+rem THIS INSTALL IS FOR TASTE OF FLExTrans
+REM --------------------------------------
+set SUFF=TOFT
+set FLEXTRANS_VERSION=%FLEXTRANS_VERSION%%SUFF%
+
 rem User interface language codes
 set LANG_CODES=de es fr
 
@@ -16,6 +21,8 @@ rem Installer Resources folder
 set installer_resources=InstallerResources
  set makefiles=%installer_resources%\makefiles
  
+set TOFT_DIR=%installer_resources%\TOFTinstall
+
 set doc=%installer_resources%\Doc
 
 rem Name the folders
@@ -47,6 +54,9 @@ for %%d in (German-Swedish TemplateProject) do (
 	rem We overwrite makefiles in the installer, but we need to put a file here to retain the structure
 	copy %makefiles%\MakefileForLiveRuleTester %workprojects%\%%d\Build\LiveRuleTester\Makefile
 )
+
+rem TOFT
+xcopy /s %TOFT_DIR%\WorkProjs\*.* %workprojects%
 
 rem copy the FlexTrans.config files
 @echo off
@@ -119,6 +129,7 @@ copy %installer_resources%\VBS\FLExTrans.vbs %flextransdoc%\"Transfer Rules Tuto
 rem SampleProjects
 copy "%installer_resources%\Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
 copy "%installer_resources%\Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" %sampleproject%
+copy %TOFT_DIR%\*.fwbackup %sampleproject%
 
 rem Zip XXE AddOns
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip

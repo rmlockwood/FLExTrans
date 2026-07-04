@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC " -//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator overwrite_rules="yes">
+    <DisjointFeatureSets>
+        <DisjointFeatureSet co_feature_name="number" language="target" disjoint_name="BantuNounGender">
+            <DisjointFeatureValuePairings>
+                <DisjointFeatureValuePairing co_feature_value="sg" flex_feature_name="BantuSg"/>
+                <DisjointFeatureValuePairing co_feature_value="pl" flex_feature_name="BantuPl"/>
+            </DisjointFeatureValuePairings>
+        </DisjointFeatureSet>
+    </DisjointFeatureSets>
+    <FLExTransRules>
+        <FLExTransRule name="N Num=one" create_permutations="no">
+            <Description>don't use disjoint for the number since the number one is mapped as a whole</Description>
+            <Source>
+                <Phrase>
+                    <Words>
+                        <Word category="n" head="no" id="1">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                        <Word category="num" head="no" id="2">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Source>
+            <Target>
+                <Phrase>
+                    <Words>
+                        <Word category="" head="yes" id="1">
+                            <Features>
+<Feature label="BantuSg" match="α" ranking="0" unmarked_default="" value=""/>
+<Feature label="BantuNounGender" match="β" ranking="0" unmarked_default="" value=""/>
+                            </Features>
+                            <Affixes>
+<Affix type="prefix">
+    <Features>
+        <Feature label="BantuNounGender" match="β" ranking="0" unmarked_default="" value=""/>
+    </Features>
+</Affix>
+                            </Affixes>
+                        </Word>
+                        <Word category="" head="no" id="2">
+                            <Features>
+<Feature label="BantuSg" match="α" ranking="0" unmarked_default="" value=""/>
+                            </Features>
+                            <Affixes/>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Target>
+        </FLExTransRule>
+        <FLExTransRule name="N Num" create_permutations="with_head">
+            <Description></Description>
+            <Source>
+                <Phrase>
+                    <Words>
+                        <Word category="n" head="no" id="1">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                        <Word category="num" head="no" id="2">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Source>
+            <Target>
+                <Phrase>
+                    <Words>
+                        <Word category="" head="yes" id="1">
+                            <Features>
+<Feature label="BantuNounGender" match="α" ranking="0" unmarked_default="" value=""/>
+                            </Features>
+                            <Affixes>
+<Affix type="prefix">
+    <Features>
+        <Feature label="BantuNounGender" match="α" ranking="0" unmarked_default="" value=""/>
+    </Features>
+</Affix>
+                            </Affixes>
+                        </Word>
+                        <Word category="" head="no" id="2">
+                            <Features/>
+                            <Affixes>
+<Affix type="prefix">
+    <Features>
+        <Feature label="BantuNounGender" match="α" ranking="0" unmarked_default="" value=""/>
+    </Features>
+</Affix>
+                            </Affixes>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Target>
+        </FLExTransRule>
+    </FLExTransRules>
+</FLExTransRuleGenerator>

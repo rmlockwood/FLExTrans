@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">
+<dictionary>
+	<section id="append" type="standard">
+		<e><p><l>SourceWord1.1<s n="v"/><s n="pfv"/></l><r>TargetWord1.1<s n="v"/><s n="ptcp"/></r></p></e>
+	</section>
+</dictionary>

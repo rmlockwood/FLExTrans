@@ -11,7 +11,7 @@ Unicode True
 !define PRODUCT_WEB_SITE "https://software.sil.org/flextrans"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_VERSION "3.16"
+!define PRODUCT_VERSION "3.16TOFT"
 !define PYTHON_MAJOR "3"
 !define PYTHON_MINOR "13"
 !define PYTHON_PATCH "12"
