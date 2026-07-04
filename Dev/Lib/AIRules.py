@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.4 - 7/4/26 - Ron Lockwood
+#    The prompt's definition summary now enumerates the contents of each def-cat (the cat-item tags, and the lemma when a category is lemma-specific) and each def-list (its items),
+#    instead of only listing category and list names.
+#
 #   Version 3.16.3 - 7/4/26 - Ron Lockwood
 #    The authorship-stamp date/time is now localized to the interface language: markAuthorship / generateValidatedRule accept a preformatted whenStr from the Qt-side caller, with a
 #    plain English date as the standalone fallback. The authorship sentences are also whole localized sentences (chosen by mode) rather than a verb interpolated into a fixed frame.
@@ -478,9 +482,24 @@ def extractExistingDefs(transferPath: str) -> dict:
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     root = ET.parse(transferPath, parser=parser).getroot()
 
-    cats = [c.get('n', '') for c in root.findall('.//def-cat')]
+    # For categories, gather the contents of each def-cat - the tags of every cat-item and, when a cat-item is lemma-specific, the lemma - so the model sees exactly what each category
+    # matches (and which categories are pinned to a particular lemma) rather than only the names.
+    catItems = {}
+
+    for c in root.findall('.//def-cat'):
+
+        items = []
+
+        for it in c.findall('./cat-item'):
+
+            tags = it.get('tags', '')
+            lemma = it.get('lemma')
+            items.append('{tags} (lemma {lemma})'.format(tags=tags, lemma=lemma) if lemma else tags)
+
+        catItems[c.get('n', '')] = items
+
+    cats = list(catItems.keys())
     variables = [v.get('n', '') for v in root.findall('.//def-var')]
-    lists = [lst.get('n', '') for lst in root.findall('.//def-list')]
     macros = [m.get('n', '') for m in root.findall('.//def-macro')]
 
     # For attributes, gather the tag values too so the model knows which tags are legal for each attribute.
@@ -489,11 +508,23 @@ def extractExistingDefs(transferPath: str) -> dict:
     for a in root.findall('.//def-attr'):
         attrs[a.get('n', '')] = sorted(i.get('tags', '') for i in a.findall('./attr-item'))
 
+    # For lists, gather the contents of each def-list - the value of every list-item - so the model sees the actual members of each list, not only its name.
+    listItems = {}
+
+    for lst in root.findall('.//def-list'):
+        listItems[lst.get('n', '')] = [li.get('v', '') for li in lst.findall('./list-item')]
+
+    lists = list(listItems.keys())
+
     ruleNames = [r.get('comment', '') for r in root.findall('.//rule')]
 
-    # Build a compact text summary for the prompt.
+    # Build a text summary for the prompt.
     lines = []
-    lines.append('Existing categories (def-cat): ' + ', '.join(cats))
+    lines.append('Existing categories (def-cat) with the cat-item tags each one matches (a lemma in parentheses means that item is pinned to that specific lemma):')
+
+    for name in sorted(catItems):
+        lines.append('  {name}: {items}'.format(name=name, items='; '.join(catItems[name]) or '(empty)'))
+
     lines.append('')
     lines.append('Existing attributes (def-attr) and their legal tag values:')
 
@@ -501,14 +532,24 @@ def extractExistingDefs(transferPath: str) -> dict:
         lines.append('  {name}: {values}'.format(name=name, values=', '.join(attrs[name])))
 
     lines.append('')
+    lines.append('Existing lists (def-list) with their items:')
+
+    if listItems:
+
+        for name in sorted(listItems):
+            lines.append('  {name}: {items}'.format(name=name, items=', '.join(listItems[name]) or '(empty)'))
+
+    else:
+        lines.append('  (none)')
+
+    lines.append('')
     lines.append('Existing variables (def-var): ' + (', '.join(variables) or '(none)'))
-    lines.append('Existing lists (def-list): ' + (', '.join(lists) or '(none)'))
     lines.append('Existing macros (def-macro): ' + (', '.join(macros) or '(none)'))
     lines.append('')
     lines.append('Existing rule names (comment): ' + ', '.join(ruleNames))
 
     return {
-        'cats': cats, 'attrs': attrs, 'variables': variables, 'lists': lists, 'macros': macros, 'ruleNames': ruleNames, 'summaryText': '\n'.join(lines), }
+        'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'ruleNames': ruleNames, 'summaryText': '\n'.join(lines), }
 
 def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
     '''Return the XML text of the rule whose comment matches, or None.'''
