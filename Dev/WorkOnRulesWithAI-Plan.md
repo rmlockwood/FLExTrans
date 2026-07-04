@@ -1,9 +1,9 @@
 # Plan — "Work on Rules with AI" module
 
-A FLExTrans module that uses an AI provider (Anthropic Claude by default, with Google Gemini selectable) to **create a new Apertium transfer rule** or **modify an existing one** in the project's
-`transfer_rules.t1x`, with human review and approval before anything is written.
+A FLExTrans module that uses an AI provider (Google Gemini by default — its free tier makes it the lowest-friction start — with Anthropic Claude and OpenAI ChatGPT selectable) to **create a new
+Apertium transfer rule** or **modify an existing one** in the project's `transfer_rules.t1x`, with human review and approval before anything is written.
 
-This document is a plan for review. Nothing is built yet, and per project convention no feature code is committed until Ron OKs it.
+This document started as a plan for review; a working prototype of everything below is now built. Per project convention no feature code is committed until Ron OKs it.
 
 ---
 
@@ -45,12 +45,14 @@ This document is a plan for review. Nothing is built yet, and per project conven
 
 ## 3. API key / credits model
 
-The engine is **pluggable** (a small provider layer in `AIRules.py`). **Anthropic Claude** (`claude-opus-4-8`) is the default; **Google Gemini** (`gemini-2.5-flash`) is selectable, and other providers
-can be added by implementing `makeClient()` + `generate()` and registering them. Selection is a config setting (`AIRulesProvider`); each provider knows its own env var(s) and default model. Every
-provider's API is key-based; the request bills to the account that owns the key. Options:
+The engine is **pluggable** (a small provider layer in `AIRules.py`). **Google Gemini** (`gemini-2.5-flash`, free tier) is the default; **Anthropic Claude** (`claude-opus-4-8`) and **OpenAI ChatGPT**
+(`gpt-5.1`) are selectable, and other providers can be added by implementing `makeClient()` + `generate()` and registering them. The provider and model are chosen in the Settings tool (AI Assistant
+section) and stored as `AIRulesProvider` / `AIRulesModel`; the module refuses to run until both are set, so the user always knows which service their data goes to. Every provider's API is key-based;
+the request bills to the account that owns the key. Options:
 
-1. **Bring-your-own-key (BYOK)** — each user supplies their own key for the chosen provider (Anthropic Console, or Google AI Studio which has a **free tier** — the answer to the earlier "can users get
-   free usage" question, and a reason to keep Gemini easy to switch to). Zero cost/liability for SIL, scales, no infrastructure; downside is signup friction.
+1. **Bring-your-own-key (BYOK)** — each user supplies their own key for the chosen provider (Google AI Studio has a **free tier** — the answer to the earlier "can users get free usage" question, and
+   the reason Gemini is the default; Anthropic and OpenAI need purchased credit). Zero cost/liability for SIL, scales, no infrastructure; downside is signup friction. The user documentation has a
+   per-provider "Getting an API key" walkthrough (anchor `sAIApiKeys`), and the Settings tool links to it.
 2. **Org-sponsored via a proxy** — SIL holds the key behind an SIL-hosted proxy that meters per-user usage and enforces quotas. Users need no account, but a shared key **cannot** be shipped in the
    desktop app (trivially extractable/abusable), so this requires building and operating a backend plus SIL absorbing usage cost.
 3. **Per-user keys with limits** — feasible for a small known pilot group, not for public distribution.
@@ -58,9 +60,12 @@ provider's API is key-based; the request bills to the account that owns the key.
 **v1 decision: BYOK**, with the key sourced per-provider by a single resolver:
 
 ```
-resolveApiKey(provider):  provider env var(s)  →  config AIRulesApiKey  →  None (prompt user)
-      anthropic → ANTHROPIC_API_KEY      gemini → GEMINI_API_KEY / GOOGLE_API_KEY
+resolveApiKey(provider):  OS credential vault (single FLExTrans/AIRulesApiKey entry)  →  provider env var(s)  →  None (prompt user, store in vault)
+      gemini → GEMINI_API_KEY / GOOGLE_API_KEY      anthropic → ANTHROPIC_API_KEY      openai → OPENAI_API_KEY
 ```
+
+The key is **never written to a settings/config file** (those files get shared); it lives in the OS credential vault via `keyring` (Windows Credential Manager). The dialog's "Change API key…"
+button updates the vault entry and rebuilds the client immediately.
 
 Keeping key resolution and client construction behind the provider layer means a future org-proxy is a drop-in (point the client at the proxy and swap the auth) without touching the rest of the
 module.
@@ -72,9 +77,12 @@ module.
 | File | Purpose |
 |---|---|
 | `Dev/Modules/WorkOnRulesWithAI.py` | Module entry: `docs`, `FlexToolsModuleClass`, `MainFunction(DB, report)`, consent gate, orchestration. |
-| `Dev/Lib/AIRules.py` | Pluggable provider layer (Anthropic default, Gemini selectable), prompt assembly, validation-retry loop, key resolution, surgical write. No Qt. |
-| `Dev/Lib/TransferPreview.py` | XML→HTML renderer + before/after diff-marking; loads the per-language display spec and inlines `transfer_preview.css`. No raw markup ever shown to the user. |
-| `Dev/Lib/WorkOnRulesWithAIDlg.py` | The PyQt6 dialog (code-based, no `.ui`): mode toggle, rule picker, description box, threaded generation, `QWebEngineView` preview, Approve / Open-in-XXE / Cancel. |
+| `Dev/Lib/AIRules.py` | Pluggable provider layer (Gemini default; Anthropic and OpenAI selectable), prompt assembly, validation-retry loop, key resolution (vault → env), optional prompt logging, surgical write. No Qt. |
+| `Dev/Lib/TransferPreview.py` | XML→HTML renderer + before/after diff-marking; loads the per-language display spec (labels **and chip colours**) and inlines `transfer_preview.css`. No raw markup ever shown to the user. |
+| `Dev/Lib/WorkOnRulesWithAIDlg.py` | The PyQt6 dialog logic: mode toggle, rule picker, description box, threaded generation, `QWebEngineView` preview, Approve / Open-in-XXE / Cancel, Change API key. |
+| `Dev/Lib/Windows/WorkOnRulesWithAIWindow.ui` (+ compiled `.py`) | The dialog layout, defined in Qt Designer format and compiled with pyuic like the other module windows (`convert_ui_py.bat`). |
+| `Dev/TopLevel/SettingsGUI.py` | The AI Assistant settings section: provider, model, include-project-names, prompt logging, an API-key help LINK row, and hidden rows preserving the consent flags. |
+| `Installer/InstallerResources/Doc/UserDoc.xml` / `.htm` | New §4.11 "The Work on Rules with AI Module" with §4.11.1 "Getting an API key" (anchor `sAIApiKeys`, target of the Settings link). |
 | `Dev/Lib/transfer_preview.css` | Standard-CSS reskin of `transfer.css` — palette/chip/layout only (language-independent); labels come from the per-language spec. Inlined into the preview. |
 | `Dev/Lib/WorkOnRulesWithAI-Conventions.md` | The house-conventions system prompt (the cached grounding). Loaded at runtime via `realpath`. |
 | `Dev/Lib/transfer.dtd` | Bundled DTD for validation (no copy sits beside project files). |
@@ -84,19 +92,23 @@ module.
 | `Installer/CreateInstaller.bat` | Runs `derive_preview_specs.py`, then copies `Dev/Lib/*.dtd`, `*.md`, `*.json` (not just `*.py`/`*.css`) into the deployed `Lib`. |
 | `translations/*.ts` (de/es/fr) beside each new `.py` | New UI strings; aim for 0 unfinished, compile `.qm`. Crowdin syncs from master. |
 | (no menu edit) | FlexTools auto-discovers modules in `Dev/Modules`, so dropping the file in is enough — no `FLExTransMenu.py` change needed. |
-| install / requirements | Add the `anthropic` dependency (and `google-genai` if the Gemini provider is used). |
+| install / requirements | `google-genai` (default Gemini provider), `anthropic`, `openai`, and `keyring` (credential vault). |
 
 ---
 
 ## 5. Config keys (ReadConfig, alphabetical)
 
-- `AI_RULES_PROVIDER` — which provider to use: `anthropic` (default) or `gemini`.
-- `AI_RULES_API_KEY` — optional; the key itself, or blank to use the provider's env var (`ANTHROPIC_API_KEY`, or `GEMINI_API_KEY` / `GOOGLE_API_KEY`).
-- `AI_RULES_MODEL` — optional; overrides the provider's default model.
-- `AI_RULES_CONSENT` and `AI_RULES_CONSENT_ASKED` — the consent flag and whether-asked flag, mirroring the Mixpanel opt-in constant pattern, since this sends data externally.
-- Provider defaults live in `AIRules.py`: Anthropic → `claude-opus-4-8`, Gemini → `gemini-2.5-flash` (free-tier friendly; Pro needs a paid key).
+All of these are set in the Settings tool's **AI Assistant** section (the code reads them via `ReadConfig`); none of them holds the API key — that lives in the OS credential vault.
 
-If any Doc-subfolder `FlexTrans.config` template needs the new setting, update all copies, not just the main one.
+- `AI_RULES_PROVIDER` — which provider to use; the Settings tool stores the display name (`Google Gemini` / `Anthropic Claude` / `OpenAI ChatGPT`) and `findProvider` accepts either that or the short
+  name (`gemini` / `anthropic` / `openai`). **Required** — the module shows a "set this up in Settings first" message and exits when it (or the model) is unset.
+- `AI_RULES_MODEL` — the model to use with the chosen provider. **Required.** The Settings combo offers each provider's known models (`provider.models`) plus whatever value is already saved.
+- `AI_RULES_INCLUDE_PROJECT_NAMES` — y/n; include the FLEx project names in the prompt. Off by default because a project name can itself be sensitive.
+- `AI_RULES_LOG_PROMPTS` — y/n (Full view only); when on, every prompt and response is appended to `Build/AIRulesPromptLog.txt` for debugging on a user's machine. Off for shipping.
+- `AI_RULES_CONSENT` and `AI_RULES_CONSENT_ASKED` — the consent flag and whether-asked flag, mirroring the Mixpanel opt-in constant pattern, since this sends data externally. Also present as hidden
+  rows in the Settings widget list so that saving settings (which rewrites the whole config file from that list) preserves them.
+
+The new settings were added to the main `FlexTrans.config` template and all Doc-subfolder copies.
 
 ---
 
@@ -104,13 +116,16 @@ If any Doc-subfolder `FlexTrans.config` template needs the new setting, update a
 
 1. `Utils.loadTranslations(...)`, `ReadConfig.readConfig(report)`.
 2. `Mixpanel.LogModuleStarted(...)`, matching other modules.
-3. Consent gate (one-time opt-in dialog in the Mixpanel style): state clearly what is sent to Google Gemini — rule text, categories, feature/affix data — and let the user opt out.
-4. Resolve the API key (§3). If missing, show a dialog explaining BYOK with a link to Google AI Studio, then abort cleanly.
-5. Get the `TRANSFER_RULES_FILE` path; open the target project (`Utils.openTargetProject`).
-6. Parse existing rules (reuse `CreateApertiumRules.ProcessExistingTransferFile` parsing) → list of `(comment, element)` for the picker, plus the existing def-cat / def-attr / def-var / def-macro
-   names.
-7. Gather project grounding via `RuleAssistant.GetStartData` (POS, features, values, affixes) for source and target.
-8. Launch the dialog. On Approve, write the file with a `shutil` backup (same pattern `CreateApertiumRules` uses). Optionally offer to launch the Live Rule Tester (`LiveRuleTesterTool`).
+3. **Settings gate:** read `AIRulesProvider` / `AIRulesModel`; if either is unset (or the provider is unrecognized), show a message telling the user to set them in the Settings tool's AI Assistant
+   section and come back — then exit. No silent defaults.
+4. Consent gate (one-time opt-in dialog in the Mixpanel style): state clearly what is sent to the configured provider — rule text, categories, feature/affix data — and let the user opt out.
+5. Resolve the API key (§3): vault → env var → prompt-and-store (the prompt shows the provider's key URL).
+6. Turn prompt logging on/off from `AIRulesLogPrompts` (sets `AIRules.PROMPT_LOG_PATH` to `Build/AIRulesPromptLog.txt` and tells the user via `report.Info`).
+7. Get the `TRANSFER_RULES_FILE` path; open the target project (`Utils.openTargetProject`).
+8. Gather project grounding via `RuleAssistant.GetRuleAssistantStartData` (POS, features, values, affixes) for source and target; FLEx project names are included only when
+   `AIRulesIncludeProjectNames` is `y`.
+9. Extract the existing definitions/rule names and the four longest rules + two longest macros for the system instruction; build the `Engine` from the configured provider/model.
+10. Launch the dialog (`dlg.show()` + `app.exec()` — FlexTools has no running Qt event loop). On Approve, write the file with a backup. Optionally offer to launch the Live Rule Tester later.
 
 ---
 
@@ -133,7 +148,11 @@ shown.
 
 **Preview language.** The labels (`clip -`, `item:`, `side:`, …) come from a per-language spec (`preview_spec_<lang>.json`) that `derive_preview_specs.py` derives from the XXE `transfer.css` files.
 `renderRuleHtml` / `renderComparisonHtml` take a `lang` and load the matching spec (English fallback), so the preview shows XXE's labels in the request's language. The model returns that language as a
-two-letter code in its structured output (see §8); colours and layout are language-independent (shared CSS).
+two-letter code in its structured output (see §8).
+
+**Preview colours.** The chip/box colours also come from the derived spec: `derive_preview_specs.py` parses the `@property-value def-*-background-color()` declarations at the top of each XXE
+`transfer.css` into a `_colors` map in the JSON, and `TransferPreview` appends those as CSS overrides after `transfer_preview.css` (whose hard-coded `.c-*` values remain only as fallbacks). Changing
+a colour in the XXE stylesheet therefore flows into the in-app preview on the next derivation run — nothing is hard coded in the renderer.
 
 **Buttons:** **Approve** (writes, with backup) / **Cancel** (discards) / **Open in XXE** (writes the candidate — or the full updated file — to disk and points the user to open it in XXE for
 full-fidelity, editable review).
@@ -146,14 +165,19 @@ A provider abstraction keeps the rest of the module provider-agnostic. Each prov
 explanation)`, and is registered in `PROVIDERS`. `buildEngine(providerName, apiKey, model)` returns an `Engine` (provider + client + model) that flows through `generateRule` / `generateValidatedRule`.
 SDKs are imported lazily inside each provider, so only the selected provider's SDK must be installed.
 
-- **Anthropic (default):** `anthropic`, `client.messages.create(model="claude-opus-4-8", …)`, **forced tool use** (`tool_choice` → the `submit_rule` tool) for structured output, adaptive thinking, and
-  the system instruction wrapped in a `cache_control` block for prompt caching. Handles `stop_reason == "refusal"`.
-- **Gemini:** `google-genai`, `client.models.generate_content(model="gemini-2.5-flash", …)`, **structured output** (`response_mime_type="application/json"` + `response_schema=RULE_SCHEMA`),
+- **Gemini (default):** `google-genai`, `client.models.generate_content(model="gemini-2.5-flash", …)`, **structured output** (`response_mime_type="application/json"` + `response_schema=RULE_SCHEMA`),
   `json.loads` the response. Guards a blocked/empty response (surfacing `prompt_feedback`).
-- **Shared:** both return the same `(rule_xml, new_defs, explanation, language)` tuple — `language` is the two-letter ISO 639-1 code of the request's language, used to localize the preview.
-- **System instruction:** the "how we write Apertium rules" conventions doc + one or two real sample rules from the file, concatenated by `buildSystemInstruction`. The `transfer.dtd` is deliberately
-  NOT included — the model already knows the Apertium format, so it was ~5k low-value tokens (and counts against Gemini free-tier input quotas); the validation-retry loop is the authoritative check.
-  The prefix is identical across requests (Anthropic caches it via the breakpoint; Gemini 2.5 reuses it via implicit caching).
+- **Anthropic:** `anthropic`, `client.messages.create(model="claude-opus-4-8", …)`, **forced tool use** (`tool_choice` → the `submit_rule` tool) for structured output, adaptive thinking, and
+  the system instruction wrapped in a `cache_control` block for prompt caching. Handles `stop_reason == "refusal"`.
+- **OpenAI:** `openai`, `client.chat.completions.create(model="gpt-5.1", …)`, **strict JSON-schema response format** (`response_format={"type": "json_schema", …}` with `OPENAI_RULE_SCHEMA`, which
+  adds `additionalProperties: false` and drops Gemini's `propertyOrdering`). Handles the message-level `refusal` field and empty responses.
+- **Shared:** all providers return the same `(rule_xml, new_defs, explanation, language)` tuple — `language` is the two-letter ISO 639-1 code of the request's language, used to localize the preview.
+- **System instruction:** the "how we write Apertium rules" conventions doc + the **four longest rules and two longest macros** from the project's transfer file (`getSampleRulesAndMacros`; the
+  slices naturally handle files with fewer rules or no macros), concatenated by `buildSystemInstruction`. The `transfer.dtd` is deliberately NOT included — the model already knows the Apertium
+  format, so it was ~5k low-value tokens (and counts against Gemini free-tier input quotas); the validation-retry loop is the authoritative check. The prefix is identical across requests (Anthropic
+  caches it via the breakpoint; Gemini 2.5 reuses it via implicit caching).
+- **Prompt logging:** when `AIRulesLogPrompts` is on, `Engine.generate` appends every outgoing prompt and incoming response (or error) to `Build/AIRulesPromptLog.txt` via `AIRules.PROMPT_LOG_PATH` /
+  `logPromptTraffic` — a debugging aid that ships off and can be switched on in Settings (Full view) on a user's machine.
 - **Per-request content:** the project's real categories/features/tags, the existing definition *names* (so it reuses `a_gender_feature` etc. rather than inventing), the current rule XML when
   modifying, and the user's description.
 - `max_tokens` / `max_output_tokens` ~16000; non-streaming is fine for a single rule.
@@ -163,10 +187,11 @@ SDKs are imported lazily inside each provider, so only the selected provider's S
 The rest of the module (dialog, validation loop, preview, config, key handling, rate-limit UI) is provider-agnostic — everything flows through the `Engine` — so adding a provider is small. You
 touch two places in `AIRules.py` (plus optionally requirements/config), and nothing else changes.
 
-1. **Write a provider class** with these class attributes and two methods (model on `AnthropicProvider` / `GeminiProvider`):
-   - `name` — the value users put in the `AIRulesProvider` config setting (e.g. `'openai'`).
-   - `displayName` — shown in the consent dialog and error messages (e.g. `'OpenAI'`).
-   - `defaultModel` — used when `AIRulesModel` isn't set.
+1. **Write a provider class** with these class attributes and two methods (model on `GeminiProvider` / `AnthropicProvider` / `OpenAIProvider`):
+   - `name` — the short config value (e.g. `'openai'`); `findProvider` also matches the `displayName`, which is what the Settings tool stores.
+   - `displayName` — shown in the Settings provider combo, the consent dialog, and error messages (e.g. `'OpenAI ChatGPT'`).
+   - `defaultModel` — the sensible first choice for this provider.
+   - `models` — the list of known model names the Settings tool's AI Model combo offers.
    - `envVars` — a tuple of env var name(s) `resolveApiKey` checks (e.g. `('OPENAI_API_KEY',)`).
    - `keyUrl` — where to get a key; shown in the "no key" dialog.
    - `makeClient(self, apiKey)` — **import the SDK lazily inside this method** (so only the selected provider's SDK must be installed) and return the client.
@@ -190,11 +215,12 @@ touch two places in `AIRules.py` (plus optionally requirements/config), and noth
            return rule_xml, new_defs, explanation    # (str, list[str], str)
    ```
 
-2. **Register it** in the `PROVIDERS` dict (the only other change):
+2. **Register it** in the `PROVIDERS` dict (the only other change — the Settings tool's provider and model combos pick it up from the registry automatically):
    ```python
    PROVIDERS = {
-       AnthropicProvider.name: AnthropicProvider(),
        GeminiProvider.name: GeminiProvider(),
+       AnthropicProvider.name: AnthropicProvider(),
+       OpenAIProvider.name: OpenAIProvider(),
        MyProvider.name: MyProvider(),                # ← add this line
    }
    ```
@@ -203,8 +229,8 @@ touch two places in `AIRules.py` (plus optionally requirements/config), and noth
 - On **HTTP 429**, `raise RateLimitError(self.displayName, retryAfterSeconds_or_None)` — the dialog then shows the clean "try again in N s" message instead of a raw dump.
 - On a **blocked / empty / refused** response, `raise RuntimeError(...)` with a readable message (the dialog surfaces it via the "failed" path).
 
-**Outside `AIRules.py`:** add the SDK to `requirements.txt` (both copies; can be optional/documented since imports are lazy). No config or conventions-doc changes are needed —
-`AIRulesProvider`, `AIRulesModel`, and `AIRulesApiKey` already work generically, and the system instruction is provider-independent.
+**Outside `AIRules.py`:** add the SDK to `requirements.txt` (imports are lazy, so only the selected provider's SDK actually has to be installed). No config or conventions-doc changes are needed —
+`AIRulesProvider` and `AIRulesModel` work generically, the API key comes from the shared vault entry, and the system instruction is provider-independent.
 
 ---
 
@@ -247,7 +273,7 @@ Both must pass. This is what makes direct-XML generation trustworthy.
   deliberately include glosses).
 - **Non-determinism:** rules are always human-reviewed and validated; never auto-applied.
 - **Cost:** low per rule with caching; surface it if credits are ever sponsored.
-- **Dependency:** adds `anthropic` (and optionally `google-genai` for the Gemini provider) to the install/bundle — confirm acceptable.
+- **Dependency:** adds `google-genai`, `anthropic`, `openai`, and `keyring` to the install/bundle — confirm acceptable (imports are lazy, so only the selected provider's SDK is exercised).
 
 ---
 

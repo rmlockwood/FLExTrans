@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.2 - 7/3/26 - Ron Lockwood
+#    Settings for the Work on Rules with AI module: provider, model, consent, include-project-names, and prompt logging. Removed the unused AIRulesApiKey setting (keys live in the OS
+#    credential vault, never in a settings file).
+#
 #   Version 3.16.1 - 6/22/26 - Ron Lockwood
 #    Use with statements for file handling in writeConfigValue.
 #
@@ -77,9 +81,10 @@ from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
-AI_RULES_API_KEY = 'AIRulesApiKey'
 AI_RULES_CONSENT = 'AIRulesConsentToSendData'
 AI_RULES_CONSENT_ASKED = 'AIRulesConsentQuestionAsked'
+AI_RULES_INCLUDE_PROJECT_NAMES = 'AIRulesIncludeProjectNames'
+AI_RULES_LOG_PROMPTS = 'AIRulesLogPrompts'
 AI_RULES_MODEL = 'AIRulesModel'
 AI_RULES_PROVIDER = 'AIRulesProvider'
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'

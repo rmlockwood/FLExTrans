@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.1 - 7/3/26 - Ron Lockwood
+#    The dialog layout now comes from WorkOnRulesWithAIWindow.ui compiled with pyuic (like the other module windows), and the status label word-wraps so a long explanation no longer
+#    forces the dialog wide.
+#
 #   Version 3.16 - 7/2/26 - Ron Lockwood
 #    Prototype. The dialog for the "Work on Rules with AI" module: choose to create a new rule or modify an existing one, describe the change, generate with the configured AI provider
 #    (on a background thread), preview the result rendered like XXE, and Approve / Open in XXE / Cancel. Inputs are injected so the dialog can be exercised standalone; MainFunction
@@ -12,19 +16,21 @@
 
 import os
 
-from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
+from PyQt6.QtCore import QThread, QObject, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QRadioButton, QButtonGroup, QListWidget, QPlainTextEdit, QPushButton, QLabel, QMessageBox, QApplication, QWidget, QInputDialog, QLineEdit)
+from PyQt6.QtWidgets import QDialog, QMessageBox, QInputDialog, QLineEdit
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
 import TransferPreview
+from WorkOnRulesWithAIWindow import Ui_WorkOnRulesWithAI
 
 # FTPaths is only available inside the full FLExTrans install; tolerate its absence so the dialog can run standalone.
 try:
     import FTPaths
+
 except ImportError:
-    FTPaths = None
+    FTPaths = None  # type: ignore[assignment]
 
 _translate = QCoreApplication.translate
 
@@ -76,7 +82,7 @@ class GenerateWorker(QObject):
             self.failed.emit(str(err))
 
 class WorkOnRulesWithAIDlg(QDialog):
-    '''Create or modify one Apertium transfer rule with AI assistance.'''
+    '''Create or modify one Apertium transfer rule with AI assistance. The widget layout comes from WorkOnRulesWithAIWindow.ui (compiled to WorkOnRulesWithAIWindow.py with pyuic).'''
 
     def __init__(self, transferPath, ruleNames, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
 
@@ -93,120 +99,52 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.compilerExe = compilerExe
 
         # Populated once a candidate is generated.
-        self.result = None
+        self.ruleResult = None
         self.currentRuleXml = None
-        self.thread = None
+        self.genThread = None
         self.worker = None
 
-        self.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        # Build the widgets from the pyuic-generated class.
+        self.ui = Ui_WorkOnRulesWithAI()
+        self.ui.setupUi(self)
 
         if FTPaths:
             self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
-        self.resize(1000, 750)
-        self.buildUi()
-        self.onModeChanged()
+        self.ui.ruleList.addItems(self.ruleNames)
 
-    def buildUi(self):
-
-        layout = QVBoxLayout(self)
-
-        # Mode: create vs modify.
-        modeRow = QHBoxLayout()
-        self.createRadio = QRadioButton(_translate('WorkOnRulesWithAI', 'Create new rule'))
-        self.modifyRadio = QRadioButton(_translate('WorkOnRulesWithAI', 'Modify existing rule'))
-        self.createRadio.setChecked(True)
-
-        self.modeGroup = QButtonGroup(self)
-        self.modeGroup.addButton(self.createRadio)
-        self.modeGroup.addButton(self.modifyRadio)
-        self.createRadio.toggled.connect(self.onModeChanged)
-
-        modeRow.addWidget(self.createRadio)
-        modeRow.addWidget(self.modifyRadio)
-        modeRow.addStretch()
-        layout.addLayout(modeRow)
-
-        # Rule picker (shown only in modify mode).
-        self.pickerLabel = QLabel(_translate('WorkOnRulesWithAI', 'Rule to modify:'))
-        layout.addWidget(self.pickerLabel)
-
-        self.ruleList = QListWidget()
-        self.ruleList.addItems(self.ruleNames)
-        self.ruleList.setMaximumHeight(160)
-        layout.addWidget(self.ruleList)
-
-        # Description of the desired rule / change.
-        layout.addWidget(QLabel(_translate('WorkOnRulesWithAI', 'Describe the rule you want:')))
-        self.descriptionEdit = QPlainTextEdit()
-        self.descriptionEdit.setPlaceholderText(
-            _translate('WorkOnRulesWithAI', 'e.g. Make adjectives agree in gender and number with the noun they modify.'))
-        self.descriptionEdit.setMaximumHeight(110)
-        layout.addWidget(self.descriptionEdit)
-
-        # Generate button and status.
-        genRow = QHBoxLayout()
-        self.generateButton = QPushButton(_translate('WorkOnRulesWithAI', 'Generate'))
-        self.generateButton.clicked.connect(self.onGenerate)
-        self.statusLabel = QLabel('')
-        genRow.addWidget(self.generateButton)
-        genRow.addWidget(self.statusLabel)
-        genRow.addStretch()
-        layout.addLayout(genRow)
-
-        # Preview (single rule for create, side-by-side for modify). The QWebEngineView is created lazily on first use: an embedded Chromium view installs input hooks that can steal
-        # arrow/navigation keys from sibling text widgets, so we keep it out of the window until a preview is needed.
-        layout.addWidget(QLabel(_translate('WorkOnRulesWithAI', 'Preview:')))
-        self.previewContainer = QWidget()
-        self.previewLayout = QVBoxLayout(self.previewContainer)
-        self.previewLayout.setContentsMargins(0, 0, 0, 0)
-        self.previewPlaceholder = QLabel(_translate('WorkOnRulesWithAI', 'The generated rule will appear here after you click Generate.'))
-        self.previewLayout.addWidget(self.previewPlaceholder)
-        layout.addWidget(self.previewContainer, 1)
+        # The preview QWebEngineView is created lazily on first use (see ensurePreview): an embedded Chromium view installs input hooks that can steal arrow/navigation keys from
+        # sibling text widgets, so we keep it out of the window until a preview is needed.
         self.preview = None
 
-        # Action buttons.
-        buttonRow = QHBoxLayout()
-        self.approveButton = QPushButton(_translate('WorkOnRulesWithAI', 'Approve && Write'))
-        self.approveButton.clicked.connect(self.onApprove)
-        self.approveButton.setEnabled(False)
+        # Hook up the widgets.
+        self.ui.createRadio.toggled.connect(self.onModeChanged)
+        self.ui.generateButton.clicked.connect(self.onGenerate)
+        self.ui.approveButton.clicked.connect(self.onApprove)
+        self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
+        self.ui.cancelButton.clicked.connect(self.reject)
+        self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
 
-        self.xxeButton = QPushButton(_translate('WorkOnRulesWithAI', 'Open in XXE'))
-        self.xxeButton.clicked.connect(self.onOpenInXxe)
-        self.xxeButton.setEnabled(False)
-
-        self.cancelButton = QPushButton(_translate('WorkOnRulesWithAI', 'Cancel'))
-        self.cancelButton.clicked.connect(self.reject)
-
-        # A utility action (left side): change the stored API key at any time.
-        self.changeKeyButton = QPushButton(_translate('WorkOnRulesWithAI', 'Change API key…'))
-        self.changeKeyButton.clicked.connect(self.onChangeApiKey)
-
-        buttonRow.addWidget(self.changeKeyButton)
-        buttonRow.addStretch()
-        buttonRow.addWidget(self.xxeButton)
-        buttonRow.addWidget(self.cancelButton)
-        buttonRow.addWidget(self.approveButton)
-        layout.addLayout(buttonRow)
+        self.onModeChanged()
 
     def isModify(self) -> bool:
 
-        return self.modifyRadio.isChecked()
+        return self.ui.modifyRadio.isChecked()
 
     def onModeChanged(self):
 
         modify = self.isModify()
-        self.pickerLabel.setVisible(modify)
-        self.ruleList.setVisible(modify)
+        self.ui.pickerLabel.setVisible(modify)
+        self.ui.ruleList.setVisible(modify)
 
     def selectedRuleComment(self):
 
-        item = self.ruleList.currentItem()
+        item = self.ui.ruleList.currentItem()
         return item.text() if item else None
 
     def onGenerate(self):
 
-        description = self.descriptionEdit.toPlainText().strip()
+        description = self.ui.descriptionEdit.toPlainText().strip()
 
         if not description:
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
@@ -241,88 +179,86 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         # Disable controls and run generation on a worker thread.
         self.setBusy(True)
-        self.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generating…'))
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generating…'))
 
-        self.thread = QThread()
+        self.genThread = QThread()
         self.worker = GenerateWorker(params)
-        self.worker.moveToThread(self.thread)
-        self.thread.started.connect(self.worker.run)
+        self.worker.moveToThread(self.genThread)
+        self.genThread.started.connect(self.worker.run)
         self.worker.finished.connect(self.onGenerateFinished)
         self.worker.failed.connect(self.onGenerateFailed)
         self.worker.rateLimited.connect(self.onRateLimited)
-        self.thread.start()
+        self.genThread.start()
 
     def setBusy(self, busy: bool):
 
-        self.generateButton.setEnabled(not busy)
-        self.createRadio.setEnabled(not busy)
-        self.modifyRadio.setEnabled(not busy)
-        self.ruleList.setEnabled(not busy)
-        self.descriptionEdit.setEnabled(not busy)
+        self.ui.generateButton.setEnabled(not busy)
+        self.ui.createRadio.setEnabled(not busy)
+        self.ui.modifyRadio.setEnabled(not busy)
+        self.ui.ruleList.setEnabled(not busy)
+        self.ui.descriptionEdit.setEnabled(not busy)
 
     def cleanupThread(self):
 
-        if self.thread:
-            self.thread.quit()
-            self.thread.wait()
-            self.thread = None
+        if self.genThread:
+
+            self.genThread.quit()
+            self.genThread.wait()
+            self.genThread = None
             self.worker = None
 
     def ensurePreview(self):
         '''Create the QWebEngineView on first use and swap out the placeholder.'''
 
         if self.preview is None:
+
             self.preview = QWebEngineView()
-            self.previewLayout.addWidget(self.preview)
-            self.previewPlaceholder.hide()
+            self.ui.previewLayout.addWidget(self.preview)
+            self.ui.previewPlaceholder.hide()
 
         return self.preview
 
     def showEvent(self, event):
 
         super().showEvent(event)
-        self.descriptionEdit.setFocus()
+        self.ui.descriptionEdit.setFocus()
 
     def onGenerateFinished(self, result):
 
         self.cleanupThread()
         self.setBusy(False)
-        self.result = result
+        self.ruleResult = result
 
-        # Render the preview: single rule for create, before/after for modify. The label
-        # language follows the language of the user's request, as reported by the model.
+        # Render the preview: single rule for create, before/after for modify. The label language follows the language of the user's request, as reported by the model.
         if self.isModify() and self.currentRuleXml:
             html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language)
         else:
             html = TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language)
 
         self.ensurePreview().setHtml(html)
-        self.xxeButton.setEnabled(True)
+        self.ui.xxeButton.setEnabled(True)
 
         if result.valid:
-            self.approveButton.setEnabled(True)
-            self.statusLabel.setText(
-                _translate('WorkOnRulesWithAI', 'Valid rule generated (attempt {n}). {expl}').format(
-                    n=result.attempts, expl=result.explanation))
+
+            self.ui.approveButton.setEnabled(True)
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Valid rule generated (attempt {n}). {expl}').format(n=result.attempts, expl=result.explanation))
         else:
-            self.approveButton.setEnabled(False)
-            self.statusLabel.setText(
-                _translate('WorkOnRulesWithAI', 'Could not produce a valid rule after {n} attempts. See errors; you can still open it in XXE.').format(
-                    n=result.attempts))
+            self.ui.approveButton.setEnabled(False)
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not produce a valid rule after {n} attempts. See errors; you can still open it in XXE.').format(n=result.attempts))
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Validation failed'), result.errors)
 
     def onGenerateFailed(self, message):
 
         self.cleanupThread()
         self.setBusy(False)
-        self.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generation failed.'))
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generation failed.'))
         QMessageBox.critical(self, _translate('WorkOnRulesWithAI', 'Error'), message)
 
     def onRateLimited(self, message):
 
         self.cleanupThread()
         self.setBusy(False)
-        self.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rate limited - try again shortly.'))
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rate limited - try again shortly.'))
         QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Rate limited'), message)
 
     def onChangeApiKey(self):
@@ -331,6 +267,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         newKey = promptForApiKey(provider, self)
 
         if newKey:
+
             # Rebuild the client so the new key takes effect immediately, not just next run.
             self.engine.client = provider.makeClient(newKey)
             QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'API key'),
@@ -338,16 +275,17 @@ class WorkOnRulesWithAIDlg(QDialog):
 
     def onApprove(self):
 
-        if not (self.result and self.result.valid):
+        if not (self.ruleResult and self.ruleResult.valid):
             return
 
         mode = 'modify' if self.isModify() else 'create'
         targetComment = self.selectedRuleComment() if mode == 'modify' else None
 
         try:
-            backupPath = AIRules.applyRule(self.transferPath, self.result, mode, targetComment)
+            backupPath = AIRules.applyRule(self.transferPath, self.ruleResult, mode, targetComment)
 
         except Exception as err:
+
             QMessageBox.critical(self, _translate('WorkOnRulesWithAI', 'Error writing rule'), str(err))
             return
 
@@ -356,18 +294,18 @@ class WorkOnRulesWithAIDlg(QDialog):
 
     def onOpenInXxe(self):
 
-        if not self.result:
+        if not self.ruleResult:
             return
 
+        import shutil
         import tempfile
 
         mode = 'modify' if self.isModify() else 'create'
         targetComment = self.selectedRuleComment() if mode == 'modify' else None
 
         workDir = tempfile.mkdtemp(prefix='airules_xxe_')
-        import shutil
         shutil.copyfile(self.dtdPath, os.path.join(workDir, 'transfer.dtd'))
-        tempPath = AIRules.spliceIntoTemp(self.transferPath, self.result.ruleXml, self.result.newDefs, mode, targetComment, workDir)
+        tempPath = AIRules.spliceIntoTemp(self.transferPath, self.ruleResult.ruleXml, self.ruleResult.newDefs, mode, targetComment, workDir)
 
         try:
             os.startfile(tempPath)   # Windows: open with the registered handler (XXE)

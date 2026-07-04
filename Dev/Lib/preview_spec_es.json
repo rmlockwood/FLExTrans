@@ -1,4 +1,16 @@
 {
+ "_colors": {
+  "c-attr": "#F5DEB3",
+  "c-cat": "#FFB6C1",
+  "c-chunk": "#AEC6CF",
+  "c-list": "#CCFFCC",
+  "c-lit": "#98FB98",
+  "c-littag": "#FFFFB5",
+  "c-macro": "#F09FF0",
+  "c-pos": "#FFDAB9",
+  "c-rule": "#BFD0FF",
+  "c-var": "#AFEEEE"
+ },
  "action": [
   " acción: ",
   []

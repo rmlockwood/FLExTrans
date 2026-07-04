@@ -3328,6 +3328,52 @@ src="Images/ReplacementEditor.png"
 ></chart
 ></example
 ></section2
+><section2
+id="sWorkOnRulesAI"
+><secTitle
+>The <object
+type="tTool"
+>Work on Rules with AI</object
+> Module</secTitle
+><p
+>The <object
+type="tTool"
+>Work on Rules with AI</object
+> module sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.</p
+><p
+>Before the first use, open the <object
+type="tSettingsTool"
+></object
+> and in the AI Assistant section (visible in the Basic and Full views) choose the AI Provider and the AI Model. You also need an API key for the chosen provider &#8212; see the next section. The first time you run the module it asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the module if you need to enter a different key later.</p
+><section3
+id="sAIApiKeys"
+><secTitle
+>Getting an API key</secTitle
+><p
+>An API key is a long string of letters and numbers that identifies your personal account to the AI service, a bit like a password. Treat it like one: don&#8217;t share it or put it in files you send to others. Get a key from the provider you chose in the <object
+type="tSettingsTool"
+></object
+>, then paste it into the box the <object
+type="tTool"
+>Work on Rules with AI</object
+> module shows when it asks for it.</p
+><p
+>Google Gemini (the default provider): go to <link
+href="https://aistudio.google.com/apikey"
+>aistudio.google.com/apikey</link
+>, sign in with a Google account, and click Create API key. Copy the key. The gemini-2.5-flash model can be used free of charge with daily usage limits; other Gemini models such as gemini-2.5-pro require setting up billing on the account.</p
+><p
+>Anthropic Claude: go to <link
+href="https://console.anthropic.com/settings/keys"
+>console.anthropic.com/settings/keys</link
+>, sign in or create an account, and click Create Key. Copy the key. Using Claude models requires purchasing usage credit on the account&#8217;s Billing page.</p
+><p
+>OpenAI ChatGPT: go to <link
+href="https://platform.openai.com/api-keys"
+>platform.openai.com/api-keys</link
+>, sign in or create an account, and click Create new secret key. Copy the key right away &#8212; it is only shown once. Using OpenAI models requires purchasing usage credit in the account&#8217;s billing settings.</p
+></section3
+></section2
 ></section1
 ><section1
 id="sCluster"

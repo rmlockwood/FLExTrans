@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.1 - 7/3/26 - Ron Lockwood
+#    Added the OpenAI (ChatGPT) provider, made Gemini's free model the default, per-provider model lists for the Settings tool, optional prompt/response logging for debugging, and
+#    prompt grounding with the project's longest rules and macros.
+#
 #   Version 3.16 - 7/2/26 - Ron Lockwood
 #    Prototype. Core logic for the "Work on Rules with AI" module: assemble the prompt, call the configured AI provider (Anthropic by default, Gemini or others selectable) to generate or
 #    modify an Apertium transfer rule, and run the generated rule through a DTD + compile validation-retry loop. No Qt and no FLEx dependencies here so it can be exercised standalone.
@@ -19,13 +23,31 @@ import tempfile
 import datetime
 import subprocess
 import dataclasses
-from typing import Optional
+from typing import Optional, cast
 import xml.etree.ElementTree as ET
 
 # Generation settings. The provider and model are chosen from config (see getProvider / buildEngine); these limits are provider-independent.
 MAX_TOKENS = 16000
 MAX_VALIDATION_ATTEMPTS = 3
-DEFAULT_PROVIDER = 'anthropic'
+DEFAULT_PROVIDER = 'gemini'
+
+# When set (by the module, from the AIRulesLogPrompts setting), every prompt sent to the provider and every response received is appended to this file. Off by default for shipping;
+# a support person can turn it on in the Settings tool (Full view) to debug on a user's machine. The log can contain project data, so it is opt-in only.
+PROMPT_LOG_PATH: Optional[str] = None
+
+def logPromptTraffic(title: str, text: str) -> None:
+    '''Append one titled block to the prompt log when logging is enabled. Never raises - a broken log path must not break generation.'''
+
+    if not PROMPT_LOG_PATH:
+        return
+
+    try:
+
+        with open(PROMPT_LOG_PATH, 'a', encoding='utf-8') as fout:
+            fout.write('===== {title} at {when} =====\n{text}\n\n'.format(title=title, when=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), text=text))
+
+    except OSError:
+        pass
 
 class RateLimitError(RuntimeError):
     '''A provider returned HTTP 429. Carries the provider display name and, when the response gave one, how many seconds to wait before retrying. Its str() is a clean,
@@ -108,6 +130,19 @@ SUBMIT_RULE_TOOL = {
     },
 }
 
+# OpenAI structured-output schema (response_format json_schema in strict mode, which requires additionalProperties: false and rejects Gemini's propertyOrdering keyword).
+OPENAI_RULE_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'rule_xml': {'type': 'string', 'description': _RULE_XML_DESC},
+        'new_defs': {'type': 'array', 'items': {'type': 'string'}, 'description': _NEW_DEFS_DESC},
+        'explanation': {'type': 'string', 'description': _EXPLANATION_DESC},
+        'language': {'type': 'string', 'description': _LANGUAGE_DESC},
+    },
+    'required': ['rule_xml', 'new_defs', 'explanation', 'language'],
+    'additionalProperties': False,
+}
+
 @dataclasses.dataclass
 class RuleResult:
     '''The outcome of a generation attempt.'''
@@ -126,11 +161,12 @@ class RuleResult:
 # ---------------------------------------------------------------------------
 
 class AnthropicProvider:
-    '''Anthropic Claude (the default).'''
+    '''Anthropic Claude.'''
 
     name = 'anthropic'
     displayName = 'Anthropic Claude'
     defaultModel = 'claude-opus-4-8'
+    models = ['claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5-20251001']
     envVars = ('ANTHROPIC_API_KEY',)
     keyUrl = 'https://console.anthropic.com/settings/keys'
 
@@ -152,10 +188,15 @@ class AnthropicProvider:
         except anthropic.RateLimitError as err:
 
             retryAfter = None
-            try:
-                retryAfter = float(err.response.headers.get('retry-after'))
-            except (AttributeError, TypeError, ValueError):
-                pass
+            retryHeader = getattr(getattr(err, 'response', None), 'headers', {}).get('retry-after')
+
+            if retryHeader:
+
+                try:
+                    retryAfter = float(retryHeader)
+
+                except ValueError:
+                    pass
 
             raise RateLimitError(self.displayName, retryAfter)
 
@@ -165,18 +206,20 @@ class AnthropicProvider:
         for block in response.content:
 
             if block.type == 'tool_use' and block.name == 'submit_rule':
-                data = block.input
+
+                data = cast(dict, block.input)
                 return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
 
         raise RuntimeError('The model did not return a submit_rule tool call.')
 
 class GeminiProvider:
-    '''Google Gemini. Default is gemini-2.5-flash, which is available on the free tier; gemini-2.5-pro requires a billing-enabled (paid) key and returns a 429 with "limit: 0" on the
-    free tier. Override with the AIRulesModel setting.'''
+    '''Google Gemini (the default provider). Default is gemini-2.5-flash, which is available on the free tier; gemini-2.5-pro requires a billing-enabled (paid) key and returns a 429
+    with "limit: 0" on the free tier. Override with the AIRulesModel setting.'''
 
     name = 'gemini'
     displayName = 'Google Gemini'
     defaultModel = 'gemini-2.5-flash'
+    models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro']
     envVars = ('GEMINI_API_KEY', 'GOOGLE_API_KEY')
     keyUrl = 'https://aistudio.google.com/apikey'
 
@@ -213,14 +256,73 @@ class GeminiProvider:
         data = json.loads(payload)
         return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
 
-# Registry of available providers, keyed by the config value.
+class OpenAIProvider:
+    '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers.'''
+
+    name = 'openai'
+    displayName = 'OpenAI ChatGPT'
+    defaultModel = 'gpt-5.1'
+    models = ['gpt-5.1', 'gpt-5', 'gpt-5-mini']
+    envVars = ('OPENAI_API_KEY',)
+    keyUrl = 'https://platform.openai.com/api-keys'
+
+    def makeClient(self, apiKey: str):
+
+        import openai
+
+        return openai.OpenAI(api_key=apiKey)
+
+    def generate(self, client, model: str, systemInstruction: str, userContent: str) -> tuple:
+
+        import json
+
+        import openai
+
+        try:
+            response = client.chat.completions.create(
+                model=model, max_completion_tokens=MAX_TOKENS, response_format={'type': 'json_schema', 'json_schema': {'name': 'submit_rule', 'strict': True, 'schema': OPENAI_RULE_SCHEMA}},
+                messages=[{'role': 'system', 'content': systemInstruction}, {'role': 'user', 'content': userContent}], )
+
+        except openai.RateLimitError as err:
+            raise RateLimitError(self.displayName, parseRetryAfter(str(err)))
+
+        message = response.choices[0].message
+
+        if getattr(message, 'refusal', None):
+            raise RuntimeError('The model declined this request: ' + message.refusal)
+
+        payload = message.content
+
+        if not payload:
+            raise RuntimeError('The model returned no rule (empty response).')
+
+        data = json.loads(payload)
+        return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
+
+# Registry of available providers, keyed by the config value. Gemini comes first because its free tier makes it the default; the Settings tool lists them in this order.
 PROVIDERS = {
-    AnthropicProvider.name: AnthropicProvider(), GeminiProvider.name: GeminiProvider(), }
+    GeminiProvider.name: GeminiProvider(), AnthropicProvider.name: AnthropicProvider(), OpenAIProvider.name: OpenAIProvider(), }
+
+def findProvider(name: Optional[str]):
+    '''Return the provider whose short name or display name matches `name` (case-insensitive), or None when the name is missing or unknown. The Settings tool stores the display name
+    (e.g. "Google Gemini"), so both spellings are accepted.'''
+
+    if not name:
+        return None
+
+    key = name.strip().lower()
+
+    for provider in PROVIDERS.values():
+
+        if key in (provider.name, provider.displayName.lower()):
+            return provider
+
+    return None
 
 def getProvider(name: Optional[str] = None):
-    '''Return the provider for `name` (case-insensitive), falling back to the default when the name is missing or unknown.'''
+    '''Return the provider for `name`, falling back to the default when the name is missing or unknown.'''
 
-    return PROVIDERS.get((name or DEFAULT_PROVIDER).strip().lower(), PROVIDERS[DEFAULT_PROVIDER])
+    return findProvider(name) or PROVIDERS[DEFAULT_PROVIDER]
 
 # A single API-key slot in the OS credential vault (Windows Credential Manager / macOS Keychain / Linux Secret Service). One entry, provider-agnostic: the user stores the key for whichever
 # provider they use; switching providers means changing the key. Never written to a project file.
@@ -270,7 +372,19 @@ class Engine:
 
     def generate(self, systemInstruction: str, userContent: str) -> tuple:
 
-        return self.provider.generate(self.client, self.model, systemInstruction, userContent)
+        # When debug logging is on, record exactly what goes out and what comes back (or the error), so we can diagnose bad generations on a user's machine.
+        logPromptTraffic('PROMPT to {provider} ({model})'.format(provider=self.provider.displayName, model=self.model), 'SYSTEM INSTRUCTION:\n' + systemInstruction + '\n\nUSER CONTENT:\n' + userContent)
+
+        try:
+            result = self.provider.generate(self.client, self.model, systemInstruction, userContent)
+
+        except Exception as err:
+
+            logPromptTraffic('ERROR from {provider}'.format(provider=self.provider.displayName), str(err))
+            raise
+
+        logPromptTraffic('RESPONSE from {provider}'.format(provider=self.provider.displayName), repr(result))
+        return result
 
 def buildEngine(providerName: Optional[str], apiKey: str, model: Optional[str] = None) -> Engine:
     '''Construct the Engine for the configured provider. `model` overrides the provider default when given (config setting). SDKs are imported lazily inside makeClient, so only the
@@ -280,13 +394,32 @@ def buildEngine(providerName: Optional[str], apiKey: str, model: Optional[str] =
     client = provider.makeClient(apiKey)
     return Engine(provider, client, model or provider.defaultModel)
 
-def buildSystemInstruction(conventionsText: str, sampleRulesText: str) -> str:
-    '''Build the system instruction: the house conventions plus a few real example rules from the project. The transfer.dtd is intentionally NOT included - the model already knows the
-    Apertium transfer format, so the DTD is ~5k low-value tokens, and the validation-retry loop (well-formedness + apertium-preprocess-transfer) is the authoritative structural check.
+def getSampleRulesAndMacros(transferPath: str, ruleCount: int = 4, macroCount: int = 2) -> tuple:
+    '''Pull the longest rules (up to `ruleCount`) and longest macros (up to `macroCount`) from the project's transfer file, to show the model the house style with the richest examples
+    available. The slices naturally guard against files with fewer rules or no macros. Returns (rulesText, macrosText), each a blank-line-separated string ('' when none exist).'''
+
+    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+    root = ET.parse(transferPath, parser=parser).getroot()
+
+    ruleTexts = sorted((ET.tostring(r, encoding='unicode') for r in root.findall('.//rule')), key=len, reverse=True)[:ruleCount]
+    macroTexts = sorted((ET.tostring(m, encoding='unicode') for m in root.findall('.//def-macro')), key=len, reverse=True)[:macroCount]
+
+    return '\n\n'.join(ruleTexts), '\n\n'.join(macroTexts)
+
+def buildSystemInstruction(conventionsText: str, sampleRulesText: str, sampleMacrosText: str = '') -> str:
+    '''Build the system instruction: the house conventions plus real example rules and macros from the project. The transfer.dtd is intentionally NOT included - the model already knows
+    the Apertium transfer format, so the DTD is ~5k low-value tokens, and the validation-retry loop (well-formedness + apertium-preprocess-transfer) is the authoritative structural check.
     This prefix is identical across requests, so it caches well (Anthropic cache_control / Gemini implicit caching).'''
 
-    return (conventionsText
-            + '\n\nExample rules from this project, for style reference:\n\n' + sampleRulesText)
+    text = conventionsText
+
+    if sampleRulesText:
+        text += '\n\nExample rules from this project, for style reference (these are the longest rules in the file; your rule can be much simpler):\n\n' + sampleRulesText
+
+    if sampleMacrosText:
+        text += '\n\nExample macros from this project, for style reference:\n\n' + sampleMacrosText
+
+    return text
 
 def extractExistingDefs(transferPath: str) -> dict:
     '''Read the transfer file and collect the names of definitions that already exist (so the model reuses them) plus the value sets of each attribute and the existing rule names.
@@ -295,17 +428,18 @@ def extractExistingDefs(transferPath: str) -> dict:
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     root = ET.parse(transferPath, parser=parser).getroot()
 
-    cats = [c.get('n') for c in root.findall('.//def-cat')]
-    variables = [v.get('n') for v in root.findall('.//def-var')]
-    lists = [l.get('n') for l in root.findall('.//def-list')]
-    macros = [m.get('n') for m in root.findall('.//def-macro')]
+    cats = [c.get('n', '') for c in root.findall('.//def-cat')]
+    variables = [v.get('n', '') for v in root.findall('.//def-var')]
+    lists = [lst.get('n', '') for lst in root.findall('.//def-list')]
+    macros = [m.get('n', '') for m in root.findall('.//def-macro')]
 
     # For attributes, gather the tag values too so the model knows which tags are legal for each attribute.
     attrs = {}
-    for a in root.findall('.//def-attr'):
-        attrs[a.get('n')] = sorted(i.get('tags') for i in a.findall('./attr-item'))
 
-    ruleNames = [r.get('comment') for r in root.findall('.//rule')]
+    for a in root.findall('.//def-attr'):
+        attrs[a.get('n', '')] = sorted(i.get('tags', '') for i in a.findall('./attr-item'))
+
+    ruleNames = [r.get('comment', '') for r in root.findall('.//rule')]
 
     # Build a compact text summary for the prompt.
     lines = []
@@ -397,7 +531,12 @@ def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: st
     for defText in newDefs:
 
         defElem = ET.fromstring(defText)
-        section = getSection(root, DEF_TAG_TO_SECTION.get(defElem.tag))
+        sectionName = DEF_TAG_TO_SECTION.get(defElem.tag)
+
+        if sectionName is None:
+            raise RuntimeError('The model returned an unsupported definition element: <{tag}>.'.format(tag=defElem.tag))
+
+        section = getSection(root, sectionName)
         section.append(defElem)
 
     # Comment-preserving parse so the AI-authorship comment survives into the temp file.
@@ -459,7 +598,7 @@ def validateFile(tempPath: str, dtdPath: str, compilerExe: Optional[str] = None)
 
     return (len(errors) == 0, '\n'.join(errors))
 
-def markAuthorship(ruleXml: str, mode: str, now) -> str:
+def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime) -> str:
     '''Prepend an XML comment to the <rule> recording that the AI Assistant added or modified it, and when. Placed as the rule's first child so it travels with the rule and shows in
     the preview. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
 
@@ -476,7 +615,8 @@ def markAuthorship(ruleXml: str, mode: str, now) -> str:
     except ET.ParseError:
         return ruleXml
 
-    elem.insert(0, ET.Comment(text))
+    # cast() because the stdlib stubs type ET.Comment's return oddly; at runtime it is a normal comment element.
+    elem.insert(0, cast(ET.Element, ET.Comment(text)))
     return ET.tostring(elem, encoding='unicode')
 
 def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, dtdPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None) -> RuleResult:

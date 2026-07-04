@@ -104,6 +104,10 @@ Only include tag values that actually exist in the supplied project data — nev
   general rule that also matches will never fire. A pattern category like `n.neut.pl` is more specific than plain `n`; a rule with the `n.neut.pl` pattern must be placed **before** the general `n`
   rule, or it gets skipped. So when the rule you produce is more specific than an existing rule that would also match its words, say so in the `explanation` and note that it belongs before that
   general rule. Do not rewrite the other rules — you only produce the one rule — but flag the ordering requirement.
+- **Start every new rule with a plain-language description comment.** The first child of a new `<rule>` must be an XML comment giving a detailed description of what the rule does, written in
+  lay-person's speech for someone unaccustomed to reading Apertium rules — say what happens to which words and why, without Apertium jargon (e.g. `<!-- When a noun is plural, this rule copies the
+  plural marking onto the adjective that describes it, so the two words agree. -->`). Write it in the language of the user's request. When modifying a rule that lacks such a comment, add one that
+  describes the modified behavior.
 - **Comment liberally inside the rule**, in the team's style: a short XML comment before each conditional or output block explaining *what* and *why* (e.g. `<!--Move Demonstrative to a separate
   word-->`). This matches how the existing rules are written and makes them maintainable.
 

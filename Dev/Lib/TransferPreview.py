@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.1 - 7/3/26 - Ron Lockwood
+#    Chip/box colours now come from the derived preview_spec JSON (parsed from the XXE stylesheet's @property-value declarations) instead of only the hard-coded values in
+#    transfer_preview.css, so editing a colour in the XXE CSS flows into the preview.
+#
 #   Version 3.16 - 7/2/26 - Ron Lockwood
 #    Prototype. Render an Apertium transfer <rule> (and supporting definitions) as read-only styled HTML for the "Work on Rules with AI" preview. Mirrors the XXE stylesheet's palette
 #    and labels via transfer_preview.css. Produces a single render (for creating a rule) or a side-by-side before/after comparison (for modifying one) with best-effort diff highlighting.
@@ -209,11 +213,20 @@ def parseFragment(xmlText: str):
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     return ET.fromstring(xmlText, parser=parser)
 
-def wrapDocument(bodyHtml: str) -> str:
-    '''Wrap rendered body HTML in a full document with the inlined CSS.'''
+def colorsToCss(colors) -> str:
+    '''Turn the spec's "_colors" map (chip class -> hex, derived from the XXE stylesheet by derive_preview_specs.py) into CSS rules. These come after transfer_preview.css in the
+    document so they override its hard-coded fallback colours; an empty/missing map leaves the fallbacks in force.'''
+
+    if not colors:
+        return ''
+
+    return '\n'.join('.{cls} {{ background: {hexColor}; }}'.format(cls=cls, hexColor=colors[cls]) for cls in sorted(colors))
+
+def wrapDocument(bodyHtml: str, colors=None) -> str:
+    '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides).'''
 
     return ('<!DOCTYPE html><html><head><meta charset="utf-8"><style>\n'
-            + loadCss()
+            + loadCss() + '\n' + colorsToCss(colors)
             + '\n</style></head><body>' + bodyHtml + '</body></html>')
 
 def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
@@ -223,12 +236,14 @@ def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
     body = []
 
     if newDefs:
+
         body.append('<div class="legend">New definitions to be added:</div>')
+
         for defText in newDefs:
             body.append(elementToHtml(parseFragment(defText), spec=spec))
 
     body.append(elementToHtml(parseFragment(ruleXml), spec=spec))
-    return wrapDocument(''.join(body))
+    return wrapDocument(''.join(body), spec.get('_colors'))
 
 def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
     '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (positional); the panes are always readable even
@@ -247,4 +262,4 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
     left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec) + '</div>'
     right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec) + '</div>'
 
-    return wrapDocument(legend + '<div class="compare">' + left + right + '</div>')
+    return wrapDocument(legend + '<div class="compare">' + left + right + '</div>', spec.get('_colors'))

@@ -5,14 +5,17 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.1 - 7/3/26 - Ron Lockwood
+#    The provider and model now must be chosen in the Settings tool before the module will run. New settings: include FLEx project names in the prompt (privacy) and prompt logging
+#    for debugging. Prompt grounding now uses the four longest rules and two longest macros from the transfer file.
+#
 #   Version 3.16 - 7/2/26 - Ron Lockwood
-#    Prototype. New module that uses a configured AI provider (Anthropic by default, Gemini selectable) to create a new Apertium transfer rule or modify an existing one in the transfer
-#    rules file. Gathers the project's real categories/features/affixes from FLEx, grounds the model with the house conventions + DTD + example rules, validates every generated rule
-#    (DTD + apertium-preprocess-transfer), and previews it before the user approves. See WorkOnRulesWithAI-Plan.md.
+#    Prototype. New module that uses a configured AI provider (Gemini by default, Anthropic and OpenAI selectable) to create a new Apertium transfer rule or modify an existing one in
+#    the transfer rules file. Gathers the project's real categories/features/affixes from FLEx, grounds the model with the house conventions + example rules, validates every generated
+#    rule (well-formedness + apertium-preprocess-transfer), and previews it before the user approves. See WorkOnRulesWithAI-Plan.md.
 #
 
 import os
-import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                       # type: ignore
 
@@ -45,20 +48,24 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
         FTM_Description : descr}
 
-def buildProjectDataText(startData) -> str:
-    '''Turn the FLEx-derived StartData (source and target) into the grounding text the model needs: real categories, features with their values, and per-category features/affixes.'''
+def buildProjectDataText(startData, includeProjectNames: bool) -> str:
+    '''Turn the FLEx-derived StartData (source and target) into the grounding text the model needs: real categories, features with their values, and per-category features/affixes.
+    The FLEx project names are only included when the user opted in via the AIRulesIncludeProjectNames setting - a project name can itself be sensitive information.'''
 
     lines = []
 
     for label, db in (('SOURCE', startData.src), ('TARGET', startData.tgt)):
 
-        lines.append('{label} project: {name}'.format(label=label, name=db.projectName))
+        if includeProjectNames:
+            lines.append('{label} project: {name}'.format(label=label, name=db.projectName))
+        else:
+            lines.append('{label} project:'.format(label=label))
         lines.append('  Categories: ' + ', '.join(db.categoryList))
         lines.append('  Features (name: values):')
 
@@ -80,15 +87,6 @@ def buildProjectDataText(startData) -> str:
         lines.append('')
 
     return '\n'.join(lines)
-
-def getSampleRulesText(transferPath: str, howMany: int = 2) -> str:
-    '''Pull the first few existing rules from the project's transfer file to show the model the house style.'''
-
-    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    root = ET.parse(transferPath, parser=parser).getroot()
-
-    rules = root.findall('.//rule')[:howMany]
-    return '\n\n'.join(ET.tostring(r, encoding='unicode') for r in rules)
 
 def checkConsent(configMap, report, providerDisplay: str) -> bool:
     '''One-time opt-in, mirroring the Mixpanel consent pattern. Returns whether the user consents to sending rule/lexical data to the configured AI provider.'''
@@ -131,9 +129,17 @@ def MainFunction(DB, report, modify=True):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Determine the AI provider (Anthropic by default; set AIRulesProvider to switch).
-    providerName = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_PROVIDER, report, giveError=False) or AIRules.DEFAULT_PROVIDER
-    provider = AIRules.getProvider(providerName)
+    # The provider and model must be chosen in the Settings tool before this module can run; there are no silent defaults, so the user always knows which service their data goes to.
+    providerName = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_PROVIDER, report, giveError=False)
+    model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False)
+    provider = AIRules.findProvider(providerName)
+
+    if not provider or not model:
+
+        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Basic and Full views). Then come back to this module; it will ask for your API key.')
+        QMessageBox.information(None, _translate('WorkOnRulesWithAI', 'Work on Rules with AI'), msg)
+        report.Info(msg)
+        return
 
     # Get consent to send data to the external service.
     if not checkConsent(configMap, report, provider.displayName):
@@ -177,23 +183,35 @@ def MainFunction(DB, report, modify=True):
         return
 
     compilerExe = os.path.join(FTPaths.TOOLS_DIR, 'apertium-preprocess-transfer.exe')
+
     if not os.path.isfile(compilerExe):
         compilerExe = None
 
-    # Gather the project grounding data from FLEx (source and target).
+    # Turn prompt logging on or off (debugging aid, normally off; see the AIRulesLogPrompts setting). The log holds everything sent to and received from the provider.
+    if ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_LOG_PROMPTS, report, giveError=False) == 'y':
+
+        AIRules.PROMPT_LOG_PATH = os.path.join(FTPaths.BUILD_DIR, 'AIRulesPromptLog.txt')
+        report.Info(_translate('WorkOnRulesWithAI', 'AI prompt logging is on. Prompts and responses are appended to: {path}').format(path=Utils.shortenPathForDisplay(AIRules.PROMPT_LOG_PATH)))
+    else:
+        AIRules.PROMPT_LOG_PATH = None
+
+    # Gather the project grounding data from FLEx (source and target). The FLEx project names go into the prompt only if the user opted in (they can be sensitive).
     TargetDB = Utils.openTargetProject(configMap, report)
 
     from RuleAssistant import GetRuleAssistantStartData
     startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
-    projectData = buildProjectDataText(startData)
+
+    includeProjectNames = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES, report, giveError=False) == 'y'
+    projectData = buildProjectDataText(startData, includeProjectNames)
 
     defs = AIRules.extractExistingDefs(transferPath)
 
     conventionsText = open(conventionsPath, encoding='utf-8').read()
-    sampleRulesText = getSampleRulesText(transferPath)
 
-    model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False) or None
-    systemInstruction = AIRules.buildSystemInstruction(conventionsText, sampleRulesText)
+    # Ground the model with the project's longest rules and macros - the richest examples of the house style the file has to offer.
+    sampleRulesText, sampleMacrosText = AIRules.getSampleRulesAndMacros(transferPath)
+
+    systemInstruction = AIRules.buildSystemInstruction(conventionsText, sampleRulesText, sampleMacrosText)
     engine = AIRules.buildEngine(providerName, apiKey, model)
 
     # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()

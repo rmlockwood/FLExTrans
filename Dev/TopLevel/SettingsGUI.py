@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16.1 - 7/3/26 - Ron Lockwood
+#    Added the AI Assistant section for the Work on Rules with AI module: provider, model, include-project-names, and prompt-logging settings, an API-key help link (new LINK widget
+#    type that opens the user documentation at an anchor), and hidden rows that preserve the module's consent answers when settings are saved.
+#
 #   Version 3.16 - 6/22/26 - Ron Lockwood
 #    Fixes #1376. Added the Lowercase/Uppercase pairs for special letters synthesis setting, with validation that
 #    it contains single letters separated by spaces and an even number of letters.
@@ -179,6 +183,7 @@ from ComboBox import CheckableComboBox
 import Utils
 import ReadConfig
 import FTPaths
+import AIRules
 
 # TODO: temporary stuff until FlexTools implements LexiconGetAllomorphCustomFields
 from SIL.LCModel.Infrastructure import (# type: ignore
@@ -229,6 +234,7 @@ TEXT_BOX = "textbox"
 FILE = "file"
 FOLDER = "folder"
 SECTION_TITLE = "section_title"
+LINK = "link"
 GIVE_ERROR = True
 DONT_GIVE_ERROR = False
 MINI_VIEW = 15
@@ -694,15 +700,60 @@ def loadCategorySubLists(widget1, widget2, wind, settingName):
                 
                 widget2.setCurrentIndex(i+1) # ... is the first item
 
-def loadYesNo(widget, widget2, wind, settingName):            
+def loadYesNo(widget, widget2, wind, settingName):
 
     yesNo = wind.read(settingName)
-    
+
     if yesNo == 'y':
-        
+
         widget.setChecked(True)
     else:
         widget2.setChecked(True)
+
+def loadAiProviders(widget, wind, settingName):
+
+    # Offer the AI providers the Work on Rules with AI module supports, by display name, plus a blank meaning "not configured".
+    widget.addItem('')
+
+    for provider in AIRules.PROVIDERS.values():
+
+        widget.addItem(provider.displayName)
+
+    # Select the saved provider. findProvider accepts either the display name (what we save) or the short name, so a hand-edited config file still round-trips.
+    provider = AIRules.findProvider(wind.read(settingName))
+
+    if provider:
+
+        widget.setCurrentText(provider.displayName)
+
+def loadAiModels(widget, wind, settingName):
+
+    savedValue = wind.read(settingName) or ''
+
+    # Offer the known models of every provider (the user should pick one that belongs to the chosen provider), plus a blank meaning "not configured".
+    allModels = []
+
+    for provider in AIRules.PROVIDERS.values():
+
+        allModels.extend(provider.models)
+
+    # Keep a hand-entered model that isn't in the built-in lists (e.g. a model newer than this FLExTrans release) selectable so saving doesn't lose it.
+    if savedValue and savedValue not in allModels:
+
+        allModels.append(savedValue)
+
+    widget.addItem('')
+
+    for model in allModels:
+
+        widget.addItem(model)
+
+    widget.setCurrentText(savedValue)
+
+def loadLink(widget, wind, settingName):
+
+    # A LINK row has nothing to load; its text and URL are set once in setupUi.
+    pass
 
 def loadTextBox(widget, wind, settingName):            
 
@@ -957,6 +1008,15 @@ class Ui_MainWindow(object):
 
                 continue
 
+            elif widgInfo[WIDGET_TYPE] == LINK:
+
+                # The row's label doubles as a clickable link that opens the user documentation at the anchor named in the obj2-name slot (e.g. "sAIApiKeys").
+                url = QtCore.QUrl.fromLocalFile(os.path.join(FTPaths.HELP_DIR, 'UserDoc.htm')).toString() + '#' + widgInfo[WIDGET2_OBJ_NAME]
+                newObj.setText('<a href="{url}"><span style="text-decoration: underline; color:#0000ff;">{text}</span></a>'.format(url=url, text=widgInfo[LABEL_TEXT]))
+                newObj.setOpenExternalLinks(True)
+                newObj.setToolTip(widgInfo[WIDGET_TOOLTIP])
+                widgInfo[WIDGET1_OBJ] = newObj
+
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
@@ -1075,6 +1135,10 @@ class Ui_MainWindow(object):
 
             # Skip the widget if we are hiding it from the user
             if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
+                continue
+
+            # A LINK row's label got its rich-text anchor in setupUi; setting plain text here would wipe the link out.
+            if widgInfo[WIDGET_TYPE] == LINK:
                 continue
 
             widgInfo[LABEL_OBJ].setText(widgInfo[LABEL_TEXT])
@@ -1512,9 +1576,10 @@ class Main(QMainWindow):
             widgInfo = widgetList[i]
             outStr = ''
 
-            if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
+            # Section titles and links carry no setting value.
+            if widgInfo[WIDGET_TYPE] in [SECTION_TITLE, LINK]:
                 continue
-            
+
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
                 mySettingVal = widgInfo[WIDGET1_OBJ].currentText()
@@ -1936,6 +2001,34 @@ widgetList = [
 
    [_translate("SettingsGUI", "Projects to treat together as a cluster"), "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
     _translate("SettingsGUI", "Indicate the cluster projects you would like to run some modules on together."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+
+
+   [_translate("SettingsGUI", "AI Assistant"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, BASIC_VIEW],\
+
+   [_translate("SettingsGUI", "AI Provider"), "choose_ai_provider", "", COMBO_BOX, object, object, object, loadAiProviders, ReadConfig.AI_RULES_PROVIDER,\
+    _translate("SettingsGUI", "The AI service the Work on Rules with AI module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, BASIC_VIEW],\
+
+   [_translate("SettingsGUI", "AI Model"), "choose_ai_model", "", COMBO_BOX, object, object, object, loadAiModels, ReadConfig.AI_RULES_MODEL,\
+    _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-2.5-flash is available on Google's free tier."), DONT_GIVE_ERROR, BASIC_VIEW],\
+
+   [_translate("SettingsGUI", "Include FLEx project names in AI requests?"), "ai_include_proj_yes", "ai_include_proj_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES,\
+    _translate("SettingsGUI", "If Yes, the source and target FLEx project names are included in what is sent to the AI provider.\nChoose No if the project names themselves are sensitive information."), DONT_GIVE_ERROR, BASIC_VIEW],\
+
+   [_translate("SettingsGUI", "Log AI prompts for debugging?"), "ai_log_prompts_yes", "ai_log_prompts_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_LOG_PROMPTS,\
+    _translate("SettingsGUI", "If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to\nAIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "How do I get an API key?"), "ai_key_help_link", "sAIApiKeys", LINK, object, object, object, loadLink, None,\
+    _translate("SettingsGUI", "Opens the FLExTrans documentation section that explains how to get an API key for each provider."), DONT_GIVE_ERROR, BASIC_VIEW],\
+
+   # These two values are written by the Work on Rules with AI module's one-time consent question. They are kept in the widget list (hidden from the user) only so that saving
+   # settings preserves them - the save code rewrites the whole config file from this list.
+   [_translate("SettingsGUI", "AI data consent"), "ai_consent_yes", "ai_consent_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT,\
+    "", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+
+   [_translate("SettingsGUI", "AI data consent question asked"), "ai_consent_asked_yes", "ai_consent_asked_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT_ASKED,\
+    "", DONT_GIVE_ERROR, HIDE_FROM_USER],\
 
 
 

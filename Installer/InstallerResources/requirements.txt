@@ -7,9 +7,10 @@ PyQt6-WebEngine==6.10.0
 regex
 pygetwindow
 tomli_w
-# Work on Rules with AI module (anthropic is the default provider; google-genai only for the Gemini provider; keyring stores the API key in the OS credential vault)
+# Work on Rules with AI module (google-genai serves the default Gemini provider; anthropic and openai serve the other selectable providers; keyring stores the API key in the OS credential vault)
 anthropic==0.115.1
 google-genai==2.10.0
+openai==2.44.0
 keyring==25.7.0
 # Currently wildebeest doesn't work with Python 3.13
 # echo wildebeest-nlp 

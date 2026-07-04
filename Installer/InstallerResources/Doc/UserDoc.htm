@@ -104,6 +104,10 @@
                <li><a href="#sTextIn">4.8&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span></a></li>
                <li><a href="#sTextOut">4.9&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span></a></li>
                <li><a href="#sReplEditTool">4.10&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span></a></li>
+               <li><a href="#sWorkOnRulesAI">4.11&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> Module</a></li>
+               <ul>
+                  <li><a href="#sAIApiKeys">4.11.1&nbsp;Getting an API key</a></li>
+               </ul>
             </ul>
             <li><a href="#sCluster">5&nbsp;Cluster Project Support</a></li>
             <ul>
@@ -1831,6 +1835,31 @@
             </tr>
          </table>
       </div>
+      <h2 style=""><a name="sWorkOnRulesAI"></a>4.11&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> Module</h2>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> module sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated
+         rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer
+         rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.
+      </p>
+      <p>Before the first use, open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> and in the AI Assistant section (visible in the Basic and Full views) choose the AI Provider and the AI
+         Model. You also need an API key for the chosen provider &mdash; see the next section. The first time you run the module it
+         asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings
+         file. Use the Change API key button in the module if you need to enter a different key later.
+      </p>
+      <h3 style=""><a name="sAIApiKeys"></a>4.11.1&nbsp;Getting an API key
+      </h3>
+      <p>An API key is a long string of letters and numbers that identifies your personal account to the AI service, a bit like a
+         password. Treat it like one: don&#8217;t share it or put it in files you send to others. Get a key from the provider you chose
+         in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>, then paste it into the box the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> module shows when it asks for it.
+      </p>
+      <p>Google Gemini (the default provider): go to <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>, sign in with a Google account, and click Create API key. Copy the key. The gemini-2.5-flash model can be used free of
+         charge with daily usage limits; other Gemini models such as gemini-2.5-pro require setting up billing on the account.
+      </p>
+      <p>Anthropic Claude: go to <a href="https://console.anthropic.com/settings/keys">console.anthropic.com/settings/keys</a>, sign in or create an account, and click Create Key. Copy the key. Using Claude models requires purchasing usage credit
+         on the account&#8217;s Billing page.
+      </p>
+      <p>OpenAI ChatGPT: go to <a href="https://platform.openai.com/api-keys">platform.openai.com/api-keys</a>, sign in or create an account, and click Create new secret key. Copy the key right away &mdash; it is only shown once. Using
+         OpenAI models requires purchasing usage credit in the account&#8217;s billing settings.
+      </p>
       <h1 style=""><a name="sCluster"></a>5&nbsp;Cluster Project Support
       </h1>
       <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> works great in cluster projects. You can leverage the approval of an interlinear text in the source language to produce translations

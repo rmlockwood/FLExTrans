@@ -10,6 +10,11 @@
 #   a {tag: [labelText, [[attr, attrLabel, colorClass], ...]]} map and written to
 #   Dev/Lib/preview_spec_<lang>.json, which TransferPreview loads at render time.
 #
+#   The spec also carries a "_colors" map (chip class -> hex colour) parsed from the
+#   stylesheet's @property-value declarations, so the preview's box colours come
+#   from the XXE CSS rather than being hard coded; editing a colour there flows
+#   into the derived JSON and from it into the in-app preview.
+#
 #   Run it whenever the XXE transfer.css files change (the installer runs it too).
 #     python Dev/derive_preview_specs.py
 
@@ -46,6 +51,20 @@ COLOR_CLASS = {
 
 def stripComments(css):
     return re.sub(r'/\*.*?\*/', '', css, flags=re.DOTALL)
+
+
+def parseColors(css):
+    '''Parse the @property-value colour declarations (e.g. "@property-value def-cat-background-color() #FFB6C1;")
+    into a {chipClass: hexColor} map keyed by our transfer_preview.css class names.'''
+
+    colors = {}
+
+    for name, hexColor in re.findall(r'@property-value\s+([\w-]+)\(\)\s+(#[0-9A-Fa-f]{3,8})\s*;', css):
+        cls = COLOR_CLASS.get(name)
+        if cls:
+            colors[cls] = hexColor.upper()
+
+    return colors
 
 
 def splitArgs(argText):
@@ -213,6 +232,9 @@ def parseCss(path):
             labelText = pending
 
         spec[tag] = [labelText, attrs]
+
+    # Carry the chip colours along under a key no element tag can collide with.
+    spec['_colors'] = parseColors(css)
 
     return spec
 

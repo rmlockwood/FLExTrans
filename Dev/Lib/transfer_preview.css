@@ -47,7 +47,11 @@ body {
     color: #777;
 }
 
-/* An attribute value shown as a coloured chip, matching the XXE field colours. */
+/* An attribute value shown as a coloured chip, matching the XXE field colours.
+   The .c-* backgrounds below are FALLBACKS only: at render time TransferPreview
+   appends overrides derived from the XXE transfer.css @property-value colours
+   (via derive_preview_specs.py -> preview_spec_<lang>.json "_colors"), so a colour
+   change in the XXE stylesheet wins over these values. */
 .chip {
     display: inline-block;
     padding: 0 5px;
