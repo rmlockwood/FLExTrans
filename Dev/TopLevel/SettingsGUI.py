@@ -726,29 +726,35 @@ def loadAiProviders(widget, wind, settingName):
 
         widget.setCurrentText(provider.displayName)
 
-def loadAiModels(widget, wind, settingName):
+def populateAiModelCombo(widget, providerName, savedModel):
 
-    savedValue = wind.read(settingName) or ''
+    # Offer only the chosen provider's models so a mismatched provider/model pairing can't be selected; with no provider chosen yet, offer every provider's models.
+    provider = AIRules.findProvider(providerName)
 
-    # Offer the known models of every provider (the user should pick one that belongs to the chosen provider), plus a blank meaning "not configured".
-    allModels = []
+    if provider:
 
-    for provider in AIRules.PROVIDERS.values():
+        models = list(provider.models)
+    else:
+        models = [model for prov in AIRules.PROVIDERS.values() for model in prov.models]
 
-        allModels.extend(provider.models)
+    # Keep a hand-entered model that no provider claims (e.g. one newer than this FLExTrans release) selectable; a model that belongs to a *different* provider is deliberately dropped
+    # so the selection falls back to blank and the user must pick a valid one.
+    if savedModel and savedModel not in models and AIRules.findModelOwner(savedModel) is None:
 
-    # Keep a hand-entered model that isn't in the built-in lists (e.g. a model newer than this FLExTrans release) selectable so saving doesn't lose it.
-    if savedValue and savedValue not in allModels:
+        models.append(savedModel)
 
-        allModels.append(savedValue)
-
+    widget.clear()
     widget.addItem('')
 
-    for model in allModels:
+    for model in models:
 
         widget.addItem(model)
 
-    widget.setCurrentText(savedValue)
+    widget.setCurrentText(savedModel if savedModel in models else '')
+
+def loadAiModels(widget, wind, settingName):
+
+    populateAiModelCombo(widget, wind.read(ReadConfig.AI_RULES_PROVIDER), wind.read(settingName) or '')
 
 def loadLink(widget, wind, settingName):
 
@@ -1250,13 +1256,18 @@ class Main(QMainWindow):
             # Connect all widgets to a function the sets the modified flag
             # This is so that any clicking on objects will prompt the user to save on exit
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
-                
+
                 if widgInfo[WIDGET1_OBJ_NAME] == 'choose_target_project':
 
                     widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChangeAndDisable(self, self.changedSettingsSet, widgInfo))
-                    
+
                 else:
                     widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+
+                # Changing the AI provider refills the AI Model combo with that provider's models, so a model that doesn't go with the provider can't be selected.
+                if widgInfo[WIDGET1_OBJ_NAME] == 'choose_ai_provider':
+
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.onAiProviderChanged)
 
                                     
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
@@ -1525,6 +1536,28 @@ class Main(QMainWindow):
             msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msg.exec()
         
+    def onAiProviderChanged(self):
+
+        # Refill the AI Model combo with the newly chosen provider's models. The current model is passed along so it survives when it still fits (or is a custom, unclaimed one);
+        # a model belonging to a different provider gets dropped and the selection falls back to blank.
+        providerWidget = self.nameToWidgetMap[ReadConfig.AI_RULES_PROVIDER][WIDGET1_OBJ]
+        modelWidget = self.nameToWidgetMap[ReadConfig.AI_RULES_MODEL][WIDGET1_OBJ]
+        populateAiModelCombo(modelWidget, providerWidget.currentText(), modelWidget.currentText())
+
+    def validateAiProviderModel(self):
+
+        # A model that a *different* provider claims is invalid with the selected provider (or with no provider selected). A blank model or a model unknown to every provider
+        # (e.g. newer than this release's lists) passes.
+        providerName = self.nameToWidgetMap[ReadConfig.AI_RULES_PROVIDER][WIDGET1_OBJ].currentText()
+        model = self.nameToWidgetMap[ReadConfig.AI_RULES_MODEL][WIDGET1_OBJ].currentText().strip()
+
+        owner = AIRules.findModelOwner(model)
+
+        if owner is None:
+            return True
+
+        return owner is AIRules.findProvider(providerName)
+
     def validateLowercaseUppercasePairs(self):
 
         # Get the current text the user typed for the lowercase/uppercase special letter pairs setting
@@ -1554,6 +1587,17 @@ class Main(QMainWindow):
         return True
 
     def save(self):
+
+        # Make sure the AI model goes with the selected AI provider before saving anything
+        if not self.validateAiProviderModel():
+
+            msg = QMessageBox()
+            msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
+            msg.setText(_translate("SettingsGUI", "The AI Model does not go with the selected AI Provider.\nChoose the AI Provider first, then pick one of the models offered for it."))
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msg.exec()
+            return False
 
         # Make sure the lowercase/uppercase special letter pairs are well formed before saving anything
         if not self.validateLowercaseUppercasePairs():

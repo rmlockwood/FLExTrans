@@ -324,6 +324,20 @@ def getProvider(name: Optional[str] = None):
 
     return findProvider(name) or PROVIDERS[DEFAULT_PROVIDER]
 
+def findModelOwner(model: Optional[str]):
+    '''Return the provider whose known-models list contains `model`, or None when no provider claims it. Used to reject a provider/model mismatch (e.g. a Claude model with the Gemini
+    provider) while still allowing a hand-entered model that is newer than this release's lists.'''
+
+    if not model:
+        return None
+
+    for provider in PROVIDERS.values():
+
+        if model in provider.models:
+            return provider
+
+    return None
+
 # A single API-key slot in the OS credential vault (Windows Credential Manager / macOS Keychain / Linux Secret Service). One entry, provider-agnostic: the user stores the key for whichever
 # provider they use; switching providers means changing the key. Never written to a project file.
 KEYRING_SERVICE = 'FLExTrans'

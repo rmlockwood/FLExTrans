@@ -41,8 +41,8 @@ if app is None:
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
-# Libraries whose strings we load when the module runs.
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'CreateApertiumRules']
+# Libraries whose strings we load when the module runs. The dialog logic and its pyuic-generated window file each have their own .ts/.qm.
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'CreateApertiumRules', 'WorkOnRulesWithAIDlg', 'WorkOnRulesWithAIWindow']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -139,6 +139,17 @@ def MainFunction(DB, report, modify=True):
         msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Basic and Full views). Then come back to this module; it will ask for your API key.')
         QMessageBox.information(None, _translate('WorkOnRulesWithAI', 'Work on Rules with AI'), msg)
         report.Info(msg)
+        return
+
+    # Reject a model that belongs to a different provider (possible via a hand-edited config file; the Settings tool itself prevents this pairing). A model no provider claims is
+    # allowed - it may simply be newer than this release's model lists.
+    owner = AIRules.findModelOwner(model)
+
+    if owner is not None and owner is not provider:
+
+        msg = _translate('WorkOnRulesWithAI', 'The configured AI model ({model}) goes with {owner}, not {provider}. Fix the AI Model setting in the FLExTrans Settings tool.').format(model=model, owner=owner.displayName, provider=provider.displayName)
+        QMessageBox.warning(None, _translate('WorkOnRulesWithAI', 'Work on Rules with AI'), msg)
+        report.Error(msg)
         return
 
     # Get consent to send data to the external service.
