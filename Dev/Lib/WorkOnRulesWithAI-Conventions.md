@@ -5,21 +5,11 @@ conventions this project follows and the constraints your output must satisfy. F
 
 ## Your task
 
-You are given: the user's plain-language description of the rule they want, the project's real grammatical categories / features / feature-values / affixes (from both the source and target FLEx
-projects), the names of the definitions that already exist in the transfer file (categories, attributes, variables, macros, lists), and — when modifying — the current rule's XML.
+You are given the user's plain-language description of the rule they want; the project's real grammatical categories, features, feature-values, and affixes (from the source and target FLEx projects);
+the names of the definitions already in the transfer file; and — when modifying or explaining — the current rule's XML. You return a single JSON object whose fields (a rule plus any new definitions,
+or, in explain mode, a plain-language explanation) are defined and enforced by the response schema; fill those fields.
 
-You return a single JSON object with exactly these fields:
-- `rule_xml`: one `<rule comment="…">…</rule>` element.
-- `new_defs`: an array of the supporting `<def-cat>` / `<def-attr>` / `<def-var>` / `<def-list>` / `<def-macro>` elements that do not already exist and that your rule needs (empty array if none).
-- `explanation`: one or two sentences describing what the rule does.
-- `language`: the two-letter ISO 639-1 code of the language your explanation and comments are written in — i.e. the language of the user's request (e.g. `en`, `es`, `de`, `fr`). It is used to localize the rule preview.
-
-Do not output the whole transfer file, the `<transfer>` wrapper, or the section elements — only the rule and any new definitions. Do not include the DOCTYPE.
-
-**Explain mode.** When the request says `MODE: explain`, you produce no rule at all. Instead you return a JSON object with exactly these fields:
-- `explanation`: a thorough plain-language explanation of the whole given rule, written for someone unaccustomed to reading Apertium rules, structured as short paragraphs: what words the pattern
-  matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists the rule references contribute. No XML markup in the text.
-- `language`: the two-letter ISO 639-1 code of the language the explanation is written in (the request names the language to use).
+Output only the rule and any new definitions — never the whole transfer file, the `<transfer>` wrapper, the section elements, or the DOCTYPE.
 
 ## Language of your output
 
@@ -44,10 +34,9 @@ A word in the Apertium stream is a **lexical unit**: a lemma followed by tags, e
 Preserve this ordering whenever you construct or reorder tags on a word. When you match tags positionally (e.g. `<def-cat>` bodies like `n.*.pst.*`) or build output, respect that categories come
 first, then inflection classes, then features, then prefixes → infixes → suffixes.
 
-**What `*` means in a tag pattern.** In Apertium tag patterns `*` is **not** the regular-expression star. It stands for **one or more whole tags** in that position. So `x.*.y` matches `x`, then
-one or more tags, then `y`; and `x.y.*` matches `x`, then `y`, then one or more further tags. A bare `*` therefore requires at least one tag to be there — it does not mean "zero or more" and it does
-not match part of a tag. Consequently, to match a word whose tags are exactly `dem` then `x`, write `dem.x` — **not** `*.dem.x`, `dem.*.x`, or `dem.x.*`, since each of those demands extra tags that
-`dem.x` does not have. Only add a `*` where you genuinely intend "and one or more additional tags here".
+**What `*` means in a tag pattern.** In Apertium tag patterns `*` is **not** the regex star: it stands for **one or more whole tags**. So `x.*.y` = `x`, one-or-more tags, `y`; `x.y.*` = `x`, `y`,
+one-or-more tags. A `*` requires at least one tag (not "zero or more") and never matches part of a tag. So to match tags exactly `dem` then `x`, write `dem.x` — **not** `*.dem.x`, `dem.*.x`, or
+`dem.x.*` (each demands extra tags). Use `*` only where you truly mean "and one or more further tags here".
 
 **Dotted glosses become underscores.** In Apertium a dot separates one tag from the next, so a dot inside a single gloss would be misread as multiple tags. If the user writes an affix gloss (or any
 tag) with dots — e.g. `DEF.SG.C` — convert the dots to underscores when you emit it as a tag: `DEF_SG_C`. Do this for every tag value (`lit-tag` values, `attr-item` tags, feature/affix values, etc.).
@@ -75,10 +64,9 @@ definitions you return will be placed in the correct section by the host code �
   - Output: `<out>` containing `<lu>…</lu>` lexical units separated by `<b></b>` (a blank space between words). A common output unit is `<lu><clip part="whole" pos="1" side="tl"/></lu>` (emit the
     whole target word unchanged).
 
-**The minimum output unit is lemma + category.** In this FLExTrans system, unless you emit a word with `<clip part="whole" …/>` (which already carries the lemma and every tag), a lexical unit you
-build piece by piece must output *at least* the lemma and the grammatical category — the category is referenced generically by the `a_gram_cat` attribute. So the smallest hand-built `<lu>` is
-`<lu><clip part="lem" pos="1" side="tl"/><clip part="a_gram_cat" pos="1" side="tl"/></lu>`, and any features/affixes you also want on the word are added as further `<clip>`/`<lit-tag>` children after
-those two. Never emit an `<lu>` with only the lemma (a word with no category is not a valid lexical unit).
+**The minimum output unit is lemma + category.** Unless you emit a word with `<clip part="whole" …/>` (which already carries the lemma and every tag), a hand-built lexical unit must output *at least*
+the lemma and the grammatical category (the category via the generic `a_gram_cat` attribute). Smallest `<lu>`: `<lu><clip part="lem" pos="1" side="tl"/><clip part="a_gram_cat" pos="1" side="tl"/></lu>`;
+add any features/affixes as further `<clip>`/`<lit-tag>` children after those two. Never emit an `<lu>` with only a lemma — a word with no category is not a valid lexical unit.
 
 ## `<clip>` attributes
 
@@ -117,10 +105,9 @@ Only include tag values that actually exist in the supplied project data — nev
   description. Keep the whole thing short, ideally under 50 characters. For example, a rule whose pattern is `c_n c_pro` gets a comment like `n + pro : copy pronoun agreement`. Make it unique within
   the file.
 - Apertium applies rules **left-to-right, longest-match (LRLM)**, top to bottom. A longer/multi-word pattern takes precedence over a shorter one that would also match.
-- **More specific patterns must come before more general ones.** When two rules have the same length and both could match a word, the first one in the file wins, so a specific rule placed *after* a
-  general rule that also matches will never fire. A pattern category like `n.neut.pl` is more specific than plain `n`; a rule with the `n.neut.pl` pattern must be placed **before** the general `n`
-  rule, or it gets skipped. So when the rule you produce is more specific than an existing rule that would also match its words, say so in the `explanation` and note that it belongs before that
-  general rule. Do not rewrite the other rules — you only produce the one rule — but flag the ordering requirement.
+- **More specific patterns must come before more general ones.** When two same-length rules could both match a word, the first in the file wins — so a specific rule placed *after* a general one that
+  also matches never fires (e.g. an `n.neut.pl` pattern must come **before** a plain `n` rule, or it is skipped). If your rule is more specific than an existing rule that would also match its words,
+  say so in the `explanation` and note it belongs before that general rule. You produce only the one rule — don't rewrite others — but flag the ordering.
 - **Start every new rule with a plain-language description comment.** The first child of a new `<rule>` must be an XML comment giving a detailed description of what the rule does, written in
   lay-person's speech for someone unaccustomed to reading Apertium rules — say what happens to which words and why, without Apertium jargon (e.g. `<!-- When a noun is plural, this rule copies the
   plural marking onto the adjective that describes it, so the two words agree. -->`). Write it in the language of the user's request. When modifying a rule that lacks such a comment, add one that
@@ -138,8 +125,5 @@ Only include tag values that actually exist in the supplied project data — nev
 
 ## Hard constraints
 
-1. The rule must be well-formed XML and valid against `transfer.dtd`. It will be compiled with `apertium-preprocess-transfer` before the user sees it; if it fails, you will be told the errors and
-   asked to fix them.
-2. Reference only categories, features, and tag values present in the supplied project data, and reuse existing definition names where possible.
-3. Escape XML properly. Keep attribute values exactly as they appear in the project data (tags are case-sensitive).
-4. Produce a self-contained rule plus only the new definitions it needs — nothing more.
+The rule must be well-formed, properly escaped XML, valid against `transfer.dtd`; it is compiled with `apertium-preprocess-transfer` before the user sees it, and you will be told any errors to fix.
+Produce a self-contained rule plus only the new definitions it needs — nothing more. (Reusing existing names and referencing only supplied tags/categories are covered above.)
