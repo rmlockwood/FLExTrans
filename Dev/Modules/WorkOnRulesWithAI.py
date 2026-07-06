@@ -20,7 +20,7 @@
 
 import os
 
-from flextoolslib import *                                       # type: ignore
+from flextoolslib import FlexToolsModuleClass, FTM_Name, FTM_Version, FTM_ModifiesDB, FTM_Synopsis, FTM_Help, FTM_Description  
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication, QMessageBox
