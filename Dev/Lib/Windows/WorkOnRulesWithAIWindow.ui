@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Work on Rules with AI</string>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,0,0,0,0,0,1,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,0,0,0,0,0,0,1,0">
    <item>
     <layout class="QHBoxLayout" name="modeRow">
      <item>
@@ -37,6 +37,26 @@
        <attribute name="buttonGroup">
         <string notr="true">modeGroup</string>
        </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="explainRadio">
+       <property name="text">
+        <string>Explain existing rule</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">modeGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="explainLangEdit">
+       <property name="toolTip">
+        <string>The language to write the explanation in (e.g. Spanish, Swahili). Leave blank to use the FLExTrans interface language.</string>
+       </property>
+       <property name="placeholderText">
+        <string>Explanation language</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -93,6 +113,43 @@
       <string>e.g. In a definite article + noun phrase, remove the article and add the definite singular common gender affix.</string>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="dataRow">
+     <item>
+      <widget class="QPushButton" name="sourceDataButton">
+       <property name="toolTip">
+        <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+       </property>
+       <property name="text">
+        <string>Source Data…</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="targetDataButton">
+       <property name="toolTip">
+        <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+       </property>
+       <property name="text">
+        <string>Target Data…</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="dataSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="genRow" stretch="0,1">

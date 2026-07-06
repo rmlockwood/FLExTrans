@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.2 - 7/5/26 - Ron Lockwood
+#    Added renderExplanationHtml for the new explain mode: the rule rendered XXE-style on the left, the AI's plain-text explanation (escaped, paragraphs preserved) on the right.
+#
 #   Version 3.16.1 - 7/3/26 - Ron Lockwood
 #    Chip/box colours now come from the derived preview_spec JSON (parsed from the XXE stylesheet's @property-value declarations) instead of only the hard-coded values in
 #    transfer_preview.css, so editing a colour in the XXE CSS flows into the preview.
@@ -244,6 +247,19 @@ def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
 
     body.append(elementToHtml(parseFragment(ruleXml), spec=spec))
     return wrapDocument(''.join(body), spec.get('_colors'))
+
+def renderExplanationHtml(ruleXml: str, explanationText: str, lang: str = 'en') -> str:
+    '''Render the rule (styled like XXE) on the left and the AI's plain-text explanation on the right - used for the "explain" preview. The explanation is escaped and its blank-line
+    breaks become paragraphs, so no raw markup is ever shown. Returns a complete HTML document.'''
+
+    spec = loadSpec(lang)
+
+    paragraphs = ''.join('<p>' + html.escape(par.strip()).replace('\n', '<br>') + '</p>' for par in explanationText.split('\n\n') if par.strip())
+
+    left = '<div class="pane">' + elementToHtml(parseFragment(ruleXml), spec=spec) + '</div>'
+    right = '<div class="pane explanation">' + paragraphs + '</div>'
+
+    return wrapDocument('<div class="compare">' + left + right + '</div>', spec.get('_colors'))
 
 def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
     '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (positional); the panes are always readable even

@@ -5,6 +5,13 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.6 - 7/6/26 - Ron Lockwood
+#    The explain mode's language is now named in the prompt (buildUserContent's explainLang is a language name, e.g. "Spanish", not an ISO code), so the user can request any language.
+#
+#   Version 3.16.5 - 7/5/26 - Ron Lockwood
+#    New explain task: each provider's generate() now takes a task argument selecting the rule schema or a new explanation schema and returns the parsed JSON dict; explainRule() asks
+#    for a thorough plain-language explanation of an existing rule (answered in the interface language via buildUserContent's explain mode).
+#
 #   Version 3.16.4 - 7/4/26 - Ron Lockwood
 #    The prompt's definition summary now enumerates the contents of each def-cat (the cat-item tags, and the lemma when a category is lemma-specific) and each def-list (its items),
 #    instead of only listing category and list names.
@@ -155,6 +162,43 @@ OPENAI_RULE_SCHEMA = {
     'additionalProperties': False,
 }
 
+# The explain task: instead of producing a rule, the model returns a thorough plain-language explanation of an existing rule. Same three per-provider shapes as the rule task.
+_LONG_EXPLANATION_DESC = ('A thorough explanation of the whole rule for a linguist unaccustomed to reading Apertium rules: what words the pattern matches, what each part of the action does and why, '
+                          'what the output looks like, and how any macros/variables/lists it references contribute. Use short paragraphs; no XML markup.')
+
+_EXPLAIN_PROPERTIES = {
+    'explanation': {'type': 'string', 'description': _LONG_EXPLANATION_DESC},
+    'language': {'type': 'string', 'description': _LANGUAGE_DESC},
+}
+
+EXPLAIN_SCHEMA = {
+    'type': 'object',
+    'properties': _EXPLAIN_PROPERTIES,
+    'required': ['explanation', 'language'],
+    'propertyOrdering': ['explanation', 'language'],
+}
+
+SUBMIT_EXPLANATION_TOOL = {
+    'name': 'submit_explanation',
+    'description': 'Return a thorough plain-language explanation of the given Apertium transfer rule.',
+    'input_schema': {
+        'type': 'object',
+        'properties': _EXPLAIN_PROPERTIES,
+        'required': ['explanation', 'language'],
+    },
+}
+
+OPENAI_EXPLAIN_SCHEMA = {
+    'type': 'object',
+    'properties': _EXPLAIN_PROPERTIES,
+    'required': ['explanation', 'language'],
+    'additionalProperties': False,
+}
+
+# Task identifiers passed through Engine.generate to pick the schema set.
+TASK_RULE = 'rule'
+TASK_EXPLAIN = 'explain'
+
 @dataclasses.dataclass
 class RuleResult:
     '''The outcome of a generation attempt.'''
@@ -168,8 +212,8 @@ class RuleResult:
     attempts: int
 
 # ---------------------------------------------------------------------------
-# Provider layer. Each provider knows how to build its SDK client and how to turn a system instruction + user prompt into (ruleXml, newDefs, explanation). To add a provider,
-# implement makeClient() and generate() and register it in PROVIDERS.
+# Provider layer. Each provider knows how to build its SDK client and how to turn a system instruction + user prompt into the task's JSON object (a dict matching the rule or explain
+# schema above, selected by the task argument). To add a provider, implement makeClient() and generate() and register it in PROVIDERS.
 # ---------------------------------------------------------------------------
 
 class AnthropicProvider:
@@ -188,14 +232,16 @@ class AnthropicProvider:
 
         return anthropic.Anthropic(api_key=apiKey)
 
-    def generate(self, client, model: str, systemInstruction: str, userContent: str) -> tuple:
+    def generate(self, client, model: str, systemInstruction: str, userContent: str, task: str = TASK_RULE) -> dict:
 
         import anthropic
 
+        tool = SUBMIT_RULE_TOOL if task == TASK_RULE else SUBMIT_EXPLANATION_TOOL
+
         try:
             response = client.messages.create(
-                model=model, max_tokens=MAX_TOKENS, thinking={'type': 'adaptive'}, system=[{'type': 'text', 'text': systemInstruction, 'cache_control': {'type': 'ephemeral'}}], tools=[SUBMIT_RULE_TOOL],
-                tool_choice={'type': 'tool', 'name': 'submit_rule'}, messages=[{'role': 'user', 'content': userContent}], )
+                model=model, max_tokens=MAX_TOKENS, thinking={'type': 'adaptive'}, system=[{'type': 'text', 'text': systemInstruction, 'cache_control': {'type': 'ephemeral'}}], tools=[tool],
+                tool_choice={'type': 'tool', 'name': tool['name']}, messages=[{'role': 'user', 'content': userContent}], )
 
         except anthropic.RateLimitError as err:
 
@@ -217,12 +263,10 @@ class AnthropicProvider:
 
         for block in response.content:
 
-            if block.type == 'tool_use' and block.name == 'submit_rule':
+            if block.type == 'tool_use' and block.name == tool['name']:
+                return cast(dict, block.input)
 
-                data = cast(dict, block.input)
-                return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
-
-        raise RuntimeError('The model did not return a submit_rule tool call.')
+        raise RuntimeError('The model did not return a {name} tool call.'.format(name=tool['name']))
 
 class GeminiProvider:
     '''Google Gemini (the default provider). Default is gemini-2.5-flash, which is available on the free tier; gemini-2.5-pro requires a billing-enabled (paid) key and returns a 429
@@ -241,16 +285,18 @@ class GeminiProvider:
 
         return genai.Client(api_key=apiKey)
 
-    def generate(self, client, model: str, systemInstruction: str, userContent: str) -> tuple:
+    def generate(self, client, model: str, systemInstruction: str, userContent: str, task: str = TASK_RULE) -> dict:
 
         import json
 
         from google.genai import types, errors
 
+        schema = RULE_SCHEMA if task == TASK_RULE else EXPLAIN_SCHEMA
+
         try:
             response = client.models.generate_content(
                 model=model, contents=userContent, config=types.GenerateContentConfig(
-                    system_instruction=systemInstruction, max_output_tokens=MAX_TOKENS, response_mime_type='application/json', response_schema=RULE_SCHEMA, ), )
+                    system_instruction=systemInstruction, max_output_tokens=MAX_TOKENS, response_mime_type='application/json', response_schema=schema, ), )
 
         except errors.APIError as err:
 
@@ -263,10 +309,9 @@ class GeminiProvider:
 
         if not payload:
             feedback = getattr(response, 'prompt_feedback', None)
-            raise RuntimeError('The model returned no rule. {feedback}'.format(feedback=feedback or '(response was empty or blocked)'))
+            raise RuntimeError('The model returned nothing. {feedback}'.format(feedback=feedback or '(response was empty or blocked)'))
 
-        data = json.loads(payload)
-        return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
+        return json.loads(payload)
 
 class OpenAIProvider:
     '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers.'''
@@ -284,15 +329,20 @@ class OpenAIProvider:
 
         return openai.OpenAI(api_key=apiKey)
 
-    def generate(self, client, model: str, systemInstruction: str, userContent: str) -> tuple:
+    def generate(self, client, model: str, systemInstruction: str, userContent: str, task: str = TASK_RULE) -> dict:
 
         import json
 
         import openai
 
+        if task == TASK_RULE:
+            responseFormat = {'type': 'json_schema', 'json_schema': {'name': 'submit_rule', 'strict': True, 'schema': OPENAI_RULE_SCHEMA}}
+        else:
+            responseFormat = {'type': 'json_schema', 'json_schema': {'name': 'submit_explanation', 'strict': True, 'schema': OPENAI_EXPLAIN_SCHEMA}}
+
         try:
             response = client.chat.completions.create(
-                model=model, max_completion_tokens=MAX_TOKENS, response_format={'type': 'json_schema', 'json_schema': {'name': 'submit_rule', 'strict': True, 'schema': OPENAI_RULE_SCHEMA}},
+                model=model, max_completion_tokens=MAX_TOKENS, response_format=responseFormat,
                 messages=[{'role': 'system', 'content': systemInstruction}, {'role': 'user', 'content': userContent}], )
 
         except openai.RateLimitError as err:
@@ -306,10 +356,9 @@ class OpenAIProvider:
         payload = message.content
 
         if not payload:
-            raise RuntimeError('The model returned no rule (empty response).')
+            raise RuntimeError('The model returned nothing (empty response).')
 
-        data = json.loads(payload)
-        return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
+        return json.loads(payload)
 
 # Registry of available providers, keyed by the config value. Gemini comes first because its free tier makes it the default; the Settings tool lists them in this order.
 PROVIDERS = {
@@ -424,13 +473,13 @@ class Engine:
         self.client = client
         self.model = model
 
-    def generate(self, systemInstruction: str, userContent: str) -> tuple:
+    def generate(self, systemInstruction: str, userContent: str, task: str = TASK_RULE) -> dict:
 
         # When debug logging is on, record exactly what goes out and what comes back (or the error), so we can diagnose bad generations on a user's machine.
-        logPromptTraffic('PROMPT to {provider} ({model})'.format(provider=self.provider.displayName, model=self.model), 'SYSTEM INSTRUCTION:\n' + systemInstruction + '\n\nUSER CONTENT:\n' + userContent)
+        logPromptTraffic('PROMPT to {provider} ({model}, task={task})'.format(provider=self.provider.displayName, model=self.model, task=task), 'SYSTEM INSTRUCTION:\n' + systemInstruction + '\n\nUSER CONTENT:\n' + userContent)
 
         try:
-            result = self.provider.generate(self.client, self.model, systemInstruction, userContent)
+            result = self.provider.generate(self.client, self.model, systemInstruction, userContent, task)
 
         except Exception as err:
 
@@ -564,9 +613,10 @@ def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
 
     return None
 
-def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str]) -> str:
-    '''Assemble the volatile per-request part of the prompt: the project's real categories/features, the existing-definition summary, the current rule (when modifying), and the
-    user's request.'''
+def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str], explainLang: str = 'English') -> str:
+    '''Assemble the volatile per-request part of the prompt: the project's real categories/features, the existing-definition summary, the current rule (when modifying or explaining),
+    and the user's request. For the explain mode there is no user request text, so `explainLang` names the language to answer in - either what the user typed in the Explanation-language
+    box (e.g. "Spanish", "Swahili") or, when that is blank, the FLExTrans interface language.'''
 
     parts = []
     parts.append('PROJECT DATA (real categories, features, feature values, and affixes from the FLEx projects):')
@@ -576,7 +626,18 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
     parts.append(defsSummary)
     parts.append('')
 
+    if mode == 'explain' and currentRuleXml:
+
+        parts.append('MODE: explain the following existing rule. Give a thorough plain-language explanation of the whole rule, structured as short paragraphs, for someone unaccustomed to reading '
+                     'Apertium rules: what words the pattern matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists it references '
+                     'contribute. Do not produce or modify any rule.')
+        parts.append('Write the explanation in {lang}. Also set the "language" field to that language\'s two-letter ISO 639-1 code.'.format(lang=explainLang))
+        parts.append('RULE TO EXPLAIN:')
+        parts.append(currentRuleXml)
+        return '\n'.join(parts)
+
     if mode == 'modify' and currentRuleXml:
+
         parts.append('MODE: modify the following existing rule. Keep its comment unless asked to rename it.')
         parts.append('CURRENT RULE:')
         parts.append(currentRuleXml)
@@ -590,7 +651,7 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
     return '\n'.join(parts)
 
 def generateRule(engine: Engine, systemInstruction: str, userContent: str, priorErrors: Optional[str] = None) -> tuple:
-    '''Make one generation call through the engine and return (ruleXml, newDefs, explanation). On a validation retry the prior errors are appended so the model can fix them.'''
+    '''Make one generation call through the engine and return (ruleXml, newDefs, explanation, language). On a validation retry the prior errors are appended so the model can fix them.'''
 
     text = userContent
 
@@ -598,7 +659,15 @@ def generateRule(engine: Engine, systemInstruction: str, userContent: str, prior
         text += ('\n\nYour previous rule failed validation with these errors. Fix them and resubmit:\n'
                  + priorErrors)
 
-    return engine.generate(systemInstruction, text)
+    data = engine.generate(systemInstruction, text, TASK_RULE)
+    return data['rule_xml'], data.get('new_defs', []), data.get('explanation', ''), data.get('language', '')
+
+def explainRule(engine: Engine, systemInstruction: str, userContent: str) -> tuple:
+    '''Ask the provider for a thorough plain-language explanation of an existing rule (the explain task). Returns (explanation, language). No validation-retry loop - there is nothing
+    to compile.'''
+
+    data = engine.generate(systemInstruction, userContent, TASK_EXPLAIN)
+    return data.get('explanation', ''), data.get('language', '')
 
 def getSection(root: ET.Element, sectionName: str) -> ET.Element:
     '''Return a section element, matching CreateApertiumRules' section ordering assumption. The sample/real files already contain every section.'''

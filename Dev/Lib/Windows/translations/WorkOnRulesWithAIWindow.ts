@@ -78,5 +78,20 @@
         <source>Re-read the transfer rules file to update the list of rules (e.g. after you edit the file in another window).</source>
         <translation>Relire le fichier de règles de transfert pour actualiser la liste des règles (p. ex. après avoir modifié le fichier dans une autre fenêtre).</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="114"/>
+        <source>Explain existing rule</source>
+        <translation>Expliquer une règle existante</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="122"/>
+        <source>Explanation language</source>
+        <translation>Langue de l'explication</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="121"/>
+        <source>The language to write the explanation in (e.g. Spanish, Swahili). Leave blank to use the FLExTrans interface language.</source>
+        <translation>La langue dans laquelle rédiger l'explication (p. ex. espagnol, swahili). Laissez vide pour utiliser la langue de l'interface de FLExTrans.</translation>
+    </message>
 </context>
 </TS>

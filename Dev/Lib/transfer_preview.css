@@ -115,6 +115,16 @@ body {
     padding-bottom: 4px;
 }
 
+/* The explanation pane of the "explain rule" view: ordinary prose next to the rendered rule. */
+.pane.explanation {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.pane.explanation p {
+    margin: 0 0 9px;
+}
+
 .legend {
     font-size: 11px;
     color: #666;

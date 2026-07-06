@@ -5,6 +5,13 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.6 - 7/6/26 - Ron Lockwood
+#    The explain mode gained an Explanation-language box: type any language (e.g. Spanish, Swahili) to get the explanation in it; blank uses the FLExTrans interface language.
+#
+#   Version 3.16.5 - 7/5/26 - Ron Lockwood
+#    New Explain existing rule mode: pick a rule (no description needed) and the AI gives a thorough plain-language explanation, shown beside the rendered rule; Approve and Open-in-XXE
+#    stay disabled in this mode. Switching modes now also invalidates any pending candidate so a rule generated in one mode can't be written under another.
+#
 #   Version 3.16.4 - 7/4/26 - Ron Lockwood
 #    Reworked the dialog to stay open for successive edits: Cancel became Close (only Close and the window X end it); Approve and Open-temp no longer close it; Approve disables itself
 #    after a write until the next rule is generated (no duplicate saves); approving re-reads the rule file; added a Refresh Rules button; success is now reported in the status line.
@@ -72,21 +79,22 @@ def promptForApiKey(provider, parent=None):
     return key
 
 class GenerateWorker(QObject):
-    '''Runs the (slow) generate + validate loop off the UI thread.'''
+    '''Runs a slow AIRules call off the UI thread: `fn` (generateValidatedRule for the create/modify modes, explainRule for the explain mode) is called with `params`.'''
 
-    finished = pyqtSignal(object)   # AIRules.RuleResult
+    finished = pyqtSignal(object)   # AIRules.RuleResult, or (explanation, language) for the explain task
     failed = pyqtSignal(str)
     rateLimited = pyqtSignal(str)   # friendly "try again in N s" message
 
-    def __init__(self, params: dict):
+    def __init__(self, fn, params: dict):
 
         super().__init__()
+        self.fn = fn
         self.params = params
 
     def run(self):
 
         try:
-            result = AIRules.generateValidatedRule(**self.params)
+            result = self.fn(**self.params)
             self.finished.emit(result)
 
         except AIRules.RateLimitError as err:
@@ -112,9 +120,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.dtdPath = dtdPath
         self.compilerExe = compilerExe
 
-        # Populated once a candidate is generated.
+        # Populated once a candidate is generated. currentTask remembers which mode the running/last generation was for ('create'/'modify'/'explain').
         self.ruleResult = None
         self.currentRuleXml = None
+        self.currentTask = 'create'
         self.genThread = None
         self.worker = None
 
@@ -132,7 +141,11 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.preview = None
 
         # Hook up the widgets. The window stays open across successive rule edits: only Close (and the window's X) end it; Generate / Open temp / Approve all leave it open.
+        # Connect all three mode radios: switching between modify and explain leaves the create radio untoggled, so connecting create alone would miss that switch and leave the wrong
+        # widgets showing. Each switch toggles two radios, so onModeChanged runs twice, which is harmless (it's idempotent).
         self.ui.createRadio.toggled.connect(self.onModeChanged)
+        self.ui.modifyRadio.toggled.connect(self.onModeChanged)
+        self.ui.explainRadio.toggled.connect(self.onModeChanged)
         self.ui.generateButton.clicked.connect(self.onGenerate)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
@@ -146,11 +159,36 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         return self.ui.modifyRadio.isChecked()
 
+    def isExplain(self) -> bool:
+
+        return self.ui.explainRadio.isChecked()
+
+    def currentMode(self) -> str:
+
+        if self.isExplain():
+            return 'explain'
+
+        return 'modify' if self.isModify() else 'create'
+
     def onModeChanged(self):
 
-        modify = self.isModify()
-        self.ui.pickerLabel.setVisible(modify)
-        self.ui.ruleList.setVisible(modify)
+        # Both the modify and explain modes pick from the rule list; only create/modify take a description. The picker label follows the mode.
+        mode = self.currentMode()
+
+        self.ui.pickerLabel.setVisible(mode in ('modify', 'explain'))
+        self.ui.ruleList.setVisible(mode in ('modify', 'explain'))
+        self.ui.pickerLabel.setText(_translate('WorkOnRulesWithAI', 'Rule to explain:') if mode == 'explain' else _translate('WorkOnRulesWithAI', 'Rule to modify:'))
+        self.ui.describeLabel.setVisible(mode != 'explain')
+        self.ui.descriptionEdit.setVisible(mode != 'explain')
+
+        # The Explanation-language box replaces the description box in explain mode (create/modify infer the language from the request text instead).
+        self.ui.explainLangEdit.setVisible(mode == 'explain')
+
+        # Switching modes invalidates any pending candidate: a rule generated for one mode must not be approvable (or openable in XXE) under another, e.g. a created rule silently
+        # overwriting whichever rule happens to be selected after switching to modify.
+        self.ruleResult = None
+        self.ui.approveButton.setEnabled(False)
+        self.ui.xxeButton.setEnabled(False)
 
     def selectedRuleComment(self):
 
@@ -190,67 +228,113 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.reloadRules()
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule list refreshed ({n} rules).').format(n=len(self.ruleNames)))
 
+    # The FLExTrans interface languages, mapped to the English language name we put in the prompt when the user leaves the Explanation-language box blank.
+    UI_LANG_NAMES = {'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French'}
+
+    def interfaceLanguageName(self) -> str:
+        '''The FLExTrans interface language as a language name (e.g. "German"), used as the default explanation language when the user hasn't typed one. Falls back to English when
+        Utils/FTConfig aren't available (standalone runs) or the code isn't one we have a name for.'''
+
+        try:
+            import Utils
+            code = Utils.getInterfaceLangCode() or 'en'
+
+        except Exception:
+            code = 'en'
+
+        return self.UI_LANG_NAMES.get(code, 'English')
+
+    def explanationLanguage(self) -> str:
+        '''The language to write an explanation in: what the user typed in the Explanation-language box, or the interface language when that box is blank.'''
+
+        typed = self.ui.explainLangEdit.text().strip()
+        return typed or self.interfaceLanguageName()
+
     def onGenerate(self):
 
+        mode = self.currentMode()
         description = self.ui.descriptionEdit.toPlainText().strip()
 
-        if not description:
+        # A description is required to create or modify; the explain mode needs only a picked rule.
+        if mode != 'explain' and not description:
+
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
 
-        mode = 'modify' if self.isModify() else 'create'
         targetComment = None
         self.currentRuleXml = None
 
-        if mode == 'modify':
+        if mode in ('modify', 'explain'):
 
             targetComment = self.selectedRuleComment()
 
             if not targetComment:
-                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+
+                if mode == 'explain':
+                    QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to explain.'))
+                else:
+                    QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+
                 return
 
             self.currentRuleXml = AIRules.getRuleXmlByComment(self.transferPath, targetComment)
 
-        userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml)
+        # The explain language matters only in explain mode; it's harmlessly ignored for create/modify (which infer the language from the request text).
+        explainLang = self.explanationLanguage() if mode == 'explain' else 'English'
+        userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml, explainLang)
 
-        # The authorship-stamp sentences, localized to the FLExTrans UI language. Whole sentences (with a {when} placeholder) so they translate cleanly regardless of word order.
-        authorshipComments = {
-            'added':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
-            'modified': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
-        }
+        if mode == 'explain':
 
-        # Localize the stamp's date/time to the interface language the same way the testbed log does (Utils.LocalizedDateTimeFormatter). The custom Qt format gives a spelled-out,
-        # localized month without the weekday/seconds/timezone the long format adds. If Utils/FTConfig aren't available (standalone runs), leave it None so AIRules uses its English fallback.
-        whenStr = None
+            # Explaining makes one plain call - no validation loop, no authorship stamp, nothing written.
+            fn = AIRules.explainRule
+            params = {
+                'engine': self.engine,
+                'systemInstruction': self.systemInstruction,
+                'userContent': userContent,
+            }
+        else:
 
-        try:
-            import Utils
-            from PyQt6.QtCore import QDateTime
-            whenStr = Utils.LocalizedDateTimeFormatter().formatDateTime(QDateTime.currentDateTime(), 'd MMMM yyyy HH:mm')
+            # The authorship-stamp sentences, localized to the FLExTrans UI language. Whole sentences (with a {when} placeholder) so they translate cleanly regardless of word order.
+            authorshipComments = {
+                'added':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
+                'modified': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
+            }
 
-        except Exception:
-            pass
+            # Localize the stamp's date/time to the interface language the same way the testbed log does (Utils.LocalizedDateTimeFormatter). The custom Qt format gives a spelled-out,
+            # localized month without the weekday/seconds/timezone the long format adds. If Utils/FTConfig aren't available (standalone runs), leave it None so AIRules uses its English fallback.
+            whenStr = None
 
-        params = {
-            'engine': self.engine,
-            'systemInstruction': self.systemInstruction,
-            'userContent': userContent,
-            'transferPath': self.transferPath,
-            'dtdPath': self.dtdPath,
-            'mode': mode,
-            'targetComment': targetComment,
-            'compilerExe': self.compilerExe,
-            'authorshipComments': authorshipComments,
-            'whenStr': whenStr,
-        }
+            try:
+                import Utils
+                from PyQt6.QtCore import QDateTime
+                whenStr = Utils.LocalizedDateTimeFormatter().formatDateTime(QDateTime.currentDateTime(), 'd MMMM yyyy HH:mm')
 
-        # Disable controls and run generation on a worker thread.
+            except Exception:
+                pass
+
+            fn = AIRules.generateValidatedRule
+            params = {
+                'engine': self.engine,
+                'systemInstruction': self.systemInstruction,
+                'userContent': userContent,
+                'transferPath': self.transferPath,
+                'dtdPath': self.dtdPath,
+                'mode': mode,
+                'targetComment': targetComment,
+                'compilerExe': self.compilerExe,
+                'authorshipComments': authorshipComments,
+                'whenStr': whenStr,
+            }
+
+        # Remember which task this run is for, so onGenerateFinished knows how to interpret and render the result (the mode radios are disabled while busy, so it can't change mid-run).
+        self.currentTask = mode
+
+        # Disable controls and run the call on a worker thread.
         self.setBusy(True)
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generating…'))
 
         self.genThread = QThread()
-        self.worker = GenerateWorker(params)
+        self.worker = GenerateWorker(fn, params)
         self.worker.moveToThread(self.genThread)
         self.genThread.started.connect(self.worker.run)
         self.worker.finished.connect(self.onGenerateFinished)
@@ -263,8 +347,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.generateButton.setEnabled(not busy)
         self.ui.createRadio.setEnabled(not busy)
         self.ui.modifyRadio.setEnabled(not busy)
+        self.ui.explainRadio.setEnabled(not busy)
         self.ui.ruleList.setEnabled(not busy)
         self.ui.descriptionEdit.setEnabled(not busy)
+        self.ui.explainLangEdit.setEnabled(not busy)
         self.ui.refreshButton.setEnabled(not busy)
 
     def cleanupThread(self):
@@ -303,6 +389,20 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         self.cleanupThread()
         self.setBusy(False)
+
+        # The explain task returns (explanation, language) and produces no rule: render the rule beside its explanation and leave Approve / Open-in-XXE disabled (there is nothing to
+        # write or open).
+        if self.currentTask == 'explain':
+
+            explanation, language = result
+            self.ruleResult = None
+
+            self.ensurePreview().setHtml(TransferPreview.renderExplanationHtml(self.currentRuleXml or '', explanation, lang=language))
+            self.ui.approveButton.setEnabled(False)
+            self.ui.xxeButton.setEnabled(False)
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Explanation generated.'))
+            return
+
         self.ruleResult = result
 
         # Render the preview: single rule for create, before/after for modify. The label language follows the language of the user's request, as reported by the model.

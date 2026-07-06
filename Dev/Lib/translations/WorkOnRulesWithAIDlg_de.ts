@@ -140,5 +140,20 @@ Open it in XXE to review.</source>
         <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
         <translation>Regel in die Transferdatei geschrieben (Sicherung: {backup}). Generieren oder wählen Sie eine weitere Regel, um fortzufahren.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="173"/>
+        <source>Rule to explain:</source>
+        <translation>Zu erklärende Regel:</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="253"/>
+        <source>Please select a rule to explain.</source>
+        <translation>Bitte wählen Sie eine zu erklärende Regel aus.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="379"/>
+        <source>Explanation generated.</source>
+        <translation>Erklärung generiert.</translation>
+    </message>
 </context>
 </TS>

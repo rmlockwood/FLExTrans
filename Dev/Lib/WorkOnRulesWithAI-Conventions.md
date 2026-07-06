@@ -16,6 +16,11 @@ You return a single JSON object with exactly these fields:
 
 Do not output the whole transfer file, the `<transfer>` wrapper, or the section elements — only the rule and any new definitions. Do not include the DOCTYPE.
 
+**Explain mode.** When the request says `MODE: explain`, you produce no rule at all. Instead you return a JSON object with exactly these fields:
+- `explanation`: a thorough plain-language explanation of the whole given rule, written for someone unaccustomed to reading Apertium rules, structured as short paragraphs: what words the pattern
+  matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists the rule references contribute. No XML markup in the text.
+- `language`: the two-letter ISO 639-1 code of the language the explanation is written in (the request names the language to use).
+
 ## Language of your output
 
 Write every piece of human-readable text you produce in the **same language as the user's request** — the `explanation`, the descriptive part of each rule `comment` (the text after the
