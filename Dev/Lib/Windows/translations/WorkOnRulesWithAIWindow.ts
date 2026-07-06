@@ -93,5 +93,25 @@
         <source>The language to write the explanation in (e.g. Spanish, Swahili). Leave blank to use the FLExTrans interface language.</source>
         <translation>La langue dans laquelle rédiger l'explication (p. ex. espagnol, swahili). Laissez vide pour utiliser la langue de l'interface de FLExTrans.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="135"/>
+        <source>Source Data…</source>
+        <translation>Données source…</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="137"/>
+        <source>Target Data…</source>
+        <translation>Données cibles…</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="134"/>
+        <source>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</source>
+        <translation>Collez des données d'exemple interlinéarisées de la langue source (séparées par des tabulations, p. ex. copiées depuis FLEx) à envoyer à l'IA avec votre demande. Une coche indique que des données ont été fournies.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="136"/>
+        <source>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</source>
+        <translation>Collez des données d'exemple interlinéarisées de la langue cible (séparées par des tabulations, p. ex. copiées depuis FLEx) à envoyer à l'IA avec votre demande. Une coche indique que des données ont été fournies.</translation>
+    </message>
 </context>
 </TS>

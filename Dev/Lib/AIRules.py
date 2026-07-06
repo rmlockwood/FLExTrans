@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.7 - 7/6/26 - Ron Lockwood
+#    buildUserContent takes optional interlinearized source/target example data (pasted by the user in the dialog's data grids) and adds it to the prompt as its own sections.
+#
 #   Version 3.16.6 - 7/6/26 - Ron Lockwood
 #    The explain mode's language is now named in the prompt (buildUserContent's explainLang is a language name, e.g. "Spanish", not an ISO code), so the user can request any language.
 #
@@ -613,10 +616,11 @@ def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
 
     return None
 
-def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str], explainLang: str = 'English') -> str:
-    '''Assemble the volatile per-request part of the prompt: the project's real categories/features, the existing-definition summary, the current rule (when modifying or explaining),
-    and the user's request. For the explain mode there is no user request text, so `explainLang` names the language to answer in - either what the user typed in the Explanation-language
-    box (e.g. "Spanish", "Swahili") or, when that is blank, the FLExTrans interface language.'''
+def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str], explainLang: str = 'English', sourceData: str = '', targetData: str = '') -> str:
+    '''Assemble the volatile per-request part of the prompt: the project's real categories/features, the existing-definition summary, any interlinearized example data the user pasted
+    (source and/or target side, tab-separated), the current rule (when modifying or explaining), and the user's request. For the explain mode there is no user request text, so
+    `explainLang` names the language to answer in - either what the user typed in the Explanation-language box (e.g. "Spanish", "Swahili") or, when that is blank, the FLExTrans
+    interface language.'''
 
     parts = []
     parts.append('PROJECT DATA (real categories, features, feature values, and affixes from the FLEx projects):')
@@ -625,6 +629,20 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
     parts.append('DEFINITIONS ALREADY IN THE TRANSFER FILE (reuse these; only create new ones when necessary):')
     parts.append(defsSummary)
     parts.append('')
+
+    # Interlinearized example data the user pasted (typically copied out of FLEx). Real words, glosses, and morpheme breakdowns ground the rule/explanation in how the languages
+    # actually behave, so include each side whenever it was given.
+    if sourceData:
+
+        parts.append('SOURCE LANGUAGE EXAMPLE DATA (interlinearized text supplied by the user; columns are tab-separated):')
+        parts.append(sourceData)
+        parts.append('')
+
+    if targetData:
+
+        parts.append('TARGET LANGUAGE EXAMPLE DATA (interlinearized text supplied by the user; columns are tab-separated):')
+        parts.append(targetData)
+        parts.append('')
 
     if mode == 'explain' and currentRuleXml:
 

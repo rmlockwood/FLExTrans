@@ -155,5 +155,40 @@ Open it in XXE to review.</source>
         <source>Explanation generated.</source>
         <translation>Explicación generada.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="100"/>
+        <source>Paste tab-separated interlinear data (e.g. copied from FLEx).</source>
+        <translation>Pegue datos interlineales separados por tabulaciones (p. ej. copiados de FLEx).</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="106"/>
+        <source>Paste from Clipboard</source>
+        <translation>Pegar desde el portapapeles</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="108"/>
+        <source>Clear</source>
+        <translation>Borrar</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="423"/>
+        <source>Source Language Data</source>
+        <translation>Datos de la lengua de origen</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="428"/>
+        <source>Target Language Data</source>
+        <translation>Datos de la lengua de destino</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
+        <source>Example language data</source>
+        <translation>Datos lingüísticos de ejemplo</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
+        <source>Do you want to keep the example language data you provided for the previous rule?</source>
+        <translation>¿Desea conservar los datos lingüísticos de ejemplo proporcionados para la regla anterior?</translation>
+    </message>
 </context>
 </TS>

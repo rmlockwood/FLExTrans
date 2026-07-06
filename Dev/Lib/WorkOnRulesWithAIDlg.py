@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.8 - 7/6/26 - Ron Lockwood
+#    After approving a rule that used example data, the next create-mode Generate asks once whether to keep that data for the new rule (No clears both sides); reopening the data grids
+#    disarms the question.
+#
+#   Version 3.16.7 - 7/6/26 - Ron Lockwood
+#    Source Data / Target Data buttons open a paste grid (PasteDataDlg, the paste-to-grid tool with OK/Cancel/Clear) for interlinearized tab-separated example data; saved data is
+#    re-displayed on reopen, marked with a check on the button, and sent to the AI with every request.
+#
 #   Version 3.16.6 - 7/6/26 - Ron Lockwood
 #    The explain mode gained an Explanation-language box: type any language (e.g. Spanish, Swahili) to get the explanation in it; blank uses the FLExTrans interface language.
 #
@@ -33,10 +41,11 @@
 #    supplies the real FLEx-derived data later.
 
 import os
+import unicodedata
 
 from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QDialog, QMessageBox, QInputDialog, QLineEdit
+from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMessageBox, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout)
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
@@ -77,6 +86,175 @@ def promptForApiKey(provider, parent=None):
         return None
 
     return key
+
+class PasteDataDlg(QDialog):
+    '''Paste-and-review grid for interlinearized, tab-separated example data. The user pastes rows copied from FLEx, sees them aligned in a grid (record-start rows and the row-label
+    column bolded, right-to-left scripts laid out right to left), can edit cells, and OKs the data back to the caller, who re-supplies it as initialText to re-display it next time.'''
+
+    def __init__(self, title, initialText, parent=None):
+
+        super().__init__(parent)
+
+        self.setWindowTitle(title)
+        self.resize(500, 300)
+
+        layout = QVBoxLayout(self)
+
+        # A short hint, since an empty grid isn't self-explanatory.
+        layout.addWidget(QLabel(_translate('WorkOnRulesWithAI', 'Paste tab-separated interlinear data (e.g. copied from FLEx).')))
+
+        self.table = QTableWidget()
+        layout.addWidget(self.table)
+
+        buttonRow = QHBoxLayout()
+        self.pasteButton = QPushButton(_translate('WorkOnRulesWithAI', 'Paste from Clipboard'))
+        self.pasteButton.clicked.connect(self.onPaste)
+        self.clearButton = QPushButton(_translate('WorkOnRulesWithAI', 'Clear'))
+        self.clearButton.clicked.connect(self.onClear)
+        buttonRow.addWidget(self.pasteButton)
+        buttonRow.addWidget(self.clearButton)
+        buttonRow.addStretch()
+
+        # Standard OK/Cancel buttons, so Qt supplies their localized labels.
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        buttonRow.addWidget(buttons)
+        layout.addLayout(buttonRow)
+
+        if initialText:
+            self.populateFromText(initialText)
+
+    def onPaste(self):
+
+        clipboard = QApplication.clipboard()
+        self.populateFromText(clipboard.text() if clipboard else '')
+
+    def onClear(self):
+
+        self.table.setRowCount(0)
+        self.table.setColumnCount(0)
+
+    def populateFromText(self, text: str):
+        '''Break the tab-separated text into the grid and apply the display niceties: blanked header labels, bolding of record-start rows and the row-label column, right-to-left
+        layout for right-to-left scripts, and sizing the window to show the whole table.'''
+
+        rows = [line.split('\t') for line in text.strip().split('\n') if line]
+
+        if not rows:
+
+            self.onClear()
+            return
+
+        # If any character on the first row belongs to a right-to-left script (detected via Unicode's bidirectional category rather than hard-coded ranges), lay the table out right
+        # to left; otherwise use the normal left-to-right direction.
+        firstRowIsRtl = any(unicodedata.bidirectional(ch) in ('R', 'AL') for cell in rows[0] for ch in cell)
+        self.table.setLayoutDirection(Qt.LayoutDirection.RightToLeft if firstRowIsRtl else Qt.LayoutDirection.LeftToRight)
+
+        numRows = len(rows)
+        numCols = max(len(row) for row in rows)
+        self.table.setRowCount(numRows)
+        self.table.setColumnCount(numCols)
+
+        # Populate the grid (missing trailing cells become empty items so every cell is editable and serializes cleanly).
+        for rowIdx, row in enumerate(rows):
+
+            for colIdx in range(numCols):
+                self.table.setItem(rowIdx, colIdx, QTableWidgetItem(row[colIdx].strip() if colIdx < len(row) else ''))
+
+        # Keep the headers visible but blank out the automatic numbering.
+        self.table.setVerticalHeaderLabels([''] * numRows)
+        self.table.setHorizontalHeaderLabels([''] * numCols)
+
+        self.applyBoldFormatting(rows, numCols)
+
+        # Resize columns after bolding, so the wider bold text is accounted for.
+        self.table.resizeColumnsToContents()
+        self.resizeWindowToFitTable()
+
+    def applyBoldFormatting(self, rows, numCols: int):
+        '''Look for a "new record" indicator column: one that's blank on some rows (continuation rows of a record) and filled on others (the row that starts a new record). A column
+        like this signals a grouped layout of row-labeled data blocks; plain rectangular data won't have one, and gets no bold formatting.'''
+
+        indicatorCol = next((col for col in range(numCols) if any(col >= len(row) or not row[col].strip() for row in rows) and any(col < len(row) and row[col].strip() for row in rows)), None)
+
+        if indicatorCol is None:
+            return
+
+        # Bold every row where the indicator column starts a new record.
+        for rowIdx, row in enumerate(rows):
+
+            if indicatorCol < len(row) and row[indicatorCol].strip():
+
+                for colIdx in range(numCols):
+                    self.setBold(rowIdx, colIdx)
+
+        # The "row header" column is the first fully-populated column after the indicator - e.g. the repeated "Word" / "Morphemes" / "Lex. Entries" labels on every row of a record.
+        headerCol = next((col for col in range(indicatorCol + 1, numCols) if all(col < len(row) and row[col].strip() for row in rows)), None)
+
+        if headerCol is not None:
+
+            for rowIdx in range(len(rows)):
+                self.setBold(rowIdx, headerCol)
+
+    def setBold(self, row: int, col: int):
+
+        item = self.table.item(row, col)
+
+        if item:
+
+            font = item.font()
+            font.setBold(True)
+            item.setFont(font)
+
+    def resizeWindowToFitTable(self):
+
+        table = self.table
+
+        width = sum(table.columnWidth(col) for col in range(table.columnCount()))
+        height = sum(table.rowHeight(row) for row in range(table.rowCount()))
+
+        # The (blanked but still visible) headers take up their own space, which the column/row sums above don't include - add the vertical header's width and the horizontal header's
+        # height, or the table has no room for them and shows scrollbars instead.
+        vHeader = table.verticalHeader()
+        hHeader = table.horizontalHeader()
+
+        if vHeader and vHeader.isVisible():
+            width += vHeader.width()
+
+        if hHeader and hHeader.isVisible():
+            height += hHeader.height()
+
+        # The frame border, plus a couple of extra pixels to absorb any rounding between the column-width sum and what Qt actually needs to render without a scrollbar.
+        width += table.frameWidth() * 2 + 2
+        height += table.frameWidth() * 2 + 2
+
+        # Require the table to be exactly this size, let the dialog's layout grow to fit it, then drop the minimum back down so the window stays freely resizeable.
+        table.setMinimumSize(width, height)
+        self.adjustSize()
+        table.setMinimumSize(0, 0)
+
+    def dataText(self) -> str:
+        '''Serialize the grid back to tab-separated text (including any in-cell edits), dropping trailing empty cells on each row and dropping empty rows. Empty grid -> empty string,
+        which the caller treats as "no data given".'''
+
+        lines = []
+
+        for row in range(self.table.rowCount()):
+
+            cells = []
+
+            for col in range(self.table.columnCount()):
+
+                item = self.table.item(row, col)
+                cells.append(item.text() if item else '')
+
+            line = '\t'.join(cells).rstrip('\t')
+
+            if line.strip():
+                lines.append(line)
+
+        return '\n'.join(lines)
 
 class GenerateWorker(QObject):
     '''Runs a slow AIRules call off the UI thread: `fn` (generateValidatedRule for the create/modify modes, explainRule for the explain mode) is called with `params`.'''
@@ -127,6 +305,12 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.genThread = None
         self.worker = None
 
+        # Interlinearized example data the user pastes via the Source/Target Data buttons; sent with every request when non-empty. After a rule is approved, the next create-mode
+        # Generate asks whether to keep the (possibly no longer relevant) data - askAboutDataOnNextGenerate arms that one-time question.
+        self.sourceDataText = ''
+        self.targetDataText = ''
+        self.askAboutDataOnNextGenerate = False
+
         # Build the widgets from the pyuic-generated class.
         self.ui = Ui_WorkOnRulesWithAI()
         self.ui.setupUi(self)
@@ -146,6 +330,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.createRadio.toggled.connect(self.onModeChanged)
         self.ui.modifyRadio.toggled.connect(self.onModeChanged)
         self.ui.explainRadio.toggled.connect(self.onModeChanged)
+        self.ui.sourceDataButton.clicked.connect(self.onSourceData)
+        self.ui.targetDataButton.clicked.connect(self.onTargetData)
         self.ui.generateButton.clicked.connect(self.onGenerate)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
@@ -228,6 +414,36 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.reloadRules()
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule list refreshed ({n} rules).').format(n=len(self.ruleNames)))
 
+    def editData(self, title: str, currentText: str) -> str:
+        '''Open the paste grid seeded with the currently saved data. OK returns the (possibly edited) grid serialized back to text; Cancel keeps what was saved before.'''
+
+        dlg = PasteDataDlg(title, currentText, self)
+
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            return dlg.dataText()
+
+        return currentText
+
+    def onSourceData(self):
+
+        self.sourceDataText = self.editData(_translate('WorkOnRulesWithAI', 'Source Language Data'), self.sourceDataText)
+        self.updateDataButtons()
+
+        # The user just looked at / refreshed the data deliberately, so don't second-guess them with the keep-the-data question on the next Generate.
+        self.askAboutDataOnNextGenerate = False
+
+    def onTargetData(self):
+
+        self.targetDataText = self.editData(_translate('WorkOnRulesWithAI', 'Target Language Data'), self.targetDataText)
+        self.updateDataButtons()
+        self.askAboutDataOnNextGenerate = False
+
+    def updateDataButtons(self):
+        '''A check mark at the end of a data button's label shows that data has been given on that side.'''
+
+        self.ui.sourceDataButton.setText(_translate('WorkOnRulesWithAI', 'Source Data…') + (' ✓' if self.sourceDataText else ''))
+        self.ui.targetDataButton.setText(_translate('WorkOnRulesWithAI', 'Target Data…') + (' ✓' if self.targetDataText else ''))
+
     # The FLExTrans interface languages, mapped to the English language name we put in the prompt when the user leaves the Explanation-language box blank.
     UI_LANG_NAMES = {'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French'}
 
@@ -261,6 +477,20 @@ class WorkOnRulesWithAIDlg(QDialog):
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
 
+        # Starting a new rule after approving the previous one: the example data given for that rule may not fit this one, so ask once whether to keep it. Regenerating while iterating
+        # on the same rule doesn't ask, and neither does a user who just reopened the data grids (onSourceData/onTargetData disarm the question).
+        if mode == 'create' and self.askAboutDataOnNextGenerate and (self.sourceDataText or self.targetDataText):
+
+            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Example language data'), _translate('WorkOnRulesWithAI', 'Do you want to keep the example language data you provided for the previous rule?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+
+            if answer == QMessageBox.StandardButton.No:
+
+                self.sourceDataText = ''
+                self.targetDataText = ''
+                self.updateDataButtons()
+
+            self.askAboutDataOnNextGenerate = False
+
         targetComment = None
         self.currentRuleXml = None
 
@@ -281,7 +511,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         # The explain language matters only in explain mode; it's harmlessly ignored for create/modify (which infer the language from the request text).
         explainLang = self.explanationLanguage() if mode == 'explain' else 'English'
-        userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml, explainLang)
+        userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml, explainLang, self.sourceDataText, self.targetDataText)
 
         if mode == 'explain':
 
@@ -351,6 +581,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.ruleList.setEnabled(not busy)
         self.ui.descriptionEdit.setEnabled(not busy)
         self.ui.explainLangEdit.setEnabled(not busy)
+        self.ui.sourceDataButton.setEnabled(not busy)
+        self.ui.targetDataButton.setEnabled(not busy)
         self.ui.refreshButton.setEnabled(not busy)
 
     def cleanupThread(self):
@@ -469,6 +701,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         # definition summary include the rule just written. Report success in the status line rather than a modal box, which would be tedious across many successive edits.
         self.ui.approveButton.setEnabled(False)
         self.reloadRules()
+
+        # This rule is done; if example data was given for it, the next create-mode Generate will ask whether to keep that data for the next rule.
+        if self.sourceDataText or self.targetDataText:
+            self.askAboutDataOnNextGenerate = True
 
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
 
