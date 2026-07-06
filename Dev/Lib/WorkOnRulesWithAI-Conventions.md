@@ -44,6 +44,11 @@ A word in the Apertium stream is a **lexical unit**: a lemma followed by tags, e
 Preserve this ordering whenever you construct or reorder tags on a word. When you match tags positionally (e.g. `<def-cat>` bodies like `n.*.pst.*`) or build output, respect that categories come
 first, then inflection classes, then features, then prefixes → infixes → suffixes.
 
+**What `*` means in a tag pattern.** In Apertium tag patterns `*` is **not** the regular-expression star. It stands for **one or more whole tags** in that position. So `x.*.y` matches `x`, then
+one or more tags, then `y`; and `x.y.*` matches `x`, then `y`, then one or more further tags. A bare `*` therefore requires at least one tag to be there — it does not mean "zero or more" and it does
+not match part of a tag. Consequently, to match a word whose tags are exactly `dem` then `x`, write `dem.x` — **not** `*.dem.x`, `dem.*.x`, or `dem.x.*`, since each of those demands extra tags that
+`dem.x` does not have. Only add a `*` where you genuinely intend "and one or more additional tags here".
+
 **Dotted glosses become underscores.** In Apertium a dot separates one tag from the next, so a dot inside a single gloss would be misread as multiple tags. If the user writes an affix gloss (or any
 tag) with dots — e.g. `DEF.SG.C` — convert the dots to underscores when you emit it as a tag: `DEF_SG_C`. Do this for every tag value (`lit-tag` values, `attr-item` tags, feature/affix values, etc.).
 
