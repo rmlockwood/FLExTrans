@@ -20,8 +20,10 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="101"/>
-        <source>This module sends your rule description, the transfer file's categories, and the project's grammatical categories, features, and affixes to your configured AI provider ({provider}) to generate transfer rules. Your lexicon glosses and texts are not sent. Do you want to allow this?</source>
-        <translation>Dieses Modul sendet Ihre Regelbeschreibung, die Kategorien der Transferdatei und die grammatischen Kategorien, Merkmale und Affixe des Projekts an Ihren konfigurierten KI-Anbieter ({provider}), um Transferregeln zu generieren. Ihre Lexikon-Glossen und Texte werden nicht gesendet. Möchten Sie dies erlauben?</translation>
+        <source>This module sends your rule description, the transfer file's categories, attributes, and the project's grammatical categories, features, and affixes to your configured AI provider ({provider}) to generate transfer rules. Also, if you chose to include example language data, that will be sent as well. Your lexicon entries and texts are not sent (except for what is in the example data). Do you want to allow this?
+There is a separate setting for sending FLEx project names.</source>
+        <translation>Dieses Modul sendet Ihre Regelbeschreibung, die Kategorien und Attribute der Transferdatei sowie die grammatischen Kategorien, Merkmale und Affixe des Projekts an Ihren konfigurierten KI-Anbieter ({provider}), um Transferregeln zu generieren. Wenn Sie außerdem sprachliche Beispieldaten einbezogen haben, werden diese ebenfalls gesendet. Ihre Lexikoneinträge und Texte werden nicht gesendet (außer dem, was in den Beispieldaten enthalten ist). Möchten Sie dies erlauben?
+Für das Senden der FLEx-Projektnamen gibt es eine separate Einstellung.</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="147"/>

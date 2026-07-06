@@ -101,8 +101,9 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
-        msgBox.setText(_translate('WorkOnRulesWithAI', "This module sends your rule description, the transfer file's categories, and the project's grammatical categories, features, and affixes to " \
-                       "your configured AI provider ({provider}) to generate transfer rules. Your lexicon glosses and texts are not sent. Do you want to allow this?").format(provider=providerDisplay))
+        msgBox.setText(_translate('WorkOnRulesWithAI', "This module sends your rule description, the transfer file's categories, attributes, and the project's grammatical categories, features, and affixes to " \
+                       "your configured AI provider ({provider}) to generate transfer rules. Also, if you chose to include example language data, that will be sent as well. Your lexicon entries and texts are " \
+                       "not sent (except for what is in the example data). Do you want to allow this?\nThere is a separate setting for sending FLEx project names.").format(provider=providerDisplay))
         msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
         allow = (msgBox.exec() == QMessageBox.StandardButton.Yes)
