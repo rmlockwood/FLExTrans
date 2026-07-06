@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.9 - 7/6/26 - Ron Lockwood
+#    PasteDataDlg UI moved to separate Windows/PasteDataWindow.ui file compiled with pyuic; translations split into Windows/translations/PasteDataWindow*.ts files.
+#
 #   Version 3.16.8 - 7/6/26 - Ron Lockwood
 #    After approving a rule that used example data, the next create-mode Generate asks once whether to keep that data for the new rule (No clears both sides); reopening the data grids
 #    disarms the question.
@@ -45,12 +48,13 @@ import unicodedata
 
 from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMessageBox, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout)
+from PyQt6.QtWidgets import (QApplication, QDialog, QInputDialog, QLineEdit, QMessageBox, QTableWidgetItem)
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
 import TransferPreview
 from WorkOnRulesWithAIWindow import Ui_WorkOnRulesWithAI # type: ignore
+from PasteDataWindow import Ui_PasteDataDialog # type: ignore
 
 # FTPaths is only available inside the full FLExTrans install; tolerate its absence so the dialog can run standalone.
 try:
@@ -95,32 +99,15 @@ class PasteDataDlg(QDialog):
 
         super().__init__(parent)
 
+        # Build the widgets from the pyuic-generated class.
+        self.ui = Ui_PasteDataDialog()
+        self.ui.setupUi(self)
+
         self.setWindowTitle(title)
-        self.resize(500, 300)
 
-        layout = QVBoxLayout(self)
-
-        # A short hint, since an empty grid isn't self-explanatory.
-        layout.addWidget(QLabel(_translate('WorkOnRulesWithAI', 'Paste tab-separated interlinear data (e.g. copied from FLEx).')))
-
-        self.table = QTableWidget()
-        layout.addWidget(self.table)
-
-        buttonRow = QHBoxLayout()
-        self.pasteButton = QPushButton(_translate('WorkOnRulesWithAI', 'Paste from Clipboard'))
-        self.pasteButton.clicked.connect(self.onPaste)
-        self.clearButton = QPushButton(_translate('WorkOnRulesWithAI', 'Clear'))
-        self.clearButton.clicked.connect(self.onClear)
-        buttonRow.addWidget(self.pasteButton)
-        buttonRow.addWidget(self.clearButton)
-        buttonRow.addStretch()
-
-        # Standard OK/Cancel buttons, so Qt supplies their localized labels.
-        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-        buttons.accepted.connect(self.accept)
-        buttons.rejected.connect(self.reject)
-        buttonRow.addWidget(buttons)
-        layout.addLayout(buttonRow)
+        # Hook up button signals to methods.
+        self.ui.pasteButton.clicked.connect(self.onPaste)
+        self.ui.clearButton.clicked.connect(self.onClear)
 
         if initialText:
             self.populateFromText(initialText)
@@ -132,8 +119,8 @@ class PasteDataDlg(QDialog):
 
     def onClear(self):
 
-        self.table.setRowCount(0)
-        self.table.setColumnCount(0)
+        self.ui.table.setRowCount(0)
+        self.ui.table.setColumnCount(0)
 
     def populateFromText(self, text: str):
         '''Break the tab-separated text into the grid and apply the display niceties: blanked header labels, bolding of record-start rows and the row-label column, right-to-left
@@ -149,27 +136,27 @@ class PasteDataDlg(QDialog):
         # If any character on the first row belongs to a right-to-left script (detected via Unicode's bidirectional category rather than hard-coded ranges), lay the table out right
         # to left; otherwise use the normal left-to-right direction.
         firstRowIsRtl = any(unicodedata.bidirectional(ch) in ('R', 'AL') for cell in rows[0] for ch in cell)
-        self.table.setLayoutDirection(Qt.LayoutDirection.RightToLeft if firstRowIsRtl else Qt.LayoutDirection.LeftToRight)
+        self.ui.table.setLayoutDirection(Qt.LayoutDirection.RightToLeft if firstRowIsRtl else Qt.LayoutDirection.LeftToRight)
 
         numRows = len(rows)
         numCols = max(len(row) for row in rows)
-        self.table.setRowCount(numRows)
-        self.table.setColumnCount(numCols)
+        self.ui.table.setRowCount(numRows)
+        self.ui.table.setColumnCount(numCols)
 
         # Populate the grid (missing trailing cells become empty items so every cell is editable and serializes cleanly).
         for rowIdx, row in enumerate(rows):
 
             for colIdx in range(numCols):
-                self.table.setItem(rowIdx, colIdx, QTableWidgetItem(row[colIdx].strip() if colIdx < len(row) else ''))
+                self.ui.table.setItem(rowIdx, colIdx, QTableWidgetItem(row[colIdx].strip() if colIdx < len(row) else ''))
 
         # Keep the headers visible but blank out the automatic numbering.
-        self.table.setVerticalHeaderLabels([''] * numRows)
-        self.table.setHorizontalHeaderLabels([''] * numCols)
+        self.ui.table.setVerticalHeaderLabels([''] * numRows)
+        self.ui.table.setHorizontalHeaderLabels([''] * numCols)
 
         self.applyBoldFormatting(rows, numCols)
 
         # Resize columns after bolding, so the wider bold text is accounted for.
-        self.table.resizeColumnsToContents()
+        self.ui.table.resizeColumnsToContents()
         self.resizeWindowToFitTable()
 
     def applyBoldFormatting(self, rows, numCols: int):
@@ -199,7 +186,7 @@ class PasteDataDlg(QDialog):
 
     def setBold(self, row: int, col: int):
 
-        item = self.table.item(row, col)
+        item = self.ui.table.item(row, col)
 
         if item:
 
@@ -209,7 +196,7 @@ class PasteDataDlg(QDialog):
 
     def resizeWindowToFitTable(self):
 
-        table = self.table
+        table = self.ui.table
 
         width = sum(table.columnWidth(col) for col in range(table.columnCount()))
         height = sum(table.rowHeight(row) for row in range(table.rowCount()))
@@ -240,13 +227,13 @@ class PasteDataDlg(QDialog):
 
         lines = []
 
-        for row in range(self.table.rowCount()):
+        for row in range(self.ui.table.rowCount()):
 
             cells = []
 
-            for col in range(self.table.columnCount()):
+            for col in range(self.ui.table.columnCount()):
 
-                item = self.table.item(row, col)
+                item = self.ui.table.item(row, col)
                 cells.append(item.text() if item else '')
 
             line = '\t'.join(cells).rstrip('\t')

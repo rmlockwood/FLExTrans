@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.2 - 7/6/26 - Ron Lockwood
+#    PasteDataDlg UI moved to separate Windows/PasteDataWindow.ui file compiled with pyuic; translations split into Windows/translations/PasteDataWindow*.ts files.
+#
 #   Version 3.16.1 - 7/3/26 - Ron Lockwood
 #    The provider and model now must be chosen in the Settings tool before the module will run. New settings: include FLEx project names in the prompt (privacy) and prompt logging
 #    for debugging. Prompt grounding now uses the four longest rules and two longest macros from the transfer file.
@@ -42,13 +45,13 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # Libraries whose strings we load when the module runs. The dialog logic and its pyuic-generated window file each have their own .ts/.qm.
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'CreateApertiumRules', 'WorkOnRulesWithAIDlg', 'WorkOnRulesWithAIWindow']
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'CreateApertiumRules', 'WorkOnRulesWithAIDlg', 'WorkOnRulesWithAIWindow', 'PasteDataWindow']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",

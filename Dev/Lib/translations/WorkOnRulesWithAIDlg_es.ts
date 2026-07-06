@@ -155,21 +155,7 @@ Open it in XXE to review.</source>
         <source>Explanation generated.</source>
         <translation>Explicación generada.</translation>
     </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="100"/>
-        <source>Paste tab-separated interlinear data (e.g. copied from FLEx).</source>
-        <translation>Pegue datos interlineales separados por tabulaciones (p. ej. copiados de FLEx).</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="106"/>
-        <source>Paste from Clipboard</source>
-        <translation>Pegar desde el portapapeles</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="108"/>
-        <source>Clear</source>
-        <translation>Borrar</translation>
-    </message>
+
     <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="423"/>
         <source>Source Language Data</source>
