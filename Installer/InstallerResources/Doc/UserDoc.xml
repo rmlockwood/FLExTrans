@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->29 June 2026</date
+>6 July 2026</date
 ><version
 >3.16</version
 ><contents
@@ -3334,29 +3334,29 @@ id="sWorkOnRulesAI"
 >The <object
 type="tTool"
 >Work on Rules with AI</object
-> Module</secTitle
+> Tool</secTitle
 ><p
 >The <object
 type="tTool"
 >Work on Rules with AI</object
-> module sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.</p
+> tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.</p
 ><p
 >Before the first use, open the <object
 type="tSettingsTool"
 ></object
-> and in the AI Assistant section (visible in the Basic and Full views) choose the AI Provider and the AI Model. You also need an API key for the chosen provider &#8212; see the next section. The first time you run the module it asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the module if you need to enter a different key later.</p
+> and in the AI Assistant section (visible in the Full view) choose the AI Provider and the AI Model. You also need an API key for the chosen provider — see the next section. The first time you run the module it asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the module if you need to enter a different key later.</p
 ><section3
 id="sAIApiKeys"
 ><secTitle
 >Getting an API key</secTitle
 ><p
->An API key is a long string of letters and numbers that identifies your personal account to the AI service, a bit like a password. Treat it like one: don&#8217;t share it or put it in files you send to others. Get a key from the provider you chose in the <object
+>An API key is a long string of letters and numbers that identifies your personal account to the AI service, a bit like a password. Treat it like one: don’t share it or put it in files you send to others. Get a key from the provider you chose in the <object
 type="tSettingsTool"
 ></object
 >, then paste it into the box the <object
 type="tTool"
 >Work on Rules with AI</object
-> module shows when it asks for it.</p
+> tool shows when it asks for it.</p
 ><p
 >Google Gemini (the default provider): go to <link
 href="https://aistudio.google.com/apikey"
@@ -3366,12 +3366,31 @@ href="https://aistudio.google.com/apikey"
 >Anthropic Claude: go to <link
 href="https://console.anthropic.com/settings/keys"
 >console.anthropic.com/settings/keys</link
->, sign in or create an account, and click Create Key. Copy the key. Using Claude models requires purchasing usage credit on the account&#8217;s Billing page.</p
+>, sign in or create an account, and click Create Key. Copy the key. Using Claude models requires purchasing usage credit on the account’s Billing page.</p
 ><p
 >OpenAI ChatGPT: go to <link
 href="https://platform.openai.com/api-keys"
 >platform.openai.com/api-keys</link
->, sign in or create an account, and click Create new secret key. Copy the key right away &#8212; it is only shown once. Using OpenAI models requires purchasing usage credit in the account&#8217;s billing settings.</p
+>, sign in or create an account, and click Create new secret key. Copy the key right away — it is only shown once. Using OpenAI models requires purchasing usage credit in the account’s billing settings.</p
+></section3
+><section3
+id="sAIExampleData"
+><secTitle
+>Giving the AI example language data</secTitle
+><p
+>You can give the <object
+type="tTool"
+>Work on Rules with AI</object
+> tool example language data to send along with your request. In some cases this gives the AI valuable context about how the source and target languages actually behave, and helps it make or modify a rule better.</p
+><p
+>The easiest way to bring this data into the module is to copy it straight from a text where the rule would be applicable. In <object
+type="tFlexx"
+></object
+>, open the text and go to its Print View tab. Drag the mouse from the top to the bottom of all the sentences you want to bring in, then press Ctrl+C to copy them.</p
+><p
+>Back in the module, press either the Source Data or the Target Data button. In the window that opens, press the Paste from Clipboard button to bring in what you copied. Review how it looks in the grid, then click OK to store that data. A check mark appears on the button to show that data has been given, and the stored data is sent to the AI with every request until you clear it.</p
+><p
+>Ideally you should paste source and target data that illustrate the same meanings, so the AI can line the two languages up. As a best practice, before you copy the data hide the word gloss, word category, and free translation lines in the Print View, so that only the information helpful for rule writing is included.</p
 ></section3
 ></section2
 ></section1
