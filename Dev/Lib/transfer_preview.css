@@ -9,6 +9,9 @@
  * no editable widgets, no collapsers. TransferPreview.py emits the HTML this
  * styles and inlines this file into the document's <style>.
  *
+ * Font: XXE (a Java/XMLmind app) uses Java's logical "SansSerif" face - Arial on
+ * Windows. This file follows suit with Arial 16px throughout.
+ *
  * Palette (from transfer.css @property-value):
  *   attr  #F5DEB3 wheat        cat   #FFB6C1 lightpink   list  #CCFFCC lightgreen
  *   macro #F09FF0 violet       rule  #BFD0FF paleblue    var   #AFEEEE paleturquoise
@@ -16,9 +19,11 @@
  *   chunk #AEC6CF pastelblue
  */
 
+/* XXE is a Java (XMLmind) application: its default document font is Java's logical "SansSerif" face, which maps to Arial on Windows. Match it here - one sans-serif family at one size
+   for labels, field values (chips), and comments alike - rather than a monospace for the chips, so the preview reads like XXE. */
 body {
-    font-family: "Segoe UI", "Calibri", sans-serif;
-    font-size: 13px;
+    font-family: Arial, "Liberation Sans", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 16px;
     color: #222;
     margin: 8px;
 }
@@ -28,23 +33,39 @@ body {
     display: block;
 }
 
+/* XXE indents each nested level by .125in (12px at 96dpi). */
 .children {
-    padding-left: 1.1em;
+    padding-left: 12px;
+}
+
+/* A few leaf items carry extra indentation in the XXE stylesheet, via their own margin-left on top of the parent's .125in padding: pattern-item by .4in, attr-item and list-item by
+   .2in. Match those so, e.g., "item:" under "pattern:" sits as far right as it does in XXE (the standard .125in elements like clip under a lexical unit already lined up). */
+.el.pattern-item {
+    margin-left: .4in;
+}
+
+.el.attr-item {
+    margin-left: .2in;
+}
+
+.el.list-item {
+    margin-left: .2in;
 }
 
 /* The header row = the element's label plus its displayed attribute chips.
    Diff highlighting backgrounds this row only, not the nested children. */
 .rowline {
     display: block;
-    line-height: 1.7;
+    line-height: 1.5;
 }
 
+/* Labels ("rule:", "pattern:", "output:", …) are near-black in XXE, not grey. */
 .label {
-    color: #555;
+    color: #1a1a1a;
 }
 
 .attrlabel {
-    color: #777;
+    color: #333;
 }
 
 /* An attribute value shown as a coloured chip, matching the XXE field colours.
@@ -54,12 +75,11 @@ body {
    change in the XXE stylesheet wins over these values. */
 .chip {
     display: inline-block;
-    padding: 0 5px;
+    min-width: 8px;
+    padding: 0 2px;
     margin: 0 2px;
     border: 1px solid #9a9a9a;
     border-radius: 2px;
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
 }
 
 .c-attr   { background: #F5DEB3; }
@@ -73,16 +93,30 @@ body {
 .c-littag { background: #FFFFB5; }
 .c-chunk  { background: #AEC6CF; }
 
-/* A "plain" value (e.g. side: source/target) shown without a box. */
+/* Plain (non-box) attribute values. The side value is coloured the way the master XXE stylesheet colours its combo box: red for source language (sl), ochre for target language (tl). */
 .c-plain {
-    color: #a0522d;
-    font-style: italic;
+    color: #333;
 }
 
-/* XML comments the linguist wrote inside the rule. */
+.c-side-sl {
+    color: #ff0000;
+}
+
+.c-side-tl {
+    color: #ce901b;
+}
+
+/* XML comments the linguist (or the AI Assistant) wrote inside the rule, rendered like XMLmind's default comment box: a pale-yellow block with grey monospace text - not the green diff
+   colour, which is reserved for the side-by-side comparison. */
 .comment .rowline {
-    color: #2e7d32;
-    font-style: italic;
+    display: block;
+    background: #ffffdd;
+    border: 1px solid #E6E0A0;
+    color: #6f6f6f;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    padding: 1px 3px;
+    margin: 2px 0;
 }
 
 /* Best-effort diff highlighting for the before/after comparison. */
@@ -108,7 +142,7 @@ body {
 
 .pane h3 {
     margin: 0 0 8px;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 600;
     color: #444;
     border-bottom: 1px solid #eee;
@@ -117,7 +151,6 @@ body {
 
 /* The explanation pane of the "explain rule" view: ordinary prose next to the rendered rule. */
 .pane.explanation {
-    font-size: 13px;
     line-height: 1.5;
 }
 

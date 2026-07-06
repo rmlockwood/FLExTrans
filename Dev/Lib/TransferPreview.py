@@ -5,6 +5,16 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.3 - 7/6/26 - Ron Lockwood
+#    Diff highlighting is now confined to the side-by-side comparison (a new compare flag); the single-rule create/explain views render plain like XXE instead of being flagged wholesale
+#    as "added" (which had tinted the whole rule green). Restyled to match XXE: Arial 16px labels/chips, the extra per-item indents from transfer.css (pattern-item .4in, attr/list-item
+#    .2in), the side value coloured like the XXE combo box (red for sl, ochre for tl), and a pale-yellow (#ffffdd) comment box with grey serif-monospace text (no "//" prefix). An empty
+#    value (e.g. <lit v=""/>) now renders as an empty coloured box rather than collapsing to nothing.
+#
+#   Version 3.16.4 - 7/6/26 - Ron Lockwood
+#    The side-by-side comparison now aligns children with difflib instead of strict position, so an inserted or deleted node (e.g. the authorship/description comments prepended to a
+#    modified rule, or one added clip) marks only itself rather than shifting every following row and lighting up the whole rule.
+#
 #   Version 3.16.2 - 7/5/26 - Ron Lockwood
 #    Added renderExplanationHtml for the new explain mode: the rule rendered XXE-style on the left, the AI's plain-text explanation (escaped, paragraphs preserved) on the right.
 #
@@ -20,6 +30,7 @@
 import os
 import json
 import html
+import difflib
 import xml.etree.ElementTree as ET
 
 # realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder where transfer_preview.css actually sits.
@@ -110,15 +121,23 @@ def isComment(elem) -> bool:
 
     return callable(elem.tag)
 
+def childKey(elem):
+    '''The key the comparison uses to line up an element against its counterpart: its tag (so like elements match and an attribute-only change still pairs and is flagged), or a single
+    shared key for every comment (so a comment lines up with a comment - e.g. one authorship stamp against another - rather than against a real element).'''
+
+    return '#comment' if isComment(elem) else elem.tag
+
 def renderChip(value: str, colorClass: str) -> str:
-    '''Render one attribute value as a coloured chip (or a plain italic value).'''
+    '''Render one attribute value. Most values are coloured chips (a bordered box); the "plain" classes (c-plain and the c-side-* side colours) are shown as plain coloured text with no box.'''
 
     shown = html.escape(value)
 
-    if colorClass == 'c-plain':
-        return '<span class="c-plain">' + shown + '</span>'
+    if colorClass == 'c-plain' or colorClass.startswith('c-side'):
+        return '<span class="{cls}">{val}</span>'.format(cls=colorClass, val=shown)
 
-    return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown)
+    # An empty value (e.g. <lit v=""/>, the empty string used to clear an attribute) still gets a visible coloured box: a non-breaking space gives it content, and the chip's min-width
+    # keeps it from collapsing, so an empty literal reads as an (empty-valued) box rather than nothing.
+    return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown or '&nbsp;')
 
 def renderRowLine(elem: ET.Element, spec: dict) -> str:
     '''Render an element's header row: its label plus its displayed attributes, using the given per-language display spec.'''
@@ -143,6 +162,9 @@ def renderRowLine(elem: ET.Element, spec: dict) -> str:
         value = elem.attrib[name]
 
         if name == 'side':
+
+            # Colour the side value the way the master XXE stylesheet does: red for source language (sl), ochre for target language (tl).
+            colorClass = 'c-side-sl' if value == 'sl' else 'c-side-tl'
             value = SIDE_LABELS.get(value, value)
 
         if attrLabel:
@@ -166,22 +188,23 @@ def diffClass(elem: ET.Element, other) -> str:
 
     return ''
 
-def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=None) -> str:
+def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=None, compare: bool = False) -> str:
     '''Recursively render an element to HTML.
 
-    `other` is the positional counterpart in the compared tree. `side` is which pane we are rendering ("before" or "after") so a child with no counterpart is marked "removed" on the
-    before side and "added" on the after side. `forced` propagates that marker down an added/removed subtree.'''
+    Diff highlighting only happens when `compare` is True (the side-by-side modify view). In the single-rule create/explain views `compare` is False and no added/changed/removed classes
+    are emitted, so the rule renders plain (like XXE) rather than being flagged wholesale as "added". `other` is the positional counterpart in the compared tree; `side` is which pane we
+    are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.'''
 
     if spec is None:
         spec = SPEC
 
     if isComment(elem):
         text = (elem.text or '').strip()
-        cls = forced or diffClass(elem, other)
+        cls = (forced or diffClass(elem, other)) if compare else ''
         classAttr = 'el comment' + ((' ' + cls) if cls else '')
-        return '<div class="' + classAttr + '"><span class="rowline">// ' + html.escape(text) + '</span></div>'
+        return '<div class="' + classAttr + '"><span class="rowline">' + html.escape(text) + '</span></div>'
 
-    cls = forced or diffClass(elem, other)
+    cls = (forced or diffClass(elem, other)) if compare else ''
     classAttr = 'el ' + elem.tag + ((' ' + cls) if cls else '')
 
     out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec)]
@@ -191,19 +214,53 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
     if children:
 
         out.append('<div class="children">')
-        otherChildren = [c for c in other] if (other is not None and not forced) else []
 
-        for i, child in enumerate(children):
+        if not compare:
 
-            if forced:
-                counterpart, childForced = None, forced
-            elif i < len(otherChildren):
-                counterpart, childForced = otherChildren[i], ''
-            else:
-                # Past the other side's children: new on the after pane, gone on the before pane.
-                counterpart, childForced = None, ('added' if side == 'after' else 'removed')
+            # Single-rule render: no counterpart, no diff marking.
+            for child in children:
+                out.append(elementToHtml(child, None, side, '', spec, compare))
 
-            out.append(elementToHtml(child, counterpart, side, childForced, spec))
+        elif forced:
+
+            # This whole subtree is added/removed, so every descendant carries the same marker and has no counterpart.
+            for child in children:
+                out.append(elementToHtml(child, forced=forced, side=side, spec=spec, compare=compare))
+
+        else:
+
+            # Align this element's children with the counterpart's, matching by kind/tag (difflib) so an inserted or deleted child - e.g. the authorship/description comments prepended
+            # to a modified rule, or an added clip - marks only itself, instead of shifting every following row and lighting up the whole rule. Matched children recurse (so an attribute
+            # change is caught by diffClass); a child with no counterpart is "added" on the after pane and "removed" on the before pane.
+            otherChildren = [c for c in other] if other is not None else []
+            unmatched = 'added' if side == 'after' else 'removed'
+            opcodes = difflib.SequenceMatcher(None, [childKey(c) for c in children], [childKey(c) for c in otherChildren]).get_opcodes()
+
+            for op, i1, i2, j1, j2 in opcodes:
+
+                if op == 'equal':
+
+                    for k in range(i2 - i1):
+                        out.append(elementToHtml(children[i1 + k], otherChildren[j1 + k], side, '', spec, compare))
+
+                elif op == 'replace':
+
+                    # Pair the overlap positionally so a like-for-like change recurses and diffClass flags it; any surplus on this side has no counterpart.
+                    paired = min(i2 - i1, j2 - j1)
+
+                    for k in range(paired):
+                        out.append(elementToHtml(children[i1 + k], otherChildren[j1 + k], side, '', spec, compare))
+
+                    for k in range(i1 + paired, i2):
+                        out.append(elementToHtml(children[k], forced=unmatched, side=side, spec=spec, compare=compare))
+
+                elif op == 'delete':
+
+                    # Children present on this side but not the counterpart.
+                    for k in range(i1, i2):
+                        out.append(elementToHtml(children[k], forced=unmatched, side=side, spec=spec, compare=compare))
+
+                # 'insert' means children only in the counterpart; they render in that pane, not this one.
 
         out.append('</div>')
 
@@ -275,7 +332,7 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
               '<span class="sw" style="background:#FFF3B0"></span>changed'
               '</div>')
 
-    left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec) + '</div>'
-    right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec) + '</div>'
+    left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True) + '</div>'
+    right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True) + '</div>'
 
     return wrapDocument(legend + '<div class="compare">' + left + right + '</div>', spec.get('_colors'))
