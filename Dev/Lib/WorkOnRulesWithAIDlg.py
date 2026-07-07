@@ -5,11 +5,27 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.13 - 7/7/26 - Ron Lockwood
+#    On the Modify/Explain tab the rule list (left column) and the change-description box (right column) now expand to fill their columns instead of being capped at a fixed height.
+#
+#   Version 3.16.12 - 7/7/26 - Ron Lockwood
+#    The "Create new rule" tab is now selected initially, and the tab area shrinks to its minimum height (the preview pane below it absorbs the rest) so the rule preview is larger.
+#    Switching to the Modify/Explain tab no longer auto-previews a rule (the list starts unselected; a preview appears only when a rule is clicked), and returning to Create blanks the preview.
+#
+#   Version 3.16.11 - 7/7/26 - Ron Lockwood
+#    Faster, less surprising preview: the web view is warmed up just after the window opens (so the first rule click isn't delayed by Chromium start-up); rule XML is cached in memory
+#    ({comment: XML}) so picking a rule no longer re-parses the whole file; no rule is auto-selected, so the preview stays blank until the user actually picks (or creates/modifies) one.
+#
+#   Version 3.16.10 - 7/7/26 - Ron Lockwood
+#    Reorganized into two tabs: "Create new rule", and "Modify or explain an existing rule" (rule list on the left, change description on the right). Clicking a rule shows its preview at
+#    once on the left; Modify puts the changed rule on the right, Explain puts the explanation there. Generate became separate Modify and Explain buttons; the preview area is now larger.
+#    Clicking Explain while an unapproved modified rule is showing offers to approve and write it first.
+#
 #   Version 3.16.9 - 7/6/26 - Ron Lockwood
 #    PasteDataDlg UI moved to separate Windows/PasteDataWindow.ui file compiled with pyuic; translations split into Windows/translations/PasteDataWindow*.ts files.
 #
 #   Version 3.16.8 - 7/6/26 - Ron Lockwood
-#    After approving a rule that used example data, the next create-mode Generate asks once whether to keep that data for the new rule (No clears both sides); reopening the data grids
+#    After approving a rule that used example data, the next create Generate asks once whether to keep that data for the new rule (No clears both sides); reopening the data grids
 #    disarms the question.
 #
 #   Version 3.16.7 - 7/6/26 - Ron Lockwood
@@ -46,9 +62,9 @@
 import os
 import unicodedata
 
-from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication
+from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication, QTimer
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QApplication, QDialog, QInputDialog, QLineEdit, QMessageBox, QTableWidgetItem)
+from PyQt6.QtWidgets import (QApplication, QDialog, QInputDialog, QLineEdit, QMessageBox, QSizePolicy, QTableWidgetItem)
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
@@ -269,15 +285,22 @@ class GenerateWorker(QObject):
             self.failed.emit(str(err))
 
 class WorkOnRulesWithAIDlg(QDialog):
-    '''Create or modify one Apertium transfer rule with AI assistance. The widget layout comes from WorkOnRulesWithAIWindow.ui (compiled to WorkOnRulesWithAIWindow.py with pyuic).'''
+    '''Create, modify, or explain one Apertium transfer rule with AI assistance. Two tabs: "Create new rule" (describe it, then Create) and "Modify or explain an existing rule" (pick a
+    rule - its preview shows at once on the left - then Modify with a description, or Explain in a chosen language). The layout comes from WorkOnRulesWithAIWindow.ui (pyuic).'''
 
-    def __init__(self, transferPath, ruleNames, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
+    # The FLExTrans interface languages, mapped to the English language name we put in the prompt when the user leaves the Explanation-language box blank.
+    UI_LANG_NAMES = {'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French'}
+
+    def __init__(self, transferPath, ruleNames, ruleXmlByComment, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
 
         super().__init__(parent)
 
         # Everything the generation needs, injected by the caller.
         self.transferPath = transferPath
         self.ruleNames = ruleNames
+        # {comment: rule-XML} for every rule in the file, so clicking a rule in the picker renders its preview from memory instead of re-reading and re-parsing the whole transfer file
+        # each time. Rebuilt from the file whenever the list is reloaded (Refresh Rules / after an approve).
+        self.ruleXmlByComment = ruleXmlByComment or {}
         self.systemInstruction = systemInstruction
         self.defsSummary = defsSummary
         self.projectData = projectData
@@ -285,15 +308,18 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.dtdPath = dtdPath
         self.compilerExe = compilerExe
 
-        # Populated once a candidate is generated. currentTask remembers which mode the running/last generation was for ('create'/'modify'/'explain').
+        # Draft/preview state. currentTask names what the preview currently shows ('create'/'modify'/'explain'/'select'); currentRuleXml and currentTargetComment describe the rule
+        # selected in the modify/explain list; ruleResult holds a generated create/modify draft; draftWritten marks it approved so Explain doesn't re-offer to write it.
         self.ruleResult = None
         self.currentRuleXml = None
+        self.currentTargetComment = None
         self.currentTask = 'create'
+        self.draftWritten = False
         self.genThread = None
         self.worker = None
 
-        # Interlinearized example data the user pastes via the Source/Target Data buttons; sent with every request when non-empty. After a rule is approved, the next create-mode
-        # Generate asks whether to keep the (possibly no longer relevant) data - askAboutDataOnNextGenerate arms that one-time question.
+        # Interlinearized example data pasted via the Source/Target Data buttons; sent with every request when non-empty. After a rule is approved, the next create Generate asks whether
+        # to keep the (possibly no longer relevant) data.
         self.sourceDataText = ''
         self.targetDataText = ''
         self.askAboutDataOnNextGenerate = False
@@ -305,68 +331,149 @@ class WorkOnRulesWithAIDlg(QDialog):
         if FTPaths:
             self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
+        # The preview should get the bulk of the window. Keep the tab area from claiming more vertical space than its controls need (Maximum policy) and send every extra pixel to the
+        # preview pane below it (stretch 0 for the tabs, 1 for the preview). The initial split is set to the tab area's minimum height in showEvent, once the real size hints are known.
+        self.ui.modeTabs.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        self.ui.mainSplitter.setStretchFactor(0, 0)
+        self.ui.mainSplitter.setStretchFactor(1, 1)
+        self.splitterSized = False
+
         self.ui.ruleList.addItems(self.ruleNames)
 
-        # The preview QWebEngineView is created lazily on first use (see ensurePreview): an embedded Chromium view installs input hooks that can steal arrow/navigation keys from
-        # sibling text widgets, so we keep it out of the window until a preview is needed.
+        # Start with no rule selected: the preview shows its placeholder until the user actually picks a rule (or creates/modifies/explains one) - we don't auto-select the first rule.
+        self.ui.ruleList.setCurrentRow(-1)
+
+        # The preview QWebEngineView is created lazily (see ensurePreview) and only added to the window when a preview is actually shown: an embedded Chromium view installs input hooks
+        # that can steal arrow/navigation keys from sibling text widgets. Constructing it is slow (Chromium starts up), so we warm it up just after the window appears - see warmUpPreview.
         self.preview = None
 
-        # Hook up the widgets. The window stays open across successive rule edits: only Close (and the window's X) end it; Generate / Open temp / Approve all leave it open.
-        # Connect all three mode radios: switching between modify and explain leaves the create radio untoggled, so connecting create alone would miss that switch and leave the wrong
-        # widgets showing. Each switch toggles two radios, so onModeChanged runs twice, which is harmless (it's idempotent).
-        self.ui.createRadio.toggled.connect(self.onModeChanged)
-        self.ui.modifyRadio.toggled.connect(self.onModeChanged)
-        self.ui.explainRadio.toggled.connect(self.onModeChanged)
+        # Hook up the widgets. The window stays open across successive edits: only Close (and the window's X) end it.
+        self.ui.createButton.clicked.connect(self.onCreate)
+        self.ui.modifyButton.clicked.connect(self.onModify)
+        self.ui.explainButton.clicked.connect(self.onExplain)
+        self.ui.ruleList.currentItemChanged.connect(self.onRuleSelected)
+        self.ui.modeTabs.currentChanged.connect(self.onTabChanged)
         self.ui.sourceDataButton.clicked.connect(self.onSourceData)
         self.ui.targetDataButton.clicked.connect(self.onTargetData)
-        self.ui.generateButton.clicked.connect(self.onGenerate)
+        self.ui.refreshButton.clicked.connect(self.onRefreshRules)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
-        self.ui.refreshButton.clicked.connect(self.onRefreshRules)
         self.ui.closeButton.clicked.connect(self.close)
         self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
 
-        self.onModeChanged()
+    def showEvent(self, event):
 
-    def isModify(self) -> bool:
+        super().showEvent(event)
+        self.ui.descriptionEdit.setFocus()
 
-        return self.ui.modifyRadio.isChecked()
+        # Collapse the tab area to its minimum height the first time the window is shown, so the preview pane gets all the remaining vertical space. This is done here rather than in
+        # __init__ because the widgets' real size hints aren't known until the window is laid out; the guard keeps a later re-show from undoing a splitter drag the user has since made.
+        if not self.splitterSized:
 
-    def isExplain(self) -> bool:
+            self.ui.mainSplitter.setSizes([self.ui.modeTabs.minimumSizeHint().height(), self.height()])
+            self.splitterSized = True
 
-        return self.ui.explainRadio.isChecked()
+        # Warm up the (slow-to-construct) web view once the window is on screen, so the first preview isn't held up by Chromium starting. singleShot(0) lets the window paint first, then
+        # builds the view during the next idle moment - by the time the user navigates to a rule the engine is ready. warmUpPreview is idempotent, so repeated shows don't rebuild it.
+        QTimer.singleShot(0, self.warmUpPreview)
 
-    def currentMode(self) -> str:
+    def warmUpPreview(self):
+        '''Construct the QWebEngineView ahead of time (paying the Chromium start-up cost) but leave it out of the window until a preview is actually rendered (ensurePreview adds it),
+        so it can't steal arrow keys from the description boxes before it's needed.'''
 
-        if self.isExplain():
-            return 'explain'
+        if self.preview is None:
+            self.preview = QWebEngineView()
 
-        return 'modify' if self.isModify() else 'create'
+    def closeEvent(self, event):
+        '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
+        would crash - when the dialog is garbage-collected after the event loop returns.'''
 
-    def onModeChanged(self):
+        self.cleanupThread()
+        super().closeEvent(event)
 
-        # Both the modify and explain modes pick from the rule list; only create/modify take a description. The picker label follows the mode.
-        mode = self.currentMode()
+    # --- interface language ----------------------------------------------
 
-        self.ui.pickerLabel.setVisible(mode in ('modify', 'explain'))
-        self.ui.ruleList.setVisible(mode in ('modify', 'explain'))
-        self.ui.pickerLabel.setText(_translate('WorkOnRulesWithAI', 'Rule to explain:') if mode == 'explain' else _translate('WorkOnRulesWithAI', 'Rule to modify:'))
-        self.ui.describeLabel.setVisible(mode != 'explain')
-        self.ui.descriptionEdit.setVisible(mode != 'explain')
+    def interfaceLangCode(self) -> str:
+        '''The FLExTrans interface-language code ('en'/'de'/'es'/'fr'), used to localize the preview labels. Falls back to English when Utils/FTConfig aren't available (standalone runs).'''
 
-        # The Explanation-language box replaces the description box in explain mode (create/modify infer the language from the request text instead).
-        self.ui.explainLangEdit.setVisible(mode == 'explain')
+        try:
+            import Utils
+            return Utils.getInterfaceLangCode() or 'en'
 
-        # Switching modes invalidates any pending candidate: a rule generated for one mode must not be approvable (or openable in XXE) under another, e.g. a created rule silently
-        # overwriting whichever rule happens to be selected after switching to modify.
-        self.ruleResult = None
-        self.ui.approveButton.setEnabled(False)
-        self.ui.xxeButton.setEnabled(False)
+        except Exception:
+            return 'en'
+
+    def interfaceLanguageName(self) -> str:
+        '''The interface language as a language name (e.g. "German"), the default explanation language when the user hasn't typed one in the Explanation-language box.'''
+
+        return self.UI_LANG_NAMES.get(self.interfaceLangCode(), 'English')
+
+    def explanationLanguage(self) -> str:
+        '''The language to write an explanation in: what the user typed in the Explanation-language box, or the interface language when that box is blank.'''
+
+        typed = self.ui.explainLangEdit.text().strip()
+        return typed or self.interfaceLanguageName()
+
+    # --- rule list -------------------------------------------------------
 
     def selectedRuleComment(self):
 
         item = self.ui.ruleList.currentItem()
         return item.text() if item else None
+
+    def onTabChanged(self, index):
+        '''Switching tabs starts fresh: blank the preview and drop any pending draft, so a rule shown on one tab isn't left over on another. On the Create tab it simply stays blank; on
+        the Modify/Explain tab we also clear the rule list and keep focus out of it, so nothing is previewed until the user actually clicks a rule (see clearRuleSelection for why).'''
+
+        self.blankPreview()
+        self.ruleResult = None
+        self.currentRuleXml = None
+        self.currentTargetComment = None
+        self.draftWritten = False
+        self.currentTask = 'create' if self.ui.modeTabs.widget(index) is self.ui.createTab else 'select'
+        self.ui.approveButton.setEnabled(False)
+        self.ui.xxeButton.setEnabled(False)
+        self.ui.statusLabel.setText('')
+
+        if self.ui.modeTabs.widget(index) is self.ui.modifyTab:
+
+            # A QListWidget auto-selects (and so previews) its first row when the tab switch moves keyboard focus into it. That runs synchronously as part of the tab change, so undo it on
+            # the next event-loop turn: clear the selection and move the cursor to the description box, leaving the list unselected until the user deliberately clicks a rule.
+            QTimer.singleShot(0, self.clearRuleSelection)
+
+    def clearRuleSelection(self):
+        '''Leave the rule list with nothing selected and the preview blank, and put the cursor in the change-description box so focus doesn't sit on the list (which would re-select its
+        first row). Runs just after a switch to the Modify/Explain tab to cancel the automatic first-row selection Qt makes when focus lands on the list.'''
+
+        self.ui.ruleList.setCurrentRow(-1)
+        self.currentRuleXml = None
+        self.currentTargetComment = None
+        self.blankPreview()
+        self.ui.modifyDescriptionEdit.setFocus()
+
+    def onRuleSelected(self, current=None, previous=None):
+        '''A rule was picked in the modify/explain list: fetch its XML, show it immediately in the left preview pane, and discard any pending draft (a previously shown before/after or
+        explanation no longer applies to the newly selected rule).'''
+
+        comment = self.selectedRuleComment()
+
+        if not comment:
+            return
+
+        self.currentTargetComment = comment
+        self.currentRuleXml = self.ruleXmlByComment.get(comment)
+
+        # A newly selected rule invalidates any pending draft.
+        self.ruleResult = None
+        self.draftWritten = False
+        self.currentTask = 'select'
+        self.ui.approveButton.setEnabled(False)
+        self.ui.xxeButton.setEnabled(False)
+
+        if self.currentRuleXml:
+
+            self.ensurePreview().setHtml(TransferPreview.renderRulePreviewHtml(self.currentRuleXml, lang=self.interfaceLangCode()))
+            self.ui.statusLabel.setText('')
 
     def reloadRules(self):
         '''Re-read the transfer file so the rule picker and the definition summary sent to the AI reflect the current on-disk state. Called after a rule is approved (a new/changed rule
@@ -381,6 +488,7 @@ class WorkOnRulesWithAIDlg(QDialog):
             return
 
         self.ruleNames = defs['ruleNames']
+        self.ruleXmlByComment = defs['ruleXml']
         self.defsSummary = defs['summaryText']
 
         previous = self.selectedRuleComment()
@@ -388,7 +496,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.ruleList.clear()
         self.ui.ruleList.addItems(self.ruleNames)
 
-        # Restore the previous selection if that rule still exists.
+        # Restore the previous selection if that rule still exists (this re-fires onRuleSelected, re-previewing the rule).
         if previous:
 
             matches = self.ui.ruleList.findItems(previous, Qt.MatchFlag.MatchExactly)
@@ -400,6 +508,8 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         self.reloadRules()
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule list refreshed ({n} rules).').format(n=len(self.ruleNames)))
+
+    # --- example data ----------------------------------------------------
 
     def editData(self, title: str, currentText: str) -> str:
         '''Open the paste grid seeded with the currently saved data. OK returns the (possibly edited) grid serialized back to text; Cancel keeps what was saved before.'''
@@ -431,42 +541,20 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.sourceDataButton.setText(_translate('WorkOnRulesWithAI', 'Source Data…') + (' ✓' if self.sourceDataText else ''))
         self.ui.targetDataButton.setText(_translate('WorkOnRulesWithAI', 'Target Data…') + (' ✓' if self.targetDataText else ''))
 
-    # The FLExTrans interface languages, mapped to the English language name we put in the prompt when the user leaves the Explanation-language box blank.
-    UI_LANG_NAMES = {'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French'}
+    # --- the three actions -----------------------------------------------
 
-    def interfaceLanguageName(self) -> str:
-        '''The FLExTrans interface language as a language name (e.g. "German"), used as the default explanation language when the user hasn't typed one. Falls back to English when
-        Utils/FTConfig aren't available (standalone runs) or the code isn't one we have a name for.'''
+    def onCreate(self):
 
-        try:
-            import Utils
-            code = Utils.getInterfaceLangCode() or 'en'
-
-        except Exception:
-            code = 'en'
-
-        return self.UI_LANG_NAMES.get(code, 'English')
-
-    def explanationLanguage(self) -> str:
-        '''The language to write an explanation in: what the user typed in the Explanation-language box, or the interface language when that box is blank.'''
-
-        typed = self.ui.explainLangEdit.text().strip()
-        return typed or self.interfaceLanguageName()
-
-    def onGenerate(self):
-
-        mode = self.currentMode()
         description = self.ui.descriptionEdit.toPlainText().strip()
 
-        # A description is required to create or modify; the explain mode needs only a picked rule.
-        if mode != 'explain' and not description:
+        if not description:
 
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
 
-        # Starting a new rule after approving the previous one: the example data given for that rule may not fit this one, so ask once whether to keep it. Regenerating while iterating
-        # on the same rule doesn't ask, and neither does a user who just reopened the data grids (onSourceData/onTargetData disarm the question).
-        if mode == 'create' and self.askAboutDataOnNextGenerate and (self.sourceDataText or self.targetDataText):
+        # Starting a new rule after approving the previous one: the example data given for that rule may not fit this one, so ask once whether to keep it. Reopening the data grids
+        # disarms the question (onSourceData/onTargetData).
+        if self.askAboutDataOnNextGenerate and (self.sourceDataText or self.targetDataText):
 
             answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Example language data'), _translate('WorkOnRulesWithAI', 'Do you want to keep the example language data you provided for the previous rule?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
 
@@ -478,77 +566,97 @@ class WorkOnRulesWithAIDlg(QDialog):
 
             self.askAboutDataOnNextGenerate = False
 
-        targetComment = None
         self.currentRuleXml = None
+        self.currentTargetComment = None
+        userContent = AIRules.buildUserContent('create', description, self.defsSummary, self.projectData, None, 'English', self.sourceDataText, self.targetDataText)
+        self.startRuleGeneration('create', userContent, None)
 
-        if mode in ('modify', 'explain'):
+    def onModify(self):
 
-            targetComment = self.selectedRuleComment()
+        if not self.currentRuleXml:
 
-            if not targetComment:
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+            return
 
-                if mode == 'explain':
-                    QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to explain.'))
-                else:
-                    QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+        description = self.ui.modifyDescriptionEdit.toPlainText().strip()
 
+        if not description:
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the change you want.'))
+            return
+
+        userContent = AIRules.buildUserContent('modify', description, self.defsSummary, self.projectData, self.currentRuleXml, 'English', self.sourceDataText, self.targetDataText)
+        self.startRuleGeneration('modify', userContent, self.currentTargetComment)
+
+    def onExplain(self):
+
+        if not self.currentRuleXml:
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to explain.'))
+            return
+
+        # If an unapproved modified rule is showing on the right, the explanation would replace it - offer to write it to the file first so the work isn't lost.
+        if self.ruleResult and self.ruleResult.valid and not self.draftWritten and self.currentTask == 'modify':
+
+            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Unapproved rule'), _translate('WorkOnRulesWithAI', 'You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Yes)
+
+            if answer == QMessageBox.StandardButton.Cancel:
                 return
 
-            self.currentRuleXml = AIRules.getRuleXmlByComment(self.transferPath, targetComment)
+            if answer == QMessageBox.StandardButton.Yes and not self.approveDraft():
 
-        # The explain language matters only in explain mode; it's harmlessly ignored for create/modify (which infer the language from the request text).
-        explainLang = self.explanationLanguage() if mode == 'explain' else 'English'
-        userContent = AIRules.buildUserContent(mode, description, self.defsSummary, self.projectData, self.currentRuleXml, explainLang, self.sourceDataText, self.targetDataText)
+                # The write failed (approveDraft already showed the error); don't discard the draft by explaining over it.
+                return
 
-        if mode == 'explain':
+        explainLang = self.explanationLanguage()
+        userContent = AIRules.buildUserContent('explain', '', self.defsSummary, self.projectData, self.currentRuleXml, explainLang, self.sourceDataText, self.targetDataText)
 
-            # Explaining makes one plain call - no validation loop, no authorship stamp, nothing written.
-            fn = AIRules.explainRule
-            params = {
-                'engine': self.engine,
-                'systemInstruction': self.systemInstruction,
-                'userContent': userContent,
-            }
-        else:
+        self.currentTask = 'explain'
+        self.startWorker(AIRules.explainRule, {'engine': self.engine, 'systemInstruction': self.systemInstruction, 'userContent': userContent}, _translate('WorkOnRulesWithAI', 'Explaining…'))
 
-            # The authorship-stamp sentences, localized to the FLExTrans UI language. Whole sentences (with a {when} placeholder) so they translate cleanly regardless of word order.
-            authorshipComments = {
-                'added':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
-                'modified': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
-            }
+    def startRuleGeneration(self, mode: str, userContent: str, targetComment):
+        '''Kick off a create or modify generation (generateValidatedRule) on the worker thread, remembering the target rule so a later Approve writes to the right place.'''
 
-            # Localize the stamp's date/time to the interface language the same way the testbed log does (Utils.LocalizedDateTimeFormatter). The custom Qt format gives a spelled-out,
-            # localized month without the weekday/seconds/timezone the long format adds. If Utils/FTConfig aren't available (standalone runs), leave it None so AIRules uses its English fallback.
-            whenStr = None
+        # The authorship-stamp sentences, localized to the FLExTrans UI language. Whole sentences (with a {when} placeholder) so they translate cleanly regardless of word order.
+        authorshipComments = {
+            'added':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
+            'modified': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
+        }
 
-            try:
-                import Utils
-                from PyQt6.QtCore import QDateTime
-                whenStr = Utils.LocalizedDateTimeFormatter().formatDateTime(QDateTime.currentDateTime(), 'd MMMM yyyy HH:mm')
+        # Localize the stamp's date/time to the interface language the same way the testbed log does (Utils.LocalizedDateTimeFormatter). The custom Qt format gives a spelled-out,
+        # localized month without the weekday/seconds/timezone the long format adds. If Utils/FTConfig aren't available (standalone runs), leave it None so AIRules uses its English fallback.
+        whenStr = None
 
-            except Exception:
-                pass
+        try:
+            import Utils
+            from PyQt6.QtCore import QDateTime
+            whenStr = Utils.LocalizedDateTimeFormatter().formatDateTime(QDateTime.currentDateTime(), 'd MMMM yyyy HH:mm')
 
-            fn = AIRules.generateValidatedRule
-            params = {
-                'engine': self.engine,
-                'systemInstruction': self.systemInstruction,
-                'userContent': userContent,
-                'transferPath': self.transferPath,
-                'dtdPath': self.dtdPath,
-                'mode': mode,
-                'targetComment': targetComment,
-                'compilerExe': self.compilerExe,
-                'authorshipComments': authorshipComments,
-                'whenStr': whenStr,
-            }
+        except Exception:
+            pass
 
-        # Remember which task this run is for, so onGenerateFinished knows how to interpret and render the result (the mode radios are disabled while busy, so it can't change mid-run).
+        params = {
+            'engine': self.engine,
+            'systemInstruction': self.systemInstruction,
+            'userContent': userContent,
+            'transferPath': self.transferPath,
+            'dtdPath': self.dtdPath,
+            'mode': mode,
+            'targetComment': targetComment,
+            'compilerExe': self.compilerExe,
+            'authorshipComments': authorshipComments,
+            'whenStr': whenStr,
+        }
+
         self.currentTask = mode
+        self.currentTargetComment = targetComment
+        self.startWorker(AIRules.generateValidatedRule, params, _translate('WorkOnRulesWithAI', 'Generating…'))
 
-        # Disable controls and run the call on a worker thread.
+    def startWorker(self, fn, params: dict, statusText: str):
+        '''Disable the controls and run `fn(**params)` on a background thread, reporting `statusText` while it runs.'''
+
         self.setBusy(True)
-        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generating…'))
+        self.ui.statusLabel.setText(statusText)
 
         self.genThread = QThread()
         self.worker = GenerateWorker(fn, params)
@@ -560,17 +668,17 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.genThread.start()
 
     def setBusy(self, busy: bool):
+        '''Disable input while a generation runs. Close stays enabled (its closeEvent waits for the thread). Approve/XXE are only turned back on by the result handlers, not here.'''
 
-        self.ui.generateButton.setEnabled(not busy)
-        self.ui.createRadio.setEnabled(not busy)
-        self.ui.modifyRadio.setEnabled(not busy)
-        self.ui.explainRadio.setEnabled(not busy)
-        self.ui.ruleList.setEnabled(not busy)
-        self.ui.descriptionEdit.setEnabled(not busy)
-        self.ui.explainLangEdit.setEnabled(not busy)
+        self.ui.modeTabs.setEnabled(not busy)
         self.ui.sourceDataButton.setEnabled(not busy)
         self.ui.targetDataButton.setEnabled(not busy)
-        self.ui.refreshButton.setEnabled(not busy)
+        self.ui.changeKeyButton.setEnabled(not busy)
+
+        if busy:
+
+            self.ui.approveButton.setEnabled(False)
+            self.ui.xxeButton.setEnabled(False)
 
     def cleanupThread(self):
 
@@ -582,27 +690,31 @@ class WorkOnRulesWithAIDlg(QDialog):
             self.worker = None
 
     def ensurePreview(self):
-        '''Create the QWebEngineView on first use and swap out the placeholder.'''
+        '''Return the QWebEngineView ready to render into, creating it if warmUpPreview hasn't yet, and adding it to the window (replacing the placeholder) the first time a preview is
+        actually shown.'''
 
         if self.preview is None:
-
             self.preview = QWebEngineView()
+
+        # The view is created unparented by warmUpPreview; addWidget reparents it into the preview area. Only do this once - after that it already lives in the layout.
+        if self.preview.parent() is None:
             self.ui.previewLayout.addWidget(self.preview)
-            self.ui.previewPlaceholder.hide()
+
+        # Show the view and hide the placeholder. Done every time (not just on the first add) because blankPreview hides the view and re-shows the placeholder when the preview is cleared.
+        self.ui.previewPlaceholder.hide()
+        self.preview.show()
 
         return self.preview
 
-    def showEvent(self, event):
+    def blankPreview(self):
+        '''Clear the preview area back to its placeholder text: hide the web view (if it exists) and show the placeholder. Used when switching tabs so no stale rule is left showing.'''
 
-        super().showEvent(event)
-        self.ui.descriptionEdit.setFocus()
+        if self.preview is not None:
+            self.preview.hide()
 
-    def closeEvent(self, event):
-        '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
-        would crash - when the dialog is garbage-collected after the event loop returns.'''
+        self.ui.previewPlaceholder.show()
 
-        self.cleanupThread()
-        super().closeEvent(event)
+    # --- results ---------------------------------------------------------
 
     def onGenerateFinished(self, result):
 
@@ -623,9 +735,11 @@ class WorkOnRulesWithAIDlg(QDialog):
             return
 
         self.ruleResult = result
+        self.draftWritten = False
 
-        # Render the preview: single rule for create, before/after for modify. The label language follows the language of the user's request, as reported by the model.
-        if self.isModify() and self.currentRuleXml:
+        # Render the preview: the original rule on the left and the modified rule on the right for a modify; a single rule for a create. The label language follows the language of the
+        # user's request, as reported by the model.
+        if self.currentTask == 'modify' and self.currentRuleXml:
             html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language)
         else:
             html = TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language)
@@ -668,13 +782,21 @@ class WorkOnRulesWithAIDlg(QDialog):
             QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'API key'),
                                     _translate('WorkOnRulesWithAI', 'Your {provider} API key was updated.').format(provider=provider.displayName))
 
+    # --- writing to the file ---------------------------------------------
+
     def onApprove(self):
 
-        if not (self.ruleResult and self.ruleResult.valid):
-            return
+        self.approveDraft()
 
-        mode = 'modify' if self.isModify() else 'create'
-        targetComment = self.selectedRuleComment() if mode == 'modify' else None
+    def approveDraft(self) -> bool:
+        '''Write the current create/modify draft to the transfer file after backing it up. Returns True on success. Shared by the Approve button and the "approve before explaining"
+        prompt. The window stays open; Approve disables until the next generation so the same rule can't be written twice, and the rule list is re-read so the new/changed rule shows.'''
+
+        if not (self.ruleResult and self.ruleResult.valid):
+            return False
+
+        mode = 'modify' if self.currentTask == 'modify' else 'create'
+        targetComment = self.currentTargetComment if mode == 'modify' else None
 
         try:
             backupPath = AIRules.applyRule(self.transferPath, self.ruleResult, mode, targetComment)
@@ -682,18 +804,18 @@ class WorkOnRulesWithAIDlg(QDialog):
         except Exception as err:
 
             QMessageBox.critical(self, _translate('WorkOnRulesWithAI', 'Error writing rule'), str(err))
-            return
+            return False
 
-        # The window stays open for the next edit. Disable Approve until a new rule is generated so the same rule can't be written twice, and re-read the file so the picker and the
-        # definition summary include the rule just written. Report success in the status line rather than a modal box, which would be tedious across many successive edits.
+        self.draftWritten = True
         self.ui.approveButton.setEnabled(False)
         self.reloadRules()
 
-        # This rule is done; if example data was given for it, the next create-mode Generate will ask whether to keep that data for the next rule.
+        # This rule is done; if example data was given for it, the next create Generate will ask whether to keep that data for the next rule.
         if self.sourceDataText or self.targetDataText:
             self.askAboutDataOnNextGenerate = True
 
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
+        return True
 
     def onOpenInXxe(self):
 
@@ -703,8 +825,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         import shutil
         import tempfile
 
-        mode = 'modify' if self.isModify() else 'create'
-        targetComment = self.selectedRuleComment() if mode == 'modify' else None
+        mode = 'modify' if self.currentTask == 'modify' else 'create'
+        targetComment = self.currentTargetComment if mode == 'modify' else None
 
         workDir = tempfile.mkdtemp(prefix='airules_xxe_')
         shutil.copyfile(self.dtdPath, os.path.join(workDir, 'transfer.dtd'))

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.8 - 7/7/26 - Ron Lockwood
+#    extractExistingDefs also returns a {comment: rule-XML} map built in the same parse, so the dialog can cache it and render a picked rule's preview without re-reading the file.
+#
 #   Version 3.16.7 - 7/6/26 - Ron Lockwood
 #    buildUserContent takes optional interlinearized source/target example data (pasted by the user in the dialog's data grids) and adds it to the prompt as its own sections.
 #
@@ -568,7 +571,11 @@ def extractExistingDefs(transferPath: str) -> dict:
 
     lists = list(listItems.keys())
 
-    ruleNames = [r.get('comment', '') for r in root.findall('.//rule')]
+    # Gather the rules once: their comments (used as display names in the picker) and, keyed by comment, each rule's XML text. The dialog caches this map so clicking a rule in the
+    # picker renders instantly instead of re-reading and re-parsing the whole transfer file on every selection.
+    rules = root.findall('.//rule')
+    ruleNames = [r.get('comment', '') for r in rules]
+    ruleXml = {r.get('comment', ''): ET.tostring(r, encoding='unicode') for r in rules}
 
     # Build a text summary for the prompt.
     lines = []
@@ -601,7 +608,7 @@ def extractExistingDefs(transferPath: str) -> dict:
     lines.append('Existing rule names (comment): ' + ', '.join(ruleNames))
 
     return {
-        'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'ruleNames': ruleNames, 'summaryText': '\n'.join(lines), }
+        'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'ruleNames': ruleNames, 'ruleXml': ruleXml, 'summaryText': '\n'.join(lines), }
 
 def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
     '''Return the XML text of the rule whose comment matches, or None.'''

@@ -11,6 +11,9 @@
 #    .2in), the side value coloured like the XXE combo box (red for sl, ochre for tl), and a pale-yellow (#ffffdd) comment box with grey serif-monospace text (no "//" prefix). An empty
 #    value (e.g. <lit v=""/>) now renders as an empty coloured box rather than collapsing to nothing.
 #
+#   Version 3.16.5 - 7/7/26 - Ron Lockwood
+#    Added renderRulePreviewHtml (selected rule in the left pane, right pane empty) for the immediate rule preview when a rule is clicked in the modify/explain tab.
+#
 #   Version 3.16.4 - 7/6/26 - Ron Lockwood
 #    The side-by-side comparison now aligns children with difflib instead of strict position, so an inserted or deleted node (e.g. the authorship/description comments prepended to a
 #    modified rule, or one added clip) marks only itself rather than shifting every following row and lighting up the whole rule.
@@ -304,6 +307,15 @@ def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
 
     body.append(elementToHtml(parseFragment(ruleXml), spec=spec))
     return wrapDocument(''.join(body), spec.get('_colors'))
+
+def renderRulePreviewHtml(ruleXml: str, lang: str = 'en') -> str:
+    '''Render just the selected rule in the left pane, leaving the right pane empty - used when the user clicks a rule in the modify/explain list, so the rule shows immediately and there is
+    room on the right for the modified version (Modify) or the explanation (Explain) to appear. `lang` selects the label language. Returns a complete HTML document.'''
+
+    spec = loadSpec(lang)
+    left = '<div class="pane">' + elementToHtml(parseFragment(ruleXml), spec=spec) + '</div>'
+
+    return wrapDocument('<div class="compare">' + left + '</div>', spec.get('_colors'))
 
 def renderExplanationHtml(ruleXml: str, explanationText: str, lang: str = 'en') -> str:
     '''Render the rule (styled like XXE) on the left and the AI's plain-text explanation on the right - used for the "explain" preview. The explanation is escaped and its blank-line

@@ -14,16 +14,6 @@
         <translation>Neue Regel erstellen</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="105"/>
-        <source>Modify existing rule</source>
-        <translation>Bestehende Regel ändern</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="106"/>
-        <source>Rule to modify:</source>
-        <translation>Zu ändernde Regel:</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="107"/>
         <source>Describe the rule you want:</source>
         <translation>Beschreiben Sie die gewünschte Regel:</translation>
@@ -34,19 +24,9 @@
         <translation>z. B. Entfernen Sie in einer Nominalphrase mit bestimmtem Artikel den Artikel und fügen Sie das Affix für bestimmt, Singular, gemeinsames Genus hinzu.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="109"/>
-        <source>Generate</source>
-        <translation>Generieren</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="110"/>
         <source>Preview:</source>
         <translation>Vorschau:</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="111"/>
-        <source>The generated rule will appear here after you click Generate.</source>
-        <translation>Die generierte Regel erscheint hier, nachdem Sie auf Generieren geklickt haben.</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="112"/>
@@ -79,11 +59,6 @@
         <translation>Die Transferregeldatei erneut einlesen, um die Regelliste zu aktualisieren (z. B. nachdem Sie die Datei in einem anderen Fenster bearbeitet haben).</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="114"/>
-        <source>Explain existing rule</source>
-        <translation>Bestehende Regel erklären</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="122"/>
         <source>Explanation language</source>
         <translation>Sprache der Erklärung</translation>
@@ -112,6 +87,46 @@
         <location filename="../WorkOnRulesWithAIWindow.py" line="136"/>
         <source>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</source>
         <translation>Fügen Sie interlinearisierte Beispieldaten der Zielsprache ein (tabulatorgetrennt, z. B. aus FLEx kopiert), die mit Ihrer Anfrage an die KI gesendet werden. Ein Häkchen zeigt an, dass Daten vorhanden sind.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="168"/>
+        <source>Modify or explain an existing rule</source>
+        <translation>Bestehende Regel ändern oder erklären</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="157"/>
+        <source>Create</source>
+        <translation>Erstellen</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="159"/>
+        <source>Rule:</source>
+        <translation>Regel:</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="162"/>
+        <source>Describe the change (needed to Modify):</source>
+        <translation>Beschreiben Sie die Änderung (für Ändern erforderlich):</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="164"/>
+        <source>Modify</source>
+        <translation>Ändern</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="165"/>
+        <source>Explain</source>
+        <translation>Erklären</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="170"/>
+        <source>The rule preview will appear here. Select a rule to see it, or Create, Modify, or Explain a rule.</source>
+        <translation>Die Regelvorschau erscheint hier. Wählen Sie eine Regel aus, um sie zu sehen, oder erstellen, ändern oder erklären Sie eine Regel.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="160"/>
+        <source>e.g. Remove the IND affix from the output.</source>
+        <translation>z. B. Das Affix IND aus der Ausgabe entfernen.</translation>
     </message>
 </context>
 </TS>

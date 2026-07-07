@@ -176,5 +176,25 @@ Open it in XXE to review.</source>
         <source>Do you want to keep the example language data you provided for the previous rule?</source>
         <translation>Möchten Sie die für die vorige Regel angegebenen sprachlichen Beispieldaten behalten?</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="511"/>
+        <source>Please describe the change you want.</source>
+        <translation>Bitte beschreiben Sie die gewünschte Änderung.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="541"/>
+        <source>Explaining…</source>
+        <translation>Wird erklärt…</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="527"/>
+        <source>Unapproved rule</source>
+        <translation>Nicht genehmigte Regel</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="527"/>
+        <source>You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?</source>
+        <translation>Sie haben eine geänderte Regel, die noch nicht in die Transferdatei geschrieben wurde. Vor dem Erklären genehmigen und schreiben?</translation>
+    </message>
 </context>
 </TS>

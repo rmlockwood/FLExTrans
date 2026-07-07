@@ -232,7 +232,7 @@ def MainFunction(DB, report, modify=True):
     # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()
     # returns immediately here and the dialog would flash open and close. app.exec() returns when the dialog (the only top-level Qt window) is closed.
     from WorkOnRulesWithAIDlg import WorkOnRulesWithAIDlg
-    dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], systemInstruction, defs['summaryText'], projectData, engine, dtdPath, compilerExe)
+    dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, dtdPath, compilerExe)
     dlg.show()
     thisApp.exec()
 
