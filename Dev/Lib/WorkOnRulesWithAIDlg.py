@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.14 - 7/7/26 - Ron Lockwood
+#    Review fixes: Open-in-XXE scratch folders are tracked and removed when the dialog closes (were leaking per click); a modify that can't load the original rule now says so instead of
+#    silently showing only the new rule with no comparison.
+#
 #   Version 3.16.13 - 7/7/26 - Ron Lockwood
 #    On the Modify/Explain tab the rule list (left column) and the change-description box (right column) now expand to fill their columns instead of being capped at a fixed height.
 #
@@ -60,6 +64,8 @@
 #    supplies the real FLEx-derived data later.
 
 import os
+import shutil
+import tempfile
 import unicodedata
 
 from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication, QTimer
@@ -324,6 +330,9 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.targetDataText = ''
         self.askAboutDataOnNextGenerate = False
 
+        # Temp directories created for Open-in-XXE. Each holds a candidate copy of the transfer file that XXE opens, so it must outlive the click; they're removed when the dialog closes.
+        self.xxeTempDirs = []
+
         # Build the widgets from the pyuic-generated class.
         self.ui = Ui_WorkOnRulesWithAI()
         self.ui.setupUi(self)
@@ -389,6 +398,12 @@ class WorkOnRulesWithAIDlg(QDialog):
         would crash - when the dialog is garbage-collected after the event loop returns.'''
 
         self.cleanupThread()
+
+        # Best-effort removal of the Open-in-XXE scratch folders. ignore_errors covers the case where XXE still has a file open (Windows won't delete it then) - it's left behind rather
+        # than raising, but that's the rare exception, not the norm.
+        for workDir in self.xxeTempDirs:
+            shutil.rmtree(workDir, ignore_errors=True)
+
         super().closeEvent(event)
 
     # --- interface language ----------------------------------------------
@@ -739,6 +754,8 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         # Render the preview: the original rule on the left and the modified rule on the right for a modify; a single rule for a create. The label language follows the language of the
         # user's request, as reported by the model.
+        comparisonMissing = self.currentTask == 'modify' and not self.currentRuleXml
+
         if self.currentTask == 'modify' and self.currentRuleXml:
             html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language)
         else:
@@ -746,6 +763,11 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         self.ensurePreview().setHtml(html)
         self.ui.xxeButton.setEnabled(True)
+
+        # A modify with no original rule to compare against (shouldn't normally happen - the list selection supplies it) would otherwise silently drop the before/after and the change
+        # highlighting, showing only the new rule. Say why, so the missing comparison isn't mistaken for "nothing changed".
+        if comparisonMissing:
+            QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Comparison unavailable'), _translate('WorkOnRulesWithAI', 'Could not load the original rule to show a side-by-side comparison, so only the modified rule is shown.'))
 
         if result.valid:
 
@@ -822,13 +844,13 @@ class WorkOnRulesWithAIDlg(QDialog):
         if not self.ruleResult:
             return
 
-        import shutil
-        import tempfile
-
         mode = 'modify' if self.currentTask == 'modify' else 'create'
         targetComment = self.currentTargetComment if mode == 'modify' else None
 
+        # This temp file has to outlive the call (XXE opens it after we return), so we can't delete it here. Track its directory and clean it up when the dialog closes - bounding the
+        # leak to one folder per Open-in-XXE click within a single session instead of forever.
         workDir = tempfile.mkdtemp(prefix='airules_xxe_')
+        self.xxeTempDirs.append(workDir)
         shutil.copyfile(self.dtdPath, os.path.join(workDir, 'transfer.dtd'))
         tempPath = AIRules.spliceIntoTemp(self.transferPath, self.ruleResult.ruleXml, self.ruleResult.newDefs, mode, targetComment, workDir)
 

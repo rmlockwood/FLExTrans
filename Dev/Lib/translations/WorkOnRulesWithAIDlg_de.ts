@@ -196,5 +196,15 @@ Open it in XXE to review.</source>
         <source>You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?</source>
         <translation>Sie haben eine geänderte Regel, die noch nicht in die Transferdatei geschrieben wurde. Vor dem Erklären genehmigen und schreiben?</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
+        <source>Comparison unavailable</source>
+        <translation>Vergleich nicht verfügbar</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
+        <source>Could not load the original rule to show a side-by-side comparison, so only the modified rule is shown.</source>
+        <translation>Die ursprüngliche Regel konnte nicht geladen werden, um einen direkten Vergleich anzuzeigen; es wird nur die geänderte Regel angezeigt.</translation>
+    </message>
 </context>
 </TS>

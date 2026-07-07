@@ -5,6 +5,11 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.9 - 7/7/26 - Ron Lockwood
+#    Review fixes: applyRule's modify now locates the rule to replace via an XML parse (robust to escaped chars / quote style in the comment) and replaces it by position, refusing to
+#    write rather than silently appending a duplicate when it can't match; the generate scratch directory is removed in a finally; very large def-cat/def-list member lists are capped in
+#    the prompt summary with a "(… N more)" marker.
+#
 #   Version 3.16.8 - 7/7/26 - Ron Lockwood
 #    extractExistingDefs also returns a {comment: rule-XML} map built in the same parse, so the dialog can cache it and render a picked rule's preview without re-reading the file.
 #
@@ -54,6 +59,9 @@ import xml.etree.ElementTree as ET
 # Generation settings. The provider and model are chosen from config (see getProvider / buildEngine); these limits are provider-independent.
 MAX_TOKENS = 16000
 MAX_VALIDATION_ATTEMPTS = 3
+# Cap on how many members of a single def-cat or def-list we spell out in the prompt summary. Typical categories/lists are well under this; the cap only bites on a project with an
+# unusually large list, keeping one huge def-list from inflating the (uncached) per-request prompt without limit. When it bites, the omitted count is shown so nothing is silently dropped.
+MAX_SUMMARY_ITEMS = 80
 DEFAULT_PROVIDER = 'gemini'
 
 # When set (by the module, from the AIRulesLogPrompts setting), every prompt sent to the provider and every response received is appended to this file. Off by default for shipping;
@@ -530,6 +538,15 @@ def buildSystemInstruction(conventionsText: str, sampleRulesText: str, sampleMac
 
     return text
 
+def capItemsForSummary(items: list) -> list:
+    '''Return `items` for the prompt summary, capped at MAX_SUMMARY_ITEMS with a trailing "(… N more)" marker when it's longer, so one very large def-list/def-cat can't blow up the
+    per-request prompt. The marker makes the truncation explicit (to the model, and in the prompt log) rather than silently dropping members.'''
+
+    if len(items) <= MAX_SUMMARY_ITEMS:
+        return items
+
+    return items[:MAX_SUMMARY_ITEMS] + ['(… {n} more)'.format(n=len(items) - MAX_SUMMARY_ITEMS)]
+
 def extractExistingDefs(transferPath: str) -> dict:
     '''Read the transfer file and collect the names of definitions that already exist (so the model reuses them) plus the value sets of each attribute and the existing rule names.
     Returns a dict with both the raw data and a text summary suitable for dropping into the prompt.'''
@@ -582,7 +599,7 @@ def extractExistingDefs(transferPath: str) -> dict:
     lines.append('Existing categories (def-cat) with the cat-item tags each one matches (a lemma in parentheses means that item is pinned to that specific lemma):')
 
     for name in sorted(catItems):
-        lines.append('  {name}: {items}'.format(name=name, items='; '.join(catItems[name]) or '(empty)'))
+        lines.append('  {name}: {items}'.format(name=name, items='; '.join(capItemsForSummary(catItems[name])) or '(empty)'))
 
     lines.append('')
     lines.append('Existing attributes (def-attr) and their legal tag values:')
@@ -596,7 +613,7 @@ def extractExistingDefs(transferPath: str) -> dict:
     if listItems:
 
         for name in sorted(listItems):
-            lines.append('  {name}: {items}'.format(name=name, items=', '.join(listItems[name]) or '(empty)'))
+            lines.append('  {name}: {items}'.format(name=name, items=', '.join(capItemsForSummary(listItems[name])) or '(empty)'))
 
     else:
         lines.append('  (none)')
@@ -825,23 +842,30 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
 
     workDir = tempfile.mkdtemp(prefix='airules_')
 
-    # apertium-preprocess-transfer resolves the DTD relative to the file.
-    shutil.copyfile(dtdPath, os.path.join(workDir, 'transfer.dtd'))
+    # Remove the scratch directory once we're done with it however we leave (success, exhausted attempts, or an exception). The returned RuleResult holds only strings, so nothing here
+    # needs to outlive the call - unlike the Open-in-XXE temp file, which the dialog cleans up on close.
+    try:
 
-    for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
+        # apertium-preprocess-transfer resolves the DTD relative to the file.
+        shutil.copyfile(dtdPath, os.path.join(workDir, 'transfer.dtd'))
 
-        lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
-        lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr)
+        for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
-        tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir)
-        ok, lastErrors = validateFile(tempPath, os.path.join(workDir, 'transfer.dtd'), compilerExe)
+            lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
+            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr)
 
-        if ok:
-            return RuleResult(lastRule, lastDefs, lastExpl, lastLang, True, '', attempt)
+            tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir)
+            ok, lastErrors = validateFile(tempPath, os.path.join(workDir, 'transfer.dtd'), compilerExe)
 
-        priorErrors = lastErrors
+            if ok:
+                return RuleResult(lastRule, lastDefs, lastExpl, lastLang, True, '', attempt)
 
-    return RuleResult(lastRule, lastDefs, lastExpl, lastLang, False, lastErrors, MAX_VALIDATION_ATTEMPTS)
+            priorErrors = lastErrors
+
+        return RuleResult(lastRule, lastDefs, lastExpl, lastLang, False, lastErrors, MAX_VALIDATION_ATTEMPTS)
+
+    finally:
+        shutil.rmtree(workDir, ignore_errors=True)
 
 def insertBefore(text: str, marker: str, insertion: str) -> str:
     '''Insert `insertion` (plus a newline) immediately before the first occurrence of `marker` in `text`.'''
@@ -876,13 +900,23 @@ def applyRule(transferPath: str, result: RuleResult, mode: str, targetComment: O
 
     if mode == 'modify' and targetComment:
 
-        # Replace the whole <rule …comment="X"…>…</rule> span in place, keeping its position (so specific-before-general ordering is preserved). Rules don't nest, so the non-greedy
-        # match stops at this rule's own close tag.
-        pattern = re.compile(r'<rule\b[^>]*?comment="' + re.escape(targetComment) + r'"[\s\S]*?</rule\s*>')
-        text, count = pattern.subn(lambda m: ruleText, text, count=1)
+        # Decide which rule to replace with a real XML parse, so the match is robust to XML-escaped characters (&, <, >, quotes) in the comment and to either attribute quote style - a
+        # raw-text regex on comment="X" could silently miss (and then append a duplicate rule). Rules don't nest and appear only in section-rules, so the i-th <rule>…</rule> span in the
+        # text is the i-th rule in the parsed tree; we replace that span in place (plain string slice, so backslashes in the rule text aren't treated as regex replacements), keeping the
+        # rest of the file byte-for-byte and the rule in its original position.
+        parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+        rules = ET.parse(transferPath, parser=parser).getroot().findall('.//rule')
+        ruleIndex = next((i for i, r in enumerate(rules) if r.get('comment') == targetComment), None)
 
-        if count == 0:
-            text = insertBefore(text, '</section-rules', ruleText)
+        spans = list(re.finditer(r'<rule\b[\s\S]*?</rule\s*>', text))
+
+        # If the target rule isn't found, or the raw-text rule spans don't line up one-to-one with the parsed rules (e.g. a stray "<rule" inside a comment threw the count off), refuse to
+        # guess: writing a duplicate or clobbering the wrong rule is worse than stopping. The backup is already made and the user can place the rule by hand via Open in XXE.
+        if ruleIndex is None or len(spans) != len(rules):
+            raise RuntimeError('Could not safely locate the rule "{comment}" to replace it, so the rule file was left unchanged (a backup was made at {backup}). Use "Open a Temporary Version in XXE" to place the rule manually.'.format(comment=targetComment, backup=os.path.basename(backupPath)))
+
+        span = spans[ruleIndex]
+        text = text[:span.start()] + ruleText + text[span.end():]
     else:
         text = insertBefore(text, '</section-rules', ruleText)
 

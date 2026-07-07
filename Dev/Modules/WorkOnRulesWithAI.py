@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.3 - 7/7/26 - Ron Lockwood
+#    The target FLEx project is now guarded (bail out cleanly if it can't be opened) and closed in a finally so it isn't left locked for the rest of the session; the conventions .md is
+#    read with a with-block.
+#
 #   Version 3.16.2 - 7/6/26 - Ron Lockwood
 #    PasteDataDlg UI moved to separate Windows/PasteDataWindow.ui file compiled with pyuic; translations split into Windows/translations/PasteDataWindow*.ts files.
 #
@@ -51,7 +55,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -213,28 +217,42 @@ def MainFunction(DB, report, modify=True):
     # Gather the project grounding data from FLEx (source and target). The FLEx project names go into the prompt only if the user opted in (they can be sensitive).
     TargetDB = Utils.openTargetProject(configMap, report)
 
-    from RuleAssistant import GetRuleAssistantStartData
-    startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
+    # Bail out if the target project couldn't be opened (openTargetProject returns None on failure) - otherwise GetRuleAssistantStartData would crash on None.
+    if TargetDB is None:
 
-    includeProjectNames = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES, report, giveError=False) == 'y'
-    projectData = buildProjectDataText(startData, includeProjectNames)
+        report.Error(_translate('WorkOnRulesWithAI', 'Could not open the target FLEx project. Check the target-project setting and try again.'))
+        return
 
-    defs = AIRules.extractExistingDefs(transferPath)
+    # Close the target project no matter how we leave this function (normal close, or an exception building the prompt / running the dialog) so it isn't left locked for the rest of the
+    # FlexTools session. We hold it open across the dialog because GetRuleAssistantStartData's data may reference the open project.
+    try:
 
-    conventionsText = open(conventionsPath, encoding='utf-8').read()
+        from RuleAssistant import GetRuleAssistantStartData
+        startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
-    # Ground the model with the project's longest rules and macros - the richest examples of the house style the file has to offer.
-    sampleRulesText, sampleMacrosText = AIRules.getSampleRulesAndMacros(transferPath)
+        includeProjectNames = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES, report, giveError=False) == 'y'
+        projectData = buildProjectDataText(startData, includeProjectNames)
 
-    systemInstruction = AIRules.buildSystemInstruction(conventionsText, sampleRulesText, sampleMacrosText)
-    engine = AIRules.buildEngine(providerName, apiKey, model)
+        defs = AIRules.extractExistingDefs(transferPath)
 
-    # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()
-    # returns immediately here and the dialog would flash open and close. app.exec() returns when the dialog (the only top-level Qt window) is closed.
-    from WorkOnRulesWithAIDlg import WorkOnRulesWithAIDlg
-    dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, dtdPath, compilerExe)
-    dlg.show()
-    thisApp.exec()
+        with open(conventionsPath, encoding='utf-8') as conventionsFile:
+            conventionsText = conventionsFile.read()
+
+        # Ground the model with the project's longest rules and macros - the richest examples of the house style the file has to offer.
+        sampleRulesText, sampleMacrosText = AIRules.getSampleRulesAndMacros(transferPath)
+
+        systemInstruction = AIRules.buildSystemInstruction(conventionsText, sampleRulesText, sampleMacrosText)
+        engine = AIRules.buildEngine(providerName, apiKey, model)
+
+        # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()
+        # returns immediately here and the dialog would flash open and close. app.exec() returns when the dialog (the only top-level Qt window) is closed.
+        from WorkOnRulesWithAIDlg import WorkOnRulesWithAIDlg
+        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, dtdPath, compilerExe)
+        dlg.show()
+        thisApp.exec()
+
+    finally:
+        TargetDB.CloseProject()
 
 #----------------------------------------------------------------
 # define the FlexToolsModule

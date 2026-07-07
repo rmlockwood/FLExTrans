@@ -196,5 +196,15 @@ Ouvrez-la dans XXE pour la relire.</translation>
         <source>You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?</source>
         <translation>Vous avez une règle modifiée qui n'a pas été écrite dans le fichier de transfert. L'approuver et l'écrire avant d'expliquer ?</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
+        <source>Comparison unavailable</source>
+        <translation>Comparaison indisponible</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
+        <source>Could not load the original rule to show a side-by-side comparison, so only the modified rule is shown.</source>
+        <translation>Impossible de charger la règle d'origine pour afficher une comparaison côte à côte ; seule la règle modifiée est affichée.</translation>
+    </message>
 </context>
 </TS>

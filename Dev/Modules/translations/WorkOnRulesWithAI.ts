@@ -60,5 +60,10 @@ Il existe un paramètre distinct pour l'envoi des noms des projets FLEx.</transl
         <source>The configured AI model ({model}) goes with {owner}, not {provider}. Fix the AI Model setting in the FLExTrans Settings tool.</source>
         <translation>Le modèle d'IA configuré ({model}) va avec {owner}, pas avec {provider}. Corrigez le paramètre Modèle d'IA dans l'outil Paramètres de FLExTrans.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAI.py" line="223"/>
+        <source>Could not open the target FLEx project. Check the target-project setting and try again.</source>
+        <translation>Impossible d'ouvrir le projet FLEx cible. Vérifiez le paramètre du projet cible et réessayez.</translation>
+    </message>
 </context>
 </TS>
