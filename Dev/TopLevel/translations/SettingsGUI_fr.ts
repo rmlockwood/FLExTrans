@@ -12,8 +12,7 @@
       <location filename="../SettingsGUI.py" line="1790"/>
       <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
 Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
-      <translation>Pour certaines lettres spéciales, vous devrez peut-être définir l&apos;équivalent majuscule des lettres minuscules.
-Indiquez la lettre minuscule suivie de sa lettre majuscule, avec une seule espace entre chaque lettre. Par exemple : ʋ Ʋ</translation>
+      <translation>Certaines lettres spéciales peuvent nécessiter la définition de leur équivalent majuscule. Indiquez la lettre minuscule suivie de sa lettre majuscule, avec un espace simple entre chaque lettre. Ex. : ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1499"/>
