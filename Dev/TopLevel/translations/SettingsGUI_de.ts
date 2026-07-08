@@ -6,21 +6,21 @@
     <message>
       <location filename="../SettingsGUI.py" line="1789"/>
       <source>Lowercase/Uppercase pairs for special letters</source>
-      <translation type="unfinished">Lowercase/Uppercase pairs for special letters</translation>
+      <translation>Klein-/Großbuchstabenpaare für Sonderzeichen</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1790"/>
       <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
 Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
-      <translation type="unfinished">Some special letters you may need to define the uppercase equivalent of lower case letters.
-Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</translation>
+      <translation>Bei einigen Sonderzeichen müssen Sie möglicherweise das Großbuchstaben-Äquivalent der Kleinbuchstaben definieren.
+Geben Sie den Kleinbuchstaben gefolgt vom zugehörigen Großbuchstaben an, mit einem einzelnen Leerzeichen zwischen allen Buchstaben. Z. B. ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1499"/>
       <source>The Lowercase/Uppercase pairs for special letters setting is not valid.
 Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</source>
-      <translation type="unfinished">The Lowercase/Uppercase pairs for special letters setting is not valid.
-Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</translation>
+      <translation>Die Einstellung „Klein-/Großbuchstabenpaare für Sonderzeichen“ ist ungültig.
+Geben Sie einzelne durch Leerzeichen getrennte Buchstaben ein, mit einer geraden Anzahl von Buchstaben, sodass auf jeden Kleinbuchstaben sein Großbuchstabe folgt. Z. B. ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1460"/>
@@ -102,7 +102,7 @@ Enter single letters separated by spaces, with an even number of letters so each
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation type="unfinished">Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</translation>
+      <translation>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -178,7 +178,7 @@ FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu üb
     <message>
       <location filename="../SettingsGUI.py" line="1628"/>
       <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
-      <translation type="unfinished">Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</translation>
+      <translation>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1630"/>
@@ -189,7 +189,7 @@ FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu üb
       <location filename="../SettingsGUI.py" line="1631"/>
       <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</source>
-      <translation type="unfinished">Indicates if the system should avoid regenerating data that hasn&apos;t changed.
+      <translation>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</translation>
     </message>
     <message>
@@ -248,7 +248,7 @@ Mit anderen Worten, keine Affixe und keine Klitika.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1648"/>
       <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
-      <translation type="unfinished">In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</translation>
+      <translation>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1652"/>
