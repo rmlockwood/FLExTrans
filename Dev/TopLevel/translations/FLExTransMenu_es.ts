@@ -54,17 +54,17 @@ software.sil.org/flextrans</translation>
     <message>
       <location filename="../FLExTransMenu.py" line="111"/>
       <source>XMLmind XML Editor not found at expected location: {xxe}</source>
-      <translation type="unfinished">XMLmind XML Editor not found at expected location: {xxe}</translation>
+      <translation>XMLmind XML Editor not found at expected location: {xxe}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="121"/>
       <source>Error occurred while trying to open transfer rules file: {e}</source>
-      <translation type="unfinished">Error occurred while trying to open transfer rules file: {e}</translation>
+      <translation>Error occurred while trying to open transfer rules file: {e}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="121"/>
       <source>Error</source>
-      <translation type="unfinished">Error</translation>
+      <translation>Error</translation>
     </message>
   </context>
 </TS>
