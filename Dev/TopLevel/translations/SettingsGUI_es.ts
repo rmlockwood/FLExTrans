@@ -6,21 +6,21 @@
     <message>
       <location filename="../SettingsGUI.py" line="1789"/>
       <source>Lowercase/Uppercase pairs for special letters</source>
-      <translation type="unfinished">Lowercase/Uppercase pairs for special letters</translation>
+      <translation>Pares de minúscula/mayúscula para letras especiales</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1790"/>
       <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
 Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
-      <translation type="unfinished">Some special letters you may need to define the uppercase equivalent of lower case letters.
-Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</translation>
+      <translation>Para algunas letras especiales puede que necesite definir el equivalente en mayúscula de las letras minúsculas.
+Indique la letra minúscula seguida de su letra mayúscula, con un solo espacio entre cada letra. P. ej. ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1499"/>
       <source>The Lowercase/Uppercase pairs for special letters setting is not valid.
 Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</source>
-      <translation type="unfinished">The Lowercase/Uppercase pairs for special letters setting is not valid.
-Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</translation>
+      <translation>El ajuste Pares de minúscula/mayúscula para letras especiales no es válido.
+Introduzca letras individuales separadas por espacios, con un número par de letras, de modo que cada letra minúscula vaya seguida de su letra mayúscula. P. ej. ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1460"/>
@@ -102,7 +102,7 @@ Enter single letters separated by spaces, with an even number of letters so each
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation type="unfinished">Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</translation>
+      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto puede deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del diálogo Propiedades del proyecto de Fieldworks. Se encuentra en el menú en Archivo &gt; Administración de proyectos &gt; Propiedades del proyecto de Fieldworks.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -178,7 +178,7 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
     <message>
       <location filename="../SettingsGUI.py" line="1628"/>
       <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
-      <translation type="unfinished">Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</translation>
+      <translation>No mostrar advertencias para palabras en mayúscula (nombres propios) que quedan sin analizar. Excepto al principio de una oración.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1630"/>
@@ -189,8 +189,8 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
       <location filename="../SettingsGUI.py" line="1631"/>
       <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</source>
-      <translation type="unfinished">Indicates if the system should avoid regenerating data that hasn&apos;t changed.
-Use the CleanFiles module to force the regeneration of data.</translation>
+      <translation>Indica si el sistema debe evitar regenerar datos que no han cambiado.
+Use el módulo CleanFiles para forzar la regeneración de los datos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1633"/>
@@ -248,7 +248,7 @@ como algún tipo de raíz. En otras palabras, no afijos y no clíticos.</transla
     <message>
       <location filename="../SettingsGUI.py" line="1648"/>
       <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
-      <translation type="unfinished">In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</translation>
+      <translation>En el módulo de modo de producción &apos;Traducir texto&apos;, ¿adónde quiere que vaya el texto borrador?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1652"/>
@@ -951,6 +951,93 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
       <location filename="../SettingsGUI.py" line="1884"/>
       <source>Opt out of sending usage statistics.</source>
       <translation>Excluirse del envío de estadísticas de uso.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="7"/>
+      <source>AI Assistant</source>
+      <translation>Asistente de IA</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2010"/>
+      <source>AI Provider</source>
+      <translation>Proveedor de IA</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2011"/>
+      <source>The AI service the Work on Rules with AI module sends requests to.
+You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
+      <translation>El servicio de IA al que el módulo 'Trabajar en reglas con IA' envía las solicitudes.
+Necesita su propia clave API para el proveedor elegido; el módulo la pide la primera vez que lo ejecuta.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2013"/>
+      <source>AI Model</source>
+      <translation>Modelo de IA</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2014"/>
+      <source>The model to use. Pick one that belongs to the chosen AI provider.
+gemini-2.5-flash is available on Google's free tier.</source>
+      <translation>El modelo que se usará. Elija uno que pertenezca al proveedor de IA elegido.
+gemini-2.5-flash está disponible en el nivel gratuito de Google.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2016"/>
+      <source>Include FLEx project names in AI requests?</source>
+      <translation>¿Incluir los nombres de los proyectos FLEx en las solicitudes de IA?</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2017"/>
+      <source>If Yes, the source and target FLEx project names are included in what is sent to the AI provider.
+Choose No if the project names themselves are sensitive information.</source>
+      <translation>Si es Sí, los nombres de los proyectos FLEx de origen y destino se incluyen en lo que se envía al proveedor de IA.
+Elija No si los nombres de los proyectos son en sí información sensible.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2019"/>
+      <source>Log AI prompts for debugging?</source>
+      <translation>¿Registrar los prompts de IA para depuración?</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2020"/>
+      <source>If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to
+AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
+      <translation>Si es Sí, todo lo que el módulo 'Trabajar en reglas con IA' envía al proveedor de IA y recibe de él se añade a
+AIRulesPromptLog.txt en la carpeta Build del proyecto. Déjelo en No salvo cuando esté solucionando problemas.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2022"/>
+      <source>How do I get an API key?</source>
+      <translation>¿Cómo obtengo una clave API?</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2023"/>
+      <source>Opens the FLExTrans documentation section that explains how to get an API key for each provider.</source>
+      <translation>Abre la sección de la documentación de FLExTrans que explica cómo obtener una clave API para cada proveedor.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2027"/>
+      <source>Allow sending data to the AI provider?</source>
+      <translation>¿Permitir el envío de datos al proveedor de IA?</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2030"/>
+      <source>AI data consent question asked</source>
+      <translation>Pregunta de consentimiento de datos de IA realizada</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1596"/>
+      <source>The AI Model does not go with the selected AI Provider.
+Choose the AI Provider first, then pick one of the models offered for it.</source>
+      <translation>El Modelo de IA no corresponde al Proveedor de IA seleccionado.
+Elija primero el Proveedor de IA y luego elija uno de los modelos ofrecidos para él.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2073"/>
+      <source>Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
+The module also asks this the first time you run it; you can review or change your answer here.</source>
+      <translation>Indica si el módulo « Trabajar en reglas con IA » puede enviar su descripción de la regla y las categorías gramaticales, los rasgos y los afijos del proyecto al proveedor de IA.
+El módulo también hace esta pregunta la primera vez que lo ejecuta; puede revisar o cambiar su respuesta aquí.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1848"/>

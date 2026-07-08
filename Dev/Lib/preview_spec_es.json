@@ -1,0 +1,387 @@
+{
+ "_colors": {
+  "c-attr": "#F5DEB3",
+  "c-cat": "#FFB6C1",
+  "c-chunk": "#AEC6CF",
+  "c-list": "#CCFFCC",
+  "c-lit": "#98FB98",
+  "c-littag": "#FFFFB5",
+  "c-macro": "#F09FF0",
+  "c-pos": "#FFDAB9",
+  "c-rule": "#BFD0FF",
+  "c-var": "#AFEEEE"
+ },
+ "action": [
+  " acción: ",
+  []
+ ],
+ "and": [
+  " y: ",
+  []
+ ],
+ "append": [
+  " añadir a: ",
+  [
+   [
+    "n",
+    "",
+    "c-var"
+   ]
+  ]
+ ],
+ "attr-item": [
+  "etiquetas:  ",
+  [
+   [
+    "tags",
+    "",
+    "c-chunk"
+   ]
+  ]
+ ],
+ "b": [
+  " espacio en blanco: ",
+  []
+ ],
+ "begins-with": [
+  " comienza con: ",
+  []
+ ],
+ "begins-with-list": [
+  " comienza con algo en la lista: ",
+  []
+ ],
+ "call-macro": [
+  "llamar macro: ",
+  [
+   [
+    "n",
+    "",
+    "c-macro"
+   ]
+  ]
+ ],
+ "case-of": [
+  " caso de -  elemento: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ],
+   [
+    "side",
+    "  lado: ",
+    "c-plain"
+   ],
+   [
+    "part",
+    "  parte: ",
+    "c-attr"
+   ]
+  ]
+ ],
+ "cat-item": [
+  "etiquetas:  ",
+  [
+   [
+    "tags",
+    "",
+    "c-chunk"
+   ],
+   [
+    "lemma",
+    " lema: ",
+    "c-chunk"
+   ]
+  ]
+ ],
+ "choose": [
+  "elegir: ",
+  []
+ ],
+ "chunk": [
+  " fragmento - nombre: ",
+  [
+   [
+    "name",
+    "",
+    "c-chunk"
+   ],
+   [
+    "namefrom",
+    " fragmento - obtener nombre de variable: ",
+    "c-var"
+   ]
+  ]
+ ],
+ "clip": [
+  " recorte -  elemento: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ],
+   [
+    "side",
+    " lado: ",
+    "c-plain"
+   ],
+   [
+    "part",
+    " parte: ",
+    "c-attr"
+   ]
+  ]
+ ],
+ "concat": [
+  " concatenar: ",
+  []
+ ],
+ "contains-substring": [
+  " contiene subcadena: ",
+  []
+ ],
+ "def-attr": [
+  " atributo: ",
+  [
+   [
+    "n",
+    "",
+    "c-attr"
+   ]
+  ]
+ ],
+ "def-cat": [
+  " categoría: ",
+  [
+   [
+    "n",
+    "",
+    "c-cat"
+   ]
+  ]
+ ],
+ "def-list": [
+  " lista: ",
+  [
+   [
+    "n",
+    "",
+    "c-list"
+   ]
+  ]
+ ],
+ "def-macro": [
+  " macro: ",
+  [
+   [
+    "n",
+    "",
+    "c-macro"
+   ],
+   [
+    "npar",
+    " número de elementos = ",
+    "c-pos"
+   ]
+  ]
+ ],
+ "def-var": [
+  " variable: ",
+  [
+   [
+    "n",
+    "",
+    "c-var"
+   ]
+  ]
+ ],
+ "ends-with": [
+  " termina con: ",
+  []
+ ],
+ "ends-with-list": [
+  " termina con algo en la lista: ",
+  []
+ ],
+ "equal": [
+  " igual: ",
+  []
+ ],
+ "get-case-from": [
+  " obtener caso de  elemento: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ]
+  ]
+ ],
+ "in": [
+  " en lista: ",
+  []
+ ],
+ "let": [
+  " dejar: ",
+  []
+ ],
+ "list": [
+  " lista:  ",
+  [
+   [
+    "n",
+    "",
+    "c-list"
+   ]
+  ]
+ ],
+ "list-item": [
+  "elemento:  ",
+  [
+   [
+    "v",
+    "",
+    "c-lit"
+   ]
+  ]
+ ],
+ "lit": [
+  " cadena literal:  ",
+  [
+   [
+    "v",
+    "",
+    "c-lit"
+   ]
+  ]
+ ],
+ "lit-tag": [
+  " etiqueta literal:  ",
+  [
+   [
+    "v",
+    "",
+    "c-littag"
+   ]
+  ]
+ ],
+ "lu": [
+  " unidad léxica: ",
+  []
+ ],
+ "mlu": [
+  " multi-palabra: ",
+  []
+ ],
+ "modify-case": [
+  " modificar caso: ",
+  []
+ ],
+ "not": [
+  " no: ",
+  []
+ ],
+ "or": [
+  " o: ",
+  []
+ ],
+ "otherwise": [
+  " de lo contrario: ",
+  []
+ ],
+ "out": [
+  " salida: ",
+  []
+ ],
+ "pattern": [
+  " patrón: ",
+  []
+ ],
+ "pattern-item": [
+  "elemento:  ",
+  [
+   [
+    "n",
+    "",
+    "c-cat"
+   ]
+  ]
+ ],
+ "rule": [
+  " regla: ",
+  [
+   [
+    "comment",
+    "",
+    "c-rule"
+   ]
+  ]
+ ],
+ "section-def-attrs": [
+  " Atributos: ",
+  []
+ ],
+ "section-def-cats": [
+  " Categorías: ",
+  []
+ ],
+ "section-def-lists": [
+  " Listas: ",
+  []
+ ],
+ "section-def-macros": [
+  " Macros: ",
+  []
+ ],
+ "section-def-vars": [
+  " Variables: ",
+  []
+ ],
+ "section-rules": [
+  " Reglas: ",
+  []
+ ],
+ "tag": [
+  " etiqueta: ",
+  []
+ ],
+ "tags": [
+  " etiquetas: ",
+  []
+ ],
+ "test": [
+  " prueba: ",
+  []
+ ],
+ "transfer": [
+  "",
+  []
+ ],
+ "var": [
+  " variable:  ",
+  [
+   [
+    "n",
+    "",
+    "c-var"
+   ]
+  ]
+ ],
+ "when": [
+  " cuando: ",
+  []
+ ],
+ "with-param": [
+  " con elemento: ",
+  [
+   [
+    "pos",
+    "",
+    "c-pos"
+   ]
+  ]
+ ]
+}

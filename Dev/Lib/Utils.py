@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.3 - 7/4/26 - Ron Lockwood
+#    LocalizedDateTimeFormatter.formatDateTime takes an optional Qt format string, so callers can get a custom localized layout (e.g. a spelled-out localized month) as well as the
+#    default short format.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Renamed getPathRelativeToWorkProjectsDir to shortenPathForDisplay and reimplemented it to return the path
 #    relative to the work project directory (FTPaths.WORK_DIR), passing non-absolute / outside-the-project values
@@ -1442,10 +1446,16 @@ class LocalizedDateTimeFormatter:
         
         return self.localeCache[langCode]
     
-    def formatDateTime(self, datetimeObj):
-        """Format datetime according to language locale"""
+    def formatDateTime(self, datetimeObj, formatStr=None):
+        """Format datetime according to the interface-language locale. With no formatStr, uses the locale's short format (as the testbed log does); pass a Qt format string (e.g.
+        'd MMMM yyyy HH:mm') to get a custom localized layout, such as a spelled-out localized month without the weekday/seconds/timezone that the long format adds."""
 
         locale = self.getLocale(getInterfaceLangCode())
+
+        if formatStr:
+
+            return locale.toString(datetimeObj, formatStr)
+
         return locale.toString(datetimeObj, QLocale.FormatType.ShortFormat)
     
 def getInterfaceLangCode():
