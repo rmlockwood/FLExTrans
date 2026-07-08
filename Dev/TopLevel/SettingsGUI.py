@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16.3 - 7/8/26 - Ron Lockwood
+#    Fixes #1392. Added the "Apply Text Out Rules in the Testbed?" yes/no setting to the Testbed Settings section.
+#
 #   Version 3.16.2 - 7/4/26 - Ron Lockwood
 #    Added the AI Assistant section (Full view) for the Work on Rules with AI module: provider, model, include-project-names, prompt-logging, and the data-consent answer as visible
 #    settings, plus an API-key help link (new LINK widget type that opens the user documentation at an anchor). The consent "question asked" bookkeeping flag stays hidden but is kept
@@ -2160,6 +2163,9 @@ widgetList = [
 
    [_translate("SettingsGUI", "Testbed Results Log File"), "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     _translate("SettingsGUI", "The path and name of the testbed results log file."), GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Apply Text Out Rules in the Testbed?"), "apply_textout_testbed_yes", "apply_textout_testbed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.APPLY_TEXT_OUT_RULES_IN_TESTBED, \
+    _translate("SettingsGUI", "When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,\nso testbed tests match the final output produced by Insert Target Text and Export to Paratext."), DONT_GIVE_ERROR, BASIC_VIEW],\
 
 
 

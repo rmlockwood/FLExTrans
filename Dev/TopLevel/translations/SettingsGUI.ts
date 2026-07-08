@@ -726,6 +726,18 @@ du test de synthèse.</translation>
         <translation>Le chemin et le nom du fichier de log des résultats du banc d'essai.</translation>
     </message>
     <message>
+        <location filename="../SettingsGUI.py" line="2167"/>
+        <source>Apply Text Out Rules in the Testbed?</source>
+        <translation>Appliquer les règles de sortie de texte dans le banc d'essai ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2168"/>
+        <source>When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,
+so testbed tests match the final output produced by Insert Target Text and Export to Paratext.</source>
+        <translation>Lorsque le module Terminer le banc d'essai extrait les résultats du texte synthétisé, appliquer d'abord les règles de recherche/remplacement de sortie de texte,
+afin que les tests du banc d'essai correspondent au résultat final produit par Insérer le texte cible et Exporter vers Paratext.</translation>
+    </message>
+    <message>
         <location filename="../SettingsGUI.py" line="1795"/>
         <source>Import Settings</source>
         <translation>Paramètres d'importation</translation>

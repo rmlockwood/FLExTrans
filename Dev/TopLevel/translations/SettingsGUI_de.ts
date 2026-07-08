@@ -728,6 +728,18 @@ des Synthese-Tests.</translation>
       <translation>Der Pfad und Name der Testbed-Ergebnis-Logdatei.</translation>
     </message>
     <message>
+      <location filename="../SettingsGUI.py" line="2167"/>
+      <source>Apply Text Out Rules in the Testbed?</source>
+      <translation>Textausgabe-Regeln im Testbed anwenden?</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="2168"/>
+      <source>When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,
+so testbed tests match the final output produced by Insert Target Text and Export to Paratext.</source>
+      <translation>Wenn das Modul „End Testbed“ die Ergebnisse aus dem synthetisierten Text extrahiert, zuerst die Textausgabe-Regeln für Suchen/Ersetzen anwenden,
+damit die Testbed-Tests mit der endgültigen Ausgabe von „Insert Target Text“ und „Export to Paratext“ übereinstimmen.</translation>
+    </message>
+    <message>
       <location filename="../SettingsGUI.py" line="1795"/>
       <source>Import Settings</source>
       <translation>Import-Einstellungen</translation>

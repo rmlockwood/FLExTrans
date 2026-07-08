@@ -335,7 +335,63 @@ Section "MainSection" SEC01
       File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${MAKEFILESDIR}\MakefileForLiveRuleTester"
       File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${MAKEFILESDIR}\MakefileForLiveRuleTester.advanced"
     ${EndIf}
-	
+
+    # Remove the deprecated "Fix Up Synthesis Text" module (issue #1392). If it was living in the collection that also runs the
+    # testbed (detected by the End Testbed module rather than the collection's localizable file name), turn the setting on so the testbed keeps applying those rules.
+    StrCpy $6 "0"   # flag: was Fix Up Synthesis Text found in a testbed-running collection?
+
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+
+      FindFirst $2 $3 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+
+      collectionLoop:
+        StrCmp $3 "" collectionDone
+
+        # Does this collection contain the deprecated module? (/c: makes findstr treat the bracketed string as a literal, not a regex.)
+        nsExec::Exec 'findstr /c:"[FLExTrans\FixUpSynthText.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+        Pop $4   # 0 = found, non-zero = not found
+
+        ${If} $4 == 0
+
+          # Is this the testbed-running collection? Detect by the End Testbed module so it works no matter what the collection file is named in the user's language.
+          nsExec::Exec 'findstr /c:"[FLExTrans\EndTestbed.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $5
+
+          ${If} $5 == 0
+            StrCpy $6 "1"
+          ${EndIf}
+
+          # Drop the deprecated module's section from this collection.
+          DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
+        ${EndIf}
+
+        FindNext $2 $3
+        Goto collectionLoop
+
+      collectionDone:
+      FindClose $2
+    ${EndIf}
+
+    # If it was in the testbed collection, enable the replacement setting in this work project's config, but only when the key isn't already there so we don't override a choice the user
+    # has since made in the Settings dialog. (The config is a flat key=value file, so we append a line rather than using an INI writer.)
+    ${If} $6 == "1"
+
+      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\FlexTrans.config"
+
+        nsExec::Exec 'findstr /b /c:"ApplyTextOutRulesInTestbed=" "${WORKPROJECTSDIR}\$1\Config\FlexTrans.config"'
+        Pop $5   # 0 = key already present, non-zero = absent
+
+        ${If} $5 != 0
+
+          # Append the setting on its own line. The leading CRLF guarantees a clean line break even if the file didn't end in a newline (a resulting blank line is harmless — readConfig skips it).
+          FileOpen $7 "${WORKPROJECTSDIR}\$1\Config\FlexTrans.config" a
+          FileSeek $7 0 END
+          FileWrite $7 "$\r$\nApplyTextOutRulesInTestbed=y$\r$\n"
+          FileClose $7
+        ${EndIf}
+      ${EndIf}
+    ${EndIf}
+
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     # We use WriteINIStr instead of _ReplaceInFile for better non-admin compatibility
