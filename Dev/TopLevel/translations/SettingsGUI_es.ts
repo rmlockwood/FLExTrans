@@ -6,21 +6,21 @@
     <message>
       <location filename="../SettingsGUI.py" line="1789"/>
       <source>Lowercase/Uppercase pairs for special letters</source>
-      <translation type="unfinished">Lowercase/Uppercase pairs for special letters</translation>
+      <translation>Pares de minúscula/mayúscula para letras especiales</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1790"/>
       <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
 Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
-      <translation type="unfinished">Some special letters you may need to define the uppercase equivalent of lower case letters.
-Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</translation>
+      <translation>Para algunas letras especiales puede que necesite definir el equivalente en mayúscula de las letras minúsculas.
+Indique la letra minúscula seguida de su letra mayúscula, con un solo espacio entre cada letra. Por ejemplo: ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1499"/>
       <source>The Lowercase/Uppercase pairs for special letters setting is not valid.
 Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</source>
-      <translation type="unfinished">The Lowercase/Uppercase pairs for special letters setting is not valid.
-Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</translation>
+      <translation>La configuración «Pares de minúscula/mayúscula para letras especiales» no es válida.
+Introduzca letras individuales separadas por espacios, con un número par de letras, de modo que cada letra minúscula vaya seguida de su letra mayúscula. Por ejemplo: ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1460"/>
@@ -102,7 +102,7 @@ Enter single letters separated by spaces, with an even number of letters so each
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation type="unfinished">Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</translation>
+      <translation>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -178,7 +178,7 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
     <message>
       <location filename="../SettingsGUI.py" line="1628"/>
       <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
-      <translation type="unfinished">Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</translation>
+      <translation>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1630"/>
@@ -189,7 +189,7 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
       <location filename="../SettingsGUI.py" line="1631"/>
       <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</source>
-      <translation type="unfinished">Indicates if the system should avoid regenerating data that hasn&apos;t changed.
+      <translation>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</translation>
     </message>
     <message>
@@ -248,7 +248,7 @@ como algún tipo de raíz. En otras palabras, no afijos y no clíticos.</transla
     <message>
       <location filename="../SettingsGUI.py" line="1648"/>
       <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
-      <translation type="unfinished">In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</translation>
+      <translation>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1652"/>
