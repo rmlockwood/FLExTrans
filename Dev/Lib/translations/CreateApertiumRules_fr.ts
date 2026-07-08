@@ -4,11 +4,6 @@
   <context>
     <name>CreateApertiumRules</name>
     <message>
-      <location filename="../CreateApertiumRules.py" line="582"/>
-      <source>List values</source>
-      <translation>Valeurs de liste</translation>
-    </message>
-    <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
       <translation>Aucune étiquette disponible pour cette fonctionnalité {label} de catégorie grammaticale {category}.</translation>

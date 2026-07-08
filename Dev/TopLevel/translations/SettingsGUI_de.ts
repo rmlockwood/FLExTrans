@@ -1071,7 +1071,7 @@ Wählen Sie „Zwei Projekte“ (der normale Modus), um von einem Quell-FLEx-Pro
       <translation>Ein Projekt</translation>
     </message>
     <message>
-      <location filename="../SettingsGUI.py" line="1634"/>
+      <location filename="../SettingsGUI.py" line="1635"/>
       <source>In One project mode you must choose a Target Writing System.</source>
       <translation>Im Ein-Projekt-Modus müssen Sie ein Ziel-Schriftsystem auswählen.</translation>
     </message>
