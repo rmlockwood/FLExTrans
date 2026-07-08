@@ -141,5 +141,9 @@
       <source>No cluster projects found. Define them in Settings.</source>
       <translation>Keine Cluster-Projekte gefunden. Definieren Sie diese in den Einstellungen.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Dieses Modul funktioniert nur im Modus Zwei Projekte.</translation>
+    </message>
   </context>
 </TS>

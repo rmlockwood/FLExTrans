@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - target data is in the source project, read in the target WS.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -91,7 +94,7 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
-        FTM_Version:     "3.15",
+        FTM_Version:     "3.16.1",
         FTM_ModifiesDB:  False,
         FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
         FTM_Help:        "",
@@ -397,12 +400,15 @@ class CompleterDelegate(QItemDelegate):
         return ret
 
 class Main(QMainWindow):
-    def __init__(self, replaceFile, sourceDB, targetDB, report, composed):
+    def __init__(self, replaceFile, sourceDB, targetDB, report, composed, targetWSHandle=None):
         super().__init__()
         self.replaceFile = replaceFile
         self.sourceDB = sourceDB
         self.targetDB = targetDB
         self.report = report
+
+        # In one project mode the target lemmas come from the source project read in the target writing system; this handle selects it (None = default vernacular).
+        self.targetWSHandle = targetWSHandle
 
         self.unsaved = False
         self.ui = Ui_ReplacementEditorWindow()
@@ -411,7 +417,7 @@ class Main(QMainWindow):
         self.rows = []
 
         self.sourceLemmas, self.sourceAffixes = self.gatherCompletionData(sourceDB, composed)
-        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB, composed)
+        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB, composed, self.targetWSHandle)
         self.sourcePOS = self.gatherPOSTags(sourceDB)
         self.targetPOS = self.gatherPOSTags(targetDB)
         self.sourceTags = self.gatherTags(sourceDB)
@@ -492,7 +498,7 @@ class Main(QMainWindow):
         if lastRow != -1:
             self.deleteRow(lastRow)
 
-    def gatherCompletionData(self, DB, composed):
+    def gatherCompletionData(self, DB, composed, wsHandle=None):
         if composed:
             def norm(s): return normalize('NFC', s)
         else:
@@ -503,7 +509,11 @@ class Main(QMainWindow):
         self.report.ProgressStart(DB.LexiconNumberOfEntries())
         for index, entry in enumerate(DB.LexiconAllEntries()):
             self.report.ProgressUpdate(index)
-            headWord = ITsString(entry.HeadWord).Text
+            # In one project mode wsHandle selects the target writing system so these lemmas match the target side of the bilingual lexicon; otherwise use the default-vernacular headword.
+            if wsHandle is not None:
+                headWord = Utils.getHeadwordStr(entry, wsHandle)
+            else:
+                headWord = ITsString(entry.HeadWord).Text
             headWord = Utils.add_one(headWord)
             #headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
             headWord = norm(headWord)
@@ -630,17 +640,34 @@ def MainFunction(DB, report, modifyAllowed):
         report.Error(_translate("ReplacementEditor", 'A value for {configValue} not found in the configuration file.').format(configValue=ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE))
         return
 
-    targetDB = Utils.openTargetProject(configMap, report)
+    # In one project (two writing systems) mode there is no separate target project: the target data is in the source project,
+    # read in the target writing system. So reuse the source DB and resolve the target WS handle for the completion lemmas.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+    targetWSHandle = None
+
+    if oneProjectMode:
+
+        targetDB = DB
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
+
+        if targetWSTag:
+
+            targetWSHandle = DB.WSHandle(targetWSTag)
+    else:
+        targetDB = Utils.openTargetProject(configMap, report)
 
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS,
                                        report)
     composed = (composed == 'y')
 
-    window = Main(replaceFile, DB, targetDB, report, composed)
+    window = Main(replaceFile, DB, targetDB, report, composed, targetWSHandle)
     window.show()
     app.exec()
 
-    targetDB.CloseProject()
+    # Only close the target project if it's a separate project (not in one project mode where target == source).
+    if targetDB is not DB:
+
+        targetDB.CloseProject()
 
 FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs = docs)

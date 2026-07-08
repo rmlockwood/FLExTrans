@@ -54,5 +54,9 @@ eindeutigen Bezeichner (GUID) haben.</translation>
       <source>{entryIndex} entries processed.</source>
       <translation>{entryIndex} Einträge verarbeitet.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Dieses Modul funktioniert nur im Modus Zwei Projekte.</translation>
+    </message>
   </context>
 </TS>

@@ -6437,6 +6437,126 @@ src="Images\CompleteVerseVideo.png"
 ></p
 ></section2
 ><section2
+id="sOneProjectData"
+><secTitle
+>How to have your source and target data in one project</secTitle
+><p
+>Normally <object
+type="tFlextrans"
+></object
+> translates from a source <object
+type="tFlexx"
+></object
+> project into a separate target <object
+type="tFlexx"
+></object
+> project. But if your source and target are really two vernacular writing systems of the <object
+type="tItalic"
+>same</object
+> language — for example two orthographies or scripts, a spelling reform, or a transliteration — you can keep everything in a single <object
+type="tFlexx"
+></object
+> project and translate from its default vernacular writing system into a second vernacular writing system in that same project. This is called <object
+type="tItalic"
+>One project (two writing systems)</object
+> mode. You only maintain one lexicon, and you do not have to keep a separate target project in step with the source.</p
+><p
+>If your source and target are genuinely different languages, do not use this mode — leave <object
+type="tFlextrans"
+></object
+> in the normal two-project setup instead.</p
+><section3
+id="sOneProjectSetup"
+><secTitle
+>Setting it up</secTitle
+><p
+>One project mode requires a single <object
+type="tFlexx"
+></object
+> project that has at least two vernacular writing systems. The default vernacular writing system is always the source, and you translate into one of the other vernacular writing systems. To turn it on:</p
+><ol
+><li
+>In <object
+type="tFlexx"
+></object
+>, make sure the project contains the second vernacular writing system you want to translate into. (Add it under <object
+type="tMenu"
+>Format</object
+> &gt; <object
+type="tMenu"
+>Set up Writing Systems</object
+> if it is not already there.)</li
+><li
+>Add the <object
+type="tSettingsProperty"
+>Target Equivalent</object
+> custom field to the project, exactly as described in <sectionRef
+sec="sProjectSetup"
+></sectionRef
+>. In this mode the field lives in the same project, and the <object
+type="tSenseLinker"
+></object
+> uses it to record any sense links.</li
+><li
+>Open the <object
+type="tSettingsTool"
+></object
+> and set <object
+type="tSettingsProperty"
+>Project Mode</object
+> to <object
+type="tSettingsValue"
+>One project</object
+>.</li
+><li
+>Set <object
+type="tSettingsProperty"
+>Target Writing System</object
+> to the vernacular writing system you are translating into. The list shows the vernacular writing systems of the project with the default vernacular writing system left out, since that one is always the source.</li
+></ol
+><p
+>In this mode the source and target project name settings are not used, because the one open project serves as both. If the project has only a single vernacular writing system, the <object
+type="tSettingsProperty"
+>Project Mode</object
+> and <object
+type="tSettingsProperty"
+>Target Writing System</object
+> settings are disabled and <object
+type="tSettingsValue"
+>Two projects</object
+> stays selected, since there would be no second writing system to translate into.</p
+></section3
+><section3
+id="sOneProjectBehavior"
+><secTitle
+>What changes when you translate this way</secTitle
+><p
+>Once One project mode is on, the <object
+type="tFlextrans"
+></object
+> modules adjust automatically. The differences from the normal two-project setup are:</p
+><ul
+><li
+>Words are read from the project in the default vernacular writing system on the source side, and in the <object
+type="tSettingsProperty"
+>Target Writing System</object
+> on the target side. The bilingual lexicon is built from the one project, with the source side in the default vernacular writing system and the target side in the target writing system.</li
+><li
+>In the <object
+type="tSenseLinker"
+></object
+>, each source sense is linked to itself by default, but shown in the target writing system. If you want a source word to map to a different target word, you can pick a different sense from the list; selecting the same sense again removes the link.</li
+><li
+>The translated text is created back in the same project in the target writing system, so that <object
+type="tFlexx"
+></object
+> still treats it as vernacular text. The new text’s name has the target writing system’s abbreviation added to it so it is easy to tell apart from the source.</li
+><li
+>A few modules that only make sense with two separate projects (for example the cluster and agreement helper modules) are not available in One project mode and will report that they only work in Two projects mode.</li
+></ul
+></section3
+></section2
+><section2
 id="sTransferRuleHowTos"
 ><secTitle
 >Transfer Rule How To’s</secTitle

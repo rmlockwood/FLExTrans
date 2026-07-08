@@ -12,14 +12,13 @@
       <location filename="../SettingsGUI.py" line="1790"/>
       <source>Some special letters you may need to define the uppercase equivalent of lower case letters.
 Give the lowercase letter followed by its uppercase letter, with single spaces between every letter. E.g. ʋ Ʋ</source>
-      <translation>Pour certaines lettres spéciales, vous devrez peut-être définir l&apos;équivalent majuscule des lettres minuscules.
-Indiquez la lettre minuscule suivie de sa lettre majuscule, avec une seule espace entre chaque lettre. Par exemple : ʋ Ʋ</translation>
+      <translation>Certaines lettres spéciales peuvent nécessiter la définition de leur équivalent majuscule. Indiquez la lettre minuscule suivie de sa lettre majuscule, avec un espace simple entre chaque lettre. Ex. : ʋ Ʋ</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1499"/>
       <source>The Lowercase/Uppercase pairs for special letters setting is not valid.
 Enter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ</source>
-      <translation>Le paramètre « Paires minuscule/majuscule pour les lettres spéciales » n&apos;est pas valide.
+      <translation>Le paramètre « Paires minuscule/majuscule pour les lettres spéciales » n'est pas valide.
 Saisissez des lettres individuelles séparées par des espaces, avec un nombre pair de lettres, de sorte que chaque lettre minuscule soit suivie de sa lettre majuscule. Par exemple : ʋ Ʋ</translation>
     </message>
     <message>
@@ -102,7 +101,7 @@ Saisissez des lettres individuelles séparées par des espaces, avec un nombre p
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation>Échec d&apos;ouverture du projet &apos;{projectName}&apos;. Cela peut être dû au fait que vous avez le projet ouvert et que vous n&apos;avez pas activé l&apos;option de partage dans l&apos;onglet Partage de la boîte de dialogue Propriétés du projet Fieldworks. Cela se trouve sous Fichier &gt; Gestion de projet &gt; Propriétés du projet Fieldworks dans le menu.</translation>
+      <translation>Échec d'ouverture du projet '{projectName}'. Cela peut être dû au fait que vous avez le projet ouvert et que vous n'avez pas activé l'option de partage dans l'onglet Partage de la boîte de dialogue Propriétés du projet Fieldworks. Cette option se trouve sous Fichier > Gestion de projet > Propriétés du projet Fieldworks dans le menu.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -178,7 +177,7 @@ projet FLEx source. Il est possible de choisir de ne pas traduire les noms propr
     <message>
       <location filename="../SettingsGUI.py" line="1628"/>
       <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
-      <translation>Ne pas afficher d&apos;avertissements pour les mots en majuscules (noms propres) non analysés. Sauf au début d&apos;une phrase.</translation>
+      <translation>Ne pas afficher d'avertissements pour les mots en majuscules (noms propres) non analysés. Sauf au début d'une phrase.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1630"/>
@@ -189,7 +188,7 @@ projet FLEx source. Il est possible de choisir de ne pas traduire les noms propr
       <location filename="../SettingsGUI.py" line="1631"/>
       <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</source>
-      <translation>Indique si le système doit éviter de régénérer les données qui n&apos;ont pas changé.
+      <translation>Indique si le système doit éviter de régénérer les données qui n'ont pas changé.
 Utilisez le module CleanFiles pour forcer la régénération des données.</translation>
     </message>
     <message>
@@ -248,7 +247,7 @@ comme une sorte de racine. En d'autres termes, non-affixes et non-clitiques.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1648"/>
       <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
-      <translation>Dans le module de mode de production &apos;Traduire le texte&apos;, où voulez-vous que le texte brouillon aille ?</translation>
+      <translation>Dans le module en mode production 'Traduire le texte', où voulez-vous que le texte brouillon aille ?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1652"/>
@@ -1032,6 +1031,43 @@ Choisissez d'abord le Fournisseur d'IA, puis choisissez l'un des modèles propos
 The module also asks this the first time you run it; you can review or change your answer here.</source>
       <translation>Indique si le module « Travailler sur les règles avec l'IA » peut envoyer votre description de la règle et les catégories grammaticales, les traits et les affixes du projet au fournisseur d'IA.
 Le module pose aussi cette question la première fois que vous l'exécutez ; vous pouvez revoir ou modifier votre réponse ici.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1848"/>
+      <source>Project Mode</source>
+      <translation>Mode de projet</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1849"/>
+      <source>Choose One project to translate from one writing system to another within a single FLEx project.
+Choose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project.</source>
+      <translation>Choisissez Un projet pour traduire d'un système d'écriture à un autre au sein d'un même projet FLEx.
+Choisissez Deux projets (le mode normal) pour traduire d'un projet FLEx source vers un projet FLEx cible distinct.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1855"/>
+      <source>Target Writing System</source>
+      <translation>Système d'écriture cible</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1856"/>
+      <source>In One project mode, the vernacular writing system in the FLEx project that text is translated to.</source>
+      <translation>En mode Un projet, le système d'écriture vernaculaire du projet FLEx vers lequel le texte est traduit.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1159"/>
+      <source>Two projects</source>
+      <translation>Deux projets</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1160"/>
+      <source>One project</source>
+      <translation>Un projet</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1634"/>
+      <source>In One project mode you must choose a Target Writing System.</source>
+      <translation>En mode Un projet, vous devez choisir un système d'écriture cible.</translation>
     </message>
   </context>
 </TS>

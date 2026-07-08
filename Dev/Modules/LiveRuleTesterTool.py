@@ -5,8 +5,11 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.16.5 - 6/30/26 - Ron Lockwood
+#   Version 3.16.6 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.5 - 6/24/26 - Ron Lockwood
+#    Pass the source DB to DoStampSynthesis.synthesize so One project mode names the lexicon files after the source project.
 #
 #   Version 3.16.4 - 6/24/26 - Ron Lockwood
 #    Fixes #1134. Focus the active source-selection widget when the tool opens so the arrow keys work right away.
@@ -301,7 +304,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.5",
+        FTM_Version    : "3.16.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1823,7 +1826,7 @@ class Main(QMainWindow):
                 self.unsetCursor()
                 return
         else:
-            errorList = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath, report=None, overrideClean=self.ui.DoNotCleanupCheckbox.isChecked())
+            errorList = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath, report=None, overrideClean=self.ui.DoNotCleanupCheckbox.isChecked(), DB=self.__DB)
 
             # check for fatal errors
             fatal, msg = Utils.checkForFatalError(errorList, None)

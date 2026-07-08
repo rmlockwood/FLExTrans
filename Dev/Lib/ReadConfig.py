@@ -5,9 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.16.2 - 7/3/26 - Ron Lockwood
+#   Version 3.16.3 - 7/3/26 - Ron Lockwood
 #    Settings for the Work on Rules with AI module: provider, model, consent, include-project-names, and prompt logging. Removed the unused AIRulesApiKey setting (keys live in the OS
 #    credential vault, never in a settings file).
+#
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    Added TwoProjectMode and TargetWritingSystem settings for one-project, two-writing-system mode.
 #
 #   Version 3.16.1 - 6/22/26 - Ron Lockwood
 #    Use with statements for file handling in writeConfigValue.
@@ -135,6 +138,7 @@ TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TARGET_WRITING_SYSTEM = 'TargetWritingSystem'
 TARGET_XAMPLE_CUSTOM_ENTRY_FIELD = 'TargetXampleCustomEntryField'
 TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD = 'TargetXampleCustomAllomorphField'
 TESTBED_FILE = 'TestbedFile'
@@ -147,6 +151,7 @@ TRANSFER_RULES_FILE2 = 'TransferRulesFile2'
 TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
+TWO_PROJECT_MODE = 'TwoProjectMode'
 
 # DM: ADDING NEW CONFIGS FOR GENSTC
 GENSTC_ANALYZED_GLOSS_TEXT_FILE = 'AnalyzedTextOutputFileForGloss'

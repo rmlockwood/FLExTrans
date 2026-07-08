@@ -54,5 +54,9 @@ identificador único (guid).</translation>
       <source>{entryIndex} entries processed.</source>
       <translation>{entryIndex} entradas procesadas.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Este módulo solo funciona en el modo de dos proyectos.</translation>
+    </message>
   </context>
 </TS>

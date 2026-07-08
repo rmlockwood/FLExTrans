@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -111,7 +114,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("AdHocConstrForCluster", "Add Ad Hoc Constraint for a Cluster"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),
         FTM_Help       : "",
@@ -897,6 +900,11 @@ def MainFunction(DB, report, modify=True):
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
+        return
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("AdHocConstrForCluster", "This module only works in Two Project mode."))
         return
     
     # Log the start of this module on the analytics server if the user allows logging.

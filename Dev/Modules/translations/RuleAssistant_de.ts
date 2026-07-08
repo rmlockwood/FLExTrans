@@ -55,5 +55,9 @@
       <source>No rules created.</source>
       <translation>Keine Regeln erstellt.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Dieses Modul funktioniert nur im Modus Zwei Projekte.</translation>
+    </message>
   </context>
 </TS>

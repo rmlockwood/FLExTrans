@@ -1033,5 +1033,42 @@ The module also asks this the first time you run it; you can review or change yo
         <translation>Indique si le module « Travailler sur les règles avec l'IA » peut envoyer votre description de la règle et les catégories grammaticales, les traits et les affixes du projet au fournisseur d'IA.
 Le module pose aussi cette question la première fois que vous l'exécutez ; vous pouvez revoir ou modifier votre réponse ici.</translation>
     </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1848"/>
+        <source>Project Mode</source>
+        <translation>Mode de projet</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1849"/>
+        <source>Choose One project to translate from one writing system to another within a single FLEx project.
+Choose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project.</source>
+        <translation>Choisissez Un projet pour traduire d'un système d'écriture à un autre au sein d'un même projet FLEx.
+Choisissez Deux projets (le mode normal) pour traduire d'un projet FLEx source vers un projet FLEx cible distinct.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1855"/>
+        <source>Target Writing System</source>
+        <translation>Système d'écriture cible</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1856"/>
+        <source>In One project mode, the vernacular writing system in the FLEx project that text is translated to.</source>
+        <translation>En mode Un projet, le système d'écriture vernaculaire du projet FLEx vers lequel le texte est traduit.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1159"/>
+        <source>Two projects</source>
+        <translation>Deux projets</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1160"/>
+        <source>One project</source>
+        <translation>Un projet</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1634"/>
+        <source>In One project mode you must choose a Target Writing System.</source>
+        <translation>En mode Un projet, vous devez choisir un système d'écriture cible.</translation>
+    </message>
 </context>
 </TS>

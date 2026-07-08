@@ -5,11 +5,14 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.16.2 - 7/2/26 - Ron Lockwood
+#   Version 3.16.3 - 7/2/26 - Ron Lockwood
 #    Guard against a None anaObj before setting after-punctuation on the previous word.
 #
-#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - use the source project as the target.
 #
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
@@ -167,7 +170,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -389,8 +392,8 @@ class ANAInfo(object):
         
 class ConversionData():
     
-    def __init__(self, errorList, configMap, report, complexFormTypeMap):
-        
+    def __init__(self, errorList, configMap, report, complexFormTypeMap, DB):
+
         self.errorList = errorList
         self.configMap = configMap
         self.report = report
@@ -401,11 +404,19 @@ class ConversionData():
         self.complexFormTypeMap = complexFormTypeMap
         self.haveError = False
 
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+        # In one project (two writing systems) mode the target data lives in the source project, so there is no separate target project to open.
+        oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+        if oneProjectMode:
+
+            # Use the source project as the target. The cache file is named after the source project in this mode.
+            targetProj = DB.ProjectName()
+        else:
+            targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
         if not targetProj:
             return
-            
+
         self.targetProj = targetProj
         
         # Get lexicon files folder setting, we use this for the place to put the cache file.
@@ -446,27 +457,35 @@ class ConversionData():
                 else:
                     return
                 
-        TargetDB = FLExProject()
-    
-        try:
-            TargetDB.OpenProject(targetProj, True)
-        except: #FDA_DatabaseError, e:
-            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
-            raise
-    
+        if oneProjectMode:
+
+            # The target data is in the source project - reuse the already-open source DB.
+            TargetDB = DB
+        else:
+            TargetDB = FLExProject()
+
+            try:
+                TargetDB.OpenProject(targetProj, True)
+            except: #FDA_DatabaseError, e:
+                report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
+                raise
+
         self.project = TargetDB
-        
+
         # Read the db and initialize the complex map and inflect variant map
         self.readDatabaseValues()
-        
+
         # Convert these maps to Ana objects
         self.convertValuesToAnas()
-        
+
         if cacheData == 'y':
-            
+
             self.saveToCache()
-            
-        TargetDB.CloseProject()
+
+        # Only close the target project if we opened a separate one (not in one project mode).
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
             
     def cacheExists(self):
         
@@ -1351,7 +1370,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         return errorList
 
     # Get the complex forms and inflectional variants This may be slow if the data is not in the cache.
-    convData = ConversionData(errorList, configMap, report, complexFormTypeMap)
+    convData = ConversionData(errorList, configMap, report, complexFormTypeMap, DB)
     
     if convData.haveError:
         
