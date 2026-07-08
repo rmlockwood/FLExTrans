@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.4 - 7/8/26 - Ron Lockwood
+#    Fixes #1392. Added the ApplyTextOutRulesInTestbed setting that controls whether Text Out rules are applied to the synthesis before the testbed extracts results.
+#
 #   Version 3.16.3 - 7/3/26 - Ron Lockwood
 #    Settings for the Work on Rules with AI module: provider, model, consent, include-project-names, and prompt logging. Removed the unused AIRulesApiKey setting (keys live in the OS
 #    credential vault, never in a settings file).
@@ -93,6 +96,7 @@ AI_RULES_PROVIDER = 'AIRulesProvider'
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
 ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
 ALT_PARATEXT_FOLDER = 'AlternateParatextFolder'
+APPLY_TEXT_OUT_RULES_IN_TESTBED = 'ApplyTextOutRulesInTestbed'
 BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
 BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
