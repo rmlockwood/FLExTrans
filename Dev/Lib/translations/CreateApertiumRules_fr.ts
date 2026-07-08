@@ -211,7 +211,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
       <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
-      <translation type="unfinished">Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</translation>
+      <translation>Une valeur de caractéristique liée inattendue "{val}" a été trouvée dans un ensemble de caractéristiques divisé. Seules les valeurs "sg" (singulier), "pl" (pluriel) ou "many" (plusieurs) étaient attendues. Cette valeur sera ignorée.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
