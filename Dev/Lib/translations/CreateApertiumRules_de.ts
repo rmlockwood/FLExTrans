@@ -4,11 +4,6 @@
   <context>
     <name>CreateApertiumRules</name>
     <message>
-      <location filename="../CreateApertiumRules.py" line="582"/>
-      <source>List values</source>
-      <translation type="unfinished">List values</translation>
-    </message>
-    <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
       <translation>Konnte keine Tags für das Merkmal {label} der Wortart {category} finden.</translation>
@@ -31,17 +26,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="848"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
-      <translation>Clear the variable to be sure we don't accidentally retain a prior value</translation>
+      <translation>Die Variable leeren, um sicherzustellen, dass wir nicht versehentlich einen vorherigen Wert behalten</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="650"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
-      <translation>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</translation>
+      <translation>Keine Ziel-Affixe für das Merkmal '{trgSpec.label}' der Wortart {trgSpec.category} gefunden.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
       <source>There are no target affixes, so there's nothing further to do here.</source>
-      <translation>There are no target affixes, so there's nothing further to do here.</translation>
+      <translation>Es gibt keine Ziel-Affixe, daher gibt es hier nichts weiter zu tun.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="655"/>
@@ -61,17 +56,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="763"/>
       <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
-      <translation>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</translation>
+      <translation>Das Quellsubstantiv hat keinen Plural-Affix angehängt. (Wahrscheinlich hat es einen Singular-Affix.)</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="767"/>
       <source>The target noun doesn't take plural agreement (marked as such).</source>
-      <translation>The target noun doesn't take plural agreement (marked as such).</translation>
+      <translation>Das Zielsubstantiv nimmt keinen Plural-Übereinstimmung an (als solche gekennzeichnet).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="771"/>
       <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
-      <translation>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</translation>
+      <translation>Wenn das Zielsubstantiv keinen Singular-Übereinstimmung an nimmt (als solche gekennzeichnet), dann werden wir eine Plural-Substantivklasse haben.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="778"/>
@@ -211,12 +206,12 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
       <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
-      <translation type="unfinished">Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</translation>
+      <translation>Unerwarteter Co-Feature-Wert &quot;{val}&quot; in einer geteilten Feature-Menge gefunden. Nur &quot;sg&quot;, &quot;pl&quot; oder &quot;many&quot; erwartet. Dieser Wert wird ignoriert.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</translation>
+      <translation>Bitte stellen Sie sicher, dass der Co-Feature &quot;number&quot; sowohl die Werte &quot;sg&quot; als auch &quot;pl&quot; hat.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>

@@ -1065,7 +1065,7 @@ Choisissez Deux projets (le mode normal) pour traduire d'un projet FLEx source v
       <translation>Un projet</translation>
     </message>
     <message>
-      <location filename="../SettingsGUI.py" line="1634"/>
+      <location filename="../SettingsGUI.py" line="1635"/>
       <source>In One project mode you must choose a Target Writing System.</source>
       <translation>En mode Un projet, vous devez choisir un système d'écriture cible.</translation>
     </message>

@@ -1,0 +1,11 @@
+-In CrowdIn, Go to the sources tab and open to the translations folder where the new file is.
+-Click the ... and select Add File
+-Select the new .ts file (not any that have the _xx code)
+-Now add the existing translation by going to the translations tab
+-Open the section Upload existing translations and press Select Files
+-Select all the new .ts files that have a -xx language code
+-For the ones that don't have the target language detected (usually Spanish), set the language
+-Find the source file for each lang code file, may have to use search and select the plain .ts file
+-Click the Settings gear to open additional options
+-Check Allow target ... to match source
+-Now the new files are ready for review and approval
