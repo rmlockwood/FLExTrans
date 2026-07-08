@@ -952,5 +952,42 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
       <source>Opt out of sending usage statistics.</source>
       <translation>Excluirse del envío de estadísticas de uso.</translation>
     </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1848"/>
+      <source>Project Mode</source>
+      <translation>Modo de proyecto</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1849"/>
+      <source>Choose One project to translate from one writing system to another within a single FLEx project.
+Choose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project.</source>
+      <translation>Elija Un proyecto para traducir de un sistema de escritura a otro dentro de un solo proyecto FLEx.
+Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen a un proyecto FLEx de destino separado.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1855"/>
+      <source>Target Writing System</source>
+      <translation>Sistema de escritura de destino</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1856"/>
+      <source>In One project mode, the vernacular writing system in the FLEx project that text is translated to.</source>
+      <translation>En el modo Un proyecto, el sistema de escritura vernáculo del proyecto FLEx al que se traduce el texto.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1159"/>
+      <source>Two projects</source>
+      <translation>Dos proyectos</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1160"/>
+      <source>One project</source>
+      <translation>Un proyecto</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1634"/>
+      <source>In One project mode you must choose a Target Writing System.</source>
+      <translation>En el modo Un proyecto debe elegir un sistema de escritura de destino.</translation>
+    </message>
   </context>
 </TS>

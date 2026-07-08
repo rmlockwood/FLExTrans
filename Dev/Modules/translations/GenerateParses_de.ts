@@ -164,5 +164,9 @@ und Affixen) in die in den Einstellungen angegebene Parses-Ausgabedatei aus.</tr
       <source>{wrdCount} words generated.</source>
       <translation>{wrdCount} Wörter generiert.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Dieses Modul funktioniert nur im Modus Zwei Projekte.</translation>
+    </message>
   </context>
 </TS>

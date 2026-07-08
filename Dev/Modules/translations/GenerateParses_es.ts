@@ -164,5 +164,9 @@ y afijos) en el archivo de salida de análisis especificado en la configuración
       <source>{wrdCount} words generated.</source>
       <translation>{wrdCount} palabras generadas.</translation>
     </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Este módulo solo funciona en el modo de dos proyectos.</translation>
+    </message>
   </context>
 </TS>

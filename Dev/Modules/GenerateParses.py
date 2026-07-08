@@ -14,8 +14,11 @@
 #   the correct homograph/sense number on root glosses
 #
 #
-#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
 #
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
@@ -107,7 +110,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("GenerateParses", "Generate All Parses"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
         FTM_Help       : "",
@@ -304,6 +307,11 @@ def MainFunction(DB, report, modifyAllowed):
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
+        return
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("GenerateParses", "This module only works in Two Project mode."))
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
