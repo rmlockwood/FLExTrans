@@ -6,7 +6,7 @@
     <message>
       <location filename="../TextInOutUtils.py" line="282"/>
       <source>Applying Text In/Out rules stopped because of a failure of rule {ruleNumber}: {ruleString}</source>
-      <translation>L'application des règles Text In/Out s'est arrêtée en raison de l'échec de la règle {ruleNumber} : {ruleString}</translation>
+      <translation>L'application des règles de texte en Entrée/Sortie s'est arrêtée en raison de l'échec de la règle {ruleNumber} : {ruleString}</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="342"/>
