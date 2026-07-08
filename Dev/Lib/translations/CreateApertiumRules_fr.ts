@@ -210,8 +210,8 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
-      <source>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</source>
-      <translation>Valeur inattendue de trait associé &quot;{val}&quot; trouvée dans un ensemble de caractéristiques disjointes. Seules &quot;sg&quot; ou &quot;pl&quot; sont attendues. Cette valeur sera ignorée.</translation>
+      <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
+      <translation type="unfinished">Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>

@@ -51,7 +51,7 @@
     <message>
       <location filename="../ClusterAdHoc.py" line="129"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Projets de groupés auxquels appliquer</translation>
+      <translation>Projets de groupes auxquels appliquer</translation>
     </message>
     <message>
       <location filename="../ClusterAdHoc.py" line="130"/>

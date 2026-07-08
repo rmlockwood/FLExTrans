@@ -24,7 +24,7 @@ must run the modules up to and including {runApert} before running this module.<
 Les unités lexicales sont codées par couleur comme suit : noir-lemme, bleu-catégorie
 grammaticale, vert-affixe ou caractéristique ou classe, jaune-ponctuation non-phrastique,
 rose foncé-lemme inconnu, rose-catégorie inconnue, rouge-lemme non trouvé. Important ! Vous
-devez exécuter les modules jusqu'à et y compris {runApert} avant d'exécuter ce module.</translation>
+devez exécuter les modules jusqu'à {runApert} avant d'exécuter ce module.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="235"/>

@@ -51,12 +51,12 @@
     <message>
       <location filename="../AdHocConstrForCluster.py" line="181"/>
       <source>adjacent after</source>
-      <translation>adjacent après</translation>
+      <translation>adjacent suivant</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="182"/>
       <source>adjacent before</source>
-      <translation>adjacent avant</translation>
+      <translation>adjacent précédent</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="371"/>
