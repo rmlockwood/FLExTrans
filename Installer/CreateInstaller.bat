@@ -89,7 +89,8 @@ copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 rem copy all module code files
 copy %dev%\Modules\*.py %modulesflextrans%
 
-rem regenerate the per-language rule-preview specs from the XXE transfer.css files so the derived specs match the current CSS
+rem sync the translated XXE transfer.css copies to the master's structure (keeps their translated labels), then regenerate the per-language rule-preview specs from the XXE transfer.css files
+python %dev%\syncTransferCss.py
 python %dev%\derive_preview_specs.py
 
 rem copy all shared code and css files
