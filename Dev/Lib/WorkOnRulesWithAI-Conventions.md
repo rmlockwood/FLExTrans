@@ -48,6 +48,27 @@ the same tag as `def_sg_c`). Never change the case of a tag.
 target word by its lexeme only (e.g. "word"), **append the default homograph and sense `1.1`** → `word1.1`. If the user gives the homograph and sense explicitly (e.g. `jag2.2`), use it exactly and
 **do not append** anything. This applies wherever a lemma appears — most often a `<lit v="…">` that outputs a target lemma (e.g. `<lit v="word1.1">`), and `<cat-item lemma="…">`.
 
+## Reading the interlinearized FLEx example data
+
+Some requests include **SOURCE / TARGET LANGUAGE EXAMPLE DATA** — interlinearized text the user copied out of FLEx, laid out as tab-separated rows with a row header in the first column. It is optional
+grounding: when it is present, use it to see how the languages actually break words into morphemes and which morphemes map to which lemmas, affixes, and features; when it is absent, work from the
+project data and the request alone. Most of the rows (the free translation, the word/morpheme numbering, and so on) are noise for rule-writing — **concentrate only on the `Lex. Entries`, `Lex. Gloss`,
+and `Lex. Gram. Info.` rows**, and read them together column by column so each morpheme lines up across the three rows.
+
+- **`Lex. Entries`** — the morpheme-by-morpheme breakdown of each word. Pay attention to the **stems**: the morphemes that have a category abbreviation under them (on the `Lex. Gram. Info.` row). A
+  stem roughly corresponds to an Apertium **lemma**.
+- **`Lex. Gloss`** — the gloss of each morpheme. Pay attention to the **affix glosses**: after turning any periods into underscores (see "Dotted glosses become underscores" above), these are the affix
+  tags that show up as attributes — the `tags` values of the `<attr-item>`s inside a `<def-attr>`.
+- **`Lex. Gram. Info.`** — the grammatical information for each morpheme, which tells you what kind of thing it is and how it maps into a lexical unit's tags:
+  - An **inflectional affix** shows the category abbreviation it attaches to, then a colon, then the name of the slot it fills — e.g. `n:number`. That slot name is the one you build an `a_<slot>_slot`
+    attribute around, and the affix glosses from the `Lex. Gloss` row that fill that position are its `<attr-item>` tags.
+  - A **derivational affix** shows the category abbreviation it attaches to and the category abbreviation the resulting new stem becomes, joined by a `>` sign — e.g. `adj>adv` (attaches to an adjective
+    and turns it into an adverb). The `>` is what marks it as derivational rather than inflectional: it changes the stem's category instead of filling an inflection slot.
+  - A **stem** shows its category abbreviation, then a space, then optionally the inflection-feature abbreviations assigned to the stem and/or, in parentheses, the inflection class assigned to it —
+    e.g. `n masc (decl1)`. These become the feature tags and the inflection-class tag on the word (recall the canonical tag order: category, then inflection class, then features, then affixes).
+  - **Enclitics and proclitics** carry only a category abbreviation, so they look like separate words, but in the FLExTrans/Apertium pipeline they are **treated as affixes, not separate words**. Spot
+    them by the equals sign attached to the lexical entry (the `=` sits on the side facing the host word): a proclitic is written with `=` after it and an enclitic with `=` before it.
+
 ## Transfer file structure (context only — you emit rules, not the file)
 
 The file is a `<transfer>` with sections in this fixed order: `section-def-cats`, `section-def-attrs`, `section-def-vars`, `section-def-lists`, `section-def-macros`, `section-rules`. Any new
