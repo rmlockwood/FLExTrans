@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/26
 #
+#   Version 3.16.3 - 7/9/26 - Ron Lockwood
+#    Fixes #1407. Selected item now shows white text (over the highlight background), matching the split feature grid.
+#
 #   Version 3.16.2 - 6/16/26 - Ron Lockwood
 #    Enable alternating row colors in the chooser list.
 #
@@ -55,6 +58,15 @@ class ListChooserDialog(QDialog):
 
         # Paint rows in alternating tones (Base / AlternateBase) so they're easier to scan, matching the rule list.
         self._list.setAlternatingRowColors(True)
+
+        # Force a white foreground on the selected row (over the highlight background) so the text stays readable instead of the dark
+        # color the Win11 style leaves it. Matches the split feature grid in the Disjoint Features editor.
+        self._list.setStyleSheet(
+            "QListWidget { outline: 0; }"
+            "QListWidget::item { border: 0; }"
+            "QListWidget::item:selected {"
+            " background-color: palette(highlight); color: white; }"
+        )
 
         for text, data in items:
 
