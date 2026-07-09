@@ -54,3 +54,53 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
    `Dev/Modules`, `Dev/TopLevel`), translate them (Crowdin picks the new language up from the regenerated `crowdin.yml`), and compile them to `.qm` with the `compile_transl*.bat` /
    `process*.bat` scripts — those already loop over the generated `LANG_CODES`, so they include the new language automatically.
 
+## Maintaining the XXE rule-preview stylesheet (`transfer.css`)
+
+The in-app rule preview (the "Work on Rules with AI" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,
+[`Dev/derive_preview_specs.py`](derive_preview_specs.py), parses each `transfer.css` into a compact `Dev/Lib/preview_spec_<code>.json` that `TransferPreview` loads. Each spec captures, per rule
+element, the label text, the attribute chips shown on it, and the chip colours (the colours come from the stylesheet's `@property-value` declarations, so the preview's box colours match XXE).
+
+**When to run it:** any time an XXE `transfer.css` changes — a colour edit, a new element rule, a changed label — and after adding a new language's translated stylesheet (step 4 above).
+
+**How to run it:** `python Dev/derive_preview_specs.py`. It rewrites `preview_spec_<code>.json` for every language in `UILanguages.py`; a language whose translated `transfer.css` doesn't exist yet
+is printed as `SKIP` and its preview falls back to English. `CreateInstaller.bat` runs this automatically on every build, so the shipped specs always match the current CSS — you only need to
+run it by hand when you want to see a CSS change reflected in the preview during development. Commit the regenerated `preview_spec_<code>.json` files with your CSS change.
+
+### The master and translated stylesheets
+
+There are N copies of `transfer.css`, one per UI language (English's copy is the master):
+
+- the master (English): `Installer/InstallerResources/XXEaddon/ApertiumTransferXMLmind/css/transfer.css`
+- one per translation language: `Installer/InstallerResources/XXEaddon/translations/<code>/ApertiumTransferXMLmind/css/transfer.css`
+
+The translated copies are **structurally identical** to the master — same selectors, same `text-field`/`combo-box`/colour definitions, same `@property-value` colours — and differ **only** in the
+quoted label strings inside `content:` (e.g. `" action: "` → `" Aktion: "`). So a structural change to the master (a new element rule, a colour change, a new/renamed field) must be mirrored into
+every translated copy, keeping its translated label text. [`Dev/syncTransferCss.py`](syncTransferCss.py) does this for you — don't hand-edit the translated copies for structural changes.
+
+### Syncing the translated stylesheets after editing the master
+
+After you change the **master** `transfer.css`, run:
+
+```
+python Dev/syncTransferCss.py
+```
+
+It rebuilds each translated copy from the master, re-applying that copy's existing translations (matched by selector and position) so every structural change is carried over automatically. Any
+English string in the master that a translated copy has no translation for is left in English **and reported**, so you can see exactly what still needs translating, e.g.:
+
+```
+  de: updated (...\translations\de\...\transfer.css, cp1252)
+    1 string(s) still in English (need translation in de):
+      " negate: "
+```
+
+Then hand-translate only the reported strings in the affected files. `CreateInstaller.bat` runs this tool just before `derive_preview_specs.py`, so a build never ships a translated stylesheet
+that has drifted from the master. Notes: only translate the **master**; the translated copies are regenerated. Comments and everything outside the quoted label strings come from the master, so a
+translated copy's CSS comments are reset to English (they aren't user-visible). Each translated file keeps the encoding it is stored in (currently cp1252). A language whose translated
+`transfer.css` doesn't exist yet is skipped — create it first (step 4 above).
+
+**Rewording an existing label.** The tool matches translations to master strings **by position** (which rule, which field), not by the English text. So if you only reword a label that is
+already there — e.g. change `" action: "` to `" step: "` on an otherwise-unchanged rule — the tool keeps the existing translation at that position and does **not** flag it. If the reword is
+just cosmetic (same meaning), that's fine, nothing more to do. If the meaning changed, update that label's translation in each `translations/<code>/…/transfer.css` yourself — or blank that one
+string there (`content: "";`) and re-run the sync, which will then leave it English and list it as needing translation, back in the normal flow above.
+
