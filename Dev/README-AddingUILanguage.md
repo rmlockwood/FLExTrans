@@ -19,8 +19,13 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
    `Portuguese` — see `C:\Program Files (x86)\NSIS\Contrib\Language files` for the valid names), and `crowdinId` only if Crowdin's id for the language differs from the two-letter code
    (as with Spanish, `es-ES`). The position of the line in `LANGUAGES` is the position in the installer's language-picker dialog.
 
-2. **Translate the installer strings.** Copy `Installer/InstallerResources/LangForInstallerScript/en.nsh` to `XX.nsh` in the same folder, change every `EN_` prefix to `XX_`, translate all
-   the string values (including the five collection-tab `LangString`s), and set `XX_DISPLAY_NAME` to the same native name you put in `UILanguages.py`.
+2. **Translate the installer strings.** Copy `Installer/InstallerResources/LangForInstallerScript/en.nsh` to `XX.nsh` in the same folder and make these three edits, then translate all the
+   string values (including the five collection-tab `LangString`s) and set `XX_DISPLAY_NAME` to the same native name you put in `UILanguages.py`:
+   - Change every `EN_` prefix to `XX_` (e.g. `EN_LANGCODE` → `SV_LANGCODE`) — these are the `!define` lines.
+   - Change every `${LANG_ENGLISH}` to `${LANG_<NSISNAME>}` on the five `LangString` lines. `<NSISNAME>` is the uppercase of the `nsisName` you set in step 1 — NSIS itself defines this
+     constant when the generated `languages.nsh` registers the language with `!insertmacro MUI_LANGUAGE "<nsisName>"`, so you don't invent the name. For `nsisName='Swedish'` it is
+     `${LANG_SWEDISH}` (compare `de.nsh`, which uses `${LANG_GERMAN}`).
+   - Set `XX_LANGCODE` to the two-letter `code` from step 1 (e.g. `"sv"`).
 
 3. **Run the generator:** `python Dev/updateLanguageFiles.py`. This regenerates the three files in the table above; commit them along with your other changes. Nothing in
    `FLExTrans-installer.nsi`, the `.bat` scripts, or `crowdin.yml` needs hand-editing.
@@ -49,4 +54,3 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
    `Dev/Modules`, `Dev/TopLevel`), translate them (Crowdin picks the new language up from the regenerated `crowdin.yml`), and compile them to `.qm` with the `compile_transl*.bat` /
    `process*.bat` scripts — those already loop over the generated `LANG_CODES`, so they include the new language automatically.
 
-7. **Rule Assistant strings.** If the Rule Assistant properties files are in use (`Dev/RuleGen_{en,de,es,fr}.properties`), add a `RuleGen_XX.properties` translation as well.
