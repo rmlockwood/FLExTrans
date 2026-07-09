@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.4 - 7/9/26 - Ron Lockwood
+#    LocalizedDateTimeFormatter now builds its QLocale from UILanguages.py (the new single authoritative UI-language list) instead of a hardcoded per-language map.
+#
 #   Version 3.16.3 - 7/4/26 - Ron Lockwood
 #    LocalizedDateTimeFormatter.formatDateTime takes an optional Qt format string, so callers can get a custom localized layout (e.g. a spelled-out localized month) as well as the
 #    default short format.
@@ -253,6 +256,7 @@ from flextoolslib import FTConfig
 
 import ReadConfig as MyReadConfig
 import FTPaths
+import UILanguages
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -1437,14 +1441,10 @@ class LocalizedDateTimeFormatter:
 
         if langCode not in self.localeCache:
 
-            localeMap = {
-                'de': QLocale(QLocale.Language.German, QLocale.Country.Germany),
-                'es': QLocale(QLocale.Language.Spanish, QLocale.Country.Spain),
-                'en': QLocale(QLocale.Language.English, QLocale.Country.UnitedStates),
-                'fr': QLocale(QLocale.Language.French, QLocale.Country.France),   
-            }
-            self.localeCache[langCode] = localeMap.get(langCode, QLocale())
-        
+            # The locale name (e.g. 'de_DE') comes from the authoritative UI-language list; an unknown code falls back to the system default locale.
+            localeName = UILanguages.localeNameForCode(langCode)
+            self.localeCache[langCode] = QLocale(localeName) if localeName else QLocale()
+
         return self.localeCache[langCode]
     
     def formatDateTime(self, datetimeObj, formatStr=None):

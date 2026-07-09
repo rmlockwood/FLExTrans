@@ -1,11 +1,12 @@
 ; ==============================================================
 ; Lang\en.nsh — English UI strings for FLExTrans installer
 ;
-; HOW TO ADD A NEW LANGUAGE:
+; HOW TO ADD A NEW LANGUAGE (full checklist: Dev\README-AddingUILanguage.md):
 ;   1. Copy this file to Lang\XX.nsh  (XX = ISO 639-1 code, e.g. "pt")
 ;   2. Change every EN_ prefix to XX_  (e.g. PT_)
 ;   3. Translate every string value
-;   4. Follow the remaining steps listed in FLExTrans-installer.nsi
+;   4. Add the language to Dev\Lib\UILanguages.py and run: python Dev\updateLanguageFiles.py
+;      (that regenerates languages.nsh, which registers this file with the installer)
 ; ==============================================================
 
 ; ---- LangStrings (referenced at runtime as $(Key) for collection tab names) ----

@@ -94,3 +94,7 @@ Group imports into these blocks, in this order, separated by a single blank line
   `Dev/RuleGen_{en,de,es,fr}.properties`. Pull translations from there.
 - Compile with `lrelease <file>.ts -qm CompiledTranslations/<file>_<lang>.qm`.
 - Add new strings to all of `_de`, `_es`, `_fr`; aim for 0 unfinished.
+- The authoritative UI-language list is `Dev/Lib/UILanguages.py`. `Dev/lang_codes.bat`,
+  `LangForInstallerScript/languages.nsh`, and `crowdin.yml` are GENERATED from it by
+  `Dev/updateLanguageFiles.py` — never edit those three by hand. To add a UI language,
+  follow `Dev/README-AddingUILanguage.md`.

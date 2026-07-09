@@ -21,18 +21,18 @@
 import os
 import re
 import json
+import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 XXE = os.path.join(REPO, 'Installer', 'InstallerResources', 'XXEaddon')
 OUT_DIR = os.path.join(REPO, 'Dev', 'Lib')
 
-# The XXE stylesheet per UI language. 'en' is the untranslated master.
-CSS_FOR_LANG = {
-    'en': os.path.join(XXE, 'ApertiumTransferXMLmind', 'css', 'transfer.css'),
-    'de': os.path.join(XXE, 'translations', 'de', 'ApertiumTransferXMLmind', 'css', 'transfer.css'),
-    'es': os.path.join(XXE, 'translations', 'es', 'ApertiumTransferXMLmind', 'css', 'transfer.css'),
-    'fr': os.path.join(XXE, 'translations', 'fr', 'ApertiumTransferXMLmind', 'css', 'transfer.css'),
-}
+# The UI-language list comes from the single authoritative module in Dev/Lib.
+sys.path.insert(0, os.path.join(REPO, 'Dev', 'Lib'))
+import UILanguages
+
+# The XXE stylesheet per UI language: English reads the untranslated master; every translation language reads the translated stylesheet under XXEaddon/translations/<lang>/.
+CSS_FOR_LANG = {code: os.path.join(XXE, 'ApertiumTransferXMLmind', 'css', 'transfer.css') if code == UILanguages.SOURCE_CODE else os.path.join(XXE, 'translations', code, 'ApertiumTransferXMLmind', 'css', 'transfer.css') for code in UILanguages.allCodes()}
 
 # XXE background-color property-value name -> our transfer_preview.css chip class.
 COLOR_CLASS = {

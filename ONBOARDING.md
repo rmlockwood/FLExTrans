@@ -304,8 +304,11 @@ window opens; breakpoints in `Dev\` will hit.
 ## 10. Translating user-facing strings
 
 All user-facing text is localized through Qt's translation system into German (`de`),
-Spanish (`es`), and French (`fr`). The workflow is: **mark strings → extract to `.ts` →
-translate → compile to `.qm`**.
+Spanish (`es`), and French (`fr`). The authoritative list of UI languages lives in
+`Dev\Lib\UILanguages.py` — the batch scripts, installer script, and `crowdin.yml` draw their
+language lists from files generated from it by `Dev\updateLanguageFiles.py` (to add a whole
+new UI language, see `Dev\README-AddingUILanguage.md`). The per-string workflow is:
+**mark strings → extract to `.ts` → translate → compile to `.qm`**.
 
 ### 10a. Tools you need
 
