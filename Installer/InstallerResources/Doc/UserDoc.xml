@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->6 July 2026</date
+>9 July 2026</date
 ><version
 >3.16</version
 ><contents
@@ -2702,7 +2702,7 @@ id="nCreateAll"
 ></comment
 > A validity check will also be applied to every rule. If any issue is found, an error dialog message will be shown with an explanation of what the issue is. It will also indicate which rule had the problem. The dialog will not exit until all validity checks pass.</p
 ><p
->The “Help” button is used to get this user documentation file or to show the “About” dialog box.</p
+>The “Help” button is used to display the user documentation on this tool.</p
 ><p
 >Whenever you use either the <object
 type="tSaveCreate"
@@ -2728,7 +2728,7 @@ type="tLiveRuleTester"
 ><p
 >Under the list of rules is a check box labeled “Overwrite rule(s).” When this is checked, then any previous rules which have the same name will be overwritten.</p
 ><p
->Under this check box is a button labeled “Set disjoint features.” This is for a special case. See section <sectionRef
+>Under this check box is a button labeled “Set split features.” This is for a special case. See section <sectionRef
 sec="sRuleAssistDisjointFeatures"
 ></sectionRef
 >.</p
@@ -3008,14 +3008,6 @@ type="tBold"
 ><li
 ><object
 type="tBold"
->Insert feature</object
->: inserts a feature item. This is only available when a category has been set for the word this affix is a part of. The list of available features depends on the set of valid features defined in <object
-type="tFlexx"
-></object
-> for the category of the word.</li
-><li
-><object
-type="tBold"
 >Insert new prefix before</object
 >: inserts a new affix item labeled as a prefix before the selected affix.</li
 ><li
@@ -3033,6 +3025,14 @@ type="tBold"
 type="tBold"
 >Insert new suffix after</object
 >: inserts a new affix item labeled as a suffix after the selected affix.</li
+><li
+><object
+type="tBold"
+>Insert feature</object
+>: inserts a feature item. This is only available when a category has been set for the word this affix is a part of. The list of available features depends on the set of valid features defined in <object
+type="tFlexx"
+></object
+> for the category of the word.</li
 ><li
 ><object
 type="tBold"
@@ -3102,28 +3102,9 @@ type="tFlextrans"
 ><section3
 id="sRuleAssistDisjointFeatures"
 ><secTitle
->Disjoint features</secTitle
+>Split features</secTitle
 ><p
-contentType="ctNumberOnly"
->This is a special case and requires that the target language have a “number” feature with at least values of “sg” and “pl” (and the feature and these two values must be spelled exactly this way). If your target language does not have this feature with at least these two values, then <object
-type="tTool"
->Rule Assistant</object
-> will show the error message dialog in example <exampleRef
-letter="xNumberSgPlMessage"
-num="xNumberSgPlMessage"
-></exampleRef
->.</p
-><example
-contentType="ctNumberOnly"
-num="xNumberSgPlMessage"
-><chart
-><img
-src="Images/NumberSgPlMessage.png"
-></img
-></chart
-></example
-><p
->In rare cases, you may need to use what we are calling “disjoint features.” Some <object
+>In rare cases, you may need to use what we are calling “split features.” Some <object
 type="tFlexx"
 ></object
 > users implementing Bantu languages split the set of gender features into at least two sets. One set corresponds to the gender noun classes which also are marked as singular in number and the other set corresponds to the gender noun classes which are also marked as plural in number. When writing a rule via the <object
@@ -3146,26 +3127,15 @@ src="Images/DisjointGenderFeaturesEditor.png"
 ><p
 >The name that will be used in features in rules is in the “Name” field. You can think of this as a cover term.</p
 ><p
-contentType="ctFull"
->You can set this for either the source or the target language via the “Language” radio buttons.</p
+>Currently, only the target language can be used, so the “Language” is fixed to the target. The “Distinguishing feature” combo box only allows the “number” feature appropriate for Bantu. The combo boxes under “Feature value” only allow a “sg,” “pl,” or “many” value.</p
 ><p
-contentType="ctNumberOnly"
->Currently, only the target language can be used.</p
-><p
-contentType="ctFull"
->The “Co-feature name” combo box lists all the features available in this language. You select the one that is common to each set of disjoint features. In this Bantu case, this is the “number” feature.</p
-><p
-contentType="ctNumberOnly"
->The “Distinguishing feature” combo box only allows for the “number” feature appropriate for Bantu. The combo boxes under “Feature value” only allow for either a “sg” or a “pl” value. When you set one, the other is automatically set to the other value.</p
-><p
-contentType="ctFull"
->Below this is a slider control which lets you define between two and six pairs of a <object
+>Below this is a slider control which lets you define between two and three pairs of a <object
 type="tFlexx"
 ></object
-> feature and a value for this “co-feature.” Each pair has two combo boxes, one for the <object
+> feature and a value for the distinguishing feature. Each pair has two combo boxes, one for the <object
 type="tFlexx"
 ></object
-> feature and one for the value of the co-feature. As you can see in example <exampleRef
+> feature (under “Subfeature”) and one for its value (under “Feature value”). As you can see in example <exampleRef
 letter="xFeatureSetEditor"
 num="xFeatureSetEditor"
 ></exampleRef
@@ -3177,12 +3147,12 @@ id="nBantu1AndBantu2"
 ><p
 >The “1” and the “2” are used merely for sorting purposes. This enables the singular to appear before the plural.</p
 ></endnote
-> Notice that the singular disjoint feature uses the “sg” value of the “number” feature while the plural disjoint feature uses the “pl” value of the “number” feature. This information enables the <object
+> Notice that the singular split feature uses the “sg” for the feature value while the plural split feature uses the “pl” feature value. This information enables the <object
 type="tTool"
 >Rule Assistant</object
 > to create appropriate transfer rules using the “BantuNounClass” cover term.</p
 ><p
->Whenever you have one of these disjoint feature sets defined and are choosing a feature to use in a word or affix, the name of the disjoint feature set will be listed in the possible feature values. You can then choose it as part of the rule like you would any other normal (non-disjoint) feature. In this example, you would see features like “BantuNounClass:α” and “BantuNounClass:β” in the list.</p
+>Whenever you have one of these split feature sets defined and are choosing a feature to use in a word or affix, the name of the split feature set will be listed in the possible feature values. You can then choose it as part of the rule like you would any other normal (non-split) feature. In this example, you would see features like “BantuNounClass:α” and “BantuNounClass:β” in the list.</p
 ></section3
 ></section2
 ><section2
