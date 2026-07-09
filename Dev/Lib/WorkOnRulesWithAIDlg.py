@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.17 - 7/9/26 - Ron Lockwood
+#    The interface-language names now come from UILanguages.py (the new single authoritative UI-language list) instead of a local UI_LANG_NAMES dict.
+#
 #   Version 3.16.16 - 7/9/26 - Ron Lockwood
 #    Moved the Source Data / Target Data buttons off the bottom row and up beside the action buttons on both tabs (next to Create, and next to Modify/Explain); both copies share the same
 #    global example data and check-mark state.
@@ -82,6 +85,7 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 import AIRules
 import TransferPreview
+import UILanguages
 from WorkOnRulesWithAIWindow import Ui_WorkOnRulesWithAI # type: ignore
 from PasteDataWindow import Ui_PasteDataDialog # type: ignore
 
@@ -307,9 +311,6 @@ class WorkOnRulesWithAIDlg(QDialog):
     '''Create, modify, or explain one Apertium transfer rule with AI assistance. Two tabs: "Create new rule" (describe it, then Create) and "Modify or explain an existing rule" (pick a
     rule - its preview shows at once on the left - then Modify with a description, or Explain in a chosen language). The layout comes from WorkOnRulesWithAIWindow.ui (pyuic).'''
 
-    # The FLExTrans interface languages, mapped to the English language name we put in the prompt when the user leaves the Explanation-language box blank.
-    UI_LANG_NAMES = {'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French'}
-
     def __init__(self, transferPath, ruleNames, ruleXmlByComment, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
 
         super().__init__(parent)
@@ -450,9 +451,9 @@ class WorkOnRulesWithAIDlg(QDialog):
             return 'en'
 
     def interfaceLanguageName(self) -> str:
-        '''The interface language as a language name (e.g. "German"), the default explanation language when the user hasn't typed one in the Explanation-language box.'''
+        '''The interface language as an English language name (e.g. "German"), the default explanation language when the user hasn't typed one in the Explanation-language box.'''
 
-        return self.UI_LANG_NAMES.get(self.interfaceLangCode(), 'English')
+        return UILanguages.englishNameForCode(self.interfaceLangCode())
 
     def explanationLanguage(self) -> str:
         '''The language to write an explanation in: what the user typed in the Explanation-language box, or the interface language when that box is blank.'''

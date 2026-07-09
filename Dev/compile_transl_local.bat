@@ -1,8 +1,8 @@
 echo off
 setlocal enabledelayedexpansion
 
-REM Define language codes
-set lang_codes=de es fr
+REM Load the translation language codes (LANG_CODES) from the generated file - the authoritative list is Dev\Lib\UILanguages.py
+call "%~dp0lang_codes.bat"
 
 REM Define directories to process
 set directories=TopLevel Modules Lib Lib\Windows
