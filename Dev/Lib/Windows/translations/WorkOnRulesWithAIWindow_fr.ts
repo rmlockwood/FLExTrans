@@ -61,7 +61,7 @@
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="122"/>
       <source>Explanation language</source>
-      <translation>Langue de l'explication</translation>
+      <translation>Langue d'explication</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="121"/>
