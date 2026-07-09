@@ -79,6 +79,26 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QPushButton" name="createSourceDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Source Data…</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="createTargetDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Target Data…</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -190,6 +210,26 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QPushButton" name="modifySourceDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Source Data…</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="modifyTargetDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Target Data…</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -234,6 +274,84 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QLabel" name="zoomLabel">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Zoom:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="zoomIncreaseButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>25</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>21</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Magnify the preview text</string>
+           </property>
+           <property name="text">
+            <string notr="true">+</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="zoomDecreaseButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>25</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>21</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Reduce the preview text</string>
+           </property>
+           <property name="text">
+            <string notr="true">–</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -271,26 +389,6 @@
       <widget class="QPushButton" name="changeKeyButton">
        <property name="text">
         <string>Change API key…</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="sourceDataButton">
-       <property name="toolTip">
-        <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
-       </property>
-       <property name="text">
-        <string>Source Data…</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="targetDataButton">
-       <property name="toolTip">
-        <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
-       </property>
-       <property name="text">
-        <string>Target Data…</string>
        </property>
       </widget>
      </item>

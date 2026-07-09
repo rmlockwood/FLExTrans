@@ -1323,7 +1323,8 @@ def getAllInflectableFeatures(DB):
         abbr = as_string(pos.Abbreviation)
         for infl in pos.InflectableFeatsRC:
             # TODO: are there other possibilities?
-            if infl.ClassName == FS_COMPLEX_FEATURE:
+            # See if we have a complex feature and non-None objects.
+            if infl.ClassName == FS_COMPLEX_FEATURE and IFsComplexFeature(infl).TypeRA and IFsComplexFeature(infl).TypeRA.FeaturesRS:
                 for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
                     ret[abbr].add(as_string(feat.Name))
             elif infl.ClassName == FS_CLOSED_FEATURE:

@@ -5,6 +5,13 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.16 - 7/9/26 - Ron Lockwood
+#    Moved the Source Data / Target Data buttons off the bottom row and up beside the action buttons on both tabs (next to Create, and next to Modify/Explain); both copies share the same
+#    global example data and check-mark state.
+#
+#   Version 3.16.15 - 7/9/26 - Ron Lockwood
+#    Added Zoom +/- buttons to the preview pane header (like the Live Rule Tester) so the user can magnify or reduce the rendered rule text; the chosen zoom persists across re-renders.
+#
 #   Version 3.16.14 - 7/7/26 - Ron Lockwood
 #    Review fixes: Open-in-XXE scratch folders are tracked and removed when the dialog closes (were leaking per click); a modify that can't load the original rule now says so instead of
 #    silently showing only the new rule with no comparison.
@@ -86,6 +93,12 @@ except ImportError:
     FTPaths = None  # type: ignore[assignment]
 
 _translate = QCoreApplication.translate
+
+# Multiplier applied to the preview's zoom factor on each click of the +/- buttons (matches the Live Rule Tester's zoom step). QWebEngineView clamps the usable zoom to roughly
+# 0.25x-5.0x, so we clamp to that range in setPreviewZoom before applying it.
+ZOOM_FACTOR_STEP = 1.15
+MIN_PREVIEW_ZOOM = 0.25
+MAX_PREVIEW_ZOOM = 5.0
 
 def promptForApiKey(provider, parent=None):
     '''Ask the user for an API key and store it in `provider`'s slot in the OS credential vault (not a project file). Each provider has its own slot, so a key entered here does not
@@ -356,19 +369,36 @@ class WorkOnRulesWithAIDlg(QDialog):
         # that can steal arrow/navigation keys from sibling text widgets. Constructing it is slow (Chromium starts up), so we warm it up just after the window appears - see warmUpPreview.
         self.preview = None
 
+        # Current magnification of the preview text, driven by the Zoom +/- buttons. Remembered here (not just on the view) so it survives re-rendering and view rebuilds; applied to the
+        # view whenever it's created or shown - see setPreviewZoom / ensurePreview.
+        self.previewZoomFactor = 1.0
+
         # Hook up the widgets. The window stays open across successive edits: only Close (and the window's X) end it.
         self.ui.createButton.clicked.connect(self.onCreate)
         self.ui.modifyButton.clicked.connect(self.onModify)
         self.ui.explainButton.clicked.connect(self.onExplain)
         self.ui.ruleList.currentItemChanged.connect(self.onRuleSelected)
         self.ui.modeTabs.currentChanged.connect(self.onTabChanged)
-        self.ui.sourceDataButton.clicked.connect(self.onSourceData)
-        self.ui.targetDataButton.clicked.connect(self.onTargetData)
         self.ui.refreshButton.clicked.connect(self.onRefreshRules)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
         self.ui.closeButton.clicked.connect(self.close)
         self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
+        self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
+        self.ui.zoomDecreaseButton.clicked.connect(self.onZoomDecrease)
+
+        # The Source/Target Data buttons appear once on each tab (Create and Modify/Explain), but the example data they edit is global - the same data is sent with every request. Group
+        # each side's buttons so the check-mark label and the busy-time enable/disable can be kept in step across both copies (see updateDataButtons / setBusy).
+        self.sourceDataButtons = [self.ui.createSourceDataButton, self.ui.modifySourceDataButton]
+        self.targetDataButtons = [self.ui.createTargetDataButton, self.ui.modifyTargetDataButton]
+
+        for button in self.sourceDataButtons:
+
+            button.clicked.connect(self.onSourceData)
+
+        for button in self.targetDataButtons:
+
+            button.clicked.connect(self.onTargetData)
 
     def showEvent(self, event):
 
@@ -392,6 +422,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         if self.preview is None:
             self.preview = QWebEngineView()
+            self.preview.setZoomFactor(self.previewZoomFactor)
 
     def closeEvent(self, event):
         '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
@@ -551,10 +582,19 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.askAboutDataOnNextGenerate = False
 
     def updateDataButtons(self):
-        '''A check mark at the end of a data button's label shows that data has been given on that side.'''
+        '''A check mark at the end of a data button's label shows that data has been given on that side. Both tabs' copies of each button carry the same label so the mark shows wherever
+        the user looks.'''
 
-        self.ui.sourceDataButton.setText(_translate('WorkOnRulesWithAI', 'Source Data…') + (' ✓' if self.sourceDataText else ''))
-        self.ui.targetDataButton.setText(_translate('WorkOnRulesWithAI', 'Target Data…') + (' ✓' if self.targetDataText else ''))
+        sourceLabel = _translate('WorkOnRulesWithAI', 'Source Data…') + (' ✓' if self.sourceDataText else '')
+        targetLabel = _translate('WorkOnRulesWithAI', 'Target Data…') + (' ✓' if self.targetDataText else '')
+
+        for button in self.sourceDataButtons:
+
+            button.setText(sourceLabel)
+
+        for button in self.targetDataButtons:
+
+            button.setText(targetLabel)
 
     # --- the three actions -----------------------------------------------
 
@@ -685,9 +725,9 @@ class WorkOnRulesWithAIDlg(QDialog):
     def setBusy(self, busy: bool):
         '''Disable input while a generation runs. Close stays enabled (its closeEvent waits for the thread). Approve/XXE are only turned back on by the result handlers, not here.'''
 
+        # Disabling the tab widget also disables everything inside it, so the Create/Modify/Explain buttons and both tabs' Source/Target Data buttons (which now live inside the tabs) are
+        # covered here without touching them individually.
         self.ui.modeTabs.setEnabled(not busy)
-        self.ui.sourceDataButton.setEnabled(not busy)
-        self.ui.targetDataButton.setEnabled(not busy)
         self.ui.changeKeyButton.setEnabled(not busy)
 
         if busy:
@@ -710,6 +750,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         if self.preview is None:
             self.preview = QWebEngineView()
+            self.preview.setZoomFactor(self.previewZoomFactor)
 
         # The view is created unparented by warmUpPreview; addWidget reparents it into the preview area. Only do this once - after that it already lives in the layout.
         if self.preview.parent() is None:
@@ -720,6 +761,25 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.preview.show()
 
         return self.preview
+
+    def onZoomIncrease(self):
+        '''Magnify the preview text one step (Zoom + button).'''
+
+        self.setPreviewZoom(self.previewZoomFactor * ZOOM_FACTOR_STEP)
+
+    def onZoomDecrease(self):
+        '''Reduce the preview text one step (Zoom - button).'''
+
+        self.setPreviewZoom(self.previewZoomFactor / ZOOM_FACTOR_STEP)
+
+    def setPreviewZoom(self, factor):
+        '''Clamp the requested zoom to the web view's supported range, remember it, and apply it to the view if it exists. Remembering it here means a preview rendered (or a view rebuilt)
+        after the user has zoomed comes up at the chosen magnification rather than resetting to 1.0.'''
+
+        self.previewZoomFactor = max(MIN_PREVIEW_ZOOM, min(MAX_PREVIEW_ZOOM, factor))
+
+        if self.preview is not None:
+            self.preview.setZoomFactor(self.previewZoomFactor)
 
     def blankPreview(self):
         '''Clear the preview area back to its placeholder text: hide the web view (if it exists) and show the placeholder. Used when switching tabs so no stale rule is left showing.'''

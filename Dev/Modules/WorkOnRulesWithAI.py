@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.4 - 7/9/26 - Ron Lockwood
+#    The transfer file is now parsed only once at startup (parsed here and the tree handed to both extractExistingDefs and getSampleRulesAndMacros) instead of being read and parsed twice.
+#
 #   Version 3.16.3 - 7/7/26 - Ron Lockwood
 #    The target FLEx project is now guarded (bail out cleanly if it can't be opened) and closed in a finally so it isn't left locked for the rest of the session; the conventions .md is
 #    read with a with-block.
@@ -55,7 +58,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.3",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -233,13 +236,16 @@ def MainFunction(DB, report, modify=True):
         includeProjectNames = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES, report, giveError=False) == 'y'
         projectData = buildProjectDataText(startData, includeProjectNames)
 
-        defs = AIRules.extractExistingDefs(transferPath)
+        # Parse the transfer file once and feed the same tree to both extractors, rather than each re-reading and re-parsing the whole file (extractExistingDefs walks it for the def
+        # summary and the {comment: rule-XML} cache; getSampleRulesAndMacros pulls the longest rules/macros out of the same tree).
+        transferRoot = AIRules.parseTransferFile(transferPath)
+        defs = AIRules.extractExistingDefs(root=transferRoot)
 
         with open(conventionsPath, encoding='utf-8') as conventionsFile:
             conventionsText = conventionsFile.read()
 
         # Ground the model with the project's longest rules and macros - the richest examples of the house style the file has to offer.
-        sampleRulesText, sampleMacrosText = AIRules.getSampleRulesAndMacros(transferPath)
+        sampleRulesText, sampleMacrosText = AIRules.getSampleRulesAndMacros(root=transferRoot)
 
         systemInstruction = AIRules.buildSystemInstruction(conventionsText, sampleRulesText, sampleMacrosText)
         engine = AIRules.buildEngine(providerName, apiKey, model)
