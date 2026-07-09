@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.15 - 7/9/26 - Ron Lockwood
+#    Added Zoom +/- buttons to the preview pane header (like the Live Rule Tester) so the user can magnify or reduce the rendered rule text; the chosen zoom persists across re-renders.
+#
 #   Version 3.16.14 - 7/7/26 - Ron Lockwood
 #    Review fixes: Open-in-XXE scratch folders are tracked and removed when the dialog closes (were leaking per click); a modify that can't load the original rule now says so instead of
 #    silently showing only the new rule with no comparison.
@@ -86,6 +89,12 @@ except ImportError:
     FTPaths = None  # type: ignore[assignment]
 
 _translate = QCoreApplication.translate
+
+# Multiplier applied to the preview's zoom factor on each click of the +/- buttons (matches the Live Rule Tester's zoom step). QWebEngineView clamps the usable zoom to roughly
+# 0.25x-5.0x, so we clamp to that range in setPreviewZoom before applying it.
+ZOOM_FACTOR_STEP = 1.15
+MIN_PREVIEW_ZOOM = 0.25
+MAX_PREVIEW_ZOOM = 5.0
 
 def promptForApiKey(provider, parent=None):
     '''Ask the user for an API key and store it in `provider`'s slot in the OS credential vault (not a project file). Each provider has its own slot, so a key entered here does not
@@ -356,6 +365,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         # that can steal arrow/navigation keys from sibling text widgets. Constructing it is slow (Chromium starts up), so we warm it up just after the window appears - see warmUpPreview.
         self.preview = None
 
+        # Current magnification of the preview text, driven by the Zoom +/- buttons. Remembered here (not just on the view) so it survives re-rendering and view rebuilds; applied to the
+        # view whenever it's created or shown - see setPreviewZoom / ensurePreview.
+        self.previewZoomFactor = 1.0
+
         # Hook up the widgets. The window stays open across successive edits: only Close (and the window's X) end it.
         self.ui.createButton.clicked.connect(self.onCreate)
         self.ui.modifyButton.clicked.connect(self.onModify)
@@ -369,6 +382,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
         self.ui.closeButton.clicked.connect(self.close)
         self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
+        self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
+        self.ui.zoomDecreaseButton.clicked.connect(self.onZoomDecrease)
 
     def showEvent(self, event):
 
@@ -392,6 +407,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         if self.preview is None:
             self.preview = QWebEngineView()
+            self.preview.setZoomFactor(self.previewZoomFactor)
 
     def closeEvent(self, event):
         '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
@@ -710,6 +726,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         if self.preview is None:
             self.preview = QWebEngineView()
+            self.preview.setZoomFactor(self.previewZoomFactor)
 
         # The view is created unparented by warmUpPreview; addWidget reparents it into the preview area. Only do this once - after that it already lives in the layout.
         if self.preview.parent() is None:
@@ -720,6 +737,25 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.preview.show()
 
         return self.preview
+
+    def onZoomIncrease(self):
+        '''Magnify the preview text one step (Zoom + button).'''
+
+        self.setPreviewZoom(self.previewZoomFactor * ZOOM_FACTOR_STEP)
+
+    def onZoomDecrease(self):
+        '''Reduce the preview text one step (Zoom - button).'''
+
+        self.setPreviewZoom(self.previewZoomFactor / ZOOM_FACTOR_STEP)
+
+    def setPreviewZoom(self, factor):
+        '''Clamp the requested zoom to the web view's supported range, remember it, and apply it to the view if it exists. Remembering it here means a preview rendered (or a view rebuilt)
+        after the user has zoomed comes up at the chosen magnification rather than resetting to 1.0.'''
+
+        self.previewZoomFactor = max(MIN_PREVIEW_ZOOM, min(MAX_PREVIEW_ZOOM, factor))
+
+        if self.preview is not None:
+            self.preview.setZoomFactor(self.previewZoomFactor)
 
     def blankPreview(self):
         '''Clear the preview area back to its placeholder text: hide the web view (if it exists) and show the placeholder. Used when switching tabs so no stale rule is left showing.'''

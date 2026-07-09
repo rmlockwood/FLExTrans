@@ -128,5 +128,20 @@
         <source>e.g. Remove the IND affix from the output.</source>
         <translation>p. ej. Eliminar el afijo IND de la salida.</translation>
     </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
+        <source>Zoom:</source>
+        <translation>Zoom</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
+        <source>Magnify the preview text</source>
+        <translation>Ampliar el texto de la vista previa</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
+        <source>Reduce the preview text</source>
+        <translation>Reducir el texto de la vista previa</translation>
+    </message>
 </context>
 </TS>
