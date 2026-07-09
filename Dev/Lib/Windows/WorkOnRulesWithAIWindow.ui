@@ -79,6 +79,26 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QPushButton" name="createSourceDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Source Data…</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="createTargetDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Target Data…</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -189,6 +209,26 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="modifySourceDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Source Data…</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="modifyTargetDataButton">
+            <property name="toolTip">
+             <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
+            </property>
+            <property name="text">
+             <string>Target Data…</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -349,26 +389,6 @@
       <widget class="QPushButton" name="changeKeyButton">
        <property name="text">
         <string>Change API key…</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="sourceDataButton">
-       <property name="toolTip">
-        <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
-       </property>
-       <property name="text">
-        <string>Source Data…</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="targetDataButton">
-       <property name="toolTip">
-        <string>Paste interlinearized target-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
-       </property>
-       <property name="text">
-        <string>Target Data…</string>
        </property>
       </widget>
      </item>

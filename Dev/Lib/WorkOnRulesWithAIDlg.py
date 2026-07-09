@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.16 - 7/9/26 - Ron Lockwood
+#    Moved the Source Data / Target Data buttons off the bottom row and up beside the action buttons on both tabs (next to Create, and next to Modify/Explain); both copies share the same
+#    global example data and check-mark state.
+#
 #   Version 3.16.15 - 7/9/26 - Ron Lockwood
 #    Added Zoom +/- buttons to the preview pane header (like the Live Rule Tester) so the user can magnify or reduce the rendered rule text; the chosen zoom persists across re-renders.
 #
@@ -375,8 +379,6 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.explainButton.clicked.connect(self.onExplain)
         self.ui.ruleList.currentItemChanged.connect(self.onRuleSelected)
         self.ui.modeTabs.currentChanged.connect(self.onTabChanged)
-        self.ui.sourceDataButton.clicked.connect(self.onSourceData)
-        self.ui.targetDataButton.clicked.connect(self.onTargetData)
         self.ui.refreshButton.clicked.connect(self.onRefreshRules)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
@@ -384,6 +386,19 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
         self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
         self.ui.zoomDecreaseButton.clicked.connect(self.onZoomDecrease)
+
+        # The Source/Target Data buttons appear once on each tab (Create and Modify/Explain), but the example data they edit is global - the same data is sent with every request. Group
+        # each side's buttons so the check-mark label and the busy-time enable/disable can be kept in step across both copies (see updateDataButtons / setBusy).
+        self.sourceDataButtons = [self.ui.createSourceDataButton, self.ui.modifySourceDataButton]
+        self.targetDataButtons = [self.ui.createTargetDataButton, self.ui.modifyTargetDataButton]
+
+        for button in self.sourceDataButtons:
+
+            button.clicked.connect(self.onSourceData)
+
+        for button in self.targetDataButtons:
+
+            button.clicked.connect(self.onTargetData)
 
     def showEvent(self, event):
 
@@ -567,10 +582,19 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.askAboutDataOnNextGenerate = False
 
     def updateDataButtons(self):
-        '''A check mark at the end of a data button's label shows that data has been given on that side.'''
+        '''A check mark at the end of a data button's label shows that data has been given on that side. Both tabs' copies of each button carry the same label so the mark shows wherever
+        the user looks.'''
 
-        self.ui.sourceDataButton.setText(_translate('WorkOnRulesWithAI', 'Source Data…') + (' ✓' if self.sourceDataText else ''))
-        self.ui.targetDataButton.setText(_translate('WorkOnRulesWithAI', 'Target Data…') + (' ✓' if self.targetDataText else ''))
+        sourceLabel = _translate('WorkOnRulesWithAI', 'Source Data…') + (' ✓' if self.sourceDataText else '')
+        targetLabel = _translate('WorkOnRulesWithAI', 'Target Data…') + (' ✓' if self.targetDataText else '')
+
+        for button in self.sourceDataButtons:
+
+            button.setText(sourceLabel)
+
+        for button in self.targetDataButtons:
+
+            button.setText(targetLabel)
 
     # --- the three actions -----------------------------------------------
 
@@ -701,9 +725,9 @@ class WorkOnRulesWithAIDlg(QDialog):
     def setBusy(self, busy: bool):
         '''Disable input while a generation runs. Close stays enabled (its closeEvent waits for the thread). Approve/XXE are only turned back on by the result handlers, not here.'''
 
+        # Disabling the tab widget also disables everything inside it, so the Create/Modify/Explain buttons and both tabs' Source/Target Data buttons (which now live inside the tabs) are
+        # covered here without touching them individually.
         self.ui.modeTabs.setEnabled(not busy)
-        self.ui.sourceDataButton.setEnabled(not busy)
-        self.ui.targetDataButton.setEnabled(not busy)
         self.ui.changeKeyButton.setEnabled(not busy)
 
         if busy:
