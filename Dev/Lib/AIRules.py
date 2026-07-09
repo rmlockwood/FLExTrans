@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.10 - 7/9/26 - Ron Lockwood
+#    Added parseTransferFile so the transfer file is parsed only once at startup: extractExistingDefs and getSampleRulesAndMacros now accept a pre-parsed root (the module parses once
+#    and passes it to both) instead of each re-reading and re-parsing the whole file.
+#
 #   Version 3.16.9 - 7/7/26 - Ron Lockwood
 #    Review fixes: applyRule's modify now locates the rule to replace via an XML parse (robust to escaped chars / quote style in the comment) and replaces it by position, refusing to
 #    write rather than silently appending a duplicate when it can't match; the generate scratch directory is removed in a finally; very large def-cat/def-list member lists are capped in
@@ -511,12 +515,21 @@ def buildEngine(providerName: Optional[str], apiKey: str, model: Optional[str] =
     client = provider.makeClient(apiKey)
     return Engine(provider, client, model or provider.defaultModel)
 
-def getSampleRulesAndMacros(transferPath: str, ruleCount: int = 4, macroCount: int = 2) -> tuple:
-    '''Pull the longest rules (up to `ruleCount`) and longest macros (up to `macroCount`) from the project's transfer file, to show the model the house style with the richest examples
-    available. The slices naturally guard against files with fewer rules or no macros. Returns (rulesText, macrosText), each a blank-line-separated string ('' when none exist).'''
+def parseTransferFile(transferPath: str):
+    '''Parse the transfer file once and return its root element. A caller that needs several things out of the same file (the module's startup does both extractExistingDefs and
+    getSampleRulesAndMacros) parses here once and passes the root to each, instead of every function re-reading and re-parsing the whole file. insert_comments keeps the file's XML
+    comments in the tree so rule text round-trips faithfully.'''
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    root = ET.parse(transferPath, parser=parser).getroot()
+    return ET.parse(transferPath, parser=parser).getroot()
+
+def getSampleRulesAndMacros(transferPath: str = None, ruleCount: int = 4, macroCount: int = 2, root=None) -> tuple:
+    '''Pull the longest rules (up to `ruleCount`) and longest macros (up to `macroCount`) from the project's transfer file, to show the model the house style with the richest examples
+    available. The slices naturally guard against files with fewer rules or no macros. Returns (rulesText, macrosText), each a blank-line-separated string ('' when none exist).
+    Pass an already-parsed `root` to reuse a single parse (see parseTransferFile); otherwise `transferPath` is parsed here.'''
+
+    if root is None:
+        root = parseTransferFile(transferPath)
 
     ruleTexts = sorted((ET.tostring(r, encoding='unicode') for r in root.findall('.//rule')), key=len, reverse=True)[:ruleCount]
     macroTexts = sorted((ET.tostring(m, encoding='unicode') for m in root.findall('.//def-macro')), key=len, reverse=True)[:macroCount]
@@ -547,12 +560,13 @@ def capItemsForSummary(items: list) -> list:
 
     return items[:MAX_SUMMARY_ITEMS] + ['(… {n} more)'.format(n=len(items) - MAX_SUMMARY_ITEMS)]
 
-def extractExistingDefs(transferPath: str) -> dict:
+def extractExistingDefs(transferPath: str = None, root=None) -> dict:
     '''Read the transfer file and collect the names of definitions that already exist (so the model reuses them) plus the value sets of each attribute and the existing rule names.
-    Returns a dict with both the raw data and a text summary suitable for dropping into the prompt.'''
+    Returns a dict with both the raw data and a text summary suitable for dropping into the prompt. Pass an already-parsed `root` to reuse a single parse (see parseTransferFile);
+    otherwise `transferPath` is parsed here.'''
 
-    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-    root = ET.parse(transferPath, parser=parser).getroot()
+    if root is None:
+        root = parseTransferFile(transferPath)
 
     # For categories, gather the contents of each def-cat - the tags of every cat-item and, when a cat-item is lemma-specific, the lemma - so the model sees exactly what each category
     # matches (and which categories are pinned to a particular lemma) rather than only the names.
