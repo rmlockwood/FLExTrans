@@ -1001,7 +1001,7 @@ Choisissez Non si les noms des projets sont eux-mêmes des informations sensible
     <message>
       <location filename="../SettingsGUI.py" line="2019"/>
       <source>Log AI prompts for debugging?</source>
-      <translation>Journaliser les prompts IA pour le débogage ?</translation>
+      <translation>Enregistrer les prompts IA pour le débogage ?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2020"/>
