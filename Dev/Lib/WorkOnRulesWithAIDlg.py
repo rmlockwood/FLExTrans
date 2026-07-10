@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.19 - 7/10/26 - Ron Lockwood
+#    The dialog now always opens on the Create tab, set explicitly in code (pyuic had baked in the Modify tab as the startup tab because it was the active tab when the .ui was last saved).
+#
+#   Version 3.16.18 - 7/10/26 - Ron Lockwood
+#    Switching tabs with an unwritten rule (either a new rule made on the Create tab or a modified rule made on the Modify/Explain tab) now offers to approve and write it first, in either
+#    direction, so the draft isn't silently discarded. onRuleSelected now ignores the row the list auto-selects when it gains focus during a tab switch (that spurious selection was nulling
+#    the pending draft before the offer could be made). The Explain "approve before explaining" prompt is now Yes/No (the Cancel button was removed).
+#
 #   Version 3.16.17 - 7/9/26 - Ron Lockwood
 #    The interface-language names now come from UILanguages.py (the new single authoritative UI-language list) instead of a local UI_LANG_NAMES dict.
 #
@@ -338,6 +346,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.genThread = None
         self.worker = None
 
+        # True from the moment a tab is clicked until onTabChanged finishes. While set, onRuleSelected ignores the rule the Modify/Explain list auto-selects when it receives focus during
+        # the switch - that spurious selection would otherwise null the pending draft (self.ruleResult) before onTabChanged can offer to write it. See onTabBarClicked / onRuleSelected.
+        self.switchingTabs = False
+
         # Interlinearized example data pasted via the Source/Target Data buttons; sent with every request when non-empty. After a rule is approved, the next create Generate asks whether
         # to keep the (possibly no longer relevant) data.
         self.sourceDataText = ''
@@ -350,6 +362,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         # Build the widgets from the pyuic-generated class.
         self.ui = Ui_WorkOnRulesWithAI()
         self.ui.setupUi(self)
+
+        # Always open on the Create tab. Don't rely on the .ui for this: pyuic bakes in whichever tab was active when the .ui was last saved in Qt Designer, so a later Designer edit could
+        # silently reopen us on the Modify tab. Setting it here (before the currentChanged signal is connected below, so onTabChanged doesn't fire) makes the starting tab explicit and stable.
+        self.ui.modeTabs.setCurrentIndex(0)
 
         if FTPaths:
             self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -380,6 +396,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.explainButton.clicked.connect(self.onExplain)
         self.ui.ruleList.currentItemChanged.connect(self.onRuleSelected)
         self.ui.modeTabs.currentChanged.connect(self.onTabChanged)
+        # tabBarClicked fires on the click, before the tab actually changes (and before the list's focus-driven auto-select), so it's where we mark that a switch is starting.
+        self.ui.modeTabs.tabBarClicked.connect(self.onTabBarClicked)
         self.ui.refreshButton.clicked.connect(self.onRefreshRules)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
@@ -468,9 +486,26 @@ class WorkOnRulesWithAIDlg(QDialog):
         item = self.ui.ruleList.currentItem()
         return item.text() if item else None
 
+    def onTabBarClicked(self, index):
+        '''The user clicked a tab. This fires before the tab actually changes and before the Modify/Explain list's focus-driven auto-select, so it's our chance to mark that a switch is
+        starting - which tells onRuleSelected to ignore that spurious auto-select and so preserve any pending draft for onTabChanged's save offer. A click on the current tab is not a
+        switch, so it clears the flag rather than setting it (otherwise it could stay set and suppress a later genuine rule click).'''
+
+        self.switchingTabs = index != self.ui.modeTabs.currentIndex()
+
     def onTabChanged(self, index):
         '''Switching tabs starts fresh: blank the preview and drop any pending draft, so a rule shown on one tab isn't left over on another. On the Create tab it simply stays blank; on
         the Modify/Explain tab we also clear the rule list and keep focus out of it, so nothing is previewed until the user actually clicks a rule (see clearRuleSelection for why).'''
+
+        # If a generated rule hasn't been written to the file yet, switching tabs would discard it below. Offer to approve and write it first so the work isn't lost. This covers both
+        # directions - a new rule made on the Create tab and a modified rule made on the Modify/Explain tab (currentTask tells approveDraft which) - and mirrors the offer Explain makes.
+        if self.ruleResult and self.ruleResult.valid and not self.draftWritten and self.currentTask in ('create', 'modify'):
+
+            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Unapproved rule'), _translate('WorkOnRulesWithAI', 'You have a rule that has not been written to the transfer file. Approve and write it before switching?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+
+            if answer == QMessageBox.StandardButton.Yes:
+
+                self.approveDraft()
 
         self.blankPreview()
         self.ruleResult = None
@@ -481,6 +516,9 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.approveButton.setEnabled(False)
         self.ui.xxeButton.setEnabled(False)
         self.ui.statusLabel.setText('')
+
+        # The switch is over; a rule the user now clicks in the list is a genuine selection again, so stop suppressing onRuleSelected.
+        self.switchingTabs = False
 
         if self.ui.modeTabs.widget(index) is self.ui.modifyTab:
 
@@ -501,6 +539,11 @@ class WorkOnRulesWithAIDlg(QDialog):
     def onRuleSelected(self, current=None, previous=None):
         '''A rule was picked in the modify/explain list: fetch its XML, show it immediately in the left preview pane, and discard any pending draft (a previously shown before/after or
         explanation no longer applies to the newly selected rule).'''
+
+        # Ignore the row the list auto-selects when it gains focus during a tab switch. It isn't a real pick, and acting on it would null the pending draft (below) before onTabChanged can
+        # offer to write it. clearRuleSelection, scheduled by onTabChanged, then leaves the list unselected. A rule the user clicks after the switch has settled comes through normally.
+        if self.switchingTabs:
+            return
 
         comment = self.selectedRuleComment()
 
@@ -654,10 +697,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         # If an unapproved modified rule is showing on the right, the explanation would replace it - offer to write it to the file first so the work isn't lost.
         if self.ruleResult and self.ruleResult.valid and not self.draftWritten and self.currentTask == 'modify':
 
-            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Unapproved rule'), _translate('WorkOnRulesWithAI', 'You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Yes)
-
-            if answer == QMessageBox.StandardButton.Cancel:
-                return
+            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Unapproved rule'), _translate('WorkOnRulesWithAI', 'You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
 
             if answer == QMessageBox.StandardButton.Yes and not self.approveDraft():
 

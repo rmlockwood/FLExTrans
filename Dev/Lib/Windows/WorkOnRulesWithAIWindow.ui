@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Work on Rules with AI</string>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout" stretch="1,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0">
    <item>
     <widget class="QSplitter" name="mainSplitter">
      <property name="lineWidth">
@@ -123,31 +123,7 @@
              <widget class="QListWidget" name="ruleList"/>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="refreshRow">
-              <item>
-               <widget class="QPushButton" name="refreshButton">
-                <property name="toolTip">
-                 <string>Re-read the transfer rules file to update the list of rules (e.g. after you edit the file in another window).</string>
-                </property>
-                <property name="text">
-                 <string>Refresh Rules</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="refreshSpacer">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+             <layout class="QHBoxLayout" name="refreshRow"/>
             </item>
            </layout>
           </item>
@@ -211,6 +187,16 @@
            </spacer>
           </item>
           <item>
+           <widget class="QPushButton" name="refreshButton">
+            <property name="toolTip">
+             <string>Re-read the transfer rules file to update the list of rules (e.g. after you edit the file in another window).</string>
+            </property>
+            <property name="text">
+             <string>Refresh Rules</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="modifySourceDataButton">
             <property name="toolTip">
              <string>Paste interlinearized source-language example data (tab-separated, e.g. copied from FLEx) to send to the AI with your request. A check mark shows when data has been given.</string>
@@ -250,7 +236,7 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="previewHeaderRow" stretch="0,1">
+        <layout class="QHBoxLayout" name="previewHeaderRow" stretch="0,1,0,0,0">
          <item>
           <widget class="QLabel" name="previewLabel">
            <property name="text">
