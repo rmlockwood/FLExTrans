@@ -32,8 +32,12 @@ Hay un ajuste aparte para enviar los nombres de los proyectos FLEx.</translation
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="139"/>
-        <source>Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.</source>
-        <translation>Antes de poder usar este módulo, elija el Proveedor de IA y el Modelo de IA en la herramienta de Configuración de FLExTrans, en la sección Asistente de IA (visible en la vista Completo). Luego vuelva a este módulo; le pedirá su clave API.</translation>
+        <source>Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.
+
+Do you want to open the Settings tool now?</source>
+        <translation>Antes de poder usar este módulo, elija el Proveedor de IA y el Modelo de IA en la herramienta de Configuración de FLExTrans, en la sección Asistente de IA (visible en la vista Completo). Luego vuelva a este módulo; le pedirá su clave API.
+
+¿Desea abrir la herramienta de Configuración ahora?</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="161"/>

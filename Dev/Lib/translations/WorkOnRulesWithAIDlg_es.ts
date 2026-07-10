@@ -197,6 +197,11 @@ Open it in XXE to review.</source>
         <translation>Tiene una regla modificada que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de explicar?</translation>
     </message>
     <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="486"/>
+        <source>You have a rule that has not been written to the transfer file. Approve and write it before switching?</source>
+        <translation>Tiene una regla que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de cambiar?</translation>
+    </message>
+    <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
         <source>Comparison unavailable</source>
         <translation>Comparación no disponible</translation>

@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.5 - 7/10/26 - Ron Lockwood
+#    The information, warning, and consent message boxes now show the FLExTrans window icon. When the provider/model aren't set yet, the module now asks (yes/no) whether to open the
+#    Settings tool and, if yes, opens it in the Full view scrolled to the AI Assistant section so the user can set them without hunting for the tool.
+#
 #   Version 3.16.4 - 7/9/26 - Ron Lockwood
 #    The transfer file is now parsed only once at startup (parsed here and the tree handed to both extractExistingDefs and getSampleRulesAndMacros) instead of being read and parsed twice.
 #
@@ -30,6 +34,7 @@ import os
 from flextoolslib import FlexToolsModuleClass, FTM_Name, FTM_Version, FTM_ModifiesDB, FTM_Synopsis, FTM_Help, FTM_Description  
 
 from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QMessageBox
 
 import Mixpanel
@@ -58,7 +63,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.4",
+        FTM_Version    : "3.16.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -107,6 +112,7 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
 
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
+        msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
         msgBox.setText(_translate('WorkOnRulesWithAI', "This module sends your rule description, the transfer file's categories, attributes, and the project's grammatical categories, features, and affixes to " \
                        "your configured AI provider ({provider}) to generate transfer rules. Also, if you chose to include example language data, that will be sent as well. Your lexicon entries and texts are " \
@@ -147,9 +153,23 @@ def MainFunction(DB, report, modify=True):
 
     if not provider or not model:
 
-        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.')
-        QMessageBox.information(None, _translate('WorkOnRulesWithAI', 'Work on Rules with AI'), msg)
+        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.\n\nDo you want to open the Settings tool now?')
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Icon.Question)
+        msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setText(msg)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
         report.Info(msg)
+
+        # If the user says yes, open the Settings tool for them so they don't have to hunt for it. Force the Full view and scroll to the bottom, where the AI Assistant settings (provider, model) live.
+        if msgBox.exec() == QMessageBox.StandardButton.Yes:
+
+            import SettingsGUI # type: ignore
+            SettingsGUI.MainFunction(DB, report, forceFullView=True, scrollToBottom=True)
+
         return
 
     # Reject a model that belongs to a different provider (possible via a hand-edited config file; the Settings tool itself prevents this pairing). A model no provider claims is
@@ -159,7 +179,14 @@ def MainFunction(DB, report, modify=True):
     if owner is not None and owner is not provider:
 
         msg = _translate('WorkOnRulesWithAI', 'The configured AI model ({model}) goes with {owner}, not {provider}. Fix the AI Model setting in the FLExTrans Settings tool.').format(model=model, owner=owner.displayName, provider=provider.displayName)
-        QMessageBox.warning(None, _translate('WorkOnRulesWithAI', 'Work on Rules with AI'), msg)
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Icon.Warning)
+        msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setText(msg)
+        msgBox.exec()
+
         report.Error(msg)
         return
 

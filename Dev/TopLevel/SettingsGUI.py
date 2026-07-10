@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16.4 - 7/10/26 - Ron Lockwood
+#    MainFunction/Main now accept forceFullView and scrollToBottom so another module (Work on Rules with AI) can open Settings in the Full view scrolled to the AI Assistant section.
+#
 #   Version 3.16.3 - 7/8/26 - Ron Lockwood
 #    Fixes #1392. Added the "Apply Text Out Rules in the Testbed?" yes/no setting to the Testbed Settings section.
 #
@@ -1245,7 +1248,7 @@ class Ui_MainWindow(object):
 
 class Main(QMainWindow):
 
-    def __init__(self, configMap, targetDB, DB):
+    def __init__(self, configMap, targetDB, DB, forceFullView=False, scrollToBottom=False):
         QMainWindow.__init__(self)
 
         self.configMap = configMap
@@ -1254,11 +1257,19 @@ class Main(QMainWindow):
         self.changedSettingsSet = set()
         self.nameToWidgetMap = {}
         self.nameToLabelMap = {}
-        
+
+        # When another module (e.g. Work on Rules with AI) opens Settings to send the user to the AI Assistant section, it asks for the Full view and a scroll to the bottom.
+        self.scrollToBottom = scrollToBottom
+
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         # Load the view setting from the JSON file
         self.loadViewSetting()
+
+        # Force the Full view when the caller needs a setting that is only shown there (the AI Assistant settings live in the Full view).
+        if forceFullView:
+
+            self.viewSetting = FULL_VIEW
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -1365,6 +1376,18 @@ class Main(QMainWindow):
 
         # One project mode needs a second vernacular writing system to translate into, so disable the Project Mode radio when there isn't one.
         self.disableModeIfOneWritingSystem()
+
+        # Scroll to the bottom (where the AI Assistant settings are) once the event loop starts and the layout has been computed. singleShot(0) runs after show() has laid the widgets out,
+        # so the vertical scrollbar's maximum is correct by the time we set it.
+        if self.scrollToBottom:
+
+            QtCore.QTimer.singleShot(0, self.scrollToAiSettings)
+
+    def scrollToAiSettings(self):
+
+        # The AI Assistant settings sit at the bottom of the Full view. Scroll all the way down so the user lands on them (used when the Work on Rules with AI module opens Settings for setup).
+        scrollBar = self.ui.scrollArea.verticalScrollBar()
+        scrollBar.setValue(scrollBar.maximum())
 
     def calcViewSetting(self):
 
@@ -1864,8 +1887,8 @@ def giveDBErrorMessageBox(myProj):
     errMsg = _translate("SettingsGUI", "Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File > Project Management > Fieldworks Project Properties on the menu.").format(projectName=myProj)
     MessageBox.Show(errMsg, _translate("SettingsGUI", "FLExTrans Settings"), MessageBoxButtons.OK)
 
-def MainFunction(DB, report, modify=True): 
-    
+def MainFunction(DB, report, modify=True, forceFullView=False, scrollToBottom=False):
+
     translators = []
     app = QApplication.instance()
 
@@ -1915,7 +1938,7 @@ def MainFunction(DB, report, modify=True):
             giveDBErrorMessageBox(targetProj)
             TargetDB = None
     
-    window = Main(configMap, TargetDB, sourceDB)
+    window = Main(configMap, TargetDB, sourceDB, forceFullView=forceFullView, scrollToBottom=scrollToBottom)
 
     # Show the settings window. If, on the way out, the user chooses to save but the save fails validation (e.g. One
     # project mode with a writing system not chosen), reopen the same window with their changes intact so they can fix
