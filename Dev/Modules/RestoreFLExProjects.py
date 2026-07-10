@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.16.2 - 7/10/26 - Ron Lockwood
+#    Locate flex.exe via the shared Utils.getFlexExePath helper, which guards against an unset FIELDWORKSDIR environment variable (reports an error and returns None) instead of crashing.
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -73,7 +76,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",
@@ -231,9 +234,11 @@ def mainFunction(DB, report, modifyAllowed):
     mainWindow.show()
     app.exec()
 
-    # Get the Fieldworks folder path
-    fieldworksDir = os.getenv('FIELDWORKSDIR')
-    flexExe = os.path.join(fieldworksDir, 'flex.exe')
+    # Get the path to flex.exe (via the shared Utils helper). It reports an error and returns None if FIELDWORKSDIR isn't set, in which case we stop.
+    flexExe = Utils.getFlexExePath(report)
+
+    if not flexExe:
+        return
 
     if mainWindow.returnVal:
 

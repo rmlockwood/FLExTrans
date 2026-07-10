@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.5 - 7/10/26 - Ron Lockwood
+#    Added getFlexExePath(report): the shared FIELDWORKSDIR/flex.exe lookup (with its error message) that OpenFLExProjects and RestoreFLExProjects both used, now in one place.
+#
 #   Version 3.16.4 - 7/9/26 - Ron Lockwood
 #    LocalizedDateTimeFormatter now builds its QLocale from UILanguages.py (the new single authoritative UI-language list) instead of a hardcoded per-language map.
 #
@@ -652,6 +655,19 @@ def split_compounds(outStr):
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
+
+def getFlexExePath(report):
+    '''Return the full path to FLEx's flex.exe, located via the FIELDWORKSDIR environment variable. If that variable isn't set we can't find FLEx, so report an error and return None so
+    the caller can stop rather than crashing in os.path.join with None. Shared by the modules that launch or restore FLEx projects so the lookup and its error message live in one place.'''
+
+    fieldworksDir = os.getenv('FIELDWORKSDIR')
+
+    if not fieldworksDir:
+
+        report.Error(_translate("Utils", "The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found."))
+        return None
+
+    return os.path.join(fieldworksDir, 'flex.exe')
 
 def openProject(report, DBname):
 

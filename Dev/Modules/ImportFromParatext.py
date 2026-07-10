@@ -567,7 +567,7 @@ def do_import(DB, report, chapSelectObj, tree):
     if chapSelectObj.makeActive:
         
         setSourceNameInConfigFile(report, firstTitle)
-        FTPaths.CURRENT_SRC_TEXT = firstTitle
+        FTPaths.CURRENT_SRC_TEXT = firstTitle  # type: ignore
 
         # Have FlexTools refresh the status bar
         refreshStatusbar()

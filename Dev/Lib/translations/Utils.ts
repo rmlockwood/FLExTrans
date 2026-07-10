@@ -88,5 +88,10 @@
         <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</source>
         <translation>lié à l'entrée : {headWordStr}, sens : {glossStr} dans le projet {projectName}.</translation>
     </message>
+    <message>
+        <location filename="../Utils.py" line="667"/>
+        <source>The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found.</source>
+        <translation>La variable d'environnement FIELDWORKSDIR n'est pas définie, donc FLEx (flex.exe) est introuvable.</translation>
+    </message>
 </context>
 </TS>

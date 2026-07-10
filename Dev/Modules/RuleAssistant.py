@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.1 - 7/10/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -107,7 +110,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant Old"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "This module is obsolete."),
         FTM_Help       : "",
@@ -348,7 +351,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     if not (sourceText or bidixDix):
         return False
 
-    if not os.path.isfile(bidixDix):
+    if bidixDix is None or not os.path.isfile(bidixDix):
 
         report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
@@ -375,6 +378,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
 
     with open(fsrc, 'w', encoding='utf-8') as fout:
+        
         text.write(fout)
 
     # Compile the bilingual dictionary
@@ -398,7 +402,9 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 .num { vertical-align: sub; font-size: 50%; }
 </style></head><body>
 ''')
-            fout.write(_translate('RuleAssistant', '<p><b>Source Text:</b> ')+sourceText+'</p>\n')
+            # Ensure safe string concatenation in case _translate or sourceText is None
+            src_label = _translate('RuleAssistant', '<p><b>Source Text:</b> ') or ''
+            fout.write(src_label + (sourceText or '') + '</p>\n')
             line_count = 0
 
             for line in fin:

@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16.3 - 7/10/26 - Ron Lockwood
+#    Type-annotation cleanup (no behavior change): typed the LinkerRow/LinkerTable attributes that start as None but are always populated before use (linkObj, font, callback, selectedHPG),
+#    let HPG.SenseNum be Optional[int], passed a QModelIndex() to rowCount, and ignored the dynamic FTPaths.CURRENT_SRC_TEXT global - clearing all the Pylance reportOptionalMemberAccess warnings.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -172,6 +176,7 @@ import json
 import unicodedata
 import xml.etree.ElementTree as ET
 import time
+from typing import Callable, Optional
 
 from fuzzywuzzy import fuzz
 
@@ -217,7 +222,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -280,7 +285,7 @@ COL_TGT_GLOSS      = 7
 # model the information having to do with basic sense information, namely
 # headword, part of speech (POS) and gloss thus the name HPG
 class HPG(object):
-    def __init__(self, Sense, Headword, POS, Gloss, SenseNum=1):
+    def __init__(self, Sense, Headword, POS, Gloss, SenseNum: Optional[int] = 1):
         self.__sense = Sense
         self.__headword = Headword
         self.__POS = POS
@@ -301,7 +306,8 @@ class HPG(object):
 class LinkerRow(object):
     def __init__(self):
         self.__verseNum = ''
-        self.__linkObj = None
+        # Always populated with a real Link via setLinkObject() before the delegating stub methods below are called; typed as Link so those stubs resolve.
+        self.__linkObj: 'Link' = None  # type: ignore
     def setVerseNum(self, word):
         self.__verseNum = word.getVerseNum()
     def getVerseNum(self):
@@ -495,10 +501,12 @@ class LinkerTable(QtCore.QAbstractTableModel):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__localData = myData
         self.__myHeaderData = headerData
-        self.__selectedHPG = None
+        # These three are populated with real objects in normal use (a selection is made, and the table is always constructed with a font and a change callback); the annotations let the
+        # methods below use them without pyright flagging the None the attributes start out as / default to.
+        self.__selectedHPG: HPG = None  # type: ignore
         self.__linkingChanged = False
-        self.__font = font
-        self.__callbackFunc = changeCallback
+        self.__font: QtGui.QFont = font  # type: ignore
+        self.__callbackFunc: Callable = changeCallback  # type: ignore
     def getFont(self):
         return self.__font
     def setFont(self, myFont):
@@ -988,8 +996,8 @@ class Main(QMainWindow):
         # Update the source text setting in the config file
         ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
         
-        # Set the global variable
-        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
+        # Set the global variable (CURRENT_SRC_TEXT is a module global created dynamically on FTPaths and read by the status bar; ignore as the other setters do).
+        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText() # type: ignore
         
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -1037,7 +1045,7 @@ class Main(QMainWindow):
         found = False
         
         # Look for a match to the beginning of a headword
-        for i in range(0, self.__comboModel.rowCount(None)):
+        for i in range(0, self.__comboModel.rowCount(QtCore.QModelIndex())):
             
             if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__comboModel.getRowValue(i).getHeadword(), flags=re.RegexFlag.IGNORECASE):
                 found = True

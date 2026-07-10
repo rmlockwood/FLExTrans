@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.11 - 7/10/26 - Ron Lockwood
+#    Type fix: getSampleRulesAndMacros and extractExistingDefs now type transferPath as Optional[str] (it defaults to None), with an assert documenting that a root or a transferPath must be given.
+#
 #   Version 3.16.10 - 7/9/26 - Ron Lockwood
 #    Added parseTransferFile so the transfer file is parsed only once at startup: extractExistingDefs and getSampleRulesAndMacros now accept a pre-parsed root (the module parses once
 #    and passes it to both) instead of each re-reading and re-parsing the whole file.
@@ -523,12 +526,14 @@ def parseTransferFile(transferPath: str):
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     return ET.parse(transferPath, parser=parser).getroot()
 
-def getSampleRulesAndMacros(transferPath: str = None, ruleCount: int = 4, macroCount: int = 2, root=None) -> tuple:
+def getSampleRulesAndMacros(transferPath: Optional[str] = None, ruleCount: int = 4, macroCount: int = 2, root=None) -> tuple:
     '''Pull the longest rules (up to `ruleCount`) and longest macros (up to `macroCount`) from the project's transfer file, to show the model the house style with the richest examples
     available. The slices naturally guard against files with fewer rules or no macros. Returns (rulesText, macrosText), each a blank-line-separated string ('' when none exist).
     Pass an already-parsed `root` to reuse a single parse (see parseTransferFile); otherwise `transferPath` is parsed here.'''
 
     if root is None:
+
+        assert transferPath is not None, 'getSampleRulesAndMacros needs either a parsed root or a transferPath.'
         root = parseTransferFile(transferPath)
 
     ruleTexts = sorted((ET.tostring(r, encoding='unicode') for r in root.findall('.//rule')), key=len, reverse=True)[:ruleCount]
@@ -560,12 +565,14 @@ def capItemsForSummary(items: list) -> list:
 
     return items[:MAX_SUMMARY_ITEMS] + ['(… {n} more)'.format(n=len(items) - MAX_SUMMARY_ITEMS)]
 
-def extractExistingDefs(transferPath: str = None, root=None) -> dict:
+def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
     '''Read the transfer file and collect the names of definitions that already exist (so the model reuses them) plus the value sets of each attribute and the existing rule names.
     Returns a dict with both the raw data and a text summary suitable for dropping into the prompt. Pass an already-parsed `root` to reuse a single parse (see parseTransferFile);
     otherwise `transferPath` is parsed here.'''
 
     if root is None:
+
+        assert transferPath is not None, 'extractExistingDefs needs either a parsed root or a transferPath.'
         root = parseTransferFile(transferPath)
 
     # For categories, gather the contents of each def-cat - the tags of every cat-item and, when a cat-item is lemma-specific, the lemma - so the model sees exactly what each category
