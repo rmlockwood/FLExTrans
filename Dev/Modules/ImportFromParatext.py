@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.16.3 - 7/10/26 - Ron Lockwood
+#    Declared Main.chapSel (set externally by ChapterSelection) so pyright recognizes it, and skip a cluster project when Utils.openProject returns None instead of crashing on CloseProject.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -189,7 +192,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -215,6 +218,10 @@ replaceList = [\
               ]
 
 class Main(QMainWindow):
+
+    # chapSel is set on this window from ChapterSelection (InitControls sets it to None, the OK handler sets it to a real ChapterSelection); both take the window as `self`, so it isn't visible
+    # here as an assignment. Declared for pyright - callers read it only after retVal is True, i.e. after OK populated it.
+    chapSel: 'ChapterSelection.ChapterSelection'
 
     def __init__(self, clusterProjects, altParatextFolder):
         QMainWindow.__init__(self)
@@ -567,7 +574,7 @@ def do_import(DB, report, chapSelectObj, tree):
     if chapSelectObj.makeActive:
         
         setSourceNameInConfigFile(report, firstTitle)
-        FTPaths.CURRENT_SRC_TEXT = firstTitle
+        FTPaths.CURRENT_SRC_TEXT = firstTitle  # type: ignore
 
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -637,6 +644,10 @@ def MainFunction(DB, report, modify=True):
                     myDB = DB
                 else:
                     myDB = Utils.openProject(report, proj)
+
+                # openProject reports its own error and returns None if the project couldn't be opened; skip this one then rather than crashing on the calls below.
+                if myDB is None:
+                    continue
 
                 # Set the import project member to the right ptx project and import it
                 window.chapSel.importProjectAbbrev = window.chapSel.ptxProjList[i]

@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.16.2 - 7/10/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.16.1 - 6/26/26 - Ron Lockwood
 #    Prevent the module from starting in one-project mode.
 #
@@ -84,7 +87,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",
@@ -132,6 +135,11 @@ def MainFunction(DB, report, modify=False):
     sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
+    if not targetProj:
+        
+        report.Error(_translate("LinkAllSensesAsDup", 'No Target Project has been set. Please go to Settings and fix this.'))
+        haveConfigError = True
+        
     if not sourceTextName:
         
         report.Error(_translate("LinkAllSensesAsDup", 'No Source Text Name has been set. Please go to Settings and fix this.'))
@@ -154,10 +162,14 @@ def MainFunction(DB, report, modify=False):
         return 
     
     TargetDB = Utils.openTargetProject(configMap, report)
+    
+    if not TargetDB:
+        return
+    
     myStyle = Utils.getHyperLinkStyle(DB)
 
     preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub(r'\s','+', targetProj)
+    preGuidStr += re.sub(r'\s','+', targetProj) # type: ignore
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
 
     # Loop through all the source entries
