@@ -4,6 +4,9 @@
 #   SIL International
 #   9/6/2024
 #
+#   Version 3.16.1 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.16 - 7/11/26 - Ron Lockwood
 #    Show the FLExTrans window icon on the usage-statistics opt-out message box.
 #
@@ -44,7 +47,7 @@ _translate = QCoreApplication.translate
 # Only retrieve the IP address once per session
 @functools.cache
 def GetIPAddress():
-    import urllib
+    import urllib.request
     return urllib.request.urlopen('http://ifconfig.me/ip').read().decode('utf-8')
 
 def GetUserID(configMap, report):
@@ -102,7 +105,7 @@ def LogModuleStarted(configMap, report, module_name, module_version):
 
         mp = mixpanel.Mixpanel(TOKEN)
 
-        import Version
+        import Version # type: ignore
         mp.people_set(userid, {'FLExTrans Version': Version.Version})
 
         mp.track(userid, 'Started Module',
