@@ -4,11 +4,6 @@
   <context>
     <name>CreateApertiumRules</name>
     <message>
-      <location filename="../CreateApertiumRules.py" line="582"/>
-      <source>List values</source>
-      <translation>Valeurs de liste</translation>
-    </message>
-    <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
       <translation>Aucune étiquette disponible pour cette fonctionnalité {label} de catégorie grammaticale {category}.</translation>
@@ -210,8 +205,8 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
-      <source>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</source>
-      <translation>Valeur inattendue de trait associé &quot;{val}&quot; trouvée dans un ensemble de caractéristiques disjointes. Seules &quot;sg&quot; ou &quot;pl&quot; sont attendues. Cette valeur sera ignorée.</translation>
+      <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
+      <translation>Une valeur de caractéristique liée inattendue "{val}" a été trouvée dans un ensemble de caractéristiques divisé. Seules les valeurs "sg" (singulier), "pl" (pluriel) ou "many" (plusieurs) étaient attendues. Cette valeur sera ignorée.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>

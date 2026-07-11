@@ -496,7 +496,7 @@ rule
 section-def-attrs:before
 {
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Atributos: ";
+	" Atributos: ";
 }
 section-def-attrs
 {
@@ -507,7 +507,7 @@ section-def-attrs
 section-def-cats:before
 {
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Categorías: ";
+	" Categorías: ";
 }
 section-def-cats
 {
@@ -519,7 +519,7 @@ section-def-lists:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Listas: ";
+	" Listas: ";
 }
 section-def-lists
 {
@@ -531,7 +531,7 @@ section-def-macros:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Macros: ";
+	" Macros: ";
 }
 section-def-macros
 {
@@ -543,7 +543,7 @@ section-def-vars:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Variables: ";
+	" Variables: ";
 }
 section-def-vars
 {
@@ -554,7 +554,7 @@ section-rules:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Reglas: ";
+	" Reglas: ";
 }
 section-rules
 {

@@ -5,6 +5,12 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16 - 6/24/26 - Ron Lockwood
+#    Added an optional vernWs parameter to insertParagraphs so One project mode can insert text into a chosen vernacular writing system.
+#
 #   Version 3.15.5 - 6/20/26 - Ron Lockwood
 #    Fixes #1353. On export, overwrite the Paratext book's \id line with the one carried in the text (if present).
 #
@@ -229,7 +235,13 @@ def convertFigSyntax(importText):
     return re.sub(r'\\fig ([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\\fig\*', 
                   r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
 
-def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
+def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText, vernWs=None):
+
+    # In One project mode the synthesized text is inserted into a chosen (secondary) vernacular writing system rather than the
+    # project's default vernacular WS. Callers pass that WS handle in vernWs; otherwise fall back to the default vernacular WS.
+    if vernWs is None:
+
+        vernWs = DB.project.DefaultVernWs
 
     # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
     # put the \ after the newline
@@ -260,8 +272,8 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
                 
             else:
-                # make this in the Vernacular WS
-                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
+                # make this in the Vernacular WS (the chosen target WS in One project mode, otherwise the default vernacular WS)
+                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), vernWs)
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
         
         if seg and re.search(newPar, seg): # or first segment if not blank
@@ -483,7 +495,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         # Check if Paratext path exists
         if not os.path.exists(paratextPath): 
 
-            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=paratextPath))
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=Utils.shortenPathForDisplay(paratextPath)))
             return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
@@ -498,7 +510,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
         if not os.path.exists(projPath): 
             
-            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=projPath))
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=Utils.shortenPathForDisplay(projPath)))
             return
 
         if not fromFLEx:
@@ -514,7 +526,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
                 fileList = glob.glob(bookPathPattern)
 
             if checkBookPath and not fileList:
-                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=bookPathPattern))
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=Utils.shortenPathForDisplay(bookPathPattern)))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():
@@ -663,7 +675,7 @@ def doExport(textContents, report, chapSelectObj, parent):
 
     if not bookPath:
 
-        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=bookPath))
+        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=Utils.shortenPathForDisplay(bookPath)))
         return None
     
     # Create a backup of the paratext file

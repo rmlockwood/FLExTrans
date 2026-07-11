@@ -1,0 +1,174 @@
+/*
+ * transfer_preview.css
+ *
+ * Standard-CSS reskin of the XXE stylesheet
+ * (Installer/.../ApertiumTransferXMLmind/css/transfer.css) for a read-only,
+ * in-app preview rendered in QWebEngineView. It reuses transfer.css's colour
+ * palette and label text so a rule looks familiar to anyone who edits in XXE,
+ * but it is plain CSS: no XMLmind extensions (text-field/combo-box/collapser),
+ * no editable widgets, no collapsers. TransferPreview.py emits the HTML this
+ * styles and inlines this file into the document's <style>.
+ *
+ * Font: XXE (a Java/XMLmind app) uses Java's logical "SansSerif" face - Arial on
+ * Windows. This file follows suit with Arial 16px throughout.
+ *
+ * Palette (from transfer.css @property-value):
+ *   attr  #F5DEB3 wheat        cat   #FFB6C1 lightpink   list  #CCFFCC lightgreen
+ *   macro #F09FF0 violet       rule  #BFD0FF paleblue    var   #AFEEEE paleturquoise
+ *   pos   #FFDAB9 peachpuff    lit   #98FB98 palegreen   littag#FFFFB5 paleyellow
+ *   chunk #AEC6CF pastelblue
+ */
+
+/* XXE is a Java (XMLmind) application: its default document font is Java's logical "SansSerif" face, which maps to Arial on Windows. Match it here - one sans-serif family at one size
+   for labels, field values (chips), and comments alike - rather than a monospace for the chips, so the preview reads like XXE. */
+body {
+    font-family: Arial, "Liberation Sans", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 16px;
+    color: #222;
+    margin: 8px;
+}
+
+/* Each Apertium element is a block with its own header row and nested children. */
+.el {
+    display: block;
+}
+
+/* XXE indents each nested level by .125in (12px at 96dpi). */
+.children {
+    padding-left: 12px;
+}
+
+/* A few leaf items carry extra indentation in the XXE stylesheet, via their own margin-left on top of the parent's .125in padding: pattern-item by .4in, attr-item and list-item by
+   .2in. Match those so, e.g., "item:" under "pattern:" sits as far right as it does in XXE (the standard .125in elements like clip under a lexical unit already lined up). */
+.el.pattern-item {
+    margin-left: .4in;
+}
+
+.el.attr-item {
+    margin-left: .2in;
+}
+
+.el.list-item {
+    margin-left: .2in;
+}
+
+/* The header row = the element's label plus its displayed attribute chips.
+   Diff highlighting backgrounds this row only, not the nested children. */
+.rowline {
+    display: block;
+    line-height: 1.5;
+}
+
+/* Labels ("rule:", "pattern:", "output:", …) are near-black in XXE, not grey. */
+.label {
+    color: #1a1a1a;
+}
+
+.attrlabel {
+    color: #333;
+}
+
+/* An attribute value shown as a coloured chip, matching the XXE field colours.
+   The .c-* backgrounds below are FALLBACKS only: at render time TransferPreview
+   appends overrides derived from the XXE transfer.css @property-value colours
+   (via derive_preview_specs.py -> preview_spec_<lang>.json "_colors"), so a colour
+   change in the XXE stylesheet wins over these values. */
+.chip {
+    display: inline-block;
+    min-width: 8px;
+    padding: 0 2px;
+    margin: 0 2px;
+    border: 1px solid #9a9a9a;
+    border-radius: 2px;
+}
+
+.c-attr   { background: #F5DEB3; }
+.c-cat    { background: #FFB6C1; }
+.c-list   { background: #CCFFCC; }
+.c-macro  { background: #F09FF0; }
+.c-rule   { background: #BFD0FF; }
+.c-var    { background: #AFEEEE; }
+.c-pos    { background: #FFDAB9; }
+.c-lit    { background: #98FB98; }
+.c-littag { background: #FFFFB5; }
+.c-chunk  { background: #AEC6CF; }
+
+/* Plain (non-box) attribute values. The side value is coloured the way the master XXE stylesheet colours its combo box: red for source language (sl), ochre for target language (tl). */
+.c-plain {
+    color: #333;
+}
+
+.c-side-sl {
+    color: #ff0000;
+}
+
+.c-side-tl {
+    color: #ce901b;
+}
+
+/* XML comments the linguist (or the AI Assistant) wrote inside the rule, rendered like XMLmind's default comment box: a pale-yellow block with grey monospace text - not the green diff
+   colour, which is reserved for the side-by-side comparison. */
+.comment .rowline {
+    display: block;
+    background: #ffffdd;
+    border: 1px solid #E6E0A0;
+    color: #6f6f6f;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    padding: 1px 3px;
+    margin: 2px 0;
+}
+
+/* Best-effort diff highlighting for the before/after comparison. */
+.changed > .rowline { background: #FFF3B0; }
+.added   > .rowline { background: #CFF5D1; }
+.removed > .rowline { background: #F7CAC9; }
+
+/* Side-by-side comparison layout for the "modify" preview. */
+.compare {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.pane {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 10px;
+    overflow-x: auto;
+}
+
+.pane h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+/* The explanation pane of the "explain rule" view: ordinary prose next to the rendered rule. */
+.pane.explanation {
+    line-height: 1.5;
+}
+
+.pane.explanation p {
+    margin: 0 0 9px;
+}
+
+.legend {
+    font-size: 11px;
+    color: #666;
+    margin: 4px 0 10px;
+}
+
+.legend .sw {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #999;
+    vertical-align: middle;
+    margin: 0 3px 0 10px;
+}

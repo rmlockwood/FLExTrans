@@ -5,6 +5,12 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.23 - 7/9/26 - Ron Lockwood
+#    Fixes #1407. Selected rule in the rule list now shows white text (over the highlight background), matching the split feature grid.
+#
+#   Version 3.16.22 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened the help-file path shown in messages with Utils.shortenPathForDisplay() (added import Utils).
+#
 #   Version 3.16.21 - 6/19/26 - Ron Lockwood
 #    Fix Edit category not saving: update the owning word's wordCategory (what the XML is written from), not just the category constituent's display name.
 #
@@ -88,6 +94,7 @@ from PyQt6.QtCore import Qt, QUrl, QPoint, pyqtSignal, QCoreApplication
 from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon, QCloseEvent, QDesktopServices
 
 import FTPaths
+import Utils
 
 _translate = QCoreApplication.translate
 
@@ -215,6 +222,15 @@ class RuleAssistantWindow(QMainWindow):
 
         # Alias each generated widget to a camelCase attribute used elsewhere in the controller.
         self.ruleList = self.ui.rule_list
+
+        # Force a white foreground on the selected rule (over the highlight background) so the text stays readable instead of the dark
+        # color the Win11 style leaves it. Matches the split feature grid in the Disjoint Features editor and the FLEx choosers.
+        self.ruleList.setStyleSheet(
+            "QListWidget { outline: 0; }"
+            "QListWidget::item { border: 0; }"
+            "QListWidget::item:selected {"
+            " background-color: palette(highlight); color: white; }"
+        )
         self.overwriteCheckbox = self.ui.overwrite_checkbox
         self.disjointButton = self.ui.disjoint_button
         self.ruleNameField = self.ui.rule_name_field
@@ -939,7 +955,7 @@ class RuleAssistantWindow(QMainWindow):
         # Guard so a missing file doesn't crash the tool.
         if not os.path.exists(helpFile):
 
-            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "Help file not found: {file}").format(file=helpFile))
+            showMessageBox(self, QMessageBox.Icon.Warning, _translate("RuleAssistantWindow", "Help"), _translate("RuleAssistantWindow", "Help file not found: {file}").format(file=Utils.shortenPathForDisplay(helpFile)))
 
             return
 

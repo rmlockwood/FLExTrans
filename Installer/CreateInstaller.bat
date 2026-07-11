@@ -1,7 +1,8 @@
 SET FLEXTRANS_VERSION=3.16
 
-rem User interface language codes
-set LANG_CODES=de es fr
+rem Regenerate the language-derived files (lang_codes.bat, languages.nsh, crowdin.yml) from the authoritative UI-language list in Dev\Lib\UILanguages.py, then load the codes
+python "%~dp0..\Dev\updateLanguageFiles.py"
+call "%~dp0..\Dev\lang_codes.bat"
 
 rem Delete everything in InstallerImage
 set image=InstallerImageFolder
@@ -88,9 +89,18 @@ copy /Y %installer_resources%\subdirs.pth %flextoolsmodules%
 rem copy all module code files
 copy %dev%\Modules\*.py %modulesflextrans%
 
+rem sync the translated XXE transfer.css copies to the master's structure (keeps their translated labels), then regenerate the per-language rule-preview specs from the XXE transfer.css files
+python %dev%\syncTransferCss.py
+python %dev%\derive_preview_specs.py
+
 rem copy all shared code and css files
 copy %dev%\Lib\*.py %flextranslib%
 copy %dev%\Lib\*.css %flextranslib%
+
+rem copy Work-on-Rules-with-AI runtime resources: the DTD (validation), the conventions doc (system prompt), and the derived per-language preview specs
+copy %dev%\Lib\*.dtd %flextranslib%
+copy %dev%\Lib\*.md %flextranslib%
+copy %dev%\Lib\*.json %flextranslib%
 
 rem copy all window ui code files
 copy %dev%\Lib\Windows\*.py %flextranslib%

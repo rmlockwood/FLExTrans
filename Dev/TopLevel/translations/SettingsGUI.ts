@@ -726,6 +726,18 @@ du test de synthèse.</translation>
         <translation>Le chemin et le nom du fichier de log des résultats du banc d'essai.</translation>
     </message>
     <message>
+        <location filename="../SettingsGUI.py" line="2167"/>
+        <source>Apply Text Out Rules in the Testbed?</source>
+        <translation>Appliquer les règles de sortie de texte dans le banc d'essai ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2168"/>
+        <source>When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,
+so testbed tests match the final output produced by Insert Target Text and Export to Paratext.</source>
+        <translation>Lorsque le module Terminer le banc d'essai extrait les résultats du texte synthétisé, appliquer d'abord les règles de recherche/remplacement de sortie de texte,
+afin que les tests du banc d'essai correspondent au résultat final produit par Insérer le texte cible et Exporter vers Paratext.</translation>
+    </message>
+    <message>
         <location filename="../SettingsGUI.py" line="1795"/>
         <source>Import Settings</source>
         <translation>Paramètres d'importation</translation>
@@ -945,6 +957,130 @@ mots qui peuvent être insérés avec une règle TreeTran.</translation>
         <location filename="../SettingsGUI.py" line="1884"/>
         <source>Opt out of sending usage statistics.</source>
         <translation>Refuser l'envoi de statistiques d'utilisation.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="7"/>
+        <source>AI Assistant</source>
+        <translation>Assistant IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2010"/>
+        <source>AI Provider</source>
+        <translation>Fournisseur d'IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2011"/>
+        <source>The AI service the Work on Rules with AI module sends requests to.
+You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
+        <translation>Le service d'IA auquel le module 'Travailler sur les règles avec l'IA' envoie les requêtes.
+Vous avez besoin de votre propre clé API pour le fournisseur choisi ; le module la demande la première fois que vous l'exécutez.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2013"/>
+        <source>AI Model</source>
+        <translation>Modèle d'IA</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2014"/>
+        <source>The model to use. Pick one that belongs to the chosen AI provider.
+gemini-2.5-flash is available on Google's free tier.</source>
+        <translation>Le modèle à utiliser. Choisissez-en un qui appartient au fournisseur d'IA choisi.
+gemini-2.5-flash est disponible dans l'offre gratuite de Google.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2016"/>
+        <source>Include FLEx project names in AI requests?</source>
+        <translation>Inclure les noms des projets FLEx dans les requêtes IA ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2017"/>
+        <source>If Yes, the source and target FLEx project names are included in what is sent to the AI provider.
+Choose No if the project names themselves are sensitive information.</source>
+        <translation>Si Oui, les noms des projets FLEx source et cible sont inclus dans ce qui est envoyé au fournisseur d'IA.
+Choisissez Non si les noms des projets sont eux-mêmes des informations sensibles.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2019"/>
+        <source>Log AI prompts for debugging?</source>
+        <translation>Journaliser les prompts IA pour le débogage ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2020"/>
+        <source>If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to
+AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
+        <translation>Si Oui, tout ce que le module 'Travailler sur les règles avec l'IA' envoie au fournisseur d'IA et en reçoit est ajouté à
+AIRulesPromptLog.txt dans le dossier Build du projet. Laissez Non sauf en cas de dépannage.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2022"/>
+        <source>How do I get an API key?</source>
+        <translation>Comment obtenir une clé API ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2023"/>
+        <source>Opens the FLExTrans documentation section that explains how to get an API key for each provider.</source>
+        <translation>Ouvre la section de la documentation FLExTrans qui explique comment obtenir une clé API pour chaque fournisseur.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2027"/>
+        <source>Allow sending data to the AI provider?</source>
+        <translation>Autoriser l'envoi de données au fournisseur d'IA ?</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2030"/>
+        <source>AI data consent question asked</source>
+        <translation>Question de consentement aux données IA posée</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1596"/>
+        <source>The AI Model does not go with the selected AI Provider.
+Choose the AI Provider first, then pick one of the models offered for it.</source>
+        <translation>Le Modèle d'IA ne va pas avec le Fournisseur d'IA sélectionné.
+Choisissez d'abord le Fournisseur d'IA, puis choisissez l'un des modèles proposés pour celui-ci.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2073"/>
+        <source>Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
+The module also asks this the first time you run it; you can review or change your answer here.</source>
+        <translation>Indique si le module « Travailler sur les règles avec l'IA » peut envoyer votre description de la règle et les catégories grammaticales, les traits et les affixes du projet au fournisseur d'IA.
+Le module pose aussi cette question la première fois que vous l'exécutez ; vous pouvez revoir ou modifier votre réponse ici.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1848"/>
+        <source>Project Mode</source>
+        <translation>Mode de projet</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1849"/>
+        <source>Choose One project to translate from one writing system to another within a single FLEx project.
+Choose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project.</source>
+        <translation>Choisissez Un projet pour traduire d'un système d'écriture à un autre au sein d'un même projet FLEx.
+Choisissez Deux projets (le mode normal) pour traduire d'un projet FLEx source vers un projet FLEx cible distinct.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1855"/>
+        <source>Target Writing System</source>
+        <translation>Système d'écriture cible</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1856"/>
+        <source>In One project mode, the vernacular writing system in the FLEx project that text is translated to.</source>
+        <translation>En mode Un projet, le système d'écriture vernaculaire du projet FLEx vers lequel le texte est traduit.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1159"/>
+        <source>Two projects</source>
+        <translation>Deux projets</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1160"/>
+        <source>One project</source>
+        <translation>Un projet</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1635"/>
+        <source>In One project mode you must choose a Target Writing System.</source>
+        <translation>En mode Un projet, vous devez choisir un système d'écriture cible.</translation>
     </message>
 </context>
 </TS>

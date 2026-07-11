@@ -14,6 +14,12 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -79,7 +85,7 @@ from SIL.LCModel import ( # type: ignore
     IMoInflAffMsa,
     IMoDerivAffMsa,
     )
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -104,7 +110,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("GenerateParses", "Generate All Parses"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
         FTM_Help       : "",
@@ -303,6 +309,11 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
 
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("GenerateParses", "This module only works in Two Project mode."))
+        return
+
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
@@ -317,9 +328,9 @@ def MainFunction(DB, report, modifyAllowed):
     logFile = Utils.build_path_default_to_temp(targetLOG)
     try:
         logger.addHandler(logging.FileHandler(logFile, mode='w', encoding='utf-8'))
-        report.Info(_translate("GenerateParses", "Logging to {logFile}").format(logFile=logFile))
+        report.Info(_translate("GenerateParses", "Logging to {logFile}").format(logFile=Utils.shortenPathForDisplay(logFile)))
     except:
-        report.Error(_translate("GenerateParses", "There was a problem creating the log file: {logFile}.").format(logFile=logFile))
+        report.Error(_translate("GenerateParses", "There was a problem creating the log file: {logFile}.").format(logFile=Utils.shortenPathForDisplay(logFile)))
 
     ## Generate for only a specified POS  (This needs work)
     focusPOS = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_POS, report)
@@ -541,7 +552,7 @@ def MainFunction(DB, report, modifyAllowed):
     try:
         f_aper = open(aperFile, 'w', encoding='utf-8')
     except IOError as e:
-        report.Error(_translate("GenerateParses", "There was a problem creating the Apertium file: {aperFile}.").format(aperFile=aperFile))
+        report.Error(_translate("GenerateParses", "There was a problem creating the Apertium file: {aperFile}.").format(aperFile=Utils.shortenPathForDisplay(aperFile)))
 
     # Open another file where the results can be formatted as an end product itself (showing the parses
     # in human readable form)
@@ -549,7 +560,7 @@ def MainFunction(DB, report, modifyAllowed):
     try:
         f_out = open(outFile, 'w', encoding='utf-8')
     except IOError as e:
-        report.Error(_translate("GenerateParses", "There was a problem creating the words file: {outFile}.").format(outFile=outFile))
+        report.Error(_translate("GenerateParses", "There was a problem creating the words file: {outFile}.").format(outFile=Utils.shortenPathForDisplay(outFile)))
     # We need a blank line at the beginning of the file, to match the synthesized file.
     f_out.write('\n')
 
@@ -580,7 +591,7 @@ def MainFunction(DB, report, modifyAllowed):
     logger.info('\n\n' + _translate("GenerateParses", "{wrdcnt} words generated.").format(wrdcnt=str(wrdCount)) + '\n')
 
     # report.Info('Creation complete to the file: '+sigFile+'.')
-    report.Info(_translate("GenerateParses", "Creation complete to the file: {outFile}.").format(outFile=outFile))
+    report.Info(_translate("GenerateParses", "Creation complete to the file: {outFile}.").format(outFile=Utils.shortenPathForDisplay(outFile)))
     report.Info(_translate("GenerateParses", "{wrdCount} words generated.").format(wrdCount=str(wrdCount)))
 
 #----------------------------------------------------------------

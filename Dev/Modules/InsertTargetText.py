@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.3 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    One project mode: insert the text into the source project in the chosen target writing system instead of into a separate target project.
+#
 #   Version 3.16.1 - 6/24/26 - Ron Lockwood
 #    Fixes #1339. Load TextInOutUtils translations so the "rules applied" message is translated.
 #
@@ -84,7 +90,7 @@ from SIL.LCModel import ( # type: ignore
 )
 from SIL.LCModel.Core.Text import TsStringUtils  # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject
 
 import ChapterSelection
@@ -114,7 +120,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection', '
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
@@ -129,22 +135,54 @@ same name will not be overwritten. A copy will be created.""").format(doSynthMod
 #del app
 
 #----------------------------------------------------------------
+
+# Return the abbreviation of the writing system with the given language tag, falling back to the tag itself if there is no abbreviation. Used to label the target text in One project mode 
+# (the writing systems come from AllWritingSystems, the same place flexlibs GetWritingSystems uses).
+def getWritingSystemAbbreviation(DB, wsTag):
+
+    for ws in DB.project.ServiceLocator.WritingSystems.AllWritingSystems:
+
+        if ws.Id == wsTag and ws.Abbreviation:
+
+            return ws.Abbreviation
+
+    return wsTag
+
+#----------------------------------------------------------------
 # The main processing function
 
 def insertTargetText(DB, configMap, report):
 
-    TargetDB = FLExProject()
     tree = None
 
-    try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-        if not targetProj:
-            return None
-        TargetDB.OpenProject(targetProj, True)
-    except: 
-        report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
-        raise
+    # In One project mode there is no separate target project: the text is inserted into the source project, in the chosen
+    # target writing system. So reuse the source DB and resolve the target WS handle. Otherwise open the configured target project.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+    targetVernWs = None
+    targetVernWsAbbrev = None
+
+    if oneProjectMode:
+
+        TargetDB = DB
+        targetProj = DB.ProjectName()
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
+
+        if targetWSTag:
+
+            targetVernWs = DB.WSHandle(targetWSTag)
+            targetVernWsAbbrev = getWritingSystemAbbreviation(DB, targetWSTag)
+    else:
+        TargetDB = FLExProject()
+
+        try:
+            # Open the target database
+            targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+            if not targetProj:
+                return None
+            TargetDB.OpenProject(targetProj, True)
+        except:
+            report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
+            raise
 
     report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target project.').format(targetProj=targetProj))
 
@@ -152,7 +190,11 @@ def insertTargetText(DB, configMap, report):
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
 
     if not (sourceTextName and targetSynthesis):
-        TargetDB.CloseProject()
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return None
     
     # Allow the synthesis and ana files to not be in the temp folder if a slash is present
@@ -163,8 +205,12 @@ def insertTargetText(DB, configMap, report):
 
             fullText = f.read()
     except:
-        TargetDB.CloseProject()
-        report.Error(_translate("InsertTargetText", 'The Synthesize Text module must be run before this one. Could not open the synthesis file: "') + synFile + '".')
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
+        report.Error(_translate("InsertTargetText", 'The Synthesize Text module must be run before this one. Could not open the synthesis file: "') + Utils.shortenPathForDisplay(synFile) + '".')
         return
 
     # Apply user-defined search/replace rules from config if present
@@ -173,7 +219,13 @@ def insertTargetText(DB, configMap, report):
     if fullText is None:
         return
 
-    # Figure out the naming of the text file. Use the source text name by default,
+    # In One project mode the target text is inserted into the same project as the source text, so distinguish it by appending
+    # the target writing system abbreviation first, e.g. "Genesis-deva". This is done before checking for existing texts.
+    if oneProjectMode and targetVernWsAbbrev:
+
+        sourceTextName = sourceTextName + '-' + targetVernWsAbbrev
+
+    # Figure out the naming of the text file. Use the (possibly WS-suffixed) name by default,
     # but if it exists create a different name. E.g. War & Peace, War & Peace - Copy, War & Peace - Copy (2)
     sourceTextName = Utils.createUniqueTitle(TargetDB, sourceTextName)
  
@@ -189,19 +241,24 @@ def insertTargetText(DB, configMap, report):
     # Set StText object as the Text contents
     text.ContentsOA = stText  
 
-    # Insert text into the target DB while marking sfms as analysis writing system
-    ChapterSelection.insertParagraphs(TargetDB, fullText, m_stTxtParaFactory, stText)
+    # Insert text into the target DB while marking sfms as analysis writing system. In One project mode the vernacular content
+    # goes into the chosen target writing system; otherwise targetVernWs is None and the project's default vernacular WS is used.
+    ChapterSelection.insertParagraphs(TargetDB, fullText, m_stTxtParaFactory, stText, vernWs=targetVernWs)
 
     # Set the title of the text
     tss = TsStringUtils.MakeString(sourceTextName, TargetDB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
-    
+
     # Set metadata for the text
     ChapterSelection.setTextMetaData(DB, text)
 
-    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName}" created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
+    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName}" created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj),
                 TargetDB.BuildGotoURL(text))
-    TargetDB.CloseProject()
+
+    # In One project mode TargetDB is the same object as the source DB, so don't close it here.
+    if TargetDB is not DB:
+
+        TargetDB.CloseProject()
 
     return 1
 

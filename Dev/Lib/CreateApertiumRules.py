@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/17/26 - Ron Lockwood
 #    Fixes #1118. Rename user-facing "disjoint feature set" to "split feature set" in the unexpected-value warning.
 #
@@ -1646,7 +1649,7 @@ class RuleGenerator:
                 if self.ProcessRule(rule):
                     ruleCount += 1
 
-        self.report.Info(_translate('CreateApertiumRules', 'Added {ruleCount} rule(s) from {fileName}.').format(ruleCount=ruleCount, fileName=fileName))
+        self.report.Info(_translate('CreateApertiumRules', 'Added {ruleCount} rule(s) from {fileName}.').format(ruleCount=ruleCount, fileName=Utils.shortenPathForDisplay(fileName)))
 
         return ruleCount
 
@@ -1683,7 +1686,7 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
 
         datetimeStr = re.sub(':', '-', datetime.datetime.now().isoformat(sep=' ', timespec='seconds'))
         backupPath = f'{transferRulePath}.{datetimeStr}.bak'
-        report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=backupPath))
+        report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=Utils.shortenPathForDisplay(backupPath)))
         shutil.copy(transferRulePath, backupPath)
         generator.ProcessExistingTransferFile(transferRulePath)
 

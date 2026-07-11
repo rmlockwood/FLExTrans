@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/24/26 - Ron Lockwood
+#    One project mode: read target lemmas in the target writing system, treat a missing link as a link to the same sense, and reuse the source project as the target.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -142,7 +148,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -314,7 +320,22 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         errorList.append((_translate("ExtractBilingualLexicon", "A value for {key} not found in the configuration file.").format(key=ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE), 2))
         return errorList
 
-    TargetDB = Utils.openTargetProject(configMap, report)
+    # In One project mode there is no separate target project: the "target" is the same project read in the target writing
+    # system. So reuse the source DB and resolve the target WS handle; otherwise open the configured target project as usual.
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    oneProjectMode = twoProjectMode == 'n'
+    targetWSHandle = None
+
+    if oneProjectMode:
+
+        TargetDB = DB
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
+
+        if targetWSTag:
+
+            targetWSHandle = DB.WSHandle(targetWSTag)
+    else:
+        TargetDB = Utils.openTargetProject(configMap, report)
 
     if not TargetDB:
         return
@@ -353,7 +374,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         if Utils.get_categories(DB, report, posMap, TargetDB, numCatErrorsToShow=1, addInflectionClasses=True) == True:
 
             errorList.append((_translate("ExtractBilingualLexicon", "Error retrieving categories."), 2))
-            TargetDB.CloseProject()
+
+            if TargetDB is not DB:
+
+                TargetDB.CloseProject()
+
             return errorList
 
         # save features so they can go in the symbol definition section. Source and Target DBs.
@@ -451,7 +476,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             elif equivStr:
 
                                 targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(sourceEntry, DB, TargetDB, sourceSense, equivStr, \
-                                                                    custSenseNumField, report, remove1dot1Bool=False)
+                                                                    custSenseNumField, report, remove1dot1Bool=False, targetWSHandle=targetWSHandle)
                                 if targetSense:
 
                                     targetTags = []
@@ -482,6 +507,19 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 else:
                                     # Error already reported
                                     pass
+                            elif oneProjectMode:
+
+                                # No link in the custom field. In One project mode the entry links to itself, so the target is the
+                                # same sense rendered in the target writing system (same entry, same POS, just a different WS).
+                                targetLemma = Utils.fixupLemma(sourceEntry, i+1, wsHandle=targetWSHandle)
+
+                                pairElem = ET.SubElement(entryElem, 'p')
+                                leftElem = ET.SubElement(pairElem, 'l')
+                                rightElem = ET.SubElement(pairElem, 'r')
+                                insertWord(leftElem, senseHeadWord, sourceTags)
+                                insertWord(rightElem, targetLemma, sourceTags)
+                                targetFound = True
+                                recordsDumpedCount += 1
                             else:
                                 # Don't report this. Most of the time the equivalent field will be empty.
                                 pass
@@ -546,7 +584,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 text = unicodedata.normalize('NFD', text)
                 replTree = ET.parse(io.StringIO(text)).getroot()
         except:
-            errorList.append((_translate("ExtractBilingualLexicon", "There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.").format(replFile=replFile), 2))
+            errorList.append((_translate("ExtractBilingualLexicon", "There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.").format(replFile=Utils.shortenPathForDisplay(replFile)), 2))
 
         if replTree:
             # get rid of <leftdata> and <rightdata> (if present)
@@ -573,14 +611,22 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
                 fout.write(ET.tostring(outputTree, encoding='utf-8'))
         except IOError as err:
-            errorList.append((_translate("ExtractBilingualLexicon", "There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.").format(fullPathBilingFile=fullPathBilingFile), 2))
-            TargetDB.CloseProject()
+            errorList.append((_translate("ExtractBilingualLexicon", "There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.").format(fullPathBilingFile=Utils.shortenPathForDisplay(fullPathBilingFile)), 2))
+
+            if TargetDB is not DB:
+
+                TargetDB.CloseProject()
+
             return errorList
 
-        errorList.append((_translate("ExtractBilingualLexicon", "Creation complete to the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(fullPathBilingFile)), 0))
+        errorList.append((_translate("ExtractBilingualLexicon", "Creation complete to the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(fullPathBilingFile)), 0))
         errorList.append((_translate("ExtractBilingualLexicon", "{recordsDumpedCount} records created.").format(recordsDumpedCount=recordsDumpedCount), 0))
 
-    TargetDB.CloseProject()
+    # In One project mode TargetDB is the same object as DB, so don't close it here (the caller still needs the source project).
+    if TargetDB is not DB:
+
+        TargetDB.CloseProject()
+
     return errorList
 
 def MainFunction(DB, report, modifyAllowed):

@@ -99,8 +99,7 @@ puis double-cliquez dans la colonne Mot-vedette cible de la ligne souhaitée pou
       <location filename="../Linker.py" line="260"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</source>
-      <translation>Export a list of unlinked senses to a file. If Hide Proper Nouns 
-is checked, Proper Nouns will not be exported.</translation>
+      <translation>Exporter une liste de sens non liés vers un fichier. Si l'option "Masquer les noms propres" est cochée, les noms propres ne seront pas exportés.</translation>
     </message>
   </context>
 </TS>

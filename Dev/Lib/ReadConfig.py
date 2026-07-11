@@ -5,6 +5,16 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.4 - 7/8/26 - Ron Lockwood
+#    Fixes #1392. Added the ApplyTextOutRulesInTestbed setting that controls whether Text Out rules are applied to the synthesis before the testbed extracts results.
+#
+#   Version 3.16.3 - 7/3/26 - Ron Lockwood
+#    Settings for the Work on Rules with AI module: provider, model, consent, include-project-names, and prompt logging. Removed the unused AIRulesApiKey setting (keys live in the OS
+#    credential vault, never in a settings file).
+#
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    Added TwoProjectMode and TargetWritingSystem settings for one-project, two-writing-system mode.
+#
 #   Version 3.16.1 - 6/22/26 - Ron Lockwood
 #    Use with statements for file handling in writeConfigValue.
 #
@@ -77,9 +87,16 @@ from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
+AI_RULES_CONSENT = 'AIRulesConsentToSendData'
+AI_RULES_CONSENT_ASKED = 'AIRulesConsentQuestionAsked'
+AI_RULES_INCLUDE_PROJECT_NAMES = 'AIRulesIncludeProjectNames'
+AI_RULES_LOG_PROMPTS = 'AIRulesLogPrompts'
+AI_RULES_MODEL = 'AIRulesModel'
+AI_RULES_PROVIDER = 'AIRulesProvider'
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
 ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
 ALT_PARATEXT_FOLDER = 'AlternateParatextFolder'
+APPLY_TEXT_OUT_RULES_IN_TESTBED = 'ApplyTextOutRulesInTestbed'
 BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
 BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
@@ -125,6 +142,7 @@ TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TARGET_WRITING_SYSTEM = 'TargetWritingSystem'
 TARGET_XAMPLE_CUSTOM_ENTRY_FIELD = 'TargetXampleCustomEntryField'
 TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD = 'TargetXampleCustomAllomorphField'
 TESTBED_FILE = 'TestbedFile'
@@ -137,6 +155,7 @@ TRANSFER_RULES_FILE2 = 'TransferRulesFile2'
 TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
+TWO_PROJECT_MODE = 'TwoProjectMode'
 
 # DM: ADDING NEW CONFIGS FOR GENSTC
 GENSTC_ANALYZED_GLOSS_TEXT_FILE = 'AnalyzedTextOutputFileForGloss'

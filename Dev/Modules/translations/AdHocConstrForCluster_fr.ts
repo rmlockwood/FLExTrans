@@ -51,12 +51,12 @@
     <message>
       <location filename="../AdHocConstrForCluster.py" line="181"/>
       <source>adjacent after</source>
-      <translation>adjacent après</translation>
+      <translation>adjacent suivant</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="182"/>
       <source>adjacent before</source>
-      <translation>adjacent avant</translation>
+      <translation>adjacent précédent</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="371"/>
@@ -140,6 +140,10 @@
       <location filename="../AdHocConstrForCluster.py" line="906"/>
       <source>No cluster projects found. Define them in Settings.</source>
       <translation>Aucun projet groupé trouvé. Définissez-les dans les Paramètres.</translation>
+    </message>
+    <message>
+      <source>This module only works in Two Project mode.</source>
+      <translation>Ce module fonctionne uniquement en mode deux projets.</translation>
     </message>
   </context>
 </TS>

@@ -5,6 +5,12 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.16.2 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -56,7 +62,7 @@ from unicodedata import normalize
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import AllProjectNames
 from SIL.LCModel import ( # type: ignore
     IMoAdhocProhibGrRepository, 
@@ -111,7 +117,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("AdHocConstrForCluster", "Add Ad Hoc Constraint for a Cluster"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),
         FTM_Help       : "",
@@ -279,7 +285,7 @@ class AdHocMain(QMainWindow):
     def closeIt(self):
 
         # Close the source project if necessary
-        if self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
+        if self.sourceDB and self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
 
             self.sourceDB.CloseProject()
 
@@ -345,7 +351,7 @@ class AdHocMain(QMainWindow):
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor) 
 
         # If we had opened a different project from our main FlexTools project, close it
-        if self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
+        if self.sourceDB and self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
 
             self.sourceDB.CloseProject()
 
@@ -448,8 +454,8 @@ class AdHocMain(QMainWindow):
         for proj in self.ui.clusterProjectsComboBox.currentData():
 
             problemFound = False
-            isSourceProject = (proj == self.sourceDB.ProjectName())
-            isOrigSourceProject = (proj == self.origSourceDB.ProjectName())
+            isSourceProject = (proj == self.sourceDB.ProjectName()) if self.sourceDB else False
+            isOrigSourceProject = (proj == self.origSourceDB.ProjectName()) if self.origSourceDB else False
 
             myDB = Utils.openProject(self.report, proj)
 
@@ -507,7 +513,7 @@ class AdHocMain(QMainWindow):
 
                         # Again, give up if it's an allomorph
                         else:
-                            feedbackStr += _translate("AdHocConstrForCluster", 'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n', format(selectedType=selectedType, otherStr=otherStr, proj=proj))
+                            feedbackStr += _translate("AdHocConstrForCluster", 'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n').format(selectedType=selectedType, otherStr=otherStr, proj=proj)
                             problemFound = True
 
             if not problemFound:
@@ -754,10 +760,7 @@ class AdHocMain(QMainWindow):
 
         repo = DB.project.ServiceLocator.GetService(ICmObjectRepository)
 
-        if composed:
-            def norm(s): return normalize('NFC', s) if s else s
-        else:
-            def norm(s): return s
+        def norm(s): return normalize('NFC', s) if (composed and s) else s
 
         lemmas = {}
 
@@ -789,10 +792,7 @@ class AdHocMain(QMainWindow):
     
     def getAllomorphs(self, DB, composed=True):
 
-        if composed:
-            def norm(s): return normalize('NFC', s) if s else s
-        else:
-            def norm(s): return s
+        def norm(s): return normalize('NFC', s) if (composed and s) else s
 
         lemmas = {}
 
@@ -897,6 +897,11 @@ def MainFunction(DB, report, modify=True):
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
+        return
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("AdHocConstrForCluster", "This module only works in Two Project mode."))
         return
     
     # Log the start of this module on the analytics server if the user allows logging.

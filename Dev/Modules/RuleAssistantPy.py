@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.8 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
+#
 #   Version 3.16.7 - 6/17/26 - Ron Lockwood
 #    Cleared up lint issues.
 #
@@ -82,7 +85,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
@@ -502,6 +505,11 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
 
     if not configMap:
 
+        return
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("RuleAssistant", "This module only works in Two Project mode."))
         return
 
     # Log the start of this module on the analytics server if the user allows logging.

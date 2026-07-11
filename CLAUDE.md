@@ -50,6 +50,12 @@ Group imports into these blocks, in this order, separated by a single blank line
 ### Line length
 - **No 80-character limit.** Lines may run up to ~200 characters before wrapping.
   This applies to **comments too** — don't wrap a comment at 80; let it run to ~200.
+- **Multi-line comments should fill the width.** When a comment spans more than one
+  line, make each line run close to the ~200 char limit rather than wrapping early.
+  If it's only two lines and the total is a bit over 200, split it roughly in half so
+  the two lines are balanced rather than one full line and one short stub. Always
+  break at a point that makes sense linguistically (e.g. between clauses or
+  sentences, not mid-phrase) so each line still reads naturally.
 - **Keep function calls / signatures on one line** even if long. Do not split
   arguments across multiple lines — single-line calls are faster to step through
   in a debugger.
@@ -88,3 +94,7 @@ Group imports into these blocks, in this order, separated by a single blank line
   `Dev/RuleGen_{en,de,es,fr}.properties`. Pull translations from there.
 - Compile with `lrelease <file>.ts -qm CompiledTranslations/<file>_<lang>.qm`.
 - Add new strings to all of `_de`, `_es`, `_fr`; aim for 0 unfinished.
+- The authoritative UI-language list is `Dev/Lib/UILanguages.py`. `Dev/lang_codes.bat`,
+  `LangForInstallerScript/languages.nsh`, and `crowdin.yml` are GENERATED from it by
+  `Dev/updateLanguageFiles.py` — never edit those three by hand. To add a UI language,
+  follow `Dev/README-AddingUILanguage.md`.

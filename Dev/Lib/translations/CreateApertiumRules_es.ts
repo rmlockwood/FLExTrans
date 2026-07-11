@@ -4,11 +4,6 @@
   <context>
     <name>CreateApertiumRules</name>
     <message>
-      <location filename="../CreateApertiumRules.py" line="582"/>
-      <source>List values</source>
-      <translation type="unfinished">List values</translation>
-    </message>
-    <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
       <translation>No se pudieron encontrar etiquetas para la característica {label} de la categoría gramatical {category}.</translation>
@@ -206,17 +201,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</translation>
+      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
-      <source>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</source>
-      <translation>Unexpected co-feature value &quot;{val}&quot; found in a disjoint feature set. Expected only &quot;sg&quot; or &quot;pl&quot;. This value will be ignored.</translation>
+      <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
+      <translation>Valor de co-característica inesperado &quot;{val}&quot; encontrado en un conjunto de características dividido. Solo se espera &quot;sg&quot;, &quot;pl&quot; o &quot;many&quot;. Este valor será ignorado.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</translation>
+      <translation>Por favor, asegúrese de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>

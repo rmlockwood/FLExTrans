@@ -5,6 +5,16 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16.3 - 7/10/26 - Ron Lockwood
+#    Type-annotation cleanup (no behavior change): typed the LinkerRow/LinkerTable attributes that start as None but are always populated before use (linkObj, font, callback, selectedHPG),
+#    let HPG.SenseNum be Optional[int], passed a QModelIndex() to rowCount, and ignored the dynamic FTPaths.CURRENT_SRC_TEXT global - clearing all the Pylance reportOptionalMemberAccess warnings.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/24/26 - Ron Lockwood
+#    One project mode: default each sense to a self-link shown in the target writing system, reuse the source project as the target, let the user override to a different target sense, and delete the link if the user sets the target back to the same sense.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -166,6 +176,7 @@ import json
 import unicodedata
 import xml.etree.ElementTree as ET
 import time
+from typing import Callable, Optional
 
 from fuzzywuzzy import fuzz
 
@@ -178,7 +189,7 @@ from SIL.LCModel import ( # type: ignore
     ILexEntry,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore     
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 
 import InterlinData
@@ -211,7 +222,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -274,7 +285,7 @@ COL_TGT_GLOSS      = 7
 # model the information having to do with basic sense information, namely
 # headword, part of speech (POS) and gloss thus the name HPG
 class HPG(object):
-    def __init__(self, Sense, Headword, POS, Gloss, SenseNum=1):
+    def __init__(self, Sense, Headword, POS, Gloss, SenseNum: Optional[int] = 1):
         self.__sense = Sense
         self.__headword = Headword
         self.__POS = POS
@@ -295,7 +306,8 @@ class HPG(object):
 class LinkerRow(object):
     def __init__(self):
         self.__verseNum = ''
-        self.__linkObj = None
+        # Always populated with a real Link via setLinkObject() before the delegating stub methods below are called; typed as Link so those stubs resolve.
+        self.__linkObj: 'Link' = None  # type: ignore
     def setVerseNum(self, word):
         self.__verseNum = word.getVerseNum()
     def getVerseNum(self):
@@ -489,10 +501,12 @@ class LinkerTable(QtCore.QAbstractTableModel):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__localData = myData
         self.__myHeaderData = headerData
-        self.__selectedHPG = None
+        # These three are populated with real objects in normal use (a selection is made, and the table is always constructed with a font and a change callback); the annotations let the
+        # methods below use them without pyright flagging the None the attributes start out as / default to.
+        self.__selectedHPG: HPG = None  # type: ignore
         self.__linkingChanged = False
-        self.__font = font
-        self.__callbackFunc = changeCallback
+        self.__font: QtGui.QFont = font  # type: ignore
+        self.__callbackFunc: Callable = changeCallback  # type: ignore
     def getFont(self):
         return self.__font
     def setFont(self, myFont):
@@ -982,8 +996,8 @@ class Main(QMainWindow):
         # Update the source text setting in the config file
         ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
         
-        # Set the global variable
-        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
+        # Set the global variable (CURRENT_SRC_TEXT is a module global created dynamically on FTPaths and read by the status bar; ignore as the other setters do).
+        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText() # type: ignore
         
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -1031,7 +1045,7 @@ class Main(QMainWindow):
         found = False
         
         # Look for a match to the beginning of a headword
-        for i in range(0, self.__comboModel.rowCount(None)):
+        for i in range(0, self.__comboModel.rowCount(QtCore.QModelIndex())):
             
             if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__comboModel.getRowValue(i).getHeadword(), flags=re.RegexFlag.IGNORECASE):
                 found = True
@@ -1241,7 +1255,7 @@ class Main(QMainWindow):
         #self.ui.tableView.scrollToTop()
         return
     
-def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
+def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal, targetWSHandle=None):
 
     report.ProgressStart(entriesTotal)
     glossWarnings = 0
@@ -1268,11 +1282,8 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                 if msa == None:
                     continue
                 
-                # Get headword, POS, gloss
-                headword = ITsString(entryObj.HeadWord).Text
-                
-                # Make the lemma in the form x.x (but remove if 1.1)
-                headword = Utils.fixupLemma(entryObj, senseNum+1, remove1dot1Bool=True)
+                # Make the lemma in the form x.x (but remove if 1.1). In One project mode read it in the target writing system.
+                headword = Utils.fixupLemma(entryObj, senseNum+1, remove1dot1Bool=True, wsHandle=targetWSHandle)
                 
                 if msa.PartOfSpeechRA:
 
@@ -1313,12 +1324,12 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
     return True
 
 # Given an entry guid and a sense #, look up the the sense info. Also convert an entry guid to a sense guid and re-write it.
-def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseEquivField, senseNumField, report, preGuidStr):
-                      
+def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseEquivField, senseNumField, report, preGuidStr, targetWSHandle=None):
+
     retVal = None
-          
+
     targetSense, lem, senseNum = Utils.getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, report, remove1dot1Bool=True, \
-                                                          rewriteEntryLinkAsSense=True, preGuidStr=preGuidStr, senseEquivField=senseEquivField)
+                                                          rewriteEntryLinkAsSense=True, preGuidStr=preGuidStr, senseEquivField=senseEquivField, targetWSHandle=targetWSHandle)
     if targetSense:
 
         if targetSense.MorphoSyntaxAnalysisRA:
@@ -1405,7 +1416,7 @@ def getInterlinearText(DB, report, configMap, contents):
     
     return myText
 
-def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText, preGuidStr):
+def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText, preGuidStr, oneProjectMode=False, targetWSHandle=None):
         
     saveMap = {}
     processedMap = {}
@@ -1480,15 +1491,35 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                             else:
                                 # Get headword-POS-gloss (HPG) object for the guid, this returns None if not found
                                 # This will also convert an entry guid to a sense guid and re-write it.
-                                tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equivStr, senseEquivField, senseNumField, report, preGuidStr)
+                                tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equivStr, senseEquivField, senseNumField, report, preGuidStr, targetWSHandle)
                             
                             # Set the target part of the Link object and add it to the list
                             myLink.setTgtHPG(tgtHPG)
                             myData.append(myLinkerRow)
                             processedMap[mySense] = myLink, None, sentence
                             
+                        elif oneProjectMode:
+
+                            # No link in the custom field. In One project mode each sense links to itself by default, shown with the headword in the target writing system. setTgtHPG marks the row as 
+                            # linked; updateSourceDb leaves it alone because it is "initially linked and unmodified", so no redundant self-link is written (extraction defaults a missing link to self).
+                            # If the user picks a different target sense from the list, that link does get written.
+                            tgtSenseNum = 1
+
+                            for sIdx, s in enumerate(entry.SensesOS):
+
+                                if s == mySense:
+
+                                    tgtSenseNum = sIdx + 1
+                                    break
+
+                            tgtHeadword = Utils.fixupLemma(entry, tgtSenseNum, remove1dot1Bool=True, wsHandle=targetWSHandle)
+                            tgtHPG = HPG(mySense, tgtHeadword, srcPOS, srcGloss, tgtSenseNum)
+                            myLink.setTgtHPG(tgtHPG)
+                            myData.append(myLinkerRow)
+                            processedMap[mySense] = myLink, None, sentence
+
                         else: # no link url present
-                            
+
                             # Don't do a fuzzy compare if the source POS is a proper noun
                             doFuzzyCompare = False if srcPOS == properNounAbbr else True
 
@@ -1578,14 +1609,26 @@ def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, se
         
         if currSense not in updatedSenses:
             
-            # Create a link if the user marked it for linking and we have a valid target
-            # and it's not an existing linked sense in the DB where the link hasn't been changed (these are 
-            # marked linkIt=True, but we don't want to re-link them even though it wouldn't hurt).
-            if (currLink.getLinkIt() == True and currLink.getTgtHPG() != None and currLink.getTgtHPG().getHeadword() != '') and \
-               not currLink.isInitiallyLinkedAndTargetUnmodified():
-                
+            # Create a link if the user marked it for linking and we have a valid target and it's not an existing linked sense in the DB where the link hasn't been changed 
+            # (these are marked linkIt=True, but we don't want to re-link them even though it wouldn't hurt).
+            if (currLink.getLinkIt() == True and currLink.getTgtHPG() != None and currLink.getTgtHPG().getHeadword() != '') and not currLink.isInitiallyLinkedAndTargetUnmodified():
+
+                # In One project mode (TargetDB is the source DB), assigning the target to the same sense we are on means there is no real link to make - a missing link already defaults to self 
+                # at extraction time. So delete the link (clear the field) instead of writing a self-referential URL. This also removes a previous link that the user has reset to self.
+                if TargetDB is DB and currLink.getTgtSense() == currSense:
+
+                    DB.LexiconSetFieldText(currSense, senseEquivField, '')
+
+                    if senseNumField:
+
+                        DB.LexiconSetFieldText(currSense, senseNumField, '')
+
+                    unlinkCount += 1
+                    updatedSenses[currSense] = 1
+                    continue
+
                 cnt += 1
-                
+
                 ## Set the target field
 
                 # Get the FLEx style that is for hyperlinks (named hyperlink)
@@ -1813,11 +1856,11 @@ def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report
             etObj.write(htmlFileName)
             
         except PermissionError:
-            report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=htmlFileName))
+            report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=Utils.shortenPathForDisplay(htmlFileName)))
             return
         
         except:
-            report.Error(_translate("LinkSenseTool", "Error writing {htmlFileName}.").format(htmlFileName=htmlFileName))
+            report.Error(_translate("LinkSenseTool", "Error writing {htmlFileName}.").format(htmlFileName=Utils.shortenPathForDisplay(htmlFileName)))
             return
         
         # Report how many words were dumped
@@ -1889,29 +1932,46 @@ def RunModule(DB, report, configMap, app):
         report.Error(_translate("LinkSenseTool", "{linkField} field doesn't exist. Please read the instructions.").format(linkField=linkField))
         return ERROR_HAPPENED
 
-    TargetDB = FLExProject()
+    # In One project mode there is no separate target project: the "target" is the same project shown in the target writing
+    # system. So reuse the source DB and resolve the target WS handle; otherwise open the configured target project as usual.
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    oneProjectMode = twoProjectMode == 'n'
+    targetWSHandle = None
 
-    # Open the target database
-    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+    if oneProjectMode:
 
-    if not targetProj:
-        return ERROR_HAPPENED
-    
-    # See if the target project is a valid database name.
-    if targetProj not in AllProjectNames():
+        TargetDB = DB
+        targetProj = DB.ProjectName()
+        targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
 
-        report.Error(_translate("LinkSenseTool", 'The target project does not exist. Please check the configuration file.'))
-        return ERROR_HAPPENED
+        if targetWSTag:
 
-    report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target project.').format(targetProj=targetProj))
+            targetWSHandle = DB.WSHandle(targetWSTag)
+    else:
 
-    try:
-        TargetDB.OpenProject(targetProj, True)
+        TargetDB = FLExProject()
 
-    except: #FDA_DatabaseError, err:
+        # Open the target database
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
-        report.Error(_translate("LinkSenseTool", 'Failed to open the target project.'))
-        raise
+        if not targetProj:
+            return ERROR_HAPPENED
+
+        # See if the target project is a valid database name.
+        if targetProj not in AllProjectNames():
+
+            report.Error(_translate("LinkSenseTool", 'The target project does not exist. Please check the configuration file.'))
+            return ERROR_HAPPENED
+
+        report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target project.').format(targetProj=targetProj))
+
+        try:
+            TargetDB.OpenProject(targetProj, True)
+
+        except: #FDA_DatabaseError, err:
+
+            report.Error(_translate("LinkSenseTool", 'Failed to open the target project.'))
+            raise
 
     report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName),
                 DB.BuildGotoURL(textObj))
@@ -1936,24 +1996,33 @@ def RunModule(DB, report, configMap, app):
     myText = getInterlinearText(DB, report, configMap, contents)
 
     if myText == None:
-        TargetDB.CloseProject()
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return ERROR_HAPPENED 
 
     # Check to see if there is any data to link
     if myText.getSentCount() == 0:
                                         
         report.Error(_translate("LinkSenseTool", 'There were no senses found for linking. Please check your text and approve some words.'))
-        TargetDB.CloseProject()
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return ERROR_HAPPENED
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
-    if not getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, targetDBtotal):
+    if not getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, targetDBtotal, targetWSHandle):
 
-        TargetDB.CloseProject()
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    myData, processedMap = processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText, preGuidStr)
+    myData, processedMap = processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText, preGuidStr, oneProjectMode, targetWSHandle)
 
     # Check to see if there is any data to link
     if len(myData) == 0:
@@ -1993,7 +2062,10 @@ def RunModule(DB, report, configMap, app):
         # If the user changed the source text combo, the restart member is set to True
         if window.restartLinker:
             
-            TargetDB.CloseProject()
+            if TargetDB is not DB:
+
+                TargetDB.CloseProject()
+
             return RESTART_MODULE
         
         elif window.rebuildBiling:
@@ -2001,10 +2073,17 @@ def RunModule(DB, report, configMap, app):
             # Only rebuild the bilingual lexicon if the user clicked OK
             if window.retVal:
 
-                TargetDB.CloseProject()
+                if TargetDB is not DB:
+
+                    TargetDB.CloseProject()
+
                 return REBUILD_BILING
     
-    TargetDB.CloseProject()
+    # In One project mode TargetDB is the same object as the source DB, so don't close it here.
+    if TargetDB is not DB:
+
+        TargetDB.CloseProject()
+
     return NO_ERRORS
 
 RESTART_MODULE = 0

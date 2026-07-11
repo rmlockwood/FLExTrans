@@ -5,6 +5,12 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.16 - 7/10/26 - Ron Lockwood
+#    Type fix: annotated getInterlinData's return type as TextEntirety so callers (e.g. RuleAssistant) no longer see it as object and can call .write() without a reportAttributeAccessIssue.
+#
+#   Version 3.15.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -174,7 +180,7 @@ def getInsertedWordsList(inputFilename, report, DB):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError(_translate("InterlinData", "The Tree Tran Words to Insert File has invalid XML content.") + ' (' + inputFilename + ')')
+        raise ValueError(_translate("InterlinData", "The Tree Tran Words to Insert File has invalid XML content.") + ' (' + Utils.shortenPathForDisplay(inputFilename) + ')')
 
     myRoot = myETree.getroot()
 
@@ -220,7 +226,7 @@ def getTreeSents(inputFilename, report):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError(_translate("InterlinData", "The Tree Tran Result File has invalid XML content.") + ' (' + inputFilename + ')')
+        raise ValueError(_translate("InterlinData", "The Tree Tran Result File has invalid XML content.") + ' (' + Utils.shortenPathForDisplay(inputFilename) + ')')
 
     myRoot = myETree.getroot()
 
@@ -242,7 +248,7 @@ def getTreeSents(inputFilename, report):
 
         if len(mparses) > 1:
 
-            myTreeSent.setSingleTree(False)
+            myTreeSent.setSingleTree(False) # type: ignore
 
         if currGuid := getGuidFromAnaRecord(anaRec, report) is None:
             
@@ -254,7 +260,7 @@ def getTreeSents(inputFilename, report):
 
             newSent = True
 
-        myTreeSent.addGuid(currGuid)
+        myTreeSent.addGuid(currGuid) # type: ignore
 
     return obj_list
 
@@ -548,7 +554,7 @@ def processPunctuation(report, myInfo, analysisOccurance, reSplitPuncObj):
 # At the end of the function we figure out appropriate warnings for unknown words and we process
 # complex forms which basically is substituting complex forms when we find contiguous words that match
 # the complex form's components.
-def getInterlinData(DB, report, params):
+def getInterlinData(DB, report, params) -> TextEntirety:
 
     prevEndOffset = 0
     currSegNum = 0

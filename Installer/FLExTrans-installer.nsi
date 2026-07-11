@@ -101,32 +101,17 @@ Var /GLOBAL STR_INSTALL_XMLMIND
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ; ==============================================================
-; TO ADD A NEW LANGUAGE — touch only the items marked (*)
+; TO ADD A NEW LANGUAGE
 ; ==============================================================
-; (*) 1. Copy LangForInstallerScript\en.nsh to LangForInstallerScript\XX.nsh, change EN_ prefix to XX_,
-;        translate all string values, set XX_DISPLAY_NAME.
-; (*) 2. Add one !insertmacro MUI_LANGUAGE line below.
-; (*) 3. Add one !include "LangForInstallerScript\XX.nsh" line below.
-; (*) 4. Add one Push pair in ShowLanguageDialog (search for that function).
-; (*) 5. Add one ${ElseIf} block in SetLanguageCode (search for that function).
-;     6. Add the language-specific transfer rules files
-;        (e.g. transfer_rules-Swedish_XX.t1x) to the TransferRules folder.
-; (*) 7. Add the XXE addon folder to XXEaddon\translations\XX and modify the CreateInstaller LangForInstallerScript
-;        to zip this folder and add a File line in the XXE section below.
+; The authoritative UI-language list is Dev\Lib\UILanguages.py; everything per-language in this
+; script comes from the GENERATED include below. See Dev\README-AddingUILanguage.md for the full
+; checklist (add the language there, translate a LangForInstallerScript\XX.nsh, run
+; python Dev\updateLanguageFiles.py, add the transfer-rules and XXE addon translations).
 ; ==============================================================
 
-; MUI language registrations — add one line per language (*)
-!insertmacro MUI_LANGUAGE "English"
-!insertmacro MUI_LANGUAGE "German"
-!insertmacro MUI_LANGUAGE "Spanish"
-!insertmacro MUI_LANGUAGE "French"
-
-; Per-language string definitions — add one !include per language (*)
-; Each file defines LangStrings and XX_* compile-time string constants.
-!include "InstallerResources\LangForInstallerScript\de.nsh"
-!include "InstallerResources\LangForInstallerScript\en.nsh"
-!include "InstallerResources\LangForInstallerScript\es.nsh"
-!include "InstallerResources\LangForInstallerScript\fr.nsh"
+; GENERATED from UILanguages.py: the MUI language registrations, the per-language string includes,
+; and the FLEXTRANS_* macros inserted further down (language picker, langcode mapping, addon zips).
+!include "InstallerResources\LangForInstallerScript\languages.nsh"
 
 ; Macro for copying localized transfer rules files.
 ; Uses $LANGCODE set at runtime — no edits needed here when adding a language.
@@ -335,7 +320,63 @@ Section "MainSection" SEC01
       File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${MAKEFILESDIR}\MakefileForLiveRuleTester"
       File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${MAKEFILESDIR}\MakefileForLiveRuleTester.advanced"
     ${EndIf}
-	
+
+    # Remove the deprecated "Fix Up Synthesis Text" module (issue #1392). If it was living in the collection that also runs the
+    # testbed (detected by the End Testbed module rather than the collection's localizable file name), turn the setting on so the testbed keeps applying those rules.
+    StrCpy $6 "0"   # flag: was Fix Up Synthesis Text found in a testbed-running collection?
+
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+
+      FindFirst $2 $3 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+
+      collectionLoop:
+        StrCmp $3 "" collectionDone
+
+        # Does this collection contain the deprecated module? (/c: makes findstr treat the bracketed string as a literal, not a regex.)
+        nsExec::Exec 'findstr /c:"[FLExTrans\FixUpSynthText.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+        Pop $4   # 0 = found, non-zero = not found
+
+        ${If} $4 == 0
+
+          # Is this the testbed-running collection? Detect by the End Testbed module so it works no matter what the collection file is named in the user's language.
+          nsExec::Exec 'findstr /c:"[FLExTrans\EndTestbed.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $5
+
+          ${If} $5 == 0
+            StrCpy $6 "1"
+          ${EndIf}
+
+          # Drop the deprecated module's section from this collection.
+          DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
+        ${EndIf}
+
+        FindNext $2 $3
+        Goto collectionLoop
+
+      collectionDone:
+      FindClose $2
+    ${EndIf}
+
+    # If it was in the testbed collection, enable the replacement setting in this work project's config, but only when the key isn't already there so we don't override a choice the user
+    # has since made in the Settings dialog. (The config is a flat key=value file, so we append a line rather than using an INI writer.)
+    ${If} $6 == "1"
+
+      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\FlexTrans.config"
+
+        nsExec::Exec 'findstr /b /c:"ApplyTextOutRulesInTestbed=" "${WORKPROJECTSDIR}\$1\Config\FlexTrans.config"'
+        Pop $5   # 0 = key already present, non-zero = absent
+
+        ${If} $5 != 0
+
+          # Append the setting on its own line. The leading CRLF guarantees a clean line break even if the file didn't end in a newline (a resulting blank line is harmless — readConfig skips it).
+          FileOpen $7 "${WORKPROJECTSDIR}\$1\Config\FlexTrans.config" a
+          FileSeek $7 0 END
+          FileWrite $7 "$\r$\nApplyTextOutRulesInTestbed=y$\r$\n"
+          FileClose $7
+        ${EndIf}
+      ${EndIf}
+    ${EndIf}
+
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     # We use WriteINIStr instead of _ReplaceInFile for better non-admin compatibility
@@ -349,27 +390,13 @@ Section "MainSection" SEC01
   done1:
     FindClose $0
   
-  # if we are installing for the same language that is already there, skip adding/renaming files for the language
-  ${If} $LANGUAGE == ${LANG_GERMAN}
-  
-    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Werkzeuge.ini"
-	
-	  Goto skip4
-    ${EndIf}
-  ${EndIf}
-	
-  ${If} $LANGUAGE == ${LANG_SPANISH}
-  
-    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Herramientas.ini"
-	
-	  Goto skip4
-    ${EndIf}
-  ${EndIf}
-	
-  ${If} $LANGUAGE == ${LANG_FRENCH}
-  
-    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Outils.ini"
-	
+  # if we are installing for the same language that is already there, skip adding/renaming files for the language.
+  # $(Tools) is the localized name of the Tools collection for the chosen $LANGUAGE (e.g. Werkzeuge for German), so this
+  # one dynamic check covers every non-English language — nothing to add here for a new language.
+  ${If} $LANGUAGE != ${LANG_ENGLISH}
+
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\$(Tools).ini"
+
 	  Goto skip4
     ${EndIf}
   ${EndIf}
@@ -536,12 +563,9 @@ associate_extension:
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
 
-  # Bundle the base (English) XXE addon zip and all language-specific ones.
-  # (*) ADD A NEW LANGUAGE: add one File line here for the new language zip.
+  # Bundle the base (English) XXE addon zip and all language-specific ones (the per-language File lines are generated from UILanguages.py).
   File "${GIT_FOLDER}\Installer\${ADD_ON_ZIP_FILE}"
-  File "${GIT_FOLDER}\Installer\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
-  File "${GIT_FOLDER}\Installer\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
-  File "${GIT_FOLDER}\Installer\AddOnsForXMLmind_fr${PRODUCT_VERSION}.zip"
+  !insertmacro FLEXTRANS_ADDON_ZIP_FILES
 
   # Install the base (English) addon first, then overwrite with the
   # language-specific zip if one exists. 
@@ -900,18 +924,10 @@ Function LanguageDialogLeave
 FunctionEnd
 
 Function ShowLanguageDialog
-  ; (*) ADD A NEW LANGUAGE: add a Push ${LANG_XX} / Push ${XX_DISPLAY_NAME}
-  ;     pair before the final 'Push A' line. Order = dialog order.
+  ; The Push pairs for the language picker are generated from UILanguages.py (the LANGUAGES order there = the picker order).
 
   Push ""
-  Push ${LANG_ENGLISH}
-  Push ${EN_DISPLAY_NAME}
-  Push ${LANG_SPANISH}
-  Push ${ES_DISPLAY_NAME}
-  Push ${LANG_FRENCH}
-  Push ${FR_DISPLAY_NAME}
-  Push ${LANG_GERMAN}
-  Push ${DE_DISPLAY_NAME}
+  !insertmacro FLEXTRANS_LANG_PICKER_PUSHES
   Push A ; A means auto count languages
          ; for the auto count to work the first empty push (Push "") must remain
   LangDLL::LangDialog "Installer Language" "Please select the language to use with FLExTrans."
@@ -936,20 +952,8 @@ FunctionEnd
 !macroend
 
 Function SetLanguageCode
-  ; (*) ADD A NEW LANGUAGE: copy one ${ElseIf} block and fill in the new XX two letter code.
-  ;     the same code you are using in LangForInstallerScript\XX.nsh file.
-  ${If} $LANGUAGE == ${LANG_ENGLISH}
-    !insertmacro ASSIGN_LANG_STRINGS "EN"
-  ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
-    !insertmacro ASSIGN_LANG_STRINGS "DE"
-  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
-    !insertmacro ASSIGN_LANG_STRINGS "ES"
-  ${ElseIf} $LANGUAGE == ${LANG_FRENCH}
-    !insertmacro ASSIGN_LANG_STRINGS "FR"
-  ${Else}
-    ; Fallback to English
-    !insertmacro ASSIGN_LANG_STRINGS "EN"
-  ${EndIf}
+  ; The $LANGUAGE -> language-code / string-set mapping is generated from UILanguages.py.
+  !insertmacro FLEXTRANS_SET_LANGCODE_CHAIN
 FunctionEnd
 
 ; ==========================================================

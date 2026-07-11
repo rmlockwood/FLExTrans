@@ -5,6 +5,12 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.16.2 - 7/2/26 - Ron Lockwood
+#    Fixed type-checker lint issues: guard None target/cluster projects, cast the checkable combo box, and skip unmatched titles.
+#
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - the target text is in the source project.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -52,12 +58,13 @@ import os
 import re
 import sys
 import unicodedata
+from typing import cast
 
 import ClusterUtils
 from SIL.LCModel import * # type: ignore                                                  
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore        
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 from SIL.LCModel import ( # type: ignore
     IStTxtPara, 
 )
@@ -72,6 +79,7 @@ import FTPaths
 import Utils
 from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
+from ComboBox import CheckableComboBox
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -92,7 +100,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
@@ -137,6 +145,9 @@ class Main(QMainWindow):
         self.originalMainWinHeight = ClusterUtils.IMP_EXP_WINDOW_HEIGHT - reduction
         self.originalOKyPos = self.ui.OKButton.y() - reduction
 
+        # Annotate the type so the linter knows chapSel becomes a ChapterSelection object (it's set below in InitControls). Otherwise it infers None-only and flags attribute accesses.
+        self.chapSel: ChapterSelection.ChapterSelection | None = None
+
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=True, fromFLEx=True)
         
@@ -179,12 +190,15 @@ class Main(QMainWindow):
 
             title = self.ui.scriptureTextsComboBox.itemText(index)
 
-            # If the click on a checkbox made in checked, it will now be part of the current data
-            if title in self.ui.scriptureTextsComboBox.currentData():
+            # The generated UI types this as a plain QComboBox, but at runtime it's a CheckableComboBox (swapped in ChapterSelection). Cast so the linter sees the check/unCheck methods.
+            combo = cast(CheckableComboBox, self.ui.scriptureTextsComboBox)
 
-                checkFunc = self.ui.scriptureTextsComboBox.check
+            # If the click on a checkbox made in checked, it will now be part of the current data
+            if title in combo.currentData():
+
+                checkFunc = combo.check
             else:
-                checkFunc = self.ui.scriptureTextsComboBox.unCheck
+                checkFunc = combo.unCheck
             
             match = ChapterSelection.bookChapterPattern.match(title)
 
@@ -219,6 +233,12 @@ def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
         ## Get the book abbreviation
         # First get the book string at the start of the title. It could be full name or abbrev.
         matchObj = ChapterSelection.bookChapterPattern.match(title)
+
+        # Skip titles that don't match the book/chapter pattern (match() returns None on no match).
+        if matchObj is None:
+
+            continue
+
         bookStr = matchObj.group('book')
         bookAbbrev = ''
 
@@ -292,8 +312,20 @@ def MainFunction(DB, report, modify):
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
 
-    # Open the Target DB
-    targetDB = Utils.openTargetProject(configMap, report)
+    # In one project (two writing systems) mode the target text was inserted into the source project, so export from the source DB itself.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+    if oneProjectMode:
+
+        targetDB = DB
+    else:
+        # Open the Target DB
+        targetDB = Utils.openTargetProject(configMap, report)
+
+    # Bail out if the target project couldn't be opened (openTargetProject returns None on failure). This also lets the linter know targetDB is non-None below.
+    if targetDB is None:
+
+        return
 
     # Get a list of the text titles
     textTitles = Utils.getSourceTextList(targetDB)
@@ -305,13 +337,16 @@ def MainFunction(DB, report, modify):
     window.show()
     app.exec()
     
-    if window.retVal == True:
-        
-        if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
+    if window.retVal == True and window.chapSel is not None:
 
-            for i, proj in enumerate(window.chapSel.clusterProjects):
+        # Bind to a local so the linter can see it's not None throughout the loop below (function calls can invalidate attribute-based narrowing).
+        chapSel = window.chapSel
 
-                if window.chapSel.ptxProjList[i] == '...':
+        if chapSel.clusterProjects and len(chapSel.clusterProjects) > 0:
+
+            for i, proj in enumerate(chapSel.clusterProjects):
+
+                if chapSel.ptxProjList[i] == '...':
                     continue
 
                 # Open the project (if it's not the main project or the target project)
@@ -325,10 +360,15 @@ def MainFunction(DB, report, modify):
                 else:
                     myDB = Utils.openProject(report, proj)
 
+                    # Skip this project if it couldn't be opened (openProject reports the error and returns None).
+                    if myDB is None:
+
+                        continue
+
                 report.Blank()
                 report.Info(_translate("ExportFlexToParatext", "Exporting from the {proj} project...").format(proj=proj))
 
-                exportAllSelectedTitles(myDB, report, window, proj, window.chapSel.ptxProjList[i])
+                exportAllSelectedTitles(myDB, report, window, proj, chapSel.ptxProjList[i])
                 
                 # Close the project (if not the main)
                 if proj != DB.ProjectName() and proj != targetDB.ProjectName():
@@ -337,7 +377,10 @@ def MainFunction(DB, report, modify):
         else:
             exportAllSelectedTitles(targetDB, report, window, targetDB.ProjectName())
 
-    targetDB.CloseProject()
+    # Only close the target project if it's a separate project (not in one project mode where target == source).
+    if targetDB is not DB:
+
+        targetDB.CloseProject()
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

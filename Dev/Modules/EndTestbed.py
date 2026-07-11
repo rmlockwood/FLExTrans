@@ -5,6 +5,12 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.16.3 - 7/8/26 - Ron Lockwood
+#    Fixes #1392. Optionally apply the Text Out rules to the synthesis before extracting testbed results, controlled by the new ApplyTextOutRulesInTestbed setting.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.1 - 6/9/26 - Laerke
 #    Testbed improvements phase 1. Comment can now be added for a test.
 #
@@ -50,11 +56,12 @@
 #   log and start the log viewer. Put in an end time in the log.
 #
 
+import io
 import os
 import re
 
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
@@ -62,6 +69,8 @@ from PyQt6.QtCore import QCoreApplication
 from Testbed import *
 import Mixpanel
 import ReadConfig
+import TextInOutUtils
+import TextOutRules
 import Utils
 import FTPaths
 
@@ -79,12 +88,12 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel', 'TextInOutUtils']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",
@@ -120,21 +129,34 @@ def MainFunction(DB, report, modifyAllowed):
     if not outFileVal:
         return
     
-    # Open the synthesis file
+    # Read the whole synthesis file into memory. We read it up front (rather than passing the file object straight to extractResults) so we can optionally
+    # run the Text Out rules over it first. Those rules are what Insert Target Text and Export to Paratext apply to the final output.
     try:
-        f_out = open(outFileVal, encoding='utf-8')
+        with open(outFileVal, encoding='utf-8') as f_out:
+            synFileContents = f_out.read()
+
     except IOError:
-        report.Error(_translate("EndTestbed", "There is a problem with the Synthesis Output File path: {outFileVal}. Please check the configuration file setting.").format(outFileVal=outFileVal))
+        report.Error(_translate("EndTestbed", "There is a problem with the Synthesis Output File path: {outFileVal}. Please check the configuration file setting.").format(outFileVal=Utils.shortenPathForDisplay(outFileVal)))
         return
-    
+
+    # Optionally apply the Text Out (Fix Up Synthesis Text) rules so the testbed compares against the same text the user would see in their final output.
+    applyTextOut = ReadConfig.getConfigVal(configMap, ReadConfig.APPLY_TEXT_OUT_RULES_IN_TESTBED, report, giveError=False)
+
+    if applyTextOut == 'y':
+
+        synFileContents = TextInOutUtils.applyTextOutRulesFromConfig(synFileContents, configMap, report, TextOutRules.docs[FTM_Name])
+
+        # A fatal error while applying the rules returns None; bail out rather than extracting from bad data.
+        if synFileContents is None:
+            return
+
     # Create an object for the testbed results file and get the associated
     # XML object
     resultsFileObj = FlexTransTestbedResultsFile(report)
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
-    
-    # Extract the results from the myText.syn file
-    count = resultsXMLObj.extractResults(f_out)
-    f_out.close()
+
+    # Extract the results from the (possibly rule-adjusted) synthesis text. extractResults reads line by line, so wrap the string in a StringIO.
+    count = resultsXMLObj.extractResults(io.StringIO(synFileContents))
     
     # If we were successful write the end date-time and save the file
     if count > 0:

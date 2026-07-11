@@ -5,6 +5,12 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.16.4 - 7/10/26 - Ron Lockwood
+#    Type fix: assert logTreeView.header() is not None before using it (the Qt stubs type header() as Optional), clearing the reportOptionalMemberAccess warnings.
+#
+#   Version 3.16.3 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
 #   Version 3.16.2 - 6/24/26 - Ron Lockwood
 #    Made the "Source text:" tooltip translatable.
 #
@@ -73,7 +79,7 @@ from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
 from PyQt6.QtCore import QCoreApplication, QDateTime
 
 from SIL.LCModel import *   # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import FTPaths
@@ -101,7 +107,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -529,14 +535,21 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
 
     def __createIndex(self, row, column, node):
+
         if node.index == None:
+
             index = self.createIndex(row, column, node)
             node.index = index
+
         if node.widget[column] is None:
+            
             # Create the needed widget depending on item type
             widget = node.createTheWidget(column)
             node.widget[column] = widget
-            self.__view.setIndexWidget(self.createIndex(row, column, node), widget)
+
+            if self.__view:
+
+                self.__view.setIndexWidget(self.createIndex(row, column, node), widget)
 
         return node.index
 
@@ -620,10 +633,13 @@ class LogViewerMain(QMainWindow):
         # Start the font size at 12
         self.ui.fontSizeSpinBox.setValue(12)
         
-        # Make the header text bold
-        headerFont = self.ui.logTreeView.header().font()
+        # Make the header text bold. header() is typed as Optional in the Qt stubs but a QTreeView always has one; assert it so we can use it.
+        header = self.ui.logTreeView.header()
+        assert header is not None
+
+        headerFont = header.font()
         headerFont.setBold(True)
-        self.ui.logTreeView.header().setFont(headerFont)
+        header.setFont(headerFont)
 
     def FontSizeSpinBoxClicked(self):
         myFont = self.ui.logTreeView.font()
@@ -685,7 +701,7 @@ def RunTestbedLogViewer(report):
     
     # We can't do anything if there is no testbed
     if os.path.exists(testbedPath) == False:
-        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=testbedPath))
+        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=Utils.shortenPathForDisplay(testbedPath)))
         return None
     
     ## Load the testbed results

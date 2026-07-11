@@ -7,6 +7,13 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#
+#   Version 3.16.2 - 7/2/26 - Ron Lockwood
+#    Silenced type-checker warnings on os.remove/glob calls and guarded the bilingual backup regex against a None path.
+#
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - dictionary files are named after the source project.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -60,7 +67,7 @@ from pathlib import Path
 import tempfile
 import re
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication, QTranslator
@@ -89,7 +96,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  
@@ -115,31 +122,31 @@ def MainFunction(DB, report, modify=True):
 
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report, giveError=False)
     try:
-        os.remove(targetSynthesis)
+        os.remove(targetSynthesis)  # type: ignore
     except:
         pass # ignore errors
 
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report, giveError=False)
     try:
-        os.remove(targetANA)
+        os.remove(targetANA)  # type: ignore
     except:
         pass # ignore errors
 
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report, giveError=False)
     try:
-        os.remove(transferResultsFile)
+        os.remove(transferResultsFile) # type: ignore
     except:
         pass # ignore errors
 
     outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report, giveError=False)
     try:
-        os.remove(outFileVal)
+        os.remove(outFileVal) # type: ignore
     except:
         pass # ignore errors
     
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report, giveError=False)
     try:
-        os.remove(bilingFile)
+        os.remove(bilingFile) # type: ignore
     except:
         pass # ignore errors
     
@@ -150,9 +157,9 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
     
     # remove bilingual dictionary backup file
-    bilingOldFile = re.sub('.dix', '.dix.old', bilingFile)
+    bilingOldFile = re.sub(r'\.dix', '.dix.old', bilingFile) if bilingFile else ''
     try:
-        os.remove(bilingOldFile)
+        os.remove(bilingOldFile) # type: ignore
     except:
         pass # ignore errors
     
@@ -166,7 +173,7 @@ def MainFunction(DB, report, modify=True):
 
     affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False)
     try:
-        os.remove(affixFile)
+        os.remove(affixFile) # type: ignore
     except:
         pass # ignore errors
     
@@ -193,7 +200,7 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
 
     try:
-        os.remove(buildFolder+Utils.APERTIUM_ERROR_FILE)
+        os.remove(buildFolder+Utils.APERTIUM_ERROR_FILE) # type: ignore
     except:
         pass # ignore errors
 
@@ -204,7 +211,7 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
 
     try:
-        os.remove(buildFolder+Utils.DO_MAKE_SCRIPT_FILE)
+        os.remove(buildFolder+Utils.DO_MAKE_SCRIPT_FILE) # type: ignore
     except:
         pass # ignore errors
     
@@ -212,9 +219,17 @@ def MainFunction(DB, report, modify=True):
     
     # Remove target dictionary files
     stampFiles = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report, giveError=False)
-    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
+
+    # In one project (two writing systems) mode the dictionary files are named after the source project (there is no separate target project), so glob on the source project name.
+    oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+    if oneProjectMode:
+
+        targetProject = DB.ProjectName()
+    else:
+        targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
     try:
-        for p in Path(stampFiles).glob(targetProject+"*.*"):
+        for p in Path(stampFiles).glob(targetProject+"*.*"):  # type: ignore
             p.unlink()
     except:
         pass # ignore errors
@@ -224,14 +239,14 @@ def MainFunction(DB, report, modify=True):
         for endStr in ['_ctrl_files.txt', '_outtx.ctl', '_sycd.chg', '_synt.chg', '_XXXtr.chg', \
                        '_if.dic', '_pf.dic', '_sf.dic', '_rt.dic', '_stamp.dec']:
             
-            for p in Path(stampFiles).glob(f'*{endStr}'):
+            for p in Path(stampFiles).glob(f'*{endStr}'):  # type: ignore
                 p.unlink()
     except:
         pass # ignore errors
     
 
     try:
-        for p in Path(stampFiles).glob(f"*{Utils.CONVERSION_TO_STAMP_CACHE_FILE}"):
+        for p in Path(stampFiles).glob(f"*{Utils.CONVERSION_TO_STAMP_CACHE_FILE}"):  # type: ignore
             p.unlink()
     except:
         pass # ignore errors
@@ -257,44 +272,44 @@ def MainFunction(DB, report, modify=True):
     # Remove HermitCrab files
     hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, report, giveError=False)
     try:
-        os.remove(hcfile)
+        os.remove(hcfile) # type: ignore
     except:
         pass # ignore errors
 
     hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_PARSES_FILE, report, giveError=False)
     try:
-        os.remove(hcfile)
+        os.remove(hcfile) # type: ignore
     except:
         pass # ignore errors
 
     hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_MASTER_FILE, report, giveError=False)
     try:
-        os.remove(hcfile)
+        os.remove(hcfile) # type: ignore
     except:
         pass # ignore errors
 
     hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE, report, giveError=False)
     try:
-        os.remove(hcfile)
+        os.remove(hcfile) # type: ignore
     except:
         pass # ignore errors
 
     # Remove Generate files
     genFile = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOG_FILE, report, giveError=False)
     try:
-        os.remove(genFile)
+        os.remove(genFile) # type: ignore
     except:
         pass # ignore errors
 
     genFile = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE, report, giveError=False)
     try:
-        os.remove(genFile)
+        os.remove(genFile) # type: ignore
     except:
         pass # ignore errors
 
     genFile = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE, report, giveError=False)
     try:
-        os.remove(genFile)
+        os.remove(genFile) # type: ignore
     except:
         pass # ignore errors
 

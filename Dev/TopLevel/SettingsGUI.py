@@ -3,6 +3,20 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16.4 - 7/10/26 - Ron Lockwood
+#    MainFunction/Main now accept forceFullView and scrollToBottom so another module (Work on Rules with AI) can open Settings in the Full view scrolled to the AI Assistant section.
+#
+#   Version 3.16.3 - 7/8/26 - Ron Lockwood
+#    Fixes #1392. Added the "Apply Text Out Rules in the Testbed?" yes/no setting to the Testbed Settings section.
+#
+#   Version 3.16.2 - 7/4/26 - Ron Lockwood
+#    Added the AI Assistant section (Full view) for the Work on Rules with AI module: provider, model, include-project-names, prompt-logging, and the data-consent answer as visible
+#    settings, plus an API-key help link (new LINK widget type that opens the user documentation at an anchor). The consent "question asked" bookkeeping flag stays hidden but is kept
+#    in the list so saving preserves it.
+#
+#   Version 3.16.1 - 6/24/26 - Ron Lockwood
+#    Added One project (two writing systems) vs. Two project mode, with source/target writing-system settings.
+#
 #   Version 3.16 - 6/22/26 - Ron Lockwood
 #    Fixes #1376. Added the Lowercase/Uppercase pairs for special letters synthesis setting, with validation that
 #    it contains single letters separated by spaces and an even number of letters.
@@ -179,6 +193,7 @@ from ComboBox import CheckableComboBox
 import Utils
 import ReadConfig
 import FTPaths
+import AIRules
 
 # TODO: temporary stuff until FlexTools implements LexiconGetAllomorphCustomFields
 from SIL.LCModel.Infrastructure import (# type: ignore
@@ -229,6 +244,7 @@ TEXT_BOX = "textbox"
 FILE = "file"
 FOLDER = "folder"
 SECTION_TITLE = "section_title"
+LINK = "link"
 GIVE_ERROR = True
 DONT_GIVE_ERROR = False
 MINI_VIEW = 15
@@ -694,17 +710,105 @@ def loadCategorySubLists(widget1, widget2, wind, settingName):
                 
                 widget2.setCurrentIndex(i+1) # ... is the first item
 
-def loadYesNo(widget, widget2, wind, settingName):            
+def loadTargetWritingSystems(widget, wind, settingName):
+
+    # Show each vernacular writing system except the default vernacular WS (that is the source side in One project mode), storing the language tag (saved via currentData in save()) so the setting 
+    # survives a rename. GetWritingSystems returns (Name, language-tag, handle, isVernacular) tuples and GetDefaultVernacularWS returns (language-tag, Name).
+    widget.addItem("", "")
+
+    defaultVernTag = wind.DB.GetDefaultVernacularWS()[0]
+
+    for wsName, wsTag, wsHandle, isVernacular in wind.DB.GetWritingSystems():
+
+        if isVernacular and wsTag != defaultVernTag:
+
+            widget.addItem(wsName, wsTag)
+
+    # Preselect the writing system whose stored language tag matches the saved setting.
+    savedTag = wind.read(settingName)
+
+    if savedTag:
+
+        index = widget.findData(savedTag)
+
+        if index >= 0:
+
+            widget.setCurrentIndex(index)
+
+def loadYesNo(widget, widget2, wind, settingName):
 
     yesNo = wind.read(settingName)
-    
+
     if yesNo == 'y':
-        
+
         widget.setChecked(True)
     else:
         widget2.setChecked(True)
 
-def loadTextBox(widget, wind, settingName):            
+def loadAiProviders(widget, wind, settingName):
+
+    # Offer the AI providers the Work on Rules with AI module supports, by display name, plus a blank meaning "not configured".
+    widget.addItem('')
+
+    for provider in AIRules.PROVIDERS.values():
+
+        widget.addItem(provider.displayName)
+
+    # Select the saved provider. findProvider accepts either the display name (what we save) or the short name, so a hand-edited config file still round-trips.
+    provider = AIRules.findProvider(wind.read(settingName))
+
+    if provider:
+
+        widget.setCurrentText(provider.displayName)
+
+def populateAiModelCombo(widget, providerName, savedModel):
+
+    # Offer only the chosen provider's models so a mismatched provider/model pairing can't be selected; with no provider chosen yet, offer every provider's models.
+    provider = AIRules.findProvider(providerName)
+
+    if provider:
+
+        models = list(provider.models)
+    else:
+        models = [model for prov in AIRules.PROVIDERS.values() for model in prov.models]
+
+    # Keep a hand-entered model that no provider claims (e.g. one newer than this FLExTrans release) selectable; a model that belongs to a *different* provider is deliberately dropped
+    # so the selection falls back to blank and the user must pick a valid one.
+    if savedModel and savedModel not in models and AIRules.findModelOwner(savedModel) is None:
+
+        models.append(savedModel)
+
+    widget.clear()
+    widget.addItem('')
+
+    for model in models:
+
+        widget.addItem(model)
+
+    widget.setCurrentText(savedModel if savedModel in models else '')
+
+def loadAiModels(widget, wind, settingName):
+
+    populateAiModelCombo(widget, wind.read(ReadConfig.AI_RULES_PROVIDER), wind.read(settingName) or '')
+
+def loadLink(widget, wind, settingName):
+
+    # A LINK row has nothing to load; its text and URL are set once in setupUi.
+    pass
+
+def loadTwoProjectMode(widget, widget2, wind, settingName):
+
+    # widget is the left "Two projects" radio (the 'y' value, like a normal Yes/No); widget2 is the right "One project" radio.
+    # Default to the normal two-project mode when the setting is missing, so older config files (which won't have it) still open correctly.
+    twoProject = wind.read(settingName)
+
+    if twoProject == 'n':
+
+        widget2.setChecked(True)
+    else:
+        widget.setChecked(True)
+
+def loadTextBox(widget, wind, settingName):
 
     text = wind.read(settingName)
     
@@ -738,7 +842,18 @@ def reportChangeAndDisable(wind, mySet, myWidgInfo):
         doReport(mySet, myWidgInfo)
         wind.setModifiedFlag()
         wind.disableTargetWidgets()
-        
+
+    return report_it
+
+def reportChangeAndUpdateMode(wind, mySet, myWidgInfo):
+
+    # create a new function that will call doReport then refresh which settings are enabled for the chosen project mode
+    def report_it():
+
+        doReport(mySet, myWidgInfo)
+        wind.setModifiedFlag()
+        wind.updateModeUI()
+
     return report_it
 
 def doReport(mySet, myWidgInfo):
@@ -957,6 +1072,15 @@ class Ui_MainWindow(object):
 
                 continue
 
+            elif widgInfo[WIDGET_TYPE] == LINK:
+
+                # The row's label doubles as a clickable link that opens the user documentation at the anchor named in the obj2-name slot (e.g. "sAIApiKeys").
+                url = QtCore.QUrl.fromLocalFile(os.path.join(FTPaths.HELP_DIR, 'UserDoc.htm')).toString() + '#' + widgInfo[WIDGET2_OBJ_NAME]
+                newObj.setText('<a href="{url}"><span style="text-decoration: underline; color:#0000ff;">{text}</span></a>'.format(url=url, text=widgInfo[LABEL_TEXT]))
+                newObj.setOpenExternalLinks(True)
+                newObj.setToolTip(widgInfo[WIDGET_TOOLTIP])
+                widgInfo[WIDGET1_OBJ] = newObj
+
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
@@ -1077,6 +1201,10 @@ class Ui_MainWindow(object):
             if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
                 continue
 
+            # A LINK row's label got its rich-text anchor in setupUi; setting plain text here would wipe the link out.
+            if widgInfo[WIDGET_TYPE] == LINK:
+                continue
+
             widgInfo[LABEL_OBJ].setText(widgInfo[LABEL_TEXT])
             if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
                 continue
@@ -1104,6 +1232,11 @@ class Ui_MainWindow(object):
                 if widgInfo[WIDGET1_OBJ_NAME] == 'prod_mode_output_flex_yes':
                     widgInfo[WIDGET1_OBJ].setText("FLEx")
                     widgInfo[WIDGET2_OBJ].setText("Paratext")
+
+                # Special radio buttons for the project mode. One project=Yes, Two projects=No
+                elif widgInfo[WIDGET1_OBJ_NAME] == 'two_project_radio':
+                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Two projects"))
+                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "One project"))
                 else:
                     widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
                     widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
@@ -1115,7 +1248,7 @@ class Ui_MainWindow(object):
 
 class Main(QMainWindow):
 
-    def __init__(self, configMap, targetDB, DB):
+    def __init__(self, configMap, targetDB, DB, forceFullView=False, scrollToBottom=False):
         QMainWindow.__init__(self)
 
         self.configMap = configMap
@@ -1124,11 +1257,19 @@ class Main(QMainWindow):
         self.changedSettingsSet = set()
         self.nameToWidgetMap = {}
         self.nameToLabelMap = {}
-        
+
+        # When another module (e.g. Work on Rules with AI) opens Settings to send the user to the AI Assistant section, it asks for the Full view and a scroll to the bottom.
+        self.scrollToBottom = scrollToBottom
+
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         # Load the view setting from the JSON file
         self.loadViewSetting()
+
+        # Force the Full view when the caller needs a setting that is only shown there (the AI Assistant settings live in the Full view).
+        if forceFullView:
+
+            self.viewSetting = FULL_VIEW
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -1186,13 +1327,18 @@ class Main(QMainWindow):
             # Connect all widgets to a function the sets the modified flag
             # This is so that any clicking on objects will prompt the user to save on exit
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
-                
+
                 if widgInfo[WIDGET1_OBJ_NAME] == 'choose_target_project':
 
                     widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChangeAndDisable(self, self.changedSettingsSet, widgInfo))
-                    
+
                 else:
                     widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+
+                # Changing the AI provider refills the AI Model combo with that provider's models, so a model that doesn't go with the provider can't be selected.
+                if widgInfo[WIDGET1_OBJ_NAME] == 'choose_ai_provider':
+
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.onAiProviderChanged)
 
                                     
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
@@ -1210,16 +1356,39 @@ class Main(QMainWindow):
                 widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
-                
-                widgInfo[WIDGET1_OBJ].toggled.connect(reportChange(self, self.changedSettingsSet, widgInfo))
-                
+
+                # The project-mode radio also has to refresh which target/writing-system settings are enabled.
+                if widgInfo[WIDGET1_OBJ_NAME] == 'two_project_radio':
+
+                    widgInfo[WIDGET1_OBJ].toggled.connect(reportChangeAndUpdateMode(self, self.changedSettingsSet, widgInfo))
+                else:
+                    widgInfo[WIDGET1_OBJ].toggled.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+
         # Apply button
         self.ui.apply_button.clicked.connect(self.save)
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
         self.ui.Close_button.clicked.connect(self.closeEvent)
 
         self.hideUnhide()
-        
+
+        # Set the initial enabled/disabled state of the target and writing-system settings to match the saved project mode.
+        self.updateModeUI()
+
+        # One project mode needs a second vernacular writing system to translate into, so disable the Project Mode radio when there isn't one.
+        self.disableModeIfOneWritingSystem()
+
+        # Scroll to the bottom (where the AI Assistant settings are) once the event loop starts and the layout has been computed. singleShot(0) runs after show() has laid the widgets out,
+        # so the vertical scrollbar's maximum is correct by the time we set it.
+        if self.scrollToBottom:
+
+            QtCore.QTimer.singleShot(0, self.scrollToAiSettings)
+
+    def scrollToAiSettings(self):
+
+        # The AI Assistant settings sit at the bottom of the Full view. Scroll all the way down so the user lands on them (used when the Work on Rules with AI module opens Settings for setup).
+        scrollBar = self.ui.scrollArea.verticalScrollBar()
+        scrollBar.setValue(scrollBar.maximum())
+
     def calcViewSetting(self):
 
         if self.ui.miniRadioButton.isChecked():
@@ -1315,15 +1484,17 @@ class Main(QMainWindow):
 
         # self.centerWindow()
 
-    def disableTargetWidgets(self):
-        
+    # Enable or disable the settings that depend on a separate target FLEx project. They are disabled when the target
+    # project is invalid (None) and when One project mode is on, because in those cases there is no separate target project.
+    def setTargetWidgetsEnabled(self, enabled):
+
         for i in range(0, len(widgetList)):
-            
+
             widgInfo = widgetList[i]
-            
-            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", 
-                                              "choose_inflection_first_element", 
-                                              "choose_inflection_second_element", 
+
+            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types",
+                                              "choose_inflection_first_element",
+                                              "choose_inflection_second_element",
                                               "limit_pos",
                                               "custom_field_entry",
                                               "custom_field_allomorph",
@@ -1339,9 +1510,68 @@ class Main(QMainWindow):
                                               "genstc_limit_pos_2",
                                               "genstc_limit_semdomain_2",
                                               ]:
-                
-                widgInfo[WIDGET1_OBJ].setEnabled(False)
-                
+
+                widgInfo[WIDGET1_OBJ].setEnabled(enabled)
+
+    # Disable the target-project-dependent settings. Kept for callers that only ever need to disable (e.g. an invalid target project).
+    def disableTargetWidgets(self):
+
+        self.setTargetWidgetsEnabled(False)
+
+    # Enable or disable the target writing-system combo. It is only used (and only enabled) in One project mode.
+    def setWritingSystemWidgetsEnabled(self, enabled):
+
+        for i in range(0, len(widgetList)):
+
+            widgInfo = widgetList[i]
+
+            if widgInfo[WIDGET1_OBJ_NAME] == "choose_target_ws":
+
+                widgInfo[WIDGET1_OBJ].setEnabled(enabled)
+
+    # Reflect the current Project Mode radio selection: in One project mode the target-project settings are disabled and the writing-system combos are enabled; in the normal Two project mode it is 
+    # the reverse. When switching back to Two project mode the target settings are only re-enabled if there is actually a valid target project.
+    def updateModeUI(self):
+
+        # The right-hand radio (WIDGET2) is the "One project" choice; the left-hand one is the normal "Two projects".
+        oneProjectMode = self.nameToWidgetMap[ReadConfig.TWO_PROJECT_MODE][WIDGET2_OBJ].isChecked()
+
+        # The Target Project combo is handled separately from setTargetWidgetsEnabled: it must stay enabled in Two project
+        # mode even when the target project is invalid (so the user can pick a valid one), but be disabled in One project mode.
+        targetProjectCombo = self.nameToWidgetMap[ReadConfig.TARGET_PROJECT][WIDGET1_OBJ]
+
+        if oneProjectMode:
+
+            self.setTargetWidgetsEnabled(False)
+            self.setWritingSystemWidgetsEnabled(True)
+            targetProjectCombo.setEnabled(False)
+
+        else:
+            self.setTargetWidgetsEnabled(self.targetDB is not None)
+            self.setWritingSystemWidgetsEnabled(False)
+            targetProjectCombo.setEnabled(True)
+
+    # One project mode translates from the default vernacular writing system into another vernacular writing system. If the project has only one vernacular writing system, there is no second WS 
+    # to target, so disable the Project Mode radio entirely and the Target Writing System combo too (there is nothing to choose).
+    def disableModeIfOneWritingSystem(self):
+
+        if len(self.DB.GetAllVernacularWSs()) <= 1:
+
+            modeWidgInfo = self.nameToWidgetMap[ReadConfig.TWO_PROJECT_MODE]
+
+            # Force the normal Two projects choice (the left radio). Block the signal so just opening the dialog doesn't mark
+            # the settings as modified, then refresh the UI to the two-project state.
+            modeWidgInfo[WIDGET1_OBJ].blockSignals(True)
+            modeWidgInfo[WIDGET1_OBJ].setChecked(True)
+            modeWidgInfo[WIDGET1_OBJ].blockSignals(False)
+
+            self.updateModeUI()
+
+            # There is no second writing system to target, so disable the Project Mode radio and the Target Writing System combo.
+            modeWidgInfo[WIDGET1_OBJ].setEnabled(False)
+            modeWidgInfo[WIDGET2_OBJ].setEnabled(False)
+            self.setWritingSystemWidgetsEnabled(False)
+
     def setModifiedFlag(self):
         
         self.modified = True
@@ -1461,6 +1691,28 @@ class Main(QMainWindow):
             msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msg.exec()
         
+    def onAiProviderChanged(self):
+
+        # Refill the AI Model combo with the newly chosen provider's models. The current model is passed along so it survives when it still fits (or is a custom, unclaimed one);
+        # a model belonging to a different provider gets dropped and the selection falls back to blank.
+        providerWidget = self.nameToWidgetMap[ReadConfig.AI_RULES_PROVIDER][WIDGET1_OBJ]
+        modelWidget = self.nameToWidgetMap[ReadConfig.AI_RULES_MODEL][WIDGET1_OBJ]
+        populateAiModelCombo(modelWidget, providerWidget.currentText(), modelWidget.currentText())
+
+    def validateAiProviderModel(self):
+
+        # A model that a *different* provider claims is invalid with the selected provider (or with no provider selected). A blank model or a model unknown to every provider
+        # (e.g. newer than this release's lists) passes.
+        providerName = self.nameToWidgetMap[ReadConfig.AI_RULES_PROVIDER][WIDGET1_OBJ].currentText()
+        model = self.nameToWidgetMap[ReadConfig.AI_RULES_MODEL][WIDGET1_OBJ].currentText().strip()
+
+        owner = AIRules.findModelOwner(model)
+
+        if owner is None:
+            return True
+
+        return owner is AIRules.findProvider(providerName)
+
     def validateLowercaseUppercasePairs(self):
 
         # Get the current text the user typed for the lowercase/uppercase special letter pairs setting
@@ -1489,7 +1741,36 @@ class Main(QMainWindow):
 
         return True
 
+    def validateProjectModeWritingSystems(self):
+
+        # When One project mode is selected, the target writing system must be chosen. The combo stores the writing system's
+        # language tag in its item data, so a blank data value means nothing is selected.
+        oneProjectMode = self.nameToWidgetMap[ReadConfig.TWO_PROJECT_MODE][WIDGET2_OBJ].isChecked()
+
+        if not oneProjectMode:
+
+            return True
+
+        targetWS = self.nameToWidgetMap[ReadConfig.TARGET_WRITING_SYSTEM][WIDGET1_OBJ].currentData()
+
+        if not targetWS:
+
+            return False
+
+        return True
+
     def save(self):
+
+        # Make sure the AI model goes with the selected AI provider before saving anything
+        if not self.validateAiProviderModel():
+
+            msg = QMessageBox()
+            msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
+            msg.setText(_translate("SettingsGUI", "The AI Model does not go with the selected AI Provider.\nChoose the AI Provider first, then pick one of the models offered for it."))
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msg.exec()
+            return False
 
         # Make sure the lowercase/uppercase special letter pairs are well formed before saving anything
         if not self.validateLowercaseUppercasePairs():
@@ -1497,6 +1778,17 @@ class Main(QMainWindow):
             msg = QMessageBox()
             msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
             msg.setText(_translate("SettingsGUI", "The Lowercase/Uppercase pairs for special letters setting is not valid.\nEnter single letters separated by spaces, with an even number of letters so each lowercase letter is followed by its uppercase letter. E.g. ʋ Ʋ"))
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msg.exec()
+            return False
+
+        # In One project mode both writing systems are required
+        if not self.validateProjectModeWritingSystems():
+
+            msg = QMessageBox()
+            msg.setWindowTitle(_translate("SettingsGUI", "FLExTrans Settings"))
+            msg.setText(_translate("SettingsGUI", "In One project mode you must choose a Target Writing System."))
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msg.exec()
@@ -1512,12 +1804,18 @@ class Main(QMainWindow):
             widgInfo = widgetList[i]
             outStr = ''
 
-            if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
+            # Section titles and links carry no setting value.
+            if widgInfo[WIDGET_TYPE] in [SECTION_TITLE, LINK]:
                 continue
-            
+
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
-                
-                mySettingVal = widgInfo[WIDGET1_OBJ].currentText()
+
+                # The target writing-system combo displays the writing-system name but stores its language tag (held in the item data).
+                if widgInfo[CONFIG_NAME] == ReadConfig.TARGET_WRITING_SYSTEM:
+
+                    mySettingVal = widgInfo[WIDGET1_OBJ].currentData() or ''
+                else:
+                    mySettingVal = widgInfo[WIDGET1_OBJ].currentText()
 
                 # If the user selected (none), set the value to blank
                 if mySettingVal == _translate("SettingsGUI", "(none)"):
@@ -1555,13 +1853,13 @@ class Main(QMainWindow):
                 updatedConfigMap[widgInfo[CONFIG_NAME]] = widgInfo[WIDGET1_OBJ].text().strip()
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
-                
+
                 if widgInfo[WIDGET1_OBJ].isChecked():
-                    
+
                     selected='y'
                 else:
                     selected='n'
-            
+
                 outStr = widgInfo[CONFIG_NAME]+'='+selected
                 updatedConfigMap[widgInfo[CONFIG_NAME]] = selected
                 
@@ -1589,8 +1887,8 @@ def giveDBErrorMessageBox(myProj):
     errMsg = _translate("SettingsGUI", "Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File > Project Management > Fieldworks Project Properties on the menu.").format(projectName=myProj)
     MessageBox.Show(errMsg, _translate("SettingsGUI", "FLExTrans Settings"), MessageBoxButtons.OK)
 
-def MainFunction(DB, report, modify=True): 
-    
+def MainFunction(DB, report, modify=True, forceFullView=False, scrollToBottom=False):
+
     translators = []
     app = QApplication.instance()
 
@@ -1616,32 +1914,55 @@ def MainFunction(DB, report, modify=True):
         sourceDB = None
         return
 
-    # Open the source database
+    # Open the target database
     TargetDB = FLExProject()
 
-    try:
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report=None)
-        
-        if not targetProj:
-            
-            TargetDB = None
-        else:
-            TargetDB.OpenProject(targetProj, False)
-    except:
-        giveDBErrorMessageBox(targetProj)
-        TargetDB = None
-    
-    window = Main(configMap, TargetDB, sourceDB)
-    window.show()
-    app.exec()
-    
-    # Prompt the user to save changes, if needed
-    if window.modified == True:
-        
-        if QMessageBox.question(window, _translate("SettingsGUI", 'Save Changes'), _translate("SettingsGUI", "Do you want to save your changes?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes) == QMessageBox.StandardButton.Yes:
+    # In One project mode there is no separate target project, so skip opening one. This avoids the cost of opening a
+    # second FLEx project. A null TargetDB is already handled below (the target-dependent settings get disabled).
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report=None)
 
-            window.save()
+    if twoProjectMode == 'n':
+
+        TargetDB = None
+    else:
+
+        try:
+            targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report=None)
+
+            if not targetProj:
+
+                TargetDB = None
+            else:
+                TargetDB.OpenProject(targetProj, False)
+        except:
+            giveDBErrorMessageBox(targetProj)
+            TargetDB = None
     
+    window = Main(configMap, TargetDB, sourceDB, forceFullView=forceFullView, scrollToBottom=scrollToBottom)
+
+    # Show the settings window. If, on the way out, the user chooses to save but the save fails validation (e.g. One
+    # project mode with a writing system not chosen), reopen the same window with their changes intact so they can fix
+    # the problem instead of silently losing it. save() shows the specific error message itself and returns False.
+    while True:
+
+        window.show()
+        app.exec()
+
+        # Nothing changed: nothing to save, so we're done.
+        if window.modified == False:
+
+            break
+
+        # The user does not want to save their changes: discard them and we're done.
+        if QMessageBox.question(window, _translate("SettingsGUI", 'Save Changes'), _translate("SettingsGUI", "Do you want to save your changes?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes) != QMessageBox.StandardButton.Yes:
+
+            break
+
+        # The user wants to save. If the save succeeds we're done; otherwise loop to reopen the window so they can correct the invalid setting.
+        if window.save():
+
+            break
+
     if TargetDB:
         
         TargetDB.CloseProject()
@@ -1679,7 +2000,7 @@ widgetList = [
    [_translate("SettingsGUI", "Source Text Name"), "choose_source_text", "",              COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
    #                          tooltip text 
     _translate("SettingsGUI", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
-   
+
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     _translate("SettingsGUI", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
 
@@ -1712,6 +2033,14 @@ widgetList = [
    [_translate("SettingsGUI", "Production Mode Output Destination"), "prod_mode_output_flex_yes", "prod_mode_output_paratext_no", YES_NO, object, object, object, loadYesNo, ReadConfig.PROD_MODE_OUTPUT_FLEX, \
     _translate("SettingsGUI", "In the production mode module 'Translate Text', where do you want the drafted text to go?"), DONT_GIVE_ERROR, BASIC_VIEW],\
 
+   # One project (two writing systems) vs. the normal Two project mode. When One project mode is on, the target-project settings are disabled and the two writing-system combos below are enabled.
+   [_translate("SettingsGUI", "Project Mode"), "two_project_radio", "one_project_radio", YES_NO, object, object, object, loadTwoProjectMode, ReadConfig.TWO_PROJECT_MODE,\
+    _translate("SettingsGUI", "Choose One project to translate from one writing system to another within a single FLEx project.\nChoose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   # Target writing system, only used (and only enabled) in One project mode. The source side is the default vernacular WS, so
+   # this list excludes the default vernacular WS - the user picks the vernacular WS to translate into.
+   [_translate("SettingsGUI", "Target Writing System"), "choose_target_ws", "", COMBO_BOX, object, object, object, loadTargetWritingSystems, ReadConfig.TARGET_WRITING_SYSTEM,\
+    _translate("SettingsGUI", "In One project mode, the vernacular writing system in the FLEx project that text is translated to."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
    [_translate("SettingsGUI", "Complex Forms"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
@@ -1858,6 +2187,9 @@ widgetList = [
    [_translate("SettingsGUI", "Testbed Results Log File"), "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     _translate("SettingsGUI", "The path and name of the testbed results log file."), GIVE_ERROR, FULL_VIEW],\
 
+   [_translate("SettingsGUI", "Apply Text Out Rules in the Testbed?"), "apply_textout_testbed_yes", "apply_textout_testbed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.APPLY_TEXT_OUT_RULES_IN_TESTBED, \
+    _translate("SettingsGUI", "When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,\nso testbed tests match the final output produced by Insert Target Text and Export to Paratext."), DONT_GIVE_ERROR, BASIC_VIEW],\
+
 
 
    [_translate("SettingsGUI", "Import Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
@@ -1936,6 +2268,36 @@ widgetList = [
 
    [_translate("SettingsGUI", "Projects to treat together as a cluster"), "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
     _translate("SettingsGUI", "Indicate the cluster projects you would like to run some modules on together."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+
+
+   [_translate("SettingsGUI", "AI Assistant"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "AI Provider"), "choose_ai_provider", "", COMBO_BOX, object, object, object, loadAiProviders, ReadConfig.AI_RULES_PROVIDER,\
+    _translate("SettingsGUI", "The AI service the Work on Rules with AI module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "AI Model"), "choose_ai_model", "", COMBO_BOX, object, object, object, loadAiModels, ReadConfig.AI_RULES_MODEL,\
+    _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-2.5-flash is available on Google's free tier."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "How do I get an API key?"), "ai_key_help_link", "sAIApiKeys", LINK, object, object, object, loadLink, None,\
+    _translate("SettingsGUI", "Opens the FLExTrans documentation section that explains how to get an API key for each provider."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Include FLEx project names in AI requests?"), "ai_include_proj_yes", "ai_include_proj_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES,\
+    _translate("SettingsGUI", "If Yes, the source and target FLEx project names are included in what is sent to the AI provider.\nChoose No if the project names themselves are sensitive information."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Log AI prompts for debugging?"), "ai_log_prompts_yes", "ai_log_prompts_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_LOG_PROMPTS,\
+    _translate("SettingsGUI", "If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to\nAIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   # The consent value the Work on Rules with AI module records. Shown here so the user can review or change their answer. If it was never set it shows No; the module still asks the
+   # one-time consent question (which carries the full explanation) the first time it runs, so a project that has not consented yet is not silently opted in.
+   [_translate("SettingsGUI", "Allow sending data to the AI provider?"), "ai_consent_yes", "ai_consent_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT,\
+    _translate("SettingsGUI", "Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.\nThe module also asks this the first time you run it; you can review or change your answer here."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   # Bookkeeping flag written by the module's one-time consent question. Kept hidden (it is not something the user should toggle) but left in the list so saving settings preserves it -
+   # the save code rewrites the whole config file from this list.
+   [_translate("SettingsGUI", "AI data consent question asked"), "ai_consent_asked_yes", "ai_consent_asked_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT_ASKED,\
+    "", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 

@@ -5,6 +5,27 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.5 - 7/10/26 - Ron Lockwood
+#    Added getFlexExePath(report): the shared FIELDWORKSDIR/flex.exe lookup (with its error message) that OpenFLExProjects and RestoreFLExProjects both used, now in one place.
+#
+#   Version 3.16.4 - 7/9/26 - Ron Lockwood
+#    LocalizedDateTimeFormatter now builds its QLocale from UILanguages.py (the new single authoritative UI-language list) instead of a hardcoded per-language map.
+#
+#   Version 3.16.3 - 7/4/26 - Ron Lockwood
+#    LocalizedDateTimeFormatter.formatDateTime takes an optional Qt format string, so callers can get a custom localized layout (e.g. a spelled-out localized month) as well as the
+#    default short format.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Renamed getPathRelativeToWorkProjectsDir to shortenPathForDisplay and reimplemented it to return the path
+#    relative to the work project directory (FTPaths.WORK_DIR), passing non-absolute / outside-the-project values
+#    through unchanged. Wrapped it around the file paths shown in user-facing messages across the modules and libraries.
+#
+#   Version 3.16.1 - 6/27/26 - Ron Lockwood
+#    Adjustment to last fix. If both the citation and lexeme forms are missing, use ??? for the headword field.
+#
+#   Version 3.16 - 6/24/26 - Ron Lockwood
+#    Added a writing-system option to getHeadwordStr/fixupLemma/getTargetSenseInfo so One project mode can read target headwords in a secondary vernacular WS.
+#
 #   Version 3.15.3 - 4/22/26 - Ron Lockwood
 #    Fixes #1328. Use the new PyQt6 enums for language and country under locale.
 #
@@ -238,6 +259,7 @@ from flextoolslib import FTConfig
 
 import ReadConfig as MyReadConfig
 import FTPaths
+import UILanguages
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -438,7 +460,7 @@ def decompose(myFile):
         # Open the file and read all the lines
         f = open(myFile , "r", encoding='utf-8')
     except:
-        raise ValueError(_translate("Utils", "Could not open the file {myFile} when converting to NFD.").format(myFile=myFile))
+        raise ValueError(_translate("Utils", "Could not open the file {myFile} when converting to NFD.").format(myFile=shortenPathForDisplay(myFile)))
 
     lines = f.readlines()
     f.close()
@@ -499,8 +521,33 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             feat_abbr_list.append((featGrpName, abbValue))
     return
 
-def getHeadwordStr(e):
-    return ITsString(e.HeadWord).Text
+def getHeadwordStr(e, wsHandle=None):
+
+    # Normally the headword is read in the project's default vernacular writing system.
+    if wsHandle is None:
+
+        return ITsString(e.HeadWord).Text
+
+    # For One project mode we need the headword in a specific (secondary) vernacular writing system. HeadWord itself is only
+    # available in the default vernacular WS, so rebuild it from the citation form (or the lexeme form when there is no citation
+    # form) read in that WS, plus the homograph number, to mirror what HeadWord produces. Synthesis (DoStampSynthesis) builds its
+    # \m keys the same way via this function, so the bilingual lexicon and the synthesizer dictionaries stay in agreement.
+    headWord = ITsString(e.CitationForm.get_String(wsHandle)).Text
+
+    if not headWord and e.LexemeFormOA:
+
+        headWord = ITsString(e.LexemeFormOA.Form.get_String(wsHandle)).Text
+
+        if not headWord:
+
+            # FLEx normally shows ??? in the headword field when there is no citation form or lexeme form in the default vernacular WS.
+            headWord = '???' 
+
+    if e.HomographNumber and e.HomographNumber > 0:
+
+        headWord = headWord + str(e.HomographNumber)
+
+    return headWord
 
 def GetEntryWithSense(e):
     # If the entry is a variant and it has no senses, loop through its references
@@ -608,6 +655,19 @@ def split_compounds(outStr):
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
+
+def getFlexExePath(report):
+    '''Return the full path to FLEx's flex.exe, located via the FIELDWORKSDIR environment variable. If that variable isn't set we can't find FLEx, so report an error and return None so
+    the caller can stop rather than crashing in os.path.join with None. Shared by the modules that launch or restore FLEx projects so the lookup and its error message live in one place.'''
+
+    fieldworksDir = os.getenv('FIELDWORKSDIR')
+
+    if not fieldworksDir:
+
+        report.Error(_translate("Utils", "The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found."))
+        return None
+
+    return os.path.join(fieldworksDir, 'flex.exe')
 
 def openProject(report, DBname):
 
@@ -900,7 +960,7 @@ def checkForError(errorList, report, errValue):
 
     return found, '\n'.join(retMsgList)
 
-def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None):
+def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None, targetWSHandle=None):
 
     retVal = (None, None, None)
 
@@ -975,8 +1035,8 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
             senseNum = i+1
 
-        # Make the lemma in the form x.x (but remove if 1.1)
-        lem = fixupLemma(targetEntry, senseNum, remove1dot1Bool)
+        # Make the lemma in the form x.x (but remove if 1.1). In One project mode read it in the target writing system.
+        lem = fixupLemma(targetEntry, senseNum, remove1dot1Bool, wsHandle=targetWSHandle)
 
     return (targetSense, lem, senseNum)
 
@@ -984,9 +1044,9 @@ def remove1dot1(lem):
 
     return re.sub(r'1\.1', '', lem)
 
-def fixupLemma(entry, senseNum, remove1dot1Bool=False):
+def fixupLemma(entry, senseNum, remove1dot1Bool=False, wsHandle=None):
 
-    lem = getHeadwordStr(entry)
+    lem = getHeadwordStr(entry, wsHandle)
     lem = add_one(lem)
     lem = lem + '.' + str(senseNum) # add sense number
 
@@ -1283,7 +1343,8 @@ def getAllInflectableFeatures(DB):
         abbr = as_string(pos.Abbreviation)
         for infl in pos.InflectableFeatsRC:
             # TODO: are there other possibilities?
-            if infl.ClassName == FS_COMPLEX_FEATURE:
+            # See if we have a complex feature and non-None objects.
+            if infl.ClassName == FS_COMPLEX_FEATURE and IFsComplexFeature(infl).TypeRA and IFsComplexFeature(infl).TypeRA.FeaturesRS:
                 for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
                     ret[abbr].add(as_string(feat.Name))
             elif infl.ClassName == FS_CLOSED_FEATURE:
@@ -1344,17 +1405,27 @@ def containsInvalidLemmaChars(myStr):
 
     return True if reInvalidLemmaChars.search(myStr) else False
 
-def getPathRelativeToWorkProjectsDir(fullPath):
-    '''Get the path relative to the work projects directory.
-       If WorkProjects isn't found in the path, return the full path.'''
-    
-    # Look for 'WorkProjects' in the path
-    index = fullPath.find('WorkProjects')
-    if index == -1:
+def shortenPathForDisplay(fullPath):
+    '''Shorten an absolute file path for user-facing display by making it relative to the work project
+       directory (FTPaths.WORK_DIR). Anything that is not an absolute path below that directory - a bare
+       filename, an already-relative path, a path on another drive, or a non-path string - is returned
+       unchanged, so this is always safe to wrap around a value that is shown to the user.'''
+
+    # Only absolute paths can meaningfully be made relative; leave everything else (bare filenames, relative paths, non-path strings) untouched so relpath can't mangle it.
+    if not isinstance(fullPath, str) or not os.path.isabs(fullPath):
         return fullPath
-        
-    # Return the path starting from 'WorkProjects'
-    return "..."+fullPath[index:]
+
+    # os.path.relpath raises a ValueError on Windows when the two paths are on different drives.
+    try:
+        relPath = os.path.relpath(fullPath, FTPaths.WORK_DIR)
+    except ValueError:
+        return fullPath
+
+    # A leading '..' means fullPath climbs out of the work project directory, so it isn't below it.
+    if relPath.startswith('..'):
+        return fullPath
+
+    return relPath
 
 def loadTranslations(libList, translatorsList, loadBase=False):
 
@@ -1386,20 +1457,22 @@ class LocalizedDateTimeFormatter:
 
         if langCode not in self.localeCache:
 
-            localeMap = {
-                'de': QLocale(QLocale.Language.German, QLocale.Country.Germany),
-                'es': QLocale(QLocale.Language.Spanish, QLocale.Country.Spain),
-                'en': QLocale(QLocale.Language.English, QLocale.Country.UnitedStates),
-                'fr': QLocale(QLocale.Language.French, QLocale.Country.France),   
-            }
-            self.localeCache[langCode] = localeMap.get(langCode, QLocale())
-        
+            # The locale name (e.g. 'de_DE') comes from the authoritative UI-language list; an unknown code falls back to the system default locale.
+            localeName = UILanguages.localeNameForCode(langCode)
+            self.localeCache[langCode] = QLocale(localeName) if localeName else QLocale()
+
         return self.localeCache[langCode]
     
-    def formatDateTime(self, datetimeObj):
-        """Format datetime according to language locale"""
+    def formatDateTime(self, datetimeObj, formatStr=None):
+        """Format datetime according to the interface-language locale. With no formatStr, uses the locale's short format (as the testbed log does); pass a Qt format string (e.g.
+        'd MMMM yyyy HH:mm') to get a custom localized layout, such as a spelled-out localized month without the weekday/seconds/timezone that the long format adds."""
 
         locale = self.getLocale(getInterfaceLangCode())
+
+        if formatStr:
+
+            return locale.toString(datetimeObj, formatStr)
+
         return locale.toString(datetimeObj, QLocale.FormatType.ShortFormat)
     
 def getInterfaceLangCode():
