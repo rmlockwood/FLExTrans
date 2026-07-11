@@ -51,8 +51,8 @@ Voulez-vous ouvrir l'outil Paramètres maintenant ?</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="182"/>
-      <source>Missing WorkOnRulesWithAI-Conventions.md and/or transfer.dtd in {libDir}. Reinstall FLExTrans or copy those files there.</source>
-      <translation>WorkOnRulesWithAI-Conventions.md et/ou transfer.dtd manquent dans {libDir}. Réinstallez FLExTrans ou copiez ces fichiers à cet endroit.</translation>
+      <source>Missing WorkOnRulesWithAI-Conventions.md in the Lib/AI subfolder under {libDir}. Reinstall FLExTrans or copy that file there.</source>
+      <translation>WorkOnRulesWithAI-Conventions.md manque dans le sous-dossier Lib/AI sous {libDir}. Réinstallez FLExTrans ou copiez ce fichier à cet endroit.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="194"/>

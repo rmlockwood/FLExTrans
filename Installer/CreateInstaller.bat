@@ -97,10 +97,10 @@ rem copy all shared code and css files
 copy %dev%\Lib\*.py %flextranslib%
 copy %dev%\Lib\*.css %flextranslib%
 
-rem copy Work-on-Rules-with-AI runtime resources: the DTD (validation), the conventions doc (system prompt), and the derived per-language preview specs
-copy %dev%\Lib\*.dtd %flextranslib%
-copy %dev%\Lib\*.md %flextranslib%
-copy %dev%\Lib\*.json %flextranslib%
+rem copy Work-on-Rules-with-AI runtime data to a Lib\AI subfolder: the conventions doc (system prompt) and the derived per-language preview specs. These are data files (not imported), so Lib\AI is not added to subdirs.pth; TransferPreview/WorkOnRulesWithAI find them relative to Lib.
+mkdir %flextranslib%\AI
+copy %dev%\Lib\AI\*.md %flextranslib%\AI
+copy %dev%\Lib\AI\*.json %flextranslib%\AI
 
 rem copy all window ui code files
 copy %dev%\Lib\Windows\*.py %flextranslib%

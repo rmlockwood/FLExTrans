@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.20 - 7/10/26 - Ron Lockwood
+#    Dropped the transfer.dtd dependency: neither Open-in-XXE (XXE resolves the DOCTYPE via its own addon DTD) nor the validation loop (apertium-preprocess-transfer needs no DTD) required it,
+#    so the dtdPath constructor parameter and the beside-the-temp-file copy are gone.
+#
 #   Version 3.16.19 - 7/10/26 - Ron Lockwood
 #    The dialog now always opens on the Create tab, set explicitly in code (pyuic had baked in the Modify tab as the startup tab because it was the active tab when the .ui was last saved).
 #
@@ -319,7 +323,7 @@ class WorkOnRulesWithAIDlg(QDialog):
     '''Create, modify, or explain one Apertium transfer rule with AI assistance. Two tabs: "Create new rule" (describe it, then Create) and "Modify or explain an existing rule" (pick a
     rule - its preview shows at once on the left - then Modify with a description, or Explain in a chosen language). The layout comes from WorkOnRulesWithAIWindow.ui (pyuic).'''
 
-    def __init__(self, transferPath, ruleNames, ruleXmlByComment, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
+    def __init__(self, transferPath, ruleNames, ruleXmlByComment, systemInstruction, defsSummary, projectData, engine, compilerExe, parent=None):
 
         super().__init__(parent)
 
@@ -333,7 +337,6 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.defsSummary = defsSummary
         self.projectData = projectData
         self.engine = engine
-        self.dtdPath = dtdPath
         self.compilerExe = compilerExe
 
         # Draft/preview state. currentTask names what the preview currently shows ('create'/'modify'/'explain'/'select'); currentRuleXml and currentTargetComment describe the rule
@@ -736,7 +739,6 @@ class WorkOnRulesWithAIDlg(QDialog):
             'systemInstruction': self.systemInstruction,
             'userContent': userContent,
             'transferPath': self.transferPath,
-            'dtdPath': self.dtdPath,
             'mode': mode,
             'targetComment': targetComment,
             'compilerExe': self.compilerExe,
@@ -952,7 +954,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         # leak to one folder per Open-in-XXE click within a single session instead of forever.
         workDir = tempfile.mkdtemp(prefix='airules_xxe_')
         self.xxeTempDirs.append(workDir)
-        shutil.copyfile(self.dtdPath, os.path.join(workDir, 'transfer.dtd'))
+        # No need to drop a transfer.dtd beside the temp file: XXE resolves the DOCTYPE against the copy in its own ApertiumTransfer addon (dtds/transfer.dtd), so the file's relative DTD
+        # reference is satisfied without a local copy. (The AI validation loop still copies the DTD into its own scratch dir, because apertium-preprocess-transfer resolves it relative to the file.)
         tempPath = AIRules.spliceIntoTemp(self.transferPath, self.ruleResult.ruleXml, self.ruleResult.newDefs, mode, targetComment, workDir)
 
         try:

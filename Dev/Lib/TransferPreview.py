@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.6 - 7/10/26 - Ron Lockwood
+#    The derived per-language preview specs moved to the Lib/AI subfolder (grouped with the other Work-on-Rules-with-AI runtime data); load them from there via a new AI_DATA_DIR.
+#
 #   Version 3.16.3 - 7/6/26 - Ron Lockwood
 #    Diff highlighting is now confined to the side-by-side comparison (a new compare flag); the single-rule create/explain views render plain like XXE instead of being flagged wholesale
 #    as "added" (which had tinted the whole rule green). Restyled to match XXE: Arial 16px labels/chips, the extra per-item indents from transfer.css (pattern-item .4in, attr/list-item
@@ -93,6 +96,8 @@ SPEC = {
 }
 
 LIB_DIR = os.path.dirname(os.path.realpath(__file__))
+# The derived per-language preview specs live in the Lib/AI subfolder (grouped with the other Work-on-Rules-with-AI runtime data) rather than the Lib root.
+AI_DATA_DIR = os.path.join(LIB_DIR, 'AI')
 _specCache = {}
 
 def loadSpec(lang: str) -> dict:
@@ -106,7 +111,7 @@ def loadSpec(lang: str) -> dict:
 
     for candidate in (lang, 'en'):
 
-        path = os.path.join(LIB_DIR, 'preview_spec_{lang}.json'.format(lang=candidate))
+        path = os.path.join(AI_DATA_DIR, 'preview_spec_{lang}.json'.format(lang=candidate))
         if os.path.isfile(path):
             _specCache[lang] = json.load(open(path, encoding='utf-8'))
             return _specCache[lang]
