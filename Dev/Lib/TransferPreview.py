@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.7 - 7/10/26 - Ron Lockwood
+#    transfer_preview.css moved to the Lib/css subfolder (with the Rule Assistant stylesheets); CSS_PATH now points there.
+#
 #   Version 3.16.6 - 7/10/26 - Ron Lockwood
 #    The derived per-language preview specs moved to the Lib/AI subfolder (grouped with the other Work-on-Rules-with-AI runtime data); load them from there via a new AI_DATA_DIR.
 #
@@ -39,8 +42,8 @@ import html
 import difflib
 import xml.etree.ElementTree as ET
 
-# realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder where transfer_preview.css actually sits.
-CSS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'transfer_preview.css')
+# realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder; the stylesheets live in its css subfolder (Lib/css).
+CSS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'css', 'transfer_preview.css')
 
 # Human-friendly value for the side attribute, matching the XXE combo-box labels.
 SIDE_LABELS = {'sl': 'source lang.', 'tl': 'target lang.'}
