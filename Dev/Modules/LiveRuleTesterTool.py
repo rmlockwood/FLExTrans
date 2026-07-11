@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.8 - 7/11/26 - Ron Lockwood
+#    Wrap the main content areas in a vertical splitter so the user can drag to resize the source, rules, rule-execution, target and synthesis boxes.
+#
 #   Version 3.16.7 - 7/11/26 - Ron Lockwood
 #    Restore the saved window size when switching between advanced and standard mode instead of clobbering it with programmatic resizes.
 #
@@ -268,7 +271,7 @@ from flexlibs import FLExProject
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
 from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint, QEvent
-from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QVBoxLayout, QSplitter, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
 
 import Mixpanel
 import InterlinData
@@ -307,7 +310,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.7",
+        FTM_Version    : "3.16.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1052,16 +1055,108 @@ class Main(QMainWindow):
         self.interChunkTabText = self.ui.tabRules.tabText(1)
         self.postChunkTabText = self.ui.tabRules.tabText(2)
 
+        # Wrap the main content areas in a vertical splitter so the user can drag to resize them. Must happen before AdvancedOptionsCheckboxClicked, which
+        # rearranges the splitter panels depending on the mode.
+        self.buildResizeSplitter()
+
         # Hide the advanced widgets if needed
         self.AdvancedOptionsCheckboxClicked()
 
         self.setMinimumHeight(500)
         self.retVal = True
 
+    def buildResizeSplitter(self):
+
+        # Create a vertical QSplitter so the user can drag to resize the main content areas. Each content box is grouped with its header row into a panel,
+        # so the draggable handles land between the boxes. In standard mode the panels are Source, Rules, Rule-execution/Log, Target and Synthesis (4 handles);
+        # in advanced mode the log box moves up beside the rules, so the Rule-execution panel drops out and there are 3 handles. The fixed source-selection row
+        # at the top and the button row at the bottom stay outside the splitter. Panel sizes are not persisted, so they reset to sensible proportions each open.
+
+        # Small helper that returns a panel container widget with a tight vertical layout to hold a header row plus its content box.
+        def makePanel():
+
+            panel = QWidget()
+            layout = QVBoxLayout(panel)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(2)
+
+            return panel, layout
+
+        self.panelSource, self.panelSourceLayout = makePanel()
+        self.panelRules, self.panelRulesLayout = makePanel()
+        self.panelRuleExec, self.panelRuleExecLayout = makePanel()
+        self.panelTarget, self.panelTargetLayout = makePanel()
+        self.panelSynth, self.panelSynthLayout = makePanel()
+
+        # Pull the content rows out of the main vertical layout so we can regroup them. These references match the .ui's default (advanced) arrangement:
+        # the log box sits beside the rules, so horizontalLayout_4 is the target header and there is no separate rule-execution panel yet.
+        self.ui.verticalLayout.removeWidget(self.ui.tabSource)
+        self.ui.verticalLayout.removeItem(self.ui.horizontalLayout_9)
+        self.ui.verticalLayout.removeItem(self.ui.horizLayoutTransferRules)
+        self.ui.verticalLayout.removeItem(self.ui.horizontalLayout_4)
+        self.ui.verticalLayout.removeWidget(self.ui.TargetTextEdit)
+        self.ui.verticalLayout.removeItem(self.ui.horizontalLayout_3)
+        self.ui.verticalLayout.removeWidget(self.ui.SynthTextEdit)
+
+        # Source panel: just the source tabs (the source-selection combo row stays fixed above the splitter).
+        self.panelSourceLayout.addWidget(self.ui.tabSource)
+
+        # Rules panel: the rule-selection header row and the transfer-rules tabs (in advanced mode the log box joins horizLayoutTransferRules beside the tabs).
+        self.panelRulesLayout.addLayout(self.ui.horizontalLayout_9)
+        self.panelRulesLayout.addLayout(self.ui.horizLayoutTransferRules)
+
+        # Target panel: in the advanced default the action row (horizontalLayout_4) is the target header, followed by the target text box.
+        self.panelTargetLayout.addLayout(self.ui.horizontalLayout_4)
+        self.panelTargetLayout.addWidget(self.ui.TargetTextEdit)
+
+        # Synthesis panel: the synthesized-text header row and the synthesized text box.
+        self.panelSynthLayout.addLayout(self.ui.horizontalLayout_3)
+        self.panelSynthLayout.addWidget(self.ui.SynthTextEdit)
+
+        # The rule-execution/log panel starts empty (it only exists in standard mode); AdvancedOptionsCheckboxClicked fills and inserts it when needed.
+
+        # Build the splitter with the panels visible in the advanced arrangement.
+        self.vSplitter = QSplitter(QtCore.Qt.Orientation.Vertical)
+        self.vSplitter.setChildrenCollapsible(False)  # a drag can shrink a box but not make it vanish entirely
+        self.vSplitter.setHandleWidth(6)
+        self.vSplitter.addWidget(self.panelSource)
+        self.vSplitter.addWidget(self.panelRules)
+        self.vSplitter.addWidget(self.panelTarget)
+        self.vSplitter.addWidget(self.panelSynth)
+
+        # Keep the handles invisible (no groove line); they stay draggable via the handle width set above. The cursor still changes to a resize cursor over them.
+        self.vSplitter.setStyleSheet("QSplitter::handle { background: transparent; }")
+
+        # Insert the splitter into the main layout just below the fixed source-selection row (index 1) and above the fixed button row, and let it take the slack.
+        self.ui.verticalLayout.insertWidget(1, self.vSplitter)
+        self.ui.verticalLayout.setStretch(0, 0)
+        self.ui.verticalLayout.setStretch(1, 1)
+        self.ui.verticalLayout.setStretch(2, 0)
+
+        self.applySplitterStretch()
+
+    def applySplitterStretch(self):
+
+        # Reset the splitter panels to sensible relative heights. Called after building the splitter and after each mode switch, because sizes aren't persisted
+        # and a mode switch changes which panels are present. The weights are rough proportions; the user can drag from there. Stretch factors keep the
+        # proportions when the window itself is resized, and setSizes gives a clean initial split. Keyed by id() so the panels currently in the splitter
+        # (which Qt types as QWidget | None) look up cleanly.
+        weightFor = {id(self.panelSource): 3, id(self.panelRules): 3, id(self.panelRuleExec): 2, id(self.panelTarget): 2, id(self.panelSynth): 2}
+
+        weights = [weightFor.get(id(self.vSplitter.widget(i)), 1) for i in range(self.vSplitter.count())]
+        total = sum(weights) or 1
+        available = max(self.vSplitter.height(), 400)
+
+        for i, weight in enumerate(weights):
+
+            self.vSplitter.setStretchFactor(i, weight)
+
+        self.vSplitter.setSizes([int(available * weight / total) for weight in weights])
+
     def AdvancedOptionsCheckboxClicked(self):
 
         # Suppress dimension saving in resizeEvent while we rearrange the layout. The checkbox is already in the new state at this point, so the resize
-        # events fired by adjustSize() and the layout changes below would otherwise overwrite the new mode's saved dimensions before we restore them.
+        # events fired by the layout changes below would otherwise overwrite the new mode's saved dimensions before we restore them.
         self.switchingModes = True
 
         # Show or hide the advanced widgets and tabs
@@ -1070,30 +1165,30 @@ class Main(QMainWindow):
             for widget in self.advancedWidgetsList:
 
                 widget.show()
-            
-            # Move the log edit edit box beside the rules if needed
+
+            # Move the log edit box up beside the rules if it isn't already there (i.e. we're coming from standard mode). This collapses the separate
+            # rule-execution panel: the action row becomes the target header and the log box shares horizLayoutTransferRules with the transfer-rules tabs.
             if self.ui.horizLayoutTransferRules.count() < 2:
 
-                # Remove LogEdit from its current layout
-                self.ui.verticalLayout.removeWidget(self.ui.LogEdit)
+                # Move LogEdit from the rule-execution panel to the right of the rules list.
+                self.panelRuleExecLayout.removeWidget(self.ui.LogEdit)
+                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit)
 
-                # Add LogEdit to horizLayoutTransferRules at the desired position
-                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
-
-                # Align ruleExecutionLabel to the right.
+                # Align ruleExecutionLabel to the right and move it from the action row to the end of the rule-selection header row.
                 self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignBottom)
-
-                # Move ruleExecutionLabel from horizontalLayout_4 to horizontalLayout_9.
                 self.ui.horizontalLayout_4.removeWidget(self.ui.ruleExecutionLabel)
-
-                # Add it at the end.
                 self.ui.horizontalLayout_9.addWidget(self.ui.ruleExecutionLabel)
 
-                # Remove the targetTextLabel from verticalLayout
-                self.ui.verticalLayout.removeWidget(self.ui.targetTextLabel)
+                # Move the action row (horizontalLayout_4) from the rule-execution panel to the top of the target panel, so it heads the target text box.
+                self.panelRuleExecLayout.removeItem(self.ui.horizontalLayout_4)
+                self.panelTargetLayout.insertLayout(0, self.ui.horizontalLayout_4)
 
-                # Add it to horizontalLayout_4 at the beginning.
+                # Move the "Target Text" label from the target panel into the action row (it shares that row with the Transfer button in advanced mode).
+                self.panelTargetLayout.removeWidget(self.ui.targetTextLabel)
                 self.ui.horizontalLayout_4.insertWidget(0, self.ui.targetTextLabel)
+
+                # The rule-execution panel is now empty, so take it out of the splitter.
+                self.panelRuleExec.setParent(None)
 
             # Add advanced tabs
             self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
@@ -1113,52 +1208,52 @@ class Main(QMainWindow):
             textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
 
             if textOutRulesFile:
-                
+
                 # Check if the file exists.
                 if os.path.exists(textOutRulesFile):
 
                     try:
                         self.textOutElemTree = ET.parse(textOutRulesFile)
-                        self.ui.applyTextOutRulesCheckbox.show() 
+                        self.ui.applyTextOutRulesCheckbox.show()
                     except:
-                        pass 
+                        pass
 
             # Show the Do not clean up... checkbox if the applicable setting is not 'y'
             if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
 
                 self.ui.DoNotCleanupCheckbox.hide()
-        
+
         # Not advanced options, hide the widgets and tabs
         else:
             for widget in self.advancedWidgetsList:
 
                 widget.hide()
 
-            # Move the log edit edit box below the rules if needed
+            # Split the log box out into its own rule-execution panel below the rules if it's still beside them (i.e. we're coming from advanced mode). The
+            # action row moves down to head the log box, the "Target Text" label becomes the target panel's own header again, and the panel rejoins the splitter.
             if self.ui.horizLayoutTransferRules.count() > 1:
 
-                # Remove LogEdit from its current layout
-                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
-
-                # Add LogEdit to verticalLayout at the desired position
-                count = self.ui.verticalLayout.count()
-                insert_position = count - 4  # 4th from the bottom
-                self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
-
-                # Align ruleExecutionLabel to the left.
+                # Align ruleExecutionLabel to the left and move it from the rule-selection header back to the front of the action row.
                 self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignBottom)
-
-                # Move ruleExecutionLabel from horizontalLayout_9 to horizontalLayout_4.
                 self.ui.horizontalLayout_9.removeWidget(self.ui.ruleExecutionLabel)
-
-                # Add it at the beginning.
                 self.ui.horizontalLayout_4.insertWidget(0, self.ui.ruleExecutionLabel)
 
-                # Remove the targetTextLabel from horizontalLayout_4
+                # Take the "Target Text" label out of the action row; it becomes the target panel's own header once the action row moves away.
                 self.ui.horizontalLayout_4.removeWidget(self.ui.targetTextLabel)
 
-                # Add it to the verticalLayout above the LogEdit
-                self.ui.verticalLayout.insertWidget(insert_position+1, self.ui.targetTextLabel)
+                # Move the action row (horizontalLayout_4) from the target panel to the rule-execution panel (it heads the log box in standard mode).
+                self.panelTargetLayout.removeItem(self.ui.horizontalLayout_4)
+                self.panelRuleExecLayout.addLayout(self.ui.horizontalLayout_4)
+
+                # Put the "Target Text" label back as the top of the target panel.
+                self.panelTargetLayout.insertWidget(0, self.ui.targetTextLabel)
+
+                # Move LogEdit from beside the rules down into the rule-execution panel, below the action row.
+                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
+                self.panelRuleExecLayout.addWidget(self.ui.LogEdit)
+
+                # Insert the rule-execution panel into the splitter between the rules panel (index 1) and the target panel.
+                self.vSplitter.insertWidget(2, self.panelRuleExec)
 
             # Remove advanced tabs
             self.ui.tabSource.removeTab(2) # Remove Manual tab
@@ -1167,6 +1262,9 @@ class Main(QMainWindow):
 
             # Restore the standard mode window size. Do this after removing the tabs so the advanced layout's larger minimum size can't clamp the resize.
             self.restoreModeDimensions(self.standardModeDimensions[0], self.standardModeDimensions[1])
+
+        # Reset the splitter proportions for the panels now present in this mode.
+        self.applySplitterStretch()
 
         # Done rearranging, let resizeEvent record dimensions again
         self.switchingModes = False
@@ -1226,12 +1324,24 @@ class Main(QMainWindow):
             self.sourceFocusInitialized = True
             QtCore.QTimer.singleShot(0, self.setFocusToActiveSourceTab)
 
+            # Now that the window is at its real size, redo the splitter proportions. At build time the splitter had no height, so the initial split was
+            # computed against a fallback height; this gives a clean proportional split on first paint. Deferred so the final window size is in effect.
+            QtCore.QTimer.singleShot(0, self.applySplitterStretch)
+
     def positionZoomWidgets(self):
 
-        mainWidth = self.width()
-        tabSourceGeom = self.ui.tabSource.geometry()
-        x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
-        y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
+        # The source zoom buttons float over the bottom-right corner of the source tab area. The source tab now lives inside a QSplitter panel rather than
+        # directly in the window layout, so map its bottom edge into the zoom buttons' own parent coordinate space; otherwise the coordinates would be
+        # relative to the panel and the buttons would be mispositioned.
+        zoomParent = self.ui.ZoomDecreaseSource.parentWidget()
+
+        if zoomParent is None:
+
+            return
+
+        tabBottom = self.ui.tabSource.mapTo(zoomParent, QPoint(0, self.ui.tabSource.height()))
+        x = zoomParent.width() - 8 - self.ui.ZoomDecreaseSource.width()
+        y = tabBottom.y() - self.ui.ZoomDecreaseSource.height()
         self.ui.ZoomDecreaseSource.move(x, y)
         self.ui.ZoomIncreaseSource.move(x-23, y)
         self.ui.ZoomLabel_2.move(x-23-184, y)
