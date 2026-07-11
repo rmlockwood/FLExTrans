@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'Dev\Lib\Windows\RuleAssistantWindow.ui'
+# Form implementation generated from reading ui file 'RuleAssistantWindow.ui'
 #
 # Created by: PyQt6 UI code generator 6.10.2
 #
@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_RuleAssistantWindow(object):
     def setupUi(self, RuleAssistantWindow):
         RuleAssistantWindow.setObjectName("RuleAssistantWindow")
-        RuleAssistantWindow.resize(1256, 656)
+        RuleAssistantWindow.resize(921, 474)
         self.centralwidget = QtWidgets.QWidget(parent=RuleAssistantWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.mainLayout = QtWidgets.QHBoxLayout(self.centralwidget)

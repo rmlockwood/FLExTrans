@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.7 - 7/11/26 - Ron Lockwood
+#    Restore the saved window size when switching between advanced and standard mode instead of clobbering it with programmatic resizes.
+#
 #   Version 3.16.6 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -304,7 +307,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.6",
+        FTM_Version    : "3.16.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -698,6 +701,9 @@ class Main(QMainWindow):
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
         self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
+        # True while AdvancedOptionsCheckboxClicked is rearranging the layout, so resizeEvent doesn't record the programmatic resizes it causes
+        self.switchingModes = False
+
         self.advancedWidgetsList = [
             self.ui.rebuildBilingLexButton,
             self.ui.startRuleAssistant,
@@ -1054,6 +1060,10 @@ class Main(QMainWindow):
 
     def AdvancedOptionsCheckboxClicked(self):
 
+        # Suppress dimension saving in resizeEvent while we rearrange the layout. The checkbox is already in the new state at this point, so the resize
+        # events fired by adjustSize() and the layout changes below would otherwise overwrite the new mode's saved dimensions before we restore them.
+        self.switchingModes = True
+
         # Show or hide the advanced widgets and tabs
         if self.ui.advancedOptionsCheckbox.isChecked():
 
@@ -1090,10 +1100,8 @@ class Main(QMainWindow):
             self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
             self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
 
-            # Force a resize
-            self.adjustSize()
-
-            self.resize(self.advancedModeDimensions[0], self.advancedModeDimensions[1])
+            # Restore the advanced mode window size
+            self.restoreModeDimensions(self.advancedModeDimensions[0], self.advancedModeDimensions[1])
 
             # If we are doing HermitCrab synthesis, show the checkbox
             if not self.doHermitCrabSynthesisBool:
@@ -1152,25 +1160,57 @@ class Main(QMainWindow):
                 # Add it to the verticalLayout above the LogEdit
                 self.ui.verticalLayout.insertWidget(insert_position+1, self.ui.targetTextLabel)
 
-            # Set window width half the size
-            self.resize(self.standardModeDimensions[0], self.standardModeDimensions[1])
-
             # Remove advanced tabs
             self.ui.tabSource.removeTab(2) # Remove Manual tab
             self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
-            self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
+            self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab
+
+            # Restore the standard mode window size. Do this after removing the tabs so the advanced layout's larger minimum size can't clamp the resize.
+            self.restoreModeDimensions(self.standardModeDimensions[0], self.standardModeDimensions[1])
+
+        # Done rearranging, let resizeEvent record dimensions again
+        self.switchingModes = False
+
+    def restoreModeDimensions(self, width, height):
+
+        # Force the layout to recalculate its minimum size right now. Qt normally defers this until the event loop runs, so without this the window would
+        # still carry the previous mode's larger minimum size and the resize below would get clamped to it (e.g. standard mode coming back wider than saved).
+        mainLayout = self.layout()
+
+        if mainLayout:
+
+            mainLayout.invalidate()
+            mainLayout.activate()
+
+        self.resize(width, height)
+
+        # If the resize still got clamped because some layout recalculation was pending, retry once after the event loop has settled
+        if self.isVisible() and (self.width(), self.height()) != (width, height):
+
+            QtCore.QTimer.singleShot(0, lambda: self.retryRestoreDimensions(width, height))
+
+    def retryRestoreDimensions(self, width, height):
+
+        # Deferred second attempt from restoreModeDimensions. This runs after AdvancedOptionsCheckboxClicked has finished, so guard resizeEvent again
+        # to keep this programmatic resize from being recorded as a user-driven one.
+        self.switchingModes = True
+        self.resize(width, height)
+        self.switchingModes = False
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
 
-        if self.ui.advancedOptionsCheckbox.isChecked():
+        # Only record the dimensions for user-driven resizes. Programmatic resizes during a mode switch would clobber the saved dimensions we're restoring.
+        if not self.switchingModes:
 
-            # Save the dimensions of the advanced mode
-            self.advancedModeDimensions = (self.width(), self.height())
-        else:
+            if self.ui.advancedOptionsCheckbox.isChecked():
 
-            # Save the dimensions of the standard mode
-            self.standardModeDimensions = (self.width(), self.height()) 
+                # Save the dimensions of the advanced mode
+                self.advancedModeDimensions = (self.width(), self.height())
+            else:
+
+                # Save the dimensions of the standard mode
+                self.standardModeDimensions = (self.width(), self.height())
 
         self.positionZoomWidgets()
 

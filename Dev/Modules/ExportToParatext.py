@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16.3 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -130,7 +133,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -172,7 +175,10 @@ class Main(QMainWindow):
         
         self.ui.bookAbbrevLineEdit.setText(bookAbbrev)
         self.ui.bookAbbrevLineEdit.setEnabled(False)
-        
+
+        # Annotate the type so the linter knows chapSel becomes a ChapterSelection object (it's set in doOKbuttonValidation). Otherwise it infers None-only and flags attribute accesses.
+        self.chapSel: ChapterSelection.ChapterSelection | None = None
+
     def CancelClicked(self):
         self.retVal = False
         self.close()

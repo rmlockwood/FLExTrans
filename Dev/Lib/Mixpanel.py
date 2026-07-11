@@ -4,6 +4,12 @@
 #   SIL International
 #   9/6/2024
 #
+#   Version 3.16.1 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
+#   Version 3.16 - 7/11/26 - Ron Lockwood
+#    Show the FLExTrans window icon on the usage-statistics opt-out message box.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -25,12 +31,15 @@
 #   Usage statistics logging with the online service Mixpanel
 #
 import functools
+import os
 import mixpanel
 
 from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox, QApplication
 
 import ReadConfig
+import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -38,7 +47,7 @@ _translate = QCoreApplication.translate
 # Only retrieve the IP address once per session
 @functools.cache
 def GetIPAddress():
-    import urllib
+    import urllib.request
     return urllib.request.urlopen('http://ifconfig.me/ip').read().decode('utf-8')
 
 def GetUserID(configMap, report):
@@ -50,6 +59,7 @@ def GetUserID(configMap, report):
     if opt_out_asked == 'n' or opt_out_asked is None:
 
         msgBox = QMessageBox()
+        msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setText(_translate('Mixpanel', "FLExTrans would like to send usage statistics to FLExTrans developers. "+\
                                     "No personally identifiable information is sent. These anonymous statistics will help with future development. "+\
@@ -95,7 +105,7 @@ def LogModuleStarted(configMap, report, module_name, module_version):
 
         mp = mixpanel.Mixpanel(TOKEN)
 
-        import Version
+        import Version # type: ignore
         mp.people_set(userid, {'FLExTrans Version': Version.Version})
 
         mp.track(userid, 'Started Module',
