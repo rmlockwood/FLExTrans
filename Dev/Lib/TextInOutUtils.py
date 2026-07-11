@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.16.3 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay() (added import Utils).
 #
@@ -83,6 +86,7 @@
 #
 
 import unicodedata
+from typing import cast
 import FTPaths
 import ReadConfig
 import Utils
@@ -156,7 +160,7 @@ class RulesPopup(QWidget):
         self.textEdit = QTextEdit(self)
         self.textEdit.setReadOnly(True)
         self.textEdit.setText(rules_text)
-        self.textEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
+        self.textEdit.setWordWrapMode(QtGui.QTextOption.WrapMode.NoWrap)
 
         # Add the QTextEdit to the layout
         layout.addWidget(self.textEdit)
@@ -240,7 +244,7 @@ def buildRuleStringFromElement(element):
 
     return buildRuleString(SRobj)
 
-def getPrintableString(myStr):
+def getPrintableString(myStr: str):
     
     # If we have a special char, return the equivalent alias str, otherwise return the char.
     return ''.join(replacementsMap.get(char, char) for char in myStr)
@@ -562,14 +566,14 @@ class TextInOutRulesWindow(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         # Get cluster projects from settings;
-        self.clusterProjects = ReadConfig.getConfigVal(self.configMap, ReadConfig.CLUSTER_PROJECTS, report=None, giveError=False)
+        clusterProjectsVal = ReadConfig.getConfigVal(self.configMap, ReadConfig.CLUSTER_PROJECTS, report=None, giveError=False)
 
-        if not self.clusterProjects:
+        if not clusterProjectsVal:
 
-            self.clusterProjects = []
+            self.clusterProjects: list = []
         else:
             # Remove blank ones
-            self.clusterProjects = [x for x in self.clusterProjects if x]
+            self.clusterProjects = [x for x in clusterProjectsVal if x]
 
         currDBname = DB.ProjectName()
 
@@ -757,10 +761,13 @@ class TextInOutRulesWindow(QMainWindow):
 
         return rulesPath
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, a0: QtCore.QObject | None, a1: QtCore.QEvent | None):
+
+        # Qt always calls this with real objects, never None
+        assert a0 is not None and a1 is not None
 
         # Show popup when mouse enters key widget
-        if event.type() == QtCore.QEvent.TypeEnter and obj in self.keyWidgetList:
+        if a1.type() == QtCore.QEvent.Type.Enter and a0 in self.keyWidgetList:
 
             # Always close any existing popup before opening a new one
             if hasattr(self, 'rulesPopup') and self.rulesPopup:
@@ -776,15 +783,18 @@ class TextInOutRulesWindow(QMainWindow):
 
                 if widget.currentText() != "...":
 
-                    if widget == obj:
+                    if widget == a0:
                         break
 
                     idx += 1
 
+            # a0 is confirmed above to be one of the combo boxes in keyWidgetList
+            keyWidget = cast(QComboBox, a0)
+
             # Check if the folder is ... and if so, don't show rules
-            if obj.currentText() == "...":
-                return super().eventFilter(obj, event)
-            
+            if keyWidget.currentText() == "...":
+                return super().eventFilter(a0, a1)
+
             # Get the rules text for the folder
             rules_text = self.getRulesTextForFolder(idx)
 
@@ -795,7 +805,7 @@ class TextInOutRulesWindow(QMainWindow):
             self.rulesPopup.installEventFilter(self)  # Track mouse events on popup
 
             # Set the popup size and position based on the widget
-            pos = obj.mapToGlobal(obj.rect().bottomLeft())
+            pos = keyWidget.mapToGlobal(keyWidget.rect().bottomLeft())
 
             # Set the popup size to fit the text and show it
             self.rulesPopup.move(pos)
@@ -803,19 +813,19 @@ class TextInOutRulesWindow(QMainWindow):
             self._popupActive = True
 
         # Hide popup only if mouse leaves both widget and popup
-        elif event.type() == QtCore.QEvent.Type.Leave and obj in self.keyWidgetList:
+        elif a1.type() == QtCore.QEvent.Type.Leave and a0 in self.keyWidgetList:
 
             QtCore.QTimer.singleShot(100, self._maybeClosePopup)
 
-        elif event.type() == QtCore.QEvent.Type.Leave and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+        elif a1.type() == QtCore.QEvent.Type.Leave and hasattr(self, 'rulesPopup') and a0 == self.rulesPopup:
 
             QtCore.QTimer.singleShot(100, self._maybeClosePopup)
 
-        elif event.type() == QtCore.QEvent.Type.Enter and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+        elif a1.type() == QtCore.QEvent.Type.Enter and hasattr(self, 'rulesPopup') and a0 == self.rulesPopup:
 
             self._popupActive = True
 
-        return super().eventFilter(obj, event)
+        return super().eventFilter(a0, a1)
 
     def _maybeClosePopup(self):
 
@@ -871,9 +881,21 @@ class TextInOutRulesWindow(QMainWindow):
             widget.installEventFilter(self)
         
         self.checkForValidFolders()
-        
+
+    def _ruleItem(self, row):
+
+        # Every row in the rules model always has an item; this narrows the Optional return of QStandardItemModel.item() for callers.
+        assert self.rulesModel is not None
+        item = self.rulesModel.item(row)
+        assert item is not None
+
+        return item
+
     def AddClicked(self):
-        
+
+        # loadRules() always runs before the user can click Add
+        assert self.rulesModel is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
 
@@ -943,12 +965,16 @@ class TextInOutRulesWindow(QMainWindow):
             self.RulesListClicked(self.ruleIndex)
 
     def UpdateClicked(self):
-        
+
+        # The Update button is only enabled when a rule is selected
+        assert self.rulesModel is not None and self.ruleIndex is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
 
         # Get the rule data at the current index selected
         myItem = self.rulesModel.itemFromIndex(self.ruleIndex)
+        assert myItem is not None
         rowNum = self.ruleIndex.row()
 
         # Get the current info for doing the find match
@@ -993,6 +1019,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         if self.ruleIndex:
 
+            assert self.rulesModel is not None
             rowCount = self.rulesModel.rowCount()
 
             # Remove the row
@@ -1065,6 +1092,9 @@ class TextInOutRulesWindow(QMainWindow):
     
     def CheckAllClicked(self):
 
+        # loadRules() always runs before the user can interact with the rule list
+        assert self.rulesModel is not None
+
         state = self.ui.selectAllCheckBox.checkState()
 
         if state == QtCore.Qt.CheckState.Checked:
@@ -1089,7 +1119,7 @@ class TextInOutRulesWindow(QMainWindow):
         for i in range(0, self.rulesModel.rowCount()):
 
             # change each box
-            self.rulesModel.item(i).setCheckState(newState)
+            self._ruleItem(i).setCheckState(newState)
 
         index = self.ui.rulesList.currentIndex()
 
@@ -1102,15 +1132,18 @@ class TextInOutRulesWindow(QMainWindow):
         self.writeXMLfile()
         self.close()
 
-    def closeEvent(self, event):
+    def closeEvent(self, a0):
 
         self.CloseClicked()
 
     def UpButtonClicked(self):
 
+        # loadRules() always runs before the user can interact with the rule list
+        assert self.rulesModel is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
-        
+
         if self.ruleIndex and self.ruleIndex.row() > 0:
             
             rowNum = defaultRowNum = self.ruleIndex.row()
@@ -1142,17 +1175,19 @@ class TextInOutRulesWindow(QMainWindow):
                     self.xmlParentObjList[i].insert(rowNum-1, elemToMove)
 
             # copy the check state from one row to the other
-            currState = self.rulesModel.item(defaultRowNum).checkState()
-            othState = self.rulesModel.item(defaultRowNum-1).checkState()
-            self.rulesModel.item(defaultRowNum).setCheckState(othState)
-            self.rulesModel.item(defaultRowNum-1).setCheckState(currState)
+            currItem = self._ruleItem(defaultRowNum)
+            othItem = self._ruleItem(defaultRowNum-1)
+            currState = currItem.checkState()
+            othState = othItem.checkState()
+            currItem.setCheckState(othState)
+            othItem.setCheckState(currState)
 
             # copy the rule string from one row to the other
-            currStr = self.rulesModel.item(defaultRowNum).text()
-            othStr = self.rulesModel.item(defaultRowNum-1).text()
-            self.rulesModel.item(defaultRowNum).setText(othStr)
-            self.rulesModel.item(defaultRowNum-1).setText(currStr)
-            
+            currStr = currItem.text()
+            othStr = othItem.text()
+            currItem.setText(othStr)
+            othItem.setText(currStr)
+
             myIndex = self.rulesModel.index(defaultRowNum-1, self.ruleIndex.column())
             self.ui.rulesList.setCurrentIndex(myIndex)
 
@@ -1160,7 +1195,10 @@ class TextInOutRulesWindow(QMainWindow):
             self.RulesListClicked(myIndex)
             
     def DownButtonClicked(self):
-        
+
+        # loadRules() always runs before the user can interact with the rule list
+        assert self.rulesModel is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
 
@@ -1195,16 +1233,18 @@ class TextInOutRulesWindow(QMainWindow):
                     self.xmlParentObjList[i].insert(rowNum+1, elemToMove)
 
             # copy the check state from one row to the other
-            currState = self.rulesModel.item(defaultRowNum).checkState()
-            othState = self.rulesModel.item(defaultRowNum+1).checkState()
-            self.rulesModel.item(defaultRowNum).setCheckState(othState)
-            self.rulesModel.item(defaultRowNum+1).setCheckState(currState)
-            
+            currItem = self._ruleItem(defaultRowNum)
+            othItem = self._ruleItem(defaultRowNum+1)
+            currState = currItem.checkState()
+            othState = othItem.checkState()
+            currItem.setCheckState(othState)
+            othItem.setCheckState(currState)
+
             # copy the rule string from one row to the other
-            currStr = self.rulesModel.item(defaultRowNum).text()
-            othStr = self.rulesModel.item(defaultRowNum+1).text()
-            self.rulesModel.item(defaultRowNum).setText(othStr)
-            self.rulesModel.item(defaultRowNum+1).setText(currStr)
+            currStr = currItem.text()
+            othStr = othItem.text()
+            currItem.setText(othStr)
+            othItem.setText(currStr)
             
             myIndex = self.rulesModel.index(defaultRowNum+1, self.ruleIndex.column())
             self.ui.rulesList.setCurrentIndex(myIndex)
@@ -1213,7 +1253,10 @@ class TextInOutRulesWindow(QMainWindow):
             self.RulesListClicked(myIndex)
 
     def RulesListClicked(self, index):
-        
+
+        # loadRules() always runs before the user can click a rule in the list
+        assert self.rulesModel is not None
+
         self.ruleIndex = index
         
         # Get rule data for current index. Get it from the element tree object.
@@ -1257,7 +1300,7 @@ class TextInOutRulesWindow(QMainWindow):
         for i in range(0, self.rulesModel.rowCount()):
 
             # If active add text with the active rule #
-            if self.rulesModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
+            if self._ruleItem(i).checkState() == QtCore.Qt.CheckState.Checked:
 
                 oneBoxChecked = True
             else:
@@ -1313,7 +1356,7 @@ class TextInOutRulesWindow(QMainWindow):
         #     newStr = runWildebeest(self.defaultRoot, newStr)
 
         # Apply only the rules the user has checked, but keep each rule's real 1-based number for error reporting.
-        numberedRules = [(ind + 1, ruleEl) for ind, ruleEl in enumerate(self.xmlParentObjList[0]) if self.rulesModel.item(ind).checkState() == QtCore.Qt.CheckState.Checked]
+        numberedRules = [(ind + 1, ruleEl) for ind, ruleEl in enumerate(self.xmlParentObjList[0]) if self._ruleItem(ind).checkState() == QtCore.Qt.CheckState.Checked]
 
         newStr, errorMsg = applyRulesToString(inStr, numberedRules)
 
@@ -1490,6 +1533,9 @@ class TextInOutRulesWindow(QMainWindow):
         # The default project is always the first one in the list.
         path = self.getPath(None)
         try:
+            if path is None:
+                raise ValueError("getPath returned no path for the default project.")
+
             tree = ET.parse(path)
         except:
             self.report.Error(_translate("TextInOutUtils", "Error loading XML file."))
@@ -1500,6 +1546,9 @@ class TextInOutRulesWindow(QMainWindow):
         self.defaultRoot = tree.getroot()
         self.xmlRootList = [self.defaultRoot]
         searchReplaceRulesElement = self.defaultRoot.find(SEARCH_REPLACE_RULES_ELEM)
+
+        # The rules file is always in our own controlled format, so this element always exists.
+        assert searchReplaceRulesElement is not None
         self.xmlParentObjList = [searchReplaceRulesElement]
         self.filePathList = [path]
 
@@ -1527,6 +1576,9 @@ class TextInOutRulesWindow(QMainWindow):
                 root = tree.getroot()
                 self.xmlRootList.append(root)
                 searchReplaceRulesElement = root.find(SEARCH_REPLACE_RULES_ELEM)
+
+                # The rules file is always in our own controlled format, so this element always exists.
+                assert searchReplaceRulesElement is not None
                 self.xmlParentObjList.append(searchReplaceRulesElement)
                 self.filePathList.append(path)
 
