@@ -59,9 +59,10 @@ for /L %%j in (0, 1, %array_size%) do (
     echo Changing to directory: %modules_ft%\!current_dir!
     cd /d "%modules_ft%\!current_dir!"
     
-    REM Delete existing symbolic links if current_dir is different from last_dir
+    REM Delete existing FILE symbolic links if current_dir is different from last_dir. /a:l-d lists reparse points that are not directories, so the Lib\css and Lib\AI directory links
+    REM created below are left alone here (they are refreshed in their own block after the loop).
     if not "!current_dir!"=="!last_dir!" (
-        for /f "delims=" %%k in ('dir /a:l /b') do (
+        for /f "delims=" %%k in ('dir /a:l-d /b') do (
             echo Deleting symbolic link: %%k
             del "%%k"
         )
@@ -87,6 +88,19 @@ for /L %%j in (0, 1, %array_size%) do (
     
     REM Update last_dir to the current directory
     set last_dir=!current_dir!
+)
+
+REM Link the Lib data subfolders as whole directories so the testing Lib mirrors the repo: css (transfer_preview.css plus the Rule Assistant treeflex.css/rulegen.css) and AI (the derived
+REM preview specs and the Work-on-Rules-with-AI conventions doc). These hold non-.py data files, so a directory link keeps every current and future file in them in sync with the repo.
+REM cd into Lib first and use a relative link name (like the file loops above) so a space in the testing path doesn't break mklink's quoting.
+cd /d "%modules_ft%\Lib"
+for %%d in (css AI) do (
+    if exist "%%d" (
+        echo Removing existing directory link: Lib\%%d
+        rmdir "%%d"
+    )
+    echo Creating directory link: Lib\%%d
+    mklink /D "%%d" "%git_dev%\Lib\%%d"
 )
 
 endlocal

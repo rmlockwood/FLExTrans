@@ -44,7 +44,7 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 
    At install time the installer unzips the base (English) addon first and then overlays the language zip for the chosen `$LANGCODE`, so the five translated files shadow their English
    counterparts. Everything downstream is automatic: `CreateInstaller.bat` zips every `translations/<code>` folder it finds in `LANG_CODES` into `AddOnsForXMLmind_<code><version>.zip`,
-   the generated `languages.nsh` bundles each zip into the installer, and `derive_preview_specs.py` (also run by `CreateInstaller.bat`) derives `Dev/Lib/preview_spec_XX.json` from the
+   the generated `languages.nsh` bundles each zip into the installer, and `derive_preview_specs.py` (also run by `CreateInstaller.bat`) derives `Dev/Lib/AI/preview_spec_XX.json` from the
    translated `transfer.css` for the in-app rule preview (it prints a SKIP and the preview falls back to English until the translated CSS exists).
 
 5. **Add the language-specific transfer-rules files** (e.g. `transfer_rules-Swedish_XX.t1x`) to `Installer/InstallerResources/TransferRules/`. The installer copies them by `$LANGCODE` at
@@ -57,7 +57,7 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 ## Maintaining the XXE rule-preview stylesheet (`transfer.css`)
 
 The in-app rule preview (the "Work on Rules with AI" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,
-[`Dev/derive_preview_specs.py`](derive_preview_specs.py), parses each `transfer.css` into a compact `Dev/Lib/preview_spec_<code>.json` that `TransferPreview` loads. Each spec captures, per rule
+[`Dev/derive_preview_specs.py`](derive_preview_specs.py), parses each `transfer.css` into a compact `Dev/Lib/AI/preview_spec_<code>.json` that `TransferPreview` loads. Each spec captures, per rule
 element, the label text, the attribute chips shown on it, and the chip colours (the colours come from the stylesheet's `@property-value` declarations, so the preview's box colours match XXE).
 
 **When to run it:** any time an XXE `transfer.css` changes — a colour edit, a new element rule, a changed label — and after adding a new language's translated stylesheet (step 4 above).

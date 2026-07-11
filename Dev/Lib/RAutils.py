@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.14 - 7/10/26 - Ron Lockwood
+#    The treeflex.css/rulegen.css stylesheets moved to the Lib/css subfolder; _loadCssFiles now defaults to the css subfolder beside this file.
+#
 #   Version 3.16.13 - 6/19/26 - Ron Lockwood
 #    Feature box: move padding onto the cells so the whole box is clickable; switch the tree to overflow:visible to stop premature horizontal/vertical scroll bars.
 #
@@ -1429,10 +1432,10 @@ class WebPageProducer:
         self._rulegenCss = ""
         self._loadCssFiles(cssAssetsDir)
 
-    # Load the treeflex and rulegen CSS files from the assets directory (or this file's directory).
+    # Load the treeflex and rulegen CSS files from the assets directory (or the css subfolder beside this file, i.e. Lib/css).
     def _loadCssFiles(self, cssAssetsDir: Optional[str] = None) -> None:
 
-        baseDir = Path(cssAssetsDir) if cssAssetsDir else Path(__file__).resolve().parent
+        baseDir = Path(cssAssetsDir) if cssAssetsDir else Path(__file__).resolve().parent / "css"
 
         for attr, name in [("_treeflexCss", "treeflex.css"), ("_rulegenCss", "rulegen.css")]:
 

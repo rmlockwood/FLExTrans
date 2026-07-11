@@ -93,14 +93,17 @@ rem sync the translated XXE transfer.css copies to the master's structure (keeps
 python %dev%\syncTransferCss.py
 python %dev%\derive_preview_specs.py
 
-rem copy all shared code and css files
+rem copy all shared code files
 copy %dev%\Lib\*.py %flextranslib%
-copy %dev%\Lib\*.css %flextranslib%
 
-rem copy Work-on-Rules-with-AI runtime resources: the DTD (validation), the conventions doc (system prompt), and the derived per-language preview specs
-copy %dev%\Lib\*.dtd %flextranslib%
-copy %dev%\Lib\*.md %flextranslib%
-copy %dev%\Lib\*.json %flextranslib%
+rem copy the stylesheets to a Lib\css subfolder: transfer_preview.css (AI rule preview) and treeflex.css/rulegen.css (Rule Assistant). These are data files (not imported); TransferPreview and RAutils find them in the css subfolder beside their .py.
+mkdir %flextranslib%\css
+copy %dev%\Lib\css\*.css %flextranslib%\css
+
+rem copy Work-on-Rules-with-AI runtime data to a Lib\AI subfolder: the conventions doc (system prompt) and the derived per-language preview specs. These are data files (not imported), so Lib\AI is not added to subdirs.pth; TransferPreview/WorkOnRulesWithAI find them relative to Lib.
+mkdir %flextranslib%\AI
+copy %dev%\Lib\AI\*.md %flextranslib%\AI
+copy %dev%\Lib\AI\*.json %flextranslib%\AI
 
 rem copy all window ui code files
 copy %dev%\Lib\Windows\*.py %flextranslib%

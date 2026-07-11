@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.12 - 7/10/26 - Ron Lockwood
+#    Dropped the transfer.dtd dependency: apertium-preprocess-transfer validates without the DTD present (as in the published Build makefile), so generateValidatedRule no longer copies a DTD
+#    into its scratch dir and validateFile no longer takes a dtdPath. The written temp file keeps its DOCTYPE (matching real transfer files; XXE resolves it via its own addon).
+#
 #   Version 3.16.11 - 7/10/26 - Ron Lockwood
 #    Type fix: getSampleRulesAndMacros and extractExistingDefs now type transferPath as Optional[str] (it defaults to None), with an assert documenting that a root or a transferPath must be given.
 #
@@ -794,10 +798,10 @@ def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: st
 
     return tempPath
 
-def validateFile(tempPath: str, dtdPath: str, compilerExe: Optional[str] = None) -> tuple:
+def validateFile(tempPath: str, compilerExe: Optional[str] = None) -> tuple:
     '''Validate the spliced file. Uses the standard-library parser for a well-formedness check (no third-party dependency) and, when a compiler executable is present, runs
-    apertium-preprocess-transfer, which parses against the transfer grammar and is the authoritative structural check. `dtdPath` is unused here but the caller keeps a copy of the DTD
-    beside the temp file for the compiler's relative lookup. Returns (ok, errorText).'''
+    apertium-preprocess-transfer, which parses against the transfer grammar and is the authoritative structural check. apertium-preprocess-transfer does not need the DTD present (the
+    file's DOCTYPE references transfer.dtd but the compiler resolves the grammar itself), so none is written beside the temp file. Returns (ok, errorText).'''
 
     errors = []
 
@@ -854,7 +858,7 @@ def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipCo
     elem.insert(0, cast(ET.Element, ET.Comment(text)))
     return ET.tostring(elem, encoding='unicode')
 
-def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, dtdPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None) -> RuleResult:
+def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None) -> RuleResult:
     '''The core loop: generate a rule, splice it into a temp copy, validate, and retry with the errors fed back up to MAX_VALIDATION_ATTEMPTS times. Returns the last candidate either
     way; the caller inspects .valid. `authorshipComments` and `whenStr` are passed to markAuthorship for the localized authorship stamp.'''
 
@@ -867,16 +871,13 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
     # needs to outlive the call - unlike the Open-in-XXE temp file, which the dialog cleans up on close.
     try:
 
-        # apertium-preprocess-transfer resolves the DTD relative to the file.
-        shutil.copyfile(dtdPath, os.path.join(workDir, 'transfer.dtd'))
-
         for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
             lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
             lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr)
 
             tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir)
-            ok, lastErrors = validateFile(tempPath, os.path.join(workDir, 'transfer.dtd'), compilerExe)
+            ok, lastErrors = validateFile(tempPath, compilerExe)
 
             if ok:
                 return RuleResult(lastRule, lastDefs, lastExpl, lastLang, True, '', attempt)

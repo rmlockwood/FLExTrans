@@ -82,7 +82,7 @@ def writeSample(path):
         fout.write(SAMPLE_TRANSFER)
 
 class TempDirTestCase(unittest.TestCase):
-    '''Base class giving each test its own scratch directory (auto-removed) plus a written sample transfer file and a dummy DTD.'''
+    '''Base class giving each test its own scratch directory (auto-removed) plus a written sample transfer file.'''
 
     def setUp(self):
 
@@ -91,11 +91,6 @@ class TempDirTestCase(unittest.TestCase):
 
         self.transferPath = os.path.join(self.workDir, 'transfer.t1x')
         writeSample(self.transferPath)
-
-        self.dtdPath = os.path.join(self.workDir, 'transfer.dtd')
-
-        with open(self.dtdPath, 'w', encoding='utf-8') as fout:
-            fout.write('<!-- dummy dtd; the compiler is mocked/skipped in tests -->')
 
 # ---------------------------------------------------------------------------
 # parseRetryAfter and RateLimitError
@@ -507,7 +502,7 @@ class TestSpliceAndValidate(TempDirTestCase):
     def test_validate_wellformed_ok(self):
 
         tempPath = AIRules.spliceIntoTemp(self.transferPath, VALID_RULE, [], 'create', None, self.workDir)
-        ok, errors = AIRules.validateFile(tempPath, self.dtdPath, compilerExe=None)
+        ok, errors = AIRules.validateFile(tempPath, compilerExe=None)
 
         self.assertTrue(ok)
         self.assertEqual(errors, '')
@@ -519,7 +514,7 @@ class TestSpliceAndValidate(TempDirTestCase):
         with open(badPath, 'w', encoding='utf-8') as fout:
             fout.write('<transfer><section-rules><rule></section-rules></transfer>')
 
-        ok, errors = AIRules.validateFile(badPath, self.dtdPath, compilerExe=None)
+        ok, errors = AIRules.validateFile(badPath, compilerExe=None)
 
         self.assertFalse(ok)
         self.assertIn('not well-formed', errors)
@@ -535,7 +530,7 @@ class TestSpliceAndValidate(TempDirTestCase):
         fakeResult = SimpleNamespace(returncode=0, stderr=b'some warning to stderr')
 
         with mock.patch.object(AIRules.subprocess, 'run', return_value=fakeResult):
-            ok, errors = AIRules.validateFile(tempPath, self.dtdPath, compilerExe)
+            ok, errors = AIRules.validateFile(tempPath, compilerExe)
 
         # Zero exit means success even though stderr was non-empty (it emits warnings).
         self.assertTrue(ok)
@@ -551,7 +546,7 @@ class TestSpliceAndValidate(TempDirTestCase):
         fakeResult = SimpleNamespace(returncode=1, stderr=b'structural error XYZ')
 
         with mock.patch.object(AIRules.subprocess, 'run', return_value=fakeResult):
-            ok, errors = AIRules.validateFile(tempPath, self.dtdPath, compilerExe)
+            ok, errors = AIRules.validateFile(tempPath, compilerExe)
 
         self.assertFalse(ok)
         self.assertIn('apertium-preprocess-transfer failed', errors)
@@ -733,7 +728,7 @@ class TestGenerateValidatedRule(TempDirTestCase):
     def test_valid_on_first_attempt(self):
 
         engine = FakeEngine([self._ruleResponse()])
-        result = AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, self.dtdPath, 'create', None, compilerExe=None)
+        result = AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, 'create', None, compilerExe=None)
 
         self.assertTrue(result.valid)
         self.assertEqual(result.attempts, 1)
@@ -752,7 +747,7 @@ class TestGenerateValidatedRule(TempDirTestCase):
         results = [SimpleNamespace(returncode=1, stderr=b'first fails'), SimpleNamespace(returncode=0, stderr=b'')]
 
         with mock.patch.object(AIRules.subprocess, 'run', side_effect=results):
-            result = AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, self.dtdPath, 'create', None, compilerExe=compilerExe)
+            result = AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, 'create', None, compilerExe=compilerExe)
 
         self.assertTrue(result.valid)
         self.assertEqual(result.attempts, 2)
@@ -770,7 +765,7 @@ class TestGenerateValidatedRule(TempDirTestCase):
         alwaysFail = SimpleNamespace(returncode=1, stderr=b'never compiles')
 
         with mock.patch.object(AIRules.subprocess, 'run', return_value=alwaysFail):
-            result = AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, self.dtdPath, 'create', None, compilerExe=compilerExe)
+            result = AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, 'create', None, compilerExe=compilerExe)
 
         self.assertFalse(result.valid)
         self.assertEqual(result.attempts, AIRules.MAX_VALIDATION_ATTEMPTS)
@@ -782,7 +777,7 @@ class TestGenerateValidatedRule(TempDirTestCase):
         engine = FakeEngine([self._ruleResponse()])
 
         with mock.patch.object(AIRules.tempfile, 'mkdtemp', return_value=scratch):
-            AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, self.dtdPath, 'create', None, compilerExe=None)
+            AIRules.generateValidatedRule(engine, 'SYS', 'USER', self.transferPath, 'create', None, compilerExe=None)
 
         self.assertFalse(os.path.exists(scratch))
 

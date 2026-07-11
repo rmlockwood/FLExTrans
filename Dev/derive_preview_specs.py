@@ -8,7 +8,7 @@
 #   For English it reads the main XXE stylesheet; for de/es/fr it reads the
 #   translated stylesheet under XXEaddon/translations/<lang>/. Each is parsed into
 #   a {tag: [labelText, [[attr, attrLabel, colorClass], ...]]} map and written to
-#   Dev/Lib/preview_spec_<lang>.json, which TransferPreview loads at render time.
+#   Dev/Lib/AI/preview_spec_<lang>.json, which TransferPreview loads at render time.
 #
 #   The spec also carries a "_colors" map (chip class -> hex colour) parsed from the
 #   stylesheet's @property-value declarations, so the preview's box colours come
@@ -25,7 +25,8 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 XXE = os.path.join(REPO, 'Installer', 'InstallerResources', 'XXEaddon')
-OUT_DIR = os.path.join(REPO, 'Dev', 'Lib')
+# The derived preview specs are AI runtime data, so they live in Dev/Lib/AI with the other Work-on-Rules-with-AI resources (TransferPreview loads them from there).
+OUT_DIR = os.path.join(REPO, 'Dev', 'Lib', 'AI')
 
 # The UI-language list comes from the single authoritative module in Dev/Lib.
 sys.path.insert(0, os.path.join(REPO, 'Dev', 'Lib'))
@@ -240,6 +241,8 @@ def parseCss(path):
 
 
 def main():
+    os.makedirs(OUT_DIR, exist_ok=True)
+
     for lang, path in CSS_FOR_LANG.items():
 
         if not os.path.isfile(path):

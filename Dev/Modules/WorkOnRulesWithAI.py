@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.7 - 7/10/26 - Ron Lockwood
+#    Dropped the transfer.dtd dependency (apertium-preprocess-transfer validates without it): the module no longer locates, requires, or passes a DTD path to the dialog.
+#
+#   Version 3.16.6 - 7/10/26 - Ron Lockwood
+#    The AI runtime data moved to a Lib/AI subfolder: the conventions doc (system prompt) and the derived preview specs are now read from Lib/AI, and the missing-resources error points there.
+#
 #   Version 3.16.5 - 7/10/26 - Ron Lockwood
 #    The information, warning, and consent message boxes now show the FLExTrans window icon. When the provider/model aren't set yet, the module now asks (yes/no) whether to open the
 #    Settings tool and, if yes, opens it in the Full view scrolled to the AI Assistant section so the user can set them without hunting for the tool.
@@ -63,7 +69,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.5",
+        FTM_Version    : "3.16.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -221,14 +227,15 @@ def MainFunction(DB, report, modify=True):
         report.Error(_translate('WorkOnRulesWithAI', 'Transfer rules file not found: {path}').format(path=Utils.shortenPathForDisplay(transferPath)))
         return
 
-    # The bundled resources ship in the same Lib folder as AIRules.py. Use realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder.
+    # The Work-on-Rules-with-AI runtime resources ship in the Lib/AI subfolder beside AIRules.py's Lib folder. Use realpath so this resolves through a per-file symlink (dev deploy) to the real
+    # Lib folder. The conventions doc (system prompt) lives in Lib/AI with the derived preview specs.
     libDir = os.path.dirname(os.path.realpath(AIRules.__file__))
-    conventionsPath = os.path.join(libDir, 'WorkOnRulesWithAI-Conventions.md')
-    dtdPath = os.path.join(libDir, 'transfer.dtd')
+    aiDataDir = os.path.join(libDir, 'AI')
+    conventionsPath = os.path.join(aiDataDir, 'WorkOnRulesWithAI-Conventions.md')
 
-    if not os.path.isfile(conventionsPath) or not os.path.isfile(dtdPath):
+    if not os.path.isfile(conventionsPath):
 
-        report.Error(_translate('WorkOnRulesWithAI', 'Missing WorkOnRulesWithAI-Conventions.md and/or transfer.dtd in {libDir}. Reinstall FLExTrans or copy those files there.').format(libDir=libDir))
+        report.Error(_translate('WorkOnRulesWithAI', 'Missing WorkOnRulesWithAI-Conventions.md in the Lib/AI subfolder under {libDir}. Reinstall FLExTrans or copy that file there.').format(libDir=libDir))
         return
 
     compilerExe = os.path.join(FTPaths.TOOLS_DIR, 'apertium-preprocess-transfer.exe')
@@ -280,7 +287,7 @@ def MainFunction(DB, report, modify=True):
         # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()
         # returns immediately here and the dialog would flash open and close. app.exec() returns when the dialog (the only top-level Qt window) is closed.
         from WorkOnRulesWithAIDlg import WorkOnRulesWithAIDlg
-        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, dtdPath, compilerExe)
+        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, compilerExe)
         dlg.show()
         thisApp.exec()
 
