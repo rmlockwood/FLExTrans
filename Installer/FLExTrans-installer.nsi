@@ -350,8 +350,8 @@ Section "MainSection" SEC01
           DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
         ${EndIf}
 
-        # Migrate the Tools collection from the old "Rule Assistant" module to the new "Work On Rules With AI" module. Detect the Tools collection by the presence of the old Rule
-        # Assistant module rather than the collection's file name, which is localized (e.g. Werkzeuge.ini in German). (/c: makes findstr treat the bracketed string as a literal, not a regex.)
+        # Migrate the Tools collection off the old "Rule Assistant" module: it was renamed (RuleAssistant.py -> RuleAssistantPy.py) and the new "Work On Rules With AI" module was added. Detect the
+        # Tools collection by the presence of the old Rule Assistant module rather than the collection's file name, which is localized (e.g. Werkzeuge.ini in German). (/c: makes findstr treat the bracketed string as a literal, not a regex.)
         nsExec::Exec 'findstr /c:"[FLExTrans\RuleAssistant.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
         Pop $R2   # 0 = found, non-zero = not found
 
@@ -360,8 +360,20 @@ Section "MainSection" SEC01
           # Drop the old Rule Assistant section.
           DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\RuleAssistant.py"
 
-          # Add the new module, but only if it isn't already there so we don't create a duplicate section. NSIS has no "write section header only" call, so we append the header line
+          # Add the renamed Rule Assistant module, but only if it isn't already there so we don't create a duplicate section. NSIS has no "write section header only" call, so we append the header line
           # directly (the leading CRLF guarantees a clean line break even if the file didn't end in a newline). The new section lands at the end of the collection, which is fine for the tool list.
+          nsExec::Exec 'findstr /c:"[FLExTrans\RuleAssistantPy.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $R3   # 0 = already present, non-zero = absent
+
+          ${If} $R3 != 0
+
+            FileOpen $R4 "${WORKPROJECTSDIR}\$1\Config\Collections\$3" a
+            FileSeek $R4 0 END
+            FileWrite $R4 "$\r$\n[FLExTrans\RuleAssistantPy.py]$\r$\n"
+            FileClose $R4
+          ${EndIf}
+
+          # Also add the new "Work On Rules With AI" module, again only if it isn't already present. Same append approach as above.
           nsExec::Exec 'findstr /c:"[FLExTrans\WorkOnRulesWithAI.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
           Pop $R3   # 0 = already present, non-zero = absent
 
