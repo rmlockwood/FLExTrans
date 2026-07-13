@@ -5,12 +5,19 @@
 #   SIL International
 #   11/1/2016
 #
+#   Version 3.16 - 7/13/26 - Ron Lockwood
+#    Type fixes for the PyQt6 upgrade: call the correct base-class __init__, use the
+#    StateFlag/Key enum paths, guard the Optional returns from style()/parent()/model, and cast QEvent to its mouse/key subclass.
+#
 #   Version 1.0 - 11/1/2016 - Ron
 #
-#   TableView & CheckBox delegate classes used to show check boxes in the linker table view. 
+#   TableView & CheckBox delegate classes used to show check boxes in the linker table view.
+
+from typing import cast
 
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import QApplication, QTableView, QStyleOptionButton, QStyledItemDelegate, QStyle, QItemDelegate
+from PyQt6.QtGui import QMouseEvent, QKeyEvent
+from PyQt6.QtWidgets import QApplication, QTableView, QStyleOptionButton, QStyledItemDelegate, QStyle, QWidget
 
 
 class MyTableView(QTableView):
@@ -27,8 +34,8 @@ class CheckBoxDelegate(QStyledItemDelegate):
     cell of the column to which it's applied
     """
     def __init__(self, parent):
-        QItemDelegate.__init__(self, parent)
-        
+        QStyledItemDelegate.__init__(self, parent)
+
     def createEditor(self, parent, option, index):
         '''
         Important, otherwise an editor is created if the user clicks in this cell.
@@ -43,23 +50,28 @@ class CheckBoxDelegate(QStyledItemDelegate):
 
         checked = index.data()
         check_box_style_option = QStyleOptionButton()
- 
-        flags = int(index.flags())
-        if (flags & QtCore.Qt.ItemFlag.ItemIsEditable) > 0:
-            check_box_style_option.state |= QStyle.State_Enabled
+
+        flags = index.flags()
+
+        if bool(flags & QtCore.Qt.ItemFlag.ItemIsEditable):
+            check_box_style_option.state |= QStyle.StateFlag.State_Enabled
         else:
-            check_box_style_option.state |= QStyle.State_ReadOnly
- 
+            check_box_style_option.state |= QStyle.StateFlag.State_ReadOnly
+
         if checked:
-            check_box_style_option.state |= QStyle.State_On
+            check_box_style_option.state |= QStyle.StateFlag.State_On
         else:
-            check_box_style_option.state |= QStyle.State_Off
- 
+            check_box_style_option.state |= QStyle.StateFlag.State_Off
+
         check_box_style_option.rect = self.getCheckBoxRect(option)
- 
-        check_box_style_option.state |= QStyle.State_Enabled
- 
-        QApplication.style().drawControl(QStyle.ControlElement.CE_CheckBox, check_box_style_option, painter)
+
+        check_box_style_option.state |= QStyle.StateFlag.State_Enabled
+
+        # style() is typed Optional, so grab it once and assert it's present before drawing.
+        style = QApplication.style()
+        assert style is not None
+
+        style.drawControl(QStyle.ControlElement.CE_CheckBox, check_box_style_option, painter)
 
     def editorEvent(self, event, model, option, index):
         '''
@@ -67,16 +79,27 @@ class CheckBoxDelegate(QStyledItemDelegate):
         if the user presses the left mousebutton or presses
         Key_Space or Key_Select and this cell is editable. Otherwise do nothing.
         '''
+        if event is None or model is None:
+            return False
+
         # Do not change the checkbox-state
         if event.type() == QtCore.QEvent.Type.MouseButtonPress:
             return False
+
         if event.type() == QtCore.QEvent.Type.MouseButtonRelease or event.type() == QtCore.QEvent.Type.MouseButtonDblClick:
-            if event.button() != QtCore.Qt.MouseButton.LeftButton or not self.getCheckBoxRect(option).contains(event.pos()):
+
+            # We know this is a mouse event here, so cast so the button()/pos() accessors type-check.
+            mouseEvent = cast(QMouseEvent, event)
+
+            if mouseEvent.button() != QtCore.Qt.MouseButton.LeftButton or not self.getCheckBoxRect(option).contains(mouseEvent.pos()):
                 return False
             if event.type() == QtCore.QEvent.Type.MouseButtonDblClick:
                 return True
         elif event.type() == QtCore.QEvent.Type.KeyPress:
-            if event.key() != QtCore.Qt.Key.Type.Key_Space and event.key() != QtCore.Qt.Key.Type.Key_Select:
+
+            keyEvent = cast(QKeyEvent, event)
+
+            if keyEvent.key() != QtCore.Qt.Key.Key_Space and keyEvent.key() != QtCore.Qt.Key.Key_Select:
                 return False
             else:
                 return False
@@ -89,18 +112,32 @@ class CheckBoxDelegate(QStyledItemDelegate):
         '''
         The user wanted to change the old state in the opposite.
         '''
+        if model is None:
+            return
+
         #print 'SetModelData'
         newValue = not index.data()
         #print 'New Value : {0}'.format(newValue)
         model.setData(index, newValue, QtCore.Qt.ItemDataRole.EditRole)
-        # Crude way to cause repaint
-        mn = self.parent().parent()
+
+        # Crude way to cause repaint. self.parent() is typed Optional and its parent is a plain QObject, so guard and cast to the QWidget we know it is.
+        parentWidget = self.parent()
+
+        if parentWidget is None:
+            return
+
+        mn = cast(QWidget, parentWidget.parent())
         mn.setGeometry(mn.x()+1,mn.y()+1,mn.width(),mn.height()+1)
         mn.setGeometry(mn.x()-1,mn.y()-1,mn.width(),mn.height()-1)
 
     def getCheckBoxRect(self, option):
         check_box_style_option = QStyleOptionButton()
-        check_box_rect = QApplication.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, check_box_style_option, None)
+
+        # style() is typed Optional; assert it's present before querying the indicator rect.
+        style = QApplication.style()
+        assert style is not None
+
+        check_box_rect = style.subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, check_box_style_option, None)
         check_box_point = QtCore.QPoint (option.rect.x() +
                             option.rect.width() // 2 -
                             check_box_rect.width() // 2,

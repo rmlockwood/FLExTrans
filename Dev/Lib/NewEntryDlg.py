@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.16 - 7/13/26 - Ron Lockwood
+#    Initialize keyWidgetList in __init__ to satisfy the type checker.
+#
 #   Version 3.15.2 - 3/10/26 - Ron Lockwood
 #    Fixes #1254. Don't add inflection classes to the list of grammatical categories.
 #
@@ -87,6 +90,9 @@ class NewEntryDlg(QDialog):
         self.retVal = False
         self.nonInitalLexemeFormChanged = False
         self.settingsMap = {}
+
+        # Initialize here so it's defined even before ClusterUtils.initClusterWidgets() populates it.
+        self.keyWidgetList = []
 
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
