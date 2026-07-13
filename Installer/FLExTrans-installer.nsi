@@ -105,7 +105,7 @@ Var /GLOBAL STR_INSTALL_XMLMIND
 ; ==============================================================
 ; The authoritative UI-language list is Dev\Lib\UILanguages.py; everything per-language in this
 ; script comes from the GENERATED include below. See Dev\README-AddingUILanguage.md for the full
-; checklist (add the language there, translate a LangForInstallerScript\XX.nsh, run
+; checklist (add the language to UILanguages.py, translate a LangForInstallerScript\XX.nsh, run
 ; python Dev\updateLanguageFiles.py, add the transfer-rules and XXE addon translations).
 ; ==============================================================
 
@@ -350,6 +350,30 @@ Section "MainSection" SEC01
           DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
         ${EndIf}
 
+        # Migrate the Tools collection from the old "Rule Assistant" module to the new "Work On Rules With AI" module. Detect the Tools collection by the presence of the old Rule
+        # Assistant module rather than the collection's file name, which is localized (e.g. Werkzeuge.ini in German). (/c: makes findstr treat the bracketed string as a literal, not a regex.)
+        nsExec::Exec 'findstr /c:"[FLExTrans\RuleAssistant.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+        Pop $R2   # 0 = found, non-zero = not found
+
+        ${If} $R2 == 0
+
+          # Drop the old Rule Assistant section.
+          DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\RuleAssistant.py"
+
+          # Add the new module, but only if it isn't already there so we don't create a duplicate section. NSIS has no "write section header only" call, so we append the header line
+          # directly (the leading CRLF guarantees a clean line break even if the file didn't end in a newline). The new section lands at the end of the collection, which is fine for the tool list.
+          nsExec::Exec 'findstr /c:"[FLExTrans\WorkOnRulesWithAI.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $R3   # 0 = already present, non-zero = absent
+
+          ${If} $R3 != 0
+
+            FileOpen $R4 "${WORKPROJECTSDIR}\$1\Config\Collections\$3" a
+            FileSeek $R4 0 END
+            FileWrite $R4 "$\r$\n[FLExTrans\WorkOnRulesWithAI.py]$\r$\n"
+            FileClose $R4
+          ${EndIf}
+        ${EndIf}
+
         FindNext $2 $3
         Goto collectionLoop
 
@@ -357,7 +381,7 @@ Section "MainSection" SEC01
       FindClose $2
     ${EndIf}
 
-    # If it was in the testbed collection, enable the replacement setting in this work project's config, but only when the key isn't already there so we don't override a choice the user
+    # If FixUpSynthText was in the testbed collection, enable the replacement setting in this work project's config, but only when the key isn't already there so we don't override a choice the user
     # has since made in the Settings dialog. (The config is a flat key=value file, so we append a line rather than using an INI writer.)
     ${If} $6 == "1"
 
