@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.24 - 7/13/26 - Ron Lockwood
+#    Fixes #1432. Splitter handles can no longer drag a pane completely shut (setChildrenCollapsible(False) on all three splitters).
+#
 #   Version 3.16.23 - 7/9/26 - Ron Lockwood
 #    Fixes #1407. Selected rule in the rule list now shows white text (over the highlight background), matching the split feature grid.
 #
@@ -246,6 +249,11 @@ class RuleAssistantWindow(QMainWindow):
         self.ui.main_splitter.setSizes([200, 460])
         self.ui.v_splitter.setSizes([250, 750])
         self.ui.h_splitter.setSizes([400, 300])
+
+        # Don't let a splitter handle drag a pane all the way shut. setChildrenCollapsible(False) keeps every pane visible so the widgets to the left of a handle can never be completely hidden.
+        self.ui.main_splitter.setChildrenCollapsible(False)
+        self.ui.v_splitter.setChildrenCollapsible(False)
+        self.ui.h_splitter.setChildrenCollapsible(False)
 
     def _createWebViews(self) -> None:
         """Create the QWebEngineViews in code (kept out of the .ui to preserve the
