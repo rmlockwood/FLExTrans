@@ -6,7 +6,7 @@
 #   September 2023
 #
 #   Version 3.16.24 - 7/13/26 - Ron Lockwood
-#    Splitter handles can no longer drag a pane completely shut (setChildrenCollapsible(False) on all three splitters).
+#    Fixes #1432. Splitter handles can no longer drag a pane completely shut (setChildrenCollapsible(False) on all three splitters).
 #
 #   Version 3.16.23 - 7/9/26 - Ron Lockwood
 #    Fixes #1407. Selected rule in the rule list now shows white text (over the highlight background), matching the split feature grid.
