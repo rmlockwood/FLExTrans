@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16.4 - 7/13/26 - Ron Lockwood
+#    Fixes #1437. When a target word is filled into an unlinked row, color the whole line green instead of just the target columns.
+#
 #   Version 3.16.3 - 7/10/26 - Ron Lockwood
 #    Type-annotation cleanup (no behavior change): typed the LinkerRow/LinkerTable attributes that start as None but are always populated before use (linkObj, font, callback, selectedHPG),
 #    let HPG.SenseNum be Optional[int], passed a QModelIndex() to rowCount, and ignored the dynamic FTPaths.CURRENT_SRC_TEXT global - clearing all the Pylance reportOptionalMemberAccess warnings.
@@ -222,7 +225,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16.3",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -608,10 +611,9 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     
                     qColor = QtGui.QColor(QtGui.QColorConstants.Yellow)
                     
-                # Modified rows get a color just for the target columns
-                elif col >= COL_TGT_HEADWORD and col <= COL_TGT_GLOSS and (locData.getTgtModified() == True or \
-                                                                           (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.getLinkIt() == False)):
-                    
+                # Modified rows get a green background across the whole line, not just the target columns (fixes #1437). Column 0 is handled by the yellow branch above, so it keeps its link/unlink marker.
+                elif locData.getTgtModified() == True or (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.getLinkIt() == False):
+
                     qColor = QtGui.QColor(152, 251, 152) # pale green
                 
                 # Exact suggestion 
@@ -715,13 +717,15 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 self.__localData[row].setLinkIt(False)
                 self.__localData[row].setModified(True)
             
-            # Repaint columns link, target head-word, cat, gloss) when the checkbox is changed.
-            # Do this for all rows to display rows that are linked to the link object
-            for myCol in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
-                
-                for row in range(0,len(self.__localData)):
-                    newindex = self.index(row, myCol)    
-                    self.dataChanged.emit(newindex, newindex)
+            # Repaint the whole line for every row when the checkbox is changed, so a modified/linked row is fully green (fixes #1437), not just the target columns.
+            # Do this for all rows so rows that share the same link object update together.
+            lastCol = self.columnCount(QtCore.QModelIndex()) - 1
+
+            for row in range(0, len(self.__localData)):
+
+                topLeft = self.index(row, 0)
+                bottomRight = self.index(row, lastCol)
+                self.dataChanged.emit(topLeft, bottomRight)
             
             # Recalculate the senses to link 
             self.__callbackFunc()
@@ -849,12 +853,11 @@ class Main(QMainWindow):
         if index.column() == COL_TGT_HEADWORD:
 
             self.__model.data(index, QtCore.Qt.ItemDataRole.EditRole)
-            
-            # Repaint the target headword, target POS, and target gloss columns
-            for col in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
-                
-                idx = self.__model.index(index.row(), col)
-                self.__model.dataChanged.emit(idx, idx)
+
+            # Repaint the whole row so the modified row turns green across the entire line, not just the target columns (fixes #1437).
+            topLeft = self.__model.index(index.row(), 0)
+            bottomRight = self.__model.index(index.row(), self.__model.columnCount(QtCore.QModelIndex()) - 1)
+            self.__model.dataChanged.emit(topLeft, bottomRight)
             
     def AddTargetEntry(self):
 
