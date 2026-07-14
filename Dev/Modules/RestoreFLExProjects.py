@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.16.3 - 7/14/26 - Ron Lockwood
+#    Fixes #1441. Verify the flex.exe path and each backup file exist before use, reporting an error instead of failing later.
+#
 #   Version 3.16.2 - 7/10/26 - Ron Lockwood
 #    Locate flex.exe via the shared Utils.getFlexExePath helper, which guards against an unset FIELDWORKSDIR environment variable (reports an error and returns None) instead of crashing.
 #
@@ -76,7 +79,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",
@@ -240,6 +243,11 @@ def mainFunction(DB, report, modifyAllowed):
     if not flexExe:
         return
 
+    # Make sure the flex.exe path actually points at an existing file before we try to launch it.
+    if not os.path.isfile(flexExe):
+        report.Error(_translate("RestoreFLExProjects", "Could not find the FLEx executable: {flexExe}.").format(flexExe=Utils.shortenPathForDisplay(flexExe)))
+        return
+
     if mainWindow.returnVal:
 
         # Loop through selected backups and restore them
@@ -255,6 +263,12 @@ def mainFunction(DB, report, modifyAllowed):
                 continue
 
             backupPath = os.path.join(mainWindow.selectedFolder, backupName)  # Append backupName to the selected folder path
+
+            # Make sure the backup file still exists before handing it to FLEx to restore.
+            if not os.path.isfile(backupPath):
+                report.Error(_translate("RestoreFLExProjects", "Could not find the backup file: {backupPath}. Skipping.").format(backupPath=Utils.shortenPathForDisplay(backupPath)))
+                continue
+
             process = Popen([flexExe, '-restore', backupPath], creationflags=DETACHED_PROCESS)
 
             secs = 0

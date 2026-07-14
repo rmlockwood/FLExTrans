@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.6 - 7/14/26 - Ron Lockwood
+#    Fixes #1441. getFlexExePath prefers FieldWorks.exe (newer FLEx installs) and falls back to flex.exe if that isn't present.
+#
 #   Version 3.16.5 - 7/10/26 - Ron Lockwood
 #    Added getFlexExePath(report): the shared FIELDWORKSDIR/flex.exe lookup (with its error message) that OpenFLExProjects and RestoreFLExProjects both used, now in one place.
 #
@@ -666,6 +669,12 @@ def getFlexExePath(report):
 
         report.Error(_translate("Utils", "The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found."))
         return None
+
+    # Newer FLEx installs name the executable FieldWorks.exe; older ones use flex.exe. Prefer the former and fall back to the latter.
+    fieldWorksExe = os.path.join(fieldworksDir, 'FieldWorks.exe')
+
+    if os.path.isfile(fieldWorksExe):
+        return fieldWorksExe
 
     return os.path.join(fieldworksDir, 'flex.exe')
 
