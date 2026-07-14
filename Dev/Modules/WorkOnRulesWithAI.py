@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.8 - 7/14/26 - Ron Lockwood
+#    Fixes #1438. Give a more helpful message when consent is declined.
+#
 #   Version 3.16.7 - 7/10/26 - Ron Lockwood
 #    Dropped the transfer.dtd dependency (apertium-preprocess-transfer validates without it): the module no longer locates, requires, or passes a DTD path to the dialog.
 #
@@ -69,7 +72,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.7",
+        FTM_Version    : "3.16.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -199,7 +202,7 @@ def MainFunction(DB, report, modify=True):
     # Get consent to send data to the external service.
     if not checkConsent(configMap, report, provider.displayName):
 
-        report.Info(_translate('WorkOnRulesWithAI', 'AI rule assistance was declined. No data was sent.'))
+        report.Info(_translate('WorkOnRulesWithAI', "AI rule assistance was declined. No data was sent. To give consent, change the AI Rules Consent setting in FLExTrans' Settings."))
         return
 
     # Resolve the API key for the selected provider: OS credential vault, then env var (bring-your-own-key).
