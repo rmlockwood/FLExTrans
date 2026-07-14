@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.16.2 - 7/14/26 - Ron Lockwood
+#    Fixes #1441. Verify the flex.exe path exists before use, reporting an error instead of failing later.
+#
 #   Version 3.16.1 - 7/10/26 - Ron Lockwood
 #    Locate flex.exe via the shared Utils.getFlexExePath helper, which guards against an unset FIELDWORKSDIR environment variable (reports an error and returns None) instead of crashing.
 #
@@ -71,7 +74,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",
@@ -164,6 +167,12 @@ def MainFunction(DB, report, modifyAllowed):
     flexExe = Utils.getFlexExePath(report)
 
     if not flexExe:
+        return
+
+    # Make sure the flex.exe path actually points at an existing file before we try to launch it.
+
+    if not os.path.isfile(flexExe):
+        report.Error(_translate("OpenFLExProjects", "Could not find the FLEx executable: {flexExe}.").format(flexExe=Utils.shortenPathForDisplay(flexExe)))
         return
 
     if mainWindow.returnVal:

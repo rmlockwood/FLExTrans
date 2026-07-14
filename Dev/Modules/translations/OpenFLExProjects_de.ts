@@ -34,6 +34,11 @@
       <translation>Abbrechen</translation>
     </message>
     <message>
+      <location filename="../OpenFLExProjects.py" line="175"/>
+      <source>Could not find the FLEx executable: {flexExe}.</source>
+      <translation>Die FLEx-Programmdatei konnte nicht gefunden werden: {flexExe}.</translation>
+    </message>
+    <message>
       <location filename="../OpenFLExProjects.py" line="168"/>
       <source>The {proj} project is already open. Skipping.</source>
       <translation>Das Projekt {proj} ist bereits geöffnet. Überspringen.</translation>
