@@ -75,7 +75,7 @@ b
 
 begins-with:before
 {
-    content: " comienza con: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " comienza con: "check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 begins-with
 {
@@ -85,7 +85,7 @@ begins-with
 
 begins-with-list:before
 {
-    content: " comienza con algo en la lista: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " comienza con algo en la lista: "check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 begins-with-list
 {
@@ -213,7 +213,7 @@ concat
 
 contains-substring:before
 {
-    content: " contiene subcadena: " check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " contiene subcadena: " check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 contains-substring
 {
@@ -284,7 +284,7 @@ def-var
 
 ends-with:before
 {
-    content: " termina con: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " termina con: "check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 ends-with
 {
@@ -294,7 +294,7 @@ ends-with
 
 ends-with-list:before
 {
-    content: " termina con algo en la lista: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " termina con algo en la lista: "check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 ends-with-list
 {
@@ -304,7 +304,7 @@ ends-with-list
 
 equal:before
 {
-    content: " igual: " check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " igual: " check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 equal
 {
@@ -325,7 +325,7 @@ get-case-from
 
 in:before
 {
-    content: " en lista: " check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
+    content: " en lista: " check-box(attribute, caseless, label, "sin distinguir mayúsculas", unchecked-value, "no", checked-value, "yes");
 }
 in
 {

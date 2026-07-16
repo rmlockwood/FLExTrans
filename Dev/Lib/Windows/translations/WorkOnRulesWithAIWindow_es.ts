@@ -90,18 +90,13 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="168"/>
-        <source>Modify or explain an existing rule</source>
-        <translation>Modificar o explicar una regla existente</translation>
+        <source>Modify or explain an existing rule or macro</source>
+        <translation>Modificar o explicar una regla o una macro existente</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="157"/>
         <source>Create</source>
         <translation>Crear</translation>
-    </message>
-    <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="159"/>
-        <source>Rule:</source>
-        <translation>Regla:</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="162"/>
@@ -142,6 +137,22 @@
         <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
         <source>Reduce the preview text</source>
         <translation>Reducir el texto de la vista previa</translation>
+    </message>
+    <message>
+        <source>Rules</source>
+        <translation>Reglas</translation>
+    </message>
+    <message>
+        <source>Macros</source>
+        <translation>Macros</translation>
+    </message>
+    <message>
+        <source>Create a macro instead of a rule</source>
+        <translation>Crear una macro en lugar de una regla</translation>
+    </message>
+    <message>
+        <source>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</source>
+        <translation>Si está marcada, la IA crea una macro reutilizable en lugar de una regla. Las macros contienen lógica que varias reglas pueden llamar.</translation>
     </message>
 </context>
 </TS>

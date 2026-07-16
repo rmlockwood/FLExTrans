@@ -67,6 +67,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="createMacroCheckbox">
+            <property name="toolTip">
+             <string>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</string>
+            </property>
+            <property name="text">
+             <string>Create a macro instead of a rule</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="createActionSpacer">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
@@ -105,7 +115,7 @@
       </widget>
       <widget class="QWidget" name="modifyTab">
        <attribute name="title">
-        <string>Modify or explain an existing rule</string>
+        <string>Modify or explain an existing rule or macro</string>
        </attribute>
        <layout class="QVBoxLayout" name="modifyLayout">
         <item>
@@ -113,14 +123,31 @@
           <item>
            <layout class="QVBoxLayout" name="listCol">
             <item>
-             <widget class="QLabel" name="pickerLabel">
-              <property name="text">
-               <string>Rule:</string>
+             <widget class="QTabWidget" name="listTabs">
+              <property name="currentIndex">
+               <number>0</number>
               </property>
+              <widget class="QWidget" name="rulesTab">
+               <attribute name="title">
+                <string>Rules</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="rulesTabLayout">
+                <item>
+                 <widget class="QListWidget" name="ruleList"/>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="macrosTab">
+               <attribute name="title">
+                <string>Macros</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="macrosTabLayout">
+                <item>
+                 <widget class="QListWidget" name="macroList"/>
+                </item>
+               </layout>
+              </widget>
              </widget>
-            </item>
-            <item>
-             <widget class="QListWidget" name="ruleList"/>
             </item>
             <item>
              <layout class="QHBoxLayout" name="refreshRow"/>

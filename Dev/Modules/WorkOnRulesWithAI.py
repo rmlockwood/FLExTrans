@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.9 - 7/16/26 - Ron Lockwood
+#    Pass the macro names and {name: def-macro-XML} map to the dialog for the new Macros list (modify/explain a macro, create one via the Create-tab checkbox).
+#
 #   Version 3.16.8 - 7/14/26 - Ron Lockwood
 #    Fixes #1438. Give a more helpful message when consent is declined.
 #
@@ -72,7 +75,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.8",
+        FTM_Version    : "3.16.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -290,7 +293,7 @@ def MainFunction(DB, report, modify=True):
         # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()
         # returns immediately here and the dialog would flash open and close. app.exec() returns when the dialog (the only top-level Qt window) is closed.
         from WorkOnRulesWithAIDlg import WorkOnRulesWithAIDlg
-        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, compilerExe)
+        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], defs['macros'], defs['macroXml'], systemInstruction, defs['summaryText'], projectData, engine, compilerExe)
         dlg.show()
         thisApp.exec()
 

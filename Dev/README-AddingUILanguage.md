@@ -17,7 +17,10 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 1. **Add the language to the authoritative list.** In `Dev/Lib/UILanguages.py`, add one `UILang(...)` line to `LANGUAGES`: the two-letter `code`, the `englishName` (e.g. `Portuguese`), the
    `nativeName` (what the installer's language picker shows, e.g. `Português`), the `localeName` for date/time formatting (e.g. `pt_BR`), the NSIS language-file name `nsisName` (e.g.
    `Portuguese` — see `C:\Program Files (x86)\NSIS\Contrib\Language files` for the valid names), and `crowdinId` only if Crowdin's id for the language differs from the two-letter code
-   (as with Spanish, `es-ES`). The position of the line in `LANGUAGES` is the position in the installer's language-picker dialog.
+   (as with Spanish, `es-ES`). The position of the line in `LANGUAGES` is the position in the installer's language-picker dialog. In the same file, also add the language's entries to
+   `MACRO_NOUNS`, `MACRO_NAMING_WORDS`, and `MACRO_STOP_WORDS` — respectively the word for "macro", the fillers a description might use when naming one ("the macro **called** m_x"), and the
+   common function words that can sit next to "macro" in prose without being a name ("the macro **that** …") — which the Work on Rules with AI module uses to spot macro references and to
+   avoid mistaking prose for a mistyped macro name; a missing entry doesn't break anything, it only means less accurate macro-reference detection for descriptions written in that language.
 
 2. **Translate the installer strings.** Copy `Installer/InstallerResources/LangForInstallerScript/en.nsh` to `XX.nsh` in the same folder and make these three edits, then translate all the
    string values (including the five collection-tab `LangString`s) and set `XX_DISPLAY_NAME` to the same native name you put in `UILanguages.py`:

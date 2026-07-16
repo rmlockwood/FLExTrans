@@ -5,6 +5,32 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.18 - 7/16/26 - Ron Lockwood
+#    The macro-name token pattern now also recognizes the bare lowercase-m form (mCopyGender - a lowercase m directly followed by a capitalized name), not only m_snake_case, so a macro
+#    referenced that way in a description is spotted. The capital keeps it from matching ordinary m-words like "modify"/"move".
+#
+#   Version 3.16.17 - 7/16/26 - Ron Lockwood
+#    findMacroMentions now flags a mistyped macro name that is a plain word (e.g. "call the macro asldkjfsdf") as missing, not just m_-style or identifier-shaped tokens: a word next to
+#    "macro" that isn't a common function word (UILanguages.MACRO_STOP_WORDS) and doesn't match an existing macro is reported, while prose like "the macro that copies gender" is left alone.
+#
+#   Version 3.16.16 - 7/16/26 - Ron Lockwood
+#    A malformed (e.g. truncated) JSON reply from Gemini or OpenAI now raises an error that names the provider/model and suggests retrying, instead of a bare "Unterminated string" parse
+#    error. The authorship comment no longer pads its sentence with spaces inside the <!-- -->, matching the house comment style.
+#
+#   Version 3.16.15 - 7/16/26 - Ron Lockwood
+#    The shipped sample/reference definitions (m_sample, v_sample, l_sample, a_sample) are now excluded from the definition summary and style examples sent to the AI, alongside the existing
+#    "Sample logic to copy and paste" rule; the m_sample macro is also kept out of the macro picker and reference macros (never shown, modified, explained, or sent). See SAMPLE_DEF_NAMES.
+#
+#   Version 3.16.14 - 7/16/26 - Ron Lockwood
+#    The macro-mention regexes are now built from per-UI-language word lists (UILanguages.MACRO_NOUNS / MACRO_NAMING_WORDS) instead of hard-coded English/German spellings, so each UI
+#    language's ways of saying 'the macro called X' are recognized and new languages can add theirs in one place.
+#
+#   Version 3.16.13 - 7/16/26 - Ron Lockwood
+#    Macro support: rules AND macros can now be created, modified, and explained (isMacro flows through buildUserContent, spliceIntoTemp, markAuthorship, generateValidatedRule, and applyRule);
+#    extractExistingDefs also returns a {name: def-macro-XML} map; macros a rule calls (recursively) and macros the user's request names (partial match) can be gathered into the prompt
+#    (findCalledMacroNames / collectCalledMacros / findMacroMentions); the explain prompt now asks for Markdown, plain non-technical wording, no angle-bracket tags, and an opening walk-through
+#    of what each pattern item's category matches; the reference rule "Sample logic to copy and paste" is excluded from the rule list, the prompt summary, and the style examples.
+#
 #   Version 3.16.12 - 7/10/26 - Ron Lockwood
 #    Dropped the transfer.dtd dependency: apertium-preprocess-transfer validates without the DTD present (as in the published Build makefile), so generateValidatedRule no longer copies a DTD
 #    into its scratch dir and validateFile no longer takes a dtdPath. The written temp file keeps its DOCTYPE (matching real transfer files; XXE resolves it via its own addon).
@@ -67,6 +93,9 @@ import dataclasses
 from typing import Optional, cast
 import xml.etree.ElementTree as ET
 
+# Qt-free by design (see the module comment), so importing it here keeps AIRules usable standalone.
+import UILanguages
+
 # Generation settings. The provider and model are chosen from config (see getProvider / buildEngine); these limits are provider-independent.
 MAX_TOKENS = 16000
 MAX_VALIDATION_ATTEMPTS = 3
@@ -74,6 +103,15 @@ MAX_VALIDATION_ATTEMPTS = 3
 # unusually large list, keeping one huge def-list from inflating the (uncached) per-request prompt without limit. When it bites, the omitted count is shown so nothing is silently dropped.
 MAX_SUMMARY_ITEMS = 80
 DEFAULT_PROVIDER = 'gemini'
+
+# The reference rule that ships in the transfer-file template as sample logic to copy from. It is not a real rule of the project, so it is never shown in the rule picker and never sent to the
+# AI in any form - not in the rule-name summary, not as a style example, and never as a rule to modify or explain.
+SAMPLE_LOGIC_RULE_NAME = 'Sample logic to copy and paste'
+
+# The sample/reference definitions that ship in the transfer-file template alongside SAMPLE_LOGIC_RULE_NAME - one placeholder per definition kind (macro, variable, list, attribute). Like the
+# sample rule they are not real definitions of the project, so they are excluded from the definition summary sent to the AI and from the style examples; the sample macro is also kept out of the
+# macro picker and the reference macros (so it is never shown, modified, explained, or sent). The one-letter prefixes make each name unique to its kind, so a single set can filter them all.
+SAMPLE_DEF_NAMES = {'m_sample', 'v_sample', 'l_sample', 'a_sample'}
 
 # When set (by the module, from the AIRulesLogPrompts setting), every prompt sent to the provider and every response received is appended to this file. Off by default for shipping;
 # a support person can turn it on in the Settings tool (Full view) to debug on a user's machine. The log can contain project data, so it is opt-in only.
@@ -140,7 +178,7 @@ DEF_TAG_TO_SECTION = {
 }
 
 # The result shape both providers must return: the rule XML, any new supporting definitions, and a short explanation.
-_RULE_XML_DESC = 'Exactly one <rule comment="...">...</rule> element. No wrapper, no DOCTYPE.'
+_RULE_XML_DESC = 'Exactly one <rule comment="...">...</rule> element - or, when the request asks for a macro, exactly one <def-macro n="...">...</def-macro> element. No wrapper, no DOCTYPE.'
 _NEW_DEFS_DESC = 'Each string is one new <def-cat>/<def-attr>/<def-var>/<def-list>/<def-macro> element the rule needs and that does not already exist. Empty list if none.'
 _EXPLANATION_DESC = 'One or two sentences describing what the rule does. Note here if the rule must be ordered before a more general rule.'
 _LANGUAGE_DESC = 'The ISO 639-1 two-letter code of the language the user\'s request is written in (e.g. "en", "es", "de", "fr"). Used to localize the rule preview.'
@@ -187,9 +225,24 @@ OPENAI_RULE_SCHEMA = {
     'additionalProperties': False,
 }
 
-# The explain task: instead of producing a rule, the model returns a thorough plain-language explanation of an existing rule. Same three per-provider shapes as the rule task.
-_LONG_EXPLANATION_DESC = ('A thorough explanation of the whole rule for a linguist unaccustomed to reading Apertium rules: what words the pattern matches, what each part of the action does and why, '
-                          'what the output looks like, and how any macros/variables/lists it references contribute. Use short paragraphs; no XML markup.')
+# The explain task: instead of producing a rule, the model returns a thorough plain-language explanation of an existing rule or macro. Same three per-provider shapes as the rule task.
+_LONG_EXPLANATION_DESC = ('A thorough explanation of the whole rule (or macro) for a linguist unaccustomed to reading Apertium rules, written in Markdown and in plain non-technical language: what '
+                          'words the pattern matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists it references contribute. Never wrap '
+                          'a tag or category name in angle brackets (write 3s_POSS, not <3s_POSS>). The user content gives the full structure and style requirements.')
+
+# Style requirements sent with every explain request. The explanation is rendered as Markdown in the preview pane, so the model is asked to use real formatting; the rest keeps the text friendly to
+# a non-technical reader (no angle-bracket tags, and an opening walk-through of what the pattern's categories are actually defined to match, including lemma-pinned items and the fact that every
+# cat-item's first tag is the word's grammatical category from FLEx).
+EXPLAIN_STYLE_COMMON = (
+    'Follow these style requirements for the explanation:\n'
+    '- Write for a non-technical reader: plain language, no XML markup, and no Apertium jargon beyond the names that appear in the rule itself.\n'
+    '- Never wrap a tag, category, attribute, or feature name in angle brackets: write 3s_POSS, not <3s_POSS>.\n'
+    '- Format the explanation in Markdown (short headings, bold for category/tag/variable/macro names, bullet lists where they make things clearer). The Markdown will be rendered, so the formatting will show.')
+
+EXPLAIN_STYLE_PATTERN = (
+    '- Begin by explaining what the pattern matches, item by item: name each pattern item\'s category and spell out what that category is defined to match. The first tag of each cat-item is the '
+    'word\'s grammatical category from FLEx, so describe it as the kind of word, with any remaining tags as tags the word carries - for example: "c_UPC matches verbs, prepositions, and adverbs '
+    'that end with the UPC tag". Also mention any lemmas that are part of the category definition (a cat-item pinned to a specific lemma matches only that exact word).')
 
 _EXPLAIN_PROPERTIES = {
     'explanation': {'type': 'string', 'description': _LONG_EXPLANATION_DESC},
@@ -336,7 +389,13 @@ class GeminiProvider:
             feedback = getattr(response, 'prompt_feedback', None)
             raise RuntimeError('The model returned nothing. {feedback}'.format(feedback=feedback or '(response was empty or blocked)'))
 
-        return json.loads(payload)
+        # A truncated or malformed model reply surfaces here as a JSONDecodeError whose bare message ("Unterminated string starting at: line 2 column 15") tells the user nothing about where
+        # it came from. Rewrap it so the message names the provider/model and says the practical thing: it's a one-off output glitch, and simply retrying the request usually works.
+        try:
+            return json.loads(payload)
+
+        except json.JSONDecodeError as err:
+            raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 class OpenAIProvider:
     '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers.'''
@@ -383,7 +442,12 @@ class OpenAIProvider:
         if not payload:
             raise RuntimeError('The model returned nothing (empty response).')
 
-        return json.loads(payload)
+        # Same rewrap as the Gemini provider: name the provider/model and suggest the retry that usually fixes a malformed reply, instead of surfacing a bare JSON parse error.
+        try:
+            return json.loads(payload)
+
+        except json.JSONDecodeError as err:
+            raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 # Registry of available providers, keyed by the config value. Gemini comes first because its free tier makes it the default; the Settings tool lists them in this order.
 PROVIDERS = {
@@ -540,8 +604,9 @@ def getSampleRulesAndMacros(transferPath: Optional[str] = None, ruleCount: int =
         assert transferPath is not None, 'getSampleRulesAndMacros needs either a parsed root or a transferPath.'
         root = parseTransferFile(transferPath)
 
-    ruleTexts = sorted((ET.tostring(r, encoding='unicode') for r in root.findall('.//rule')), key=len, reverse=True)[:ruleCount]
-    macroTexts = sorted((ET.tostring(m, encoding='unicode') for m in root.findall('.//def-macro')), key=len, reverse=True)[:macroCount]
+    # The shipped "Sample logic to copy and paste" reference rule and the m_sample reference macro are not project style, so they never serve as examples.
+    ruleTexts = sorted((ET.tostring(r, encoding='unicode') for r in root.findall('.//rule') if r.get('comment', '') != SAMPLE_LOGIC_RULE_NAME), key=len, reverse=True)[:ruleCount]
+    macroTexts = sorted((ET.tostring(m, encoding='unicode') for m in root.findall('.//def-macro') if m.get('n', '') not in SAMPLE_DEF_NAMES), key=len, reverse=True)[:macroCount]
 
     return '\n\n'.join(ruleTexts), '\n\n'.join(macroTexts)
 
@@ -596,26 +661,41 @@ def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
         catItems[c.get('n', '')] = items
 
     cats = list(catItems.keys())
-    variables = [v.get('n', '') for v in root.findall('.//def-var')]
-    macros = [m.get('n', '') for m in root.findall('.//def-macro')]
+    variables = [v.get('n', '') for v in root.findall('.//def-var') if v.get('n', '') not in SAMPLE_DEF_NAMES]
+
+    # For macros, keep the full XML of each one (keyed by name) as well as the name list: the macro picker in the dialog renders and edits macros from this map, and macros a rule calls (or the
+    # user's request names) are pulled from it into the prompt so the model sees what a call-macro invocation actually does. The shipped m_sample reference macro is left out entirely (like the
+    # sample rule), so it appears neither in the picker nor in anything sent to the AI.
+    macroElems = [m for m in root.findall('.//def-macro') if m.get('n', '') not in SAMPLE_DEF_NAMES]
+    macros = [m.get('n', '') for m in macroElems]
+    macroXml = {m.get('n', ''): ET.tostring(m, encoding='unicode') for m in macroElems}
 
     # For attributes, gather the tag values too so the model knows which tags are legal for each attribute.
     attrs = {}
 
     for a in root.findall('.//def-attr'):
+
+        if a.get('n', '') in SAMPLE_DEF_NAMES:
+            continue
+
         attrs[a.get('n', '')] = sorted(i.get('tags', '') for i in a.findall('./attr-item'))
 
     # For lists, gather the contents of each def-list - the value of every list-item - so the model sees the actual members of each list, not only its name.
     listItems = {}
 
     for lst in root.findall('.//def-list'):
+
+        if lst.get('n', '') in SAMPLE_DEF_NAMES:
+            continue
+
         listItems[lst.get('n', '')] = [li.get('v', '') for li in lst.findall('./list-item')]
 
     lists = list(listItems.keys())
 
     # Gather the rules once: their comments (used as display names in the picker) and, keyed by comment, each rule's XML text. The dialog caches this map so clicking a rule in the
-    # picker renders instantly instead of re-reading and re-parsing the whole transfer file on every selection.
-    rules = root.findall('.//rule')
+    # picker renders instantly instead of re-reading and re-parsing the whole transfer file on every selection. The shipped "Sample logic to copy and paste" reference rule is left out
+    # entirely - it is not a real rule, so it appears neither in the picker nor in anything sent to the AI.
+    rules = [r for r in root.findall('.//rule') if r.get('comment', '') != SAMPLE_LOGIC_RULE_NAME]
     ruleNames = [r.get('comment', '') for r in rules]
     ruleXml = {r.get('comment', ''): ET.tostring(r, encoding='unicode') for r in rules}
 
@@ -650,7 +730,7 @@ def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
     lines.append('Existing rule names (comment): ' + ', '.join(ruleNames))
 
     return {
-        'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'ruleNames': ruleNames, 'ruleXml': ruleXml, 'summaryText': '\n'.join(lines), }
+        'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'macroXml': macroXml, 'ruleNames': ruleNames, 'ruleXml': ruleXml, 'summaryText': '\n'.join(lines), }
 
 def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
     '''Return the XML text of the rule whose comment matches, or None.'''
@@ -665,11 +745,140 @@ def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
 
     return None
 
-def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str], explainLang: str = 'English', sourceData: str = '', targetData: str = '') -> str:
+def findCalledMacroNames(xmlText: str) -> list:
+    '''The names of the macros a rule or macro fragment calls (its <call-macro n="..."/> elements), in document order without duplicates. Returns [] when the fragment can't be parsed -
+    the validation loop reports the real XML error later.'''
+
+    try:
+        elem = ET.fromstring(xmlText, parser=ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))
+
+    except ET.ParseError:
+        return []
+
+    names = []
+
+    for call in elem.iter('call-macro'):
+
+        name = call.get('n')
+
+        if name and name not in names:
+            names.append(name)
+
+    return names
+
+def collectCalledMacros(xmlText: str, macroXmlByName: dict, excludeNames=None) -> list:
+    '''Collect, recursively, the names of every macro that `xmlText` (a rule or a macro) calls - including macros called by those macros in turn - in first-encountered order. Names in
+    `excludeNames` (e.g. the macro being modified itself, whose XML is already in the prompt) and names with no definition in `macroXmlByName` are left out.'''
+
+    seen = set(excludeNames or [])
+    ordered = []
+    queue = findCalledMacroNames(xmlText)
+
+    while queue:
+
+        name = queue.pop(0)
+
+        if name in seen:
+            continue
+
+        seen.add(name)
+        macroXml = macroXmlByName.get(name)
+
+        if macroXml is None:
+            continue
+
+        ordered.append(name)
+        queue.extend(findCalledMacroNames(macroXml))
+
+    return ordered
+
+# How a macro reference is spotted in the user's request text: any token following the macro naming convention - m_snake_case, or a bare lowercase-m prefix directly followed by a capitalized
+# name (mCopyGender) - or an identifier-looking word right next to the word for "macro" (optionally skipping a filler word like "called"/"named" and an opening quote). The "macro" nouns and
+# naming fillers, per UI language, live in UILanguages.MACRO_NOUNS / MACRO_NAMING_WORDS; the patterns are built from the union across all UI languages, since a description may be written in
+# any of them regardless of the interface language currently chosen.
+def wordAlternatives(wordsByLang: dict) -> str:
+    '''Turn the per-language word lists into one regex alternation: the union of every language's words, longest first (so "macros" is tried before "macro"), each escaped, with the
+    internal spaces of a multi-word phrase ("mit dem Namen") matching any whitespace.'''
+
+    words = sorted({word for words in wordsByLang.values() for word in words}, key=len, reverse=True)
+    return '|'.join(re.escape(word).replace(re.escape(' '), r'\s+') for word in words)
+
+# A macro-name token: the m_snake_case form (m_ then word chars), or a bare lowercase m directly followed by a capital and more word chars (mCopyGender). The capital in the second form is
+# what keeps it from matching ordinary m-words like "modify"/"move"/"make" (and it is deliberately case-sensitive - no re.IGNORECASE - so "Makro"/"Modify" don't match either).
+MACRO_TOKEN_PATTERN = re.compile(r'\bm(?:_\w+|[A-Z]\w*)\b')
+MACRO_AFTER_PATTERN = re.compile(r'\b(?:' + wordAlternatives(UILanguages.MACRO_NOUNS) + r')\s+(?:(?:' + wordAlternatives(UILanguages.MACRO_NAMING_WORDS) + r')\s+)?["\'«‘“]?([A-Za-z_][\w-]*)', re.IGNORECASE)
+MACRO_BEFORE_PATTERN = re.compile(r'([A-Za-z_][\w-]*)["\'»’”]?\s+(?:' + wordAlternatives(UILanguages.MACRO_NOUNS) + r')\b', re.IGNORECASE)
+
+# The function words that can sit next to "macro" in prose without being a macro name (union of every UI language's list; see UILanguages.MACRO_STOP_WORDS), lowercased for case-insensitive
+# lookup. A word captured next to "macro" that is not one of these - and doesn't match an existing macro - is taken to be a mistyped macro name and reported, so "call the macro asldkjfsdf"
+# is flagged while "the macro that copies gender" is not.
+MACRO_STOP_WORDS = {word.lower() for words in UILanguages.MACRO_STOP_WORDS.values() for word in words}
+
+def looksLikeMacroIdentifier(token: str) -> bool:
+    '''Whether a word looks like an identifier (contains an underscore or a digit) rather than ordinary prose. An identifier-shaped token is treated as a macro name even when it isn't
+    adjacent to the word "macro".'''
+
+    return '_' in token or any(ch.isdigit() for ch in token)
+
+def findMacroMentions(description: str, macroNames) -> tuple:
+    '''Find the macros the user's request text refers to. Returns (foundNames, missingTokens): foundNames are existing macro names matched by some token in the text (partial and
+    case-insensitive, in either direction - the token can be part of the name or the name part of the token), in the order encountered; missingTokens are tokens that name a macro but match
+    no existing macro, so the caller can warn and not send the prompt until the user fixes the name.
+
+    A token counts as naming a macro when it follows the naming convention (m_snake_case, or a bare lowercase m + capitalized name like mCopyGender - matched anywhere), or when it sits
+    right next to the word "macro" (before or after it) and is neither a common function word (UILanguages.MACRO_STOP_WORDS - "the", "that", "for", …) nor too short to be a real name. This
+    is what lets a plain typo like "call the macro asldkjfsdf" be reported as missing, while "the macro that copies gender" is left alone.'''
+
+    found = []
+    missing = []
+    considered = set()
+
+    def classify(token: str, definite: bool):
+        '''Record one candidate token. `definite` is True for the unambiguous naming-convention forms (m_snake_case / mCamelCase, always a macro reference); otherwise the token was captured
+        next to the word "macro" and only counts as a name when it isn't a stop word and is long enough (or identifier-shaped).'''
+
+        key = token.lower()
+
+        if key in considered:
+            return
+
+        considered.add(key)
+
+        # A word captured next to "macro" that is a common function word or too short to be a name is prose, not a macro reference: drop it before matching. (This must precede the substring
+        # match below - otherwise a tiny word like "the" would match a macro that merely contains it, e.g. "the" inside "m_o[the]r".) Convention-form tokens (definite) are always references.
+        if not definite and (key in MACRO_STOP_WORDS or not (looksLikeMacroIdentifier(token) or len(token) >= 4)):
+            return
+
+        matches = [name for name in macroNames if key in name.lower() or name.lower() in key]
+
+        if matches:
+
+            for name in matches:
+
+                if name not in found:
+                    found.append(name)
+
+            return
+
+        missing.append(token)
+
+    # m_ convention tokens first (unambiguous), then the words captured immediately after / before the word "macro".
+    for match in MACRO_TOKEN_PATTERN.finditer(description):
+        classify(match.group(0), definite=True)
+
+    for pattern in (MACRO_AFTER_PATTERN, MACRO_BEFORE_PATTERN):
+
+        for match in pattern.finditer(description):
+            classify(match.group(1), definite=False)
+
+    return found, missing
+
+def buildUserContent(mode: str, description: str, defsSummary: str, projectData: str, currentRuleXml: Optional[str], explainLang: str = 'English', sourceData: str = '', targetData: str = '', isMacro: bool = False, macrosText: str = '') -> str:
     '''Assemble the volatile per-request part of the prompt: the project's real categories/features, the existing-definition summary, any interlinearized example data the user pasted
-    (source and/or target side, tab-separated), the current rule (when modifying or explaining), and the user's request. For the explain mode there is no user request text, so
-    `explainLang` names the language to answer in - either what the user typed in the Explanation-language box (e.g. "Spanish", "Swahili") or, when that is blank, the FLExTrans
-    interface language.'''
+    (source and/or target side, tab-separated), any macro definitions to show for reference (`macrosText`: macros the rule calls or the request names), the current rule or macro (when
+    modifying or explaining), and the user's request. `isMacro` switches the wording (and the requested output element) from a rule to a def-macro. For the explain mode there is no user
+    request text, so `explainLang` names the language to answer in - either what the user typed in the Explanation-language box (e.g. "Spanish", "Swahili") or, when that is blank, the
+    FLExTrans interface language.'''
 
     parts = []
     parts.append('PROJECT DATA (real categories, features, feature values, and affixes from the FLEx projects):')
@@ -693,21 +902,52 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
         parts.append(targetData)
         parts.append('')
 
+    # The definitions of macros the rule/macro being worked on calls (recursively) or the user's request names, so the model sees what a call-macro invocation actually does instead of
+    # guessing from the macro's name.
+    if macrosText:
+
+        parts.append('MACRO DEFINITIONS FOR REFERENCE (macros called by the rule/macro below, or named in the request):')
+        parts.append(macrosText)
+        parts.append('')
+
     if mode == 'explain' and currentRuleXml:
 
-        parts.append('MODE: explain the following existing rule. Give a thorough plain-language explanation of the whole rule, structured as short paragraphs, for someone unaccustomed to reading '
-                     'Apertium rules: what words the pattern matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists it references '
-                     'contribute. Do not produce or modify any rule.')
+        if isMacro:
+
+            parts.append('MODE: explain the following existing macro (a def-macro). Give a thorough plain-language explanation of the whole macro for someone unaccustomed to reading Apertium '
+                         'rules: what the macro is for, what each parameter position stands for, what each part of its logic does and why, and how any variables/lists it references contribute. '
+                         'Begin by explaining what the macro is for and what each parameter represents. Do not produce or modify any rule or macro.')
+            parts.append(EXPLAIN_STYLE_COMMON)
+        else:
+
+            parts.append('MODE: explain the following existing rule. Give a thorough plain-language explanation of the whole rule for someone unaccustomed to reading Apertium rules: what words '
+                         'the pattern matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists it references contribute. Do not produce '
+                         'or modify any rule.')
+            parts.append(EXPLAIN_STYLE_COMMON)
+            parts.append(EXPLAIN_STYLE_PATTERN)
+
         parts.append('Write the explanation in {lang}. Also set the "language" field to that language\'s two-letter ISO 639-1 code.'.format(lang=explainLang))
-        parts.append('RULE TO EXPLAIN:')
+        parts.append('MACRO TO EXPLAIN:' if isMacro else 'RULE TO EXPLAIN:')
         parts.append(currentRuleXml)
         return '\n'.join(parts)
 
     if mode == 'modify' and currentRuleXml:
 
-        parts.append('MODE: modify the following existing rule. Keep its comment unless asked to rename it.')
-        parts.append('CURRENT RULE:')
+        if isMacro:
+
+            parts.append('MODE: modify the following existing macro (a def-macro). Keep its name (the n attribute) unless asked to rename it, and keep npar correct for its parameters. Return the '
+                         'complete modified <def-macro> element in the rule_xml field.')
+            parts.append('CURRENT MACRO:')
+        else:
+
+            parts.append('MODE: modify the following existing rule. Keep its comment unless asked to rename it.')
+            parts.append('CURRENT RULE:')
+
         parts.append(currentRuleXml)
+
+    elif isMacro:
+        parts.append('MODE: create a new macro, not a rule: return exactly one <def-macro n="m_..."> element in the rule_xml field, with npar set to its number of parameters and a plain-language '
+                     'description comment as its first child (as you would for a rule).')
     else:
         parts.append('MODE: create a new rule.')
 
@@ -746,9 +986,10 @@ def getSection(root: ET.Element, sectionName: str) -> ET.Element:
 
     return elem
 
-def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: str, targetComment: Optional[str], workDir: str) -> str:
-    '''Insert the candidate rule and any new definitions into a copy of the transfer file, write it to workDir alongside a copy of the DTD, and return the temp file path. For "modify"
-    the rule with targetComment is replaced; for "create" the rule is appended to section-rules (specific-before-general placement is a later refinement).'''
+def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: str, targetComment: Optional[str], workDir: str, isMacro: bool = False) -> str:
+    '''Insert the candidate rule (or, with `isMacro`, the candidate def-macro) and any new definitions into a copy of the transfer file, write it to workDir, and return the temp file path.
+    For "modify" the rule with targetComment (for macros: the def-macro whose n is targetComment) is replaced; for "create" the element is appended to its section (specific-before-general
+    placement is a later refinement).'''
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     tree = ET.parse(transferPath, parser=parser)
@@ -766,27 +1007,30 @@ def spliceIntoTemp(transferPath: str, ruleXml: str, newDefs: list[str], mode: st
         section = getSection(root, sectionName)
         section.append(defElem)
 
-    # Comment-preserving parse so the AI-authorship comment survives into the temp file.
+    # Comment-preserving parse so the AI-authorship comment survives into the temp file. A rule lives in section-rules and is identified by its comment; a macro lives in
+    # section-def-macros and is identified by its n attribute.
     ruleElem = ET.fromstring(ruleXml, parser=ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))
-    ruleSection = getSection(root, 'section-rules')
+    tagName = 'def-macro' if isMacro else 'rule'
+    matchAttr = 'n' if isMacro else 'comment'
+    targetSection = getSection(root, 'section-def-macros' if isMacro else 'section-rules')
 
     if mode == 'modify' and targetComment is not None:
 
         replaced = False
 
-        for i, rule in enumerate(list(ruleSection)):
+        for i, node in enumerate(list(targetSection)):
 
-            if rule.tag == 'rule' and rule.get('comment') == targetComment:
+            if node.tag == tagName and node.get(matchAttr) == targetComment:
 
-                ruleSection.remove(rule)
-                ruleSection.insert(i, ruleElem)
+                targetSection.remove(node)
+                targetSection.insert(i, ruleElem)
                 replaced = True
                 break
 
         if not replaced:
-            ruleSection.append(ruleElem)
+            targetSection.append(ruleElem)
     else:
-        ruleSection.append(ruleElem)
+        targetSection.append(ruleElem)
 
     tempPath = os.path.join(workDir, 'candidate_transfer.t1x')
 
@@ -829,22 +1073,26 @@ def validateFile(tempPath: str, compilerExe: Optional[str] = None) -> tuple:
 # they translate cleanly to languages with different word order or date placement. English defaults; the caller passes localized versions (built with QCoreApplication.translate) so
 # AIRules itself stays Qt-free and usable standalone.
 DEFAULT_AUTHORSHIP_COMMENTS = {
-    'added':    'The AI Assistant added this rule on {when}.',
-    'modified': 'The AI Assistant modified this rule on {when}.',
+    'added':         'The AI Assistant added this rule on {when}.',
+    'modified':      'The AI Assistant modified this rule on {when}.',
+    'addedMacro':    'The AI Assistant added this macro on {when}.',
+    'modifiedMacro': 'The AI Assistant modified this macro on {when}.',
 }
 
-def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None) -> str:
-    '''Prepend an XML comment to the <rule> recording that the AI Assistant added or modified it, and when. Placed as the rule's first child so it travels with the rule and shows in
-    the preview. `authorshipComments` maps 'added'/'modified' to a whole localized sentence containing "{when}"; it defaults to English. `whenStr` is the date/time text, already
-    localized to the interface language by the Qt-side caller; when omitted, a plain English date is used so AIRules stays usable standalone. Returns the original text unchanged if it
-    can't be parsed (validation will then report the real XML error).'''
+def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False) -> str:
+    '''Prepend an XML comment to the <rule> (or def-macro) recording that the AI Assistant added or modified it, and when. Placed as the element's first child so it travels with it and
+    shows in the preview. `authorshipComments` maps 'added'/'modified' (and, for macros, 'addedMacro'/'modifiedMacro') to a whole localized sentence containing "{when}"; missing keys fall
+    back to English. `whenStr` is the date/time text, already localized to the interface language by the Qt-side caller; when omitted, a plain English date is used so AIRules stays usable
+    standalone. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
 
     templates = authorshipComments or DEFAULT_AUTHORSHIP_COMMENTS
-    template = templates['modified' if mode == 'modify' else 'added']
+    key = ('modified' if mode == 'modify' else 'added') + ('Macro' if isMacro else '')
+    template = templates.get(key) or DEFAULT_AUTHORSHIP_COMMENTS[key]
 
     # Prefer the caller's locale-formatted date/time. The standalone fallback is a plain English date like "July 3, 2026 14:42" with a non-zero-padded day (cross-platform).
+    # No space padding around the sentence: the house comment style is <!--like this-->, and the padding was showing up as a stray leading space when the comment is displayed.
     when = whenStr or (now.strftime('%B ') + str(now.day) + now.strftime(', %Y %H:%M'))
-    text = ' ' + template.format(when=when) + ' '
+    text = template.format(when=when)
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
 
@@ -858,9 +1106,9 @@ def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipCo
     elem.insert(0, cast(ET.Element, ET.Comment(text)))
     return ET.tostring(elem, encoding='unicode')
 
-def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None) -> RuleResult:
-    '''The core loop: generate a rule, splice it into a temp copy, validate, and retry with the errors fed back up to MAX_VALIDATION_ATTEMPTS times. Returns the last candidate either
-    way; the caller inspects .valid. `authorshipComments` and `whenStr` are passed to markAuthorship for the localized authorship stamp.'''
+def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False) -> RuleResult:
+    '''The core loop: generate a rule (or, with `isMacro`, a def-macro), splice it into a temp copy, validate, and retry with the errors fed back up to MAX_VALIDATION_ATTEMPTS times.
+    Returns the last candidate either way; the caller inspects .valid. `authorshipComments` and `whenStr` are passed to markAuthorship for the localized authorship stamp.'''
 
     priorErrors = None
     lastRule, lastDefs, lastExpl, lastLang, lastErrors = '', [], '', 'en', ''
@@ -874,9 +1122,9 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
         for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
             lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
-            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr)
+            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr, isMacro)
 
-            tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir)
+            tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir, isMacro)
             ok, lastErrors = validateFile(tempPath, compilerExe)
 
             if ok:
@@ -899,8 +1147,8 @@ def insertBefore(text: str, marker: str, insertion: str) -> str:
 
     return text[:idx] + insertion + '\n' + text[idx:]
 
-def applyRule(transferPath: str, result: RuleResult, mode: str, targetComment: Optional[str]) -> str:
-    '''Write the approved rule into the real transfer file after backing it up.
+def applyRule(transferPath: str, result: RuleResult, mode: str, targetComment: Optional[str], isMacro: bool = False) -> str:
+    '''Write the approved rule (or, with `isMacro`, the approved def-macro) into the real transfer file after backing it up.
 
     Uses surgical text insertion/replacement so the rest of the file is preserved byte-for-byte (XXE re-lays-out the touched rule on next open) rather than reserializing the whole
     tree and reformatting every rule. Returns the backup path.'''
@@ -911,36 +1159,40 @@ def applyRule(transferPath: str, result: RuleResult, mode: str, targetComment: O
     backupPath = transferPath + datetime.datetime.now().strftime('.%Y%m%d_%H%M%S.bak')
     shutil.copyfile(transferPath, backupPath)
 
+    ruleText = result.ruleXml.strip()
+    tagName = 'def-macro' if isMacro else 'rule'
+    matchAttr = 'n' if isMacro else 'comment'
+
+    # Place the rule/macro itself first, while `text` still matches the file on disk byte-for-byte: the modify path pairs a parse of the on-disk file with raw-text spans, so the spans
+    # must be computed before the new definitions below are inserted (an inserted def-macro would otherwise throw the macro spans off against the parse). The new definitions follow.
+    if mode == 'modify' and targetComment:
+
+        # Decide which rule/macro to replace with a real XML parse, so the match is robust to XML-escaped characters (&, <, >, quotes) in the identifying attribute and to either quote
+        # style - a raw-text regex on comment="X" could silently miss (and then append a duplicate). These elements don't nest and appear only in their own section, so the i-th raw-text
+        # span is the i-th element in the parsed tree; we replace that span in place (plain string slice, so backslashes in the rule text aren't treated as regex replacements), keeping the
+        # rest of the file byte-for-byte and the element in its original position.
+        parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+        elems = ET.parse(transferPath, parser=parser).getroot().findall('.//' + tagName)
+        elemIndex = next((i for i, e in enumerate(elems) if e.get(matchAttr) == targetComment), None)
+
+        spans = list(re.finditer(r'<' + tagName + r'\b[\s\S]*?</' + tagName + r'\s*>', text))
+
+        # If the target isn't found, or the raw-text spans don't line up one-to-one with the parsed elements (e.g. a stray "<rule" inside a comment threw the count off), refuse to
+        # guess: writing a duplicate or clobbering the wrong element is worse than stopping. The backup is already made and the user can place the rule by hand via Open in XXE.
+        if elemIndex is None or len(spans) != len(elems):
+            raise RuntimeError('Could not safely locate the {kind} "{comment}" to replace it, so the rule file was left unchanged (a backup was made at {backup}). Use "Open a Temporary Version in XXE" to place the {kind} manually.'.format(kind='macro' if isMacro else 'rule', comment=targetComment, backup=os.path.basename(backupPath)))
+
+        span = spans[elemIndex]
+        text = text[:span.start()] + ruleText + text[span.end():]
+    else:
+        text = insertBefore(text, '</section-def-macros' if isMacro else '</section-rules', ruleText)
+
     # Insert any new definitions before their section's closing tag.
     for defText in result.newDefs:
 
         defElem = ET.fromstring(defText)
         sectionClose = '</' + DEF_TAG_TO_SECTION[defElem.tag]
         text = insertBefore(text, sectionClose, defText.strip())
-
-    ruleText = result.ruleXml.strip()
-
-    if mode == 'modify' and targetComment:
-
-        # Decide which rule to replace with a real XML parse, so the match is robust to XML-escaped characters (&, <, >, quotes) in the comment and to either attribute quote style - a
-        # raw-text regex on comment="X" could silently miss (and then append a duplicate rule). Rules don't nest and appear only in section-rules, so the i-th <rule>…</rule> span in the
-        # text is the i-th rule in the parsed tree; we replace that span in place (plain string slice, so backslashes in the rule text aren't treated as regex replacements), keeping the
-        # rest of the file byte-for-byte and the rule in its original position.
-        parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
-        rules = ET.parse(transferPath, parser=parser).getroot().findall('.//rule')
-        ruleIndex = next((i for i, r in enumerate(rules) if r.get('comment') == targetComment), None)
-
-        spans = list(re.finditer(r'<rule\b[\s\S]*?</rule\s*>', text))
-
-        # If the target rule isn't found, or the raw-text rule spans don't line up one-to-one with the parsed rules (e.g. a stray "<rule" inside a comment threw the count off), refuse to
-        # guess: writing a duplicate or clobbering the wrong rule is worse than stopping. The backup is already made and the user can place the rule by hand via Open in XXE.
-        if ruleIndex is None or len(spans) != len(rules):
-            raise RuntimeError('Could not safely locate the rule "{comment}" to replace it, so the rule file was left unchanged (a backup was made at {backup}). Use "Open a Temporary Version in XXE" to place the rule manually.'.format(comment=targetComment, backup=os.path.basename(backupPath)))
-
-        span = spans[ruleIndex]
-        text = text[:span.start()] + ruleText + text[span.end():]
-    else:
-        text = insertBefore(text, '</section-rules', ruleText)
 
     with open(transferPath, 'w', encoding='utf-8') as fout:
         fout.write(text)

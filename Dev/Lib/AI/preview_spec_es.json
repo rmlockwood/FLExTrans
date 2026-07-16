@@ -1,4 +1,22 @@
 {
+ "_collapsible": [
+  "action",
+  "def-attr",
+  "def-cat",
+  "def-list",
+  "def-macro",
+  "otherwise",
+  "out",
+  "rule",
+  "section-def-attrs",
+  "section-def-cats",
+  "section-def-lists",
+  "section-def-macros",
+  "section-def-vars",
+  "section-rules",
+  "tags",
+  "when"
+ ],
  "_colors": {
   "c-attr": "#F5DEB3",
   "c-cat": "#FFB6C1",
@@ -45,11 +63,23 @@
  ],
  "begins-with": [
   " comienza con: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "begins-with-list": [
   " comienza con algo en la lista: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "call-macro": [
   "llamar macro: ",
@@ -141,7 +171,13 @@
  ],
  "contains-substring": [
   " contiene subcadena: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "def-attr": [
   " atributo: ",
@@ -200,15 +236,33 @@
  ],
  "ends-with": [
   " termina con: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "ends-with-list": [
   " termina con algo en la lista: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "equal": [
   " igual: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "get-case-from": [
   " obtener caso de  elemento: ",
@@ -222,7 +276,13 @@
  ],
  "in": [
   " en lista: ",
-  []
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "let": [
   " dejar: ",

@@ -132,8 +132,8 @@ Open it in XXE to review.</source>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="188"/>
-        <source>Rule list refreshed ({n} rules).</source>
-        <translation>Lista de reglas actualizada ({n} reglas).</translation>
+        <source>Rule list refreshed ({n} rules, {m} macros).</source>
+        <translation>Lista de reglas actualizada ({n} reglas, {m} macros).</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
@@ -155,7 +155,6 @@ Open it in XXE to review.</source>
         <source>Explanation generated.</source>
         <translation>Explicación generada.</translation>
     </message>
-
     <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="423"/>
         <source>Source Language Data</source>
@@ -192,14 +191,9 @@ Open it in XXE to review.</source>
         <translation>Regla no aprobada</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="527"/>
-        <source>You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?</source>
-        <translation>Tiene una regla modificada que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de explicar?</translation>
-    </message>
-    <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="486"/>
-        <source>You have a rule that has not been written to the transfer file. Approve and write it before switching?</source>
-        <translation>Tiene una regla que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de cambiar?</translation>
+        <source>You have a rule that has not been written to the transfer file. Approve and write it before continuing?</source>
+        <translation>Tiene una regla que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de continuar?</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
@@ -210,6 +204,62 @@ Open it in XXE to review.</source>
         <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
         <source>Could not load the original rule to show a side-by-side comparison, so only the modified rule is shown.</source>
         <translation>No se pudo cargar la regla original para mostrar una comparación en paralelo, por lo que solo se muestra la regla modificada.</translation>
+    </message>
+    <message>
+        <source>Unapproved macro</source>
+        <translation>Macro no aprobada</translation>
+    </message>
+    <message>
+        <source>You have a macro that has not been written to the transfer file. Approve and write it before continuing?</source>
+        <translation>Tiene una macro que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de continuar?</translation>
+    </message>
+    <message>
+        <source>(none)</source>
+        <translation>(ninguna)</translation>
+    </message>
+    <message>
+        <source>Macro not found</source>
+        <translation>Macro no encontrada</translation>
+    </message>
+    <message>
+        <source>Your description mentions a macro that is not in the transfer rules file: {missing}
+
+Macros in the file: {names}
+
+Nothing was sent to the AI. Correct the macro name and try again.</source>
+        <translation>Su descripción menciona una macro que no está en el archivo de reglas de transferencia: {missing}
+
+Macros en el archivo: {names}
+
+No se envió nada a la IA. Corrija el nombre de la macro e inténtelo de nuevo.</translation>
+    </message>
+    <message>
+        <source>No macro selected</source>
+        <translation>Ninguna macro seleccionada</translation>
+    </message>
+    <message>
+        <source>Please select a macro to modify.</source>
+        <translation>Seleccione una macro para modificar.</translation>
+    </message>
+    <message>
+        <source>Please select a macro to explain.</source>
+        <translation>Seleccione una macro para explicar.</translation>
+    </message>
+    <message>
+        <source>The AI Assistant added this macro on {when}.</source>
+        <translation>El Asistente de IA agregó esta macro el {when}.</translation>
+    </message>
+    <message>
+        <source>The AI Assistant modified this macro on {when}.</source>
+        <translation>El Asistente de IA modificó esta macro el {when}.</translation>
+    </message>
+    <message>
+        <source>Valid macro generated (attempt {n}). {expl}</source>
+        <translation>Macro válida generada (intento {n}). {expl}</translation>
+    </message>
+    <message>
+        <source>Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.</source>
+        <translation>Macro escrita en el archivo de transferencia (copia de seguridad: {backup}). Genere o seleccione otra regla u otra macro para continuar.</translation>
     </message>
 </context>
 </TS>
