@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.9 - 7/16/26 - Ron Lockwood
+#    Which elements get a plus/minus collapser (the XXE minus-box/plus-box icons, embedded as data URIs) now comes from transfer.css: derive_preview_specs records which elements carry a
+#    collapser() there ("_collapsible" in the spec), and the preview folds exactly those - except the single top-level rule/macro, which there is nothing to fold away from. Vertical indent
+#    guides are a separate, preview-only set (the lengthy logic blocks choose/when/otherwise/test/out/and/or/not), independent of collapsibility. The caseless attribute renders as a disabled
+#    checkbox with the stylesheet's localized label (e.g. "case insensitive"), shown on the comparison elements that support it and checked when caseless="yes" (a captured check-box() field).
+#
 #   Version 3.16.8 - 7/16/26 - Ron Lockwood
 #    The explanation's Markdown is now rendered by the Python-Markdown package (new Markdown entry in the installer requirements), HTML-escaped
 #    first so markup from the model can never render as live elements; tables and fenced code blocks now render too, with matching styles added to transfer_preview.css. In the two-pane
@@ -67,7 +73,7 @@ SPEC = {
     'when':               ('when: ', []),
     'otherwise':          ('otherwise: ', []),
     'test':               ('test: ', []),
-    'equal':              ('equal: ', []),
+    'equal':              ('equal: ', [('caseless', 'case insensitive', 'c-checkbox')]),
     'pattern':            ('pattern: ', []),
     'pattern-item':       ('item: ', [('n', '', 'c-cat')]),
     'let':                ('let: ', []),
@@ -98,13 +104,27 @@ SPEC = {
     'modify-case':        ('modify case: ', []),
     'append':            ('append to: ', [('n', '', 'c-var')]),
     'concat':             ('concat: ', []),
-    'begins-with':        ('begins with: ', []),
-    'ends-with':          ('ends with: ', []),
-    'begins-with-list':   ('begins with something in list: ', []),
-    'ends-with-list':     ('ends with something in list: ', []),
-    'contains-substring': ('contains substring: ', []),
-    'in':                 ('in list: ', []),
+    'begins-with':        ('begins with: ', [('caseless', 'case insensitive', 'c-checkbox')]),
+    'ends-with':          ('ends with: ', [('caseless', 'case insensitive', 'c-checkbox')]),
+    'begins-with-list':   ('begins with something in list: ', [('caseless', 'case insensitive', 'c-checkbox')]),
+    'ends-with-list':     ('ends with something in list: ', [('caseless', 'case insensitive', 'c-checkbox')]),
+    'contains-substring': ('contains substring: ', [('caseless', 'case insensitive', 'c-checkbox')]),
+    'in':                 ('in list: ', [('caseless', 'case insensitive', 'c-checkbox')]),
 }
+
+# Which elements get a fold control comes from the stylesheet: the derived spec's "_collapsible" list holds exactly the elements XXE marks with a collapser() in transfer.css (see
+# derive_preview_specs.py), so add/remove a collapser there and the preview follows. COLLAPSIBLE_FALLBACK is used only when the derived spec JSON is missing (the built-in SPEC has no
+# "_collapsible" key); it mirrors the elements transfer.css currently collapses that can appear in a rule/def preview.
+COLLAPSIBLE_FALLBACK = {'rule', 'action', 'when', 'otherwise', 'out', 'def-cat', 'def-attr', 'def-list', 'def-macro'}
+
+# The preview shows a single whole rule, or a single whole macro, at the top. Folding that top element away would leave nothing, so rule and def-macro never get a collapser here even though
+# transfer.css marks them collapsible (in XXE you see the whole file, so folding a rule there makes sense).
+COLLAPSER_EXCLUDE = {'rule', 'def-macro'}
+
+# Vertical indent guides mark the lengthy, deeply-nested logic blocks so the eye can track which rows line up with which block (like a code editor's indent guides). This is deliberately a
+# DIFFERENT, preview-only set from the collapsible elements: guides go on the block-logic elements whether or not XXE lets you fold them (choose/test/and/or/not are not collapsible in
+# transfer.css but still benefit from a guide), and never on the single top-level rule/macro.
+INDENT_GUIDE_TAGS = {'choose', 'when', 'otherwise', 'test', 'out', 'and', 'or', 'not'}
 
 LIB_DIR = os.path.dirname(os.path.realpath(__file__))
 # The derived per-language preview specs live in the Lib/AI subfolder (grouped with the other Work-on-Rules-with-AI runtime data) rather than the Lib root.
@@ -163,9 +183,11 @@ def renderChip(value: str, colorClass: str) -> str:
     # keeps it from collapsing, so an empty literal reads as an (empty-valued) box rather than nothing.
     return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown or '&nbsp;')
 
-def renderRowLine(elem: ET.Element, spec: dict) -> str:
-    '''Render an element's header row: its label plus its displayed attributes, using the given per-language display spec.'''
+def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False) -> str:
+    '''Render an element's header row: its label plus its displayed attributes, using the given per-language display spec. With `collapsible` a plus/minus collapser box is placed in
+    front of the label (the block's children fold when it is clicked - see wrapDocument's script).'''
 
+    collapser = '<span class="collapser"></span>' if collapsible else ''
     entry = spec.get(elem.tag)
 
     if entry is None:
@@ -173,12 +195,24 @@ def renderRowLine(elem: ET.Element, spec: dict) -> str:
         pieces = ['<span class="label">' + html.escape(elem.tag) + ': </span>']
         for name, value in elem.attrib.items():
             pieces.append('<span class="attrlabel">' + html.escape(name) + ': </span>' + renderChip(value, 'c-chunk'))
-        return '<span class="rowline">' + ''.join(pieces) + '</span>'
+        return '<span class="rowline">' + collapser + ''.join(pieces) + '</span>'
 
     label, attrSpecs = entry
     pieces = ['<span class="label">' + html.escape(label) + '</span>']
 
     for name, attrLabel, colorClass in attrSpecs:
+
+        # The caseless check-box is always shown on the elements that support it, like XXE shows it: checked when the attribute is "yes", unchecked otherwise - including when the
+        # attribute is absent, since "no" is its DTD default. Disabled because the preview reflects the rule, it isn't an editor. The label text (e.g. "case insensitive") comes from the
+        # per-language spec, derived from the check-box() declaration in the XXE stylesheet.
+        if colorClass == 'c-checkbox':
+
+            pieces.append('<input type="checkbox" class="caseless-box" disabled' + (' checked' if elem.attrib.get(name) == 'yes' else '') + '>')
+
+            if attrLabel:
+                pieces.append('<span class="attrlabel">' + html.escape(attrLabel) + '</span>')
+
+            continue
 
         if name not in elem.attrib:
             continue
@@ -196,7 +230,7 @@ def renderRowLine(elem: ET.Element, spec: dict) -> str:
 
         pieces.append(renderChip(value, colorClass))
 
-    return '<span class="rowline">' + ''.join(pieces) + '</span>'
+    return '<span class="rowline">' + collapser + ''.join(pieces) + '</span>'
 
 def diffClass(elem: ET.Element, other) -> str:
     '''Diff class for an element vs. its positional counterpart: "changed" if the tag or attributes differ, else "".'''
@@ -228,12 +262,16 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
         classAttr = 'el comment' + ((' ' + cls) if cls else '')
         return '<div class="' + classAttr + '"><span class="rowline">' + html.escape(text) + '</span></div>'
 
-    cls = (forced or diffClass(elem, other)) if compare else ''
-    classAttr = 'el ' + elem.tag + ((' ' + cls) if cls else '')
-
-    out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec)]
-
+    # Two independent, children-gated decisions (see the constants above): a collapser fold control goes on the elements transfer.css marks collapsible (minus the top-level rule/macro),
+    # and a vertical indent guide - the "guide" class the CSS keys off - goes on the lengthy logic blocks. The two sets overlap (e.g. out, when) but are not the same.
     children = [c for c in elem]
+    collapsible = bool(children) and elem.tag not in COLLAPSER_EXCLUDE and elem.tag in (spec.get('_collapsible') or COLLAPSIBLE_FALLBACK)
+    guided = bool(children) and elem.tag in INDENT_GUIDE_TAGS
+
+    cls = (forced or diffClass(elem, other)) if compare else ''
+    classAttr = 'el ' + elem.tag + (' guide' if guided else '') + ((' ' + cls) if cls else '')
+
+    out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec, collapsible)]
 
     if children:
 
@@ -313,13 +351,18 @@ def markdownToHtml(mdText: str) -> str:
 
     return markdown.markdown(html.escape(mdText), extensions=['tables', 'fenced_code', 'sane_lists', 'nl2br'])
 
+# Clicking a collapser box folds/unfolds its block: toggle the "collapsed" class on the enclosing .el, which hides the children and swaps the minus icon for the plus (both in the CSS).
+# One delegated listener on the document covers every collapser without per-element handlers.
+COLLAPSER_SCRIPT = ('<script>document.addEventListener("click", function(e) {'
+                    ' if (e.target.classList && e.target.classList.contains("collapser")) { e.target.closest(".el").classList.toggle("collapsed"); } });</script>')
+
 def wrapDocument(bodyHtml: str, colors=None, split: bool = False) -> str:
-    '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides). With `split` the body gets the "split" class, which makes each .compare
-    pane scroll on its own (see transfer_preview.css) so, e.g., the explanation stays in view while the user scrolls through a long rule on the left.'''
+    '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides) and the collapser click handler. With `split` the body gets the "split"
+    class, which makes each .compare pane scroll on its own (see transfer_preview.css) so, e.g., the explanation stays in view while the user scrolls through a long rule on the left.'''
 
     return ('<!DOCTYPE html><html><head><meta charset="utf-8"><style>\n'
             + loadCss() + '\n' + colorsToCss(colors)
-            + '\n</style></head><body' + (' class="split"' if split else '') + '>' + bodyHtml + '</body></html>')
+            + '\n</style></head><body' + (' class="split"' if split else '') + '>' + bodyHtml + COLLAPSER_SCRIPT + '</body></html>')
 
 def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
     '''Render a single rule (plus any new definitions) - used for the "create" preview. `lang` selects the label language. Returns a complete HTML document.'''

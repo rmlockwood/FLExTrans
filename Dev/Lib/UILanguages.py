@@ -5,6 +5,10 @@
 #   SIL International
 #   7/9/26
 #
+#   Version 3.16.2 - 7/16/26 - Ron Lockwood
+#    Added MACRO_STOP_WORDS: per-language function words that can sit next to "macro" in prose without being a name, so AIRules can flag a real mistyped macro name (e.g. "call the macro
+#    asldkjfsdf") as missing while still ignoring phrasings like "the macro that copies gender".
+#
 #   Version 3.16.1 - 7/16/26 - Ron Lockwood
 #    Added MACRO_NOUNS and MACRO_NAMING_WORDS: per-language words a rule description might use to refer to a macro by name, from which AIRules builds its macro-mention regexes.
 #
@@ -58,6 +62,22 @@ MACRO_NAMING_WORDS = {
     'es': ['llamada', 'llamado', 'denominada', 'denominado', 'con el nombre'],
     'fr': ['appelée', 'appelé', 'nommée', 'nommé', 'du nom de'],
     'de': ['namens', 'genannt', 'mit dem Namen'],
+}
+
+# Common function words (articles, demonstratives, relatives, prepositions, conjunctions, a few frequent verbs) that can sit right next to the word "macro" in ordinary prose without being a
+# macro name - e.g. "the macro THAT copies gender", "das Makro, DAS ...". AIRules treats a word next to "macro" as a (possibly mistyped) macro name unless it is one of these, so a real
+# typo like "call the macro asldkjfsdf" is reported as missing while "the macro that copies gender" is not. Matching is case-insensitive. This list only needs the words a description would
+# realistically place immediately before or after "macro"; add more per language as false positives or misses turn up. A missing language entry just means less filtering for that language.
+MACRO_STOP_WORDS = {
+    'en': ['a', 'an', 'the', 'this', 'that', 'these', 'those', 'which', 'what', 'whose', 'it', 'its', 'is', 'are', 'was', 'be', 'will', 'would', 'shall', 'should', 'must', 'can', 'could',
+           'for', 'to', 'of', 'in', 'on', 'with', 'from', 'into', 'and', 'or', 'but', 'then', 'here', 'there', 'above', 'below', 'same', 'other', 'each', 'both', 'some', 'any', 'first',
+           'second', 'third', 'next', 'last', 'when', 'where', 'while', 'also', 'only', 'given', 'following', 'correct', 'right', 'whole', 'entire', 'main', 'new'],
+    'es': ['un', 'una', 'el', 'la', 'los', 'las', 'lo', 'este', 'esta', 'esto', 'estos', 'estas', 'ese', 'esa', 'que', 'cual', 'cuales', 'para', 'por', 'con', 'de', 'del', 'en', 'y', 'o',
+           'pero', 'mismo', 'misma', 'otro', 'otra', 'cada', 'primer', 'primero', 'segundo', 'siguiente', 'anterior', 'correcto', 'nueva', 'nuevo'],
+    'fr': ['un', 'une', 'le', 'la', 'les', 'ce', 'cet', 'cette', 'ces', 'qui', 'que', 'quel', 'quelle', 'pour', 'par', 'avec', 'de', 'du', 'des', 'dans', 'et', 'ou', 'mais', 'meme', 'même',
+           'autre', 'chaque', 'premier', 'suivant', 'precedent', 'précédent', 'correct', 'nouvelle', 'nouveau'],
+    'de': ['ein', 'eine', 'einen', 'einem', 'der', 'die', 'das', 'den', 'dem', 'dieser', 'diese', 'dieses', 'welche', 'welcher', 'welches', 'für', 'fuer', 'mit', 'von', 'aus', 'und', 'oder',
+           'aber', 'gleiche', 'andere', 'jede', 'jeder', 'erste', 'nächste', 'naechste', 'folgende', 'richtige', 'neue', 'neuer'],
 }
 
 def forCode(code):

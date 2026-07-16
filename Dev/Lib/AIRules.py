@@ -5,6 +5,22 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.18 - 7/16/26 - Ron Lockwood
+#    The macro-name token pattern now also recognizes the bare lowercase-m form (mCopyGender - a lowercase m directly followed by a capitalized name), not only m_snake_case, so a macro
+#    referenced that way in a description is spotted. The capital keeps it from matching ordinary m-words like "modify"/"move".
+#
+#   Version 3.16.17 - 7/16/26 - Ron Lockwood
+#    findMacroMentions now flags a mistyped macro name that is a plain word (e.g. "call the macro asldkjfsdf") as missing, not just m_-style or identifier-shaped tokens: a word next to
+#    "macro" that isn't a common function word (UILanguages.MACRO_STOP_WORDS) and doesn't match an existing macro is reported, while prose like "the macro that copies gender" is left alone.
+#
+#   Version 3.16.16 - 7/16/26 - Ron Lockwood
+#    A malformed (e.g. truncated) JSON reply from Gemini or OpenAI now raises an error that names the provider/model and suggests retrying, instead of a bare "Unterminated string" parse
+#    error. The authorship comment no longer pads its sentence with spaces inside the <!-- -->, matching the house comment style.
+#
+#   Version 3.16.15 - 7/16/26 - Ron Lockwood
+#    The shipped sample/reference definitions (m_sample, v_sample, l_sample, a_sample) are now excluded from the definition summary and style examples sent to the AI, alongside the existing
+#    "Sample logic to copy and paste" rule; the m_sample macro is also kept out of the macro picker and reference macros (never shown, modified, explained, or sent). See SAMPLE_DEF_NAMES.
+#
 #   Version 3.16.14 - 7/16/26 - Ron Lockwood
 #    The macro-mention regexes are now built from per-UI-language word lists (UILanguages.MACRO_NOUNS / MACRO_NAMING_WORDS) instead of hard-coded English/German spellings, so each UI
 #    language's ways of saying 'the macro called X' are recognized and new languages can add theirs in one place.
@@ -373,7 +389,13 @@ class GeminiProvider:
             feedback = getattr(response, 'prompt_feedback', None)
             raise RuntimeError('The model returned nothing. {feedback}'.format(feedback=feedback or '(response was empty or blocked)'))
 
-        return json.loads(payload)
+        # A truncated or malformed model reply surfaces here as a JSONDecodeError whose bare message ("Unterminated string starting at: line 2 column 15") tells the user nothing about where
+        # it came from. Rewrap it so the message names the provider/model and says the practical thing: it's a one-off output glitch, and simply retrying the request usually works.
+        try:
+            return json.loads(payload)
+
+        except json.JSONDecodeError as err:
+            raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 class OpenAIProvider:
     '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers.'''
@@ -420,7 +442,12 @@ class OpenAIProvider:
         if not payload:
             raise RuntimeError('The model returned nothing (empty response).')
 
-        return json.loads(payload)
+        # Same rewrap as the Gemini provider: name the provider/model and suggest the retry that usually fixes a malformed reply, instead of surfacing a bare JSON parse error.
+        try:
+            return json.loads(payload)
+
+        except json.JSONDecodeError as err:
+            raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 # Registry of available providers, keyed by the config value. Gemini comes first because its free tier makes it the default; the Settings tool lists them in this order.
 PROVIDERS = {
@@ -577,9 +604,9 @@ def getSampleRulesAndMacros(transferPath: Optional[str] = None, ruleCount: int =
         assert transferPath is not None, 'getSampleRulesAndMacros needs either a parsed root or a transferPath.'
         root = parseTransferFile(transferPath)
 
-    # The shipped "Sample logic to copy and paste" reference rule is not project style, so it never serves as an example.
+    # The shipped "Sample logic to copy and paste" reference rule and the m_sample reference macro are not project style, so they never serve as examples.
     ruleTexts = sorted((ET.tostring(r, encoding='unicode') for r in root.findall('.//rule') if r.get('comment', '') != SAMPLE_LOGIC_RULE_NAME), key=len, reverse=True)[:ruleCount]
-    macroTexts = sorted((ET.tostring(m, encoding='unicode') for m in root.findall('.//def-macro')), key=len, reverse=True)[:macroCount]
+    macroTexts = sorted((ET.tostring(m, encoding='unicode') for m in root.findall('.//def-macro') if m.get('n', '') not in SAMPLE_DEF_NAMES), key=len, reverse=True)[:macroCount]
 
     return '\n\n'.join(ruleTexts), '\n\n'.join(macroTexts)
 
@@ -634,11 +661,12 @@ def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
         catItems[c.get('n', '')] = items
 
     cats = list(catItems.keys())
-    variables = [v.get('n', '') for v in root.findall('.//def-var')]
+    variables = [v.get('n', '') for v in root.findall('.//def-var') if v.get('n', '') not in SAMPLE_DEF_NAMES]
 
     # For macros, keep the full XML of each one (keyed by name) as well as the name list: the macro picker in the dialog renders and edits macros from this map, and macros a rule calls (or the
-    # user's request names) are pulled from it into the prompt so the model sees what a call-macro invocation actually does.
-    macroElems = root.findall('.//def-macro')
+    # user's request names) are pulled from it into the prompt so the model sees what a call-macro invocation actually does. The shipped m_sample reference macro is left out entirely (like the
+    # sample rule), so it appears neither in the picker nor in anything sent to the AI.
+    macroElems = [m for m in root.findall('.//def-macro') if m.get('n', '') not in SAMPLE_DEF_NAMES]
     macros = [m.get('n', '') for m in macroElems]
     macroXml = {m.get('n', ''): ET.tostring(m, encoding='unicode') for m in macroElems}
 
@@ -646,12 +674,20 @@ def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
     attrs = {}
 
     for a in root.findall('.//def-attr'):
+
+        if a.get('n', '') in SAMPLE_DEF_NAMES:
+            continue
+
         attrs[a.get('n', '')] = sorted(i.get('tags', '') for i in a.findall('./attr-item'))
 
     # For lists, gather the contents of each def-list - the value of every list-item - so the model sees the actual members of each list, not only its name.
     listItems = {}
 
     for lst in root.findall('.//def-list'):
+
+        if lst.get('n', '') in SAMPLE_DEF_NAMES:
+            continue
+
         listItems[lst.get('n', '')] = [li.get('v', '') for li in lst.findall('./list-item')]
 
     lists = list(listItems.keys())
@@ -756,10 +792,10 @@ def collectCalledMacros(xmlText: str, macroXmlByName: dict, excludeNames=None) -
 
     return ordered
 
-# How a macro reference is spotted in the user's request text: any token following the macro naming convention (m_...), or an identifier-looking word right next to the word for "macro"
-# (optionally skipping a filler word like "called"/"named" and an opening quote). The words themselves - the noun for "macro" and the naming fillers, per UI language - live in
-# UILanguages.MACRO_NOUNS / MACRO_NAMING_WORDS; the patterns are built from the union across all UI languages, since a description may be written in any of them regardless of the
-# interface language currently chosen.
+# How a macro reference is spotted in the user's request text: any token following the macro naming convention - m_snake_case, or a bare lowercase-m prefix directly followed by a capitalized
+# name (mCopyGender) - or an identifier-looking word right next to the word for "macro" (optionally skipping a filler word like "called"/"named" and an opening quote). The "macro" nouns and
+# naming fillers, per UI language, live in UILanguages.MACRO_NOUNS / MACRO_NAMING_WORDS; the patterns are built from the union across all UI languages, since a description may be written in
+# any of them regardless of the interface language currently chosen.
 def wordAlternatives(wordsByLang: dict) -> str:
     '''Turn the per-language word lists into one regex alternation: the union of every language's words, longest first (so "macros" is tried before "macro"), each escaped, with the
     internal spaces of a multi-word phrase ("mit dem Namen") matching any whitespace.'''
@@ -767,43 +803,53 @@ def wordAlternatives(wordsByLang: dict) -> str:
     words = sorted({word for words in wordsByLang.values() for word in words}, key=len, reverse=True)
     return '|'.join(re.escape(word).replace(re.escape(' '), r'\s+') for word in words)
 
-MACRO_TOKEN_PATTERN = re.compile(r'\bm_\w+\b')
+# A macro-name token: the m_snake_case form (m_ then word chars), or a bare lowercase m directly followed by a capital and more word chars (mCopyGender). The capital in the second form is
+# what keeps it from matching ordinary m-words like "modify"/"move"/"make" (and it is deliberately case-sensitive - no re.IGNORECASE - so "Makro"/"Modify" don't match either).
+MACRO_TOKEN_PATTERN = re.compile(r'\bm(?:_\w+|[A-Z]\w*)\b')
 MACRO_AFTER_PATTERN = re.compile(r'\b(?:' + wordAlternatives(UILanguages.MACRO_NOUNS) + r')\s+(?:(?:' + wordAlternatives(UILanguages.MACRO_NAMING_WORDS) + r')\s+)?["\'«‘“]?([A-Za-z_][\w-]*)', re.IGNORECASE)
 MACRO_BEFORE_PATTERN = re.compile(r'([A-Za-z_][\w-]*)["\'»’”]?\s+(?:' + wordAlternatives(UILanguages.MACRO_NOUNS) + r')\b', re.IGNORECASE)
 
+# The function words that can sit next to "macro" in prose without being a macro name (union of every UI language's list; see UILanguages.MACRO_STOP_WORDS), lowercased for case-insensitive
+# lookup. A word captured next to "macro" that is not one of these - and doesn't match an existing macro - is taken to be a mistyped macro name and reported, so "call the macro asldkjfsdf"
+# is flagged while "the macro that copies gender" is not.
+MACRO_STOP_WORDS = {word.lower() for words in UILanguages.MACRO_STOP_WORDS.values() for word in words}
+
 def looksLikeMacroIdentifier(token: str) -> bool:
-    '''Whether a word captured next to "macro" looks like an identifier (contains an underscore or a digit) rather than ordinary prose, so an unmatched ordinary word ("the macro that copies
-    gender") is ignored instead of being reported as a missing macro.'''
+    '''Whether a word looks like an identifier (contains an underscore or a digit) rather than ordinary prose. An identifier-shaped token is treated as a macro name even when it isn't
+    adjacent to the word "macro".'''
 
     return '_' in token or any(ch.isdigit() for ch in token)
 
 def findMacroMentions(description: str, macroNames) -> tuple:
     '''Find the macros the user's request text refers to. Returns (foundNames, missingTokens): foundNames are existing macro names matched by some token in the text (partial and
-    case-insensitive, in either direction - the token can be part of the name or the name part of the token), in the order encountered; missingTokens are tokens that clearly name a macro
-    (m_... style, or an identifier-looking word next to the word "macro") but match no existing macro. The caller warns about missingTokens and does not send the prompt, so the user can
-    correct the name first. Ordinary short words next to "macro" ("the macro that ...") are only used when they happen to match a macro name; they are never reported missing.'''
+    case-insensitive, in either direction - the token can be part of the name or the name part of the token), in the order encountered; missingTokens are tokens that name a macro but match
+    no existing macro, so the caller can warn and not send the prompt until the user fixes the name.
 
-    candidates = []
-
-    for pattern in (MACRO_TOKEN_PATTERN, MACRO_AFTER_PATTERN, MACRO_BEFORE_PATTERN):
-
-        for match in pattern.finditer(description):
-
-            token = match.group(1) if pattern is not MACRO_TOKEN_PATTERN else match.group(0)
-
-            if token not in candidates:
-                candidates.append(token)
+    A token counts as naming a macro when it follows the naming convention (m_snake_case, or a bare lowercase m + capitalized name like mCopyGender - matched anywhere), or when it sits
+    right next to the word "macro" (before or after it) and is neither a common function word (UILanguages.MACRO_STOP_WORDS - "the", "that", "for", …) nor too short to be a real name. This
+    is what lets a plain typo like "call the macro asldkjfsdf" be reported as missing, while "the macro that copies gender" is left alone.'''
 
     found = []
     missing = []
+    considered = set()
 
-    for token in candidates:
+    def classify(token: str, definite: bool):
+        '''Record one candidate token. `definite` is True for the unambiguous naming-convention forms (m_snake_case / mCamelCase, always a macro reference); otherwise the token was captured
+        next to the word "macro" and only counts as a name when it isn't a stop word and is long enough (or identifier-shaped).'''
 
-        # Very short prose words ("a", "the") next to "macro" would substring-match half the macro list; only tokens that are identifier-like or a plausible name length participate at all.
-        if not looksLikeMacroIdentifier(token) and len(token) < 4:
-            continue
+        key = token.lower()
 
-        matches = [name for name in macroNames if token.lower() in name.lower() or name.lower() in token.lower()]
+        if key in considered:
+            return
+
+        considered.add(key)
+
+        # A word captured next to "macro" that is a common function word or too short to be a name is prose, not a macro reference: drop it before matching. (This must precede the substring
+        # match below - otherwise a tiny word like "the" would match a macro that merely contains it, e.g. "the" inside "m_o[the]r".) Convention-form tokens (definite) are always references.
+        if not definite and (key in MACRO_STOP_WORDS or not (looksLikeMacroIdentifier(token) or len(token) >= 4)):
+            return
+
+        matches = [name for name in macroNames if key in name.lower() or name.lower() in key]
 
         if matches:
 
@@ -812,8 +858,18 @@ def findMacroMentions(description: str, macroNames) -> tuple:
                 if name not in found:
                     found.append(name)
 
-        elif MACRO_TOKEN_PATTERN.fullmatch(token) or looksLikeMacroIdentifier(token):
-            missing.append(token)
+            return
+
+        missing.append(token)
+
+    # m_ convention tokens first (unambiguous), then the words captured immediately after / before the word "macro".
+    for match in MACRO_TOKEN_PATTERN.finditer(description):
+        classify(match.group(0), definite=True)
+
+    for pattern in (MACRO_AFTER_PATTERN, MACRO_BEFORE_PATTERN):
+
+        for match in pattern.finditer(description):
+            classify(match.group(1), definite=False)
 
     return found, missing
 
@@ -1034,8 +1090,9 @@ def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipCo
     template = templates.get(key) or DEFAULT_AUTHORSHIP_COMMENTS[key]
 
     # Prefer the caller's locale-formatted date/time. The standalone fallback is a plain English date like "July 3, 2026 14:42" with a non-zero-padded day (cross-platform).
+    # No space padding around the sentence: the house comment style is <!--like this-->, and the padding was showing up as a stray leading space when the comment is displayed.
     when = whenStr or (now.strftime('%B ') + str(now.day) + now.strftime(', %Y %H:%M'))
-    text = ' ' + template.format(when=when) + ' '
+    text = template.format(when=when)
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
 

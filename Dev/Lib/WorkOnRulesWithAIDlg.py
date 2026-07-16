@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.22 - 7/16/26 - Ron Lockwood
+#    The preview pane's right-click context menu is disabled (the rendered rule is read-only, so the browser Back/Reload/Save menu doesn't apply); the QWebEngineView is now built in one
+#    shared createPreviewView helper that sets the zoom and the NoContextMenu policy.
+#
 #   Version 3.16.21 - 7/16/26 - Ron Lockwood
 #    Macro support: the Modify/Explain tab now has Rules and Macros sub-tabs (two lists; macros can be modified and explained like rules), and the Create tab gained a "Create a macro
 #    instead of a rule" checkbox. Macros a rule/macro calls, and macros the user's description names (partial match), are sent with the prompt; a named macro that isn't found blocks the
@@ -455,13 +459,21 @@ class WorkOnRulesWithAIDlg(QDialog):
         # builds the view during the next idle moment - by the time the user navigates to a rule the engine is ready. warmUpPreview is idempotent, so repeated shows don't rebuild it.
         QTimer.singleShot(0, self.warmUpPreview)
 
+    def createPreviewView(self):
+        '''Create the preview QWebEngineView, applying the remembered zoom and disabling the right-click context menu. The preview is a read-only rendering of the rule, so the default
+        browser menu (Back / Reload / Save / View source) is meaningless here; NoContextMenu suppresses it. Shared by warmUpPreview and ensurePreview so the view is always built the same way.'''
+
+        view = QWebEngineView()
+        view.setZoomFactor(self.previewZoomFactor)
+        view.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+        return view
+
     def warmUpPreview(self):
         '''Construct the QWebEngineView ahead of time (paying the Chromium start-up cost) but leave it out of the window until a preview is actually rendered (ensurePreview adds it),
         so it can't steal arrow keys from the description boxes before it's needed.'''
 
         if self.preview is None:
-            self.preview = QWebEngineView()
-            self.preview.setZoomFactor(self.previewZoomFactor)
+            self.preview = self.createPreviewView()
 
     def closeEvent(self, event):
         '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
@@ -984,8 +996,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         actually shown.'''
 
         if self.preview is None:
-            self.preview = QWebEngineView()
-            self.preview.setZoomFactor(self.previewZoomFactor)
+            self.preview = self.createPreviewView()
 
         # The view is created unparented by warmUpPreview; addWidget reparents it into the preview area. Only do this once - after that it already lives in the layout.
         if self.preview.parent() is None:

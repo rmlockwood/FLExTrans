@@ -38,6 +38,41 @@ body {
     padding-left: 12px;
 }
 
+/* Vertical indent guides down the children of the lengthy logic blocks (INDENT_GUIDE_TAGS in TransferPreview tags them with the "guide" class - a set kept separate from the collapsible
+   elements), so the eye can track which rows line up with which block, like a code editor's indent guides. The margin+padding split keeps the total indent at the standard 12px, line 4px in. */
+.el.guide > .children {
+    border-left: 1px solid #c8c8c8;
+    margin-left: 4px;
+    padding-left: 8px;
+}
+
+/* The collapser box in front of a collapsible block's label: the XXE minus-box / plus-box icons (13x13, embedded as data URIs so the document stays self-contained), toggled by a click
+   (see COLLAPSER_SCRIPT in TransferPreview.py). A collapsed block hides its children and shows the plus icon. */
+.collapser {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    margin-right: 4px;
+    vertical-align: -1px;
+    cursor: pointer;
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAACYktHRAD/h4/MvwAAAAl2cEFnAAAACQAAAAkA4x9XiAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMS0wNC0wNFQxNDo0ODoyMCswMjowMEacDQoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMDgtMDQtMjRUMTE6Mzk6MjYrMDI6MDBu43XxAAAANElEQVQoU2NkYGD4D8QkAbAmIIDwiACMjIwMTFA2SWCQa4IHBMiDhABM3WjoQQEZaY+BAQA3whERhcWUSAAAAABJRU5ErkJggg==") no-repeat center;
+}
+
+.el.collapsed > .rowline > .collapser {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAACYktHRAD/h4/MvwAAAAl2cEFnAAAACQAAAAkA4x9XiAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMS0wNC0wNFQxNDo0ODoyMCswMjowMEacDQoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMDgtMDQtMjRUMTE6Mzk6MjYrMDI6MDBu43XxAAAASklEQVQoU2NkYGD4D8QkAbAmIIDwiACMjIwMTFA2BgBJ4gI4NeED9NMEDwh8foABmDqcoQeSxCU+yAMCpyZs/oEBcEBAmMQCBgYAjaEXEbVdVCEAAAAASUVORK5CYII=") ;
+}
+
+.el.collapsed > .children {
+    display: none;
+}
+
+/* The caseless check-box ('case insensitive'), rendered like XXE's: always shown on the comparison elements that support the attribute, checked when caseless="yes". Disabled because it
+   reflects the rule - the preview isn't an editor. */
+.caseless-box {
+    vertical-align: -2px;
+    margin: 0 3px 0 8px;
+}
+
 /* A few leaf items carry extra indentation in the XXE stylesheet, via their own margin-left on top of the parent's .125in padding: pattern-item by .4in, attr-item and list-item by
    .2in. Match those so, e.g., "item:" under "pattern:" sits as far right as it does in XXE (the standard .125in elements like clip under a lexical unit already lined up). */
 .el.pattern-item {

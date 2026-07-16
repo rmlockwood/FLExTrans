@@ -98,8 +98,10 @@ def splitArgs(argText):
 
 def tokenizeContent(value):
     '''Turn a CSS `content:` value into an ordered list of tokens: ('str', text) for
-    string literals, ('field', attr, colorClass) for text-field(), and ('combo', attr)
-    for combo-box(). collapser/icon/label/check-box are ignored.'''
+    string literals, ('field', attr, colorClass) for text-field(), ('combo', attr) for
+    combo-box(), and ('checkbox', attr, label) for check-box() (the label is the
+    translated text shown beside the box, e.g. "case insensitive" for the caseless
+    attribute). collapser/icon/label are ignored.'''
 
     tokens = []
     i, n = 0, len(value)
@@ -135,7 +137,7 @@ def tokenizeContent(value):
             argText = value[i + m.end():k]
             i = k + 1
 
-            if name in ('text-field', 'combo-box'):
+            if name in ('text-field', 'combo-box', 'check-box'):
                 args = splitArgs(argText)
                 attr = args[args.index('attribute') + 1] if 'attribute' in args else ''
                 if name == 'text-field':
@@ -143,9 +145,12 @@ def tokenizeContent(value):
                     if 'background-color' in args:
                         color = args[args.index('background-color') + 1].rstrip('()')
                     tokens.append(('field', attr, COLOR_CLASS.get(color, 'c-chunk')))
-                else:
+                elif name == 'combo-box':
                     tokens.append(('combo', attr))
-            # collapser / icon / label / check-box: no chip, skip
+                else:
+                    label = args[args.index('label') + 1].strip('"') if 'label' in args else ''
+                    tokens.append(('checkbox', attr, label))
+            # collapser / icon / label: no chip, skip
             continue
 
         i += 1   # stray punctuation
@@ -203,6 +208,11 @@ def parseCss(path):
     spec = {}
     tags = set(before) | set(elemBare) | set(elemVariant)
 
+    # The elements XXE marks collapsible: a collapser(...) call in their :before content draws the plus/minus fold control. TransferPreview uses exactly this set to decide which blocks get
+    # a fold control and a vertical indent guide, so the preview stays in step with the stylesheet (rather than a hard-coded list) - add a collapser to an element in transfer.css and the
+    # preview follows. Stored under a key no element tag can collide with, like _colors.
+    collapsible = sorted(tag for tag in tags if 'collapser(' in before.get(tag, ''))
+
     for tag in tags:
 
         # :before content comes first, then the element content (bare preferred).
@@ -226,6 +236,9 @@ def parseCss(path):
 
             if tok[0] == 'field':
                 attrs.append([tok[1], attrLabel, tok[2]])
+            elif tok[0] == 'checkbox':
+                # A check-box carries its own label text (from the check-box() label argument), rendered by TransferPreview as a disabled checkbox + that label (the c-checkbox class).
+                attrs.append([tok[1], tok[2], 'c-checkbox'])
             else:
                 attrs.append([tok[1], attrLabel, 'c-plain'])
 
@@ -234,8 +247,9 @@ def parseCss(path):
 
         spec[tag] = [labelText, attrs]
 
-    # Carry the chip colours along under a key no element tag can collide with.
+    # Carry the chip colours and the collapsible-element set along under keys no element tag can collide with.
     spec['_colors'] = parseColors(css)
+    spec['_collapsible'] = collapsible
 
     return spec
 

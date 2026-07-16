@@ -1,4 +1,22 @@
 {
+ "_collapsible": [
+  "action",
+  "def-attr",
+  "def-cat",
+  "def-list",
+  "def-macro",
+  "otherwise",
+  "out",
+  "rule",
+  "section-def-attrs",
+  "section-def-cats",
+  "section-def-lists",
+  "section-def-macros",
+  "section-def-vars",
+  "section-rules",
+  "tags",
+  "when"
+ ],
  "_colors": {
   "c-attr": "#F5DEB3",
   "c-cat": "#FFB6C1",
@@ -45,11 +63,23 @@
  ],
  "begins-with": [
   " beginnt mit: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "begins-with-list": [
   " beginnt mit etwas aus Liste: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "call-macro": [
   "Makro aufrufen: ",
@@ -141,7 +171,13 @@
  ],
  "contains-substring": [
   " enthält Teilzeichenkette: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "def-attr": [
   " Attribut: ",
@@ -200,15 +236,33 @@
  ],
  "ends-with": [
   " endet mit: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "ends-with-list": [
   " endet mit etwas aus Liste: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "equal": [
   " gleich: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "get-case-from": [
   " Fall holen von  element: ",
@@ -222,7 +276,13 @@
  ],
  "in": [
   " in Liste: ",
-  []
+  [
+   [
+    "caseless",
+    "Groß-/Kleinschreibung ignorieren",
+    "c-checkbox"
+   ]
+  ]
  ],
  "let": [
   " lassen: ",

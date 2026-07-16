@@ -1,4 +1,22 @@
 {
+ "_collapsible": [
+  "action",
+  "def-attr",
+  "def-cat",
+  "def-list",
+  "def-macro",
+  "otherwise",
+  "out",
+  "rule",
+  "section-def-attrs",
+  "section-def-cats",
+  "section-def-lists",
+  "section-def-macros",
+  "section-def-vars",
+  "section-rules",
+  "tags",
+  "when"
+ ],
  "_colors": {
   "c-attr": "#F5DEB3",
   "c-cat": "#FFB6C1",
@@ -45,11 +63,23 @@
  ],
  "begins-with": [
   " begins with: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "begins-with-list": [
   " begins with something in list: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "call-macro": [
   "call macro: ",
@@ -141,7 +171,13 @@
  ],
  "contains-substring": [
   " contains substring: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "def-attr": [
   " attribute: ",
@@ -200,15 +236,33 @@
  ],
  "ends-with": [
   " ends with: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "ends-with-list": [
   " ends with something in list: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "equal": [
   " equal: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "get-case-from": [
   " get case from  item: ",
@@ -222,7 +276,13 @@
  ],
  "in": [
   " in list: ",
-  []
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "let": [
   " let: ",

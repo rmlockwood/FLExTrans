@@ -188,6 +188,20 @@ class TestGeminiProvider(unittest.TestCase):
 
         self.assertEqual(ctx.exception.retryAfter, 12.0)
 
+    def test_malformed_json_reply_names_provider_and_suggests_retry(self):
+
+        # A truncated reply (e.g. an unterminated string) must not surface as a bare JSON parse error - the message should say who produced it and that retrying usually works.
+        response = SimpleNamespace(text='{"rule_xml": "unterminated', prompt_feedback=None)
+        client = geminiClient(response=response)
+
+        with self.assertRaises(RuntimeError) as ctx:
+            self.provider.generate(client, 'gemini-x', 'SYS', 'USER')
+
+        message = str(ctx.exception)
+        self.assertIn('Google Gemini', message)
+        self.assertIn('gemini-x', message)
+        self.assertIn('try the same request again', message)
+
     def test_other_api_error_propagates(self):
 
         err = self.APIError('Internal error', code=500)
@@ -273,6 +287,19 @@ class TestOpenAIProvider(unittest.TestCase):
             self.provider.generate(client, 'gpt-x', 'SYS', 'USER')
 
         self.assertEqual(ctx.exception.retryAfter, 8.0)
+
+    def test_malformed_json_reply_names_provider_and_suggests_retry(self):
+
+        message = SimpleNamespace(refusal=None, content='{"rule_xml": "unterminated')
+        client = openaiClient(message=message)
+
+        with self.assertRaises(RuntimeError) as ctx:
+            self.provider.generate(client, 'gpt-x', 'SYS', 'USER')
+
+        text = str(ctx.exception)
+        self.assertIn('OpenAI ChatGPT', text)
+        self.assertIn('gpt-x', text)
+        self.assertIn('try the same request again', text)
 
 if __name__ == '__main__':
     unittest.main()

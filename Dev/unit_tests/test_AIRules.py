@@ -512,6 +512,65 @@ class TestSampleLogicRuleSkipped(TempDirTestCase):
         self.assertIn('Rule One', rulesText)
 
 # ---------------------------------------------------------------------------
+# The sample/reference definitions (m_sample, v_sample, l_sample, a_sample) are excluded
+# ---------------------------------------------------------------------------
+
+class TestSampleDefsSkipped(TempDirTestCase):
+
+    def setUp(self):
+
+        super().setUp()
+
+        # Add one of each shipped sample/reference definition to the file. The macro body is padded so it would top the longest-macros style examples if it weren't excluded.
+        sampleAttr = '<def-attr n="a_sample"><attr-item tags="samptag"/></def-attr>'
+        sampleVar = '<def-var n="v_sample"/>'
+        sampleList = '<def-list n="l_sample"><list-item v="sampval"/></def-list>'
+        sampleMacro = ('<def-macro n="m_sample" npar="1">'
+                       + '<let><clip pos="1" side="tl" part="lem"/><lit v="padded-sample-body-so-it-would-sort-first"/></let>' * 3 + '</def-macro>')
+
+        with open(self.transferPath, encoding='utf-8') as fin:
+            text = fin.read()
+
+        text = text.replace('</section-def-attrs>', sampleAttr + '\n</section-def-attrs>')
+        text = text.replace('</section-def-vars>', sampleVar + '\n</section-def-vars>')
+        text = text.replace('</section-def-lists>', sampleList + '\n</section-def-lists>')
+        text = text.replace('</section-def-macros>', sampleMacro + '\n</section-def-macros>')
+
+        with open(self.transferPath, 'w', encoding='utf-8') as fout:
+            fout.write(text)
+
+    def test_excluded_from_raw_name_lists_and_maps(self):
+
+        defs = AIRules.extractExistingDefs(self.transferPath)
+
+        self.assertNotIn('a_sample', defs['attrs'])
+        self.assertNotIn('v_sample', defs['variables'])
+        self.assertNotIn('l_sample', defs['lists'])
+        self.assertNotIn('l_sample', defs['listItems'])
+        self.assertNotIn('m_sample', defs['macros'])
+        self.assertNotIn('m_sample', defs['macroXml'])
+
+        # The real definitions in the fixture are still present.
+        self.assertIn('gender', defs['attrs'])
+        self.assertIn('number', defs['variables'])
+        self.assertIn('mylist', defs['lists'])
+        self.assertIn('mymacro', defs['macros'])
+
+    def test_excluded_from_summary_text(self):
+
+        summary = AIRules.extractExistingDefs(self.transferPath)['summaryText']
+
+        for name in ('a_sample', 'v_sample', 'l_sample', 'm_sample'):
+            self.assertNotIn(name, summary)
+
+    def test_sample_macro_excluded_from_style_examples(self):
+
+        _, macrosText = AIRules.getSampleRulesAndMacros(self.transferPath)
+
+        self.assertNotIn('m_sample', macrosText)
+        self.assertIn('mymacro', macrosText)
+
+# ---------------------------------------------------------------------------
 # Macro helpers: called-macro collection and description mentions
 # ---------------------------------------------------------------------------
 
@@ -575,13 +634,53 @@ class TestMacroHelpers(unittest.TestCase):
         self.assertEqual(found, [])
         self.assertEqual(missing, ['m_no_such_macro'])
 
+    def test_camelcase_m_prefix_token_found(self):
+
+        # A macro named with a bare lowercase-m prefix + capitalized name (mCopyGender) is recognized as a convention-form token, even without an underscore.
+        found, missing = AIRules.findMacroMentions('call mCopyGender for the noun', ['mCopyGender', 'm_inner'])
+
+        self.assertEqual(found, ['mCopyGender'])
+        self.assertEqual(missing, [])
+
+    def test_camelcase_m_prefix_token_missing_reported(self):
+
+        found, missing = AIRules.findMacroMentions('call mNoSuchThing here', ['m_inner'])
+
+        self.assertEqual(found, [])
+        self.assertEqual(missing, ['mNoSuchThing'])
+
+    def test_ordinary_m_words_not_treated_as_macros(self):
+
+        # Plain m-words with no capital after the m must not be mistaken for macro tokens.
+        found, missing = AIRules.findMacroMentions('modify the rule to move and make agreement work', list(self.MACROS))
+
+        self.assertEqual(found, [])
+        self.assertEqual(missing, [])
+
     def test_ordinary_words_near_macro_ignored(self):
 
-        # "the macro that ..." must not report "that" as a missing macro, nor should short words be substring-matched against the macro list.
+        # "the macro that ..." must not report "that" as a missing macro (it is a stop word), nor should short words be substring-matched against the macro list.
         found, missing = AIRules.findMacroMentions('use the macro that copies gender', list(self.MACROS))
 
         self.assertEqual(found, [])
         self.assertEqual(missing, [])
+
+    def test_mistyped_plain_word_macro_name_reported(self):
+
+        # A plain (non-m_, non-identifier) word right after "the macro" that matches nothing and isn't a function word is a mistyped macro name - report it so the user can fix it.
+        found, missing = AIRules.findMacroMentions('call the macro asldkjfsdf for the noun', list(self.MACROS))
+
+        self.assertEqual(found, [])
+        self.assertEqual(missing, ['asldkjfsdf'])
+
+    def test_mixed_found_and_mistyped(self):
+
+        # The reported case: one real macro named by a word before "macro", one mistyped name after "the macro". The real one is found, the typo is reported missing.
+        macros = ['m_process_verb', 'm_copy_noun']
+        found, missing = AIRules.findMacroMentions('in a noun - verb phrase, call the macro asldkjfsdf for the noun and the process verb macro for the verb', macros)
+
+        self.assertIn('m_process_verb', found)
+        self.assertEqual(missing, ['asldkjfsdf'])
 
     def test_mentions_in_other_ui_languages(self):
 
@@ -605,6 +704,7 @@ class TestMacroVerbiage(unittest.TestCase):
 
             self.assertTrue(UILanguages.MACRO_NOUNS.get(code), 'MACRO_NOUNS missing entry for ' + code)
             self.assertTrue(UILanguages.MACRO_NAMING_WORDS.get(code), 'MACRO_NAMING_WORDS missing entry for ' + code)
+            self.assertTrue(UILanguages.MACRO_STOP_WORDS.get(code), 'MACRO_STOP_WORDS missing entry for ' + code)
 
 # ---------------------------------------------------------------------------
 # getSection, insertBefore, spliceIntoTemp, validateFile
@@ -774,6 +874,14 @@ class TestMarkAuthorship(unittest.TestCase):
         out = AIRules.markAuthorship(VALID_RULE, 'create', self.now)
         # The authorship comment precedes the <pattern> element in the serialized rule.
         self.assertLess(out.index('<!--'), out.index('<pattern>'))
+
+    def test_comment_has_no_space_padding(self):
+
+        # House comment style is <!--like this-->: no space between the comment markers and the sentence.
+        out = AIRules.markAuthorship(VALID_RULE, 'create', self.now)
+
+        self.assertIn('<!--The AI Assistant', out)
+        self.assertIn('14:42.-->', out)
 
     def test_when_str_overrides_date(self):
 
