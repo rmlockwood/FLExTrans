@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.10 - 7/16/26 - Ron Lockwood
+#    The explanation preview now switches its pane to right-to-left layout when the returned explanation text contains RTL characters, so Arabic/Hebrew content reads naturally in the explain pane.
+#
 #   Version 3.16.9 - 7/16/26 - Ron Lockwood
 #    Which elements get a plus/minus collapser (the XXE minus-box/plus-box icons, embedded as data URIs) now comes from transfer.css: derive_preview_specs records which elements carry a
 #    collapser() there ("_collapsible" in the spec), and the preview folds exactly those - except the single top-level rule/macro, which there is nothing to fold away from. Vertical indent
@@ -52,8 +55,10 @@ import os
 import json
 import html
 import difflib
+import unicodedata
 import xml.etree.ElementTree as ET
 
+import Utils
 import markdown
 
 # realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder; the stylesheets live in its css subfolder (Lib/css).
@@ -344,6 +349,17 @@ def colorsToCss(colors) -> str:
 
     return '\n'.join('.{cls} {{ background: {hexColor}; }}'.format(cls=cls, hexColor=colors[cls]) for cls in sorted(colors))
 
+def hasRtlText(text: str) -> bool:
+    '''Return True when any character in the text has an RTL bidi class, so the explanation pane can switch direction to match the content.'''
+
+    for char in text:
+
+        if unicodedata.bidirectional(char) in ('R', 'AL'):
+            return True
+
+    return False
+
+
 def markdownToHtml(mdText: str) -> str:
     '''Convert the explanation's Markdown to HTML with the Python-Markdown package. The whole text is HTML-escaped first: Python-Markdown passes raw HTML through untouched, and the result
     goes into a live QWebEngineView, so any markup the model emits must arrive as visible text, never as elements. The extensions cover what models commonly produce beyond the core syntax:
@@ -396,7 +412,10 @@ def renderExplanationHtml(ruleXml: str, explanationText: str, lang: str = 'en') 
     spec = loadSpec(lang)
 
     left = '<div class="pane">' + elementToHtml(parseFragment(ruleXml), spec=spec) + '</div>'
-    right = '<div class="pane explanation">' + markdownToHtml(explanationText) + '</div>'
+
+    # The explanation pane switches to right-to-left layout when the explanation text contains any RTL characters in the 1st quarter of the text.
+    rtlClass = ' rtl' if Utils.hasRtl(explanationText[0:len(explanationText)//4]) else ''
+    right = '<div class="pane explanation' + rtlClass + '">' + markdownToHtml(explanationText) + '</div>'
 
     return wrapDocument('<div class="compare">' + left + right + '</div>', spec.get('_colors'), split=True)
 

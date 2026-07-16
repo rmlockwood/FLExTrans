@@ -209,6 +209,11 @@ body.split .pane {
     line-height: 1.5;
 }
 
+.pane.explanation.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
 .pane.explanation p {
     margin: 0 0 9px;
 }
@@ -230,6 +235,12 @@ body.split .pane {
 .pane.explanation ol {
     margin: 0 0 9px;
     padding-left: 24px;
+}
+
+.pane.explanation.rtl ul,
+.pane.explanation.rtl ol {
+    padding-left: 0;
+    padding-right: 24px;
 }
 
 .pane.explanation li {

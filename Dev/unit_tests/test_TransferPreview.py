@@ -101,6 +101,12 @@ class TestWrapDocument(unittest.TestCase):
 
         self.assertIn('classList.toggle("collapsed")', out)
 
+    def test_render_explanation_html_sets_rtl_class_for_rtl_text(self):
+
+        out = TransferPreview.renderExplanationHtml('<rule comment="R"><pattern><pattern-item n="c_n"/></pattern></rule>', 'مرحبا بالعالم')
+
+        self.assertIn('pane explanation rtl', out)
+
 # A rule exercising the block elements and the caseless checkbox. transfer.css marks rule/action/when/out collapsible (but the top-level rule is excluded in the preview); the separate
 # indent-guide set is choose/when/otherwise/test/out/and/or/not.
 RULE_WITH_BLOCKS = ('<rule comment="R"><pattern><pattern-item n="c_n"/></pattern><action><choose><when><test>'
