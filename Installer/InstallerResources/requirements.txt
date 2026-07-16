@@ -12,5 +12,7 @@ anthropic==0.115.1
 google-genai==2.10.0
 openai==2.44.0
 keyring==25.7.0
+# Markdown renders the AI explanation (Markdown -> HTML) in the rule preview
+Markdown==3.10.2
 # Currently wildebeest doesn't work with Python 3.13
 # echo wildebeest-nlp 

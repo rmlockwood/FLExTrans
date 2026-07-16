@@ -119,8 +119,9 @@ body {
     margin: 2px 0;
 }
 
-/* Best-effort diff highlighting for the before/after comparison. */
-.changed > .rowline { background: #FFF3B0; }
+/* Best-effort diff highlighting for the before/after comparison. Changed rows are pale orange, not yellow - pale yellow is already the comment-box background above, so a yellow change
+   marker would read as a comment. */
+.changed > .rowline { background: #FFD8A8; }
 .added   > .rowline { background: #CFF5D1; }
 .removed > .rowline { background: #F7CAC9; }
 
@@ -129,6 +130,25 @@ body {
     display: flex;
     gap: 16px;
     align-items: flex-start;
+}
+
+/* Two-pane documents (rule preview, before/after comparison, rule + explanation) get body.split: the body itself never scrolls, each pane scrolls on its own, so the explanation (or the
+   modified rule) stays in view while the user scrolls through a long rule in the other pane. The legend, when present, stays fixed above the panes. */
+body.split {
+    height: calc(100vh - 16px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+body.split .compare {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+}
+
+body.split .pane {
+    overflow-y: auto;
 }
 
 .pane {
@@ -156,6 +176,71 @@ body {
 
 .pane.explanation p {
     margin: 0 0 9px;
+}
+
+/* The explanation arrives as Markdown, rendered by TransferPreview.markdownToHtml. Keep its headings, lists, and inline code modest so it reads as prose beside the rule. */
+.pane.explanation h1,
+.pane.explanation h2 {
+    font-size: 19px;
+    margin: 10px 0 6px;
+}
+
+.pane.explanation h3,
+.pane.explanation h4 {
+    font-size: 17px;
+    margin: 8px 0 4px;
+}
+
+.pane.explanation ul,
+.pane.explanation ol {
+    margin: 0 0 9px;
+    padding-left: 24px;
+}
+
+.pane.explanation li {
+    margin: 2px 0;
+}
+
+.pane.explanation code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+/* Fenced code blocks (Python-Markdown's fenced_code extension wraps them in <pre><code>). The <pre> carries the box so the inline-code border above doesn't double up inside it. */
+.pane.explanation pre {
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 4px 6px;
+    margin: 0 0 9px;
+    overflow-x: auto;
+}
+
+.pane.explanation pre code {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Tables (Python-Markdown's tables extension). Browsers render them borderless by default, which reads as misaligned text; give them light grid lines and a shaded header row. */
+.pane.explanation table {
+    border-collapse: collapse;
+    margin: 0 0 9px;
+}
+
+.pane.explanation th,
+.pane.explanation td {
+    border: 1px solid #ccc;
+    padding: 2px 8px;
+    text-align: left;
+}
+
+.pane.explanation th {
+    background: #f2f2f2;
 }
 
 .legend {

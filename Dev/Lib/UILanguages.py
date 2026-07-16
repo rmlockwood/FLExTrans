@@ -5,6 +5,9 @@
 #   SIL International
 #   7/9/26
 #
+#   Version 3.16.1 - 7/16/26 - Ron Lockwood
+#    Added MACRO_NOUNS and MACRO_NAMING_WORDS: per-language words a rule description might use to refer to a macro by name, from which AIRules builds its macro-mention regexes.
+#
 #   Version 3.16 - 7/9/26 - Ron Lockwood
 #    Initial version. The single authoritative list of the user-interface languages FLExTrans supports.
 #
@@ -35,6 +38,27 @@ LANGUAGES = [
     UILang(code='fr', englishName='French',  nativeName='Français', localeName='fr_FR', nsisName='French'),
     UILang(code='de', englishName='German',  nativeName='Deutsch',  localeName='de_DE', nsisName='German'),
 ]
+
+# Words a user's rule/macro description might use when referring to a macro by name, one entry per UI-language code. AIRules builds its macro-mention regexes from the union of these
+# across all languages, since a description may be written in any UI language regardless of the interface language currently chosen. Matching is case-insensitive, and multi-word phrases
+# are fine (their internal spaces match any whitespace). When adding a UI language, add its words to both dicts - a missing entry only means macro references phrased in that language
+# aren't spotted, nothing breaks. Feel free to add more variants (unaccented spellings, further synonyms) as users report phrasings that aren't recognized.
+#
+# The noun for "macro", singular and plural.
+MACRO_NOUNS = {
+    'en': ['macro', 'macros'],
+    'es': ['macro', 'macros'],
+    'fr': ['macro', 'macros'],
+    'de': ['Makro', 'Makros'],
+}
+
+# The optional filler words between the noun and the macro's name ("the macro CALLED m_x", "das Makro NAMENS m_x"). The name is also recognized with no filler at all ("the macro m_x").
+MACRO_NAMING_WORDS = {
+    'en': ['called', 'named'],
+    'es': ['llamada', 'llamado', 'denominada', 'denominado', 'con el nombre'],
+    'fr': ['appelée', 'appelé', 'nommée', 'nommé', 'du nom de'],
+    'de': ['namens', 'genannt', 'mit dem Namen'],
+}
 
 def forCode(code):
     '''Return the UILang record for a two-letter code, or None if the code isn't a supported UI language.'''

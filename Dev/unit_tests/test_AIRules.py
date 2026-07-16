@@ -321,6 +321,51 @@ class TestPromptBuilding(unittest.TestCase):
         # Explain mode has no user request and returns before that section is added.
         self.assertNotIn('USER REQUEST:', text)
 
+    def test_user_content_create_macro_mode(self):
+
+        text = AIRules.buildUserContent('create', 'make a gender macro', 'DEFS', 'PROJDATA', None, isMacro=True)
+
+        self.assertIn('MODE: create a new macro', text)
+        self.assertIn('def-macro', text)
+        self.assertNotIn('MODE: create a new rule.', text)
+
+    def test_user_content_modify_macro_mode(self):
+
+        text = AIRules.buildUserContent('modify', 'change it', 'DEFS', 'PROJDATA', '<def-macro n="m_x"/>', isMacro=True)
+
+        self.assertIn('MODE: modify the following existing macro', text)
+        self.assertIn('CURRENT MACRO:', text)
+        self.assertIn('<def-macro n="m_x"/>', text)
+
+    def test_user_content_explain_macro_mode(self):
+
+        text = AIRules.buildUserContent('explain', '', 'DEFS', 'PROJDATA', '<def-macro n="m_x"/>', explainLang='German', isMacro=True)
+
+        self.assertIn('MODE: explain the following existing macro', text)
+        self.assertIn('MACRO TO EXPLAIN:', text)
+        self.assertNotIn('RULE TO EXPLAIN:', text)
+
+    def test_user_content_includes_macros_text(self):
+
+        text = AIRules.buildUserContent('create', 'req', 'DEFS', 'PROJDATA', None, macrosText='<def-macro n="m_ref"/>')
+
+        self.assertIn('MACRO DEFINITIONS FOR REFERENCE', text)
+        self.assertIn('<def-macro n="m_ref"/>', text)
+
+    def test_user_content_omits_absent_macros_text(self):
+
+        text = AIRules.buildUserContent('create', 'req', 'DEFS', 'PROJDATA', None)
+
+        self.assertNotIn('MACRO DEFINITIONS FOR REFERENCE', text)
+
+    def test_user_content_explain_includes_style_rules(self):
+
+        text = AIRules.buildUserContent('explain', '', 'DEFS', 'PROJDATA', '<rule comment="X"/>')
+
+        self.assertIn('Markdown', text)
+        self.assertIn('angle brackets', text)
+        self.assertIn('grammatical category from FLEx', text)
+
     def test_user_content_includes_example_data(self):
 
         text = AIRules.buildUserContent('create', 'req', 'DEFS', 'PROJDATA', None, sourceData='SRC\tROWS', targetData='TGT\tROWS')
@@ -432,6 +477,136 @@ class TestTransferParsing(TempDirTestCase):
         self.assertIsNone(AIRules.getRuleXmlByComment(self.transferPath, 'Ghost Rule'))
 
 # ---------------------------------------------------------------------------
+# The sample-logic reference rule is excluded everywhere
+# ---------------------------------------------------------------------------
+
+class TestSampleLogicRuleSkipped(TempDirTestCase):
+
+    def setUp(self):
+
+        super().setUp()
+
+        # Append the shipped reference rule to the sample file, made long so it would top the longest-rules style examples if it weren't excluded.
+        sampleRule = ('<rule comment="{name}"><pattern><pattern-item n="nom"/></pattern><action>'.format(name=AIRules.SAMPLE_LOGIC_RULE_NAME)
+                      + '<out><lu><clip pos="1" side="tl" part="whole"/></lu></out>' * 20 + '</action></rule>')
+
+        with open(self.transferPath, encoding='utf-8') as fin:
+            text = fin.read()
+
+        with open(self.transferPath, 'w', encoding='utf-8') as fout:
+            fout.write(text.replace('</section-rules>', sampleRule + '\n</section-rules>'))
+
+    def test_excluded_from_rule_names_and_xml_map(self):
+
+        defs = AIRules.extractExistingDefs(self.transferPath)
+
+        self.assertNotIn(AIRules.SAMPLE_LOGIC_RULE_NAME, defs['ruleNames'])
+        self.assertNotIn(AIRules.SAMPLE_LOGIC_RULE_NAME, defs['ruleXml'])
+        self.assertNotIn(AIRules.SAMPLE_LOGIC_RULE_NAME, defs['summaryText'])
+
+    def test_excluded_from_style_examples(self):
+
+        rulesText, _ = AIRules.getSampleRulesAndMacros(self.transferPath)
+
+        self.assertNotIn(AIRules.SAMPLE_LOGIC_RULE_NAME, rulesText)
+        self.assertIn('Rule One', rulesText)
+
+# ---------------------------------------------------------------------------
+# Macro helpers: called-macro collection and description mentions
+# ---------------------------------------------------------------------------
+
+class TestMacroHelpers(unittest.TestCase):
+
+    MACROS = {
+        'm_copy_gender': '<def-macro n="m_copy_gender" npar="1"><call-macro n="m_inner"><with-param pos="1"/></call-macro></def-macro>',
+        'm_inner':       '<def-macro n="m_inner" npar="1"><let><clip pos="1" side="tl" part="gender"/><lit v=""/></let></def-macro>',
+        'm_other':       '<def-macro n="m_other" npar="1"><let><var n="number"/><lit v=""/></let></def-macro>',
+    }
+
+    RULE_CALLING = ('<rule comment="R"><pattern><pattern-item n="nom"/></pattern><action>'
+                    '<call-macro n="m_copy_gender"><with-param pos="1"/></call-macro></action></rule>')
+
+    def test_find_called_macro_names(self):
+        self.assertEqual(AIRules.findCalledMacroNames(self.RULE_CALLING), ['m_copy_gender'])
+
+    def test_find_called_macro_names_unparseable(self):
+        self.assertEqual(AIRules.findCalledMacroNames('<rule><not closed'), [])
+
+    def test_collect_called_macros_recursive(self):
+
+        # The rule calls m_copy_gender, which in turn calls m_inner; both are collected, in encounter order, and m_other stays out.
+        self.assertEqual(AIRules.collectCalledMacros(self.RULE_CALLING, self.MACROS), ['m_copy_gender', 'm_inner'])
+
+    def test_collect_called_macros_excludes(self):
+        self.assertEqual(AIRules.collectCalledMacros(self.RULE_CALLING, self.MACROS, excludeNames=['m_copy_gender']), [])
+
+    def test_collect_handles_self_recursion(self):
+
+        loop = {'m_loop': '<def-macro n="m_loop" npar="1"><call-macro n="m_loop"><with-param pos="1"/></call-macro></def-macro>'}
+
+        self.assertEqual(AIRules.collectCalledMacros('<rule><action><call-macro n="m_loop"/></action></rule>', loop), ['m_loop'])
+
+    def test_mentions_by_convention_token(self):
+
+        found, missing = AIRules.findMacroMentions('Please call m_copy_gender on the second word.', list(self.MACROS))
+
+        self.assertEqual(found, ['m_copy_gender'])
+        self.assertEqual(missing, [])
+
+    def test_mentions_partial_match(self):
+
+        # A partial token matches the full macro name, case-insensitively.
+        found, missing = AIRules.findMacroMentions('use the macro m_copy for this', list(self.MACROS))
+
+        self.assertEqual(found, ['m_copy_gender'])
+        self.assertEqual(missing, [])
+
+    def test_mentions_word_before_macro(self):
+
+        found, missing = AIRules.findMacroMentions('call the copy_gender macro here', list(self.MACROS))
+
+        self.assertEqual(found, ['m_copy_gender'])
+        self.assertEqual(missing, [])
+
+    def test_mentions_missing_reported(self):
+
+        found, missing = AIRules.findMacroMentions('call m_no_such_macro please', list(self.MACROS))
+
+        self.assertEqual(found, [])
+        self.assertEqual(missing, ['m_no_such_macro'])
+
+    def test_ordinary_words_near_macro_ignored(self):
+
+        # "the macro that ..." must not report "that" as a missing macro, nor should short words be substring-matched against the macro list.
+        found, missing = AIRules.findMacroMentions('use the macro that copies gender', list(self.MACROS))
+
+        self.assertEqual(found, [])
+        self.assertEqual(missing, [])
+
+    def test_mentions_in_other_ui_languages(self):
+
+        # The mention patterns are built from UILanguages.MACRO_NOUNS / MACRO_NAMING_WORDS, so each UI language's phrasing works. The macro name here deliberately lacks the m_ prefix, so
+        # only the noun+filler pattern (not the m_... token pattern) can find it - including the multi-word fillers ("mit dem Namen", "du nom de").
+        for text in ('benutze das Makro namens copy_gender', 'das Makro mit dem Namen copy_gender ändern', 'usa la macro llamada copy_gender', 'utilise la macro du nom de copy_gender'):
+
+            found, missing = AIRules.findMacroMentions(text, list(self.MACROS))
+
+            self.assertEqual(found, ['m_copy_gender'], text)
+            self.assertEqual(missing, [], text)
+
+class TestMacroVerbiage(unittest.TestCase):
+
+    def test_every_ui_language_has_macro_words(self):
+
+        # Every UI language in the authoritative list should have macro-reference verbiage, so descriptions written in any of them are covered.
+        import UILanguages
+
+        for code in UILanguages.allCodes():
+
+            self.assertTrue(UILanguages.MACRO_NOUNS.get(code), 'MACRO_NOUNS missing entry for ' + code)
+            self.assertTrue(UILanguages.MACRO_NAMING_WORDS.get(code), 'MACRO_NAMING_WORDS missing entry for ' + code)
+
+# ---------------------------------------------------------------------------
 # getSection, insertBefore, spliceIntoTemp, validateFile
 # ---------------------------------------------------------------------------
 
@@ -498,6 +673,26 @@ class TestSpliceAndValidate(TempDirTestCase):
 
         with self.assertRaises(RuntimeError):
             AIRules.spliceIntoTemp(self.transferPath, VALID_RULE, ['<bogus n="x"/>'], 'create', None, self.workDir)
+
+    def test_splice_create_macro_appends_to_macro_section(self):
+
+        newMacro = '<def-macro n="m_new" npar="1"><let><clip pos="1" side="tl" part="gender"/><lit v=""/></let></def-macro>'
+        tempPath = AIRules.spliceIntoTemp(self.transferPath, newMacro, [], 'create', None, self.workDir, isMacro=True)
+        root = AIRules.parseTransferFile(tempPath)
+        names = [m.get('n') for m in root.findall('./section-def-macros/def-macro')]
+
+        self.assertEqual(names, ['mymacro', 'm_new'])
+
+    def test_splice_modify_macro_replaces_by_name(self):
+
+        newMacro = '<def-macro n="mymacro" npar="1"><let><var n="number"/><lit v="replaced"/></let></def-macro>'
+        tempPath = AIRules.spliceIntoTemp(self.transferPath, newMacro, [], 'modify', 'mymacro', self.workDir, isMacro=True)
+        root = AIRules.parseTransferFile(tempPath)
+        macros = root.findall('.//def-macro')
+
+        # Still one macro, and it now has the new body.
+        self.assertEqual(len(macros), 1)
+        self.assertIsNotNone(macros[0].find('.//lit[@v="replaced"]'))
 
     def test_validate_wellformed_ok(self):
 
@@ -823,6 +1018,44 @@ class TestApplyRule(TempDirTestCase):
         self.assertIn('lit v="changed"', text)
         # Exactly two rules remain (replaced in place, not appended).
         self.assertEqual(text.count('<rule '), 2)
+
+    def test_create_macro_inserts_before_macro_section_close(self):
+
+        newMacro = '<def-macro n="m_applied" npar="1"><let><var n="number"/><lit v=""/></let></def-macro>'
+        AIRules.applyRule(self.transferPath, self._result(ruleXml=newMacro), 'create', None, isMacro=True)
+
+        with open(self.transferPath, encoding='utf-8') as fin:
+            text = fin.read()
+
+        self.assertIn('m_applied', text)
+        self.assertLess(text.index('m_applied'), text.index('</section-def-macros'))
+
+    def test_modify_macro_replaces_target(self):
+
+        newMacro = '<def-macro n="mymacro" npar="1"><let><var n="number"/><lit v="macro-changed"/></let></def-macro>'
+        AIRules.applyRule(self.transferPath, self._result(ruleXml=newMacro), 'modify', 'mymacro', isMacro=True)
+
+        with open(self.transferPath, encoding='utf-8') as fin:
+            text = fin.read()
+
+        self.assertIn('macro-changed', text)
+        # Exactly one macro remains (replaced in place, not appended).
+        self.assertEqual(text.count('<def-macro '), 1)
+
+    def test_modify_macro_with_new_macro_def_keeps_target_replacement(self):
+
+        # The tricky ordering case: the modified macro comes with a NEW def-macro in newDefs. The replacement spans must be computed before the new definition is inserted, or the
+        # span/parse pairing would go off by one and refuse (or replace the wrong macro).
+        newMacro = '<def-macro n="mymacro" npar="1"><call-macro n="m_extra"><with-param pos="1"/></call-macro></def-macro>'
+        extraDef = '<def-macro n="m_extra" npar="1"><let><var n="number"/><lit v=""/></let></def-macro>'
+        AIRules.applyRule(self.transferPath, self._result(ruleXml=newMacro, newDefs=[extraDef]), 'modify', 'mymacro', isMacro=True)
+
+        with open(self.transferPath, encoding='utf-8') as fin:
+            text = fin.read()
+
+        self.assertIn('m_extra', text)
+        self.assertNotIn('longer-macro-body', text)
+        self.assertEqual(text.count('<def-macro '), 2)
 
     def test_modify_unfound_comment_refuses(self):
 

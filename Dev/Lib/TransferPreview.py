@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.8 - 7/16/26 - Ron Lockwood
+#    The explanation's Markdown is now rendered by the Python-Markdown package (new Markdown entry in the installer requirements), HTML-escaped
+#    first so markup from the model can never render as live elements; tables and fenced code blocks now render too, with matching styles added to transfer_preview.css. In the two-pane
+#    views (rule preview, comparison, explanation) the panes now scroll independently (body.split layout) so the explanation or the modified rule stays in view while scrolling the left rule.
+#    The "changed" diff highlight is orange instead of yellow, since pale yellow is the comment-box background. loadSpec/loadCss now close their files (fixes a ResourceWarning in unit tests).
+#
 #   Version 3.16.7 - 7/10/26 - Ron Lockwood
 #    transfer_preview.css moved to the Lib/css subfolder (with the Rule Assistant stylesheets); CSS_PATH now points there.
 #
@@ -41,6 +47,8 @@ import json
 import html
 import difflib
 import xml.etree.ElementTree as ET
+
+import markdown
 
 # realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder; the stylesheets live in its css subfolder (Lib/css).
 CSS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'css', 'transfer_preview.css')
@@ -115,8 +123,12 @@ def loadSpec(lang: str) -> dict:
     for candidate in (lang, 'en'):
 
         path = os.path.join(AI_DATA_DIR, 'preview_spec_{lang}.json'.format(lang=candidate))
+
         if os.path.isfile(path):
-            _specCache[lang] = json.load(open(path, encoding='utf-8'))
+
+            with open(path, encoding='utf-8') as specFile:
+                _specCache[lang] = json.load(specFile)
+
             return _specCache[lang]
 
     _specCache[lang] = SPEC
@@ -125,7 +137,8 @@ def loadSpec(lang: str) -> dict:
 def loadCss() -> str:
     '''Read the reskin CSS so it can be inlined into the document.'''
 
-    return open(CSS_PATH, encoding='utf-8').read()
+    with open(CSS_PATH, encoding='utf-8') as cssFile:
+        return cssFile.read()
 
 def isComment(elem) -> bool:
     '''ET represents comment nodes with a callable tag; detect them.'''
@@ -293,12 +306,20 @@ def colorsToCss(colors) -> str:
 
     return '\n'.join('.{cls} {{ background: {hexColor}; }}'.format(cls=cls, hexColor=colors[cls]) for cls in sorted(colors))
 
-def wrapDocument(bodyHtml: str, colors=None) -> str:
-    '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides).'''
+def markdownToHtml(mdText: str) -> str:
+    '''Convert the explanation's Markdown to HTML with the Python-Markdown package. The whole text is HTML-escaped first: Python-Markdown passes raw HTML through untouched, and the result
+    goes into a live QWebEngineView, so any markup the model emits must arrive as visible text, never as elements. The extensions cover what models commonly produce beyond the core syntax:
+    tables, fenced code blocks, saner list numbering, and single-newline line breaks (nl2br, so a line break inside a paragraph shows as one, as this preview has always done).'''
+
+    return markdown.markdown(html.escape(mdText), extensions=['tables', 'fenced_code', 'sane_lists', 'nl2br'])
+
+def wrapDocument(bodyHtml: str, colors=None, split: bool = False) -> str:
+    '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides). With `split` the body gets the "split" class, which makes each .compare
+    pane scroll on its own (see transfer_preview.css) so, e.g., the explanation stays in view while the user scrolls through a long rule on the left.'''
 
     return ('<!DOCTYPE html><html><head><meta charset="utf-8"><style>\n'
             + loadCss() + '\n' + colorsToCss(colors)
-            + '\n</style></head><body>' + bodyHtml + '</body></html>')
+            + '\n</style></head><body' + (' class="split"' if split else '') + '>' + bodyHtml + '</body></html>')
 
 def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
     '''Render a single rule (plus any new definitions) - used for the "create" preview. `lang` selects the label language. Returns a complete HTML document.'''
@@ -323,20 +344,18 @@ def renderRulePreviewHtml(ruleXml: str, lang: str = 'en') -> str:
     spec = loadSpec(lang)
     left = '<div class="pane">' + elementToHtml(parseFragment(ruleXml), spec=spec) + '</div>'
 
-    return wrapDocument('<div class="compare">' + left + '</div>', spec.get('_colors'))
+    return wrapDocument('<div class="compare">' + left + '</div>', spec.get('_colors'), split=True)
 
 def renderExplanationHtml(ruleXml: str, explanationText: str, lang: str = 'en') -> str:
-    '''Render the rule (styled like XXE) on the left and the AI's plain-text explanation on the right - used for the "explain" preview. The explanation is escaped and its blank-line
-    breaks become paragraphs, so no raw markup is ever shown. Returns a complete HTML document.'''
+    '''Render the rule (styled like XXE) on the left and the AI's explanation on the right - used for the "explain" preview. The explanation arrives as Markdown and is rendered by
+    markdownToHtml (which escapes everything first, so no raw markup from the model is ever shown). Returns a complete HTML document.'''
 
     spec = loadSpec(lang)
 
-    paragraphs = ''.join('<p>' + html.escape(par.strip()).replace('\n', '<br>') + '</p>' for par in explanationText.split('\n\n') if par.strip())
-
     left = '<div class="pane">' + elementToHtml(parseFragment(ruleXml), spec=spec) + '</div>'
-    right = '<div class="pane explanation">' + paragraphs + '</div>'
+    right = '<div class="pane explanation">' + markdownToHtml(explanationText) + '</div>'
 
-    return wrapDocument('<div class="compare">' + left + right + '</div>', spec.get('_colors'))
+    return wrapDocument('<div class="compare">' + left + right + '</div>', spec.get('_colors'), split=True)
 
 def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
     '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (positional); the panes are always readable even
@@ -349,10 +368,10 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
     legend = ('<div class="legend">'
               '<span class="sw" style="background:#F7CAC9"></span>removed / changed on the left'
               '<span class="sw" style="background:#CFF5D1"></span>added on the right'
-              '<span class="sw" style="background:#FFF3B0"></span>changed'
+              '<span class="sw" style="background:#FFD8A8"></span>changed'
               '</div>')
 
     left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True) + '</div>'
     right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True) + '</div>'
 
-    return wrapDocument(legend + '<div class="compare">' + left + right + '</div>', spec.get('_colors'))
+    return wrapDocument(legend + '<div class="compare">' + left + right + '</div>', spec.get('_colors'), split=True)

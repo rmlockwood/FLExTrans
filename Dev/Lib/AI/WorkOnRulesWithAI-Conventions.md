@@ -9,6 +9,10 @@ You are given the user's plain-language description of the rule they want; the p
 the names of the definitions already in the transfer file; and — when modifying or explaining — the current rule's XML. You return a single JSON object whose fields (a rule plus any new definitions,
 or, in explain mode, a plain-language explanation) are defined and enforced by the response schema; fill those fields.
 
+Some requests ask you to create, modify, or explain a **macro** (a `<def-macro>`) rather than a rule; the request says so explicitly. In that case return the complete `<def-macro>` element in the
+`rule_xml` field — with `npar` set to its number of parameters and a plain-language description comment as its first child — and apply every rule-writing convention below (naming, comments, reusing
+existing definitions, only-supplied-tags) to the macro.
+
 Output only the rule and any new definitions — never the whole transfer file, the `<transfer>` wrapper, the section elements, or the DOCTYPE.
 
 ## Language of your output
