@@ -129,19 +129,19 @@
       <translation>p. ex. Supprimer l'affixe IND de la sortie.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
-        <source>Zoom:</source>
-        <translation>Zoom :</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
+      <source>Zoom:</source>
+      <translation>Zoom :</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
-        <source>Magnify the preview text</source>
-        <translation>Agrandir le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
+      <source>Magnify the preview text</source>
+      <translation>Agrandir le texte de l'aperçu</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
-        <source>Reduce the preview text</source>
-        <translation>Réduire le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
+      <source>Reduce the preview text</source>
+      <translation>Réduire le texte de l'aperçu</translation>
     </message>
-</context>
+  </context>
 </TS>
