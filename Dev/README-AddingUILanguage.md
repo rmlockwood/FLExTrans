@@ -19,7 +19,7 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
    `Portuguese` — see `C:\Program Files (x86)\NSIS\Contrib\Language files` for the valid names), and `crowdinId` only if Crowdin's id for the language differs from the two-letter code
    (as with Spanish, `es-ES`). The position of the line in `LANGUAGES` is the position in the installer's language-picker dialog. In the same file, also add the language's entries to
    `MACRO_NOUNS`, `MACRO_NAMING_WORDS`, and `MACRO_STOP_WORDS` — respectively the word for "macro", the fillers a description might use when naming one ("the macro **called** m_x"), and the
-   common function words that can sit next to "macro" in prose without being a name ("the macro **that** …") — which the Work on Rules with AI module uses to spot macro references and to
+   common function words that can sit next to "macro" in prose without being a name ("the macro **that** …") — which the AI Rule Studio module uses to spot macro references and to
    avoid mistaking prose for a mistyped macro name; a missing entry doesn't break anything, it only means less accurate macro-reference detection for descriptions written in that language.
 
 2. **Translate the installer strings.** Copy `Installer/InstallerResources/LangForInstallerScript/en.nsh` to `XX.nsh` in the same folder and make these three edits, then translate all the
@@ -59,7 +59,7 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 
 ## Maintaining the XXE rule-preview stylesheet (`transfer.css`)
 
-The in-app rule preview (the "Work on Rules with AI" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,
+The in-app rule preview (the "AI Rule Studio" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,
 [`Dev/derive_preview_specs.py`](derive_preview_specs.py), parses each `transfer.css` into a compact `Dev/Lib/AI/preview_spec_<code>.json` that `TransferPreview` loads. Each spec captures, per rule
 element, the label text, the attribute chips shown on it, and the chip colours (the colours come from the stylesheet's `@property-value` declarations, so the preview's box colours match XXE).
 

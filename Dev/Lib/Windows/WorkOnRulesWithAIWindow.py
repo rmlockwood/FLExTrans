@@ -208,7 +208,7 @@ class Ui_WorkOnRulesWithAI(object):
 
     def retranslateUi(self, WorkOnRulesWithAI):
         _translate = QtCore.QCoreApplication.translate
-        WorkOnRulesWithAI.setWindowTitle(_translate("WorkOnRulesWithAI", "Work on Rules with AI"))
+        WorkOnRulesWithAI.setWindowTitle(_translate("WorkOnRulesWithAI", "AI Rule Studio"))
         self.describeLabel.setText(_translate("WorkOnRulesWithAI", "Describe the rule you want:"))
         self.descriptionEdit.setPlaceholderText(_translate("WorkOnRulesWithAI", "e.g. In a definite article + noun phrase, remove the article and add the definite singular common gender affix."))
         self.createButton.setText(_translate("WorkOnRulesWithAI", "Create"))

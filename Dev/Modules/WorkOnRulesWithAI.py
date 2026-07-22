@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.10 - 7/22/26 - Ron Lockwood
+#    Renamed the module's user-facing name from "Work on Rules with AI" to "AI Rule Studio" (the FTM_Name and the message-box titles); the file name and code identifiers are unchanged.
+#
 #   Version 3.16.9 - 7/16/26 - Ron Lockwood
 #    Pass the macro names and {name: def-macro-XML} map to the dialog for the new Macros list (modify/explain a macro, create one via the Create-tab checkbox).
 #
@@ -74,8 +77,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
-docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.9",
+docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "AI Rule Studio"),
+        FTM_Version    : "3.16.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -125,7 +128,7 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'AI Rule Studio'))
         msgBox.setText(_translate('WorkOnRulesWithAI', "This module sends your rule description, the transfer file's categories, attributes, and the project's grammatical categories, features, and affixes to " \
                        "your configured AI provider ({provider}) to generate transfer rules. Also, if you chose to include example language data, that will be sent as well. Your lexicon entries and texts are " \
                        "not sent (except for what is in the example data). Do you want to allow this?\nThere is a separate setting for sending FLEx project names.").format(provider=providerDisplay))
@@ -170,7 +173,7 @@ def MainFunction(DB, report, modify=True):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'AI Rule Studio'))
         msgBox.setText(msg)
         msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
@@ -195,7 +198,7 @@ def MainFunction(DB, report, modify=True):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Warning)
         msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'AI Rule Studio'))
         msgBox.setText(msg)
         msgBox.exec()
 
