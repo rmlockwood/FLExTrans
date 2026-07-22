@@ -83,6 +83,8 @@ Group imports into these blocks, in this order, separated by a single blank line
 - **When the file is a module with an `FTM_Version` value in its `docs`
   dictionary, bump that value to match the new header version too.** The header
   version and `FTM_Version` should stay in sync.
+- **When the change fixes a GitHub issue, start the new header's description with
+  `Fixes #NNNN.`** (the issue number), then the one-line description of the fix.
 
 ## Translations (Qt .ts → .qm pipeline)
 - A `.ts` lives in a `translations/` folder beside the `.py` whose strings it

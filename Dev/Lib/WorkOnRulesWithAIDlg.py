@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.23 - 7/22/26 - Ron Lockwood
+#    Fixes #1459. The Create/Modify descriptions are cleaned before being sent to the AI: line endings are unified and blank lines (including a stray one left by pressing Enter before clicking Create)
+#    are dropped, so that empty trailing line no longer pushes the model into malformed output and its baffling "XML is not well-formed" validation error.
+#
 #   Version 3.16.22 - 7/16/26 - Ron Lockwood
 #    The preview pane's right-click context menu is disabled (the rendered rule is read-only, so the browser Back/Reload/Save menu doesn't apply); the QWebEngineView is now built in one
 #    shared createPreviewView helper that sets the zoom and the NoContextMenu policy.
@@ -789,6 +793,19 @@ class WorkOnRulesWithAIDlg(QDialog):
 
     # --- the three actions -----------------------------------------------
 
+    def cleanDescription(self, text: str) -> str:
+        '''Normalize a description the user typed before it is sent to the AI: unify line endings, strip trailing whitespace from each line, and drop every blank line (leading, trailing,
+        and interior). Pressing Enter before clicking Create - a natural mistake, since the Create button looks focused - leaves a stray empty line in the box; that blank line can push the
+        model into malformed output whose "XML is not well-formed" validation error is baffling to an ordinary user, so we clean it out here rather than let it reach the AI.'''
+
+        # Unify Windows (\r\n) and old-Mac (\r) line endings to a plain '\n' so splitting and re-joining below behaves the same on every platform.
+        lines = text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+
+        # Strip trailing whitespace from each line, then keep only the lines that actually carry content - this removes blank lines at the top and bottom as well as any blank line in the middle.
+        lines = [line.rstrip() for line in lines if line.strip()]
+
+        return '\n'.join(lines)
+
     def gatherMacrosForPrompt(self, description: str, xmlText) -> tuple:
         '''Collect the macro definitions to send with a request: every macro the rule/macro being worked on calls (recursively), plus any macro the description names (partial,
         case-insensitive match) along with what those call in turn. Returns (macrosText, missingTokens): macrosText is the blank-line-joined XML of the macros found, and missingTokens
@@ -823,7 +840,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
     def onCreate(self):
 
-        description = self.ui.descriptionEdit.toPlainText().strip()
+        description = self.cleanDescription(self.ui.descriptionEdit.toPlainText())
 
         if not description:
 
@@ -870,7 +887,7 @@ class WorkOnRulesWithAIDlg(QDialog):
 
             return
 
-        description = self.ui.modifyDescriptionEdit.toPlainText().strip()
+        description = self.cleanDescription(self.ui.modifyDescriptionEdit.toPlainText())
 
         if not description:
 
