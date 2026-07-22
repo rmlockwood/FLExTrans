@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.4 - 6/30/26 - Ron Lockwood
+#    Fixes #1462. Don't give an error of lowercase/uppercase pairs are not defined in the settings file.
+#
 #   Version 3.16.3 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -201,7 +204,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.16.3",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -805,7 +808,7 @@ def create_synthesis_files(partPath, configMap, report):
     f_sycd.close()
 
     # Get the capitalization pairs setting and write the output text control file if we have any pairs defined
-    capitalizationPairsStr = ReadConfig.getConfigVal(configMap, ReadConfig.LOWERCASE_UPPERCASE_PAIRS, report)
+    capitalizationPairsStr = ReadConfig.getConfigVal(configMap, ReadConfig.LOWERCASE_UPPERCASE_PAIRS, report, giveError=False)
 
     if capitalizationPairsStr:
 
