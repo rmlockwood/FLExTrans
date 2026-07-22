@@ -5,7 +5,7 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.16.4 - 6/30/26 - Ron Lockwood
+#   Version 3.16.4 - 7/22/26 - Ron Lockwood
 #    Fixes #1462. Don't give an error of lowercase/uppercase pairs are not defined in the settings file.
 #
 #   Version 3.16.3 - 6/30/26 - Ron Lockwood
