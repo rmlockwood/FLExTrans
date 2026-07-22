@@ -350,7 +350,7 @@ Section "MainSection" SEC01
           DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
         ${EndIf}
 
-        # Migrate the Tools collection off the old "Rule Assistant" module: it was renamed (RuleAssistant.py -> RuleAssistantPy.py) and the new "Work On Rules With AI" module was added. Detect the
+        # Migrate the Tools collection off the old "Rule Assistant" module: it was renamed (RuleAssistant.py -> RuleAssistantPy.py) and the new "AI Rule Studio" module (file WorkOnRulesWithAI.py) was added. Detect the
         # Tools collection by the presence of the old Rule Assistant module rather than the collection's file name, which is localized (e.g. Werkzeuge.ini in German). (/c: makes findstr treat the bracketed string as a literal, not a regex.)
         nsExec::Exec 'findstr /c:"[FLExTrans\RuleAssistant.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
         Pop $R2   # 0 = found, non-zero = not found
@@ -373,7 +373,7 @@ Section "MainSection" SEC01
             FileClose $R4
           ${EndIf}
 
-          # Also add the new "Work On Rules With AI" module, again only if it isn't already present. Same append approach as above.
+          # Also add the new "AI Rule Studio" module (file WorkOnRulesWithAI.py), again only if it isn't already present. Same append approach as above.
           nsExec::Exec 'findstr /c:"[FLExTrans\WorkOnRulesWithAI.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
           Pop $R3   # 0 = already present, non-zero = absent
 

@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="50"/>
-        <source>Work on Rules with AI</source>
-        <translation>Trabajar en reglas con IA</translation>
+        <source>AI Rule Studio</source>
+        <translation>Estudio de Reglas con IA</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="53"/>

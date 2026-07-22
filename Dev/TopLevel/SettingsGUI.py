@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16.5 - 7/22/26 - Ron Lockwood
+#    The AI Assistant setting descriptions now name the module "AI Rule Studio" (renamed from "Work on Rules with AI").
+#
 #   Version 3.16.4 - 7/10/26 - Ron Lockwood
 #    MainFunction/Main now accept forceFullView and scrollToBottom so another module (Work on Rules with AI) can open Settings in the Full view scrolled to the AI Assistant section.
 #
@@ -747,7 +750,7 @@ def loadYesNo(widget, widget2, wind, settingName):
 
 def loadAiProviders(widget, wind, settingName):
 
-    # Offer the AI providers the Work on Rules with AI module supports, by display name, plus a blank meaning "not configured".
+    # Offer the AI providers the AI Rule Studio module supports, by display name, plus a blank meaning "not configured".
     widget.addItem('')
 
     for provider in AIRules.PROVIDERS.values():
@@ -1258,7 +1261,7 @@ class Main(QMainWindow):
         self.nameToWidgetMap = {}
         self.nameToLabelMap = {}
 
-        # When another module (e.g. Work on Rules with AI) opens Settings to send the user to the AI Assistant section, it asks for the Full view and a scroll to the bottom.
+        # When another module (e.g. AI Rule Studio) opens Settings to send the user to the AI Assistant section, it asks for the Full view and a scroll to the bottom.
         self.scrollToBottom = scrollToBottom
 
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -1385,7 +1388,7 @@ class Main(QMainWindow):
 
     def scrollToAiSettings(self):
 
-        # The AI Assistant settings sit at the bottom of the Full view. Scroll all the way down so the user lands on them (used when the Work on Rules with AI module opens Settings for setup).
+        # The AI Assistant settings sit at the bottom of the Full view. Scroll all the way down so the user lands on them (used when the AI Rule Studio module opens Settings for setup).
         scrollBar = self.ui.scrollArea.verticalScrollBar()
         scrollBar.setValue(scrollBar.maximum())
 
@@ -2275,7 +2278,7 @@ widgetList = [
     "", GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "AI Provider"), "choose_ai_provider", "", COMBO_BOX, object, object, object, loadAiProviders, ReadConfig.AI_RULES_PROVIDER,\
-    _translate("SettingsGUI", "The AI service the Work on Rules with AI module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "The AI service the AI Rule Studio module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "AI Model"), "choose_ai_model", "", COMBO_BOX, object, object, object, loadAiModels, ReadConfig.AI_RULES_MODEL,\
     _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-2.5-flash is available on Google's free tier."), DONT_GIVE_ERROR, FULL_VIEW],\
@@ -2287,12 +2290,12 @@ widgetList = [
     _translate("SettingsGUI", "If Yes, the source and target FLEx project names are included in what is sent to the AI provider.\nChoose No if the project names themselves are sensitive information."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Log AI prompts for debugging?"), "ai_log_prompts_yes", "ai_log_prompts_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_LOG_PROMPTS,\
-    _translate("SettingsGUI", "If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to\nAIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "If Yes, everything the AI Rule Studio module sends to and receives from the AI provider is appended to\nAIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   # The consent value the Work on Rules with AI module records. Shown here so the user can review or change their answer. If it was never set it shows No; the module still asks the
+   # The consent value the AI Rule Studio module records. Shown here so the user can review or change their answer. If it was never set it shows No; the module still asks the
    # one-time consent question (which carries the full explanation) the first time it runs, so a project that has not consented yet is not silently opted in.
    [_translate("SettingsGUI", "Allow sending data to the AI provider?"), "ai_consent_yes", "ai_consent_no", YES_NO, object, object, object, loadYesNo, ReadConfig.AI_RULES_CONSENT,\
-    _translate("SettingsGUI", "Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.\nThe module also asks this the first time you run it; you can review or change your answer here."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "Whether the AI Rule Studio module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.\nThe module also asks this the first time you run it; you can review or change your answer here."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    # Bookkeeping flag written by the module's one-time consent question. Kept hidden (it is not something the user should toggle) but left in the list so saving settings preserves it -
    # the save code rewrites the whole config file from this list.

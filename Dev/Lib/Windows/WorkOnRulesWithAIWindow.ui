@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Work on Rules with AI</string>
+   <string>AI Rule Studio</string>
   </property>
   <layout class="QVBoxLayout" name="mainLayout" stretch="0,0">
    <item>
@@ -69,7 +69,7 @@
           <item>
            <widget class="QCheckBox" name="createMacroCheckbox">
             <property name="toolTip">
-             <string>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</string>
+             <string>When checked, the AI creates a reusable macro (def-macro) instead of a rule. Macros hold logic that several rules can call.</string>
             </property>
             <property name="text">
              <string>Create a macro instead of a rule</string>

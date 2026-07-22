@@ -3302,13 +3302,13 @@ src="Images/ReplacementEditor.png"
 id="sWorkOnRulesAI"
 ><secTitle
 >The <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > Tool</secTitle
 ><p
 >The <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.</p
 ><p
 >Before the first use, open the <object
@@ -3324,8 +3324,8 @@ id="sAIApiKeys"
 type="tSettingsTool"
 ></object
 >, then paste it into the box the <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > tool shows when it asks for it.</p
 ><p
 >Google Gemini (the default provider): go to <link
@@ -3349,8 +3349,8 @@ id="sAIExampleData"
 >Giving the AI example language data</secTitle
 ><p
 >You can give the <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > tool example language data to send along with your request. In some cases this gives the AI valuable context about how the source and target languages actually behave, and helps it make or modify a rule better.</p
 ><p
 >The easiest way to bring this data into the module is to copy it straight from a text where the rule would be applicable. In <object
@@ -8896,6 +8896,11 @@ id="hr"
 ><types
 ><comment
 >The following types are provided as pre-set examples. You may well want to create your own types that refer to one or more of these. You do that by typing in the names of the types in the types attribute of your type.</comment
+><type
+after="AI Rule Studio"
+id="tAIRuleStudio"
+types="tTool"
+></type
 ><type
 font-style="italic"
 id="tArea"

@@ -2,7 +2,7 @@
 #   test_AIRules
 #
 #   Unit tests for Dev/Lib/AIRules.py - the standalone (Qt-free, FLEx-free) core of the
-#   "Work on Rules with AI" module: the provider layer, the API-key vault helpers, the
+#   "AI Rule Studio" module: the provider layer, the API-key vault helpers, the
 #   prompt-assembly functions, the transfer-file parsing/summary, and the splice + validate
 #   + apply pipeline. The AI provider SDKs (anthropic, google.genai, openai) and the OS
 #   keyring are imported lazily inside AIRules, so each test that exercises them injects a

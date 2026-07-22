@@ -5,6 +5,9 @@
 #   SIL International
 #   7/9/26
 #
+#   Version 3.16.3 - 7/22/26 - Ron Lockwood
+#    Comment-only: refer to the module by its new name "AI Rule Studio" (renamed from "Work on Rules with AI").
+#
 #   Version 3.16.2 - 7/16/26 - Ron Lockwood
 #    Added MACRO_STOP_WORDS: per-language function words that can sit next to "macro" in prose without being a name, so AIRules can flag a real mistyped macro name (e.g. "call the macro
 #    asldkjfsdf") as missing while still ignoring phrasings like "the macro that copies gender".
@@ -25,7 +28,7 @@ from collections import namedtuple
 
 # One record per UI language:
 #   code        - the two-letter code used everywhere in FLExTrans: .qm/.ts suffixes, preview_spec_<code>.json, flextools.ini uilanguage, XXE addon zip names, etc.
-#   englishName - the language's name in English (shown e.g. as the default explanation language in Work on Rules with AI).
+#   englishName - the language's name in English (shown e.g. as the default explanation language in AI Rule Studio).
 #   nativeName  - the language's name in itself (what the installer's language picker shows; must match XX_DISPLAY_NAME in LangForInstallerScript/XX.nsh).
 #   localeName  - the locale used for date/time formatting (passed to QLocale()).
 #   nsisName    - the NSIS language-file name: MUI_LANGUAGE "<nsisName>" registers it, and ${LANG_<NSISNAME uppercased>} is its language-id constant.

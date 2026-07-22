@@ -5,8 +5,8 @@
     <name>WorkOnRulesWithAI</name>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="103"/>
-        <source>Work on Rules with AI</source>
-        <translation>Trabajar en reglas con IA</translation>
+        <source>AI Rule Studio</source>
+        <translation>Estudio de Reglas con IA</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIWindow.py" line="104"/>
