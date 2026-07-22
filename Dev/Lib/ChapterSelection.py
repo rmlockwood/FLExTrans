@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16.2 - 7/22/26 - Ron Lockwood
+#    Fixes #1461. Make sure a blank writing system isn't used to create a text in FLEx.
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -242,6 +245,7 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText, vernWs=None):
     if vernWs is None:
 
         vernWs = DB.project.DefaultVernWs
+        assert vernWs, "Default vernacular writing system is not set in the target project."
 
     # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
     # put the \ after the newline
