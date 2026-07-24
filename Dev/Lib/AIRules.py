@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.19 - 7/24/26 - Ron Lockwood
+#    The explain prompt now tells the model to describe the action in plain words instead of quoting the rule's XML mechanics: no clip/lit-tag/part/pos/side vocabulary, and the output word described
+#    by its base form and tags rather than in Apertium's ^lemma<tag><tag>$ lexical-unit notation. New EXPLAIN_STYLE_ACTION block, sent for both rule and macro explanations.
+#
 #   Version 3.16.18 - 7/16/26 - Ron Lockwood
 #    The macro-name token pattern now also recognizes the bare lowercase-m form (mCopyGender - a lowercase m directly followed by a capitalized name), not only m_snake_case, so a macro
 #    referenced that way in a description is spotted. The capital keeps it from matching ordinary m-words like "modify"/"move".
@@ -235,14 +239,25 @@ _LONG_EXPLANATION_DESC = ('A thorough explanation of the whole rule (or macro) f
 # cat-item's first tag is the word's grammatical category from FLEx).
 EXPLAIN_STYLE_COMMON = (
     'Follow these style requirements for the explanation:\n'
-    '- Write for a non-technical reader: plain language, no XML markup, and no Apertium jargon beyond the names that appear in the rule itself.\n'
+    '- Write for a non-technical reader: plain language and no XML markup. The category, tag, variable, list, and macro names that appear in the rule are fine to use, but its structural vocabulary is not - never quote an element or attribute name or its value as part of the explanation (no clip, lit-tag, lit, part, pos, side, "lem", "whole", "tl", "sl", and the like). Describe what each piece accomplishes in plain words instead (see the action guidance below).\n'
     '- Never wrap a tag, category, attribute, or feature name in angle brackets: write 3s_POSS, not <3s_POSS>.\n'
-    '- Format the explanation in Markdown (short headings, bold for category/tag/variable/macro names, bullet lists where they make things clearer). The Markdown will be rendered, so the formatting will show.')
+    '- Format the explanation in Markdown (short headings, bold for category/tag/variable/macro names, bullet lists where they make things clearer). The Markdown will be rendered, so the formatting will show.\n')
 
 EXPLAIN_STYLE_PATTERN = (
     '- Begin by explaining what the pattern matches, item by item: name each pattern item\'s category and spell out what that category is defined to match. The first tag of each cat-item is the '
     'word\'s grammatical category from FLEx, so describe it as the kind of word, with any remaining tags as tags the word carries - for example: "c_UPC matches verbs, prepositions, and adverbs '
     'that end with the UPC tag". Also mention any lemmas that are part of the category definition (a cat-item pinned to a specific lemma matches only that exact word).')
+
+# Action-side style guidance: how to describe the action - the clips that fetch parts of the matched words and the literal tags that build the output word - in plain words instead of quoting the XML
+# mechanics. This is the piece that keeps an explanation from reading like "clip part=\"lem\" pos=\"1\" side=\"tl\", which means ..."; it also asks for the output word to be described plainly rather than
+# in Apertium's ^lemma<tag><tag>$ lexical-unit notation. Sent for both rule and macro explanations, since both build output from clips and literal tags.
+EXPLAIN_STYLE_ACTION = (
+    '- When you explain the action, translate each piece into plain words rather than naming the XML that expresses it. A clip fetches one part of a matched word: the "lem" part is the word\'s base '
+    '(dictionary) form, an "a_gram_cat" part is its grammatical category, a "whole" part is the entire word with all of its tags, and any other part is the feature or affix set named after it; side "tl" '
+    'means the matching target-language word and side "sl" the source-language word; pos (or item) N means the Nth word the pattern matched. So a clip of the "lem" part, position 1, target side is simply '
+    '"the base form of the matching target word". A literal tag just adds that tag to the word being built - say "adds the tag INF", not "a lit-tag INF".\n'
+    '- When you describe what the output word looks like, name its base form and the tags it carries in plain words - for example "the target word\'s base form followed by the tags v, INF, and IND" - not in '
+    'Apertium\'s lexical-unit notation with carets and angle brackets (do not write ^springa<v><INF><IND>$).\n')
 
 _EXPLAIN_PROPERTIES = {
     'explanation': {'type': 'string', 'description': _LONG_EXPLANATION_DESC},
@@ -918,6 +933,7 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
                          'rules: what the macro is for, what each parameter position stands for, what each part of its logic does and why, and how any variables/lists it references contribute. '
                          'Begin by explaining what the macro is for and what each parameter represents. Do not produce or modify any rule or macro.')
             parts.append(EXPLAIN_STYLE_COMMON)
+            parts.append(EXPLAIN_STYLE_ACTION)
         else:
 
             parts.append('MODE: explain the following existing rule. Give a thorough plain-language explanation of the whole rule for someone unaccustomed to reading Apertium rules: what words '
@@ -925,6 +941,7 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
                          'or modify any rule.')
             parts.append(EXPLAIN_STYLE_COMMON)
             parts.append(EXPLAIN_STYLE_PATTERN)
+            parts.append(EXPLAIN_STYLE_ACTION)
 
         parts.append('Write the explanation in {lang}. Also set the "language" field to that language\'s two-letter ISO 639-1 code.'.format(lang=explainLang))
         parts.append('MACRO TO EXPLAIN:' if isMacro else 'RULE TO EXPLAIN:')
