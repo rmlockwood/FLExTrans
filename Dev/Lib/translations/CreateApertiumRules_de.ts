@@ -26,17 +26,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="848"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
-      <translation>Die Variable leeren, um sicherzustellen, dass wir nicht versehentlich einen vorherigen Wert behalten</translation>
+      <translation>Clear the variable to be sure we don't accidentally retain a prior value</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="650"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
-      <translation>Keine Ziel-Affixe für das Merkmal '{trgSpec.label}' der Wortart {trgSpec.category} gefunden.</translation>
+      <translation>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
       <source>There are no target affixes, so there's nothing further to do here.</source>
-      <translation>Es gibt keine Ziel-Affixe, daher gibt es hier nichts weiter zu tun.</translation>
+      <translation>There are no target affixes, so there's nothing further to do here.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="655"/>
@@ -56,17 +56,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="763"/>
       <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
-      <translation>Das Quellsubstantiv hat keinen Plural-Affix angehängt. (Wahrscheinlich hat es einen Singular-Affix.)</translation>
+      <translation>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="767"/>
       <source>The target noun doesn't take plural agreement (marked as such).</source>
-      <translation>Das Zielsubstantiv nimmt keinen Plural-Übereinstimmung an (als solche gekennzeichnet).</translation>
+      <translation>The target noun doesn't take plural agreement (marked as such).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="771"/>
       <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
-      <translation>Wenn das Zielsubstantiv keinen Singular-Übereinstimmung an nimmt (als solche gekennzeichnet), dann werden wir eine Plural-Substantivklasse haben.</translation>
+      <translation>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="778"/>
@@ -211,7 +211,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Bitte stellen Sie sicher, dass der Co-Feature &quot;number&quot; sowohl die Werte &quot;sg&quot; als auch &quot;pl&quot; hat.</translation>
+      <translation>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>
