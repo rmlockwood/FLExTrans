@@ -124,19 +124,19 @@
       <translation>p. ex. Supprimer l'affixe IND de la sortie.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
-        <source>Zoom:</source>
-        <translation>Zoom :</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
+      <source>Zoom:</source>
+      <translation>Zoom :</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
-        <source>Magnify the preview text</source>
-        <translation>Agrandir le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
+      <source>Magnify the preview text</source>
+      <translation>Agrandir le texte de l'aperçu</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
-        <source>Reduce the preview text</source>
-        <translation>Réduire le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
+      <source>Reduce the preview text</source>
+      <translation>Réduire le texte de l'aperçu</translation>
     </message>
     <message>
       <source>Rules</source>
@@ -154,5 +154,5 @@
       <source>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</source>
       <translation>Si cochée, l'IA crée une macro réutilisable au lieu d'une règle. Les macros contiennent une logique que plusieurs règles peuvent appeler.</translation>
     </message>
-</context>
+  </context>
 </TS>
