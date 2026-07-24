@@ -91,7 +91,7 @@
     <message>
       <location filename="../Utils.py" line="667"/>
       <source>The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found.</source>
-      <translation>La variable d'environnement FIELDWORKSDIR n'est pas définie, donc FLEx (flex.exe) est introuvable.</translation>
+      <translation>La variable d'environnement FIELDWORKSDIR n'est pas définie, donc FLEx (flex.exe) n'a pas pu être trouvé.</translation>
     </message>
   </context>
 </TS>
