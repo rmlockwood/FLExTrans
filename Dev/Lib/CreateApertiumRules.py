@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.3 - 7/24/26 - Ron Lockwood
+#    Fixes #1456. Rule names and XML ids that collide now get a 'Copy' suffix (rules via the shared Utils.makeUniqueName; ids via '_Copy', '_Copy_2', ...) instead of a bare number.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -366,13 +369,15 @@ class RuleGenerator:
             self.usedIDs.add(clean)
             return clean
 
-        n = 1
-        while True:
-            s = f'{clean}{n}'
-            if s not in self.usedIDs:
-                self.usedIDs.add(s)
-                return s
+        # The id is already taken, so append a 'Copy' suffix the same way FLEx renames texts, but with underscores and no parentheses since XML ids can't contain spaces: '_Copy', then '_Copy_2', '_Copy_3', ...
+        candidate = f'{clean}_Copy'
+        n = 2
+        while candidate in self.usedIDs:
+            candidate = f'{clean}_Copy_{n}'
             n += 1
+
+        self.usedIDs.add(candidate)
+        return candidate
 
     def AddCategories(self, root):
         '''Ensure that a <def-cat> exists for every part of speech in the
@@ -1186,14 +1191,9 @@ class RuleGenerator:
             ruleIndex = i
             break
 
-        # Add numbers to this rule name, if needed
+        # If the rule name is already in use, give it a unique name by appending ' - Copy' (then ' - Copy (2)', ...) using the shared algorithm, matching how FLEx names inserted texts.
         if ruleName in self.ruleNames:
-            index = 1
-            while True:
-                altName = f'{ruleName} ({index})'
-                if altName not in self.ruleNames:
-                    break
-                index += 1
+            altName = Utils.makeUniqueName(ruleName, self.ruleNames)
             self.report.Info(_translate('CreateApertiumRules', 'Rule name "{ruleName}" already exists in the rule file. Renaming added rule to "{altName}".').format(ruleName=ruleName, altName=altName))
             ruleName = altName
 
