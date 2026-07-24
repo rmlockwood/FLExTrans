@@ -201,7 +201,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo.</translation>
+      <translation>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
@@ -211,7 +211,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Por favor, asegúrese de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
+      <translation>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>
