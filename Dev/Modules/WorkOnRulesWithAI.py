@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.11 - 7/24/26 - Ron Lockwood
+#    Fixes #1458. When the provider/model aren't set and the user opens the Settings tool, re-check the config afterward: if they were just added, open the AI Rule Studio window instead of always returning.
+#
 #   Version 3.16.10 - 7/22/26 - Ron Lockwood
 #    Renamed the module's user-facing name from "Work on Rules with AI" to "AI Rule Studio" (the FTM_Name and the message-box titles); the file name and code identifiers are unchanged.
 #
@@ -78,7 +81,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "AI Rule Studio"),
-        FTM_Version    : "3.16.10",
+        FTM_Version    : "3.16.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
         FTM_Help       : "",
@@ -142,6 +145,16 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
 
     return ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_CONSENT, None, giveError=False) == 'y'
 
+def getProviderAndModel(configMap, report):
+    '''Read the configured AI provider name and model from the config and resolve the provider object. Returns (providerName, model, provider); provider is None when the configured name
+    matches no known provider. Shared by the initial check and the re-check done after the user visits the Settings tool, so the two stay in sync and there's only one place to maintain.'''
+
+    providerName = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_PROVIDER, report, giveError=False)
+    model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False)
+    provider = AIRules.findProvider(providerName)
+
+    return providerName, model, provider
+
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -162,13 +175,12 @@ def MainFunction(DB, report, modify=True):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # The provider and model must be chosen in the Settings tool before this module can run; there are no silent defaults, so the user always knows which service their data goes to.
-    providerName = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_PROVIDER, report, giveError=False)
-    model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False)
-    provider = AIRules.findProvider(providerName)
+    providerName, model, provider = getProviderAndModel(configMap, report)
 
     if not provider or not model:
 
-        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.\n\nDo you want to open the Settings tool now?')
+        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view).' 
+                         'Then come back to this module; it will ask for your API key.\n\nDo you want to open the Settings tool now?')
 
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
@@ -179,13 +191,25 @@ def MainFunction(DB, report, modify=True):
 
         report.Info(msg)
 
-        # If the user says yes, open the Settings tool for them so they don't have to hunt for it. Force the Full view and scroll to the bottom, where the AI Assistant settings (provider, model) live.
-        if msgBox.exec() == QMessageBox.StandardButton.Yes:
+        # If the user declines to open the Settings tool, there's nothing more we can do here.
+        if msgBox.exec() != QMessageBox.StandardButton.Yes:
+            return
 
-            import SettingsGUI # type: ignore
-            SettingsGUI.MainFunction(DB, report, forceFullView=True, scrollToBottom=True)
+        # Open the Settings tool for them so they don't have to hunt for it. Force the Full view and scroll to the bottom, where the AI Assistant settings (provider, model) live.
+        import SettingsGUI # type: ignore
+        SettingsGUI.MainFunction(DB, report, forceFullView=True, scrollToBottom=True)
 
-        return
+        # Re-read the config from disk (the in-memory configMap predates the Settings tool's changes) and re-check. If the provider and model are now set, fall through and open the AI Rule
+        # Studio window so the user doesn't have to re-launch the module; if they still aren't there, there's nothing to run, so return.
+        configMap = ReadConfig.readConfig(report)
+
+        if not configMap:
+            return
+
+        providerName, model, provider = getProviderAndModel(configMap, report)
+
+        if not provider or not model:
+            return
 
     # Reject a model that belongs to a different provider (possible via a hand-edited config file; the Settings tool itself prevents this pairing). A model no provider claims is
     # allowed - it may simply be newer than this release's model lists.
