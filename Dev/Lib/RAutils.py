@@ -5,6 +5,15 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.18 - 7/25/26 - Ron Lockwood
+#    Import tomli_w lazily inside ApplicationPreferences.sync() so RAutils can be imported (e.g. by CI unit tests) without that third-party package installed.
+#
+#   Version 3.16.17 - 7/25/26 - Ron Lockwood
+#    Fixes #1446. A duplicated rule now gets no permutations (createPermutations=no) so it doesn't produce redundant permutation rules for the same phrase head.
+#
+#   Version 3.16.16 - 7/25/26 - Ron Lockwood
+#    Fixes #1451. validateRule now reports every problem with a rule at once (joined into one message) instead of one at a time; a target with any words must have a head marked.
+#
 #   Version 3.16.15 - 7/24/26 - Ron Lockwood
 #    Fixes #1456. duplicate() no longer appends ' (duplicate)' to the rule name; duplicateRule() returns the new rule so the caller can apply the shared 'Copy' naming algorithm.
 #
@@ -60,7 +69,6 @@ import os
 import xml.etree.ElementTree as ET
 import io
 import tomllib
-import tomli_w
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -1012,7 +1020,8 @@ class FLExTransRule(RuleConstituent):
     def duplicate(self) -> "FLExTransRule":
 
         # Copy the name as-is; the caller applies the shared 'Copy' naming algorithm (see Utils.makeUniqueName) so the new rule gets a unique 'X - Copy' style name.
-        newRule = FLExTransRule(name=self.name, description=self.description, createPermutations=self.createPermutations)
+        # The copy gets no permutations: you normally want only one rule to generate the permutations for a given phrase head, so copying that setting would produce redundant rules (issue #1446).
+        newRule = FLExTransRule(name=self.name, description=self.description, createPermutations=PermutationsValue.no)
         newRule.source = Source()
         newRule.source.phraseType = self.source.phraseType
         newRule.source.words = [w.duplicate() for w in self.source.words]
@@ -1240,6 +1249,9 @@ class ApplicationPreferences:
     # Persist the current settings to the TOML file, creating the Config folder if it doesn't exist yet.
     def sync(self) -> None:
 
+        # Import here (not at module load) so RAutils can be imported without tomli_w present - e.g. in CI/unit tests that only exercise the model classes, not settings persistence.
+        import tomli_w
+
         os.makedirs(os.path.dirname(self._filePath), exist_ok=True)
 
         with open(self._filePath, "wb") as f:
@@ -1354,7 +1366,8 @@ class ValidityChecker:
 
         words = rule.target.words
 
-        if len(words) <= 1:
+        # An empty target has nothing to mark; otherwise a head-marked word is required, matching CreateApertiumRules which won't write a rule whose target has no head (even with a single word).
+        if not words:
 
             return True, ""
 
@@ -1370,9 +1383,11 @@ class ValidityChecker:
 
         return False, _translate("RuleAssistantLib", "Target phrase has {0} head words; only one allowed").format(headCount)
 
-    # Run all validity checks and return the first failure, or success if all pass.
+    # Run all validity checks and return every failure joined into one message (so the user sees all of a rule's problems at once, not one message box after another), or success if all pass.
     @staticmethod
     def validateRule(rule: FLExTransRule) -> tuple[bool, str]:
+
+        errorMessages = []
 
         for check in [
             ValidityChecker.checkSourceWordsHaveCategories,
@@ -1384,7 +1399,11 @@ class ValidityChecker:
 
             if not isValid:
 
-                return False, errorMsg
+                errorMessages.append(errorMsg)
+
+        if errorMessages:
+
+            return False, "\n\n".join(errorMessages)
 
         return True, ""
 
