@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.11 - 7/24/26 - Ron Lockwood
+#    Fixed literal &lt;/&gt; showing in the explanation: markdownToHtml stashed &, <, > as sentinels instead of escaping up front, so Python-Markdown no longer double-escapes them inside code spans/blocks.
+#
 #   Version 3.16.10 - 7/16/26 - Ron Lockwood
 #    The explanation preview now switches its pane to right-to-left layout when the returned explanation text contains RTL characters, so Arabic/Hebrew content reads naturally in the explain pane.
 #
@@ -360,12 +363,27 @@ def hasRtlText(text: str) -> bool:
     return False
 
 
-def markdownToHtml(mdText: str) -> str:
-    '''Convert the explanation's Markdown to HTML with the Python-Markdown package. The whole text is HTML-escaped first: Python-Markdown passes raw HTML through untouched, and the result
-    goes into a live QWebEngineView, so any markup the model emits must arrive as visible text, never as elements. The extensions cover what models commonly produce beyond the core syntax:
-    tables, fenced code blocks, saner list numbering, and single-newline line breaks (nl2br, so a line break inside a paragraph shows as one, as this preview has always done).'''
+# Private-use sentinels standing in for &, <, > while Python-Markdown runs. We must keep the model's raw markup out of the live QWebEngineView, but escaping to &amp;/&lt;/&gt; up front backfires:
+# inside code spans and fenced blocks Python-Markdown escapes the & of those entities a second time (&amp;lt; ...), which then shows on screen as the literal text "&lt;"/"&gt;". Swapping the three
+# characters for sentinels Markdown never touches sidesteps that - Markdown can neither build raw HTML from them nor re-escape them - and we turn the sentinels back into real entities afterwards.
+_MD_SENTINELS = (('&', ''), ('<', ''), ('>', ''))
 
-    return markdown.markdown(html.escape(mdText), extensions=['tables', 'fenced_code', 'sane_lists', 'nl2br'])
+def markdownToHtml(mdText: str) -> str:
+    '''Convert the explanation's Markdown to HTML with the Python-Markdown package. Any raw markup the model emits must arrive as visible text, never as live elements (the result goes into a live
+    QWebEngineView), so &, <, and > are stashed as private-use sentinels before rendering and restored as HTML entities after - see _MD_SENTINELS for why we can't simply html.escape up front. The
+    extensions cover what models commonly produce beyond the core syntax: tables, fenced code blocks, saner list numbering, and single-newline line breaks (nl2br, so a line break inside a paragraph shows as one).'''
+
+    # Stash &, <, > as sentinels so Markdown treats them as plain text (no raw HTML, no entity re-escaping inside code).
+    for char, sentinel in _MD_SENTINELS:
+        mdText = mdText.replace(char, sentinel)
+
+    rendered = markdown.markdown(mdText, extensions=['tables', 'fenced_code', 'sane_lists', 'nl2br'])
+
+    # Restore each sentinel to the HTML entity it stood for, so the character shows as itself in the rendered output.
+    for char, sentinel in _MD_SENTINELS:
+        rendered = rendered.replace(sentinel, html.escape(char))
+
+    return rendered
 
 # Clicking a collapser box folds/unfolds its block: toggle the "collapsed" class on the enclosing .el, which hides the children and swaps the minus icon for the plus (both in the CSS).
 # One delegated listener on the document covers every collapser without per-element handlers.

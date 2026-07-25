@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.15 - 7/24/26 - Ron Lockwood
+#    Fixes #1456. duplicate() no longer appends ' (duplicate)' to the rule name; duplicateRule() returns the new rule so the caller can apply the shared 'Copy' naming algorithm.
+#
 #   Version 3.16.14 - 7/10/26 - Ron Lockwood
 #    The treeflex.css/rulegen.css stylesheets moved to the Lib/css subfolder; _loadCssFiles now defaults to the css subfolder beside this file.
 #
@@ -1008,7 +1011,8 @@ class FLExTransRule(RuleConstituent):
     # Make a deep copy of this rule, re-parenting all the duplicated phrases and words.
     def duplicate(self) -> "FLExTransRule":
 
-        newRule = FLExTransRule(name=self.name + " (duplicate)", description=self.description, createPermutations=self.createPermutations)
+        # Copy the name as-is; the caller applies the shared 'Copy' naming algorithm (see Utils.makeUniqueName) so the new rule gets a unique 'X - Copy' style name.
+        newRule = FLExTransRule(name=self.name, description=self.description, createPermutations=self.createPermutations)
         newRule.source = Source()
         newRule.source.phraseType = self.source.phraseType
         newRule.source.words = [w.duplicate() for w in self.source.words]
@@ -1076,12 +1080,17 @@ class FLExTransRuleGenerator:
 
                         f.parent = a
 
-    # Insert a duplicate of the rule at the given index (when the index is valid).
-    def duplicateRule(self, ruleIndex: int) -> None:
+    # Insert a duplicate of the rule at the given index (when the index is valid) and return the new rule (or None if the index is out of range) so the caller can give it a unique name.
+    def duplicateRule(self, ruleIndex: int) -> "FLExTransRule | None":
 
         if 0 <= ruleIndex < len(self.flexTransRules):
 
-            self.flexTransRules.insert(ruleIndex, self.flexTransRules[ruleIndex].duplicate())
+            newRule = self.flexTransRules[ruleIndex].duplicate()
+            self.flexTransRules.insert(ruleIndex, newRule)
+
+            return newRule
+
+        return None
 
     # Create a new editable rule (with word boxes) and insert it at index.
     def insertNewRule(self, index: int, name: str) -> "FLExTransRule":

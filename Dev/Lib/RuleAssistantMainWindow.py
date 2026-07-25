@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.25 - 7/24/26 - Ron Lockwood
+#    Fixes #1456. Renamed the word/affix/rule 'Duplicate' context-menu items to 'Copy' and gave a copied rule a unique 'X - Copy' style name via the shared Utils.makeUniqueName algorithm.
+#
 #   Version 3.16.24 - 7/13/26 - Ron Lockwood
 #    Fixes #1432. Splitter handles can no longer drag a pane completely shut (setChildrenCollapsible(False) on all three splitters).
 #
@@ -320,7 +323,7 @@ class RuleAssistantWindow(QMainWindow):
 
         # Word context menu
         self._wordMenu = QMenu()
-        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onWordDuplicate)
+        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Copy"), self._onWordDuplicate)
         self._wordMenu.addSeparator()
         self._wordMenu.addAction(_translate("RuleAssistantWindow", "Change number"), self._onWordChangeNumber)
         self._cmWordMarkAsHead = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Mark as head"), self._onWordMarkAsHead)
@@ -357,7 +360,7 @@ class RuleAssistantWindow(QMainWindow):
 
         # Affix context menu
         self._affixMenu = QMenu()
-        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onAffixDuplicate)
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Copy"), self._onAffixDuplicate)
         self._affixMenu.addSeparator()
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Toggle affix type"), self._onAffixToggleType)
         self._affixMenu.addSeparator()
@@ -376,7 +379,7 @@ class RuleAssistantWindow(QMainWindow):
 
         # Rule list context menu
         self._ruleMenu = QMenu()
-        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onRuleDuplicate)
+        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Copy"), self._onRuleDuplicate)
         self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Insert new before"), self._onRuleInsertBefore)
         self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Insert new after"), self._onRuleInsertAfter)
         self._ruleMenu.addSeparator()
@@ -1794,11 +1797,20 @@ class RuleAssistantWindow(QMainWindow):
 
     # Rule menu handlers
     def _onRuleDuplicate(self) -> None:
-        """Duplicate selected rule."""
+        """Copy the selected rule, giving the new rule a unique 'X - Copy' style name."""
 
         if self._generator:
 
-            self._generator.duplicateRule(self._currentRuleIndex)
+            # Collect the existing rule names before duplicating so we can find a name that doesn't collide.
+            existingNames = [rule.name for rule in self._generator.flexTransRules]
+
+            newRule = self._generator.duplicateRule(self._currentRuleIndex)
+
+            if newRule:
+
+                # Apply the shared 'Copy' naming algorithm (the same one used when inserting a target text into FLEx) so the copy gets a unique name.
+                newRule.name = Utils.makeUniqueName(newRule.name, existingNames)
+
             self._populateRuleList()
             self._markDirty()
 

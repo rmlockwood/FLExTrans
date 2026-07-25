@@ -50,8 +50,8 @@
       <translation>¿Desea guardar los cambios?</translation>
     </message>
     <message>
-      <source>Duplicate</source>
-      <translation>Duplicar</translation>
+      <source>Copy</source>
+      <translation>Copiar</translation>
     </message>
     <message>
       <source>Edit</source>
