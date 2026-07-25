@@ -2788,7 +2788,7 @@ src="Images/WordContextMenu.png"
 ><li
 ><object
 type="tBold"
->Duplicate</object
+>Copy</object
 >: creates a complete copy of the current word.</li
 ><li
 ><object
@@ -2998,7 +2998,7 @@ src="Images/AffixContextMenu.png"
 ><li
 ><object
 type="tBold"
->Duplicate</object
+>Copy</object
 >: creates a complete copy of the current affix.</li
 ><li
 ><object

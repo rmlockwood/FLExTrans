@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.17 - 7/25/26 - Ron Lockwood
+#    Fixes #1446. A duplicated rule now gets no permutations (createPermutations=no) so it doesn't produce redundant permutation rules for the same phrase head.
+#
 #   Version 3.16.16 - 7/25/26 - Ron Lockwood
 #    Fixes #1451. validateRule now reports every problem with a rule at once (joined into one message) instead of one at a time; a target with any words must have a head marked.
 #
@@ -1015,7 +1018,8 @@ class FLExTransRule(RuleConstituent):
     def duplicate(self) -> "FLExTransRule":
 
         # Copy the name as-is; the caller applies the shared 'Copy' naming algorithm (see Utils.makeUniqueName) so the new rule gets a unique 'X - Copy' style name.
-        newRule = FLExTransRule(name=self.name, description=self.description, createPermutations=self.createPermutations)
+        # The copy gets no permutations: you normally want only one rule to generate the permutations for a given phrase head, so copying that setting would produce redundant rules (issue #1446).
+        newRule = FLExTransRule(name=self.name, description=self.description, createPermutations=PermutationsValue.no)
         newRule.source = Source()
         newRule.source.phraseType = self.source.phraseType
         newRule.source.words = [w.duplicate() for w in self.source.words]

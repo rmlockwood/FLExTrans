@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.27 - 7/25/26 - Ron Lockwood
+#    Fixes #1447. Select the affected rule after duplicating, inserting, moving, or deleting a rule, instead of always jumping back to the first rule.
+#
 #   Version 3.16.26 - 7/25/26 - Ron Lockwood
 #    Fixes #1450. Added tooltips to the Save, Save & Write, and Save & Write All buttons explaining how they differ.
 #
@@ -422,8 +425,12 @@ class RuleAssistantWindow(QMainWindow):
 
         self._dirty = False
 
-    def _populateRuleList(self) -> None:
-        """Populate the rule list from generator."""
+    def _populateRuleList(self, selectRow: int = 0) -> None:
+        """Populate the rule list from the generator and select `selectRow`.
+
+        Callers pass the row that should end up selected (e.g. the newly duplicated rule, or a
+        rule that was just moved), because selecting a row here fires _onRuleSelected which sets
+        _currentRuleIndex. Out-of-range values fall back to the first rule."""
 
         self.ruleList.clear()
 
@@ -434,10 +441,14 @@ class RuleAssistantWindow(QMainWindow):
                 item = QListWidgetItem(rule.name or f"Rule {i+1}")
                 self.ruleList.addItem(item)
 
-        # Select first rule
+        # Select the requested rule (clamped to a valid row), which drives _currentRuleIndex via the selection handler.
         if self.ruleList.count() > 0:
 
-            self.ruleList.setCurrentRow(0)
+            if selectRow < 0 or selectRow >= self.ruleList.count():
+
+                selectRow = 0
+
+            self.ruleList.setCurrentRow(selectRow)
 
     def _showRule(self, index: int) -> None:
         """Show a rule in the editor.
@@ -1812,6 +1823,8 @@ class RuleAssistantWindow(QMainWindow):
             # Collect the existing rule names before duplicating so we can find a name that doesn't collide.
             existingNames = [rule.name for rule in self._generator.flexTransRules]
 
+            # duplicateRule inserts the new rule at this index, so that's the row to select afterwards.
+            newIndex = self._currentRuleIndex
             newRule = self._generator.duplicateRule(self._currentRuleIndex)
 
             if newRule:
@@ -1819,7 +1832,8 @@ class RuleAssistantWindow(QMainWindow):
                 # Apply the shared 'Copy' naming algorithm (the same one used when inserting a target text into FLEx) so the copy gets a unique name.
                 newRule.name = Utils.makeUniqueName(newRule.name, existingNames)
 
-            self._populateRuleList()
+            # Select the newly duplicated rule so the user can edit it immediately (issue #1447).
+            self._populateRuleList(newIndex)
             self._markDirty()
 
     def _onRuleInsertBefore(self) -> None:
@@ -1849,8 +1863,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         self._generator.insertNewRule(index, f"Rule {len(self._generator.flexTransRules) + 1}")
-        self._populateRuleList()
-        self.ruleList.setCurrentRow(index)
+        self._populateRuleList(index)
         self._markDirty()
 
     def _onRuleMoveUp(self) -> None:
@@ -1862,9 +1875,8 @@ class RuleAssistantWindow(QMainWindow):
 
         rules = self._generator.flexTransRules
         rules[self._currentRuleIndex], rules[self._currentRuleIndex - 1] = rules[self._currentRuleIndex - 1], rules[self._currentRuleIndex]
-        self._currentRuleIndex -= 1
-        self._populateRuleList()
-        self.ruleList.setCurrentRow(self._currentRuleIndex)
+        # Keep the moved rule selected rather than jumping back to the first rule (issue #1447).
+        self._populateRuleList(self._currentRuleIndex - 1)
         self._markDirty()
 
     def _onRuleMoveDown(self) -> None:
@@ -1876,9 +1888,8 @@ class RuleAssistantWindow(QMainWindow):
 
         rules = self._generator.flexTransRules
         rules[self._currentRuleIndex], rules[self._currentRuleIndex + 1] = rules[self._currentRuleIndex + 1], rules[self._currentRuleIndex]
-        self._currentRuleIndex += 1
-        self._populateRuleList()
-        self.ruleList.setCurrentRow(self._currentRuleIndex)
+        # Keep the moved rule selected rather than jumping back to the first rule (issue #1447).
+        self._populateRuleList(self._currentRuleIndex + 1)
         self._markDirty()
 
     def _onRuleDelete(self) -> None:
@@ -1895,16 +1906,15 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         self._generator.flexTransRules.pop(self._currentRuleIndex)
-        self._populateRuleList()
 
-        if self._currentRuleIndex >= len(self._generator.flexTransRules):
+        # After removing a rule, keep the selection on the rule that shifted into its place, or the new last rule if we removed the last one.
+        newIndex = self._currentRuleIndex
 
-            self._currentRuleIndex = len(self._generator.flexTransRules) - 1
+        if newIndex >= len(self._generator.flexTransRules):
 
-        if self._currentRuleIndex >= 0:
+            newIndex = len(self._generator.flexTransRules) - 1
 
-            self.ruleList.setCurrentRow(self._currentRuleIndex)
-
+        self._populateRuleList(newIndex)
         self._markDirty()
 
     # Helper methods
