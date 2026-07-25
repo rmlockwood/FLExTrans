@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_n">
+      <cat-item tags="n" />
+      <cat-item tags="n.*" />
+    </def-cat>
+    <def-cat n="c_xyz">
+      <cat-item tags="XYZ"/>
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <!--Part-of-speech tags used in the rules-->
+    <def-attr n="a_gram_cat">
+      <attr-item tags="n" />
+    </def-attr>
+  </section-def-attrs>
+  <section-rules>
+    <!-- This rule has the same name a Rule Assistant rule would generate, but it was written by hand (no "Rule Assistant Description:" marker), so an overwrite must refuse to touch it. -->
+    <rule comment="def n simple">
+      <pattern>
+        <pattern-item n="c_n" />
+      </pattern>
+      <action>
+        <out>
+          <lu>
+            <clip pos="1" side="tl" part="lem" />
+            <clip pos="1" side="tl" part="a_gram_cat" />
+          </lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

@@ -26,9 +26,9 @@ Previous Versions/FLExToolsWithFLExTrans3.9beta.zip
 Previous Versions/HermitCrabTools3.9beta.zip
 HermitCrabTools3.9beta.zip
 
-RuleAssistantTests/CreateApertiumRules.py
-RuleAssistantTests/*.t1x
-RuleAssistantTests/*.bin
+Dev/TestRuleAssistant/RuleAssistantTests/CreateApertiumRules.py
+Dev/TestRuleAssistant/RuleAssistantTests/*.t1x
+Dev/TestRuleAssistant/RuleAssistantTests/*.bin
 __pycache__
 .vscode/launch.json
 Dev/TopLevel/translations/.vscode/launch.json

@@ -68,6 +68,12 @@ def pyqtSignal(*args, **kwargs):
     def decorator(func):
         return func
     return decorator
+
+def pyqtSlot(*args, **kwargs):
+    """Mock pyqtSlot decorator - no-op for CI/tests"""
+    def decorator(func):
+        return func
+    return decorator
     
     def __init__(self, language=None, country=None):
         self.language = language

@@ -205,5 +205,17 @@
       <source>Word Number</source>
       <translation>Número de Palabra</translation>
     </message>
+    <message>
+      <source>Save your rules in the Rule Assistant only. Nothing is written to the transfer rule file.</source>
+      <translation>Guarda sus reglas solo en el Asistente de Reglas. No se escribe nada en el archivo de reglas de transferencia.</translation>
+    </message>
+    <message>
+      <source>Save your rules and write the currently selected rule to the transfer rule file.</source>
+      <translation>Guarda sus reglas y escribe la regla seleccionada actualmente en el archivo de reglas de transferencia.</translation>
+    </message>
+    <message>
+      <source>Save your rules and write all of the rules to the transfer rule file.</source>
+      <translation>Guarda sus reglas y escribe todas las reglas en el archivo de reglas de transferencia.</translation>
+    </message>
   </context>
 </TS>
