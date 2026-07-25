@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.6 - 7/25/26 - Ron Lockwood
+#    Fixed Pylance warnings: two .reomve() typos, a malformed dict type annotation, and None-safety for XML attribute and element lookups.
+#
 #   Version 3.16.5 - 7/25/26 - Ron Lockwood
 #    Fixes #1454. Write a comment in every generated rule warning that manual edits may be overwritten by the Rule Assistant and suggesting the user rename the rule to avoid this.
 #
@@ -168,8 +171,8 @@ class RuleGenerator:
         self.root: Optional[ET.Element] = None
 
         # All current <def-cat>s
-        # {name: [(lemma, tags), ...]}
-        self.definedCategories: dict[str, list[tuple[str, str]]] = {}
+        # {name: [(lemma, tags), ...]} where lemma (and in principle tags) may be None
+        self.definedCategories: dict[str, list[tuple[Optional[str], Optional[str]]]] = {}
 
         # All current <def-attr>s
         # {name: [tags, ...]}
@@ -209,7 +212,7 @@ class RuleGenerator:
         self.usedIDs = set()
 
         # The <section-*> elements of the XML tree
-        self.sections: dict[str: ET.Element] = {}
+        self.sections: dict[str, ET.Element] = {}
 
         # Attributes for tracking split gender agreement
         self.BantuMacro: Optional[str] = None
@@ -277,6 +280,8 @@ class RuleGenerator:
     def GetSection(self, sectionName: str) -> ET.Element:
         '''Retrieve a section of the rule file, creating it if necessary.'''
 
+        assert self.root is not None, 'GetSection requires the XML tree to have been created or loaded.'
+
         # Check if we've looked it up before
         if sectionName in self.sections:
             return self.sections[sectionName]
@@ -314,32 +319,60 @@ class RuleGenerator:
         self.root = tree.getroot()
 
         for cat in self.root.findall('.//def-cat'):
+
             name = cat.get('n')
+
+            # Skip any malformed <def-cat> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
             items = [(i.get('lemma'), i.get('tags')) for i in cat.findall('./cat-item')]
             self.usedIDs.add(name)
             self.definedCategories[name] = items
 
             if len(items) == 2:
                 if not items[0][0] and not items[1][0]: # no lemmas
-                    ls = sorted([items[0][1], items[1][1]])
+                    ls = sorted([items[0][1] or '', items[1][1] or ''])
                     if ls[1] == ls[0] + '.*':
                         self.tagToCategoryName[ls[0]] = name
 
         for attr in self.root.findall('.//def-attr'):
+
             name = attr.get('n')
-            values = set([i.get('tags') for i in attr.findall('./attr-item')])
+
+            # Skip any malformed <def-attr> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
+            values = set([tags for i in attr.findall('./attr-item') if (tags := i.get('tags')) is not None])
             self.usedIDs.add(name)
             self.definedAttributes[name] = values
 
         for var in self.root.findall('.//def-var'):
+
             name = var.get('n')
+
+            # Skip any malformed <def-var> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
             val = var.get('v')
             self.usedIDs.add(name)
             self.variables[name] = val
 
         for lst in self.root.findall('.//def-list'):
+
             name = lst.get('n')
-            values = set([i.get('v') for i in lst.findall('./list-item')])
+
+            # Skip any malformed <def-list> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
+            values = set([v for i in lst.findall('./list-item') if (v := i.get('v')) is not None])
             self.usedIDs.add(name)
             self.lists[name] = values
 
@@ -358,7 +391,13 @@ class RuleGenerator:
             '''
 
         for rule in self.root.findall('.//rule'):
-            self.ruleNames.add(rule.get('comment'))
+
+            comment = rule.get('comment')
+
+            # Only rules with a comment attribute have a name to track.
+            if comment is not None:
+
+                self.ruleNames.add(comment)
 
     def CreateTree(self) -> None:
         '''Generate a blank Apertium transfer XML tree.'''
@@ -574,6 +613,7 @@ class RuleGenerator:
         # Check if we're dealing with Bantu noun class
         if srcSpec.category == 'n' and srcSpec.label == self.BantuFeature:
             bantu = True
+            assert self.BantuValues is not None, 'MakeBantuMacro sets BantuValues whenever BantuFeature is set.'
             src = set([(x, x) for x in self.BantuValues])
         else:
             bantu = False
@@ -681,6 +721,7 @@ class RuleGenerator:
             return MacroSpec(macid, varid, [srcSpec.category])
 
         if bantu:
+            assert self.BantuMacro is not None, 'MakeBantuMacro sets BantuMacro whenever BantuFeature is set.'
             macro.append(ET.Comment(_translate('CreateApertiumRules', 'Determine the appropriate noun class')))
             callmac = ET.SubElement(macro, 'call-macro', n=self.BantuMacro)
             ET.SubElement(callmac, 'with-param', pos='1')
@@ -697,6 +738,7 @@ class RuleGenerator:
 
                 eq = MakeWhenClause(choose, varid, FindTag(srcFeat))
                 if bantu:
+                    assert self.BantuVariable is not None, 'MakeBantuMacro sets BantuVariable whenever BantuFeature is set.'
                     ET.SubElement(eq, 'var', n=self.BantuVariable)
                 else:
                     ET.SubElement(eq, 'clip', pos='1', side='tl',
@@ -727,7 +769,7 @@ class RuleGenerator:
 
             for node in section:
 
-                if node.tag == defTag and re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n')):
+                if node.tag == defTag and re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n', '')):
                     
                     drop.append(node)
 
@@ -958,7 +1000,7 @@ class RuleGenerator:
         sourceList = sources
         if all(s.ranking for s in sources):
             ranked = True
-            sourceList = sorted(sources, key=lambda s: s.ranking)
+            sourceList = sorted(sources, key=lambda s: s.ranking or 0)
 
         # Get a list of all possible output affixes or lemma for each value
         # of each feature.
@@ -1182,7 +1224,9 @@ class RuleGenerator:
         node and append it to the current XML tree. Return whether a rule
         was created. Skip any words whose id field is in `skip`.'''
 
-        ruleName = rule.get('name')
+        assert self.categoryAttribute is not None, 'ProcessAssistantFile sets categoryAttribute before any rules are processed.'
+
+        ruleName = rule.get('name', '')
 
         # Collect and validate the source words along with any features
         # that will affect the pattern
@@ -1354,19 +1398,17 @@ class RuleGenerator:
             lemmaTags = []
             lemmaLocs = {}
             for feature in word.findall('./Features/Feature'):
-                label = feature.get('label')
+                label = feature.get('label', '')
                 match = feature.get('match')
                 value = feature.get('value')
                 tgtDefault = feature.get('unmarked_default')
-                ranking = feature.get('ranking')
-                if ranking:
-                    ranking = int(ranking)
+                rankingStr = feature.get('ranking')
+                ranking = int(rankingStr) if rankingStr else None
                 if not value:
                     apos, isAffix, srcDefault, isSource = featureSources.get(
                         (label, match), (pos, False, None, False))
                 else:
                     apos, isAffix, srcDefault, isSource = pos, False, None, False
-                srcCat = wordCats.get(apos)
                 if apos is None:
                     if value:
                         srcCat = cat
@@ -1374,6 +1416,8 @@ class RuleGenerator:
                         self.report.Error(_translate('CreateApertiumRules', 'Missing source for feature {label} on inserted word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
                         self.GetSection('section-rules').remove(ruleEl)
                         return False
+                else:
+                    srcCat = wordCats[apos]
                 lemmaTags.append(FeatureSpec(srcCat, label, isAffix,
                                              value=value, ranking=ranking,
                                              default=(tgtDefault or srcDefault),
@@ -1384,7 +1428,7 @@ class RuleGenerator:
 
             if pos is None and not shouldUseLemmaMacro:
                 self.report.Error(_translate('CreateApertiumRules', 'Unable to generate lemma for inserted word {wid} in rule {ruleName}.').format(wid=wid, ruleName=ruleName))
-                self.GetSection('section-rules').reomve(ruleEl)
+                self.GetSection('section-rules').remove(ruleEl)
                 return False
 
             # Capitalize the word based on its position in the rule.
@@ -1410,6 +1454,7 @@ class RuleGenerator:
                                   pos=lemmaLocs[srcCat])
                 ET.SubElement(lemCase, 'var', n=spec.varid)
             else:
+                assert pos is not None, 'The check above guarantees pos is set when we are not using a lemma macro.'
                 ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
 
             # Insert the part-of-speech tag.
@@ -1428,13 +1473,12 @@ class RuleGenerator:
                 prefix = (affix.get('type', 'suffix') == 'prefix')
                 features = []
                 for feature in affix.findall('.//Feature'):
-                    label = feature.get('label')
+                    label = feature.get('label', '')
                     match = feature.get('match')
                     value = feature.get('value')
                     default = feature.get('unmarked_default')
-                    ranking = feature.get('ranking')
-                    if ranking:
-                        ranking = int(ranking)
+                    rankingStr = feature.get('ranking')
+                    ranking = int(rankingStr) if rankingStr else None
                     features.append((label, match, value, default, ranking))
                 if not features:
                     continue
@@ -1456,14 +1500,15 @@ class RuleGenerator:
                     for label, match, value, tgtDefault, ranking in affix:
                         apos, isAffix, srcDefault, isSource = featureSources.get(
                             (label, match), (pos, True, None, False))
-                        srcCat = wordCats.get(apos)
                         if apos is None:
                             if value:
                                 srcCat = cat
                             else:
                                 self.report.Error(_translate('CreateApertiumRules', 'Unable to find source for feature {label} on word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
-                                self.GetSection('section-rules').reomve(ruleEl)
+                                self.GetSection('section-rules').remove(ruleEl)
                                 return False
+                        else:
+                            srcCat = wordCats[apos]
                         default = tgtDefault or srcDefault
                         specList.append(FeatureSpec(srcCat, label,
                                                     isAffix, value=value,
@@ -1508,7 +1553,7 @@ class RuleGenerator:
                     (label, match), (pos, True, None, False))
                 if apos is None:
                     self.report.Error(_translate('CreateApertiumRules', 'Unable to find source for feature {label} on word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
-                    self.GetSection('section-rules').reomve(ruleEl)
+                    self.GetSection('section-rules').remove(ruleEl)
                     return False
                 default = tgtDefault or srcDefault
 
@@ -1547,6 +1592,8 @@ class RuleGenerator:
         '''Delete macros and variables which have become unused as a result of
         deleting old rules.'''
 
+        assert self.root is not None, 'TrimUnused requires the XML tree to have been created or loaded.'
+
         names = [('section-def-macros', 'def-macro', 'call-macro'),
                  ('section-def-vars', 'def-var', 'var')]
         for sectionName, defTag, callTag in names:
@@ -1559,7 +1606,7 @@ class RuleGenerator:
                     comments.append(node)
                     continue                                             
                 # We may have a Bantu macro or variable already added, leave it 
-                if node.tag != defTag or node.attrib.get('n') in used or re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n')):
+                if node.tag != defTag or node.attrib.get('n') in used or re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n', '')):
                     comments = []
                     continue
                 drop += comments
@@ -1586,6 +1633,8 @@ class RuleGenerator:
         if self.root is None:
             self.CreateTree()
 
+        assert self.root is not None, 'CreateTree just set self.root if it was not already loaded from an existing transfer file.'
+
         self.AddCategories(root)
 
         self.categoryAttribute = 'a_gram_cat'
@@ -1596,6 +1645,8 @@ class RuleGenerator:
                 'a_gram_cat', set(self.tagToCategoryName.keys()),
                 comment='Part-of-speech tags used in the rules')
         catElem = self.root.find(f".//def-attr[@n='{self.categoryAttribute}']")
+        assert catElem is not None, 'The category def-attr always exists: it was either loaded from the existing file or just created by AddSingleAttribute.'
+
         for tag in self.tagToCategoryName:
             if tag not in self.definedAttributes[self.categoryAttribute]:
                 ET.SubElement(catElem, 'attr-item', tags=tag)
@@ -1616,7 +1667,7 @@ class RuleGenerator:
 
                     continue
 
-                name = rule.get('name')
+                name = rule.get('name', '')
 
                 for i, existing in self.FindOldRules(name, True):
 
@@ -1682,12 +1733,19 @@ class RuleGenerator:
                 continue
 
             if delete_old:
-                name = rule.get('name')
+                name = rule.get('name', '')
                 remove = [r for i, r in self.FindOldRules(name, True)]
                 section = self.GetSection('section-rules')
+
                 for r in remove:
-                    self.ruleNames.remove(r.get('comment'))
+
+                    # FindOldRules only yields rules that have a comment attribute, but check anyway to keep the types straight.
+                    if (comment := r.get('comment')) is not None:
+
+                        self.ruleNames.remove(comment)
+
                     section.remove(r)
+
                 self.TrimUnused()
 
             perm = rule.get('create_permutations', 'no')
@@ -1720,6 +1778,8 @@ class RuleGenerator:
 
     def WriteTransferFile(self, fileName: str) -> None:
         '''Write the generated transfer rules XML to `fileName`.'''
+
+        assert self.root is not None, 'WriteTransferFile requires the XML tree to have been created or loaded.'
 
         # The transfer DTD doesn't allow sections to be empty,
         # so simply don't include them in that case.
