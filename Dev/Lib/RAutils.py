@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.16 - 7/25/26 - Ron Lockwood
+#    Fixes #1451. validateRule now reports every problem with a rule at once (joined into one message) instead of one at a time; a target with any words must have a head marked.
+#
 #   Version 3.16.15 - 7/24/26 - Ron Lockwood
 #    Fixes #1456. duplicate() no longer appends ' (duplicate)' to the rule name; duplicateRule() returns the new rule so the caller can apply the shared 'Copy' naming algorithm.
 #
@@ -1354,7 +1357,8 @@ class ValidityChecker:
 
         words = rule.target.words
 
-        if len(words) <= 1:
+        # An empty target has nothing to mark; otherwise a head-marked word is required, matching CreateApertiumRules which won't write a rule whose target has no head (even with a single word).
+        if not words:
 
             return True, ""
 
@@ -1370,9 +1374,11 @@ class ValidityChecker:
 
         return False, _translate("RuleAssistantLib", "Target phrase has {0} head words; only one allowed").format(headCount)
 
-    # Run all validity checks and return the first failure, or success if all pass.
+    # Run all validity checks and return every failure joined into one message (so the user sees all of a rule's problems at once, not one message box after another), or success if all pass.
     @staticmethod
     def validateRule(rule: FLExTransRule) -> tuple[bool, str]:
+
+        errorMessages = []
 
         for check in [
             ValidityChecker.checkSourceWordsHaveCategories,
@@ -1384,7 +1390,11 @@ class ValidityChecker:
 
             if not isValid:
 
-                return False, errorMsg
+                errorMessages.append(errorMsg)
+
+        if errorMessages:
+
+            return False, "\n\n".join(errorMessages)
 
         return True, ""
 

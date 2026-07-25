@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.26 - 7/25/26 - Ron Lockwood
+#    Fixes #1450. Added tooltips to the Save, Save & Write, and Save & Write All buttons explaining how they differ.
+#
 #   Version 3.16.25 - 7/24/26 - Ron Lockwood
 #    Fixes #1456. Renamed the word/affix/rule 'Duplicate' context-menu items to 'Copy' and gave a copied rule a unique 'X - Copy' style name via the shared Utils.makeUniqueName algorithm.
 #
@@ -247,6 +250,11 @@ class RuleAssistantWindow(QMainWindow):
         self.saveCreateButton = self.ui.save_create_button
         self.saveAllButton = self.ui.save_all_button
         self.helpButton = self.ui.help_button
+
+        # Spell out how the three Save buttons differ, since the labels alone don't make it obvious (issue #1450).
+        self.saveButton.setToolTip(_translate("RuleAssistantWindow", "Save your rules in the Rule Assistant only. Nothing is written to the transfer rule file."))
+        self.saveCreateButton.setToolTip(_translate("RuleAssistantWindow", "Save your rules and write the currently selected rule to the transfer rule file."))
+        self.saveAllButton.setToolTip(_translate("RuleAssistantWindow", "Save your rules and write all of the rules to the transfer rule file."))
 
         # Splitter proportions (runtime tweak, not expressible in the .ui).
         self.ui.main_splitter.setSizes([200, 460])

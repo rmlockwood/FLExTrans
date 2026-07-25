@@ -232,5 +232,9 @@
       <source>Copying prior version of transfer rules to {backupPath}.</source>
       <translation>Copiando la versión anterior de las reglas de transferencia a {backupPath}.</translation>
     </message>
+    <message>
+      <source>If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.</source>
+      <translation>Si edita esta regla manualmente, el Asistente de Reglas podría sobrescribir sus cambios. Cambie el nombre de la regla para evitarlo.</translation>
+    </message>
   </context>
 </TS>

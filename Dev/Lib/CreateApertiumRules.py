@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.5 - 7/25/26 - Ron Lockwood
+#    Fixes #1454. Write a comment in every generated rule warning that manual edits may be overwritten by the Rule Assistant and suggesting the user rename the rule to avoid this.
+#
 #   Version 3.16.4 - 7/25/26 - Ron Lockwood
 #    Fixes #1455. Refuse to overwrite a hand-written rule: on overwrite, abort with an error if an existing same-named rule lacks the 'Rule Assistant Description:' marker; always write that marker.
 #
@@ -1231,6 +1234,9 @@ class RuleGenerator:
         ruleEl = ET.Element('rule', comment=ruleName)
         ruleSection.insert(ruleIndex, ruleEl)
         self.ruleNames.add(ruleName)
+
+        # Warn anyone editing the rule file by hand that the Rule Assistant may overwrite this rule when it regenerates. Renaming the rule takes it out of the Rule Assistant's reach (issue #1454).
+        ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.')))
 
         # Always write a 'Rule Assistant Description:' comment (even when the rule has no description text) so the rule is recognizable as Rule-Assistant-generated. This marker is what lets a
         # later overwrite replace this rule while refusing to clobber a hand-written rule of the same name (see IsRuleAssistantRule). Emit one comment per Description, or a single bare marker if there are none.
