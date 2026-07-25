@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.18 - 7/25/26 - Ron Lockwood
+#    Import tomli_w lazily inside ApplicationPreferences.sync() so RAutils can be imported (e.g. by CI unit tests) without that third-party package installed.
+#
 #   Version 3.16.17 - 7/25/26 - Ron Lockwood
 #    Fixes #1446. A duplicated rule now gets no permutations (createPermutations=no) so it doesn't produce redundant permutation rules for the same phrase head.
 #
@@ -66,7 +69,6 @@ import os
 import xml.etree.ElementTree as ET
 import io
 import tomllib
-import tomli_w
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -1246,6 +1248,9 @@ class ApplicationPreferences:
 
     # Persist the current settings to the TOML file, creating the Config folder if it doesn't exist yet.
     def sync(self) -> None:
+
+        # Import here (not at module load) so RAutils can be imported without tomli_w present - e.g. in CI/unit tests that only exercise the model classes, not settings persistence.
+        import tomli_w
 
         os.makedirs(os.path.dirname(self._filePath), exist_ok=True)
 
