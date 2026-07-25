@@ -144,6 +144,10 @@
       <translation>El nombre de la regla &quot;{ruleName}&quot; ya existe en el archivo de reglas. Renombrando la regla añadida a &quot;{altName}&quot;.</translation>
     </message>
     <message>
+      <source>The transfer rule file already contains a rule named &quot;{ruleName}&quot; that was not created by the Rule Assistant. To avoid overwriting a hand-written rule, no rules were written. Please rename or remove that rule, or rename your Rule Assistant rule.</source>
+      <translation>El archivo de reglas de transferencia ya contiene una regla llamada &quot;{ruleName}&quot; que no fue creada por el Asistente de Reglas. Para evitar sobrescribir una regla escrita a mano, no se escribió ninguna regla. Cambie el nombre de esa regla o elimínela, o cambie el nombre de su regla del Asistente de Reglas.</translation>
+    </message>
+    <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
       <source>Rule Assistant Description: {desc}</source>
       <translation>Descripción del Asistente de Reglas: {desc}</translation>
