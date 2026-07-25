@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.16.7 - 7/24/26 - Ron Lockwood
+#    Fixes #1456. Factored the text 'Copy' naming algorithm out of createUniqueTitle into a reusable makeUniqueName(title, existingNames) so the Rule Assistant can share it.
+#
 #   Version 3.16.6 - 7/14/26 - Ron Lockwood
 #    Fixes #1441. getFlexExePath prefers FieldWorks.exe (newer FLEx installs) and falls back to flex.exe if that isn't present.
 #
@@ -432,11 +435,17 @@ def createUniqueTitle(DB, title):
     # Create a list of source text names
     sourceTextList = getSourceTextList(DB)
 
-    if title in sourceTextList:
+    return makeUniqueName(title, sourceTextList)
+
+# Given a name and the collection of names already in use, return the name unchanged if it's free; otherwise append ' - Copy', then ' - Copy (2)', ' - Copy (3)', and so on until the
+# result is unused. This is the shared "Copy" naming algorithm used when inserting a target text into FLEx, duplicating a rule in the Rule Assistant, and adding rules to the transfer rule file.
+def makeUniqueName(title, existingNames):
+
+    if title in existingNames:
 
         title += _translate("Utils", ' - Copy')
 
-        if title in sourceTextList:
+        if title in existingNames:
 
             done = False
             i = 2
@@ -445,12 +454,13 @@ def createUniqueTitle(DB, title):
 
                 tryName = title + ' (' + str(i) + ')'
 
-                if tryName not in sourceTextList:
+                if tryName not in existingNames:
 
                     title = tryName
                     done = True
 
                 i += 1
+
     return title
 
 def removeTestID(inStr):
