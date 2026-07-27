@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.24 - 7/27/26 - Ron Lockwood
+#    Closing the window now offers to approve and write an unapproved create/modify draft first (the same offer a tab switch or rule click makes), so the draft isn't silently discarded;
+#    if the write is requested and fails, the window stays open so the draft can be retried rather than lost.
+#
 #   Version 3.16.23 - 7/22/26 - Ron Lockwood
 #    Fixes #1459. The Create/Modify descriptions are cleaned before being sent to the AI: line endings are unified and blank lines (including a stray one left by pressing Enter before clicking Create)
 #    are dropped, so that empty trailing line no longer pushes the model into malformed output and its baffling "XML is not well-formed" validation error.
@@ -480,8 +484,18 @@ class WorkOnRulesWithAIDlg(QDialog):
             self.preview = self.createPreviewView()
 
     def closeEvent(self, event):
-        '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
-        would crash - when the dialog is garbage-collected after the event loop returns.'''
+        '''Close (the Close button and the window's X both route here). If a generated rule/macro hasn't been written to the file yet, offer to approve and write it first so closing the
+        window doesn't silently discard the draft (the same offer a tab switch or rule click makes). If the user asked for the write and it failed, keep the window open so the draft isn't
+        lost. Then, if a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which would crash - when the dialog is garbage-collected
+        after the event loop returns.'''
+
+        # Offer to write a pending draft before the close discards it. A False return means the user asked for the write and it failed (the error was already shown); leave the window open
+        # so they can retry rather than lose the draft.
+
+        if not self.offerToWritePendingDraft():
+
+            event.ignore()
+            return
 
         self.cleanupThread()
 
