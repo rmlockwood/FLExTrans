@@ -11,77 +11,77 @@
     <message>
       <location filename="../TextInOutUtils.py" line="342"/>
       <source>The rules file: {textOutRulesFile} has invalid XML data.</source>
-      <translation>Die Regeldatei: {textOutRulesFile} enthält ungültige XML-Daten.</translation>
+      <translation>The rules file: {textOutRulesFile} has invalid XML data.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="354"/>
       <source>{numRules} {moduleName} rules applied.</source>
-      <translation>{numRules} {moduleName} angewendet.</translation>
+      <translation>{numRules} {moduleName} rules applied.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="418"/>
       <source>Current Project not in Cluster Projects list, exiting.</source>
-      <translation>Das aktuelle Projekt ist nicht in der Liste der Cluster-Projekte, wird beendet.</translation>
+      <translation>Current Project not in Cluster Projects list, exiting.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="444"/>
       <source>Error accessing work project folders.</source>
-      <translation>Fehler beim Zugriff auf die Arbeitsprojektordner.</translation>
+      <translation>Error accessing work project folders.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="447"/>
       <source>FLEx project name</source>
-      <translation>FLEx-Projektname</translation>
+      <translation>FLEx project name</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="448"/>
       <source>WorkProject folder</source>
-      <translation>WorkProject-Ordner</translation>
+      <translation>WorkProject folder</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="512"/>
       <source>Run the {wildebeest} cleanup tool</source>
-      <translation>Das Bereinigungswerkzeug {wildebeest} ausführen</translation>
+      <translation>Run the {wildebeest} cleanup tool</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="513"/>
       <source>help</source>
-      <translation>Hilfe</translation>
+      <translation>help</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="558"/>
       <source>There was a problem reading the configuration file for folder {folderName}. Check your configuration.</source>
-      <translation>Beim Lesen der Konfigurationsdatei für den Ordner {folderName} ist ein Problem aufgetreten. Überprüfen Sie Ihre Konfiguration.</translation>
+      <translation>There was a problem reading the configuration file for folder {folderName}. Check your configuration.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="592"/>
       <source>There was a problem creating or backing up the rules file. Check your configuration.</source>
-      <translation>Beim Erstellen oder Sichern der Regeldatei ist ein Problem aufgetreten. Überprüfen Sie Ihre Konfiguration.</translation>
+      <translation>There was a problem creating or backing up the rules file. Check your configuration.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="760"/>
       <source>For folder {foldName}, the rule: {ruleID} already exists.</source>
-      <translation>Für den Ordner {foldName} existiert die Regel: {ruleID} bereits.</translation>
+      <translation>For folder {foldName}, the rule: {ruleID} already exists.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="853"/>
       <source>For folder {foldName}, the rule: {ruleID} was not found.</source>
-      <translation>Für den Ordner {foldName} wurde die Regel: {ruleID} nicht gefunden.</translation>
+      <translation>For folder {foldName}, the rule: {ruleID} was not found.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="1018"/>
       <source>For folder {foldName}, the rule: {ruleID} not found.</source>
-      <translation>Für den Ordner {foldName} wurde die Regel: {ruleID} nicht gefunden.</translation>
+      <translation>For folder {foldName}, the rule: {ruleID} not found.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="1367"/>
       <source>Error loading XML file.</source>
-      <translation>Fehler beim Laden der XML-Datei.</translation>
+      <translation>Error loading XML file.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="1471"/>
       <source>Error saving settings.</source>
-      <translation>Fehler beim Speichern der Einstellungen.</translation>
+      <translation>Error saving settings.</translation>
     </message>
   </context>
 </TS>
