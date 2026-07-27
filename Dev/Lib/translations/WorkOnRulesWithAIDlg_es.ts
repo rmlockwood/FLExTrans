@@ -55,14 +55,34 @@ Obtenga una clave en:
         <translation>Regla válida generada (intento {n}). {expl}</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="247"/>
-        <source>Could not produce a valid rule after {n} attempts. See errors; you can still open it in XXE.</source>
-        <translation>No se pudo producir una regla válida después de {n} intentos. Vea los errores; aun así puede abrirla en XXE.</translation>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="1124"/>
+        <source>Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.</source>
+        <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puede abrirla en XXE para inspeccionarla.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="248"/>
-        <source>Validation failed</source>
-        <translation>Falló la validación</translation>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="1148"/>
+        <source>Could not build a valid rule</source>
+        <translation>No se pudo crear una regla válida</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="1135"/>
+        <source>The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.</source>
+        <translation>La regla de la IA no estaba bien construida: sus etiquetas XML no coincidían, por lo que FLExTrans no pudo usarla.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="1138"/>
+        <source>The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.</source>
+        <translation>La regla de la IA no se ajustaba al formato de regla de transferencia que requiere FLExTrans, por lo que no se pudo usar.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="1141"/>
+        <source>The AI couldn't build a valid rule from this request.</source>
+        <translation>La IA no pudo crear una regla válida a partir de esta solicitud.</translation>
+    </message>
+    <message>
+        <location filename="../WorkOnRulesWithAIDlg.py" line="1144"/>
+        <source>Try rephrasing your description as a single, clear sentence and generate again.</source>
+        <translation>Intente reformular su descripción como una sola frase clara y vuelva a generar.</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAIDlg.py" line="254"/>

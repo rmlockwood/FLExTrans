@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.20 - 7/27/26 - Ron Lockwood
+#    Fixes #1470. Added friendlyValidationSummary, which turns the raw validation error text (expat's "mismatched tag..." or the compiler's diagnostics) into one plain-language sentence; the
+#    dialog leads its "could not build a valid rule" message with this (translated) and keeps the raw text behind "Show Details".
+#
 #   Version 3.16.19 - 7/24/26 - Ron Lockwood
 #    The explain prompt now tells the model to describe the action in plain words instead of quoting the rule's XML mechanics: no clip/lit-tag/part/pos/side vocabulary, and the output word described
 #    by its base form and tags rather than in Apertium's ^lemma<tag><tag>$ lexical-unit notation. New EXPLAIN_STYLE_ACTION block, sent for both rule and macro explanations.
@@ -1085,6 +1089,24 @@ def validateFile(tempPath: str, compilerExe: Optional[str] = None) -> tuple:
             errors.append('  ' + stderr)
 
     return (len(errors) == 0, '\n'.join(errors))
+
+def friendlyValidationSummary(errors: str) -> str:
+    '''Turn the raw validation error text (expat's "mismatched tag: line N, column M", the compiler's diagnostics) into one plain-language sentence an ordinary user can act on. The raw
+    text is still shown separately (behind a "Show Details" button in the dialog) for bug reports and power users; this is just the lead-in that says, in non-technical words, what went wrong.
+    Returns English here so AIRules stays Qt-free; the dialog wraps the equivalent localized sentences with QCoreApplication.translate and only falls back to this when it has no match.'''
+
+    text = errors or ''
+
+    # A well-formedness failure means the AI's XML tags did not match up (an opened element never closed, or closed in the wrong order) - the "mismatched tag" the user was baffled by.
+    if 'XML is not well-formed' in text:
+        return "The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it."
+
+    # A structural failure means the XML parsed fine but didn't fit the Apertium transfer-rule grammar (a piece in the wrong place, an unknown attribute, and the like).
+    if 'apertium-preprocess-transfer failed' in text:
+        return "The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used."
+
+    # Anything else (empty or unrecognized): a plain, catch-all statement.
+    return "The AI couldn't build a valid rule from this request."
 
 # The authorship-stamp sentences, as whole sentences with a single {when} placeholder for the date/time. Being complete sentences (rather than a verb interpolated into a fixed frame)
 # they translate cleanly to languages with different word order or date placement. English defaults; the caller passes localized versions (built with QCoreApplication.translate) so
