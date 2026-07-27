@@ -647,6 +647,18 @@ class Main(QMainWindow):
                     comboBox = QComboBox()
                     comboBox.setFont(wordFont)
 
+                    # In a right-to-left text, right-align the chosen word so it lines up with the surrounding words. The displayed
+                    # word lives in a read-only line edit (making the combo box editable), which is the part we can align.
+                    if self.rightToLeft:
+
+                        comboBox.setEditable(True)
+                        editWidget = comboBox.lineEdit()
+
+                        if editWidget is not None:
+
+                            editWidget.setReadOnly(True)
+                            editWidget.setAlignment(Qt.AlignmentFlag.AlignLeft)
+
                     # The first item shows all the alternatives together and means "not chosen yet"
                     comboBox.addItem('%'.join(segment.alternativeList))
 
@@ -777,7 +789,26 @@ class Main(QMainWindow):
 
     def cancelClicked(self):
 
-        # Cancel restores the file to what it was when the window opened, discarding anything saved during this session
+        # Cancel restores the file to what it was when the window opened, discarding this session's choices (including any that
+        # were already saved). Since that throws work away, check with the user first when there is anything to lose, offering to
+        # save the current choices instead. "Anything to lose" is when the current choices differ from the original text.
+        if self.getCurrentText() != self.origText:
+
+            answer = QMessageBox.question(self, _translate("DisambiguateText", "Save Choices"), _translate("DisambiguateText", "Do you want to save your disambiguation choices before closing?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel)
+
+            if answer == QMessageBox.StandardButton.Cancel:
+
+                return
+
+            if answer == QMessageBox.StandardButton.Yes:
+
+                # Keep the choices: save them and close without reverting
+                self.saveClicked()
+                self.skipSavePrompt = True
+                self.close()
+                return
+
+        # No changes to lose, or the user chose not to save: restore the original text and close
         self.writeFile(self.origText)
         self.skipSavePrompt = True
         self.close()
