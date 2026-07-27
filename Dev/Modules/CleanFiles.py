@@ -8,6 +8,9 @@
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
 #
+#   Version 3.16.3 - 7/27/26 - Ron Lockwood
+#    Don't delete a transfer changes file (_XXXtr.chg) that has content in it. The user may have put STAMP changes into it by hand.
+#
 #   Version 3.16.2 - 7/2/26 - Ron Lockwood
 #    Silenced type-checker warnings on os.remove/glob calls and guarded the bilingual backup regex against a None path.
 #
@@ -96,7 +99,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.16.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  
@@ -105,6 +108,21 @@ docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
 
 #app.quit()
 #del app
+
+# Return True if this is a transfer changes file (_XXXtr.chg) that has content in it. Such a file must not be deleted, because the user may have put STAMP changes
+# into it by hand, e.g. changes that produce the ambiguities that the Disambiguate Synthesized Text module works with. An empty one is fine to delete since
+# DoStampSynthesis recreates it blank as needed. If the file can't be read, play it safe and treat it as having content.
+def isNonEmptyTransferChangesFile(path):
+
+    if not path.name.endswith('_XXXtr.chg'):
+
+        return False
+
+    try:
+        return path.read_text(encoding='utf-8').strip() != ''
+
+    except OSError:
+        return True
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -229,18 +247,32 @@ def MainFunction(DB, report, modify=True):
     else:
         targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
     try:
+
         for p in Path(stampFiles).glob(targetProject+"*.*"):  # type: ignore
+
+            # Keep a transfer changes file that the user has put content into
+            if isNonEmptyTransferChangesFile(p):
+                continue
+
             p.unlink()
+
     except:
         pass # ignore errors
     
     # Delete other dictionary files that could be there from copying and pasting a project folder
     try:
+
         for endStr in ['_ctrl_files.txt', '_outtx.ctl', '_sycd.chg', '_synt.chg', '_XXXtr.chg', \
                        '_if.dic', '_pf.dic', '_sf.dic', '_rt.dic', '_stamp.dec']:
-            
+
             for p in Path(stampFiles).glob(f'*{endStr}'):  # type: ignore
+
+                # Keep a transfer changes file that the user has put content into
+                if isNonEmptyTransferChangesFile(p):
+                    continue
+
                 p.unlink()
+
     except:
         pass # ignore errors
     
