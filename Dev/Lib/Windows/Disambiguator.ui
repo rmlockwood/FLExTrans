@@ -98,6 +98,21 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="settingsButton">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Change the font and highlight colors.</string>
+        </property>
+        <property name="text">
+         <string>Settings...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="cancelButton">
         <property name="font">
          <font>
