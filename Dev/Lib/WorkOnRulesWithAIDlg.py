@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.25 - 7/27/26 - Ron Lockwood
+#    Fixes #1470. A rule that fails validation no longer confronts the user with the raw parser text (e.g. expat's baffling "mismatched tag: line N, column M"): the dialog now leads with a
+#    plain-language summary of what went wrong plus a "rephrase as one clear sentence and try again" nudge, and tucks the raw parser/compiler errors behind the message box's "Show Details" button.
+#
 #   Version 3.16.24 - 7/27/26 - Ron Lockwood
 #    Closing the window now offers to approve and write an unapproved create/modify draft first (the same offer a tab switch or rule click makes), so the draft isn't silently discarded;
 #    if the write is requested and fails, the window stays open so the draft can be retried rather than lost.
@@ -1115,9 +1119,40 @@ class WorkOnRulesWithAIDlg(QDialog):
             else:
                 self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Valid rule generated (attempt {n}). {expl}').format(n=result.attempts, expl=result.explanation))
         else:
+
             self.ui.approveButton.setEnabled(False)
-            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not produce a valid rule after {n} attempts. See errors; you can still open it in XXE.').format(n=result.attempts))
-            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Validation failed'), result.errors)
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.').format(n=result.attempts))
+            self.showValidationFailed(result.errors)
+
+    def showValidationFailed(self, errors):
+        '''Explain a failed validation in plain language. The raw parser/compiler text (e.g. expat's baffling "mismatched tag: line N, column M") is kept out of the main message - it goes
+        behind the "Show Details" button - so an ordinary user reads what went wrong and what to try next, while the technical detail stays one click away for a bug report.'''
+
+        # Lead with a non-technical sentence describing the failure, chosen the same way AIRules.friendlyValidationSummary classifies it, but translated to the interface language here.
+        text = errors or ''
+
+        if 'XML is not well-formed' in text:
+            summary = _translate('WorkOnRulesWithAI', "The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.")
+
+        elif 'apertium-preprocess-transfer failed' in text:
+            summary = _translate('WorkOnRulesWithAI', "The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.")
+
+        else:
+            summary = _translate('WorkOnRulesWithAI', "The AI couldn't build a valid rule from this request.")
+
+        # Actionable next step. Odd or contradictory wording is the usual trigger, so steer the user toward a single, plain sentence and trying again.
+        guidance = _translate('WorkOnRulesWithAI', 'Try rephrasing your description as a single, clear sentence and generate again.')
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(_translate('WorkOnRulesWithAI', 'Could not build a valid rule'))
+        box.setText(summary + '\n\n' + guidance)
+
+        # Keep the raw errors available for a bug report or a technical user, but collapsed behind "Show Details" so they don't confront the average user with parser jargon.
+        if text:
+            box.setDetailedText(text)
+
+        box.exec()
 
     def onGenerateFailed(self, message):
 
