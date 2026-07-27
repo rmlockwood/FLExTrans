@@ -33,8 +33,8 @@ del texto sintetizado. Nota: este módulo solo se aplica cuando se usa el métod
     </message>
     <message>
         <location filename="../DisambiguateText.py" line="472"/>
-        <source>%2%big%large%</source>
-        <translation>%2%grande%gran%</translation>
+        <source>big%large</source>
+        <translation>grande%gran</translation>
     </message>
     <message>
         <location filename="../DisambiguateText.py" line="474"/>

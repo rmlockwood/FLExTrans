@@ -33,8 +33,8 @@ wird eine Sicherungskopie der Datei mit dem synthetisierten Text erstellt. Hinwe
     </message>
     <message>
         <location filename="../DisambiguateText.py" line="472"/>
-        <source>%2%big%large%</source>
-        <translation>%2%groß%riesig%</translation>
+        <source>big%large</source>
+        <translation>groß%riesig</translation>
     </message>
     <message>
         <location filename="../DisambiguateText.py" line="474"/>

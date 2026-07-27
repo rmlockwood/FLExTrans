@@ -33,8 +33,8 @@ est faite avant l'enregistrement de vos choix. Remarque : ce module ne s'appliqu
     </message>
     <message>
         <location filename="../DisambiguateText.py" line="472"/>
-        <source>%2%big%large%</source>
-        <translation>%2%grand%gros%</translation>
+        <source>big%large</source>
+        <translation>grand%gros</translation>
     </message>
     <message>
         <location filename="../DisambiguateText.py" line="474"/>
