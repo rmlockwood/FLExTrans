@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.13 - 7/28/26 - Ron Lockwood
+#    Consolidated duplicated code: an XXE launch helper, table-driven file selection in TransferClicked, a shared rule-move helper, and a hoisted rules-tab tail.
+#
 #   Version 3.16.12 - 7/28/26 - Ron Lockwood
 #    Converted the remaining file open() calls to 'with' blocks and gave the file handles descriptive names.
 #
@@ -324,7 +327,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.12",
+        FTM_Version    : "3.16.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -803,7 +806,7 @@ class Main(QMainWindow):
         self.ui.refreshTargetLexiconButton.clicked.connect(self.RefreshTargetLexiconButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
-        self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
+        self.ui.editTestbedButton.clicked.connect(self.EditTestbedButtonClicked)
         self.ui.rebuildBilingLexButton.clicked.connect(self.RebuildBilingLexButtonClicked)
         self.ui.viewBilingualLexiconButton.clicked.connect(self.ViewBilingualLexiconButtonClicked)
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
@@ -1342,31 +1345,25 @@ class Main(QMainWindow):
 
         return True
 
-    def ViewBilingualLexiconButtonClicked(self):
+    def launchInXXE(self, filePath, notFoundMsg):
 
-        if os.path.exists(self.__bilingFile) == False:
+        # Warn and bail if the file isn't there. The caller supplies its own (already translated) not-found message so each file type keeps its specific wording.
+        if not filePath or not os.path.exists(filePath):
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__bilingFile))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), notFoundMsg)
             return
 
-        progFilesFolder = os.environ['ProgramFiles(x86)']
+        # Launch the XMLmind XML Editor (xxe) on the file.
+        xxe = os.path.join(os.environ['ProgramFiles(x86)'], 'XMLmind_XML_Editor', 'bin', 'xxe.exe')
+        call([xxe, filePath])
 
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+    def ViewBilingualLexiconButtonClicked(self):
 
-        call([xxe, self.__bilingFile])
+        self.launchInXXE(self.__bilingFile, _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__bilingFile))
 
     def EditTransferRulesButtonClicked(self):
 
-        if not self.__transfer_rules_file or not os.path.exists(self.__transfer_rules_file):
-
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file or ''))
-            return
-
-        progFilesFolder = os.environ['ProgramFiles(x86)']
-
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
-
-        call([xxe, self.__transfer_rules_file])
+        self.launchInXXE(self.__transfer_rules_file, _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file or ''))
 
     def EditReplacementButton(self):
 
@@ -1500,18 +1497,9 @@ class Main(QMainWindow):
         self.startRuleAssistant = True
         self.close()
 
-    def EditTestbedLogButtonClicked(self):
+    def EditTestbedButtonClicked(self):
 
-        if not self.__testbedPath or not os.path.exists(self.__testbedPath):
-
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
-            return
-
-        progFilesFolder = os.environ['ProgramFiles(x86)']
-
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
-
-        call([xxe, self.__testbedPath])
+        self.launchInXXE(self.__testbedPath, _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
 
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
@@ -1948,56 +1936,50 @@ class Main(QMainWindow):
         return
 
     def UpButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() > 0 and self.__rulesElement and self.__ruleModel:
 
-            # get current list item and insert it one above and remove it from its old position
-            elemToMove = self.__rulesElement[self.TRIndex.row()]
-            self.__rulesElement.remove(elemToMove)
-            self.__rulesElement.insert(self.TRIndex.row()-1, elemToMove)
-
-            # copy the selection
-            curr_item = self.__ruleModel.item(self.TRIndex.row())
-            prev_item = self.__ruleModel.item(self.TRIndex.row() - 1)
-
-            # Only perform the swap if both items actually exist
-            if curr_item and prev_item:
-                cur_state = curr_item.checkState()
-                oth_state = prev_item.checkState()
-                
-                curr_item.setCheckState(oth_state)
-                prev_item.setCheckState(cur_state)
-
-            myIndex = self.__ruleModel.index(self.TRIndex.row()-1, self.TRIndex.column())
-            self.ui.listTransferRules.setCurrentIndex(myIndex)
-
-            # redo the display
-            self.rulesListClicked(myIndex)
+        self.moveSelectedRule(-1)
 
     def DownButtonClicked(self):
-        if self.TRIndex and self.__rulesElement and self.__ruleModel and self.TRIndex.row() < len(list(self.__rulesElement))-1:
 
-            # get current list item and insert it one above and remove it from its old position
-            elemToMove = self.__rulesElement[self.TRIndex.row()]
-            self.__rulesElement.remove(elemToMove)
-            self.__rulesElement.insert(self.TRIndex.row()+1, elemToMove)
+        self.moveSelectedRule(1)
 
-            # copy the selection
-            curr_item = self.__ruleModel.item(self.TRIndex.row())
-            next_item = self.__ruleModel.item(self.TRIndex.row()+1)
+    def moveSelectedRule(self, direction):
 
-            # Only perform the swap if both items actually exist
-            if curr_item and next_item:
-                cur_state = curr_item.checkState()
-                oth_state = next_item.checkState()
+        # direction is -1 to move the selected rule up, +1 to move it down. Bail unless there is a selection and the models exist.
+        if not (self.TRIndex and self.__rulesElement and self.__ruleModel):
 
-                curr_item.setCheckState(oth_state)
-                next_item.setCheckState(cur_state)
+            return
 
-            myIndex = self.__ruleModel.index(self.TRIndex.row()+1, self.TRIndex.column())
-            self.ui.listTransferRules.setCurrentIndex(myIndex)
+        row = self.TRIndex.row()
+        targetRow = row + direction
 
-            # redo the display
-            self.rulesListClicked(myIndex)
+        # Bail if the target row would be off either end of the list.
+        if not (0 <= targetRow < len(list(self.__rulesElement))):
+
+            return
+
+        # Get the current list item and move it to the target position.
+        elemToMove = self.__rulesElement[row]
+        self.__rulesElement.remove(elemToMove)
+        self.__rulesElement.insert(targetRow, elemToMove)
+
+        # Swap the check states of the current and target items, but only if both actually exist.
+        currItem = self.__ruleModel.item(row)
+        targetItem = self.__ruleModel.item(targetRow)
+
+        if currItem and targetItem:
+
+            currState = currItem.checkState()
+            targetState = targetItem.checkState()
+
+            currItem.setCheckState(targetState)
+            targetItem.setCheckState(currState)
+
+        myIndex = self.__ruleModel.index(targetRow, self.TRIndex.column())
+        self.ui.listTransferRules.setCurrentIndex(myIndex)
+
+        # redo the display
+        self.rulesListClicked(myIndex)
 
     def SelectAllCheckBoxClicked(self):
         
@@ -2315,9 +2297,6 @@ class Main(QMainWindow):
 
                 self.ui.ManualEdit.setPlainText(self.__tranferPrevSourceLUs)
 
-                self.rulesListClicked(self.TRIndex)
-                self.__ClearStuff()
-
             elif self.ui.tabRules.currentIndex() == 1: #'tab_interchunk_rules':
                 self.__ruleModel = self.__interChunkModel
                 self.__rulesElement = self.__interchunkRulesElement
@@ -2336,9 +2315,6 @@ class Main(QMainWindow):
                     self.ui.ManualEdit.setPlainText(self.__interchunkPrevSourceLUs)
                     self.__lexicalUnits = self.__interchunkPrevSourceLUs
 
-                self.rulesListClicked(self.TRIndex)
-                self.__ClearStuff()
-
             else: # postchunk
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
@@ -2351,8 +2327,9 @@ class Main(QMainWindow):
                 self.ui.ManualEdit.setPlainText(self.__interchunkLexicalUnitsResult)
                 self.__lexicalUnits = self.__interchunkLexicalUnitsResult
 
-                self.rulesListClicked(self.TRIndex)
-                self.__ClearStuff()
+            # After switching tabs, redo the rule numbering display and clear the result areas.
+            self.rulesListClicked(self.TRIndex)
+            self.__ClearStuff()
 
             self.__prevTab = self.ui.tabRules.currentIndex()
 
@@ -2748,50 +2725,34 @@ class Main(QMainWindow):
 
         self.__convertIt = True
 
-        if self.advancedTransfer:
+        # Pick the source/rule/target/log file names and the rule-file XML tree for the current mode. In advanced mode each rules tab (transfer/interchunk/postchunk) 
+        # chains off the previous tab's output; in standard mode there is just the transfer set, but its target is the final TARGET_FILE rather than TARGET_FILE1.
+        tabIndex = self.ui.tabRules.currentIndex()
 
-            if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+        if not self.advancedTransfer:
 
-                sourceFile = os.path.join(self.testerFolder, SOURCE_APERT)
-                trFile = os.path.join(self.testerFolder, RULE_FILE1)
-                tgtFile = os.path.join(self.testerFolder, TARGET_FILE1)
-                logFile = os.path.join(self.testerFolder, LOG_FILE)
+            sourceName, ruleName, targetName, logName, ruleFileTree = SOURCE_APERT, RULE_FILE1, TARGET_FILE, LOG_FILE, self.__transferRuleFileXMLtree
 
-                # Copy the xml structure to a new object
-                myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-                ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
+        elif tabIndex == 0: # transfer
 
-            elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+            sourceName, ruleName, targetName, logName, ruleFileTree = SOURCE_APERT, RULE_FILE1, TARGET_FILE1, LOG_FILE, self.__transferRuleFileXMLtree
 
-                sourceFile = os.path.join(self.testerFolder, TARGET_FILE1)
-                trFile = os.path.join(self.testerFolder, RULE_FILE2)
-                tgtFile = os.path.join(self.testerFolder, TARGET_FILE2)
-                logFile = os.path.join(self.testerFolder, LOG_FILE2)
+        elif tabIndex == 1: # interchunk
 
-                # Copy the xml structure to a new object
-                myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
-                ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
+            sourceName, ruleName, targetName, logName, ruleFileTree = TARGET_FILE1, RULE_FILE2, TARGET_FILE2, LOG_FILE2, self.__interChunkRuleFileXMLtree
 
-            else: # postchunk
+        else: # postchunk
 
-                sourceFile = os.path.join(self.testerFolder, TARGET_FILE2)
-                trFile = os.path.join(self.testerFolder, RULE_FILE3)
-                tgtFile = os.path.join(self.testerFolder, TARGET_FILE)
-                logFile = os.path.join(self.testerFolder, LOG_FILE3)
+            sourceName, ruleName, targetName, logName, ruleFileTree = TARGET_FILE2, RULE_FILE3, TARGET_FILE, LOG_FILE3, self.__postChunkRuleFileXMLtree
 
-                # Copy the xml structure to a new object
-                myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
-                ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
+        sourceFile = os.path.join(self.testerFolder, sourceName)
+        trFile = os.path.join(self.testerFolder, ruleName)
+        tgtFile = os.path.join(self.testerFolder, targetName)
+        logFile = os.path.join(self.testerFolder, logName)
 
-        else:
-            sourceFile = os.path.join(self.testerFolder, SOURCE_APERT)
-            trFile = os.path.join(self.testerFolder, RULE_FILE1)
-            tgtFile = os.path.join(self.testerFolder, TARGET_FILE)
-            logFile = os.path.join(self.testerFolder, LOG_FILE)
-
-            # Copy the xml structure to a new object
-            myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-            ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
+        # Copy the xml structure to a new object
+        myTree = copy.deepcopy(ruleFileTree)
+        ruleFileRoot = ruleFileTree.getroot()
 
         # Get the source text data stream to save to the tester folder
         myStr = self.getActiveLexicalUnits()
