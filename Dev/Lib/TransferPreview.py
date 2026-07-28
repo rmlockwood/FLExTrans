@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.12 - 7/28/26 - Ron Lockwood
+#    Lexical units the model writes into an explanation (e.g. ^book1.1<n><pl><gen>$) are now color-coded like the Source/Target viewer: colorLexicalUnitsInMarkdown stashes each one past the
+#    Markdown render and swaps in the colored HTML Testbed.lexicalUnitToHtml builds for it.
+#
 #   Version 3.16.11 - 7/24/26 - Ron Lockwood
 #    Fixed literal &lt;/&gt; showing in the explanation: markdownToHtml stashed &, <, > as sentinels instead of escaping up front, so Python-Markdown no longer double-escapes them inside code spans/blocks.
 #
@@ -55,6 +59,7 @@
 #    No raw markup is ever shown to the user - only the rendered result goes into a QWebEngineView.
 
 import os
+import re
 import json
 import html
 import difflib
@@ -62,6 +67,7 @@ import unicodedata
 import xml.etree.ElementTree as ET
 
 import Utils
+import Testbed
 import markdown
 
 # realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder; the stylesheets live in its css subfolder (Lib/css).
@@ -385,6 +391,38 @@ def markdownToHtml(mdText: str) -> str:
 
     return rendered
 
+# An Apertium lexical unit as the model tends to write it into an explanation: a ^...$ token whose body carries at least one <tag>, e.g. ^book1.1<n><pl><gen>$. Requiring a tag keeps ordinary prose
+# that merely happens to sit between a ^ and a $ (or a lone currency $) from being mistaken for a lexical unit; the body may not itself contain a ^ or $, so each token stops at the first closing $.
+_LEXICAL_UNIT_PATTERN = re.compile(r'\^([^\^$]*<[^\^$]+>[^\^$]*)\$')
+
+# Private-use placeholders (a different PUA block from markdownToHtml's _MD_SENTINELS so the two schemes can't collide) that hold a lexical unit's spot while the surrounding Markdown renders. The
+# index between them makes each placeholder unique; Markdown neither reformats nor escapes these characters, so the colored HTML we swap back in afterward lands exactly where the token was.
+_LU_PLACEHOLDER_OPEN = ''
+_LU_PLACEHOLDER_CLOSE = ''
+
+def colorLexicalUnitsInMarkdown(mdText: str) -> str:
+    '''Render the explanation's Markdown, but color any Apertium lexical units the model wrote into it (^book1.1<n><pl><gen>$ and the like) the same way the Source/Target viewer does, rather than
+    leaving them as raw ^...<...>...$ text. Each lexical unit is pulled out and replaced by a private-use placeholder before the Markdown is rendered - so Markdown can neither reformat nor escape its
+    angle brackets - then, once the Markdown is HTML, each placeholder is swapped for the colored HTML that Testbed.lexicalUnitToHtml builds for that unit (which reuses the viewer's coloring code).'''
+
+    coloredByPlaceholder = {}
+
+    def stashLexicalUnit(match):
+
+        placeholder = _LU_PLACEHOLDER_OPEN + str(len(coloredByPlaceholder)) + _LU_PLACEHOLDER_CLOSE
+        coloredByPlaceholder[placeholder] = Testbed.lexicalUnitToHtml(match.group(1))
+
+        return placeholder
+
+    stashed = _LEXICAL_UNIT_PATTERN.sub(stashLexicalUnit, mdText)
+    rendered = markdownToHtml(stashed)
+
+    # Put each colored lexical unit back where its placeholder sits in the now-rendered HTML.
+    for placeholder, coloredHtml in coloredByPlaceholder.items():
+        rendered = rendered.replace(placeholder, coloredHtml)
+
+    return rendered
+
 # Clicking a collapser box folds/unfolds its block: toggle the "collapsed" class on the enclosing .el, which hides the children and swaps the minus icon for the plus (both in the CSS).
 # One delegated listener on the document covers every collapser without per-element handlers.
 COLLAPSER_SCRIPT = ('<script>document.addEventListener("click", function(e) {'
@@ -433,7 +471,7 @@ def renderExplanationHtml(ruleXml: str, explanationText: str, lang: str = 'en') 
 
     # The explanation pane switches to right-to-left layout when the explanation text contains any RTL characters in the 1st quarter of the text.
     rtlClass = ' rtl' if Utils.hasRtl(explanationText[0:len(explanationText)//4]) else ''
-    right = '<div class="pane explanation' + rtlClass + '">' + markdownToHtml(explanationText) + '</div>'
+    right = '<div class="pane explanation' + rtlClass + '">' + colorLexicalUnitsInMarkdown(explanationText) + '</div>'
 
     return wrapDocument('<div class="compare">' + left + right + '</div>', spec.get('_colors'), split=True)
 

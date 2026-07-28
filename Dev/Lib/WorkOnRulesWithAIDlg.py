@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.26 - 7/28/26 - Ron Lockwood
+#    The Modify/Explain tab's Rules and Macros lists now get a minimum height sized to show at least three rows (the collapsed tab area had left room for only two); ensureListsShowThreeRows
+#    sets it in showEvent, just before the tab area is collapsed to its minimum-size hint. Lexical units in an AI explanation are now color-coded (via TransferPreview / Testbed) like the viewer.
+#
 #   Version 3.16.25 - 7/27/26 - Ron Lockwood
 #    Fixes #1470. A rule that fails validation no longer confronts the user with the raw parser text (e.g. expat's baffling "mismatched tag: line N, column M"): the dialog now leads with a
 #    plain-language summary of what went wrong plus a "rephrase as one clear sentence and try again" nudge, and tucks the raw parser/compiler errors behind the message box's "Show Details" button.
@@ -464,12 +468,32 @@ class WorkOnRulesWithAIDlg(QDialog):
         # __init__ because the widgets' real size hints aren't known until the window is laid out; the guard keeps a later re-show from undoing a splitter drag the user has since made.
         if not self.splitterSized:
 
+            # Give the Rules/Macros lists enough height to show at least three rows before the tab area is collapsed to its minimum height below. Done here (not __init__) so the per-row
+            # measurement is taken once the widgets are laid out, and before the setSizes call so the taller lists are already reflected in the tab area's minimum-size hint it reads.
+            self.ensureListsShowThreeRows()
+
             self.ui.mainSplitter.setSizes([self.ui.modeTabs.minimumSizeHint().height(), self.height()])
             self.splitterSized = True
 
         # Warm up the (slow-to-construct) web view once the window is on screen, so the first preview isn't held up by Chromium starting. singleShot(0) lets the window paint first, then
         # builds the view during the next idle moment - by the time the user navigates to a rule the engine is ready. warmUpPreview is idempotent, so repeated shows don't rebuild it.
         QTimer.singleShot(0, self.warmUpPreview)
+
+    def ensureListsShowThreeRows(self, rowsToShow=3):
+        '''Give the Modify/Explain tab's Rules and Macros lists a minimum height tall enough to show at least `rowsToShow` rows at once. The tab area is sized to its minimum-size hint (see
+        showEvent), and with no floor on the list height that hint left room for only two rows. The per-row height comes from the list's own row size hint (falling back to the font height
+        when the list is empty), so this stays correct across fonts and screen scaling; a QTabWidget wraps each list, so the raised minimum flows up through it into the tab area's hint.'''
+
+        for listWidget in (self.ui.ruleList, self.ui.macroList):
+
+            rowHeight = listWidget.sizeHintForRow(0) if listWidget.count() else listWidget.fontMetrics().height()
+
+            # sizeHintForRow returns -1 for an empty list on some styles; fall back to the font height so we still have a sensible per-row figure.
+            if rowHeight <= 0:
+                rowHeight = listWidget.fontMetrics().height()
+
+            # The row heights, plus the list's frame on top and bottom and a few pixels of slack, so the requested number of rows are fully visible rather than clipped at the last one.
+            listWidget.setMinimumHeight(rowHeight * rowsToShow + listWidget.frameWidth() * 2 + 6)
 
     def createPreviewView(self):
         '''Create the preview QWebEngineView, applying the remembered zoom and disabling the right-click context menu. The preview is a read-only rendering of the rule, so the default
