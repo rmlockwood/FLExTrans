@@ -135,7 +135,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Refresh Source Lexicon</string>
+         <string>Refresh Source Project</string>
         </property>
        </widget>
       </item>
