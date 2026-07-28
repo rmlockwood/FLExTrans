@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.12 - 7/28/26 - Ron Lockwood
+#    Converted the remaining file open() calls to 'with' blocks and gave the file handles descriptive names.
+#
 #   Version 3.16.11 - 7/28/26 - Ron Lockwood
 #    Renamed snake_case locals in TransferClicked/displayRules to camelCase to satisfy the naming-convention lint.
 #
@@ -321,7 +324,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.10",
+        FTM_Version    : "3.16.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -864,9 +867,9 @@ class Main(QMainWindow):
         # Load the saved window settings from a TOML file to see which tabs, checkboxes, fonts, source text and window sizes were last used.
         # Wrap it all in a try so that a missing, older or malformed file just falls back to the defaults set above instead of crashing.
         try:
-            with open(self.windowsSettingsFile, 'rb') as f:
+            with open(self.windowsSettingsFile, 'rb') as settingsFile:
 
-                settings = tomllib.load(f)
+                settings = tomllib.load(settingsFile)
 
             ruleTab = settings.get('rulesTab', 0)
             sourceTab = settings.get('sourceTab', 0)
@@ -1902,8 +1905,9 @@ class Main(QMainWindow):
                 return
 
         # Load the synthesized result into the text box
-        synf = open(self.synthesisFilePath, encoding='utf-8')
-        synthText = synf.read()
+        with open(self.synthesisFilePath, encoding='utf-8') as synthResultFile:
+
+            synthText = synthResultFile.read()
 
         # Apply Text Out Rules if desired
         if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and len(synthText) > 0:
@@ -1928,8 +1932,6 @@ class Main(QMainWindow):
             synthText = 'Synthesis produced no output.'
 
         self.ui.SynthTextEdit.setPlainText(synthText)
-
-        synf.close()
 
         # Set a flag so that we don't extract the dictionary next time
         self.__extractIt = False
@@ -2505,9 +2507,9 @@ class Main(QMainWindow):
         # Import tomli_w lazily so this module can still be imported when the package isn't installed (e.g. CI unit tests).
         import tomli_w
 
-        with open(self.windowsSettingsFile, 'wb') as f:
+        with open(self.windowsSettingsFile, 'wb') as settingsFile:
 
-            tomli_w.dump(settings, f)
+            tomli_w.dump(settings, settingsFile)
 
         if self.HCdllObj:
 
@@ -2791,8 +2793,7 @@ class Main(QMainWindow):
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
             ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
 
-        # Save the source text to the tester folder
-        sf = open(sourceFile, 'w', encoding='utf-8')
+        # Get the source text data stream to save to the tester folder
         myStr = self.getActiveLexicalUnits()
 
         if len(myStr) < 1:
@@ -2815,8 +2816,9 @@ class Main(QMainWindow):
                 myStr += f' ^{tok}$'
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
-        sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
-        sf.close()
+        with open(sourceFile, 'w', encoding='utf-8') as sourceStreamFile:
+
+            sourceStreamFile.write(self.escapeDataStreamsLemmas(myStr.strip()))
 
         # Only rewrite the transfer rules file if there was a change
         if self.rulesChanged or self.fixBilingLex:
@@ -2922,8 +2924,10 @@ class Main(QMainWindow):
             apertErrStr = _translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:')
 
             try:
-                f = open(os.path.join(self.buildFolder, RunApertium.APERTIUM_ERROR_FILE), encoding='utf-8')
-                lines = f.readlines()
+                with open(os.path.join(self.buildFolder, RunApertium.APERTIUM_ERROR_FILE), encoding='utf-8') as apertErrFile:
+
+                    lines = apertErrFile.readlines()
+
                 apertErrStr = '\n'.join([apertErrStr] + lines)
             except:
                 pass
@@ -2940,9 +2944,9 @@ class Main(QMainWindow):
 
         # Load the target text contents into the results edit box
         try:
-            with open(tgtFile, encoding='utf-8') as tgtf:
+            with open(tgtFile, encoding='utf-8') as targetResultFile:
 
-                targetOutput = tgtf.read()
+                targetOutput = targetResultFile.read()
 
         except:
             errMsg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgtFile}.').format(tgtFile=Utils.shortenPathForDisplay(tgtFile))
@@ -3004,9 +3008,9 @@ class Main(QMainWindow):
                 self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
 
         # Load the log file
-        with open(logFile, encoding='utf-8') as lf:
+        with open(logFile, encoding='utf-8') as logFileHandle:
 
-            myLines = lf.readlines()
+            myLines = logFileHandle.readlines()
 
         # Fix up the output of the log file to colorize it and remove unneeded stuff
         newText = self.processLogLines(myLines)
@@ -3193,6 +3197,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
 
         if not treeTranInsertWordsFile:
+
             insertWordsFile = False
         else:
             insertWordsFile = True
@@ -3200,23 +3205,27 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
 
             if insertWordsList == None:
+
                 return ERROR_HAPPENED # error already reported
 
-        # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
+        # We need to also find the TreeTran output file, if not don't do a Tree Tran sort. Just open it (and let the with block close it) to confirm it exists and is readable.
         try:
-            f_treeTranResultFile = open(str(treeTranResultFile), encoding='utf-8')
-            f_treeTranResultFile.close()
+            with open(str(treeTranResultFile), encoding='utf-8'):
+
+                pass
+
         except:
             report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=Utils.shortenPathForDisplay(treeTranResultFile)))
             return ERROR_HAPPENED
 
-        # get the list of guids from the TreeTran results file
+        # Get the list of guids from the TreeTran results file
         treeSentList = InterlinData.getTreeSents(treeTranResultFile, report)
 
         if treeSentList == None:
+
             return ERROR_HAPPENED # error already reported
 
-        # get log info. that tells us which sentences have a syntax parse and # words per sent
+        # Get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = InterlinData.importGoodParsesLog()
 
     # Get various bits of data for the get interlinear function
@@ -3224,6 +3233,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
     # Check for an error
     if interlinParams == None:
+
         return
 
     # Get interlinear data. A complex text object is returned.
@@ -3235,6 +3245,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
         # If we are using an Insert Words file, add the words to the text object
         if insertWordsFile == True:
+
             myText.addInsertedWordsList(insertWordsList)
 
         # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
@@ -3251,10 +3262,12 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             # If we have a parse for a sentence, TreeTran may have rearranged the words.
             # We need to put them out in the new TreeTran order.
             if parsed == True:
+
                 myTreeSent = treeSentList[p]
 
                 myFLExSent = myText.getSent(sentNum)
                 if myFLExSent is None:
+
                     report.Error(_translate('LiveRuleTesterTool', 'Sentence {sentNum} from TreeTran not found').format(sentNum=sentNum))
                     return ERROR_HAPPENED
 
@@ -3264,17 +3277,22 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
                 # Loop through each word in the sentence and get the Guids
                 for wrdNum in range(0, myTreeSent.getLength()):
+
                     myGuid = myTreeSent.getNextGuidAndIncrement()
 
                     if not myGuid:
+
                         report.Error(_translate('LiveRuleTesterTool', 'Null Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
 
                     # If we couldn't find the guid, see if there's a reason
                     if myFLExSent.haveGuid(myGuid) == False:
+
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
+
                         if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+
                             report.Warning(_translate('LiveRuleTesterTool', 'Could not find the desired Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     else:
                         surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
