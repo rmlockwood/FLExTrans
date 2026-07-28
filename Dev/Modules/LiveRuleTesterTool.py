@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.9 - 7/28/26 - Ron Lockwood
+#    Store the window settings file in TOML format (via tomllib/tomli_w) for better maintainability.
+#
 #   Version 3.16.8 - 7/28/26 - Ron Lockwood
 #    Close and reopen the source project in MainFunction on restart so the cache is cleared and any source changes will get picked up.
 #    This fixes a longstanding probelm where switching source texts or doing the refresh source lexicon had no effect.
@@ -260,6 +263,7 @@ import unicodedata
 import copy
 import xml.etree.ElementTree as ET
 import shutil
+import tomllib
 from datetime import datetime
 from subprocess import call
 
@@ -311,7 +315,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.8",
+        FTM_Version    : "3.16.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -851,62 +855,43 @@ class Main(QMainWindow):
         # Clear text boxes and labels
         self.__ClearStuff()
 
-        # Open a settings file to see which tabs were last used. Put this in a try so that if the number of values in the user's file are fewer than expected,
-        # We won't crash and instead just ignore the saved values
+        # Load the saved window settings from a TOML file to see which tabs, checkboxes, fonts, source text and window sizes were last used.
+        # Wrap it all in a try so that a missing, older or malformed file just falls back to the defaults set above instead of crashing.
         try:
-            with open(self.windowsSettingsFile) as f:
+            with open(self.windowsSettingsFile, 'rb') as f:
 
-                line = f.readline()
+                settings = tomllib.load(f)
 
-                ruleTab, sourceTab, selectWordsSentNum, savedSourceTextName = line.split('|')
-                ruleTab = int(ruleTab)
-                sourceTab = int(sourceTab)
-                selectWordsSentNum = int(selectWordsSentNum)
-                savedSourceTextName = savedSourceTextName.strip()
+            ruleTab = settings.get('rulesTab', 0)
+            sourceTab = settings.get('sourceTab', 0)
+            selectWordsSentNum = settings.get('lastSentNum', 0)
+            savedSourceTextName = settings.get('sourceText', '')
 
-                # Read the 2nd line which is the state of the rule checkboxes
-                checkBoxStateStr = f.readline().strip()
-                self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
+            # The rule and word checkbox states are each stored as a list of 0/1 integers.
+            self.rulesCheckedList = [int(val) for val in settings.get('rulesChecked', [])]
+            self.wordsCheckedList = [int(val) for val in settings.get('wordsChecked', [])]
 
-                # Read the 3rd line which is the state of the word checkboxes
-                checkBoxStateWordsStr = f.readline().strip()
-                self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
+            # Font sizes are stored as floats, but the code below expects strings (an empty string means "no saved size").
+            sourceFontSizeStr = str(settings['sourceFontSize']) if 'sourceFontSize' in settings else ''
+            targetFontSizeStr = str(settings['targetFontSize']) if 'targetFontSize' in settings else ''
 
-                # Read the 4th line which is the source and target font size
-                fontSizesStr = f.readline().strip()
-                sourceFontSizeStr, targetFontSizeStr = fontSizesStr.split('|')
+            # Restore the Apply Text Out rules, Do not clean up unknown words and Advanced options checkboxes.
+            self.ui.applyTextOutRulesCheckbox.setChecked(settings.get('applyTextOutRules', False))
+            self.ui.DoNotCleanupCheckbox.setChecked(settings.get('doNotCleanup', False))
+            self.ui.advancedOptionsCheckbox.setChecked(settings.get('advancedOptions', False))
 
-                # Read the 5th line which is the checkbox values for Apply Text Out rules and Do not clean up unknown words
-                checkBoxStateStr = f.readline().strip()
+            # Window sizes are stored as [width, height] lists; only override the defaults when a valid pair is present.
+            standardDims = settings.get('standardModeDimensions', [])
 
-                # Assuming checkBoxStateStr contains two characters, each either '1' or '0'
-                if len(checkBoxStateStr) == 2:
+            if len(standardDims) == 2:
 
-                    # Set the checkboxes based on the values in the list
-                    self.ui.applyTextOutRulesCheckbox.setChecked(checkBoxStateStr[0] == '1')
-                    self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
+                self.standardModeDimensions = (int(standardDims[0]), int(standardDims[1]))
 
-                # Read the 6th line which is the state of the advanced options checkbox
-                advancedOptionsStr = f.readline().strip()
+            advancedDims = settings.get('advancedModeDimensions', [])
 
-                if len(advancedOptionsStr) > 0:
+            if len(advancedDims) == 2:
 
-                    self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
-
-                # Read the 7th and 8th lines which are the width and height of standard and advanced modes
-                dimensionsStr = f.readline().strip()
-
-                if len(dimensionsStr) > 0:
-
-                    standardWidth, standardHeight = dimensionsStr.split('|')
-                    self.standardModeDimensions = (int(standardWidth), int(standardHeight))
-
-                dimensionsStr = f.readline().strip()
-
-                if len(dimensionsStr) > 0:
-
-                    advancedWidth, advancedHeight = dimensionsStr.split('|')
-                    self.advancedModeDimensions = (int(advancedWidth), int(advancedHeight))
+                self.advancedModeDimensions = (int(advancedDims[0]), int(advancedDims[1]))
         except:
             pass
 
@@ -2481,39 +2466,37 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
 
-        # Save which rules were checked.
+        # Save which rules and which words were checked (this populates self.rulesCheckedList and self.wordsCheckedList).
         self.saveChecked()
-        checkedStateStr = ''.join(map(str, self.rulesCheckedList))
-
-        # Save which words were checked.
         self.saveCheckedWords()
-        checkedWordsState = ''.join(map(str, self.wordsCheckedList))
 
-        # Get the font sizes of source and target widgets
-        myFont = self.ui.SelectedSentencesEdit.font()
-        sourceFontSizeStr = str(myFont.pointSizeF())
-        myFont = self.ui.SynthTextEdit.font()
-        targetFontSizeStr = str(myFont.pointSizeF())
+        # Get the font sizes of the source and target widgets.
+        sourceFontSize = self.ui.SelectedSentencesEdit.font().pointSizeF()
+        targetFontSize = self.ui.SynthTextEdit.font().pointSizeF()
 
-        # Get checkbox values
-        checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
-        checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
-        checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
+        # Collect everything worth remembering into a plain dict, then write it out as a self-describing TOML settings file.
+        settings = {
+            'rulesTab': rulesTab,
+            'sourceTab': sourceTab,
+            'lastSentNum': self.lastSentNum,
+            'sourceText': self.__sourceText or '',
+            'rulesChecked': self.rulesCheckedList,
+            'wordsChecked': self.wordsCheckedList,
+            'sourceFontSize': sourceFontSize,
+            'targetFontSize': targetFontSize,
+            'applyTextOutRules': self.ui.applyTextOutRulesCheckbox.isChecked(),
+            'doNotCleanup': self.ui.DoNotCleanupCheckbox.isChecked(),
+            'advancedOptions': self.ui.advancedOptionsCheckbox.isChecked(),
+            'standardModeDimensions': [self.standardModeDimensions[0], self.standardModeDimensions[1]],
+            'advancedModeDimensions': [self.advancedModeDimensions[0], self.advancedModeDimensions[1]],
+        }
 
-        standardDimensionsStr = f'{self.standardModeDimensions[0]}|{self.standardModeDimensions[1]}'
-        advancedDimensionsStr = f'{self.advancedModeDimensions[0]}|{self.advancedModeDimensions[1]}'
-        
-        with open(self.windowsSettingsFile, 'w') as f:
+        # Import tomli_w lazily so this module can still be imported when the package isn't installed (e.g. CI unit tests).
+        import tomli_w
 
-            # Save current rules tab, current source tab, last sentence # selected and the last source text
-            f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
-            f.write(f'{checkedStateStr}\n')
-            f.write(f'{checkedWordsState}\n')
-            f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
-            f.write(f'{checkboxStr1}{checkboxStr2}\n')
-            f.write(f'{checkboxStr3}\n')
-            f.write(f'{standardDimensionsStr}\n')
-            f.write(f'{advancedDimensionsStr}\n')   
+        with open(self.windowsSettingsFile, 'wb') as f:
+
+            tomli_w.dump(settings, f)
 
         if self.HCdllObj:
 
@@ -2533,6 +2516,7 @@ class Main(QMainWindow):
 
         # Escape some characters and write as NFD unicode.
         if RunApertium.stripRulesFile(self.__report, self.testerFolder, self.__transfer_rules_file, RULE_FILE1) == True:
+
             return True
         
         test_tree = ET.parse(str(self.__transfer_rules_file))
@@ -2565,6 +2549,7 @@ class Main(QMainWindow):
 
             # Escape some characters and write as NFD unicode.
             if RunApertium.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
+
                 return True
 
             interchunk_tree = ET.parse(interchunk_rules_file)
@@ -2572,6 +2557,7 @@ class Main(QMainWindow):
             self.__interchunkRulesElement = interchunk_rt.find('section-rules')
 
             if self.__interchunkRulesElement is not None:
+
                 self.__interChunkRuleFileXMLtree = interchunk_tree
                 self.__interChunkModel = QStandardItemModel()
                 self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
@@ -2598,6 +2584,7 @@ class Main(QMainWindow):
                 self.__postchunkRulesElement = postchunk_rt.find('section-rules')
 
                 if self.__postchunkRulesElement is not None:
+
                     self.__postChunkRuleFileXMLtree = postchunk_tree
                     self.__postChunkModel = QStandardItemModel()
                     self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
@@ -2614,17 +2601,21 @@ class Main(QMainWindow):
                 self.advancedTransfer = True
 
         if self.advancedTransfer:
+
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+
                 # Set these global variables to the transfer ones
                 self.__ruleModel = self.__transferModel
                 self.__rulesElement = self.__transferRulesElement
 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+
                 # Set these global variables to the interchunk ones
                 self.__ruleModel = self.__interChunkModel
                 self.__rulesElement = self.__interchunkRulesElement
 
             else: # postchunk
+
                 # Set these global variables to the postchunk ones
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
@@ -2664,11 +2655,14 @@ class Main(QMainWindow):
 
                 # Read state BEFORE setText, which can reset it in some Qt6 builds
                 item = self.__ruleModel.item(i) if self.__ruleModel else None
+
                 if item is None:
                     continue
+
                 itemState = item.checkState()
 
                 if itemState == QtCore.Qt.CheckState.Checked:
+
                     oneBoxChecked = True
                     item.setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
                     item.setCheckState(itemState)  # restore after setText
@@ -2680,9 +2674,12 @@ class Main(QMainWindow):
 
             # Update the select-all checkbox to reflect current state
             if oneBoxChecked and oneBoxUnchecked:
+
                 self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.PartiallyChecked)
                 self.lastSelectAllState = QtCore.Qt.CheckState.PartiallyChecked
+
             elif oneBoxChecked:
+
                 self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
                 self.lastSelectAllState = QtCore.Qt.CheckState.Checked
             else:
@@ -2739,7 +2736,9 @@ class Main(QMainWindow):
         self.__convertIt = True
 
         if self.advancedTransfer:
+
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+
                 source_file = os.path.join(self.testerFolder, SOURCE_APERT)
                 tr_file = os.path.join(self.testerFolder, RULE_FILE1)
                 tgt_file = os.path.join(self.testerFolder, TARGET_FILE1)
@@ -2750,6 +2749,7 @@ class Main(QMainWindow):
                 ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+
                 source_file = os.path.join(self.testerFolder, TARGET_FILE1)
                 tr_file = os.path.join(self.testerFolder, RULE_FILE2)
                 tgt_file = os.path.join(self.testerFolder, TARGET_FILE2)
@@ -2760,6 +2760,7 @@ class Main(QMainWindow):
                 ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
+
                 source_file = os.path.join(self.testerFolder, TARGET_FILE2)
                 tr_file = os.path.join(self.testerFolder, RULE_FILE3)
                 tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
@@ -2831,8 +2832,11 @@ class Main(QMainWindow):
 
                 # Add to the xml structure if it is a selected rule
                 item = self.__ruleModel.item(i) if self.__ruleModel else None
+
                 if item is None:
+
                     continue
+
                 if item.checkState() == QtCore.Qt.CheckState.Checked:
                     new_sr_element.append(rule_el)
 
@@ -2850,6 +2854,7 @@ class Main(QMainWindow):
                 sectionDefCatsElement = myRoot.find('section-def-cats')
 
                 if sectionDefCatsElement:
+
                     defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
                     defCatElement.attrib['n'] = 'c_dummy'
                     catItemElement = ET.SubElement(defCatElement, 'cat-item')
@@ -2882,7 +2887,9 @@ class Main(QMainWindow):
             errorList = RunApertium.checkRuleAttributesXML(ruleFileRoot)
 
             for i, triplet in enumerate(errorList):
+
                 if i == 0:
+
                     self.ui.warningTextEdit.setPlainText(triplet[0])
                 else:
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
@@ -2897,9 +2904,7 @@ class Main(QMainWindow):
             destName = f"{baseName[0]}_created_{stamp}{baseName[1]}"
             shutil.copy2(self.__transfer_rules_file, os.path.join(historyDir, destName))
 
-        # Run the makefile to run Apertium tools to do the transfer
-        # component of FLExTrans. Pass in the folder of the bash
-        # file to run. The current directory is FlexTools
+        # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. Pass in the folder of the bash file to run. The current directory is FlexTools
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
         if ret:
@@ -2938,6 +2943,7 @@ class Main(QMainWindow):
                 self.transferResultsPath = self.testerFolder + '\\' + os.path.basename(tgt_file)
 
             except FileNotFoundError:
+
                 self.ui.TargetTextEdit.setPlainText(err_msg)
                 self.unsetCursor()
                 return
@@ -2961,13 +2967,10 @@ class Main(QMainWindow):
             processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuationPresent=True)
 
         else:
-            # parse the lexical units. This will give us tokens before, between
-            # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
-            #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
+            # Parse the lexical units. This will give us tokens before, between and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
             tokens = re.split(r'\^|\$', targetOutput)
 
-            # process pairs of tokens (punctuation and lexical unit)
-            # ignore the punctuation (spaces)
+            # Process pairs of tokens (punctuation and lexical unit) ignore the punctuation (spaces)
             for i in range(0, len(tokens)-1, 2):
 
                 # Turn the lexical units into color-coded html.
@@ -2985,20 +2988,25 @@ class Main(QMainWindow):
 
         tgtf.close()
 
-        # Store the actual data stream in __lexicalUnits for use elsewhere when in advanced mode
-        # Store the html in another member
+        # Store the actual data stream in __lexicalUnits for use elsewhere when in advanced mode. Store the html in another member.
         if self.advancedTransfer:
+
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+
                 self.__transferHtmlResult = htmlVal
                 self.__transferLexicalUnitsResult = targetOutput
                 self.__tranferPrevSourceHtml = self.getActiveSrcTextEditVal()
                 self.__tranferPrevSourceLUs = self.getActiveLexicalUnits()
+
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+
                 self.__interchunkHtmlResult = htmlVal
                 self.__interchunkLexicalUnitsResult = targetOutput
                 self.__interchunkPrevSource = self.getActiveSrcTextEditVal()
                 self.__interchunkPrevSourceLUs = self.getActiveLexicalUnits()
+
             else: # 'tab_postchunk_rules':
+                
                 self.__postchunkPrevSource = self.getActiveSrcTextEditVal()
                 self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
 
