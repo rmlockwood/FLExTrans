@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.11 - 7/28/26 - Ron Lockwood
+#    Renamed snake_case locals in TransferClicked/displayRules to camelCase to satisfy the naming-convention lint.
+#
 #   Version 3.16.10 - 7/28/26 - Ron Lockwood
 #    Removed the ancient .aper fallback and opened the target-results and log files with 'with' blocks.
 #
@@ -376,19 +379,19 @@ class FlowLayout(QLayout):
         super().__init__(parent)
         self.setContentsMargins(margin, margin, margin, margin)
         self.setSpacing(spacing)
-        self.item_list = []
+        self.itemList = []
 
     def addItem(self, item):
-        self.item_list.append(item)
+        self.itemList.append(item)
 
     def count(self):
-        return len(self.item_list)
+        return len(self.itemList)
 
     def itemAt(self, index):
-        return self.item_list[index] if 0 <= index < len(self.item_list) else None
+        return self.itemList[index] if 0 <= index < len(self.itemList) else None
 
     def takeAt(self, index):
-        return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
+        return self.itemList.pop(index) if 0 <= index < len(self.itemList) else None
 
     def expandingDirections(self):
         return QtCore.Qt.Orientation(0)
@@ -400,7 +403,7 @@ class FlowLayout(QLayout):
 
         x, y, line_height = 0, 0, 0
 
-        for item in self.item_list:
+        for item in self.itemList:
 
             w = item.widget().sizeHint().width()
             h = item.widget().sizeHint().height()
@@ -425,7 +428,7 @@ class FlowLayout(QLayout):
         y = 0
         line_height = 0
 
-        for item in self.item_list:
+        for item in self.itemList:
 
             widget = item.widget()
             hint = widget.sizeHint()
@@ -680,13 +683,13 @@ class CustomCheckBox(QCheckBox):
 
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
+    def __init__(self, sentence_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
         
         QMainWindow.__init__(self)
         self.ui = Ui_LRTWindow()
         self.ui.setupUi(self)
 
-        self.__biling_file = biling_file
+        self.__bilingFile = bilingFile
         self.__sourceText = sourceText
         self.__DB = DB
         Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__sourceText, sourceTextList)
@@ -831,11 +834,11 @@ class Main(QMainWindow):
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
 
-        self.content_widget = FlowContainer()
+        self.contentWidget = FlowContainer()
 
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = CustomCheckBox(self.content_widget)
+            myCheck = CustomCheckBox(self.contentWidget)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
 
@@ -845,7 +848,7 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
-        self.ui.scrollArea.setWidget(self.content_widget)
+        self.ui.scrollArea.setWidget(self.contentWidget)
 
         # Make sure we are on right tabs
         ruleTab = 0            # default to transfer rules tab
@@ -917,7 +920,7 @@ class Main(QMainWindow):
             return
 
         # Set the models
-        self.__sent_model = SentenceList(sentence_list)
+        self.__sentModel = SentenceList(sentence_list)
 
         # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
@@ -935,7 +938,7 @@ class Main(QMainWindow):
 
                     self.ui.listSentences.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
                     self.ui.SentCombo.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-                    self.__sent_model.setRTL(True)
+                    self.__sentModel.setRTL(True)
                     found_rtl = True
                     break
 
@@ -959,8 +962,8 @@ class Main(QMainWindow):
             except:
                 pass
 
-        self.ui.listSentences.setModel(self.__sent_model)
-        self.ui.SentCombo.setModel(self.__sent_model)
+        self.ui.listSentences.setModel(self.__sentModel)
+        self.ui.SentCombo.setModel(self.__sentModel)
         selection_model = self.ui.listSentences.selectionModel()
         assert selection_model is not None
         selection_model.selectionChanged.connect(self.listSentClicked)
@@ -975,7 +978,7 @@ class Main(QMainWindow):
 
             # Set the index of the combo box and sentence list to what was saved before
             self.ui.SentCombo.setCurrentIndex(int(selectWordsSentNum))
-            qIndex = self.__sent_model.createIndex(int(selectWordsSentNum), 0)
+            qIndex = self.__sentModel.createIndex(int(selectWordsSentNum), 0)
             self.ui.listSentences.setCurrentIndex(qIndex)
 
             # Scroll to the selected item and center it in the viewable area
@@ -994,7 +997,8 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+            shutil.copy(self.__bilingFile, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+
         except:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
@@ -1041,11 +1045,13 @@ class Main(QMainWindow):
         testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
 
         if not testbedLog:
+
             self.retVal = False
             self.close()
             return
 
         if os.path.exists(testbedLog) == False:
+
             self.ui.viewTestbedLogButton.setEnabled(False)
 
         # See if we are doing HermitCrab synthesis
@@ -1059,7 +1065,6 @@ class Main(QMainWindow):
 
             # Set HermitCrab tracing checkbox to hidden if we are doing STAMP synthesis
             self.ui.traceHermitCrabSynthesisCheckBox.hide()
-
             self.doHermitCrabSynthesisBool = False
 
         self.textOutElemTree = None
@@ -1231,6 +1236,7 @@ class Main(QMainWindow):
         self.positionZoomWidgets()
 
     def showEvent(self, event):
+
         super().showEvent(event)
         self.positionZoomWidgets()
 
@@ -1276,7 +1282,7 @@ class Main(QMainWindow):
 
         # Read the XML file
         try:
-            bilingEtree = ET.parse(self.__biling_file)
+            bilingEtree = ET.parse(self.__bilingFile)
 
         except:
 
@@ -1286,17 +1292,18 @@ class Main(QMainWindow):
 
         # try to read the XML file again
         try:
-            bilingEtree = ET.parse(self.__biling_file)
+            bilingEtree = ET.parse(self.__bilingFile)
 
         except IOError:
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Read Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} could not be read.').format(self.__biling_file))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Read Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} could not be read.').format(self.__bilingFile))
             return False
 
         # Get the root node
         bilingRoot = bilingEtree.getroot()
 
         def tagSequence(node):
+
             return [s.attrib['n'] for s in node.iter('s')]
 
         # Loop through all the bilingual entries
@@ -1309,6 +1316,7 @@ class Main(QMainWindow):
 
             # If we can't find it, it must be an <i> (identity), skip it
             if left == None:
+
                 continue
 
             # Get the right part
@@ -1323,9 +1331,8 @@ class Main(QMainWindow):
                 self.__bilingMap[key] = [(left, right)]
             else:
                 if tagSequence(left) == tagSequence(self.__bilingMap[key][0][0]):
-                    # The current entry has the same source language tags
-                    # as the first entry with this lemma in the file,
-                    # so it's a replacement, and we should use the later one.
+
+                    # The current entry has the same source language tags as the first entry with this lemma in the file, so it's a replacement, and we should use the later one.
                     self.__bilingMap[key][0] = (left, right)
                 else:
                     self.__bilingMap[key].append((left, right))
@@ -1334,16 +1341,16 @@ class Main(QMainWindow):
 
     def ViewBilingualLexiconButtonClicked(self):
 
-        if os.path.exists(self.__biling_file) == False:
+        if os.path.exists(self.__bilingFile) == False:
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__biling_file))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__bilingFile))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
 
         xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
 
-        call([xxe, self.__biling_file])
+        call([xxe, self.__bilingFile])
 
     def EditTransferRulesButtonClicked(self):
 
@@ -1370,6 +1377,7 @@ class Main(QMainWindow):
         self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
 
         if self.advancedTransfer:
+            
             self.__ruleModel = self.__interChunkModel
             self.__rulesElement = self.__interchunkRulesElement
             self.SelectAllCheckBoxClicked()
@@ -1460,7 +1468,7 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
+            shutil.copy(self.__bilingFile, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
@@ -1582,7 +1590,7 @@ class Main(QMainWindow):
             return
 
         # Set the direction attribute
-        if self.__sent_model.getRTL():
+        if self.__sentModel.getRTL():
             direction = RTL
         else:
             direction = LTR
@@ -2143,7 +2151,7 @@ class Main(QMainWindow):
             self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
 
             # Turn the lexical unit into color-coded html.
-            processLexicalUnit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
+            processLexicalUnit(tokens[j+1]+' ', paragraph_element, self.__sentModel.getRTL(), True) # last parameter: show UNK categories
 
         # Add a space at the end
         self.__lexicalUnits += ' '
@@ -2151,7 +2159,7 @@ class Main(QMainWindow):
     def SourceCheckBoxClicked(self):
         self.ui.TestsAddedLabel.setText('')
 
-        mySent = self.__sent_model.getSent(self.lastSentNum)
+        mySent = self.__sentModel.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
 
         # Create a <p> html element
@@ -2179,7 +2187,7 @@ class Main(QMainWindow):
     def listSentClicked(self):
 
         self.lastSentNum = self.ui.listSentences.currentIndex().row()
-        mySent = self.__sent_model.getSent(self.lastSentNum)
+        mySent = self.__sentModel.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
 
         # Create a <p> html element
@@ -2273,7 +2281,7 @@ class Main(QMainWindow):
             # if no selection (-1), don't set the current index
             if self.lastSentNum != -1:
 
-                qIndex = self.__sent_model.createIndex(self.lastSentNum, 0)
+                qIndex = self.__sentModel.createIndex(self.lastSentNum, 0)
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
@@ -2349,7 +2357,7 @@ class Main(QMainWindow):
     def listSentComboClicked(self):
 
         self.lastSentNum = self.ui.SentCombo.currentIndex()
-        mySent = self.__sent_model.getSent(self.lastSentNum)
+        mySent = self.__sentModel.getSent(self.lastSentNum)
 
         # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
@@ -2357,12 +2365,12 @@ class Main(QMainWindow):
         self.__lexicalUnits = ''
         self.ui.ManualEdit.setPlainText('')
 
-        if self.__sent_model.getRTL():
+        if self.__sentModel.getRTL():
 
             self.ui.scrollArea.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
-        # Remove all widgets from self.content_widget
-        layout = self.content_widget.layout
+        # Remove all widgets from self.contentWidget
+        layout = self.contentWidget.layout
         while layout.count(): # type: ignore
             item = layout.takeAt(0) # type: ignore
             widget = item.widget()
@@ -2380,7 +2388,7 @@ class Main(QMainWindow):
             myCheck = self.__checkBoxList[i]
 
             # Add widget to the content widget of the scroll area
-            self.content_widget.layout.addWidget(myCheck) # type: ignore
+            self.contentWidget.layout.addWidget(myCheck) # type: ignore
             myCheck.show()
 
             # Set the text of the check box from the first tuple element. This will be the surface form.
@@ -2434,7 +2442,7 @@ class Main(QMainWindow):
     def formatTextForToolTip(self, srcTrgtPairsList):
 
         tipStr = ''
-        isRtl = self.__sent_model.getRTL()
+        isRtl = self.__sentModel.getRTL()
 
         # Between the source and target we want an arrow, choose left or right arrows depending on the text direction
         if isRtl:
@@ -2692,16 +2700,16 @@ class Main(QMainWindow):
         finally:
             self._rulesListUpdating = False
 
-    def displayRules(self, rules_element, ruleModel):
+    def displayRules(self, rulesElement, ruleModel):
 
-        if rules_element is None:
+        if rulesElement is None:
             return
 
         # Loop through each rule
-        for rule_el in rules_element:
+        for ruleEl in rulesElement:
 
             # Get the comment for the rule
-            comment = rule_el.get('comment')
+            comment = ruleEl.get('comment')
 
             if comment == None:
                 comment = _translate('LiveRuleTesterTool', 'missing comment')
@@ -2742,7 +2750,7 @@ class Main(QMainWindow):
 
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
 
-                source_file = os.path.join(self.testerFolder, SOURCE_APERT)
+                sourceFile = os.path.join(self.testerFolder, SOURCE_APERT)
                 trFile = os.path.join(self.testerFolder, RULE_FILE1)
                 tgtFile = os.path.join(self.testerFolder, TARGET_FILE1)
                 logFile = os.path.join(self.testerFolder, LOG_FILE)
@@ -2753,7 +2761,7 @@ class Main(QMainWindow):
 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
 
-                source_file = os.path.join(self.testerFolder, TARGET_FILE1)
+                sourceFile = os.path.join(self.testerFolder, TARGET_FILE1)
                 trFile = os.path.join(self.testerFolder, RULE_FILE2)
                 tgtFile = os.path.join(self.testerFolder, TARGET_FILE2)
                 logFile = os.path.join(self.testerFolder, LOG_FILE2)
@@ -2764,7 +2772,7 @@ class Main(QMainWindow):
 
             else: # postchunk
 
-                source_file = os.path.join(self.testerFolder, TARGET_FILE2)
+                sourceFile = os.path.join(self.testerFolder, TARGET_FILE2)
                 trFile = os.path.join(self.testerFolder, RULE_FILE3)
                 tgtFile = os.path.join(self.testerFolder, TARGET_FILE)
                 logFile = os.path.join(self.testerFolder, LOG_FILE3)
@@ -2774,7 +2782,7 @@ class Main(QMainWindow):
                 ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
-            source_file = os.path.join(self.testerFolder, SOURCE_APERT)
+            sourceFile = os.path.join(self.testerFolder, SOURCE_APERT)
             trFile = os.path.join(self.testerFolder, RULE_FILE1)
             tgtFile = os.path.join(self.testerFolder, TARGET_FILE)
             logFile = os.path.join(self.testerFolder, LOG_FILE)
@@ -2784,7 +2792,7 @@ class Main(QMainWindow):
             ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
 
         # Save the source text to the tester folder
-        sf = open(source_file, 'w', encoding='utf-8')
+        sf = open(sourceFile, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
 
         if len(myStr) < 1:
@@ -2816,22 +2824,22 @@ class Main(QMainWindow):
             # Copy the xml structure to a new object
             myRoot = myTree.getroot()
 
-            sr_element = myRoot.find('section-rules')
-            if sr_element is None:
+            srElement = myRoot.find('section-rules')
+            if srElement is None:
                 return
             
             # Remove the section-rules element
-            myRoot.remove(sr_element)
+            myRoot.remove(srElement)
 
             # Recreate the section-rules element
-            new_sr_element = ET.SubElement(myRoot, 'section-rules')
+            newSrElement = ET.SubElement(myRoot, 'section-rules')
 
-            rules_element = ruleFileRoot.find('section-rules')
-            if rules_element is None:
+            rulesElement = ruleFileRoot.find('section-rules')
+            if rulesElement is None:
                 return
 
             # Loop through all the selected rules
-            for i, rule_el in enumerate(rules_element):
+            for i, ruleEl in enumerate(rulesElement):
 
                 # Add to the xml structure if it is a selected rule
                 item = self.__ruleModel.item(i) if self.__ruleModel else None
@@ -2841,13 +2849,13 @@ class Main(QMainWindow):
                     continue
 
                 if item.checkState() == QtCore.Qt.CheckState.Checked:
-                    new_sr_element.append(rule_el)
+                    newSrElement.append(ruleEl)
 
             # If no rules were selected, create a dummy rule
-            if len(list(new_sr_element)) < 1:
+            if len(list(newSrElement)) < 1:
 
                 # Create a dummy rule that does nothing
-                ruleElement = ET.SubElement(new_sr_element, 'rule')
+                ruleElement = ET.SubElement(newSrElement, 'rule')
                 patternElement = ET.SubElement(ruleElement, 'pattern')
                 patternItemElement = ET.SubElement(patternElement, 'pattern-item')
                 patternItemElement.attrib['n'] = 'c_dummy'
@@ -2937,8 +2945,8 @@ class Main(QMainWindow):
                 targetOutput = tgtf.read()
 
         except:
-            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgtFile}.').format(tgtFile=Utils.shortenPathForDisplay(tgtFile))
-            self.ui.TargetTextEdit.setPlainText(err_msg)
+            errMsg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgtFile}.').format(tgtFile=Utils.shortenPathForDisplay(tgtFile))
+            self.ui.TargetTextEdit.setPlainText(errMsg)
             self.unsetCursor()
             return
 
@@ -3053,13 +3061,13 @@ class Main(QMainWindow):
                 paragraphEl = ET.Element('p')
 
                 # Start the span with 'Rule' + #
-                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sent_model.getRTL())
+                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sentModel.getRTL())
 
                 # process all the lexical units
                 for lexUnit in lexUnitList:
 
                     # Mark up the lexical unit with color, etc.
-                    processFunc(lexUnit+' ', paragraphEl, self.__sent_model.getRTL(), True)
+                    processFunc(lexUnit+' ', paragraphEl, self.__sentModel.getRTL(), True)
 
                 # Convert the ET element to an html string
                 coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
@@ -3070,22 +3078,27 @@ class Main(QMainWindow):
         return retStr
 
     def ZoomIncreaseTargetClicked(self):
+
         myFont = self.ui.SynthTextEdit.font()
         self.setTargetWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
 
     def ZoomDecreaseTargetClicked(self):
+
         myFont = self.ui.SynthTextEdit.font()
         self.setTargetWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
 
     def ZoomIncreaseSourceClicked(self):
+
         myFont = self.ui.SelectedSentencesEdit.font()
         self.setSourceWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
 
     def ZoomDecreaseSourceClicked(self):
+
         myFont = self.ui.SelectedSentencesEdit.font()
         self.setSourceWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
 
     def setTargetWidgetsFont(self, fontSize):
+
         myFont = self.ui.SynthTextEdit.font()
         myFont.setPointSizeF(fontSize)
 
@@ -3093,6 +3106,7 @@ class Main(QMainWindow):
         self.ui.TargetTextEdit.setFont(myFont)
 
     def setSourceWidgetsFont(self, fontSize):
+
         myFont = self.ui.SelectedSentencesEdit.font()
         myFont.setPointSizeF(fontSize)
 
@@ -3102,8 +3116,7 @@ class Main(QMainWindow):
         self.ui.SentCombo.setFont(myFont)
         self.ui.LogEdit.setFont(myFont)
 
-        # Set the font size of all the check boxes.
-        # This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
+        # Set the font size of all the check boxes. This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
         for check in self.__checkBoxList:
 
             check.setFont(myFont)
@@ -3112,18 +3125,26 @@ class Main(QMainWindow):
         QToolTip.setFont(myFont)
 
 def get_component_count(e):
+
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
+
         if entryRef.RefType == 1: # 1=complex form, 0=variant
+
             return entryRef.ComponentLexemesRS.Count
 
 def get_position_in_component_list(e, complex_e):
+
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in complex_e.EntryRefsOS:
+
         if entryRef.RefType == 1: # 1=complex form, 0=variant
+
             # loop through components
             for i, my_e in enumerate(entryRef.ComponentLexemesRS):
+
                 if e == my_e:
+
                     return i
 
 RESTART_MODULE = 0
