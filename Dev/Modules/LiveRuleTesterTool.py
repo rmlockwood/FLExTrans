@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.8 - 7/28/26 - Ron Lockwood
+#    Close and reopen the source project in MainFunction on restart so the cache is cleared and any source changes will get picked up.
+#    This fixes a longstanding probelm where switching source texts or doing the refresh source lexicon had no effect.
+#
 #   Version 3.16.7 - 7/11/26 - Ron Lockwood
 #    Restore the saved window size when switching between advanced and standard mode instead of clobbering it with programmatic resizes.
 #
@@ -273,7 +277,7 @@ from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, Q
 import Mixpanel
 import InterlinData
 import TextInOutUtils
-from Testbed import *
+from  Testbed import *
 import RunApertium
 import Utils
 import ReadConfig
@@ -307,7 +311,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.7",
+        FTM_Version    : "3.16.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -321,9 +325,6 @@ against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.""")}
-
-#app.quit()
-#del app
 
 ZOOM_INCREASE_FACTOR = 1.15
 ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
@@ -362,7 +363,9 @@ def firstLower(myStr):
         return myStr
 
 class FlowLayout(QLayout):
+
     def __init__(self, parent=None, margin=1, spacing=3):
+
         super().__init__(parent)
         self.setContentsMargins(margin, margin, margin, margin)
         self.setSpacing(spacing)
@@ -387,12 +390,16 @@ class FlowLayout(QLayout):
         return True
 
     def heightForWidth(self, width):
+
         x, y, line_height = 0, 0, 0
+
         for item in self.item_list:
+
             w = item.widget().sizeHint().width()
             h = item.widget().sizeHint().height()
 
             if x + w > width and x > 0:
+
                 x = 0
                 y += line_height + self.spacing()
                 line_height = 0
@@ -412,25 +419,33 @@ class FlowLayout(QLayout):
         line_height = 0
 
         for item in self.item_list:
+
             widget = item.widget()
             hint = widget.sizeHint()
 
             if is_rtl:
+
                 next_x = x - hint.width() - self.spacing()
+
                 if next_x < 0:
+
                     x = rect.width()
                     y += line_height + self.spacing()
                     next_x = x - hint.width() - self.spacing()
                     line_height = 0
+
                 item.setGeometry(QtCore.QRect(QtCore.QPoint(next_x, y), hint))
                 x = next_x
             else:
                 next_x = x + hint.width() + self.spacing()
+
                 if next_x > rect.width():
+
                     x = 0
                     y += line_height + self.spacing()
                     next_x = x + hint.width() + self.spacing()
                     line_height = 0
+
                 item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), hint))
                 x = next_x
 
@@ -443,21 +458,25 @@ class FlowLayout(QLayout):
         return QtCore.QSize(20, self.heightForWidth(40))
 
 class FlowContainer(QWidget):
+
     def __init__(self):
+
         super().__init__()
-        self.layout = FlowLayout()
-        self.setLayout(self.layout)
+        self.layout = FlowLayout() # type: ignore
+        self.setLayout(self.layout) # type: ignore
 
     def sizeHint(self):
+
         parent_widget = self.parentWidget()
         width = parent_widget.width() if parent_widget else 40
-        height = self.layout.heightForWidth(width)
+        height = self.layout.heightForWidth(width) # type: ignore
         return QtCore.QSize(width, height)
 
     def minimumSizeHint(self):
+
         parent_widget = self.parentWidget()
         width = parent_widget.width() if parent_widget else 40
-        height = self.layout.heightForWidth(width)
+        height = self.layout.heightForWidth(width) # type: ignore
         return QtCore.QSize(width, height)
     
 # Model class for list of sentences.
@@ -493,11 +512,14 @@ class SentenceList(QtCore.QAbstractListModel):
     def setData(self, index, value, role = QtCore.Qt.ItemDataRole.EditRole):
         return True
     def joinTupParts(self, tupList, i):
+
         ret = ''
 
         for t in tupList:
+
             # don't put a space before sentence punctuation
             if len(t) > i+1 and re.search(SENT_TAG, t[i+1]):
+
                 ret += t[i]
             else:
                 ret += ' ' + t[i]
@@ -509,23 +531,21 @@ CHKBOX_BOX  = 14   # indicator size in pixels
 CHKBOX_PAD  = 4    # left margin before box (delegate only)
 CHKBOX_GAP  = 6    # gap between box and text
 
-
 def paint_checkbox_indicator(painter: QPainter, box_x: int, box_y: int,
                               checked: bool) -> None:
-    """Draw a 14-px checkbox indicator at (box_x, box_y).
-    Blue filled box + white tick when checked; white box + grey border when not.
+    """Draw a 14-px checkbox indicator at (box_x, box_y). Blue filled box + white tick when checked; white box + grey border when not.
     Caller is responsible for save/restore and setting RenderHint.Antialiasing.
     """
     s = CHKBOX_BOX
     box_rect = QRect(box_x, box_y, s, s)
 
     if checked:
+
         painter.setBrush(QBrush(QColor("#0078d4")))
         painter.setPen(QPen(QColor("#0078d4"), 1.5))
         painter.drawRoundedRect(box_rect, 3, 3)
 
-        pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
-                   Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+        pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
         painter.setPen(pen)
         p1 = QPoint(box_x + int(s * 0.18), box_y + int(s * 0.50))
         p2 = QPoint(box_x + int(s * 0.42), box_y + int(s * 0.72))
@@ -539,15 +559,15 @@ def paint_checkbox_indicator(painter: QPainter, box_x: int, box_y: int,
 
 
 class CheckboxDelegate(QStyledItemDelegate):
-    """Draws a 14-px checkbox with a white tick in a QListView.
-    Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds.
-    """
+    """Draws a 14-px checkbox with a white tick in a QListView. Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds."""
 
     def sizeHint(self, option, index):
+
         sh = super().sizeHint(option, index)
         return sh.__class__(sh.width(), max(sh.height(), CHKBOX_BOX + 8))
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+
         painter.save()
 
         from PyQt6.QtWidgets import QStyle
@@ -557,8 +577,11 @@ class CheckboxDelegate(QStyledItemDelegate):
 
         # Background
         if is_selected:
+
             painter.fillRect(rect, option.palette.highlight())
+
         elif is_hover:
+
             painter.fillRect(rect, option.palette.highlight().color().lighter(190))
         else:
             painter.fillRect(rect, option.palette.base())
@@ -573,39 +596,45 @@ class CheckboxDelegate(QStyledItemDelegate):
         # Text
         text_x = box_x + CHKBOX_BOX + CHKBOX_GAP
         text_rect = QRect(text_x, rect.top(), rect.right() - text_x, rect.height())
+
         if is_selected:
+
             painter.setPen(QPen(option.palette.highlightedText().color()))
         else:
             painter.setPen(QPen(option.palette.text().color()))
-        painter.setFont(option.font)
-        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter,
-                         index.data(Qt.ItemDataRole.DisplayRole) or "")
 
+        painter.setFont(option.font)
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter, index.data(Qt.ItemDataRole.DisplayRole) or "")
         painter.restore()
 
     def editorEvent(self, event, model, option, index):
         """Toggle check state on click anywhere in the row."""
+
         if not index.isValid() or not event or not model:
+
             return False
+        
         if event.type() == QEvent.Type.MouseButtonPress:
+
             current = index.data(Qt.ItemDataRole.CheckStateRole)
-            new_state = (Qt.CheckState.Unchecked
-                         if current == Qt.CheckState.Checked.value
-                         else Qt.CheckState.Checked)
+            new_state = (Qt.CheckState.Unchecked if current == Qt.CheckState.Checked.value else Qt.CheckState.Checked)
             model.setData(index, new_state, Qt.ItemDataRole.CheckStateRole)
             return True
+        
         if event.type() == QEvent.Type.MouseButtonRelease:
+
             return True  # consume to prevent base class double-toggle
+        
         return super().editorEvent(event, model, option, index)
 
 
 class CustomCheckBox(QCheckBox):
-    """QCheckBox that paints its own indicator — same style as CheckboxDelegate.
-    Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds.
-    """
+    """QCheckBox that paints its own indicator — same style as CheckboxDelegate. Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds."""
 
     def __init__(self, parent=None):
+
         super().__init__(parent)
+
         # Hide Qt's built-in indicator; we draw our own in paintEvent
         self.setStyleSheet("""
             QCheckBox { spacing: 0px; }
@@ -614,17 +643,19 @@ class CustomCheckBox(QCheckBox):
         """)
 
     def sizeHint(self):
+
         sh = super().sizeHint()
         text_w = self.fontMetrics().horizontalAdvance(self.text())
-        return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4,
-                            max(sh.height(), CHKBOX_BOX + 6))
+        return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4, max(sh.height(), CHKBOX_BOX + 6))
 
     def mousePressEvent(self, event):
+
         """Toggle on click anywhere in the widget (box or text label)."""
         self.setChecked(not self.isChecked())
         self.clicked.emit(self.isChecked())
 
     def paintEvent(self, event):
+
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
@@ -643,6 +674,7 @@ class CustomCheckBox(QCheckBox):
 class Main(QMainWindow):
 
     def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
+        
         QMainWindow.__init__(self)
         self.ui = Ui_LRTWindow()
         self.ui.setupUi(self)
@@ -709,8 +741,6 @@ class Main(QMainWindow):
             self.ui.startRuleAssistant,
             self.ui.viewBilingualLexiconButton,
             self.ui.editReplacementButton,
-            # self.ui.selectAllButton,
-            # self.ui.unselectAllButton,
             self.ui.upButton,
             self.ui.downButton,
             self.ui.editTransferRulesButton,
@@ -781,7 +811,6 @@ class Main(QMainWindow):
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
         self.buildFolder = FTPaths.BUILD_DIR
-
         self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
         self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE
         self.transferResultsPath = self.testerFolder + '\\' + TARGET_FILE
@@ -822,8 +851,7 @@ class Main(QMainWindow):
         # Clear text boxes and labels
         self.__ClearStuff()
 
-        # Open a settings file to see which tabs were last used.
-        # Put this in a try so that if the number of values in the users file are fewer than expected,
+        # Open a settings file to see which tabs were last used. Put this in a try so that if the number of values in the user's file are fewer than expected,
         # We won't crash and instead just ignore the saved values
         try:
             with open(self.windowsSettingsFile) as f:
@@ -2347,8 +2375,8 @@ class Main(QMainWindow):
 
         # Remove all widgets from self.content_widget
         layout = self.content_widget.layout
-        while layout.count():
-            item = layout.takeAt(0)
+        while layout.count(): # type: ignore
+            item = layout.takeAt(0) # type: ignore
             widget = item.widget()
             if widget is not None:
                 widget.setParent(None)  # Detach from parent (removes from UI)
@@ -2364,7 +2392,7 @@ class Main(QMainWindow):
             myCheck = self.__checkBoxList[i]
 
             # Add widget to the content widget of the scroll area
-            self.content_widget.layout.addWidget(myCheck)
+            self.content_widget.layout.addWidget(myCheck) # type: ignore
             myCheck.show()
 
             # Set the text of the check box from the first tuple element. This will be the surface form.
@@ -3145,21 +3173,22 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
     else:
         TreeTranSort = True
 
-    # Check if we are using an Insert Words File for TreeTran
-    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
-
-    if not treeTranInsertWordsFile:
-        insertWordsFile = False
-    else:
-        insertWordsFile = True
-
-        insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
-
-        if insertWordsList == None:
-            return ERROR_HAPPENED # error already reported
-
-    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
+
+        # Check if we are using an Insert Words File for TreeTran
+        treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
+
+        if not treeTranInsertWordsFile:
+            insertWordsFile = False
+        else:
+            insertWordsFile = True
+
+            insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+
+            if insertWordsList == None:
+                return ERROR_HAPPENED # error already reported
+
+        # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
         try:
             f_treeTranResultFile = open(str(treeTranResultFile), encoding='utf-8')
             f_treeTranResultFile.close()
@@ -3267,15 +3296,17 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
     else:
         # Normal, non-TreeTran processing
         if myText.haveData() == True:
+
+            # Get pairs of surface forms with word data
             segment_list = myText.getSurfaceAndDataTupleListBySent()
 
-    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText),
-                DB.BuildGotoURL(textObj))
+    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText), DB.BuildGotoURL(textObj))
 
     if len(segment_list) > 0:
 
         # if the bilingual file path is relative, add on the current directory
         if re.search(':', bilingFile):
+
             pass
         else:
             pwd = os.getcwd()
@@ -3285,23 +3316,24 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount, sentPunc=sentPunc)
 
         if window.retVal == False:
+
             report.Error(_translate('LiveRuleTesterTool', 'An error occurred getting things initialized.'))
             return ERROR_HAPPENED
 
         window.show()
+
         if app:
             app.exec()
 
-        # Save needed attributes then explicitly destroy window before Python GC
-        # runs, to prevent QThreadStorage/mutex destruction-ordering crashes
-        restartTester        = window.restartTester
+        # Save the needed attributes then explicitly destroy window before Python garbage clean up runs, to prevent QThreadStorage/mutex destruction-ordering crashes
+        restartTester         = window.restartTester
         startTestbedLogViewer = window.startTestbedLogViewer
-        startRuleAssistant   = window.startRuleAssistant
-        startReplacementEditor = window.startReplacementEditor
+        startRuleAssistant    = window.startRuleAssistant
+        startReplacementEditor= window.startReplacementEditor
         window.deleteLater()
         del window
 
-        # If the user changed the source text combo, the restart member is set to True
+        # If the user changed the source text combo, the restart member is set to True. The actual close/reopen of the project happens in MainFunction, which owns the DB variable that the restart loop reuses (a reassignment here would be local to RunModule and lost).
         if restartTester:
 
             return RESTART_MODULE
@@ -3353,7 +3385,22 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         retVal = RunModule(DB, report, configMap, ruleCount, app)
 
-        if retVal == START_RULE_ASSISTANT:
+        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
+        if retVal == RESTART_MODULE:
+
+            savedDBName = DB.ProjectName()
+            DB.CloseProject()
+            DB = Utils.openProject(report, savedDBName)
+
+            # If the reopen failed, bail out rather than looping with a closed project.
+            if not DB:
+
+                retVal = ERROR_HAPPENED
+                break
+
+            ruleCount = None
+
+        elif retVal == START_RULE_ASSISTANT:
 
             from RuleAssistantPy import MainFunction as RA
             from RuleAssistantPy import docs as RA_docs
