@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.16.6 - 7/28/26 - Ron Lockwood
+#    Lint warning fix.
+#
 #   Version 3.16.5 - 7/22/26 - Ron Lockwood
 #    The AI Assistant setting descriptions now name the module "AI Rule Studio" (renamed from "Work on Rules with AI").
 #
@@ -1390,7 +1393,10 @@ class Main(QMainWindow):
 
         # The AI Assistant settings sit at the bottom of the Full view. Scroll all the way down so the user lands on them (used when the AI Rule Studio module opens Settings for setup).
         scrollBar = self.ui.scrollArea.verticalScrollBar()
-        scrollBar.setValue(scrollBar.maximum())
+
+        if scrollBar:
+
+            scrollBar.setValue(scrollBar.maximum())
 
     def calcViewSetting(self):
 

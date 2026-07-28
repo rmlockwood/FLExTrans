@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.10 - 7/28/26 - Ron Lockwood
+#    Removed the ancient .aper fallback and opened the target-results and log files with 'with' blocks.
+#
 #   Version 3.16.9 - 7/28/26 - Ron Lockwood
 #    Store the window settings file in TOML format (via tomllib/tomli_w) for better maintainability.
 #
@@ -315,7 +318,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.9",
+        FTM_Version    : "3.16.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -2740,9 +2743,9 @@ class Main(QMainWindow):
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
 
                 source_file = os.path.join(self.testerFolder, SOURCE_APERT)
-                tr_file = os.path.join(self.testerFolder, RULE_FILE1)
-                tgt_file = os.path.join(self.testerFolder, TARGET_FILE1)
-                log_file = os.path.join(self.testerFolder, LOG_FILE)
+                trFile = os.path.join(self.testerFolder, RULE_FILE1)
+                tgtFile = os.path.join(self.testerFolder, TARGET_FILE1)
+                logFile = os.path.join(self.testerFolder, LOG_FILE)
 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -2751,9 +2754,9 @@ class Main(QMainWindow):
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
 
                 source_file = os.path.join(self.testerFolder, TARGET_FILE1)
-                tr_file = os.path.join(self.testerFolder, RULE_FILE2)
-                tgt_file = os.path.join(self.testerFolder, TARGET_FILE2)
-                log_file = os.path.join(self.testerFolder, LOG_FILE2)
+                trFile = os.path.join(self.testerFolder, RULE_FILE2)
+                tgtFile = os.path.join(self.testerFolder, TARGET_FILE2)
+                logFile = os.path.join(self.testerFolder, LOG_FILE2)
 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
@@ -2762,9 +2765,9 @@ class Main(QMainWindow):
             else: # postchunk
 
                 source_file = os.path.join(self.testerFolder, TARGET_FILE2)
-                tr_file = os.path.join(self.testerFolder, RULE_FILE3)
-                tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
-                log_file = os.path.join(self.testerFolder, LOG_FILE3)
+                trFile = os.path.join(self.testerFolder, RULE_FILE3)
+                tgtFile = os.path.join(self.testerFolder, TARGET_FILE)
+                logFile = os.path.join(self.testerFolder, LOG_FILE3)
 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
@@ -2772,9 +2775,9 @@ class Main(QMainWindow):
 
         else:
             source_file = os.path.join(self.testerFolder, SOURCE_APERT)
-            tr_file = os.path.join(self.testerFolder, RULE_FILE1)
-            tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
-            log_file = os.path.join(self.testerFolder, LOG_FILE)
+            trFile = os.path.join(self.testerFolder, RULE_FILE1)
+            tgtFile = os.path.join(self.testerFolder, TARGET_FILE)
+            logFile = os.path.join(self.testerFolder, LOG_FILE)
 
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -2861,10 +2864,10 @@ class Main(QMainWindow):
                     catItemElement.attrib['tags'] = 'dummy'
 
             # Write out the file
-            myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+            myTree.write(trFile, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
 
             # Convert the file to be decomposed unicode
-            Utils.decompose(tr_file)
+            Utils.decompose(trFile)
 
         if self.fixBilingLex:
 
@@ -2872,7 +2875,7 @@ class Main(QMainWindow):
             subPairs = RunApertium.fixProblemChars(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
 
             # Substitute symbols with problem characters with fixed ones in the transfer file
-            RunApertium.subProbSymbols('.', tr_file, subPairs)
+            RunApertium.subProbSymbols('.', trFile, subPairs)
 
             self.fixBilingLex = False
 
@@ -2925,35 +2928,19 @@ class Main(QMainWindow):
         if self.rulesChanged:
 
             # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
-            RunApertium.unfixProblemCharsRuleFile(os.path.join(tr_file))
+            RunApertium.unfixProblemCharsRuleFile(os.path.join(trFile))
 
         # Load the target text contents into the results edit box
         try:
-            tgtf = open(tgt_file, encoding='utf-8')
+            with open(tgtFile, encoding='utf-8') as tgtf:
 
-        except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
+                targetOutput = tgtf.read()
 
-            tgt_file = re.sub(r'\.txt', '.aper', tgt_file)
-            err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=Utils.shortenPathForDisplay(tgt_file))
-
-            try:
-                tgtf = open(tgt_file, encoding='utf-8')
-
-                # Set this for use in Convert2Stamp
-                self.transferResultsPath = self.testerFolder + '\\' + os.path.basename(tgt_file)
-
-            except FileNotFoundError:
-
-                self.ui.TargetTextEdit.setPlainText(err_msg)
-                self.unsetCursor()
-                return
         except:
-            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgt_file}.').format(tgt_file=Utils.shortenPathForDisplay(tgt_file))
+            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgtFile}.').format(tgtFile=Utils.shortenPathForDisplay(tgtFile))
             self.ui.TargetTextEdit.setPlainText(err_msg)
             self.unsetCursor()
             return
-
-        targetOutput = tgtf.read()
 
         # Create a <p> html element
         pElem = ET.Element('p')
@@ -2986,8 +2973,6 @@ class Main(QMainWindow):
 
         self.ui.TargetTextEdit.setText(htmlVal)
 
-        tgtf.close()
-
         # Store the actual data stream in __lexicalUnits for use elsewhere when in advanced mode. Store the html in another member.
         if self.advancedTransfer:
 
@@ -3011,14 +2996,14 @@ class Main(QMainWindow):
                 self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
 
         # Load the log file
-        lf = open(log_file, encoding='utf-8')
+        with open(logFile, encoding='utf-8') as lf:
 
-        # fix up the output of the log file to colorize it and remove unneeded stuff
-        myLines = lf.readlines()
+            myLines = lf.readlines()
+
+        # Fix up the output of the log file to colorize it and remove unneeded stuff
         newText = self.processLogLines(myLines)
         self.ui.LogEdit.setText(newText)
 
-        lf.close()
         self.rulesChanged = False
         self.unsetCursor()
 
