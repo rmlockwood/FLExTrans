@@ -4,19 +4,19 @@
 <context>
     <name>WorkOnRulesWithAI</name>
     <message>
-        <location filename="../WorkOnRulesWithAI.py" line="49"/>
-        <source>This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.</source>
-        <translation>Dieses Modul verwendet KI, um neue Apertium-Transferregeln zu erstellen oder bestehende in der Transferregeldatei zu ändern. Sie beschreiben die gewünschte Regel; die KI entwirft sie, sie wird validiert, und Sie überprüfen und genehmigen sie, bevor sie geschrieben wird.</translation>
+        <location filename="../WorkOnRulesWithAI.py" line="85"/>
+        <source>This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.</source>
+        <translation>Dieses Modul verwendet KI, um Ihre Transferregeln und Makros zu erstellen, zu ändern oder zu erklären. Zum Erstellen oder Ändern beschreiben Sie, was Sie möchten; die KI entwirft und validiert es, und Sie überprüfen und genehmigen es, bevor es gespeichert wird. Sie können die KI auch bitten, eine bestehende Regel oder ein bestehendes Makro zu erklären. Sie können Ihre Beschreibung in einer Sprache Ihrer Wahl verfassen – und die Erklärung in dieser Sprache erhalten.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAI.py" line="50"/>
+        <location filename="../WorkOnRulesWithAI.py" line="88"/>
         <source>AI Rule Studio</source>
         <translation>KI-Regelstudio</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAI.py" line="53"/>
-        <source>Create or modify Apertium transfer rules with AI assistance.</source>
-        <translation>Apertium-Transferregeln mit KI-Unterstützung erstellen oder ändern.</translation>
+        <location filename="../WorkOnRulesWithAI.py" line="91"/>
+        <source>Use AI to create, modify, or explain your transfer rules and macros.</source>
+        <translation>Mit KI Ihre Transferregeln und Makros erstellen, ändern oder erklären.</translation>
     </message>
     <message>
         <location filename="../WorkOnRulesWithAI.py" line="101"/>
