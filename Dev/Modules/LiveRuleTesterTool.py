@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.16 - 7/28/26 - Ron Lockwood
+#    Persist the splitter panel sizes in the TOML window-settings file, stored per mode (advanced/standard have different panel counts) and restored on open and across a mode switch.
+#
 #   Version 3.16.15 - 7/28/26 - Ron Lockwood
 #    Wrap the main content areas in a vertical splitter so the user can drag to resize the source, rules, rule-execution, target and synthesis boxes.
 #
@@ -334,7 +337,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.15",
+        FTM_Version    : "3.16.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -763,6 +766,11 @@ class Main(QMainWindow):
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
         self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
+        # Saved splitter panel heights, kept per mode because the two modes have different panel counts (advanced has 4 panels, standard adds the rule-execution/log panel for 5). Empty
+        # means "no saved sizes yet" - the splitter then falls back to the proportional reset in applySplitterStretch. Loaded from the settings file below and re-saved on close.
+        self.standardModeSplitterSizes = []
+        self.advancedModeSplitterSizes = []
+
         # True while AdvancedOptionsCheckboxClicked is rearranging the layout, so resizeEvent doesn't record the programmatic resizes it causes
         self.switchingModes = False
 
@@ -918,6 +926,11 @@ class Main(QMainWindow):
             if len(advancedDims) == 2:
 
                 self.advancedModeDimensions = (int(advancedDims[0]), int(advancedDims[1]))
+
+            # Splitter panel heights are stored per mode as a list of pixel sizes (one per panel). Kept as ints; restoreOrResetSplitter only applies a set whose length matches the panels
+            # actually present in the current mode, so a list from an older/other arrangement is harmlessly ignored.
+            self.standardModeSplitterSizes = [int(size) for size in settings.get('standardModeSplitterSizes', [])]
+            self.advancedModeSplitterSizes = [int(size) for size in settings.get('advancedModeSplitterSizes', [])]
         except:
             pass
 
@@ -1108,7 +1121,8 @@ class Main(QMainWindow):
         # Create a vertical QSplitter so the user can drag to resize the main content areas. Each content box is grouped with its header row into a panel,
         # so the draggable handles land between the boxes. In standard mode the panels are Source, Rules, Rule-execution/Log, Target and Synthesis (4 handles);
         # in advanced mode the log box moves up beside the rules, so the Rule-execution panel drops out and there are 3 handles. The fixed source-selection row
-        # at the top and the button row at the bottom stay outside the splitter. Panel sizes are not persisted, so they reset to sensible proportions each open.
+        # at the top and the button row at the bottom stay outside the splitter. Panel sizes are persisted per mode (see recordCurrentSplitterSizes / restoreOrResetSplitter); a mode with no
+        # saved sizes yet resets to sensible proportions (applySplitterStretch).
 
         # Small helper that returns a panel container widget with a tight vertical layout to hold a header row plus its content box.
         def makePanel():
@@ -1165,6 +1179,10 @@ class Main(QMainWindow):
         # Keep the handles invisible (no groove line); they stay draggable via the handle width set above. The cursor still changes to a resize cursor over them.
         self.vSplitter.setStyleSheet("QSplitter::handle { background: transparent; }")
 
+        # Record the panel sizes whenever the user drags a handle, so they can be restored next open. (Window resizes redistribute the panels without emitting this signal; resizeEvent
+        # captures those.)
+        self.vSplitter.splitterMoved.connect(self.onSplitterMoved)
+
         # Insert the splitter into the main layout just below the fixed source-selection row (index 1) and above the fixed button row, and let it take the slack.
         self.ui.verticalLayout.insertWidget(1, self.vSplitter)
         self.ui.verticalLayout.setStretch(0, 0)
@@ -1190,6 +1208,43 @@ class Main(QMainWindow):
             self.vSplitter.setStretchFactor(i, weight)
 
         self.vSplitter.setSizes([int(available * weight / total) for weight in weights])
+
+    def currentModeSplitterSizes(self):
+
+        # The saved splitter sizes belonging to whichever mode is active now. The two modes are stored separately because their panel counts differ (advanced 4, standard 5).
+        return self.advancedModeSplitterSizes if self.ui.advancedOptionsCheckbox.isChecked() else self.standardModeSplitterSizes
+
+    def recordCurrentSplitterSizes(self):
+
+        # Remember the splitter's current panel heights in the active mode's slot, so a later mode switch or the next open can restore them. Called on a handle drag (onSplitterMoved) and
+        # on a user window resize (resizeEvent).
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            self.advancedModeSplitterSizes = self.vSplitter.sizes()
+        else:
+
+            self.standardModeSplitterSizes = self.vSplitter.sizes()
+
+    def onSplitterMoved(self, pos, index):
+
+        # A handle drag is a user action, so record the new sizes - unless a mode switch is rearranging the panels, whose programmatic changes aren't user intent (the same guard
+        # resizeEvent uses for the window dimensions).
+        if not self.switchingModes:
+
+            self.recordCurrentSplitterSizes()
+
+    def restoreOrResetSplitter(self):
+
+        # Restore the saved panel sizes for the current mode, or fall back to the proportional reset when there is no usable saved set. A saved set is used only when it has exactly one
+        # size per panel currently in the splitter, so a set written under a different arrangement (or a settings file from before sizes were persisted) is ignored rather than misapplied.
+        savedSizes = self.currentModeSplitterSizes()
+
+        if len(savedSizes) == self.vSplitter.count():
+
+            self.vSplitter.setSizes(savedSizes)
+        else:
+
+            self.applySplitterStretch()
 
     def AdvancedOptionsCheckboxClicked(self):
 
@@ -1301,8 +1356,8 @@ class Main(QMainWindow):
             # Restore the standard mode window size. Do this after removing the tabs so the advanced layout's larger minimum size can't clamp the resize.
             self.restoreModeDimensions(self.standardModeDimensions[0], self.standardModeDimensions[1])
 
-        # Reset the splitter proportions for the panels now present in this mode.
-        self.applySplitterStretch()
+        # Restore this mode's saved panel sizes (or reset to proportions if it has none yet) for the panels now present.
+        self.restoreOrResetSplitter()
 
         # Done rearranging, let resizeEvent record dimensions again
         self.switchingModes = False
@@ -1348,6 +1403,12 @@ class Main(QMainWindow):
                 # Save the dimensions of the standard mode
                 self.standardModeDimensions = (self.width(), self.height())
 
+            # A window resize redistributes the splitter panels without emitting splitterMoved, so capture the new panel sizes here too (once the splitter exists) to keep the saved set
+            # current for the next mode switch or open.
+            if getattr(self, 'vSplitter', None) is not None:
+
+                self.recordCurrentSplitterSizes()
+
         self.positionZoomWidgets()
 
     def showEvent(self, event):
@@ -1363,9 +1424,9 @@ class Main(QMainWindow):
             self.sourceFocusInitialized = True
             QtCore.QTimer.singleShot(0, self.setFocusToActiveSourceTab)
 
-            # Now that the window is at its real size, redo the splitter proportions. At build time the splitter had no height, so the initial split was
-            # computed against a fallback height; this gives a clean proportional split on first paint. Deferred so the final window size is in effect.
-            QtCore.QTimer.singleShot(0, self.applySplitterStretch)
+            # Now that the window is at its real size, apply this mode's saved panel sizes (or a clean proportional split if it has none). At build time the splitter had no height, so an
+            # early proportional split was computed against a fallback height; redoing it here, deferred so the final window size is in effect, gives the correct sizes on first paint.
+            QtCore.QTimer.singleShot(0, self.restoreOrResetSplitter)
 
     def positionZoomWidgets(self):
 
@@ -2585,6 +2646,11 @@ class Main(QMainWindow):
         sourceFontSize = self.ui.SelectedSentencesEdit.font().pointSizeF()
         targetFontSize = self.ui.SynthTextEdit.font().pointSizeF()
 
+        # Capture the splitter's live panel sizes for the mode showing now (drag/resize handlers keep the other mode's set current), so the latest arrangement is the one written out.
+        if getattr(self, 'vSplitter', None) is not None:
+
+            self.recordCurrentSplitterSizes()
+
         # Collect everything worth remembering into a plain dict, then write it out as a self-describing TOML settings file.
         settings = {
             'rulesTab': rulesTab,
@@ -2600,6 +2666,8 @@ class Main(QMainWindow):
             'advancedOptions': self.ui.advancedOptionsCheckbox.isChecked(),
             'standardModeDimensions': [self.standardModeDimensions[0], self.standardModeDimensions[1]],
             'advancedModeDimensions': [self.advancedModeDimensions[0], self.advancedModeDimensions[1]],
+            'standardModeSplitterSizes': self.standardModeSplitterSizes,
+            'advancedModeSplitterSizes': self.advancedModeSplitterSizes,
         }
 
         # Import tomli_w lazily so this module can still be imported when the package isn't installed (e.g. CI unit tests).
