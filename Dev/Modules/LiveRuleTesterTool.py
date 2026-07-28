@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.14 - 7/28/26 - Ron Lockwood
+#    Select (highlight) the rule row when its check box or label is clicked, so it's clear which rule the up/down arrow buttons will move. This fixes a problem where no
+#    selection was seen after clicking, but doing a up or down button actually moved the one that had been clicked on. I.e. it was selected but it didn't look like it.
+#
 #   Version 3.16.13 - 7/28/26 - Ron Lockwood
 #    Consolidated duplicated code: an XXE launch helper, table-driven file selection in TransferClicked, a shared rule-move helper, and a hoisted rules-tab tail.
 #
@@ -327,7 +331,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.13",
+        FTM_Version    : "3.16.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -631,6 +635,13 @@ class CheckboxDelegate(QStyledItemDelegate):
             return False
         
         if event.type() == QEvent.Type.MouseButtonPress:
+
+            # Select the clicked row so it shows the selection highlight. This handler consumes the press to toggle the check box, which suppresses the view's own click-to-select, so we select the row explicitly here. The highlight is critical: it shows which rule the up/down arrow buttons will move.
+            view = self.parent()
+
+            if isinstance(view, QAbstractItemView):
+
+                view.setCurrentIndex(index)
 
             current = index.data(Qt.ItemDataRole.CheckStateRole)
             new_state = (Qt.CheckState.Unchecked if current == Qt.CheckState.Checked.value else Qt.CheckState.Checked)
@@ -2524,8 +2535,15 @@ class Main(QMainWindow):
 
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
-            self.ui.listTransferRules.setItemDelegate(CheckboxDelegate(None))
+            self.ui.listTransferRules.setItemDelegate(CheckboxDelegate(self.ui.listTransferRules))
             self.__transferModel.dataChanged.connect(lambda *_: self.rulesListClicked())
+
+            # Keep TRIndex (the row the up/down arrows act on) in sync with the selected/highlighted row.
+            transferSelectionModel = self.ui.listTransferRules.selectionModel()
+
+            if transferSelectionModel:
+
+                transferSelectionModel.currentChanged.connect(lambda current, previous: self.rulesListClicked(current) if current.isValid() else None)
 
         else:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Rules File'), \
@@ -2553,8 +2571,15 @@ class Main(QMainWindow):
                 self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
-                self.ui.listInterChunkRules.setItemDelegate(CheckboxDelegate(None))
+                self.ui.listInterChunkRules.setItemDelegate(CheckboxDelegate(self.ui.listInterChunkRules))
                 self.__interChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
+
+                # Keep TRIndex (the row the up/down arrows act on) in sync with the selected/highlighted row.
+                interChunkSelectionModel = self.ui.listInterChunkRules.selectionModel()
+
+                if interChunkSelectionModel:
+
+                    interChunkSelectionModel.currentChanged.connect(lambda current, previous: self.rulesListClicked(current) if current.isValid() else None)
             else:
                 QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Interchunk Rules File'), \
                 _translate('LiveRuleTesterTool', 'The interchunk transfer file has no transfer element or no section-rules element'))
@@ -2580,8 +2605,15 @@ class Main(QMainWindow):
                     self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
-                    self.ui.listPostChunkRules.setItemDelegate(CheckboxDelegate(None))
+                    self.ui.listPostChunkRules.setItemDelegate(CheckboxDelegate(self.ui.listPostChunkRules))
                     self.__postChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
+
+                    # Keep TRIndex (the row the up/down arrows act on) in sync with the selected/highlighted row.
+                    postChunkSelectionModel = self.ui.listPostChunkRules.selectionModel()
+
+                    if postChunkSelectionModel:
+
+                        postChunkSelectionModel.currentChanged.connect(lambda current, previous: self.rulesListClicked(current) if current.isValid() else None)
                 else:
                     QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid postchunk Rules File'), \
                     _translate('LiveRuleTesterTool', 'The postchunk transfer file has no transfer element or no section-rules element'))
