@@ -102,7 +102,7 @@ Introduce letras individuales separadas por espacios, con un número par de letr
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto puede deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del diálogo Propiedades del proyecto de Fieldworks. Se encuentra en el menú en Archivo &gt; Administración de proyectos &gt; Propiedades del proyecto de Fieldworks.</translation>
+      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto podría deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña "Compartir" del diálogo "Propiedades del proyecto de Fieldworks". Se encuentra en el menú en "Archivo" &gt; "Administración de proyectos" &gt; "Propiedades del proyecto de Fieldworks".</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -134,7 +134,7 @@ Introduce letras individuales separadas por espacios, con un número par de letr
       <source>The name of the text (in the first analysis writing system)
 in the source FLEx project to be translated.</source>
       <translation>El nombre del texto (en el primer sistema de escritura de análisis)
-en el proyecto FLEx fuente que se traducirá.</translation>
+del proyecto FLEx fuente que se traducirá.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1618"/>
@@ -155,8 +155,8 @@ en el proyecto FLEx fuente que se traducirá.</translation>
       <location filename="../SettingsGUI.py" line="1622"/>
       <source>The name of the sense-level custom field in the source FLEx project that
 holds the link information to senses in the target FLEx project.</source>
-      <translation>El nombre del campo personalizado a nivel de sentido en el proyecto FLEx de origen que
-contiene la información de enlace a sentidos en el proyecto FLEx de destino.</translation>
+      <translation>El nombre del campo personalizado a nivel de acepción en el proyecto FLEx de origen que
+contiene la información de enlace a las acepciones en el proyecto FLEx de destino.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1624"/>
@@ -219,7 +219,7 @@ En las reglas de transferencia, puede verificar el final de una oración.</trans
     <message>
       <location filename="../SettingsGUI.py" line="1640"/>
       <source>Source Morpheme Types Counted As Roots</source>
-      <translation>Tipos de morfemas de origen contados como raíces</translation>
+      <translation>Tipos de morfemas de fuente contados como raíces</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1641"/>
