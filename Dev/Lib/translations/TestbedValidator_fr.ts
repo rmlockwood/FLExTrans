@@ -5,23 +5,23 @@
     <name>TestbedValidator</name>
     <message>
       <location filename="../TestbedValidator.py" line="109"/>
-      <source>Word Sense: {wordSense} not found.</source>
-      <translation type="unfinished">Word Sense: {wordSense} not found.</translation>
+      <source>Word Sense: {wordSense} not found. </source>
+      <translation>Sens du mot : {wordSense} introuvable.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="115"/>
-      <source>Grammatical Category: {gramCat} not found.</source>
-      <translation type="unfinished">Grammatical Category: {gramCat} not found.</translation>
+      <source>Grammatical Category: {gramCat} not found. </source>
+      <translation>Catégorie grammaticale : {gramCat} introuvable.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="121"/>
-      <source>Tag: {tag} not found.</source>
-      <translation type="unfinished">Tag: {tag} not found.</translation>
+      <source>Tag: {tag} not found. </source>
+      <translation>Étiquette : {tag} introuvable.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="233"/>
-      <source>Configuration File Problem. Morphnames not found.</source>
-      <translation type="unfinished">Configuration File Problem. Morphnames not found.</translation>
+      <source>Configuration File Problem. Morphnames not found. </source>
+      <translation>Problème de fichier de configuration. Noms de morphèmes introuvables.</translation>
     </message>
   </context>
 </TS>
