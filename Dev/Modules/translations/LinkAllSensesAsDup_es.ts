@@ -25,7 +25,7 @@ Esto asume que el proyecto destino fue copiado del origen y todos los sentidos t
 identificador único (guid).</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="106"/>
+      <location filename="../LinkAllSensesAsDup.py" line="107"/>
       <source>You need to run this module in &quot;modify mode.&quot;</source>
       <translation>You need to run this module in &quot;modify mode.&quot;</translation>
     </message>
