@@ -26,7 +26,7 @@ eindeutigen Bezeichner (GUID) haben.</translation>
     </message>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="107"/>
-      <source>You need to run this module in &quot;modify mode.&quot;</source>
+      <source>You need to run this module in &quot;modify mode.&quot; </source>
       <translation>Sie müssen dieses Modul im „Änderungsmodus“ ausführen.</translation>
     </message>
     <message>
