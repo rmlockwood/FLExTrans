@@ -10,8 +10,8 @@
     </message>
     <message>
       <location filename="../Mixpanel.py" line="55"/>
-      <source>FLExTrans Usage</source>
-      <translation>FLExTrans-Nutzung </translation>
+      <source>FLExTrans Usage </source>
+      <translation>FLExTrans-Nutzung</translation>
     </message>
   </context>
 </TS>
