@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.16.3 - 7/29/26 - Ron Lockwood
+#    Put the FLExTrans icon on the overwrite-chapters message box.
+#
 #   Version 3.16.2 - 7/22/26 - Ron Lockwood
 #    Fixes #1461. Make sure a blank writing system isn't used to create a text in FLEx.
 #
@@ -103,6 +106,7 @@ import glob
 import json
 from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication
 from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QIcon
 
 import ClusterUtils
 from ComboBox import CheckableComboBox
@@ -651,6 +655,7 @@ def doExport(textContents, report, chapSelectObj, parent):
 
         # Create a QMessageBox instance
         msgBox = QMessageBox()
+        msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setText(_translate("ChapterSelection", "Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?").format(chapStr=chapStr, digitsStr=digitsStr, bookName=bookMap[chapSelectObj.bookAbbrev], projAbbrev=chapSelectObj.exportProjectAbbrev))
         msgBox.setWindowTitle(_translate("ChapterSelection", "Overwrite chapters"))
