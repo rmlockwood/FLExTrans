@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.23 - 7/29/26 - Ron Lockwood
+#    Tightened the detected "language" code so example rules/comments in another language no longer sway it: the language description and a new line pinned to the USER REQUEST section
+#    both say to judge the code from the user's request text alone (ignoring project data, examples, existing rules, and macro definitions) and to default to "en" when it's too short.
+#
 #   Version 3.16.22 - 7/29/26 - Ron Lockwood
 #    Human-readable text (rule comments and explanations) now uses the interface's plain-language words for positions and macro parameters: "item N" instead of pos/pos="N"/"position N" and
 #    "with item N" instead of with-param/"parameter N", matching the labels TransferPreview shows the user. Updated EXPLAIN_STYLE_ACTION and added a convention to WorkOnRulesWithAI-Conventions.md.
@@ -197,7 +201,9 @@ DEF_TAG_TO_SECTION = {
 _RULE_XML_DESC = 'Exactly one <rule comment="...">...</rule> element - or, when the request asks for a macro, exactly one <def-macro n="...">...</def-macro> element. No wrapper, no DOCTYPE.'
 _NEW_DEFS_DESC = 'Each string is one new <def-cat>/<def-attr>/<def-var>/<def-list>/<def-macro> element the rule needs and that does not already exist. Empty list if none.'
 _EXPLANATION_DESC = 'One or two sentences describing what the rule does. Note here if the rule must be ordered before a more general rule.'
-_LANGUAGE_DESC = 'The ISO 639-1 two-letter code of the language the user\'s request is written in (e.g. "en", "es", "de", "fr"). Used to localize the rule preview.'
+_LANGUAGE_DESC = ('The ISO 639-1 two-letter code of the language the user typed their own request/instruction in (e.g. "en", "es", "de", "fr"). Judge this ONLY from the user\'s own request text - ignore the '
+                  'language of any example rules, rule comments, category names, definitions, or other reference material included in the prompt; those are context, not the request, and their language '
+                  'must not sway this code. If the user\'s request text is empty or too short to tell, default to "en". Used to localize the rule preview.')
 
 # Gemini structured-output schema (response_mime_type=application/json + response_schema).
 RULE_SCHEMA = {
@@ -984,6 +990,10 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
     else:
         parts.append('MODE: create a new rule.')
 
+    # Pin the language field to the request text below, right where it appears. Everything above (project data, examples, existing rules, macro definitions) is context and may be in any
+    # language - e.g. a sample rule whose comments are in Spanish - and must not sway the detected language. Only the words the user typed under USER REQUEST decide the "language" code.
+    parts.append('')
+    parts.append('Set the "language" field to the ISO 639-1 code of the language the USER REQUEST text below is written in - judged from that text alone, ignoring the language of anything above it. Default to "en" if it is too short to tell.')
     parts.append('')
     parts.append('USER REQUEST:')
     parts.append(description)
