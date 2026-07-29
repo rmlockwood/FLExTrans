@@ -327,15 +327,14 @@ These types, when occurring in the text file to be synthesized,
 will be broken down into their constituent entries. Use this property
 for the types that have inflection on the first element of the complex form.</source>
       <translation>Uno o más tipos complejos del proyecto FLEx de destino.
-Estos tipos, cuando aparecen en el archivo de texto que se va a sintetizar,
-se descompondrán en sus entradas constituyentes. Use esta propiedad
+Estos tipos, cuando aparecen en el archivo de texto que se va a sintetizar, se descompondrán en sus entradas constituyentes. Usa esta propiedad
 para los tipos que tienen flexión en el primer elemento de la forma compleja.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1670"/>
       <source>Target Complex Form Types
 with inflection on last Element</source>
-      <translation>Tipos de forma compleja de destino
+      <translation>Tipos de formas complejas de destino
 con flexión en el último elemento</translation>
     </message>
     <message>
