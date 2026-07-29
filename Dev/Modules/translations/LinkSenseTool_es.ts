@@ -78,7 +78,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
       <translation>Se encontraron más de {num_warnings} glosas vacías. Se suprimirán más advertencias para glosas de destino vacías.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1526"/>
+      <location filename="../LinkSenseTool.py" line="1527"/>
       <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
       <translation>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</translation>
     </message>
@@ -98,7 +98,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
       <translation>1 enlace eliminado.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1643"/>
+      <location filename="../LinkSenseTool.py" line="1644"/>
       <source>{num} links removed</source>
       <translation>{num} links removed</translation>
     </message>
@@ -193,7 +193,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
       <translation>No se encontraron sentidos para vincular. Por favor, revise su texto y apruebe algunas palabras.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1958"/>
+      <location filename="../LinkSenseTool.py" line="1959"/>
       <source>There was an error finding senses to link.</source>
       <translation>There was an error finding senses to link.</translation>
     </message>
