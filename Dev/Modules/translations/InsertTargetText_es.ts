@@ -34,18 +34,18 @@ same name will not be overwritten. A copy will be created.</source>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="162"/>
-      <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
-      <translation type="unfinished">The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</translation>
+      <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot; </source>
+      <translation type="unfinished">The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot; </translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="197"/>
-      <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</source>
-      <translation type="unfinished">Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</translation>
+      <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project. </source>
+      <translation type="unfinished">Text: &quot;{sourceTextName}&quot; created in the {targetProj} project. </translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="206"/>
-      <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation type="unfinished">You need to run this module in &quot;modify mode.&quot;</translation>
+      <source>You need to run this module in &quot;modify mode.&quot; </source>
+      <translation type="unfinished">You need to run this module in &quot;modify mode.&quot; </translation>
     </message>
   </context>
 </TS>
