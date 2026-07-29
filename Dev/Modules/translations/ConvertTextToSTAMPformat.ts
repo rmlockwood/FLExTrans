@@ -98,7 +98,7 @@ qui est utilisé.</translation>
     </message>
     <message>
         <location filename="../ConvertTextToSTAMPformat.py" line="1421"/>
-        <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist. </source>
+        <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
