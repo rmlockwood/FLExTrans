@@ -159,9 +159,9 @@
       <translation>Néhémie</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="750"/>
+      <location filename="../ChapterSelection.py" line="751"/>
       <source>Esther</source>
-      <translation>Esther</translation>
+      <translation type="unfinished">Esther</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="751"/>
@@ -414,9 +414,9 @@
       <translation>Tobit</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="801"/>
+      <location filename="../ChapterSelection.py" line="802"/>
       <source>Judith</source>
-      <translation>Judith</translation>
+      <translation type="unfinished">Judith</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="802"/>
