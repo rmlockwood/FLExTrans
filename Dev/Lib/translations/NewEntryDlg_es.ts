@@ -5,53 +5,53 @@
     <name>NewEntryDlg</name>
     <message>
       <location filename="../NewEntryDlg.py" line="93"/>
-      <source>Target FLEx project name</source>
-      <translation type="unfinished">Target FLEx project name</translation>
+      <source>Target FLEx project name </source>
+      <translation>Nombre del proyecto FLEx de destino</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="94"/>
-      <source>Lexeme Form</source>
-      <translation type="unfinished">Lexeme Form</translation>
+      <source>Lexeme Form </source>
+      <translation>Forma del Lexema</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="293"/>
-      <source>Error Check</source>
-      <translation type="unfinished">Error Check</translation>
+      <source>Error Check </source>
+      <translation>Verificación de Errores</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="218"/>
-      <source>You must enter a Gloss.</source>
-      <translation type="unfinished">You must enter a Gloss.</translation>
+      <source>You must enter a Gloss. </source>
+      <translation>Debe ingresar una Glosa.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="239"/>
-      <source>Cluster Project Selection Error</source>
-      <translation type="unfinished">Cluster Project Selection Error</translation>
+      <source>Cluster Project Selection Error </source>
+      <translation>Error de selección de proyecto en clúster</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="239"/>
-      <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-      <translation type="unfinished">You must at least select the default target project, {proj}, among your cluster projects.</translation>
+      <source>You must at least select the default target project, {proj}, among your cluster projects. </source>
+      <translation>Debe seleccionar al menos el proyecto de destino predeterminado, {proj}, entre sus proyectos en clúster.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="252"/>
-      <source>You must enter all the Lexeme Forms.</source>
-      <translation type="unfinished">You must enter all the Lexeme Forms.</translation>
+      <source>You must enter all the Lexeme Forms. </source>
+      <translation>Debe ingresar todas las Formas de Lexema.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="272"/>
-      <source>Not Found Error</source>
-      <translation type="unfinished">Not Found Error</translation>
+      <source>Not Found Error </source>
+      <translation>Error no encontrado</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="272"/>
-      <source>Failed to open the project: {proj}</source>
-      <translation type="unfinished">Failed to open the project: {proj}</translation>
+      <source>Failed to open the project: {proj} </source>
+      <translation>Error al abrir el proyecto: {proj}</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="293"/>
-      <source>You must enter a Lexeme Form.</source>
-      <translation type="unfinished">You must enter a Lexeme Form.</translation>
+      <source>You must enter a Lexeme Form. </source>
+      <translation>Debe ingresar una Forma de Lexema.</translation>
     </message>
   </context>
 </TS>
