@@ -159,7 +159,7 @@
         <translation>Néhémie</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="751"/>
+        <location filename="../ChapterSelection.py" line="750"/>
         <source>Esther</source>
         <translation>Esther</translation>
     </message>
@@ -414,7 +414,7 @@
         <translation>Tobie</translation>
     </message>
     <message>
-        <location filename="../ChapterSelection.py" line="802"/>
+        <location filename="../ChapterSelection.py" line="801"/>
         <source>Judith</source>
         <translation>Judith</translation>
     </message>

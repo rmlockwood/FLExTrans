@@ -34,7 +34,7 @@
         <translation>Le fichier de synthèse a été corrigé en utilisant {numRules} règles « Texte en sortie ».</translation>
     </message>
     <message>
-        <location filename="../FixUpSynthText.py" line="91"/>
+        <location filename="../FixUpSynthText.py" line="90"/>
         <source>This module will run a set of search and replace operations to fix up the text that comes out of 
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
 Fix Up Synthesis Text Rules File as specified in the Settings.</source>

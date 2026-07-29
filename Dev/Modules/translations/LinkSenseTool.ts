@@ -78,7 +78,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
         <translation>Plus de {num_warnings} gloses vides trouvées. Suppression des avertissements supplémentaires pour les gloses cibles vides.</translation>
     </message>
     <message>
-        <location filename="../LinkSenseTool.py" line="1527"/>
+        <location filename="../LinkSenseTool.py" line="1526"/>
         <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
         <translation>Aucun mot avec un type de morphème racine valide n'a été trouvé. Veuillez vérifier vos paramètres, en particulier les types de morphèmes sources comptés comme racines.</translation>
     </message>
@@ -98,7 +98,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
         <translation>1 lien supprimé</translation>
     </message>
     <message>
-        <location filename="../LinkSenseTool.py" line="1644"/>
+        <location filename="../LinkSenseTool.py" line="1643"/>
         <source>{num} links removed</source>
         <translation>{num} liens supprimés</translation>
     </message>
@@ -193,7 +193,7 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
         <translation>Aucun sens n'a été trouvé pour la liaison. Veuillez vérifier votre texte et approuver certains mots.</translation>
     </message>
     <message>
-        <location filename="../LinkSenseTool.py" line="1959"/>
+        <location filename="../LinkSenseTool.py" line="1958"/>
         <source>There was an error finding senses to link.</source>
         <translation>Il y a eu une erreur lors de la recherche des sens à lier.</translation>
     </message>
