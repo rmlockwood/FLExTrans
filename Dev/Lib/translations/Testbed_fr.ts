@@ -5,22 +5,22 @@
     <name>Testbed</name>
     <message>
       <location filename="../Testbed.py" line="652"/>
-      <source>No more lines to read in the synthesis file. </source>
+      <source>No more lines to read in the synthesis file.</source>
       <translation>Aucune autre ligne à lire dans le fichier de synthèse.</translation>
     </message>
     <message>
       <location filename="../Testbed.py" line="870"/>
-      <source>The testbed file: {filePath} could not be read or written. </source>
+      <source>The testbed file: {filePath} could not be read or written.</source>
       <translation>Le fichier test : {filePath} n'a pas pu être lu ou écrit.</translation>
     </message>
     <message>
       <location filename="../Testbed.py" line="875"/>
-      <source>The testbed file: {filePath} is invalid. </source>
+      <source>The testbed file: {filePath} is invalid.</source>
       <translation>Le fichier test : {filePath} est invalide.</translation>
     </message>
     <message>
       <location filename="../Testbed.py" line="1107"/>
-      <source>The testbed results file: {resultsPath} is invalid. </source>
+      <source>The testbed results file: {resultsPath} is invalid.</source>
       <translation>Le fichier de résultats test : {resultsPath} est invalide.</translation>
     </message>
   </context>

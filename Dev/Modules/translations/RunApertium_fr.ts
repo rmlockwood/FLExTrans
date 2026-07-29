@@ -53,17 +53,17 @@ Il s'appelle généralement target_text-aper.txt et se trouve habituellement dan
     </message>
     <message>
       <location filename="../RunApertium.py" line="434"/>
-      <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file} </source>
+      <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}</source>
       <translation>Le fichier du dictionnaire bilingue n'existe pas. Vous devrez peut-être exécuter le module {buildLex}. Le fichier devrait être : {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="444"/>
-      <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file} </source>
+      <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}</source>
       <translation>Le fichier de texte analysé n'existe pas. Vous devrez peut-être exécuter le module {extrSource}. Le fichier devrait être : {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="459"/>
-      <source>The transfer rules file does not exist. The file should be at: {file} </source>
+      <source>The transfer rules file does not exist. The file should be at: {file}</source>
       <translation>Le fichier de règles de transfert n'existe pas. Le fichier devrait être à : {file}</translation>
     </message>
     <message>
