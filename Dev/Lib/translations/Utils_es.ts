@@ -5,87 +5,87 @@
     <name>Utils</name>
     <message>
       <location filename="../Utils.py" line="332"/>
-      <source>space </source>
+      <source>space</source>
       <translation>espacio</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="332"/>
-      <source>converted to an underscore </source>
+      <source>converted to an underscore</source>
       <translation>convertido en un guion bajo</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="333"/>
-      <source>period </source>
+      <source>period</source>
       <translation>punto</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="333"/>
-      <source>removed </source>
+      <source>removed</source>
       <translation>eliminado</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="399"/>
-      <source> - Copy </source>
+      <source> - Copy</source>
       <translation> - Copia</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="428"/>
-      <source>Could not open the file {myFile} when converting to NFD. </source>
+      <source>Could not open the file {myFile} when converting to NFD.</source>
       <translation>No se pudo abrir el archivo {myFile} al convertir a NFD.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="607"/>
-      <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked. </source>
+      <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
       <translation>Hubo un error al abrir el proyecto: {DBname}. Quizás el proyecto esté abierto y la opción de compartir en las propiedades del proyecto FieldWorks no se haya activado.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="624"/>
-      <source>The target project does not exist. Please check the configuration file. </source>
+      <source>The target project does not exist. Please check the configuration file.</source>
       <translation>El proyecto de destino no existe. Por favor, revise el archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="631"/>
-      <source>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked. </source>
+      <source>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
       <translation>Hubo un error al abrir el proyecto de destino: {targetProj}. Quizás el proyecto esté abierto y la opción de compartir en las propiedades del proyecto FieldWorks no se haya activado.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="658"/>
-      <source>source </source>
+      <source>source</source>
       <translation>fuente</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="663"/>
-      <source>target </source>
+      <source>target</source>
       <translation>destino</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="728"/>
-      <source>category </source>
+      <source>category</source>
       <translation>categoría</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="747"/>
-      <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project. </source>
+      <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</source>
       <translation>La abreviatura/nombre: '{posAbbrStr}' para {myType}: '{posFullNameStr}' no puede contener un {charName}. No se pudo completar, por favor corrija este {myType} en el proyecto {dbType}.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="763"/>
-      <source>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules. </source>
+      <source>The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
       <translation>La abreviatura/nombre: '{oldAbbrStr}' para {myType}: '{posFullNameStr}' en el proyecto {dbType} no puede contener un {charName}. El {charName} ha sido {message}, formando {posAbbrStr}. Tenga esto en cuenta al referirse a este {myType} en las reglas de transferencia.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="771"/>
-      <source>Suppressing further warnings of this type. </source>
+      <source>Suppressing further warnings of this type.</source>
       <translation>Suprimiendo más advertencias de este tipo.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="921"/>
-      <source>Invalid url link or url not found in the target project while processing source headword: {headWord}. </source>
+      <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
       <translation>Enlace URL no válido o URL no encontrada en el proyecto de destino al procesar la palabra clave fuente: {headWord}.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="1035"/>
-      <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project. </source>
+      <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</source>
       <translation>vinculado a la entrada: {headWordStr}, significado: {glossStr} en el proyecto {projectName}.</translation>
     </message>
     <message>
