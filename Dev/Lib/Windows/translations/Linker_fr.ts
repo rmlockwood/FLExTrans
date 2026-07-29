@@ -89,17 +89,18 @@
       <translation>Sens à lier :</translation>
     </message>
     <message>
-      <location filename="../Linker.py" line="247"/>
+      <location filename="../Linker.py" line="248"/>
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation>Saisissez le début d'une entrée ou un texte quelconque (si &apos;Filtrer sur tous les champs &apos; est coché), 
-puis double-cliquez dans la colonne Mot-vedette cible de la ligne souhaitée pour y créer un lien.</translation>
+      <translation type="unfinished">Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
+then double-click in the Target Head Word column for the desired row to link to it.</translation>
     </message>
     <message>
-      <location filename="../Linker.py" line="260"/>
+      <location filename="../Linker.py" line="261"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</source>
-      <translation>Exporter une liste de sens non liés vers un fichier. Si l'option "Masquer les noms propres" est cochée, les noms propres ne seront pas exportés.</translation>
+      <translation type="unfinished">Export a list of unlinked senses to a file. If Hide Proper Nouns 
+is checked, Proper Nouns will not be exported.</translation>
     </message>
   </context>
 </TS>
