@@ -904,6 +904,35 @@ class TestMarkAuthorship(unittest.TestCase):
 
         self.assertEqual(AIRules.markAuthorship(junk, 'create', self.now), junk)
 
+    def test_modify_keeps_running_history(self):
+
+        # The rule as it stands on disk already carries an "added" stamp. Modifying it should prepend the new "modified" stamp above the old one rather than replacing it.
+        prior = AIRules.markAuthorship(VALID_RULE, 'create', datetime.datetime(2026, 7, 1, 9, 0))
+        out = AIRules.markAuthorship(VALID_RULE, 'modify', self.now, priorRuleXml=prior)
+
+        self.assertIn('The AI Assistant modified this rule', out)
+        self.assertIn('The AI Assistant added this rule', out)
+        # Newest first: the just-added modification stamp precedes the carried-over "added" stamp.
+        self.assertLess(out.index('modified this rule'), out.index('added this rule'))
+
+    def test_modify_history_accumulates_and_stays_newest_first(self):
+
+        # A rule modified twice keeps all three stamps (added, first modify, second modify), each new one prepended so the order is newest to oldest.
+        added = AIRules.markAuthorship(VALID_RULE, 'create', datetime.datetime(2026, 7, 1, 9, 0), whenStr='July 1')
+        firstMod = AIRules.markAuthorship(VALID_RULE, 'modify', datetime.datetime(2026, 7, 2, 9, 0), whenStr='July 2', priorRuleXml=added)
+        secondMod = AIRules.markAuthorship(VALID_RULE, 'modify', datetime.datetime(2026, 7, 3, 9, 0), whenStr='July 3', priorRuleXml=firstMod)
+
+        self.assertLess(secondMod.index('July 3'), secondMod.index('July 2'))
+        self.assertLess(secondMod.index('July 2'), secondMod.index('July 1'))
+
+    def test_modify_does_not_duplicate_stamp_ai_echoed(self):
+
+        # If the AI echoes the old "added" stamp back on its returned rule, the history still comes from the on-disk rule alone - the echoed stamp is dropped so it is not doubled.
+        prior = AIRules.markAuthorship(VALID_RULE, 'create', self.now, whenStr='July 1')
+        out = AIRules.markAuthorship(prior, 'modify', self.now, whenStr='July 3', priorRuleXml=prior)
+
+        self.assertEqual(out.count('added this rule'), 1)
+
 # ---------------------------------------------------------------------------
 # Engine.generate, generateRule, explainRule (with fakes)
 # ---------------------------------------------------------------------------

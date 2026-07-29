@@ -155,6 +155,10 @@ Only include tag values that actually exist in the supplied project data — nev
   describes the modified behavior.
 - **Comment liberally inside the rule**, in the team's style: a short XML comment before each conditional or output block explaining *what* and *why* (e.g. `<!--Move Demonstrative to a separate
   word-->`). This matches how the existing rules are written and makes them maintainable.
+- **Use the interface's plain-language words for positions and parameters in every human-readable text** (the `comment` description, the inline XML comments, and the `explanation`). FLExTrans shows
+  the user a `pos` value as **item** and a `<with-param>` as **with item**, so match that wording and never quote the raw XML in prose. Say "item 1" — not "pos 1", `pos="1"`, or "position 1" — when
+  you refer to the word at a pattern position, and "with item 1" (or "passing item 1") — not "with-param", `with-param pos="1"`, or "parameter 1" — when you refer to a value handed to a macro. For
+  example, write "Outputs item 1, with its lemma already lowercased", never "Outputs the first item (pos=\"1\"), with its lemma already lowercased".
 
 ## Common idioms
 
