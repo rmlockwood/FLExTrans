@@ -5,13 +5,13 @@
     <name>Mixpanel</name>
     <message>
       <location filename="../Mixpanel.py" line="52"/>
-      <source>FLExTrans would like to send usage statistics to FLExTrans developers. No personally identifiable information is sent. These anonymous statistics will help with future development. Do you want to opt out of sending usage statistics? </source>
-      <translation type="unfinished">FLExTrans would like to send usage statistics to FLExTrans developers. No personally identifiable information is sent. These anonymous statistics will help with future development. Do you want to opt out of sending usage statistics? </translation>
+      <source>FLExTrans would like to send usage statistics to FLExTrans developers. No personally identifiable information is sent. These anonymous statistics will help with future development. Do you want to opt out of sending usage statistics?</source>
+      <translation type="unfinished">FLExTrans would like to send usage statistics to FLExTrans developers. No personally identifiable information is sent. These anonymous statistics will help with future development. Do you want to opt out of sending usage statistics?</translation>
     </message>
     <message>
       <location filename="../Mixpanel.py" line="55"/>
-      <source>FLExTrans Usage</source>
-      <translation>Uso de FLExTrans</translation>
+      <source>FLExTrans Usage </source>
+      <translation type="unfinished">FLExTrans Usage </translation>
     </message>
   </context>
 </TS>
