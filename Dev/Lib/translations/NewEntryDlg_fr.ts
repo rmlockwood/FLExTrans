@@ -4,54 +4,54 @@
   <context>
     <name>NewEntryDlg</name>
     <message>
-      <location filename="../NewEntryDlg.py" line="92"/>
-      <source>Target FLEx project name</source>
-      <translation>Nom du projet FLEx cible</translation>
-    </message>
-    <message>
       <location filename="../NewEntryDlg.py" line="93"/>
+      <source>Target FLEx project name</source>
+      <translation type="unfinished">Target FLEx project name</translation>
+    </message>
+    <message>
+      <location filename="../NewEntryDlg.py" line="94"/>
       <source>Lexeme Form</source>
-      <translation>Forme de lexème</translation>
+      <translation type="unfinished">Lexeme Form</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="292"/>
+      <location filename="../NewEntryDlg.py" line="293"/>
       <source>Error Check</source>
-      <translation>Vérification d'erreur</translation>
+      <translation type="unfinished">Error Check</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="217"/>
+      <location filename="../NewEntryDlg.py" line="218"/>
       <source>You must enter a Gloss.</source>
-      <translation>Vous devez entrer une glose.</translation>
+      <translation type="unfinished">You must enter a Gloss.</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="238"/>
+      <location filename="../NewEntryDlg.py" line="239"/>
       <source>Cluster Project Selection Error</source>
-      <translation>Erreur de sélection du projet groupé</translation>
+      <translation type="unfinished">Cluster Project Selection Error</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="238"/>
+      <location filename="../NewEntryDlg.py" line="239"/>
       <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-      <translation>Vous devez au moins sélectionner le projet cible par défaut, {proj}, parmi vos projets groupés.</translation>
+      <translation type="unfinished">You must at least select the default target project, {proj}, among your cluster projects.</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="251"/>
+      <location filename="../NewEntryDlg.py" line="252"/>
       <source>You must enter all the Lexeme Forms.</source>
-      <translation>Vous devez entrer toutes les formes de lexème.</translation>
+      <translation type="unfinished">You must enter all the Lexeme Forms.</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="271"/>
+      <location filename="../NewEntryDlg.py" line="272"/>
       <source>Not Found Error</source>
-      <translation>Erreur non trouvée</translation>
+      <translation type="unfinished">Not Found Error</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="271"/>
+      <location filename="../NewEntryDlg.py" line="272"/>
       <source>Failed to open the project: {proj}</source>
-      <translation>Échec de l'ouverture du projet : {proj}</translation>
+      <translation type="unfinished">Failed to open the project: {proj}</translation>
     </message>
     <message>
-      <location filename="../NewEntryDlg.py" line="292"/>
+      <location filename="../NewEntryDlg.py" line="293"/>
       <source>You must enter a Lexeme Form.</source>
-      <translation>Vous devez entrer une forme de lexème.</translation>
+      <translation type="unfinished">You must enter a Lexeme Form.</translation>
     </message>
   </context>
 </TS>
