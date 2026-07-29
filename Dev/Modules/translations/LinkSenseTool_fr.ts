@@ -79,8 +79,8 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1527"/>
-      <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
-      <translation type="unfinished">No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</translation>
+      <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots. </source>
+      <translation>Aucun mot avec un type de morphème racine valide n'a été trouvé. Veuillez vérifier vos paramètres, en particulier les types de morphèmes sources comptés comme racines.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1633"/>
@@ -99,8 +99,8 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1644"/>
-      <source>{num} links removed</source>
-      <translation type="unfinished">{num} links removed</translation>
+      <source>{num} links removed </source>
+      <translation>{num} liens supprimés</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1711"/>
@@ -194,8 +194,8 @@ Définissez quel champ personnalisé est utilisé pour la liaison dans les param
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1959"/>
-      <source>There was an error finding senses to link.</source>
-      <translation type="unfinished">There was an error finding senses to link.</translation>
+      <source>There was an error finding senses to link. </source>
+      <translation>Il y a eu une erreur lors de la recherche des sens à lier.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1960"/>
