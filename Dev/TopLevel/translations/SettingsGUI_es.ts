@@ -346,8 +346,8 @@ con flexión en el último elemento</translation>
       <location filename="../SettingsGUI.py" line="1678"/>
       <source>Default to rebuilding the bilingual
 lexicon after linking senses?</source>
-      <translation>¿Reconstruir el diccionario
-bilingüe por defecto después de enlazar sentidos?</translation>
+      <translation>¿Se debe reconstruir el léxico
+bilingüe por defecto después de enlazar las acepciones?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1679"/>
