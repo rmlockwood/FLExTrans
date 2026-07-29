@@ -99,11 +99,11 @@
       <translation>Textos bíblicos</translation>
     </message>
     <message>
-      <location filename="../ParatextChapSelectionDlg.py" line="138"/>
+      <location filename="../ParatextChapSelectionDlg.py" line="139"/>
       <source>Overwrite a text that has the same name. For example, 
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
-      <translation>Sobrescribir un texto que tenga el mismo nombre. Por ejemplo, 
-si JHN 01 ya existe, se eliminará y se creará JHN 01 nuevamente.</translation>
+      <translation type="unfinished">Overwrite a text that has the same name. For example, 
+if JHN 01 already exists, it will delete it and create JHN 01 again.</translation>
     </message>
   </context>
 </TS>
