@@ -203,9 +203,9 @@
       <translation>Déterminer la balise {label} appropriée pour {cat} et l'enregistrer dans la variable {varid}.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1487"/>
+      <location filename="../CreateApertiumRules.py" line="1444"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Un attribut portant le nom exact &quot;numéro&quot; Veuillez corriger.</translation>
+      <translation type="unfinished">Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
