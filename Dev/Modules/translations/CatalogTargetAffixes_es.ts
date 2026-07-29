@@ -70,7 +70,7 @@ This list is used in subsequent FLExTrans modules to do conversions and synthesi
 NOTE: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.
 The catalog will be created in the file specified by the Target Affix Gloss List File setting.
-This is typically called target_affix_glosses.txt and is usually in the Build folder.</source>
+This is typically called target_affix_glosses.txt and is usually in the Build folder. </source>
       <translation>Este módulo crea un archivo que contiene una lista de todas las glosas de afijos y tipos de morfemas en el proyecto de destino.
 Esta lista se utiliza en los módulos posteriores de FLExTrans para realizar conversiones y sintetizar el texto de destino.
 NOTA: Los mensajes en la ventana de salida mostrarán que se está utilizando el proyecto FUENTE. En realidad, se está utilizando el proyecto de destino.

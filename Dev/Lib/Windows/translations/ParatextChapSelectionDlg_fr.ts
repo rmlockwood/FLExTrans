@@ -101,7 +101,7 @@
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="138"/>
       <source>Overwrite a text that has the same name. For example, 
-if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
+if JHN 01 already exists, it will delete it and create JHN 01 again. </source>
       <translation>Écraser un texte portant le même nom. Par exemple, si JHN 01 existe déjà, il sera supprimé et recréé.</translation>
     </message>
   </context>

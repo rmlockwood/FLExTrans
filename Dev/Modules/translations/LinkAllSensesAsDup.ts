@@ -26,7 +26,7 @@ identifiant unique (guid).</translation>
     </message>
     <message>
         <location filename="../LinkAllSensesAsDup.py" line="107"/>
-        <source>You need to run this module in &quot;modify mode.&quot;</source>
+        <source>You need to run this module in &quot;modify mode.&quot; </source>
         <translation>Vous devez exécuter ce module en &quot;mode modification&quot;.</translation>
     </message>
     <message>

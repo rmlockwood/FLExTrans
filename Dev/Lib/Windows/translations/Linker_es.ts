@@ -98,7 +98,7 @@ then double-click in the Target Head Word column for the desired row to link to 
     <message>
       <location filename="../Linker.py" line="260"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
-is checked, Proper Nouns will not be exported.</source>
+is checked, Proper Nouns will not be exported. </source>
       <translation>Exportar una lista de sentidos no vinculados a un archivo. Si "Ocultar nombres propios" está marcado, los nombres propios no se exportarán.</translation>
     </message>
   </context>

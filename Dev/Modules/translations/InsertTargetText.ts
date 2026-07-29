@@ -38,17 +38,17 @@ même nom ne sera pas écrasé. Une copie sera créée.</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="162"/>
-        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
+        <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot; </source>
         <translation>Le module Synthétiser le texte doit être exécuté avant celui-ci. Impossible d'ouvrir le fichier de synthèse : &quot;</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="197"/>
-        <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</source>
+        <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project. </source>
         <translation>Texte : &quot;{sourceTextName}&quot; créé dans le projet {targetProj}.</translation>
     </message>
     <message>
         <location filename="../InsertTargetText.py" line="206"/>
-        <source>You need to run this module in &quot;modify mode.&quot;</source>
+        <source>You need to run this module in &quot;modify mode.&quot; </source>
         <translation>Vous devez exécuter ce module en &quot;mode modification&quot;.</translation>
     </message>
 </context>

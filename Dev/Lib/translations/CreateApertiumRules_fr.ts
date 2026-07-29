@@ -25,17 +25,17 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="848"/>
-      <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
+      <source>Clear the variable to be sure we don't accidentally retain a prior value </source>
       <translation>Effacer la variable pour s’assurer de ne pas conserver accidentellement une valeur précédente</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="650"/>
-      <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
+      <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}. </source>
       <translation>Aucun affixe cible trouvé pour la fonctionnalité '{trgSpec.label}' sur la catégorie grammaticale {trgSpec.category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
-      <source>There are no target affixes, so there's nothing further to do here.</source>
+      <source>There are no target affixes, so there's nothing further to do here. </source>
       <translation>Il n’y a aucun affixe cible, donc il n’y a rien d’autre à faire ici.</translation>
     </message>
     <message>
@@ -55,17 +55,17 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="763"/>
-      <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
+      <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.) </source>
       <translation>Le nom source n’a pas de suffixe de pluriel attaché (il a probablement un suffixe de singulier).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="767"/>
-      <source>The target noun doesn't take plural agreement (marked as such).</source>
+      <source>The target noun doesn't take plural agreement (marked as such). </source>
       <translation>Le nom cible ne prend pas l’accord du pluriel (il est marqué comme tel).</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="771"/>
-      <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
+      <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class. </source>
       <translation>Mais si le nom cible ne prend pas l’accord du singulier (comme indiqué), alors nous aurons une classe nominale plurielle.</translation>
     </message>
     <message>
@@ -204,7 +204,7 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1487"/>
-      <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
+      <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this. </source>
       <translation>Un attribut portant le nom exact &quot;numéro&quot; Veuillez corriger.</translation>
     </message>
     <message>
@@ -214,7 +214,7 @@
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1514"/>
-      <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
+      <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values. </source>
       <translation>Veuillez vous assurer que la caractéristique associée &quot;nombre&quot; a les deux valeurs &quot;sg&quot; et &quot;pl&quot;.</translation>
     </message>
     <message>
