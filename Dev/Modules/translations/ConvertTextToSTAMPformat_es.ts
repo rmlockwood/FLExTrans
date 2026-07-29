@@ -91,8 +91,8 @@ NOTA: Los mensajes y la barra de tareas mostrarán que se está utilizando el pr
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1421"/>
-      <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation type="unfinished">The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist. </source>
+      <translation type="unfinished">The {modname} module must be run before this module. The file: ...\{filePath} does not exist. </translation>
     </message>
   </context>
 </TS>
