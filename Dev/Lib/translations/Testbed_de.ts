@@ -5,23 +5,23 @@
     <name>Testbed</name>
     <message>
       <location filename="../Testbed.py" line="653"/>
-      <source>No more lines to read in the synthesis file.</source>
-      <translation>Keine weiteren Zeilen in der Synthesedatei zu lesen. </translation>
+      <source>No more lines to read in the synthesis file. </source>
+      <translation>Keine weiteren Zeilen in der Synthesedatei zu lesen.</translation>
     </message>
     <message>
       <location filename="../Testbed.py" line="871"/>
-      <source>The testbed file: {filePath} could not be read or written.</source>
-      <translation>Die Testbed-Datei: {filePath} konnte nicht gelesen oder geschrieben werden. </translation>
+      <source>The testbed file: {filePath} could not be read or written. </source>
+      <translation>Die Testbed-Datei: {filePath} konnte nicht gelesen oder geschrieben werden.</translation>
     </message>
     <message>
       <location filename="../Testbed.py" line="876"/>
-      <source>The testbed file: {filePath} is invalid.</source>
-      <translation>Die Testbed-Datei: {filePath} ist ungültig. </translation>
+      <source>The testbed file: {filePath} is invalid. </source>
+      <translation>Die Testbed-Datei: {filePath} ist ungültig.</translation>
     </message>
     <message>
       <location filename="../Testbed.py" line="1108"/>
-      <source>The testbed results file: {resultsPath} is invalid.</source>
-      <translation>Die Testbed-Ergebnisdatei: {resultsPath} ist ungültig. </translation>
+      <source>The testbed results file: {resultsPath} is invalid. </source>
+      <translation>Die Testbed-Ergebnisdatei: {resultsPath} ist ungültig.</translation>
     </message>
   </context>
 </TS>
