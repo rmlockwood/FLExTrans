@@ -91,16 +91,15 @@
     <message>
       <location filename="../Linker.py" line="248"/>
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
-then double-click in the Target Head Word column for the desired row to link to it.</source>
+then double-click in the Target Head Word column for the desired row to link to it. </source>
       <translation type="unfinished">Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
-then double-click in the Target Head Word column for the desired row to link to it.</translation>
+then double-click in the Target Head Word column for the desired row to link to it. </translation>
     </message>
     <message>
       <location filename="../Linker.py" line="261"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
-is checked, Proper Nouns will not be exported.</source>
-      <translation type="unfinished">Export a list of unlinked senses to a file. If Hide Proper Nouns 
-is checked, Proper Nouns will not be exported.</translation>
+is checked, Proper Nouns will not be exported. </source>
+      <translation>Exportar una lista de sentidos no vinculados a un archivo. Si "Ocultar nombres propios" está marcado, los nombres propios no se exportarán.</translation>
     </message>
   </context>
 </TS>
