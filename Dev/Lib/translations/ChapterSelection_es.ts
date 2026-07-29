@@ -159,7 +159,7 @@
       <translation>Nehemías</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="750"/>
+      <location filename="../ChapterSelection.py" line="751"/>
       <source>Esther</source>
       <translation>Ester</translation>
     </message>
@@ -414,7 +414,7 @@
       <translation>Tobías</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="801"/>
+      <location filename="../ChapterSelection.py" line="802"/>
       <source>Judith</source>
       <translation>Judith</translation>
     </message>
