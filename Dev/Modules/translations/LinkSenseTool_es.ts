@@ -79,8 +79,8 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1527"/>
-      <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
-      <translation type="unfinished">No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</translation>
+      <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots. </source>
+      <translation type="unfinished">No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots. </translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1633"/>
@@ -99,8 +99,8 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1644"/>
-      <source>{num} links removed</source>
-      <translation type="unfinished">{num} links removed</translation>
+      <source>{num} links removed </source>
+      <translation type="unfinished">{num} links removed </translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1711"/>
@@ -194,8 +194,8 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1959"/>
-      <source>There was an error finding senses to link.</source>
-      <translation type="unfinished">There was an error finding senses to link.</translation>
+      <source>There was an error finding senses to link. </source>
+      <translation type="unfinished">There was an error finding senses to link. </translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1960"/>
