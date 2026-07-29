@@ -5,7 +5,7 @@
     <name>Mixpanel</name>
     <message>
         <location filename="../Mixpanel.py" line="52"/>
-        <source>FLExTrans would like to send usage statistics to FLExTrans developers. No personally identifiable information is sent. These anonymous statistics will help with future development. Do you want to opt out of sending usage statistics? </source>
+        <source>FLExTrans would like to send usage statistics to FLExTrans developers. No personally identifiable information is sent. These anonymous statistics will help with future development. Do you want to opt out of sending usage statistics?</source>
         <translation>FLExTrans souhaiterait envoyer des statistiques d'utilisation aux développeurs de FLExTrans. Aucune information personnellement identifiable n'est envoyée. Ces statistiques anonymes aideront au développement futur. Voulez-vous refuser l'envoi de statistiques d'utilisation ?</translation>
     </message>
     <message>
