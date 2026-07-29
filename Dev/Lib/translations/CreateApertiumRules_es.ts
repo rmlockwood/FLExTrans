@@ -203,7 +203,7 @@
       <translation>Determine la etiqueta {label} apropiada para {cat} y guárdela en una variable llamada {varid}.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1487"/>
+      <location filename="../CreateApertiumRules.py" line="1488"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
       <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo.</translation>
     </message>
@@ -213,7 +213,7 @@
       <translation>Valor de co-característica inesperado &quot;{val}&quot; encontrado en un conjunto de características dividido. Solo se espera &quot;sg&quot;, &quot;pl&quot; o &quot;many&quot;. Este valor será ignorado.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1514"/>
+      <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
       <translation>Por favor, asegúrese de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
     </message>
