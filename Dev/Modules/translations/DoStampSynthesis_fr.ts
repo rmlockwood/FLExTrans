@@ -35,9 +35,9 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
       <translation>Graphème nul trouvé pour la classe naturelle : {natClassName}. Ignoré.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="963"/>
+      <location filename="../DoStampSynthesis.py" line="964"/>
       <source>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</source>
-      <translation>Abandon de l'exportation du lexique cible car le champ XAMPLE personnalisé n'est pas une liste. Lorsque vous définissez le champ XAMPLE personnalisé, il doit être une liste.</translation>
+      <translation type="unfinished">Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="974"/>
@@ -150,14 +150,14 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
       <translation>Synthèse terminée.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1408"/>
+      <location filename="../DoStampSynthesis.py" line="1409"/>
       <source>An error happened when running the STAMP tool.</source>
-      <translation>Une erreur s'est produite lors de l'exécution de l'outil STAMP.</translation>
+      <translation type="unfinished">An error happened when running the STAMP tool.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1439"/>
+      <location filename="../DoStampSynthesis.py" line="1440"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation>Le module{modname} doit être exécuté avant ce module. Le fichier: ...\{filePath} n'existe pas.</translation>
+      <translation type="unfinished">The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
     </message>
   </context>
 </TS>
