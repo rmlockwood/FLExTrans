@@ -35,17 +35,17 @@ und fügt den Text in das Ziel-FLEx-Projekt ein. Die Eigenschaft „SourceTextNa
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="162"/>
-      <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
+      <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot; </source>
       <translation>Das Textsynthese-Modul muss vor diesem Modul ausgeführt werden. Die Synthesedatei konnte nicht geöffnet werden: „</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="197"/>
-      <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</source>
+      <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project. </source>
       <translation>Text: „{sourceTextName}“ wurde im Projekt {targetProj} erstellt.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="206"/>
-      <source>You need to run this module in &quot;modify mode.&quot;</source>
+      <source>You need to run this module in &quot;modify mode.&quot; </source>
       <translation>Sie müssen dieses Modul im „Änderungsmodus“ ausführen.</translation>
     </message>
   </context>
