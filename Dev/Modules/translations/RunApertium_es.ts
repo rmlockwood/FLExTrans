@@ -49,18 +49,18 @@ This is typically called target_text-aper.txt and is usually in the Build folder
     </message>
     <message>
       <location filename="../RunApertium.py" line="435"/>
-      <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file} </source>
-      <translation type="unfinished">The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file} </translation>
+      <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}</source>
+      <translation type="unfinished">The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="445"/>
-      <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file} </source>
-      <translation type="unfinished">The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file} </translation>
+      <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}</source>
+      <translation type="unfinished">The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="460"/>
-      <source>The transfer rules file does not exist. The file should be at: {file} </source>
-      <translation type="unfinished">The transfer rules file does not exist. The file should be at: {file} </translation>
+      <source>The transfer rules file does not exist. The file should be at: {file}</source>
+      <translation type="unfinished">The transfer rules file does not exist. The file should be at: {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="506"/>
