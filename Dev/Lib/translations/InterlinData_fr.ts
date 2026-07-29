@@ -11,7 +11,7 @@
     <message>
       <location filename="../InterlinData.py" line="174"/>
       <source>The Tree Tran Words to Insert File has invalid XML content.</source>
-      <translation>Le fichier Tree Tran Words to Insert contient du contenu XML invalide.</translation>
+      <translation>Le fichier Tree Tran des mots à insérer contient du contenu XML invalide.</translation>
     </message>
     <message>
       <location filename="../InterlinData.py" line="220"/>
@@ -51,7 +51,7 @@
     <message>
       <location filename="../InterlinData.py" line="678"/>
       <source>Couldn't find the sense for source headword: </source>
-      <translation>Impossible de trouver le sens associé à l'entrée de dictionnaire source : </translation>
+      <translation>Impossible de trouver le sens associé au mot-vedette source : </translation>
     </message>
     <message>
       <location filename="../InterlinData.py" line="691"/>
