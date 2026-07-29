@@ -160,8 +160,8 @@
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="751"/>
-      <source>Esther </source>
-      <translation type="unfinished">Esther </translation>
+      <source>Esther</source>
+      <translation type="unfinished">Esther</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="751"/>
