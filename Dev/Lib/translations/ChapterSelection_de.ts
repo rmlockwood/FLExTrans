@@ -161,7 +161,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="751"/>
       <source>Esther</source>
-      <translation>Ester</translation>
+      <translation>Ester </translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="751"/>
@@ -416,7 +416,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="802"/>
       <source>Judith</source>
-      <translation>Judit</translation>
+      <translation>Judit </translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="802"/>

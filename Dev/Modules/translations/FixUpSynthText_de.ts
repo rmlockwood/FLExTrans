@@ -40,7 +40,7 @@ synthesis. The operations are defined with the {textOutRulesModule} module. The 
 Fix Up Synthesis Text Rules File as specified in the Settings.</source>
       <translation>Dieses Modul führt eine Reihe von Such- und Ersetzungsvorgängen aus, um den aus der 
 Synthese stammenden Text zu korrigieren. Die Vorgänge werden mit dem Modul {textOutRulesModule} definiert. Die Regeln werden 
-in der in den Einstellungen angegebenen Datei „Fix Up Synthesis Text Rules File“ gespeichert.</translation>
+in der in den Einstellungen angegebenen Datei „Fix Up Synthesis Text Rules File“ gespeichert. </translation>
     </message>
   </context>
 </TS>

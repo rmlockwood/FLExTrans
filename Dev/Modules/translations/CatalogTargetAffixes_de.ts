@@ -75,7 +75,7 @@ This is typically called target_affix_glosses.txt and is usually in the Build fo
 Diese Liste wird in nachfolgenden FLExTrans-Modulen verwendet, um Konvertierungen durchzuführen und den Zieltext zu synthetisieren.
 HINWEIS: Meldungen im Ausgabefenster zeigen das QUELLPROJEKT als verwendet an. Tatsächlich wird das Zielprojekt verwendet.
 Der Katalog wird in der Datei erstellt, die durch die Einstellung „Target Affix Gloss List File“ angegeben ist.
-Sie heißt normalerweise target_affix_glosses.txt und befindet sich üblicherweise im Build-Ordner.</translation>
+Sie heißt normalerweise target_affix_glosses.txt und befindet sich üblicherweise im Build-Ordner. </translation>
     </message>
   </context>
 </TS>
