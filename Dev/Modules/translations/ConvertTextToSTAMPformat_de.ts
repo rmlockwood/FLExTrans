@@ -92,7 +92,7 @@ HINWEIS: Die Meldungen und die Taskleiste zeigen das Quellprojekt als verwendet 
     </message>
     <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="1421"/>
-      <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
+      <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist. </source>
       <translation>Das Modul {modname} muss vor diesem Modul ausgeführt werden. Die Datei: ...\{filePath} existiert nicht.</translation>
     </message>
   </context>
