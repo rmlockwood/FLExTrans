@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.22 - 7/29/26 - Ron Lockwood
+#    Human-readable text (rule comments and explanations) now uses the interface's plain-language words for positions and macro parameters: "item N" instead of pos/pos="N"/"position N" and
+#    "with item N" instead of with-param/"parameter N", matching the labels TransferPreview shows the user. Updated EXPLAIN_STYLE_ACTION and added a convention to WorkOnRulesWithAI-Conventions.md.
+#
+#   Version 3.16.21 - 7/28/26 - Ron Lockwood
+#    A modification now keeps a running authorship history: markAuthorship carries the rule's existing authorship comments (read from the on-disk rule/macro via getRuleXmlByComment,
+#    which now handles macros too) forward beneath the new stamp instead of replacing the previous one, so each edit prepends a newest-first record rather than overwriting it.
+#
 #   Version 3.16.20 - 7/27/26 - Ron Lockwood
 #    Fixes #1470. Added friendlyValidationSummary, which turns the raw validation error text (expat's "mismatched tag..." or the compiler's diagnostics) into one plain-language sentence; the
 #    dialog leads its "could not build a valid rule" message with this (translated) and keeps the raw text behind "Show Details".
@@ -258,8 +266,9 @@ EXPLAIN_STYLE_PATTERN = (
 EXPLAIN_STYLE_ACTION = (
     '- When you explain the action, translate each piece into plain words rather than naming the XML that expresses it. A clip fetches one part of a matched word: the "lem" part is the word\'s base '
     '(dictionary) form, an "a_gram_cat" part is its grammatical category, a "whole" part is the entire word with all of its tags, and any other part is the feature or affix set named after it; side "tl" '
-    'means the matching target-language word and side "sl" the source-language word; pos (or item) N means the Nth word the pattern matched. So a clip of the "lem" part, position 1, target side is simply '
-    '"the base form of the matching target word". A literal tag just adds that tag to the word being built - say "adds the tag INF", not "a lit-tag INF".\n'
+    'means the matching target-language word and side "sl" the source-language word; a pos value N means the Nth word the pattern matched - refer to it as "item N", the word FLExTrans shows the user, not '
+    'as "pos N", pos="N", or "position N". So a clip of the "lem" part, item 1, target side is simply "the base form of the matching target word". A literal tag just adds that tag to the word being built - '
+    'say "adds the tag INF", not "a lit-tag INF". When a macro is called with a parameter, describe it as "with item N" (the interface\'s wording), not "with-param" or "parameter N".\n'
     '- When you describe what the output word looks like, name its base form and the tags it carries in plain words - for example "the target word\'s base form followed by the tags v, INF, and IND" - not in '
     'Apertium\'s lexical-unit notation with carets and angle brackets (do not write ^springa<v><INF><IND>$).\n')
 
@@ -751,16 +760,19 @@ def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
     return {
         'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'macroXml': macroXml, 'ruleNames': ruleNames, 'ruleXml': ruleXml, 'summaryText': '\n'.join(lines), }
 
-def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
-    '''Return the XML text of the rule whose comment matches, or None.'''
+def getRuleXmlByComment(transferPath: str, comment: str, isMacro: bool = False) -> Optional[str]:
+    '''Return the XML text of the rule (or, with `isMacro`, the def-macro) whose identifying attribute matches, or None. Rules are matched on their comment attribute, macros on their n.'''
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     root = ET.parse(transferPath, parser=parser).getroot()
 
-    for rule in root.findall('.//rule'):
+    tagName = 'def-macro' if isMacro else 'rule'
+    matchAttr = 'n' if isMacro else 'comment'
 
-        if rule.get('comment') == comment:
-            return ET.tostring(rule, encoding='unicode')
+    for elem in root.findall('.//' + tagName):
+
+        if elem.get(matchAttr) == comment:
+            return ET.tostring(elem, encoding='unicode')
 
     return None
 
@@ -1118,11 +1130,12 @@ DEFAULT_AUTHORSHIP_COMMENTS = {
     'modifiedMacro': 'The AI Assistant modified this macro on {when}.',
 }
 
-def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False) -> str:
+def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False, priorRuleXml: Optional[str] = None) -> str:
     '''Prepend an XML comment to the <rule> (or def-macro) recording that the AI Assistant added or modified it, and when. Placed as the element's first child so it travels with it and
     shows in the preview. `authorshipComments` maps 'added'/'modified' (and, for macros, 'addedMacro'/'modifiedMacro') to a whole localized sentence containing "{when}"; missing keys fall
     back to English. `whenStr` is the date/time text, already localized to the interface language by the Qt-side caller; when omitted, a plain English date is used so AIRules stays usable
-    standalone. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
+    standalone. In modify mode `priorRuleXml` is the rule as it stood on disk before this edit; its leading authorship comments are carried over so each modification keeps a running
+    history (newest first) instead of replacing the previous stamp. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
 
     templates = authorshipComments or DEFAULT_AUTHORSHIP_COMMENTS
     key = ('modified' if mode == 'modify' else 'added') + ('Macro' if isMacro else '')
@@ -1141,8 +1154,39 @@ def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipCo
     except ET.ParseError:
         return ruleXml
 
-    # cast() because the stdlib stubs type ET.Comment's return oddly; at runtime it is a normal comment element.
+    # In modify mode, build up the authorship history from the rule as it was on disk rather than trusting the AI to have echoed the old stamp back. First drop any leading comments the
+    # AI happened to include on its returned rule, so the carried-over history is authoritative and nothing gets duplicated; then collect the prior rule's own leading comments (the stamps
+    # from when it was added and any earlier modifications, already ordered newest first).
+    priorComments = []
+
+    if mode == 'modify' and priorRuleXml:
+
+        while len(elem) and elem[0].tag is ET.Comment:
+            elem.remove(elem[0])
+
+        try:
+            priorElem = ET.fromstring(priorRuleXml, parser=ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))
+
+        except ET.ParseError:
+            priorElem = None
+
+        if priorElem is not None:
+
+            for child in list(priorElem):
+
+                if child.tag is ET.Comment:
+                    priorComments.append(child)
+
+                else:
+                    break
+
+    # The new stamp goes on top, then the carried-over history beneath it (each earlier modification prepended its own stamp, so the list is already newest first). cast() because the
+    # stdlib stubs type ET.Comment's return oddly; at runtime it is a normal comment element.
     elem.insert(0, cast(ET.Element, ET.Comment(text)))
+
+    for offset, priorComment in enumerate(priorComments, start=1):
+        elem.insert(offset, priorComment)
+
     return ET.tostring(elem, encoding='unicode')
 
 def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False) -> RuleResult:
@@ -1151,6 +1195,9 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
 
     priorErrors = None
     lastRule, lastDefs, lastExpl, lastLang, lastErrors = '', [], '', 'en', ''
+
+    # For a modification, read the rule/macro as it stands on disk so markAuthorship can carry its existing authorship comments forward into a running history rather than replacing them.
+    priorRuleXml = getRuleXmlByComment(transferPath, targetComment, isMacro) if mode == 'modify' and targetComment is not None else None
 
     workDir = tempfile.mkdtemp(prefix='airules_')
 
@@ -1161,7 +1208,7 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
         for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
             lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
-            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr, isMacro)
+            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr, isMacro, priorRuleXml)
 
             tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir, isMacro)
             ok, lastErrors = validateFile(tempPath, compilerExe)
