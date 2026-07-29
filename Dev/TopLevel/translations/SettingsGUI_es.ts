@@ -248,7 +248,7 @@ como algún tipo de raíz. En otras palabras, no afijos y no clíticos.</transla
     <message>
       <location filename="../SettingsGUI.py" line="1648"/>
       <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
-      <translation>En el módulo de modo de producción &apos;Traducir texto&apos;, ¿adónde quiere que vaya el texto borrador?</translation>
+      <translation>En el módulo &apos;"Traducir texto"&apos; del modo de producción ¿dónde quieres que vaya el texto borrador?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1652"/>
@@ -284,7 +284,7 @@ con flexión en el último elemento</translation>
       <location filename="../SettingsGUI.py" line="1671"/>
       <source>Same as above. Use this property for the types that have inflection
 on the last element of the complex form.</source>
-      <translation>Lo mismo que arriba. Utilice esta propiedad para los tipos que tienen flexión
+      <translation>Lo mismo que arriba. Utiliza esta propiedad para los tipos que tienen flexión
 en el último elemento de la forma compleja.</translation>
     </message>
     <message>
@@ -299,9 +299,7 @@ These types will allow one intervening word between the first
 and second words of the complex type, yet will still be treated
 as a lexical unit.</source>
       <translation>Uno o más tipos complejos del proyecto FLEx de origen.
-Estos tipos permitirán una palabra intermedia entre la primera
-y la segunda palabra del tipo complejo, pero aún se tratarán
-como una unidad léxica.</translation>
+Estos tipos permitirán una palabra intermedia entre la primera y la segunda palabra del tipo complejo, pero aún se tratarán como una unidad léxica.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1664"/>
