@@ -203,9 +203,9 @@
       <translation>Determine la etiqueta {label} apropiada para {cat} y guárdela en una variable llamada {varid}.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1487"/>
+      <location filename="../CreateApertiumRules.py" line="1444"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this</source>
-      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo</translation>
+      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo..</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
