@@ -225,7 +225,7 @@ En las reglas de transferencia, puede verificar el final de una oración.</trans
       <location filename="../SettingsGUI.py" line="1641"/>
       <source>Morpheme types in the source FLEx project that are to be considered
 as some kind of root. In other words, non-affixes and non-clitics.</source>
-      <translation>Tipos de morfemas en el proyecto FLEx de origen que deben considerarse
+      <translation>Tipos de morfemas en el proyecto FLEx de origen en que deben considerarse
 como algún tipo de raíz. En otras palabras, no afijos y no clíticos.</translation>
     </message>
     <message>
@@ -270,7 +270,7 @@ will be broken down into their constituent entries. Use this property
 for the types that have inflection on the first element of the complex form.</source>
       <translation>Uno o más tipos complejos del proyecto FLEx de origen.
 Estos tipos, cuando aparecen en el archivo de texto a sintetizar,
-se desglosan en sus entradas constituyentes. Utilice esta propiedad
+se desglosan en sus entradas constituyentes. Utiliza esta propiedad
 para los tipos que tienen flexión en el primer elemento de la forma compleja.</translation>
     </message>
     <message>
