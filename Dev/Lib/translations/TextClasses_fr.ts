@@ -4,24 +4,24 @@
   <context>
     <name>TextClasses</name>
     <message>
-      <location filename="../TextClasses.py" line="593"/>
+      <location filename="../TextClasses.py" line="594"/>
       <source>No analysis found for the word: </source>
-      <translation>Aucune analyse trouvée pour le mot : </translation>
+      <translation type="unfinished">No analysis found for the word: </translation>
     </message>
     <message>
-      <location filename="../TextClasses.py" line="593"/>
+      <location filename="../TextClasses.py" line="594"/>
       <source> Treating this as an unknown word.</source>
-      <translation> Traiter ceci comme un mot inconnu.</translation>
+      <translation type="unfinished"> Treating this as an unknown word.</translation>
     </message>
     <message>
-      <location filename="../TextClasses.py" line="821"/>
+      <location filename="../TextClasses.py" line="822"/>
       <source>Could not find bundle Guid for word in the inserted word list.</source>
-      <translation>Impossible de trouver le Guid du paquet pour le mot dans la liste des mots insérés.</translation>
+      <translation type="unfinished">Could not find bundle Guid for word in the inserted word list.</translation>
     </message>
     <message>
-      <location filename="../TextClasses.py" line="850"/>
+      <location filename="../TextClasses.py" line="851"/>
       <source>Could not find the sense for word in the inserted word list.</source>
-      <translation>Impossible de trouver le sens du mot dans la liste des mots insérés.</translation>
+      <translation type="unfinished">Could not find the sense for word in the inserted word list.</translation>
     </message>
   </context>
 </TS>
