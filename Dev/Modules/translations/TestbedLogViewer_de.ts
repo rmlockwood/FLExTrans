@@ -66,7 +66,7 @@
     <message>
       <location filename="../TestbedLogViewer.py" line="342"/>
       <source>Source text: {origin}.</source>
-      <translation type="unfinished">Source text: {origin}.</translation>
+      <translation>Source text: {origin}.</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="647"/>
