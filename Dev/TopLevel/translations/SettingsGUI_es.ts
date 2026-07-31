@@ -346,8 +346,8 @@ con flexión en el último elemento</translation>
       <location filename="../SettingsGUI.py" line="1678"/>
       <source>Default to rebuilding the bilingual
 lexicon after linking senses?</source>
-      <translation>¿Reconstruir el diccionario
-bilingüe por defecto después de enlazar sentidos?</translation>
+      <translation>¿Se debe reconstruir el léxico
+bilingüe por defecto después de enlazar las acepciones?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1679"/>
@@ -362,7 +362,7 @@ bilingüe por defecto después de enlazar sentidos?</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1682"/>
       <source>In the Sense Linker tool by default check the checkbox for filtering on all fields.</source>
-      <translation>En la herramienta Sense Linker, marque por defecto la casilla para filtrar en todos los campos.</translation>
+      <translation>En la herramienta Sense Linker, marca por defecto la casilla para filtrar en todos los campos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1686"/>
@@ -411,9 +411,9 @@ is the “from” category in the source FLEx project and the second category
 is the “to” category in the target FLEx project. Use the abbreviations of
 the FLEx categories. The substitution happens in the bilingual lexicon.</source>
       <translation>Uno o más pares de categorías gramaticales donde la primera categoría
-es la categoría &quot;de&quot; en el proyecto FLEx de origen y la segunda categoría
-es la categoría &quot;a&quot; en el proyecto FLEx de destino. Use las abreviaturas de
-las categorías FLEx. La sustitución ocurre en el diccionario bilingüe.</translation>
+es la categoría "de origen" en el proyecto FLEx de origen y la segunda categoría
+es la categoría "de destino" en el proyecto FLEx de destino. Usa las abreviaturas de
+las categorías FLEx. La sustitución ocurre en el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1701"/>
@@ -434,7 +434,7 @@ the extracted source text.</source>
     <message>
       <location filename="../SettingsGUI.py" line="1705"/>
       <source>The path and name of the file which holds the bilingual lexicon.</source>
-      <translation>La ruta y el nombre del archivo que contiene el diccionario bilingüe.</translation>
+      <translation>La ruta y el nombre del archivo que contiene el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1707"/>
@@ -445,7 +445,7 @@ the extracted source text.</source>
       <location filename="../SettingsGUI.py" line="1708"/>
       <source>The path and name of the file which holds replacement
 entry pairs for the bilingual lexicon.</source>
-      <translation>La ruta y el nombre del archivo que contiene pares de entradas de reemplazo para el diccionario bilingüe.</translation>
+      <translation>La ruta y el nombre del archivo que contiene pares de entradas de reemplazo para el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1710"/>
@@ -473,14 +473,14 @@ after going through the transfer process.</source>
       <source>Use the HermitCrab phonological synthesizer. This applies if you have
 HermitCrab parsing set up for your target project. You also need to have the
 Synthesize Text with HermitCrab module in your AllSteps collection.</source>
-      <translation>Utilice el sintetizador fonológico HermitCrab. Esto aplica si tiene
-configurado el análisis HermitCrab para su proyecto de destino. También necesita tener el módulo
-&quot;Sintetizar texto con HermitCrab&quot; en su colección AllSteps.</translation>
+      <translation>Utiliza el sintetizador fonológico HermitCrab. Esto es aplicable si tienes
+configurado el análisis HermitCrab para tu proyecto de destino. También necesitas tener el módulo
+"Sintetizar texto con HermitCrab" en tu colección AllSteps.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1721"/>
       <source>Clean Up Unknown Target Words?</source>
-      <translation>¿Limpiar palabras desconocidas de destino?</translation>
+      <translation>¿Eliminar las palabras desconocidas de destino?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1722"/>
@@ -532,7 +532,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab configuration file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de configuración de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1736"/>
@@ -544,7 +544,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab parses file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de análisis de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1739"/>
@@ -556,7 +556,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab surface forms file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de formas superficiales de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1742"/>
@@ -634,7 +634,7 @@ contiene un valor de propiedad. Se utiliza con pruebas STAMP personalizadas.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1764"/>
       <source>Limit to specific POS values</source>
-      <translation>Limitar a valores POS específicos</translation>
+      <translation>Limitar a valores de categoría gramatical específicos</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1765"/>
@@ -644,14 +644,14 @@ contiene un valor de propiedad. Se utiliza con pruebas STAMP personalizadas.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1767"/>
       <source>Limit number of stems</source>
-      <translation>Limitar el número de raíces</translation>
+      <translation>Limitar el número de temas</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1821"/>
       <source>Limit the generation to a specified number of stems.
 Stems chosen may seem random.</source>
-      <translation>Limitar la generación a un número específico de raíces.
-Las raíces elegidas pueden parecer aleatorias.</translation>
+      <translation>Limitar la generación a un número específico de temas.
+Los temas elegidos pueden parecer aleatorios.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1770"/>
