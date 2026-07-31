@@ -362,7 +362,7 @@ bilingüe por defecto después de enlazar las acepciones?</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1682"/>
       <source>In the Sense Linker tool by default check the checkbox for filtering on all fields.</source>
-      <translation>En la herramienta Sense Linker, marque por defecto la casilla para filtrar en todos los campos.</translation>
+      <translation>En la herramienta Sense Linker, marca por defecto la casilla para filtrar en todos los campos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1686"/>
@@ -411,9 +411,9 @@ is the “from” category in the source FLEx project and the second category
 is the “to” category in the target FLEx project. Use the abbreviations of
 the FLEx categories. The substitution happens in the bilingual lexicon.</source>
       <translation>Uno o más pares de categorías gramaticales donde la primera categoría
-es la categoría &quot;de&quot; en el proyecto FLEx de origen y la segunda categoría
-es la categoría &quot;a&quot; en el proyecto FLEx de destino. Use las abreviaturas de
-las categorías FLEx. La sustitución ocurre en el diccionario bilingüe.</translation>
+es la categoría "de origen" en el proyecto FLEx de origen y la segunda categoría
+es la categoría "de destino" en el proyecto FLEx de destino. Usa las abreviaturas de
+las categorías FLEx. La sustitución ocurre en el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1701"/>
@@ -434,7 +434,7 @@ the extracted source text.</source>
     <message>
       <location filename="../SettingsGUI.py" line="1705"/>
       <source>The path and name of the file which holds the bilingual lexicon.</source>
-      <translation>La ruta y el nombre del archivo que contiene el diccionario bilingüe.</translation>
+      <translation>La ruta y el nombre del archivo que contiene el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1707"/>
@@ -445,7 +445,7 @@ the extracted source text.</source>
       <location filename="../SettingsGUI.py" line="1708"/>
       <source>The path and name of the file which holds replacement
 entry pairs for the bilingual lexicon.</source>
-      <translation>La ruta y el nombre del archivo que contiene pares de entradas de reemplazo para el diccionario bilingüe.</translation>
+      <translation>La ruta y el nombre del archivo que contiene pares de entradas de reemplazo para el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1710"/>
@@ -473,14 +473,14 @@ after going through the transfer process.</source>
       <source>Use the HermitCrab phonological synthesizer. This applies if you have
 HermitCrab parsing set up for your target project. You also need to have the
 Synthesize Text with HermitCrab module in your AllSteps collection.</source>
-      <translation>Utilice el sintetizador fonológico HermitCrab. Esto aplica si tiene
-configurado el análisis HermitCrab para su proyecto de destino. También necesita tener el módulo
-&quot;Sintetizar texto con HermitCrab&quot; en su colección AllSteps.</translation>
+      <translation>Utiliza el sintetizador fonológico HermitCrab. Esto es aplicable si tienes
+configurado el análisis HermitCrab para tu proyecto de destino. También necesitas tener el módulo
+"Sintetizar texto con HermitCrab" en tu colección AllSteps.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1721"/>
       <source>Clean Up Unknown Target Words?</source>
-      <translation>¿Limpiar palabras desconocidas de destino?</translation>
+      <translation>¿Eliminar las palabras desconocidas de destino?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1722"/>
