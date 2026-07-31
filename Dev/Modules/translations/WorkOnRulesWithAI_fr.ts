@@ -6,7 +6,7 @@
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="85"/>
       <source>This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.</source>
-      <translation>Ce module utilise l'IA pour créer, modifier ou expliquer vos règles et macros de transfert. Pour créer ou modifier, vous décrivez ce que vous voulez ; l'IA rédige et valide une proposition, que vous examinez et approuvez avant qu'elle soit enregistrée. Vous pouvez aussi demander à l'IA d'expliquer une règle ou une macro existante. Vous pouvez rédiger votre description — et recevoir l'explication — dans la langue de votre choix.</translation>
+      <translation>Ce module utilise l'IA pour créer, modifier ou expliquer vos règles de transfert et macros. Pour créer ou modifier, vous décrivez ce que vous voulez ; l'IA la rédige et la valide, et vous la relisez et l'approuvez avant qu'elle soit enregistrée. Vous pouvez aussi demander à l'IA d'expliquer une règle ou une macro existante. Vous pouvez rédiger votre description — et recevoir l'explication — dans la langue de votre choix.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="88"/>

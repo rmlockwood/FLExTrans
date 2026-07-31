@@ -17,8 +17,8 @@ Output only the rule and any new definitions — never the whole transfer file, 
 
 ## Language of your output
 
-Write every piece of human-readable text you produce in the **same language as the user's request** — the `explanation`, the descriptive part of each rule `comment` (the text after the
-`item + item :` prefix), and any XML comments you add inside a rule. If the user writes in Spanish, answer in Spanish; if in French, French; and so on.
+Write every piece of human-readable text you produce in the **same language that user's request is written in** — the `explanation`, the descriptive part of each rule `comment` (the text after the
+`item + item :` prefix), and any XML comments you add inside a rule. If the user describes the rule or macro in Swahili, answer in Swahili; if in Hausa, Hausa; and so on.
 
 Never translate machine-readable content: XML element and attribute names, category names, tag / feature / affix values, variable / macro / list names, and lemmas all stay exactly as they appear
 in the project data. They are code, not prose — translating them would break the rule.
@@ -155,6 +155,10 @@ Only include tag values that actually exist in the supplied project data — nev
   describes the modified behavior.
 - **Comment liberally inside the rule**, in the team's style: a short XML comment before each conditional or output block explaining *what* and *why* (e.g. `<!--Move Demonstrative to a separate
   word-->`). This matches how the existing rules are written and makes them maintainable.
+- **Use the interface's plain-language words for positions and parameters in every human-readable text** (the `comment` description, the inline XML comments, and the `explanation`). FLExTrans shows
+  the user a `pos` value as **item** and a `<with-param>` as **with item**, so match that wording and never quote the raw XML in prose. Say "item 1" — not "pos 1", `pos="1"`, or "position 1" — when
+  you refer to the word at a pattern position, and "with item 1" (or "passing item 1") — not "with-param", `with-param pos="1"`, or "parameter 1" — when you refer to a value handed to a macro. For
+  example, write "Outputs item 1, with its lemma already lowercased", never "Outputs the first item (pos=\"1\"), with its lemma already lowercased".
 
 ## Common idioms
 

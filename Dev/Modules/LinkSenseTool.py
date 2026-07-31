@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16.5 - 7/29/26 - Ron Lockwood
+#    Close and reopen the source project in MainFunction on restart so the cache is cleared and any source changes will get picked up.
+#
 #   Version 3.16.4 - 7/13/26 - Ron Lockwood
 #    Fixes #1437. When a target word is filled into an unlinked row, color the whole line green instead of just the target columns.
 #
@@ -225,7 +228,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16.4",
+        FTM_Version    : "3.16.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -2127,6 +2130,18 @@ def MainFunction(DB, report, modify=False):
 
         retVal = RunModule(DB, report, configMap, app)
         
+        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
+        if retVal == RESTART_MODULE:
+
+            savedDBName = DB.ProjectName()
+            DB.CloseProject()
+            DB = Utils.openProject(report, savedDBName)
+
+            # If the reopen failed, bail out rather than looping with a closed project.
+            if not DB:
+
+                return
+
     if retVal == REBUILD_BILING:
         
         # Extract the bilingual lexicon. Force a complete rebuild instead of using the cache.        

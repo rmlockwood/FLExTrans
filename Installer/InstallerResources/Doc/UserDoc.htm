@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>9 July 2026</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>28 July 2026</small></center>
       <center><small>Version: 3.16</small></center>
       <hr>
       <div>
@@ -61,8 +61,9 @@
                <ul>
                   <li><a href="#sTesterQuickGuide">4.2.1&nbsp;Quick Guide</a></li>
                   <li><a href="#sLRTChangeSource">4.2.2&nbsp;Change Source Text</a></li>
-                  <li><a href="#sHover">4.2.3&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
-                  <li><a href="#sTesterOther">4.2.4&nbsp;Advanced Parts of the Tool</a></li>
+                  <li><a href="#sAddTestbed">4.2.3&nbsp;Add to Testbed</a></li>
+                  <li><a href="#sHover">4.2.4&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
+                  <li><a href="#sTesterOther">4.2.5&nbsp;Advanced Parts of the Tool</a></li>
                </ul>
                <li><a href="#sViewSrcTgt">4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium Text Tool</span></a></li>
                <li><a href="#sParatext">4.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools</a></li>
@@ -1023,7 +1024,7 @@
             words and, when you do, the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Sentences</span> tab and clicking on the sentence you want.
          </li>
          <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
-            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button.
+            appropriate. Check or uncheck them all with outside check box.
          </li>
          <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored <span style="font-style:italic; ">Target Text</span> area.
          </li>
@@ -1031,21 +1032,24 @@
          </li>
          <li>Now you are ready to synthesize. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button and you will synthesize the target text into target words in the salmon-colored <span style="font-style:italic; ">Synthesized Text</span> area.
          </li>
-         <li>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the <a href="#sTestbed">FLExTrans Testbed</a>. This is essentially a database of expected results for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to see if you are still getting the results you expect.
-         </li>
       </ol>
       <h3 style=""><a name="sLRTChangeSource"></a>4.2.2&nbsp;Change Source Text
       </h3>
-      <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart.
+      <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart. If you have made changes in your source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project&#8212;either to the text you are testing or to its lexicon&#8212;click the <span style="font-style:normal; font-weight:bold; ">Refresh Source Project</span> button to reload the current source text so those changes are picked up.
       </p>
-      <h3 style=""><a name="sHover"></a>4.2.3&nbsp;Hover to See Bilingual Lexicon Entry
+      <h3 style=""><a name="sAddTestbed"></a>4.2.3&nbsp;Add to Testbed
+      </h3>
+      <p>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the <a href="#sTestbed">FLExTrans Testbed</a>. This is essentially a database of expected results for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to see if you are still getting the results you expect. Add a comment to go with your testbed test if desired. This will
+         be visible in the testbed log.
+      </p>
+      <h3 style=""><a name="sHover"></a>4.2.4&nbsp;Hover to See Bilingual Lexicon Entry
       </h3>
       <p>When you are in the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Words</span> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown
          in the image above when you hover over the word &#8216;liebe&#8217;, use see that the bilingual lexicon maps &#8216;lieben&#8217; to &#8216;&auml;lska&#8217;. This
          feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well.
          If you have used &#8220;<a href="#sReplEditTool">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span></a>&#8221;, you may see multiple mappings in the pop-up image.
       </p>
-      <h3 style=""><a name="sTesterOther"></a>4.2.4&nbsp;Advanced Parts of the Tool
+      <h3 style=""><a name="sTesterOther"></a>4.2.5&nbsp;Advanced Parts of the Tool
       </h3>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1076,9 +1080,6 @@
       <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing the bilingual lexicon. The <span style="font-style:normal; font-weight:bold; ">Replacement Dictionary Editor</span> button will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span> module.
       </p>
       <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it so that upon synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> uses the changed target lexicon.
-      </p>
-      <p>There is a check box that says <span style="font-style:normal; font-weight:bold; ">Add multiple words to the testbed word by word</span>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you
-         have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> in one go. Each pair will be its own test.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">Open Rule Assistant</span> button will launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> and the test data shown in it will be from the source text that is currently shown in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
       </p>

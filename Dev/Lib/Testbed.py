@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.16.2 - 7/28/26 - Ron Lockwood
+#    Added lexicalUnitToHtml, which color-codes one lexical unit into an HTML string (reusing processLexicalUnit) so callers building their own HTML can drop in Source/Target-viewer-style colored lexical units.
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -1289,7 +1292,17 @@ def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
     lemma = Utils.unescapeReservedApertChars(lemma)
     
     colorInnerLU(lemma, symbols, parent_element, rtl, show_unk)
-    
+
+def lexicalUnitToHtml(lu_str, rtl=False, show_unk=False):
+    '''Color-code a single lexical unit - the text between the ^ and $ of an Apertium stream token, e.g. "book1.1<n><pl><gen>" - into an HTML string, using the very same lemma/category/
+    affix coloring the Source/Target viewer applies (processLexicalUnit). A throwaway <span> is used as the parent so the produced child spans can be serialized on their own; the result is
+    ready to drop into a larger HTML document (for example, coloring the lexical units a model writes into an AI rule explanation) without re-implementing any of the coloring rules here.'''
+
+    parent = ET.Element('span')
+    processLexicalUnit(lu_str, parent, rtl, show_unk)
+
+    return ET.tostring(parent, encoding='unicode', method='html')
+
 def processChunkLexicalUnit(lu_str, parent_element, rtl):
     
     # Split off the symbols from the lemma in the lexical unit

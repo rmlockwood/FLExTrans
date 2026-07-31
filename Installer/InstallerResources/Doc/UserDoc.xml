@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->9 July 2026</date
+>28 July 2026</date
 ><version
 >3.16</version
 ><contents
@@ -1670,13 +1670,7 @@ type="tTab"
 >Select Sentences</object
 > tab and clicking on the sentence you want.</li
 ><li
->Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the <object
-type="tButton"
->Select All</object
-> button. Uncheck them all with the <object
-type="tButton"
->Unselect All</object
-> button.</li
+>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check or uncheck them all with outside check box.</li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -1701,20 +1695,6 @@ type="tButton"
 type="tArea"
 >Synthesized Text</object
 > area.</li
-><li
->Use the <object
-type="tButton"
->Add to Testbed</object
-> button to add the input words and synthesized result to the <genericRef
-gref="sTestbed"
->FLExTrans Testbed</genericRef
->. This is essentially a database of expected results for a certain inputs. In another part of <object
-type="tFlextrans"
-></object
-> you can run the <object
-type="tTestbed"
-></object
-> to see if you are still getting the results you expect.</li
 ></ol
 ></section3
 ><section3
@@ -1728,7 +1708,32 @@ type="tButton"
 > drop-down box and select the desired text. At this point, the <object
 type="tLiveRuleTester"
 ></object
-> will close and restart.</p
+> will close and restart. If you have made changes in your source <object
+type="tFlexx"
+></object
+> project—either to the text you are testing or to its lexicon—click the <object
+type="tButton"
+>Refresh Source Project</object
+> button to reload the current source text so those changes are picked up.</p
+></section3
+><section3
+id="sAddTestbed"
+><secTitle
+>Add to Testbed</secTitle
+><p
+>Use the <object
+type="tButton"
+>Add to Testbed</object
+> button to add the input words and synthesized result to the <genericRef
+gref="sTestbed"
+>FLExTrans Testbed</genericRef
+>. This is essentially a database of expected results for a certain inputs. In another part of <object
+type="tFlextrans"
+></object
+> you can run the <object
+type="tTestbed"
+></object
+> to see if you are still getting the results you expect. Add a comment to go with your testbed test if desired. This will be visible in the testbed log.</p
 ></section3
 ><section3
 id="sHover"
@@ -1829,20 +1834,6 @@ type="tButton"
 type="tFlextrans"
 ></object
 > uses the changed target lexicon.</p
-><p
->There is a check box that says <object
-type="tButton"
->Add multiple words to the testbed word by word</object
->. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you have a "sentence" that runs through a paradigm. When you click <object
-type="tButton"
->Add to Testbed</object
->, <object
-type="tFlextrans"
-></object
-> will add each individual word and its corresponding synthesis to the <object
-type="tTestbed"
-></object
-> in one go. Each pair will be its own test.</p
 ><p
 >The <object
 type="tButton"
