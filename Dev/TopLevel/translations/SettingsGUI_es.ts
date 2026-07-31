@@ -532,7 +532,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab configuration file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de configuración de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1736"/>
@@ -544,7 +544,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab parses file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de análisis de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1739"/>
@@ -556,7 +556,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab surface forms file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de formas superficiales de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1742"/>
@@ -634,7 +634,7 @@ contiene un valor de propiedad. Se utiliza con pruebas STAMP personalizadas.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1764"/>
       <source>Limit to specific POS values</source>
-      <translation>Limitar a valores POS específicos</translation>
+      <translation>Limitar a valores de categoría gramatical específicos</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1765"/>
@@ -644,14 +644,14 @@ contiene un valor de propiedad. Se utiliza con pruebas STAMP personalizadas.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1767"/>
       <source>Limit number of stems</source>
-      <translation>Limitar el número de raíces</translation>
+      <translation>Limitar el número de temas</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1821"/>
       <source>Limit the generation to a specified number of stems.
 Stems chosen may seem random.</source>
-      <translation>Limitar la generación a un número específico de raíces.
-Las raíces elegidas pueden parecer aleatorias.</translation>
+      <translation>Limitar la generación a un número específico de temas.
+Los temas elegidos pueden parecer aleatorios.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1770"/>
