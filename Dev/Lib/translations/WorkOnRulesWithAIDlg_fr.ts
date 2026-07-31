@@ -9,7 +9,7 @@
 
 Get a key at:
 {url}</source>
-      <translation>Saisissez votre clé API {provider}. Elle est stockée en toute sécurité dans le coffre d'identifiants (Gestionnaire d'identifiants Windows), pas dans un fichier du projet.
+      <translation>Saisissez votre clé API {provider}. Elle est stockée en toute sécurité dans le coffre d'identifiants (Gestionnaire d'identifiants Windows), et non dans un fichier du projet.
 
 Obtenez une clé sur :
 {url}</translation>
@@ -82,7 +82,7 @@ Obtenez une clé sur :
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1144"/>
       <source>Try rephrasing your description as a single, clear sentence and generate again.</source>
-      <translation>Essayez de reformuler votre description en une seule phrase claire, puis relancez la génération.</translation>
+      <translation>Essayez de reformuler votre description en une seule phrase claire, puis générez à nouveau.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="254"/>
@@ -213,7 +213,7 @@ Ouvrez-la dans XXE pour la relire.</translation>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="486"/>
       <source>You have a rule that has not been written to the transfer file. Approve and write it before continuing?</source>
-      <translation>Vous avez une règle qui n'a pas été écrite dans le fichier de transfert. L'approuver et l'écrire avant de continuer ?</translation>
+      <translation>Une règle n'a pas encore été écrite dans le fichier de transfert. Voulez-vous l'approuver et l'écrire avant de continuer ?</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
@@ -231,7 +231,7 @@ Ouvrez-la dans XXE pour la relire.</translation>
     </message>
     <message>
       <source>You have a macro that has not been written to the transfer file. Approve and write it before continuing?</source>
-      <translation>Vous avez une macro qui n'a pas été écrite dans le fichier de transfert. L'approuver et l'écrire avant de continuer ?</translation>
+      <translation>Une macro n'a pas encore été écrite dans le fichier de transfert. Voulez-vous l'approuver et l'écrire avant de continuer ?</translation>
     </message>
     <message>
       <source>(none)</source>

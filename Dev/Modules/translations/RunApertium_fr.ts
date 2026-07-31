@@ -52,17 +52,17 @@ Il s'appelle généralement target_text-aper.txt et se trouve habituellement dan
       <translation>L'attribut : &quot;{attribStr}&quot; dans &quot;{attrName}&quot; contient un point. Il doit être un trait de soulignement. Vos règles pourraient ne pas fonctionner comme prévu.</translation>
     </message>
     <message>
-      <location filename="../RunApertium.py" line="434"/>
+      <location filename="../RunApertium.py" line="435"/>
       <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}</source>
       <translation>Le fichier du dictionnaire bilingue n'existe pas. Vous devrez peut-être exécuter le module {buildLex}. Le fichier devrait être : {file}</translation>
     </message>
     <message>
-      <location filename="../RunApertium.py" line="444"/>
+      <location filename="../RunApertium.py" line="445"/>
       <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}</source>
       <translation>Le fichier de texte analysé n'existe pas. Vous devrez peut-être exécuter le module {extrSource}. Le fichier devrait être : {file}</translation>
     </message>
     <message>
-      <location filename="../RunApertium.py" line="459"/>
+      <location filename="../RunApertium.py" line="460"/>
       <source>The transfer rules file does not exist. The file should be at: {file}</source>
       <translation>Le fichier de règles de transfert n'existe pas. Le fichier devrait être à : {file}</translation>
     </message>

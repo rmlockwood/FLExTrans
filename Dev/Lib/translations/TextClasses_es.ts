@@ -4,22 +4,22 @@
   <context>
     <name>TextClasses</name>
     <message>
-      <location filename="../TextClasses.py" line="593"/>
+      <location filename="../TextClasses.py" line="594"/>
       <source>No analysis found for the word: </source>
       <translation>No se encontró análisis para la palabra: </translation>
     </message>
     <message>
-      <location filename="../TextClasses.py" line="593"/>
+      <location filename="../TextClasses.py" line="594"/>
       <source> Treating this as an unknown word.</source>
       <translation> Esto se tratará como una palabra desconocida.</translation>
     </message>
     <message>
-      <location filename="../TextClasses.py" line="821"/>
+      <location filename="../TextClasses.py" line="822"/>
       <source>Could not find bundle Guid for word in the inserted word list.</source>
       <translation>No se pudo encontrar el GUID del paquete para la palabra en la lista de palabras insertadas.</translation>
     </message>
     <message>
-      <location filename="../TextClasses.py" line="850"/>
+      <location filename="../TextClasses.py" line="851"/>
       <source>Could not find the sense for word in the inserted word list.</source>
       <translation>No se pudo encontrar el sentido para la palabra en la lista de palabras insertadas.</translation>
     </message>

@@ -102,7 +102,7 @@ Introduce letras individuales separadas por espacios, con un número par de letr
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto puede deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del diálogo Propiedades del proyecto de Fieldworks. Se encuentra en el menú en Archivo &gt; Administración de proyectos &gt; Propiedades del proyecto de Fieldworks.</translation>
+      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto podría deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña "Compartir" del diálogo "Propiedades del proyecto de Fieldworks". Se encuentra en el menú en "Archivo" &gt; "Administración de proyectos" &gt; "Propiedades del proyecto de Fieldworks".</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -134,7 +134,7 @@ Introduce letras individuales separadas por espacios, con un número par de letr
       <source>The name of the text (in the first analysis writing system)
 in the source FLEx project to be translated.</source>
       <translation>El nombre del texto (en el primer sistema de escritura de análisis)
-en el proyecto FLEx fuente que se traducirá.</translation>
+del proyecto FLEx fuente que se traducirá.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1618"/>
@@ -155,8 +155,8 @@ en el proyecto FLEx fuente que se traducirá.</translation>
       <location filename="../SettingsGUI.py" line="1622"/>
       <source>The name of the sense-level custom field in the source FLEx project that
 holds the link information to senses in the target FLEx project.</source>
-      <translation>El nombre del campo personalizado a nivel de sentido en el proyecto FLEx de origen que
-contiene la información de enlace a sentidos en el proyecto FLEx de destino.</translation>
+      <translation>El nombre del campo personalizado a nivel de acepción en el proyecto FLEx de origen que
+contiene la información de enlace a las acepciones en el proyecto FLEx de destino.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1624"/>
@@ -219,13 +219,13 @@ En las reglas de transferencia, puede verificar el final de una oración.</trans
     <message>
       <location filename="../SettingsGUI.py" line="1640"/>
       <source>Source Morpheme Types Counted As Roots</source>
-      <translation>Tipos de morfemas de origen contados como raíces</translation>
+      <translation>Tipos de morfemas de fuente contados como raíces</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1641"/>
       <source>Morpheme types in the source FLEx project that are to be considered
 as some kind of root. In other words, non-affixes and non-clitics.</source>
-      <translation>Tipos de morfemas en el proyecto FLEx de origen que deben considerarse
+      <translation>Tipos de morfemas en el proyecto FLEx de origen en que deben considerarse
 como algún tipo de raíz. En otras palabras, no afijos y no clíticos.</translation>
     </message>
     <message>
@@ -248,7 +248,7 @@ como algún tipo de raíz. En otras palabras, no afijos y no clíticos.</transla
     <message>
       <location filename="../SettingsGUI.py" line="1648"/>
       <source>In the production mode module &apos;Translate Text&apos;, where do you want the drafted text to go?</source>
-      <translation>En el módulo de modo de producción &apos;Traducir texto&apos;, ¿adónde quiere que vaya el texto borrador?</translation>
+      <translation>En el módulo &apos;"Traducir texto"&apos; del modo de producción ¿dónde quieres que vaya el texto borrador?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1652"/>
@@ -270,7 +270,7 @@ will be broken down into their constituent entries. Use this property
 for the types that have inflection on the first element of the complex form.</source>
       <translation>Uno o más tipos complejos del proyecto FLEx de origen.
 Estos tipos, cuando aparecen en el archivo de texto a sintetizar,
-se desglosan en sus entradas constituyentes. Utilice esta propiedad
+se desglosan en sus entradas constituyentes. Utiliza esta propiedad
 para los tipos que tienen flexión en el primer elemento de la forma compleja.</translation>
     </message>
     <message>
@@ -284,7 +284,7 @@ con flexión en el último elemento</translation>
       <location filename="../SettingsGUI.py" line="1671"/>
       <source>Same as above. Use this property for the types that have inflection
 on the last element of the complex form.</source>
-      <translation>Lo mismo que arriba. Utilice esta propiedad para los tipos que tienen flexión
+      <translation>Lo mismo que arriba. Utiliza esta propiedad para los tipos que tienen flexión
 en el último elemento de la forma compleja.</translation>
     </message>
     <message>
@@ -299,9 +299,7 @@ These types will allow one intervening word between the first
 and second words of the complex type, yet will still be treated
 as a lexical unit.</source>
       <translation>Uno o más tipos complejos del proyecto FLEx de origen.
-Estos tipos permitirán una palabra intermedia entre la primera
-y la segunda palabra del tipo complejo, pero aún se tratarán
-como una unidad léxica.</translation>
+Estos tipos permitirán una palabra intermedia entre la primera y la segunda palabra del tipo complejo, pero aún se tratarán como una unidad léxica.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1664"/>
@@ -329,15 +327,14 @@ These types, when occurring in the text file to be synthesized,
 will be broken down into their constituent entries. Use this property
 for the types that have inflection on the first element of the complex form.</source>
       <translation>Uno o más tipos complejos del proyecto FLEx de destino.
-Estos tipos, cuando aparecen en el archivo de texto que se va a sintetizar,
-se descompondrán en sus entradas constituyentes. Use esta propiedad
+Estos tipos, cuando aparecen en el archivo de texto que se va a sintetizar, se descompondrán en sus entradas constituyentes. Usa esta propiedad
 para los tipos que tienen flexión en el primer elemento de la forma compleja.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1670"/>
       <source>Target Complex Form Types
 with inflection on last Element</source>
-      <translation>Tipos de forma compleja de destino
+      <translation>Tipos de formas complejas de destino
 con flexión en el último elemento</translation>
     </message>
     <message>
@@ -349,8 +346,8 @@ con flexión en el último elemento</translation>
       <location filename="../SettingsGUI.py" line="1678"/>
       <source>Default to rebuilding the bilingual
 lexicon after linking senses?</source>
-      <translation>¿Reconstruir el diccionario
-bilingüe por defecto después de enlazar sentidos?</translation>
+      <translation>¿Se debe reconstruir el léxico
+bilingüe por defecto después de enlazar las acepciones?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1679"/>
@@ -365,7 +362,7 @@ bilingüe por defecto después de enlazar sentidos?</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1682"/>
       <source>In the Sense Linker tool by default check the checkbox for filtering on all fields.</source>
-      <translation>En la herramienta Sense Linker, marque por defecto la casilla para filtrar en todos los campos.</translation>
+      <translation>En la herramienta Sense Linker, marca por defecto la casilla para filtrar en todos los campos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1686"/>
@@ -414,9 +411,9 @@ is the “from” category in the source FLEx project and the second category
 is the “to” category in the target FLEx project. Use the abbreviations of
 the FLEx categories. The substitution happens in the bilingual lexicon.</source>
       <translation>Uno o más pares de categorías gramaticales donde la primera categoría
-es la categoría &quot;de&quot; en el proyecto FLEx de origen y la segunda categoría
-es la categoría &quot;a&quot; en el proyecto FLEx de destino. Use las abreviaturas de
-las categorías FLEx. La sustitución ocurre en el diccionario bilingüe.</translation>
+es la categoría "de origen" en el proyecto FLEx de origen y la segunda categoría
+es la categoría "de destino" en el proyecto FLEx de destino. Usa las abreviaturas de
+las categorías FLEx. La sustitución ocurre en el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1701"/>
@@ -437,7 +434,7 @@ the extracted source text.</source>
     <message>
       <location filename="../SettingsGUI.py" line="1705"/>
       <source>The path and name of the file which holds the bilingual lexicon.</source>
-      <translation>La ruta y el nombre del archivo que contiene el diccionario bilingüe.</translation>
+      <translation>La ruta y el nombre del archivo que contiene el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1707"/>
@@ -448,7 +445,7 @@ the extracted source text.</source>
       <location filename="../SettingsGUI.py" line="1708"/>
       <source>The path and name of the file which holds replacement
 entry pairs for the bilingual lexicon.</source>
-      <translation>La ruta y el nombre del archivo que contiene pares de entradas de reemplazo para el diccionario bilingüe.</translation>
+      <translation>La ruta y el nombre del archivo que contiene pares de entradas de reemplazo para el léxico bilingüe.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1710"/>
@@ -476,14 +473,14 @@ after going through the transfer process.</source>
       <source>Use the HermitCrab phonological synthesizer. This applies if you have
 HermitCrab parsing set up for your target project. You also need to have the
 Synthesize Text with HermitCrab module in your AllSteps collection.</source>
-      <translation>Utilice el sintetizador fonológico HermitCrab. Esto aplica si tiene
-configurado el análisis HermitCrab para su proyecto de destino. También necesita tener el módulo
-&quot;Sintetizar texto con HermitCrab&quot; en su colección AllSteps.</translation>
+      <translation>Utiliza el sintetizador fonológico HermitCrab. Esto es aplicable si tienes
+configurado el análisis HermitCrab para tu proyecto de destino. También necesitas tener el módulo
+"Sintetizar texto con HermitCrab" en tu colección AllSteps.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1721"/>
       <source>Clean Up Unknown Target Words?</source>
-      <translation>¿Limpiar palabras desconocidas de destino?</translation>
+      <translation>¿Eliminar las palabras desconocidas de destino?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1722"/>
@@ -535,7 +532,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab configuration file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de configuración de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1736"/>
@@ -547,7 +544,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab parses file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de análisis de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1739"/>
@@ -559,7 +556,7 @@ Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation
       <source>The path and name of the HermitCrab surface forms file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
       <translation>La ruta y el nombre del archivo de formas superficiales de HermitCrab.
-Esto solo es necesario si está utilizando la síntesis HermitCrab.</translation>
+Esto solo es necesario si estás utilizando la síntesis HermitCrab.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1742"/>
@@ -637,7 +634,7 @@ contiene un valor de propiedad. Se utiliza con pruebas STAMP personalizadas.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1764"/>
       <source>Limit to specific POS values</source>
-      <translation>Limitar a valores POS específicos</translation>
+      <translation>Limitar a valores de categoría gramatical específicos</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1765"/>
@@ -647,14 +644,14 @@ contiene un valor de propiedad. Se utiliza con pruebas STAMP personalizadas.</tr
     <message>
       <location filename="../SettingsGUI.py" line="1767"/>
       <source>Limit number of stems</source>
-      <translation>Limitar el número de raíces</translation>
+      <translation>Limitar el número de temas</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1821"/>
       <source>Limit the generation to a specified number of stems.
 Stems chosen may seem random.</source>
-      <translation>Limitar la generación a un número específico de raíces.
-Las raíces elegidas pueden parecer aleatorias.</translation>
+      <translation>Limitar la generación a un número específico de temas.
+Los temas elegidos pueden parecer aleatorios.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1770"/>
