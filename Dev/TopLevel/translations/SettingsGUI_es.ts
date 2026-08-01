@@ -733,13 +733,13 @@ de registro de la prueba de síntesis.</translation>
       <location filename="../SettingsGUI.py" line="2168"/>
       <source>When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,
 so testbed tests match the final output produced by Insert Target Text and Export to Paratext.</source>
-      <translation>Cuando el módulo Finalizar banco de pruebas extrae los resultados del texto sintetizado, aplicar primero las reglas de búsqueda/reemplazo de salida de texto,
-para que las pruebas del banco de pruebas coincidan con el resultado final que producen Insertar texto de destino y Exportar a Paratext.</translation>
+      <translation>Cuando el módulo "Finalizar banco de pruebas" extrae los resultados del texto sintetizado, aplicar primero las reglas de búsqueda/reemplazo de salida de texto,
+para que las pruebas del banco de pruebas coincidan con el resultado final que producen "Insertar texto de destino" y "Exportar a Paratext".</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1795"/>
       <source>Import Settings</source>
-      <translation>Import Settings</translation>
+      <translation>Configuración de importación</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1798"/>
