@@ -744,14 +744,14 @@ para que las pruebas del banco de pruebas coincidan con el resultado final que p
     <message>
       <location filename="../SettingsGUI.py" line="1798"/>
       <source>Alternate Location for Paratext Files</source>
-      <translation>Alternate Location for Paratext Files</translation>
+      <translation>Ubicación alternativa para los archivos de paratexto</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1799"/>
       <source>The path to the folder where Paratext files are located.
 The .sfm or .usfm files should be found here.</source>
-      <translation>The path to the folder where Paratext files are located.
-The .sfm or .usfm files should be found here.</translation>
+      <translation>La ruta de acceso a la carpeta donde se encuentran los archivos de Paratext. 
+Los archivos .sfm o .usfm deberían encontrarse aquí.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1803"/>
@@ -771,7 +771,7 @@ The .sfm or .usfm files should be found here.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1811"/>
       <source>Generate Sentences Settings</source>
-      <translation>Configuración de Generar Oraciones</translation>
+      <translation>Configuración de la generación de frases</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1814"/>
@@ -793,7 +793,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1820"/>
       <source>Limit number of stems generated against</source>
-      <translation>Limitar el número de raíces generadas</translation>
+      <translation>Limitar el número de temas generados a partir de</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1823"/>
@@ -813,7 +813,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1827"/>
       <source>One or more grammatical categories. sentence generation word replacement in head word will be limited to using only these categories.</source>
-      <translation>Una o más categorías gramaticales. El reemplazo de palabras de generación de oraciones en la palabra principal se limitará a usar solo estas categorías.</translation>
+      <translation>Una o más categorías gramaticales. El reemplazo de palabras en la generación de oraciones en la palabra principal se limitará a usar solo estas categorías.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1832"/>
@@ -855,7 +855,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1845"/>
       <source>Limit sentence generation word replacememnt to specific lemmas in second dependent word.</source>
-      <translation>Limitar el reemplazo de palabras de generación de oraciones a lemas específicos en la segunda palabra dependiente.</translation>
+      <translation>Limitar el reemplazo de palabras en la generación de oraciones a lemas específicos en la segunda palabra dependiente.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1847"/>
@@ -871,8 +871,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1850"/>
       <source>  Limit to specific semantic domains in dependent word 2</source>
-      <translation>  Limitar a dominios semánticos específicos en
-  la palabra dependiente 2</translation>
+      <translation>  Limitar a dominios semánticos específicos en la palabra dependiente 2</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1854"/>
@@ -924,7 +923,7 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1870"/>
       <source>Indicate the cluster projects you would like to run some modules on together.</source>
-      <translation>Indique los proyectos de clúster en los que le gustaría ejecutar algunos módulos juntos.</translation>
+      <translation>Indica los proyectos de clúster en los que te gustaría ejecutar algunos módulos juntos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1874"/>
