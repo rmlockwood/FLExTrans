@@ -4,6 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   Version 3.16.3 - 1 Aug 2026 - Beth Bryson
+#    Merge Ron's 3.16 updates with my comment and debug additions from 12/Jun/2026
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -12,6 +15,11 @@
 #
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
+#
+#   Version 3.15.2 - 12 Jun 2026 - Beth Bryson
+#    Added comments to explain the sections of code.  Adjusted some slightly.
+#    To do: If the same POS is in more than one of the substitutable words, make sure
+#     it is replaced by different words in each position.
 #
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
@@ -83,7 +91,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'InterlinData', 'Mixpanel']
 # Documentation that the user sees:
 docs = {
     FTM_Name: _translate("GenStc", "Generate Sentences from Model"),
-    FTM_Version: "3.16.2",
+    FTM_Version: "3.16.3",
     FTM_ModifiesDB: False,
     FTM_Synopsis: _translate("GenStc", "Iterate over certain grammatical categories in a model sentence to produce variations."),
     FTM_Help: "",
@@ -235,6 +243,10 @@ def extractLanguageVariablesOLD(myText, posFocusN, posFocus1, posFocus2, report)
             list(set(match_1_lem)), list(set(match_1_pos)),
             list(set(match_2_lem)), list(set(match_2_pos)))
 
+## BB: Appears to be finding places where a POS in the sentence matches what was specified
+## as the POS of the Frame Word.  I'm not quite sure what the purpose of this is--is it building 
+## a list of specific instances, and it will be able to do something with that specific instance?
+## Or is it just building a list of POSs that match the posFocus?
 def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
     """Optimized version with single pass through words"""
     match_n_lem, match_n_pos = set(), set()
@@ -260,6 +272,8 @@ def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
             list(match_1_lem), list(match_1_pos),
             list(match_2_lem), list(match_2_pos))
 
+## BB: Appears to be looking through all the sentences, and all the words in each, 
+## and building a list of words that match the Frame Word.
 def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
     """Extract lemmas from source text based on settings."""
     match_n_lem, match_1_lem, match_2_lem = [], [], []
@@ -270,21 +284,25 @@ def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
         for w in stc.getWords():
             thisLemma = w.getLemma(0)
             
+#            report.Info(f'Testing stc word {thisLemma} against Frame Word (Head) {lemmaFocusN} or Frame Word (1) {lemmaFocus1}')
             if thisLemma == lemmaFocusN:
+                report.Info(f'In stc {i} found FrameWordHead: {thisLemma} matched {lemmaFocusN}')
                 match_n_lem.append(thisLemma)
             elif thisLemma == lemmaFocus1:
+                report.Info(f'Found FrameWord1: {thisLemma} matched {lemmaFocus1}')
                 match_1_lem.append(thisLemma)
             elif thisLemma == lemmaFocus2:
+                report.Info(f'Found FrameWord2: {thisLemma} matched {lemmaFocus2}')
                 match_2_lem.append(thisLemma)
 
     return list(set(match_n_lem)), list(set(match_1_lem)), list(set(match_2_lem))
 
 def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, repo, cache, report):
-    """Fetch lexical entries and return lists of GenWord objects."""
+    """Fetch lexical entries for replacing the frame words and return as lists of GenWord objects."""
     wordListN, wordList1, wordList2 = [], [], []
-    report.Info(f'match_n_pos: {match_n_pos}')
-    report.Info(f'match_1_pos: {match_1_pos}')
-    report.Info(f'match_2_pos: {match_2_pos}')
+    report.Info(f'List of matching POS(head) found in the sentences?: match_n_pos: {match_n_pos}')
+    report.Info(f'List of matching POS(1) found in sentences?: match_1_pos: {match_1_pos}')
+#    report.Info(f'List of matching POS(2) found in sentences?: match_2_pos: {match_2_pos}')
     valid_pos = {*match_n_pos, *match_1_pos, *match_2_pos}
     report.Info(_translate("GenStc", "valid pos: {valid_pos}").format(valid_pos=valid_pos))
 
@@ -309,18 +327,19 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                     word.pos = pos
                     word.gloss = Utils.as_string(s.Gloss)
                     
-                    if cache.MetaDataCacheAccessor.GetFieldType(DB.LexiconGetSenseCustomFieldNamed(customField)) == 26: 
-                        count = cache.DomainDataByFlid.get_VecSize(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField))
-                        for i in range(count):
-                            hvo = cache.DomainDataByFlid.get_VecItem(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField), i)
-                            name = (repo.GetObject(hvo)).Name
-                            word.semDomain.append(_formatString(name.get_String(cache.DefaultAnalWs).Text))
-
-                        
-                        #report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
-                    else: 
-                        word.semDomain = _formatString(DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField))).split(", ")
-                        #report.Info(f"semDomain: {word.semDomain}")
+#                   if 0:
+#                    if cache.MetaDataCacheAccessor.GetFieldType(DB.LexiconGetSenseCustomFieldNamed(customField)) == 26: 
+#                        count = cache.DomainDataByFlid.get_VecSize(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField))
+#                        for i in range(count):
+#                            hvo = cache.DomainDataByFlid.get_VecItem(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField), i)
+#                            name = (repo.GetObject(hvo)).Name
+#                            word.semDomain.append(_formatString(name.get_String(cache.DefaultAnalWs).Text))
+#
+#                        
+#                        #report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
+#                    else: 
+#                        word.semDomain = _formatString(DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField))).split(", ")
+#                        #report.Info(f"semDomain: {word.semDomain}")
 
                     if pos in match_n_pos:
                         wordListN.append(word)
@@ -333,9 +352,11 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
     random.shuffle(wordList1)
     random.shuffle(wordList2)
 
-    report.Info(f'wordListN: {wordListN}')
-    report.Info(f'wordList1: {wordList1}')
-    report.Info(f'wordList2: {wordList2}')
+    ## BB: Is this all the candidate words in that POS, in the lexicon?  And the "shuffle" puts them
+    ## into random order, and only the first N are getting used?
+    report.Info(f'[List of words to substitute for the Head Frame Word?]: wordListN: {wordListN}')
+    report.Info(f'[List of words to substitute for the first modifying Frame Word?]: wordList1: {wordList1}')
+#    report.Info(f'[List of words to substitute for the second modifying Frame Word?]: wordList2: {wordList2}')
     
     return wordListN, wordList1, wordList2
 
@@ -450,7 +471,7 @@ def _processWordOLD(wrdList, idxList, genWord, report):
     
     for idx in idxList:
         wrd = wrdList[idx]
-        #report.Info(f"Testing idx {str(idx)} Match {wrd._TextWord__lemmaList[0]} Replace {word}")
+        report.Info(f"Testing idx {str(idx)} Match {wrd._TextWord__lemmaList[0]} Replace {word}")
         wrd._TextWord__lemmaList[0] = word
         
         if info:
@@ -582,14 +603,20 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Initialize settings and files
     posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, customField, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit = setupSettings(configMap, report)
-    report.Info(_translate("GenStc", "custom field: {customField}").format(customField=customField))
+    report.Info(_translate("GenStc", "Name of custom field for Domains: {customField}").format(customField=customField))
+    report.Info(f'Frame word (Head): lemmaFocusN: {lemmaFocusN}')
+    report.Info(f'  POS of the Frame Word (Head): posFocusN: {posFocusN}')
+    report.Info(f'Frame word (1): lemmaFocus1: {lemmaFocus1}')
+    report.Info(f'  POS of first frame word: posFocus1: {posFocus1}')
+    report.Info(f'Frame word (2): lemmaFocus2: {lemmaFocus2}')
+    report.Info(f'  POS of second frame word: posFocus2: {posFocus2}')
     f_out = initializeOutputFile(configMap, report, ReadConfig.ANALYZED_TEXT_FILE)
     if not f_out:
         return
         
     f_out2 = initializeOutputFile(configMap, report, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE)
     translationFile = bool(f_out2)
-    report.Info(_translate("GenStc", "Translation file check: {translationFile}").format(translationFile=translationFile))
+    report.Info(_translate("GenStc", "Has the translation file been initialized? {translationFile}").format(translationFile=translationFile))
 
     # Get source text data
     contents = getSourceText(DB, report, configMap)
@@ -602,15 +629,15 @@ def MainFunction(DB, report, modifyAllowed):
         return
     myText = InterlinData.getInterlinData(DB, report, interlinParams)
 
-    report.Info(f'posFocusN: {posFocusN}')
-    report.Info(f'posFocus1: {posFocus1}')
 
     # Extract language variables
+    ## BB: Appears to be trying to find all the words (in one sentence? the whole text?) that match these POS; 
+    ## it doesn't appear to be screening for the lemma.
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(
         myText, posFocusN, posFocus1, posFocus2, report)
 
-    report.Info(f'match_n_pos: {match_n_pos}')
-    report.Info(f'match_1_pos: {match_1_pos}')
+#    report.Info(f'Empty? list of substitution POS (head frame word): match_n_pos: {match_n_pos}')
+#    report.Info(f'Empty? list of substitution POS (first frame word):  match_1_pos: {match_1_pos}')
 
     # Handle lemma focus if specified
     if any(lemma != 'UNK' for lemma in [lemmaFocusN, lemmaFocus1, lemmaFocus2]):
@@ -624,7 +651,7 @@ def MainFunction(DB, report, modifyAllowed):
         if lemmaFocus2 != 'UNK':
             match_2_lem = extracted_2_lem
 
-    # Get lexical entries
+    # Get lexical entries to replace the frame words
     subListN, subList1, subList2 = getLexicalEntries(
         DB, match_n_pos, match_1_pos, match_2_pos, customField, 
         DB.project.ServiceLocator.GetService(ICmPossibilityRepository), DB.project, report)
@@ -641,9 +668,9 @@ def MainFunction(DB, report, modifyAllowed):
     #------------------------------------------------------
 
     # semantic domain check (delete later)
-    report.Info(f"semanticDomainN: {semanticDomainN}")
-    report.Info(f"semanticDomain1: {semanticDomain1}")
-    report.Info(f"semanticDomain2: {semanticDomain2}")
+    report.Info(f"Using semanticDomainN: {semanticDomainN}")
+    report.Info(f"Using semanticDomain1: {semanticDomain1}")
+#    report.Info(f"Using semanticDomain2: {semanticDomain2}")
 
     # if semantic domain is specified for one of the entries
     if any(x != "UNK" for x in [semanticDomainN, semanticDomain1, semanticDomain2]): 
@@ -656,15 +683,16 @@ def MainFunction(DB, report, modifyAllowed):
     subList2 = subList2[:stemLimit]
 
     # debug check
-    report.Info(f"subListN: {subListN}")
-    report.Info(f"subList1: {subList1}")
-    report.Info(f"subList2: {subList2}")
+    report.Info(f"List of words to replace the frame word (head): subListN: {subListN}")
+    report.Info(f"List of words to replace the frame word (1): subList1: {subList1}")
+#    report.Info(f"List of words to replace the frame word (2): subList2: {subList2}")
 
     # Process each sentence
     stcCount = myText.getSentCount()
     report.Info(_translate("GenStc", "Found {stcCount} sentences in the text").format(stcCount=stcCount))
 
     for i in range(stcCount):
+        report.Info(f'Processing sentence {i}')
         
         # ---- target language ---
 
@@ -703,6 +731,7 @@ def MainFunction(DB, report, modifyAllowed):
         for idx, w in enumerate(wrdList):
             thisLemma = w.getLemma(0)
             thisPOS = w.getPOS(0)
+            #report.Info(f'Testing lemma {thisLemma} and POS {thisPOS}')
 
             if thisPOS in posFocusN and thisLemma in match_n_lem:
                 idxN_list.append(idx)
@@ -711,9 +740,9 @@ def MainFunction(DB, report, modifyAllowed):
             elif thisPOS in posFocus2 and thisLemma in match_2_lem:
                 idx2_list.append(idx)
 
-        report.Info(f'idxN_list: {idxN_list}')
-        report.Info(f'idx1_list: {idx1_list}')
-        report.Info(f'idx2_list: {idx2_list}')
+        report.Info(f'Location of the headword in the frame sentence: idxN_list: {idxN_list}')
+        report.Info(f'Location of the first modifying word in the frame sentence: idx1_list: {idx1_list}')
+#        report.Info(f'Location of the second modifying word in the frame sentence: idx2_list: {idx2_list}')
 
         # ---- language of wider communication ---- 
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
@@ -734,9 +763,9 @@ def MainFunction(DB, report, modifyAllowed):
             elif wFT in matchGlosses2: 
                 idxFT2_list.append(idxFT)
 
-        report.Info(f'idxFTN_list: {idxFTN_list}')
-        report.Info(f'idxFT1_list: {idxFT1_list}')
-        report.Info(f'idxFT2_list: {idxFT2_list}')
+#        report.Info(f'Location in Free Translation of Head Word idxFTN_list: {idxFTN_list}')
+#        report.Info(f'Location in FT of first modifying word idxFT1_list: {idxFT1_list}')
+#        report.Info(f'Location in FT of second modifying word idxFT2_list: {idxFT2_list}')
 
         # TL process
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
