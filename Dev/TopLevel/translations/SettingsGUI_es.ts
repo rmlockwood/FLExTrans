@@ -1043,8 +1043,8 @@ Choose the AI Provider first, then pick one of the models offered for it.</sourc
       <location filename="../SettingsGUI.py" line="2073"/>
       <source>Whether the AI Rule Studio module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
 The module also asks this the first time you run it; you can review or change your answer here.</source>
-      <translation>Indica si el módulo « Estudio de Reglas con IA » puede enviar su descripción de la regla y las categorías gramaticales, los rasgos y los afijos del proyecto al proveedor de IA.
-El módulo también hace esta pregunta la primera vez que lo ejecuta; puede revisar o cambiar su respuesta aquí.</translation>
+      <translation>Si el módulo "Estudio de Reglas con IA" puede enviar tu descripción de la regla y las categorías gramaticales, los rasgos y los afijos del proyecto al proveedor de IA.
+El módulo también hace esta pregunta la primera vez que lo ejecutas; puedes revisar o cambiar tu respuesta aquí.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1848"/>
@@ -1055,8 +1055,8 @@ El módulo también hace esta pregunta la primera vez que lo ejecuta; puede revi
       <location filename="../SettingsGUI.py" line="1849"/>
       <source>Choose One project to translate from one writing system to another within a single FLEx project.
 Choose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project.</source>
-      <translation>Elija Un proyecto para traducir de un sistema de escritura a otro dentro de un solo proyecto FLEx.
-Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen a un proyecto FLEx de destino separado.</translation>
+      <translation>Elige un proyecto para traducir de un sistema de escritura a otro dentro de un solo proyecto FLEx.
+Elige dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen a un proyecto FLEx de destino separado.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1855"/>
@@ -1066,7 +1066,7 @@ Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen
     <message>
       <location filename="../SettingsGUI.py" line="1856"/>
       <source>In One project mode, the vernacular writing system in the FLEx project that text is translated to.</source>
-      <translation>En el modo Un proyecto, el sistema de escritura vernáculo del proyecto FLEx al que se traduce el texto.</translation>
+      <translation>En el modo "Un proyecto", el sistema de escritura vernáculo del proyecto FLEx al que se traduce el texto.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1159"/>
@@ -1081,7 +1081,7 @@ Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen
     <message>
       <location filename="../SettingsGUI.py" line="1635"/>
       <source>In One project mode you must choose a Target Writing System.</source>
-      <translation>En el modo Un proyecto debe elegir un sistema de escritura de destino.</translation>
+      <translation>En el modo "Un proyecto" debes elegir un sistema de escritura de destino.</translation>
     </message>
   </context>
 </TS>
