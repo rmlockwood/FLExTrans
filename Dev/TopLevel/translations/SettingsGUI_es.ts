@@ -974,8 +974,8 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
       <location filename="../SettingsGUI.py" line="2011"/>
       <source>The AI service the AI Rule Studio module sends requests to.
 You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
-      <translation>El servicio de IA al que el módulo 'Estudio de Reglas con IA' envía las solicitudes.
-Necesita su propia clave API para el proveedor elegido; el módulo la pide la primera vez que lo ejecuta.</translation>
+      <translation>El servicio de IA al que el módulo "Estudio de Reglas con IA" envía las solicitudes.
+Necesitas tu propia clave API para el proveedor elegido; el módulo la pide la primera vez que lo ejecutas.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2013"/>
@@ -998,8 +998,8 @@ gemini-2.5-flash está disponible en el nivel gratuito de Google.</translation>
       <location filename="../SettingsGUI.py" line="2017"/>
       <source>If Yes, the source and target FLEx project names are included in what is sent to the AI provider.
 Choose No if the project names themselves are sensitive information.</source>
-      <translation>Si es Sí, los nombres de los proyectos FLEx de origen y destino se incluyen en lo que se envía al proveedor de IA.
-Elija No si los nombres de los proyectos son en sí información sensible.</translation>
+      <translation>Si es "Sí", los nombres de los proyectos FLEx de origen y destino se incluyen en lo que se envía al proveedor de IA.
+Elige "No" si los nombres de los proyectos son información sensible.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2019"/>
@@ -1037,8 +1037,7 @@ AIRulesPromptLog.txt en la carpeta Build del proyecto. Déjelo en No salvo cuand
       <location filename="../SettingsGUI.py" line="1596"/>
       <source>The AI Model does not go with the selected AI Provider.
 Choose the AI Provider first, then pick one of the models offered for it.</source>
-      <translation>El Modelo de IA no corresponde al Proveedor de IA seleccionado.
-Elija primero el Proveedor de IA y luego elija uno de los modelos ofrecidos para él.</translation>
+      <translation>El Modelo de IA no corresponde al Proveedor de IA seleccionado. Elige primero el Proveedor de IA y luego elige uno de los modelos que se ofrecen. </translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2073"/>
