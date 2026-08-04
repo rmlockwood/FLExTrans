@@ -1010,8 +1010,8 @@ Elige "No" si los nombres de los proyectos son información sensible.</translati
       <location filename="../SettingsGUI.py" line="2020"/>
       <source>If Yes, everything the AI Rule Studio module sends to and receives from the AI provider is appended to
 AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
-      <translation>Si es Sí, todo lo que el módulo 'Estudio de Reglas con IA' envía al proveedor de IA y recibe de él se añade a
-AIRulesPromptLog.txt en la carpeta Build del proyecto. Déjelo en No salvo cuando esté solucionando problemas.</translation>
+      <translation>Si es "Sí", todo lo que el módulo "Estudio de Reglas con IA" envía al proveedor de IA y recibe de él se añade a
+AIRulesPromptLog.txt en la carpeta "Build" del proyecto. Mantenlo en "No" salvo en caso de resolución de problemas.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2022"/>
