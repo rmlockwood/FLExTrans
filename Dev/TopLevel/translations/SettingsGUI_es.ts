@@ -953,12 +953,12 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1883"/>
       <source>Usage Statistics Opt Out Question Asked</source>
-      <translation>Pregunta de exclusión de estadísticas de uso realizada</translation>
+      <translation>Se ha planteado la opción de excluirse del registro de estadísticas de uso</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1884"/>
       <source>Opt out of sending usage statistics.</source>
-      <translation>Excluirse del envío de estadísticas de uso.</translation>
+      <translation>Desactivar el envío de estadísticas de uso.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="7"/>
@@ -986,7 +986,7 @@ Necesita su propia clave API para el proveedor elegido; el módulo la pide la pr
       <location filename="../SettingsGUI.py" line="2014"/>
       <source>The model to use. Pick one that belongs to the chosen AI provider.
 gemini-2.5-flash is available on Google's free tier.</source>
-      <translation>El modelo que se usará. Elija uno que pertenezca al proveedor de IA elegido.
+      <translation>El modelo que se usará. Elige uno que pertenezca al proveedor de IA elegido.
 gemini-2.5-flash está disponible en el nivel gratuito de Google.</translation>
     </message>
     <message>
