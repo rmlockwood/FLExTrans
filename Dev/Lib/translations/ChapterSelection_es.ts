@@ -16,7 +16,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
       <source>Registry Error</source>
-      <translation>Registry Error</translation>
+      <translation>Error de registro</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
