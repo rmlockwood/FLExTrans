@@ -5,7 +5,7 @@
     <name>RuleAssistantWindow</name>
     <message>
       <source>Cannot delete the last rule</source>
-      <translation>Cannot delete the last rule</translation>
+      <translation>No se puede eliminar la última regla</translation>
     </message>
     <message>
       <source>Change number</source>
@@ -17,11 +17,11 @@
     </message>
     <message>
       <source>Choose ranking:</source>
-      <translation>Elija la clasificación:</translation>
+      <translation>Elige la clasificación:</translation>
     </message>
     <message>
       <source>Choose word number:</source>
-      <translation>Elija el número de palabra:</translation>
+      <translation>Elige el número de palabra:</translation>
     </message>
     <message>
       <source>Could not load data</source>
@@ -47,7 +47,7 @@
     </message>
     <message>
       <source>Do you want to save any changes?</source>
-      <translation>¿Desea guardar los cambios?</translation>
+      <translation>¿Deseas guardar los cambios?</translation>
     </message>
     <message>
       <source>Copy</source>
@@ -67,7 +67,7 @@
     </message>
     <message>
       <source>Enter unmarked value:</source>
-      <translation>Enter unmarked value:</translation>
+      <translation>Introduce un valor sin marcar:</translation>
     </message>
     <message>
       <source>Error</source>
@@ -75,15 +75,15 @@
     </message>
     <message>
       <source>FLEx Category Chooser</source>
-      <translation>Selector de Categorías FLEx</translation>
+      <translation>Selector de categorías FLEx</translation>
     </message>
     <message>
       <source>FLEx Feature Value Chooser</source>
-      <translation>Selector de Valores de Rásgos FLEx</translation>
+      <translation>Selector de valores de características FLEx</translation>
     </message>
     <message>
       <source>FLExTrans Rule Assistant</source>
-      <translation>Asistente de Reglas de FLExTrans</translation>
+      <translation>Asistente de reglas de FLExTrans</translation>
     </message>
     <message>
       <source>Help</source>
@@ -99,7 +99,7 @@
     </message>
     <message>
       <source>Insert feature</source>
-      <translation>Insertar rásgo</translation>
+      <translation>Insertar característica</translation>
     </message>
     <message>
       <source>Insert new after</source>
@@ -159,15 +159,15 @@
     </message>
     <message>
       <source>No categories available</source>
-      <translation>No categories available</translation>
+      <translation>No hay categorías disponibles</translation>
     </message>
     <message>
       <source>No data loaded</source>
-      <translation>No data loaded</translation>
+      <translation>No se han cargado los datos</translation>
     </message>
     <message>
       <source>No features available</source>
-      <translation>No features available</translation>
+      <translation>No hay características disponibles</translation>
     </message>
     <message>
       <source>Omitting head-only rule</source>
@@ -179,7 +179,7 @@
     </message>
     <message>
       <source>Ranking for Feature</source>
-      <translation>Clasificación para Rásgo</translation>
+      <translation>Clasificación para la característica</translation>
     </message>
     <message>
       <source>Remove head marking</source>
@@ -187,11 +187,11 @@
     </message>
     <message>
       <source>Rules saved successfully</source>
-      <translation>Rules saved successfully</translation>
+      <translation>Las reglas se han guardado correctamente</translation>
     </message>
     <message>
       <source>Saved</source>
-      <translation>Saved</translation>
+      <translation>Guardado</translation>
     </message>
     <message>
       <source>See documentation for help</source>
