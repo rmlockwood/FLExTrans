@@ -13,7 +13,7 @@
     </message>
     <message>
       <source>No word has been marked as the head in the target phrase.  Please mark one word as the head.</source>
-      <translation>Ninguna palabra ha sido marcada como la cabeza en la frase de destino. Por favor, marque una palabra como la cabeza.</translation>
+      <translation>Ninguna palabra ha sido marcada como la cabeza en la frase de destino. Por favor, marca una palabra como la cabeza.</translation>
     </message>
     <message>
       <source>No word or affix in the target has a feature.  Please insert at least one feature.</source>
