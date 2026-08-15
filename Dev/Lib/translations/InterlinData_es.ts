@@ -26,7 +26,7 @@
     <message>
       <location filename="../InterlinData.py" line="266"/>
       <source>. Exiting.</source>
-      <translation>. Saliendo.</translation>
+      <translation>. Salir.</translation>
     </message>
     <message>
       <location filename="../InterlinData.py" line="379"/>
@@ -61,7 +61,7 @@
     <message>
       <location filename="../InterlinData.py" line="702"/>
       <source>One or more unknown words occurred multiple times.</source>
-      <translation>Una o más palabras desconocidas ocurrieron varias veces.</translation>
+      <translation>Una o más palabras desconocidas aparecieron varias veces.</translation>
     </message>
   </context>
 </TS>
