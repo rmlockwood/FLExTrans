@@ -16,12 +16,12 @@
     <message>
       <location filename="../NewEntryDlg.py" line="293"/>
       <source>Error Check</source>
-      <translation>Verificación de Errores</translation>
+      <translation>Verificación de errores</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="218"/>
       <source>You must enter a Gloss.</source>
-      <translation>Debe ingresar una Glosa.</translation>
+      <translation>Debes ingresar una glosa.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="239"/>
@@ -31,12 +31,12 @@
     <message>
       <location filename="../NewEntryDlg.py" line="239"/>
       <source>You must at least select the default target project, {proj}, among your cluster projects.</source>
-      <translation>Debe seleccionar al menos el proyecto de destino predeterminado, {proj}, entre sus proyectos en clúster.</translation>
+      <translation>Debes seleccionar al menos el proyecto de destino predeterminado, {proj}, entre los proyectos de tu clúster.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="252"/>
       <source>You must enter all the Lexeme Forms.</source>
-      <translation>Debe ingresar todas las Formas de Lexema.</translation>
+      <translation>Debes ingresar todas las formas de Lexema.</translation>
     </message>
     <message>
       <location filename="../NewEntryDlg.py" line="272"/>
@@ -51,7 +51,7 @@
     <message>
       <location filename="../NewEntryDlg.py" line="293"/>
       <source>You must enter a Lexeme Form.</source>
-      <translation>Debe ingresar una Forma de Lexema.</translation>
+      <translation>Debes ingresar una forma del lexema.</translation>
     </message>
   </context>
 </TS>
