@@ -361,12 +361,12 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1705"/>
       <source>Fieldworks directory is not set.</source>
-      <translation type="unfinished">Fieldworks directory is not set.</translation>
+      <translation>Fieldworks directory is not set.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2882"/>
       <source>Problem opening file: {tgt_file}.</source>
-      <translation type="unfinished">Problem opening file: {tgt_file}.</translation>
+      <translation>Problem opening file: {tgt_file}.</translation>
     </message>
   </context>
   <context>
@@ -374,7 +374,7 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2843"/>
       <source>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</source>
-      <translation type="unfinished">An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
+      <translation>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
     </message>
   </context>
 </TS>
