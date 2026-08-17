@@ -733,25 +733,25 @@ de registro de la prueba de síntesis.</translation>
       <location filename="../SettingsGUI.py" line="2168"/>
       <source>When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,
 so testbed tests match the final output produced by Insert Target Text and Export to Paratext.</source>
-      <translation>Cuando el módulo Finalizar banco de pruebas extrae los resultados del texto sintetizado, aplicar primero las reglas de búsqueda/reemplazo de salida de texto,
-para que las pruebas del banco de pruebas coincidan con el resultado final que producen Insertar texto de destino y Exportar a Paratext.</translation>
+      <translation>Cuando el módulo "Finalizar banco de pruebas" extrae los resultados del texto sintetizado, aplicar primero las reglas de búsqueda/reemplazo de salida de texto,
+para que las pruebas del banco de pruebas coincidan con el resultado final que producen "Insertar texto de destino" y "Exportar a Paratext".</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1795"/>
       <source>Import Settings</source>
-      <translation>Import Settings</translation>
+      <translation>Configuración de importación</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1798"/>
       <source>Alternate Location for Paratext Files</source>
-      <translation>Alternate Location for Paratext Files</translation>
+      <translation>Ubicación alternativa para los archivos de paratexto</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1799"/>
       <source>The path to the folder where Paratext files are located.
 The .sfm or .usfm files should be found here.</source>
-      <translation>The path to the folder where Paratext files are located.
-The .sfm or .usfm files should be found here.</translation>
+      <translation>La ruta de acceso a la carpeta donde se encuentran los archivos de Paratext. 
+Los archivos .sfm o .usfm deberían encontrarse aquí.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1803"/>
@@ -771,7 +771,7 @@ The .sfm or .usfm files should be found here.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1811"/>
       <source>Generate Sentences Settings</source>
-      <translation>Configuración de Generar Oraciones</translation>
+      <translation>Configuración de la generación de frases</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1814"/>
@@ -793,7 +793,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1820"/>
       <source>Limit number of stems generated against</source>
-      <translation>Limitar el número de raíces generadas</translation>
+      <translation>Limitar el número de temas generados a partir de</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1823"/>
@@ -813,7 +813,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1827"/>
       <source>One or more grammatical categories. sentence generation word replacement in head word will be limited to using only these categories.</source>
-      <translation>Una o más categorías gramaticales. El reemplazo de palabras de generación de oraciones en la palabra principal se limitará a usar solo estas categorías.</translation>
+      <translation>Una o más categorías gramaticales. El reemplazo de palabras en la generación de oraciones en la palabra principal se limitará a usar solo estas categorías.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1832"/>
@@ -855,7 +855,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1845"/>
       <source>Limit sentence generation word replacememnt to specific lemmas in second dependent word.</source>
-      <translation>Limitar el reemplazo de palabras de generación de oraciones a lemas específicos en la segunda palabra dependiente.</translation>
+      <translation>Limitar el reemplazo de palabras en la generación de oraciones a lemas específicos en la segunda palabra dependiente.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1847"/>
@@ -871,8 +871,7 @@ el texto extraído en el idioma de origen.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1850"/>
       <source>  Limit to specific semantic domains in dependent word 2</source>
-      <translation>  Limitar a dominios semánticos específicos en
-  la palabra dependiente 2</translation>
+      <translation>  Limitar a dominios semánticos específicos en la palabra dependiente 2</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1854"/>
@@ -924,7 +923,7 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1870"/>
       <source>Indicate the cluster projects you would like to run some modules on together.</source>
-      <translation>Indique los proyectos de clúster en los que le gustaría ejecutar algunos módulos juntos.</translation>
+      <translation>Indica los proyectos de clúster en los que te gustaría ejecutar algunos módulos juntos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1874"/>
@@ -954,12 +953,12 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1883"/>
       <source>Usage Statistics Opt Out Question Asked</source>
-      <translation>Pregunta de exclusión de estadísticas de uso realizada</translation>
+      <translation>Se ha planteado la opción de excluirse del registro de estadísticas de uso</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1884"/>
       <source>Opt out of sending usage statistics.</source>
-      <translation>Excluirse del envío de estadísticas de uso.</translation>
+      <translation>Desactivar el envío de estadísticas de uso.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="7"/>
@@ -975,8 +974,8 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
       <location filename="../SettingsGUI.py" line="2011"/>
       <source>The AI service the AI Rule Studio module sends requests to.
 You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
-      <translation>El servicio de IA al que el módulo 'Estudio de Reglas con IA' envía las solicitudes.
-Necesita su propia clave API para el proveedor elegido; el módulo la pide la primera vez que lo ejecuta.</translation>
+      <translation>El servicio de IA al que el módulo "Estudio de Reglas con IA" envía las solicitudes.
+Necesitas tu propia clave API para el proveedor elegido; el módulo la pide la primera vez que lo ejecutas.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2013"/>
@@ -987,7 +986,7 @@ Necesita su propia clave API para el proveedor elegido; el módulo la pide la pr
       <location filename="../SettingsGUI.py" line="2014"/>
       <source>The model to use. Pick one that belongs to the chosen AI provider.
 gemini-2.5-flash is available on Google's free tier.</source>
-      <translation>El modelo que se usará. Elija uno que pertenezca al proveedor de IA elegido.
+      <translation>El modelo que se usará. Elige uno que pertenezca al proveedor de IA elegido.
 gemini-2.5-flash está disponible en el nivel gratuito de Google.</translation>
     </message>
     <message>
@@ -999,8 +998,8 @@ gemini-2.5-flash está disponible en el nivel gratuito de Google.</translation>
       <location filename="../SettingsGUI.py" line="2017"/>
       <source>If Yes, the source and target FLEx project names are included in what is sent to the AI provider.
 Choose No if the project names themselves are sensitive information.</source>
-      <translation>Si es Sí, los nombres de los proyectos FLEx de origen y destino se incluyen en lo que se envía al proveedor de IA.
-Elija No si los nombres de los proyectos son en sí información sensible.</translation>
+      <translation>Si es "Sí", los nombres de los proyectos FLEx de origen y destino se incluyen en lo que se envía al proveedor de IA.
+Elige "No" si los nombres de los proyectos son información sensible.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2019"/>
@@ -1011,8 +1010,8 @@ Elija No si los nombres de los proyectos son en sí información sensible.</tran
       <location filename="../SettingsGUI.py" line="2020"/>
       <source>If Yes, everything the AI Rule Studio module sends to and receives from the AI provider is appended to
 AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
-      <translation>Si es Sí, todo lo que el módulo 'Estudio de Reglas con IA' envía al proveedor de IA y recibe de él se añade a
-AIRulesPromptLog.txt en la carpeta Build del proyecto. Déjelo en No salvo cuando esté solucionando problemas.</translation>
+      <translation>Si es "Sí", todo lo que el módulo "Estudio de Reglas con IA" envía al proveedor de IA y recibe de él se añade a
+AIRulesPromptLog.txt en la carpeta "Build" del proyecto. Mantenlo en "No" salvo en caso de resolución de problemas.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2022"/>
@@ -1038,15 +1037,14 @@ AIRulesPromptLog.txt en la carpeta Build del proyecto. Déjelo en No salvo cuand
       <location filename="../SettingsGUI.py" line="1596"/>
       <source>The AI Model does not go with the selected AI Provider.
 Choose the AI Provider first, then pick one of the models offered for it.</source>
-      <translation>El Modelo de IA no corresponde al Proveedor de IA seleccionado.
-Elija primero el Proveedor de IA y luego elija uno de los modelos ofrecidos para él.</translation>
+      <translation>El Modelo de IA no corresponde al Proveedor de IA seleccionado. Elige primero el Proveedor de IA y luego elige uno de los modelos que se ofrecen. </translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2073"/>
       <source>Whether the AI Rule Studio module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
 The module also asks this the first time you run it; you can review or change your answer here.</source>
-      <translation>Indica si el módulo « Estudio de Reglas con IA » puede enviar su descripción de la regla y las categorías gramaticales, los rasgos y los afijos del proyecto al proveedor de IA.
-El módulo también hace esta pregunta la primera vez que lo ejecuta; puede revisar o cambiar su respuesta aquí.</translation>
+      <translation>Si el módulo "Estudio de Reglas con IA" puede enviar tu descripción de la regla y las categorías gramaticales, los rasgos y los afijos del proyecto al proveedor de IA.
+El módulo también hace esta pregunta la primera vez que lo ejecutas; puedes revisar o cambiar tu respuesta aquí.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1848"/>
@@ -1057,8 +1055,8 @@ El módulo también hace esta pregunta la primera vez que lo ejecuta; puede revi
       <location filename="../SettingsGUI.py" line="1849"/>
       <source>Choose One project to translate from one writing system to another within a single FLEx project.
 Choose Two projects (the normal mode) to translate from a source FLEx project to a separate target FLEx project.</source>
-      <translation>Elija Un proyecto para traducir de un sistema de escritura a otro dentro de un solo proyecto FLEx.
-Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen a un proyecto FLEx de destino separado.</translation>
+      <translation>Elige un proyecto para traducir de un sistema de escritura a otro dentro de un solo proyecto FLEx.
+Elige dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen a un proyecto FLEx de destino separado.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1855"/>
@@ -1068,7 +1066,7 @@ Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen
     <message>
       <location filename="../SettingsGUI.py" line="1856"/>
       <source>In One project mode, the vernacular writing system in the FLEx project that text is translated to.</source>
-      <translation>En el modo Un proyecto, el sistema de escritura vernáculo del proyecto FLEx al que se traduce el texto.</translation>
+      <translation>En el modo "Un proyecto", el sistema de escritura vernáculo del proyecto FLEx al que se traduce el texto.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1159"/>
@@ -1083,7 +1081,7 @@ Elija Dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen
     <message>
       <location filename="../SettingsGUI.py" line="1635"/>
       <source>In One project mode you must choose a Target Writing System.</source>
-      <translation>En el modo Un proyecto debe elegir un sistema de escritura de destino.</translation>
+      <translation>En el modo "Un proyecto" debes elegir un sistema de escritura de destino.</translation>
     </message>
   </context>
 </TS>

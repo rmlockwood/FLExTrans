@@ -11,7 +11,7 @@
     <message>
       <location filename="../FLExTransMenu.py" line="111"/>
       <source>Not Found Error</source>
-      <translation>Error de no encontrado</translation>
+      <translation>Error no encontrado</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="141"/>
@@ -20,9 +20,9 @@
 Build {build}, {build_date}
 
 software.sil.org/flextrans</source>
-      <translation>{name} version {version}
+      <translation>{name} versión {version}
 
-Build {build}, {build_date}
+Compilación {build}, {build_date}
 
 software.sil.org/flextrans</translation>
     </message>
@@ -54,7 +54,7 @@ software.sil.org/flextrans</translation>
     <message>
       <location filename="../FLExTransMenu.py" line="111"/>
       <source>XMLmind XML Editor not found at expected location: {xxe}</source>
-      <translation>XMLmind XML Editor no encontrado en la ubicación esperada: {xxe}</translation>
+      <translation>No se ha encontrado el editor XMLmind XML en la ubicación prevista: {xxe}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="121"/>

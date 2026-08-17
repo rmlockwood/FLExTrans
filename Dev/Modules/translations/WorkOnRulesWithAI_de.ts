@@ -4,19 +4,19 @@
   <context>
     <name>WorkOnRulesWithAI</name>
     <message>
-        <location filename="../WorkOnRulesWithAI.py" line="85"/>
-        <source>This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.</source>
-        <translation>Dieses Modul verwendet KI, um Ihre Transferregeln und Makros zu erstellen, zu ändern oder zu erklären. Zum Erstellen oder Ändern beschreiben Sie, was Sie möchten; die KI entwirft und validiert es, und Sie überprüfen und genehmigen es, bevor es gespeichert wird. Sie können die KI auch bitten, eine bestehende Regel oder ein bestehendes Makro zu erklären. Sie können Ihre Beschreibung in einer Sprache Ihrer Wahl verfassen – und die Erklärung in dieser Sprache erhalten.</translation>
+      <location filename="../WorkOnRulesWithAI.py" line="85"/>
+      <source>This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.</source>
+      <translation>Dieses Modul verwendet KI, um Ihre Transferregeln und Makros zu erstellen, zu ändern oder zu erklären. Zum Erstellen oder Ändern beschreiben Sie, was Sie möchten; die KI entwirft und validiert es, und Sie überprüfen und genehmigen es, bevor es gespeichert wird. Sie können die KI auch bitten, eine bestehende Regel oder ein bestehendes Makro zu erklären. Sie können Ihre Beschreibung in einer Sprache Ihrer Wahl verfassen – und die Erklärung in dieser Sprache erhalten.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAI.py" line="88"/>
-        <source>AI Rule Studio</source>
-        <translation>KI-Regelstudio</translation>
+      <location filename="../WorkOnRulesWithAI.py" line="88"/>
+      <source>AI Rule Studio</source>
+      <translation>KI-Regelstudio</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAI.py" line="91"/>
-        <source>Use AI to create, modify, or explain your transfer rules and macros.</source>
-        <translation>Mit KI Ihre Transferregeln und Makros erstellen, ändern oder erklären.</translation>
+      <location filename="../WorkOnRulesWithAI.py" line="91"/>
+      <source>Use AI to create, modify, or explain your transfer rules and macros.</source>
+      <translation>Mit KI Ihre Transferregeln und Makros erstellen, ändern oder erklären.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="101"/>

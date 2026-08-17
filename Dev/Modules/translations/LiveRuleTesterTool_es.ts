@@ -359,22 +359,22 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
       <translation>Ejecutando {name} (versión {version})...</translation>
     </message>
     <message>
-      <location filename="../LiveRuleTesterTool.py" line="1704"/>
+      <location filename="../LiveRuleTesterTool.py" line="1705"/>
       <source>Fieldworks directory is not set.</source>
-      <translation>Fieldworks directory is not set.</translation>
+      <translation type="unfinished">Fieldworks directory is not set.</translation>
     </message>
     <message>
-      <location filename="../LiveRuleTesterTool.py" line="2881"/>
+      <location filename="../LiveRuleTesterTool.py" line="2882"/>
       <source>Problem opening file: {tgt_file}.</source>
-      <translation>Problem opening file: {tgt_file}.</translation>
+      <translation type="unfinished">Problem opening file: {tgt_file}.</translation>
     </message>
   </context>
   <context>
     <name>RunApertium</name>
     <message>
-      <location filename="../LiveRuleTesterTool.py" line="2842"/>
+      <location filename="../LiveRuleTesterTool.py" line="2843"/>
       <source>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</source>
-      <translation>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
+      <translation type="unfinished">An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
     </message>
   </context>
 </TS>
