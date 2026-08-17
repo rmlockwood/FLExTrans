@@ -145,7 +145,7 @@
     </message>
     <message>
       <source>The transfer rule file already contains a rule named &quot;{ruleName}&quot; that was not created by the Rule Assistant. To avoid overwriting a hand-written rule, no rules were written. Please rename or remove that rule, or rename your Rule Assistant rule.</source>
-      <translation>El archivo de reglas de transferencia ya contiene una regla llamada &quot;{ruleName}&quot; que no fue creada por el Asistente de Reglas. Para evitar sobrescribir una regla escrita a mano, no se escribió ninguna regla. Cambie el nombre de esa regla o elimínela, o cambie el nombre de su regla del Asistente de Reglas.</translation>
+      <translation>El archivo de reglas de transferencia ya contiene una regla llamada &quot;{ruleName}&quot; que no fue creada por el Asistente de Reglas. Para evitar sobrescribir una regla escrita a mano, no se escribió ninguna regla. Cambia el nombre de esa regla o elimínala, o cambia el nombre de tu regla del Asistente de Reglas.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
@@ -180,7 +180,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1272"/>
       <source>Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Determine el lema apropiado para {cat} y guárdelo en una variable llamada {spec.varid}.</translation>
+      <translation>Determina el lema apropiado para {cat} y guárdalo en una variable llamada {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
@@ -190,7 +190,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
       <source>Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Determine el afijo apropiado para {cat} y guárdelo en una variable llamada {spec.varid}.</translation>
+      <translation>Determina el afijo apropiado para {cat} y guárdalo en una variable llamada {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1367"/>
@@ -200,12 +200,12 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1393"/>
       <source>Determine the appropriate {label} tag for {cat} and store it in a variable named {varid}.</source>
-      <translation>Determine la etiqueta {label} apropiada para {cat} y guárdela en una variable llamada {varid}.</translation>
+      <translation>Determina la etiqueta {label} apropiada para {cat} y guárdala en una variable llamada {varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1444"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo.</translation>
+      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corrígelo.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
@@ -215,17 +215,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Por favor, asegúrese de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
+      <translation>Por favor, asegúrate de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>
       <source>Added {ruleCount} rule(s) from {fileName}.</source>
-      <translation>Se añadieron {ruleCount} regla(s) desde {fileName}.</translation>
+      <translation>Se añadieron {ruleCount} reglas desde {fileName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1585"/>
       <source>No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool</source>
-      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecute la herramienta Configurar categorías y Atributos de Reglas</translation>
+      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecuta la herramienta Configurar categorías y Atributos de Reglas</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1594"/>
@@ -234,7 +234,7 @@
     </message>
     <message>
       <source>If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.</source>
-      <translation>Si edita esta regla manualmente, el Asistente de Reglas podría sobrescribir sus cambios. Cambie el nombre de la regla para evitarlo.</translation>
+      <translation>Si editas esta regla manualmente, el Asistente de Reglas podría sobrescribir tus cambios. Cambia el nombre de la regla para evitarlo.</translation>
     </message>
   </context>
 </TS>
