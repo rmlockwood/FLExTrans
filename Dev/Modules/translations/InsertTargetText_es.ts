@@ -35,17 +35,17 @@ same name will not be overwritten. A copy will be created.</source>
     <message>
       <location filename="../InsertTargetText.py" line="162"/>
       <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
-      <translation type="unfinished">The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</translation>
+      <translation>El módulo Sintetizar texto debe ejecutarse antes de este. No se pudo abrir el archivo de síntesis: &quot;</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="197"/>
       <source>Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</source>
-      <translation type="unfinished">Text: &quot;{sourceTextName}&quot; created in the {targetProj} project.</translation>
+      <translation>Texto: &quot;{sourceTextName}&quot; creado en el proyecto {targetProj}.</translation>
     </message>
     <message>
       <location filename="../InsertTargetText.py" line="206"/>
       <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation type="unfinished">You need to run this module in &quot;modify mode.&quot;</translation>
+      <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
     </message>
   </context>
 </TS>
