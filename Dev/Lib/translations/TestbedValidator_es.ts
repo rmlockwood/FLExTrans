@@ -6,7 +6,7 @@
     <message>
       <location filename="../TestbedValidator.py" line="109"/>
       <source>Word Sense: {wordSense} not found.</source>
-      <translation>Sentido de la palabra: {wordSense} no encontrado.</translation>
+      <translation>Acepción de la palabra: {wordSense} no encontrada.</translation>
     </message>
     <message>
       <location filename="../TestbedValidator.py" line="115"/>
