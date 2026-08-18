@@ -9,9 +9,9 @@
 
 Get a key at:
 {url}</source>
-      <translation>Introduzca su clave API de {provider}. Se guarda de forma segura en el almacén de credenciales (Administrador de credenciales de Windows), no en ningún archivo del proyecto.
+      <translation>Introduce tu clave API de {provider}. Se guarda de forma segura en el almacén de credenciales (Administrador de credenciales de Windows), no en ningún archivo del proyecto.
 
-Obtenga una clave en:
+Obtén una clave en:
 {url}</translation>
     </message>
     <message>
