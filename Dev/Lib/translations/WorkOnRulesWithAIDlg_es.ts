@@ -32,7 +32,7 @@ Obtén una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="150"/>
       <source>Please describe the rule you want.</source>
-      <translation>Describa la regla que desea.</translation>
+      <translation>Describe la regla que deseas.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
@@ -42,7 +42,7 @@ Obtén una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
       <source>Please select a rule to modify.</source>
-      <translation>Seleccione una regla para modificar.</translation>
+      <translation>Selecciona una regla para modificar.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="182"/>
@@ -52,12 +52,12 @@ Obtén una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="244"/>
       <source>Valid rule generated (attempt {n}). {expl}</source>
-      <translation>Regla válida generada (intento {n}). {expl}</translation>
+      <translation>Se ha generado una regla válida (intento {n}). {expl}</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1124"/>
       <source>Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.</source>
-      <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puede abrirla en XXE para inspeccionarla.</translation>
+      <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puedes abrirla en XXE para inspeccionarla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1148"/>
