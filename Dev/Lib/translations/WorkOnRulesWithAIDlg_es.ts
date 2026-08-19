@@ -82,7 +82,7 @@ Obtén una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1144"/>
       <source>Try rephrasing your description as a single, clear sentence and generate again.</source>
-      <translation>Intente reformular su descripción como una sola frase clara y vuelva a generar.</translation>
+      <translation>Intenta reformular tu descripción como una sola frase clara y vuelve a generarla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="254"/>
@@ -97,7 +97,7 @@ Obtén una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
       <source>Rate limited - try again shortly.</source>
-      <translation>Límite de solicitudes alcanzado - inténtelo de nuevo en breve.</translation>
+      <translation>Límite de solicitudes alcanzado - inténtalo de nuevo en breve.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
