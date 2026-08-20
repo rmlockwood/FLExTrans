@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.16.4 - 8/20/26 - Ron Lockwood
+#    Correct fixes for lint that kept HC data from being written. Check for HCparses Str Map against None instead of just an if on it.
+#
 #   Version 3.16.3 - 7/2/26 - Ron Lockwood
 #    Guard against a None anaObj before setting after-punctuation on the previous word.
 #
@@ -170,7 +173,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.16.3",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -1024,7 +1027,7 @@ def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCr
         originalLexicalUnitStr = myAnaInfo.getOriginalLexicalUnitString()
 
         # see if the orignal LU string for is already in our map
-        if HCparseStrMap and originalLexicalUnitStr not in HCparseStrMap:
+        if HCparseStrMap is not None and originalLexicalUnitStr not in HCparseStrMap:
 
             # Get the string that we would write to the parses file
             HCparseStr = myAnaInfo.getHCparseStr()
@@ -1043,7 +1046,7 @@ def writeComponents(componentList, fOutput, theAnaInfo, rootVariantANAandFeatlis
         originalLexicalUnitStr = theAnaInfo.getOriginalLexicalUnitString()
 
         # see if the orignal LU string for this complex form is already in our map
-        if HCparseStrMap and originalLexicalUnitStr not in HCparseStrMap:
+        if HCparseStrMap is not None and originalLexicalUnitStr not in HCparseStrMap:
 
             for i, listAnaInfo in enumerate(componentList):
                 
