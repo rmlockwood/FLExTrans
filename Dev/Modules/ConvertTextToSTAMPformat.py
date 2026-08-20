@@ -6,7 +6,7 @@
 #   12/5/14
 #
 #   Version 3.16.4 - 8/20/26 - Ron Lockwood
-#    Correct fixes for lint that kept HC data from being written. Check for HCparses Str Map against None instead of just an if on it.
+#    Fixes #1511. Correct fixes for lint that kept HC data from being written. Check for HCparses Str Map against None instead of just an if on it.
 #
 #   Version 3.16.3 - 7/2/26 - Ron Lockwood
 #    Guard against a None anaObj before setting after-punctuation on the previous word.
