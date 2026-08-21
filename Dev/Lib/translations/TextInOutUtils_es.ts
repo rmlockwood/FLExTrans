@@ -6,7 +6,7 @@
     <message>
       <location filename="../TextInOutUtils.py" line="282"/>
       <source>Applying Text In/Out rules stopped because of a failure of rule {ruleNumber}: {ruleString}</source>
-      <translation>La aplicación de las reglas de Text In/Out se detuvo debido a un fallo en la regla {ruleNumber}: {ruleString}</translation>
+      <translation>La aplicación de las reglas de entrada y salida se detuvo debido a un fallo en la regla {ruleNumber}: {ruleString}</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="343"/>
@@ -51,12 +51,12 @@
     <message>
       <location filename="../TextInOutUtils.py" line="559"/>
       <source>There was a problem reading the configuration file for folder {folderName}. Check your configuration.</source>
-      <translation>Hubo un problema al leer el archivo de configuración para la carpeta {folderName}. Verifique su configuración.</translation>
+      <translation>Hubo un problema al leer el archivo de configuración para la carpeta {folderName}. Verifica su configuración.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="593"/>
       <source>There was a problem creating or backing up the rules file. Check your configuration.</source>
-      <translation>Hubo un problema al crear o respaldar el archivo de reglas. Verifique su configuración.</translation>
+      <translation>Hubo un problema al crear o respaldar el archivo de reglas. Verifica su configuración.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="761"/>
