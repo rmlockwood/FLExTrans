@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.17 - 8/21/26 - Ron Lockwood
+#    Fixes #1500. Keep keyboard focus on the advanced-options checkbox after changing modes.
+#
 #   Version 3.16.16 - 7/28/26 - Ron Lockwood
 #    Persist the splitter panel sizes in the TOML window-settings file, stored per mode (advanced/standard have different panel counts) and restored on open and across a mode switch.
 #
@@ -337,7 +340,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.16",
+        FTM_Version    : "3.16.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1361,6 +1364,9 @@ class Main(QMainWindow):
 
         # Done rearranging, let resizeEvent record dimensions again
         self.switchingModes = False
+
+        # Keep arrow keys from changing the source text after the layout switch moves focus to the source text combo box.
+        self.ui.advancedOptionsCheckbox.setFocus()
 
     def restoreModeDimensions(self, width, height):
 
