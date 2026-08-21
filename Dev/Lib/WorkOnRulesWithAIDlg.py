@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.27 - 8/21/26 - Ron Lockwood
+#    Starting a new rule now offers to save an unapproved rule preview first.
+#
 #   Version 3.16.26 - 7/28/26 - Ron Lockwood
 #    The Modify/Explain tab's Rules and Macros lists now get a minimum height sized to show at least three rows (the collapsed tab area had left room for only two); ensureListsShowThreeRows
 #    sets it in showEvent, just before the tab area is collapsed to its minimum-size hint. Lexical units in an AI explanation are now color-coded (via TransferPreview / Testbed) like the viewer.
@@ -888,6 +891,9 @@ class WorkOnRulesWithAIDlg(QDialog):
 
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
+
+        # Creating a new rule replaces the current preview and draft, so offer to write an unapproved one before continuing. Whether the user says Yes or No, go ahead and go on.
+        self.offerToWritePendingDraft()
 
         # Starting a new rule after approving the previous one: the example data given for that rule may not fit this one, so ask once whether to keep it. Reopening the data grids
         # disarms the question (onSourceData/onTargetData).
