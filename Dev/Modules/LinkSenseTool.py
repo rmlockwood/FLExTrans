@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.16.7 - 8/21/26 - Ron Lockwood
+#    Set initial keyboard focus to the target search box.
+#
+#   Version 3.16.6 - 8/21/26 - Ron Lockwood
+#    Fixes #1499. Preserve focus on the Link it checkbox after it is toggled. Also give the Link it checkbox focus when it is pressed with the mouse.
+#
 #   Version 3.16.5 - 7/29/26 - Ron Lockwood
 #    Close and reopen the source project in MainFunction on restart so the cache is cleared and any source changes will get picked up.
 #
@@ -228,7 +234,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16.5",
+    FTM_Version    : "3.16.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -750,6 +756,10 @@ class Main(QMainWindow):
         self.__fullData = myData
         self.headerData = headerData
         self.ui.tableView.setModel(self.__model)
+        tableViewport = self.ui.tableView.viewport()
+
+        if tableViewport:
+            tableViewport.installEventFilter(self)
         self.__comboData = comboData
         self.__comboModel = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__comboModel)
@@ -809,6 +819,21 @@ class Main(QMainWindow):
 
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
+        self.ui.searchTargetEdit.setFocus()
+
+    def eventFilter(self, watched, event):
+
+        # Make sure the focus stays on the clicked on checkbox.
+        if watched is self.ui.tableView.viewport() and event.type() == QtCore.QEvent.Type.MouseButtonPress:
+
+            index = self.ui.tableView.indexAt(event.position().toPoint())
+
+            if index.isValid() and index.column() == COL_LINK_IT:
+
+                self.ui.tableView.setCurrentIndex(index)
+                self.ui.tableView.setFocus()
+
+        return super().eventFilter(watched, event)
         
     def saveFontSettings(self):
 
@@ -1194,10 +1219,16 @@ class Main(QMainWindow):
             QApplication.restoreOverrideCursor()    
 
     def CancelClicked(self):
+
         self.retVal = 0
         self.close()
         
     def filter(self):
+
+        # Save the current index so we can restore it after the filter is applied
+        currentIndex = self.ui.tableView.currentIndex()
+        currentRow = currentIndex.row()
+        currentColumn = currentIndex.column()
         self.__model.beginResetModel();
 
         # If both are unchecked, use the full list
@@ -1251,6 +1282,13 @@ class Main(QMainWindow):
             
         self.__model.endResetModel();
         self.rows = len(self.__model.getInternalData())
+
+        # Set focus to the saved row and column if they are still valid.
+        if 0 <= currentRow < self.rows and 0 <= currentColumn < self.cols:
+
+            self.ui.tableView.setCurrentIndex(self.__model.index(currentRow, currentColumn))
+            self.ui.tableView.setFocus()
+
         self.causeRepaint()
         self.ui.tableView.update()
         self.__model.resetInternalData()
