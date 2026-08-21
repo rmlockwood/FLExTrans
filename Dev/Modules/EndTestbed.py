@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.16.4 - 8/21/26 - Ron Lockwood
+#    Fixes #1502. Remove test rule numbers from the testbed results.
+#
 #   Version 3.16.3 - 7/8/26 - Ron Lockwood
 #    Fixes #1392. Optionally apply the Text Out rules to the synthesis before extracting testbed results, controlled by the new ApplyTextOutRulesInTestbed setting.
 #
@@ -93,7 +96,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.16.3",
+        FTM_Version    : "3.16.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",
@@ -178,13 +181,13 @@ def MainFunction(DB, report, modifyAllowed):
         report.Info(_translate("EndTestbed", "Rule map from log: {lineRuleMap}").format(lineRuleMap=str(lineRuleMap)))
 
         # Set rule numbers on each test — line number in log = test index (1-based)
-        testLine = 1
-        resultObj = resultsXMLObj.getTestbedResultXMLObjectList()[0]
-        for testbed in resultObj.getFLExTransTestbedXMLObjectList():
-            for test in testbed.getTestXMLObjectList():
-                if testLine in lineRuleMap:
-                    test.setRuleNumbers(lineRuleMap[testLine])
-                testLine += 1
+        # testLine = 1
+        # resultObj = resultsXMLObj.getTestbedResultXMLObjectList()[0]
+        # for testbed in resultObj.getFLExTransTestbedXMLObjectList():
+        #     for test in testbed.getTestXMLObjectList():
+        #         if testLine in lineRuleMap:
+        #             test.setRuleNumbers(lineRuleMap[testLine])
+        #         testLine += 1
 
         resultsXMLObj.endTest()
         resultsFileObj.write()

@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.16.5 - 8/21/26 - Ron Lockwood
+#    Fixes #1501. Adjust comment font sizes by the spin control's change.
+#
 #   Version 3.16.4 - 7/10/26 - Ron Lockwood
 #    Type fix: assert logTreeView.header() is not None before using it (the Qt stubs type header() as Optional), clearing the reportOptionalMemberAccess warnings.
 #
@@ -107,7 +110,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.16.4",
+        FTM_Version    : "3.16.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -375,6 +378,13 @@ class CommentTreeItem(BaseTreeItem):
             return ("Rule: " + self.ruleNumber) if self.ruleNumber else ""
         return ""
 
+    def changeFontSize(self, sizeChange):
+        for widget in self.widget:
+            if widget is not None:
+                font = widget.font()
+                font.setPointSize(font.pointSize() + sizeChange)
+                widget.setFont(font)
+
     def createTheWidget(self, col):
         label = QtWidgets.QLabel(self.Data(col))
         if col == 0:
@@ -628,6 +638,7 @@ class LogViewerMain(QMainWindow):
         
         self.ui.OKButton.clicked.connect(self.okClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
+        self.__previousFontSize = 12
         self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
         # Start the font size at 12
@@ -644,8 +655,19 @@ class LogViewerMain(QMainWindow):
     def FontSizeSpinBoxClicked(self):
         myFont = self.ui.logTreeView.font()
         currentSize = self.ui.fontSizeSpinBox.value()
+        sizeChange = currentSize - self.__previousFontSize
+        self.__previousFontSize = currentSize
         myFont.setPointSize(currentSize)
         self.ui.logTreeView.setFont(myFont)
+
+        self.__changeCommentFontSize(self.__model.rootItem, sizeChange)
+
+    def __changeCommentFontSize(self, item, sizeChange):
+        if isinstance(item, CommentTreeItem):
+            item.changeFontSize(sizeChange)
+
+        for child in item.children:
+            self.__changeCommentFontSize(child, sizeChange)
         
     def getModel(self):
         return self.__model
