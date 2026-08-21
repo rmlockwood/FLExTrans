@@ -201,7 +201,8 @@ DEF_TAG_TO_SECTION = {
 _RULE_XML_DESC = 'Exactly one <rule comment="...">...</rule> element - or, when the request asks for a macro, exactly one <def-macro n="...">...</def-macro> element. No wrapper, no DOCTYPE.'
 _NEW_DEFS_DESC = 'Each string is one new <def-cat>/<def-attr>/<def-var>/<def-list>/<def-macro> element the rule needs and that does not already exist. Empty list if none.'
 _EXPLANATION_DESC = 'One or two sentences describing what the rule does. Note here if the rule must be ordered before a more general rule.'
-_LANGUAGE_DESC = ('The ISO 639-1 two-letter code of the language the user typed their own request/instruction in (e.g. "en", "es", "de", "fr"). Judge this ONLY from the user\'s own request text - ignore the '
+_LANGUAGE_DESC = ('The ISO 639-1 two-letter code of the detected language the user typed their own request/instruction in (e.g. "en", "es", "de", "fr", ...). Judge this ONLY by detecting the language that the user\'s request text is written in. '
+                  'If you detect the user described the rule or macro in Swahili, return "sw"; if in Hausa, return "ha"; and so on. Ignore the '
                   'language of any example rules, rule comments, category names, definitions, or other reference material included in the prompt; those are context, not the request, and their language '
                   'must not sway this code. If the user\'s request text is empty or too short to tell, default to "en". Used to localize the rule preview.')
 
@@ -993,7 +994,7 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
     # Pin the language field to the request text below, right where it appears. Everything above (project data, examples, existing rules, macro definitions) is context and may be in any
     # language - e.g. a sample rule whose comments are in Spanish - and must not sway the detected language. Only the words the user typed under USER REQUEST decide the "language" code.
     parts.append('')
-    parts.append('Set the "language" field to the ISO 639-1 code of the language the USER REQUEST text below is written in - judged from that text alone, ignoring the language of anything above it. Default to "en" if it is too short to tell.')
+    parts.append('Set the "language" field to the ISO 639-1 code of the language you detect the USER REQUEST text below is written in - judged from that text alone, ignoring the language of anything above it. If you detect the USER REQUEST text is in Swahili, return "sw"; if in Hausa, return "ha"; and so on. Default to "en" if it is too short to tell.')
     parts.append('')
     parts.append('USER REQUEST:')
     parts.append(description)
