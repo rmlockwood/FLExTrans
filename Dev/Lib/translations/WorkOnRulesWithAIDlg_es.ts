@@ -107,7 +107,7 @@ Obtén una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="274"/>
       <source>Your {provider} API key was updated.</source>
-      <translation>Su clave API de {provider} se actualizó.</translation>
+      <translation>Tu clave API de {provider} se actualizó.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="289"/>
@@ -125,10 +125,10 @@ Obtén una clave en:
 {path}
 
 Open it in XXE to review.</source>
-      <translation>Se escribió una copia con su regla en:
+      <translation>Se escribió una copia con tu regla en:
 {path}
 
-Ábrala en XXE para revisarla.</translation>
+Ábrela en XXE para revisarla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="175"/>
