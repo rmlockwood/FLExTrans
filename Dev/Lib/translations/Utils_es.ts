@@ -41,7 +41,7 @@
     <message>
       <location filename="../Utils.py" line="624"/>
       <source>The target project does not exist. Please check the configuration file.</source>
-      <translation>El proyecto de destino no existe. Por favor, revise el archivo de configuración.</translation>
+      <translation>El proyecto de destino no existe. Por favor, revisa el archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="631"/>
@@ -66,7 +66,7 @@
     <message>
       <location filename="../Utils.py" line="747"/>
       <source>The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+                                            'please correct this {myType} in the {dbType} project.</source>
-      <translation>La abreviatura/nombre: '{posAbbrStr}' para {myType}: '{posFullNameStr}' no puede contener un {charName}. No se pudo completar, por favor corrija este {myType} en el proyecto {dbType}.</translation>
+      <translation>La abreviatura/nombre: '{posAbbrStr}' para {myType}: '{posFullNameStr}' no puede contener un {charName}. No se pudo completar, por favor corrige este {myType} en el proyecto {dbType}.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="763"/>
