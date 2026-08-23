@@ -16,7 +16,7 @@
     <message>
       <location filename="../LiveRuleTester.py" line="607"/>
       <source>Refresh Source Project</source>
-      <translation>Actualizar el Proyecto Origen</translation>
+      <translation>Actualizar el proyecto de origen</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="608"/>
