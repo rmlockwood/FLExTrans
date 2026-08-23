@@ -17,7 +17,7 @@
     </message>
     <message>
       <source>Split feature set</source>
-      <translation>Conjunto de rásgos divididos</translation>
+      <translation>Conjunto de característica dividida</translation>
     </message>
     <message>
       <source>Split Features Editor</source>
