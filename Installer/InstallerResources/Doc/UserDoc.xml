@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->28 July 2026</date
+>24 August 2026</date
 ><version
 >3.16</version
 ><contents
@@ -4379,13 +4379,13 @@ id="sProc"
 >Procedures</secTitle
 ><ol
 ><li
->If the source language grammatical category tag is<langData
+>If the source language affix tag is<langData
 lang="lVernacular"
 > <object
 type="tluAffix"
 >ptcp_f_sg</object
 ></langData
->, change the target language tag to <langData
+>, change the target language affix tag to <langData
 lang="lVernacular"
 ><object
 type="tluAffix"
@@ -4745,14 +4745,6 @@ textBefore="singular"
 ></sectionRef
 >.</p
 ><ol
-><li
->Close the <object
-type="tBold"
->English-FLExTrans-Sample</object
-> <object
-type="tFlexx"
-></object
-> project.</li
 ><li
 >Bring up the <object
 type="tFlexxTools"
@@ -5608,22 +5600,7 @@ num="xLexUnitPron"
 ><p
 >You can do an Insert Before... and choose <object
 type="tItalic"
->lu(lexical_unit_lit-string)</object
-> then click on the <object
-type="tRuleElemInXXE"
->literal string</object
->, do an Insert After... and choose <object
-type="tItalic"
->lit-tag(literal_tag)</object
->. The <object
-type="tRuleElemInXXE"
->blank space</object
-> element comes after and is <object
-type="tUnderline"
->indented at the same level</object
-> as <object
-type="tRuleElemInXXE"
->lexical unit</object
+>lu(lexical_unit_lit-string-tag)</object
 >.</p
 ><example
 num="xLexUnitPron"
@@ -5719,7 +5696,7 @@ type="tRuleElemInXXE"
 >literal tag</object
 > element and Insert After... and choose <object
 type="tItalic"
->clip(clip_target_language)</object
+>clip(clip_target_lang)</object
 >. Do this twice.</p
 ><example
 num="xLexUnitPronPerNum"

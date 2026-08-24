@@ -8,8 +8,8 @@ REM need to put your files into a path that doesn't have spaces in it.
 REM You will probably need to run this .bat file "as Administrator"
 REM This script now deletes all symbolic links in each folder before recreating them.
 
-REM To get the localized binaries, create a translations folder under FlexTools\Modules\FLExTrans
-REM Then run this script to get links to all the translation binary files.
+REM To get the localized binaries, just run this script. It creates the translations folder under FlexTools\Modules\FLExTrans
+REM if it isn't there yet and links to all the translation binary files.
 
 REM This is your GitHub repo, where your source files are
 REM Under this you would see folders like Apertium4Windows, Dev, Doc, etc.
@@ -54,6 +54,12 @@ REM Loop through each pair of current and target directories
 for /L %%j in (0, 1, %array_size%) do (
     set current_dir=!current_dir_array[%%j]!
     set target_dir=!target_dir_array[%%j]!
+    
+    REM Create the current directory if it isn't there yet (the translations folder won't exist on a fresh installation) so the cd below doesn't fail.
+    if not exist "%modules_ft%\!current_dir!" (
+        echo Creating directory: %modules_ft%\!current_dir!
+        mkdir "%modules_ft%\!current_dir!"
+    )
     
     REM Change to the corresponding current directory
     echo Changing to directory: %modules_ft%\!current_dir!
