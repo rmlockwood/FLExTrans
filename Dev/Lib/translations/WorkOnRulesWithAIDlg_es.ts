@@ -9,9 +9,9 @@
 
 Get a key at:
 {url}</source>
-      <translation>Introduzca su clave API de {provider}. Se guarda de forma segura en el almacén de credenciales (Administrador de credenciales de Windows), no en ningún archivo del proyecto.
+      <translation>Introduce tu clave API de {provider}. Se guarda de forma segura en el almacén de credenciales (Administrador de credenciales de Windows), no en ningún archivo del proyecto.
 
-Obtenga una clave en:
+Obtén una clave en:
 {url}</translation>
     </message>
     <message>
@@ -32,7 +32,7 @@ Obtenga una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="150"/>
       <source>Please describe the rule you want.</source>
-      <translation>Describa la regla que desea.</translation>
+      <translation>Describe la regla que deseas.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
@@ -42,7 +42,7 @@ Obtenga una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
       <source>Please select a rule to modify.</source>
-      <translation>Seleccione una regla para modificar.</translation>
+      <translation>Selecciona una regla para modificar.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="182"/>
@@ -52,12 +52,12 @@ Obtenga una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="244"/>
       <source>Valid rule generated (attempt {n}). {expl}</source>
-      <translation>Regla válida generada (intento {n}). {expl}</translation>
+      <translation>Se ha generado una regla válida (intento {n}). {expl}</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1124"/>
       <source>Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.</source>
-      <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puede abrirla en XXE para inspeccionarla.</translation>
+      <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puedes abrirla en XXE para inspeccionarla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1148"/>
@@ -82,7 +82,7 @@ Obtenga una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1144"/>
       <source>Try rephrasing your description as a single, clear sentence and generate again.</source>
-      <translation>Intente reformular su descripción como una sola frase clara y vuelva a generar.</translation>
+      <translation>Intenta reformular tu descripción como una sola frase clara y vuelve a generarla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="254"/>
@@ -97,7 +97,7 @@ Obtenga una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
       <source>Rate limited - try again shortly.</source>
-      <translation>Límite de solicitudes alcanzado - inténtelo de nuevo en breve.</translation>
+      <translation>Límite de solicitudes alcanzado - inténtalo de nuevo en breve.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
@@ -107,7 +107,7 @@ Obtenga una clave en:
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="274"/>
       <source>Your {provider} API key was updated.</source>
-      <translation>Su clave API de {provider} se actualizó.</translation>
+      <translation>Tu clave API de {provider} se actualizó.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="289"/>
@@ -125,10 +125,10 @@ Obtenga una clave en:
 {path}
 
 Open it in XXE to review.</source>
-      <translation>Se escribió una copia con su regla en:
+      <translation>Se escribió una copia con tu regla en:
 {path}
 
-Ábrala en XXE para revisarla.</translation>
+Ábrela en XXE para revisarla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="175"/>
@@ -158,7 +158,7 @@ Open it in XXE to review.</source>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
       <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
-      <translation>Regla escrita en el archivo de transferencia (copia de seguridad: {backup}). Genere o seleccione otra regla para continuar.</translation>
+      <translation>Regla escrita en el archivo de transferencia (copia de seguridad: {backup}). Crea o selecciona otra regla para continuar.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="173"/>
@@ -168,7 +168,7 @@ Open it in XXE to review.</source>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="253"/>
       <source>Please select a rule to explain.</source>
-      <translation>Seleccione una regla para explicar.</translation>
+      <translation>Selecciona una regla para explicar.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="379"/>
@@ -193,12 +193,12 @@ Open it in XXE to review.</source>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
       <source>Do you want to keep the example language data you provided for the previous rule?</source>
-      <translation>¿Desea conservar los datos lingüísticos de ejemplo proporcionados para la regla anterior?</translation>
+      <translation>¿Deseas conservar los datos lingüísticos de ejemplo proporcionados para la regla anterior?</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="511"/>
       <source>Please describe the change you want.</source>
-      <translation>Describa el cambio que desea.</translation>
+      <translation>Describe el cambio que deseas.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="541"/>
@@ -213,7 +213,7 @@ Open it in XXE to review.</source>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="486"/>
       <source>You have a rule that has not been written to the transfer file. Approve and write it before continuing?</source>
-      <translation>Tiene una regla que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de continuar?</translation>
+      <translation>Tienes una regla que no se ha escrito en el archivo de transferencia. ¿Quieres aprobarla y escribirla antes de continuar?</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
@@ -231,7 +231,7 @@ Open it in XXE to review.</source>
     </message>
     <message>
       <source>You have a macro that has not been written to the transfer file. Approve and write it before continuing?</source>
-      <translation>Tiene una macro que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de continuar?</translation>
+      <translation>Tienes una macro que no se ha guardado en el archivo de transferencia. ¿Quieres aprobarla y guardarla antes de continuar?</translation>
     </message>
     <message>
       <source>(none)</source>
@@ -247,11 +247,11 @@ Open it in XXE to review.</source>
 Macros in the file: {names}
 
 Nothing was sent to the AI. Correct the macro name and try again.</source>
-      <translation>Su descripción menciona una macro que no está en el archivo de reglas de transferencia: {missing}
+      <translation>Tu descripción menciona una macro que no está en el archivo de reglas de transferencia: {missing}
 
 Macros en el archivo: {names}
 
-No se envió nada a la IA. Corrija el nombre de la macro e inténtelo de nuevo.</translation>
+No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.</translation>
     </message>
     <message>
       <source>No macro selected</source>
@@ -259,11 +259,11 @@ No se envió nada a la IA. Corrija el nombre de la macro e inténtelo de nuevo.<
     </message>
     <message>
       <source>Please select a macro to modify.</source>
-      <translation>Seleccione una macro para modificar.</translation>
+      <translation>Selecciona una macro para modificar.</translation>
     </message>
     <message>
       <source>Please select a macro to explain.</source>
-      <translation>Seleccione una macro para explicar.</translation>
+      <translation>Selecciona una macro para explicar.</translation>
     </message>
     <message>
       <source>The AI Assistant added this macro on {when}.</source>
@@ -279,7 +279,7 @@ No se envió nada a la IA. Corrija el nombre de la macro e inténtelo de nuevo.<
     </message>
     <message>
       <source>Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.</source>
-      <translation>Macro escrita en el archivo de transferencia (copia de seguridad: {backup}). Genere o seleccione otra regla u otra macro para continuar.</translation>
+      <translation>Macro escrita en el archivo de transferencia (copia de seguridad: {backup}). Crea o selecciona otra regla u otra macro para continuar.</translation>
     </message>
   </context>
 </TS>

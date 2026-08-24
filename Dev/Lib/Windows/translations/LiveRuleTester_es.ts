@@ -6,7 +6,7 @@
     <message>
       <location filename="../LiveRuleTester.py" line="605"/>
       <source>Live Rule Tester</source>
-      <translation>Herramienta de prueba de reglas en vivo</translation>
+      <translation>Probador de reglas en vivo</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="606"/>
@@ -16,7 +16,7 @@
     <message>
       <location filename="../LiveRuleTester.py" line="607"/>
       <source>Refresh Source Project</source>
-      <translation>Actualizar el Proyecto Origen</translation>
+      <translation>Actualizar el proyecto de origen</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="608"/>
@@ -36,7 +36,7 @@
     <message>
       <location filename="../LiveRuleTester.py" line="611"/>
       <source>Hover over a word to see its bilingual dictionary entry.</source>
-      <translation>Pase el cursor sobre una palabra para ver su entrada en el diccionario bilingüe.</translation>
+      <translation>Pasa el cursor sobre una palabra para ver su entrada en el diccionario bilingüe.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="612"/>
@@ -132,8 +132,8 @@
       <location filename="../LiveRuleTester.py" line="631"/>
       <source>If you have checked the FLExTrans setting to clean up unknown words,
 this keeps the clean up from happening so you can more easily see errors.</source>
-      <translation>Si ha activado la configuración de FLExTrans para limpiar palabras desconocidas,
-esto evita la limpieza para que pueda ver los errores más fácilmente.</translation>
+      <translation>Si has activado la configuración de FLExTrans para limpiar palabras desconocidas,
+esto evita la limpieza para que puedas ver los errores más fácilmente.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="633"/>
