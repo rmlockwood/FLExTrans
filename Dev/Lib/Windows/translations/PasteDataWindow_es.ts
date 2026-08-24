@@ -21,7 +21,7 @@
     <message>
       <location filename="../PasteDataWindow.py" line="52"/>
       <source>Paste interlinear data (e.g. copied from FLEx).</source>
-      <translation>Pegue datos interlineales (por ejemplo, copiados de FLEx).</translation>
+      <translation>Pega los datos interlineales (por ejemplo, copiados de FLEx).</translation>
     </message>
   </context>
 </TS>
