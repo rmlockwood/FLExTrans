@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>28 July 2026</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>24 August 2026</small></center>
       <center><small>Version: 3.16</small></center>
       <hr>
       <div>
@@ -2338,7 +2338,7 @@
       <h4 style=""><a name="sProc"></a>6.2.3.1&nbsp;Procedures
       </h4>
       <ol style="list-style-type:decimal; ">
-         <li>If the source language grammatical category tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">12</a>]</span></li>
+         <li>If the source language affix tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language affix tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">12</a>]</span></li>
       </ol>
       <h4 style=""><a name="sDecl"></a>6.2.3.2&nbsp;Declarations
       </h4>
@@ -2434,8 +2434,6 @@
       <p>Let&#8217;s see what data stream output we get for the first two words right now. To do this we will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> which is a great tool for applying a single rule to one or more words and checking the result. See section&nbsp;<a href="#sRuleTester">4.2</a>.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Close the <span style="font-weight:bold; ">English-FLExTrans-Sample</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
-         </li>
          <li>Bring up the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app.
          </li>
          <li>Click the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection.
@@ -2862,7 +2860,7 @@
       <ol style="list-style-type:decimal; ">
          <li>Output a skeleton pronoun.<br><br>So, we need to take the person and number information from the verb &#8220;be&#8221;, and the rest we need to just declare to be outputted.
             Let&#8217;s start with outputting the string <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">propers<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom</span></span>; we won&#8217;t worry about the <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">2 sg</span></span> tags yet.<br><br></li>
-         <li>In the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section, insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(85)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string)</span> then click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span>, do an Insert After... and choose <span style="font-style:italic; ">lit-tag(literal_tag)</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element comes after and is <span style="text-decoration:underline; ">indented at the same level</span> as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span>.
+         <li>In the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section, insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(85)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string-tag)</span>.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -2895,7 +2893,7 @@
                </table>
             </div>
          </li>
-         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(87)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_target_language)</span>. Do this twice.
+         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(87)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_target_lang)</span>. Do this twice.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
