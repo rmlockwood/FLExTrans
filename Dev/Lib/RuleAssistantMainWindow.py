@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.16.28 - 8/24/26 - Ron Lockwood
+#    Fixes #1449. Leave the Test in LRT button enabled when the Rule Assistant was launched from the Live Rule Tester, so all the buttons behave the same no matter how the tool was started.
+#
 #   Version 3.16.27 - 7/25/26 - Ron Lockwood
 #    Fixes #1447. Select the affected rule after duplicating, inserting, moving, or deleting a rule, instead of always jumping back to the first rule.
 #
@@ -184,6 +187,9 @@ class RuleAssistantWindow(QMainWindow):
         self.ruleFile = ruleFile
         self.flexDataFile = flexDataFile
         self.testDataFile = testDataFile
+
+        # Recorded for the caller's benefit only. Every button, Test in LRT included, works the same whether or not we were started from the Live Rule Tester (issue #1449); it is
+        # StartRuleAssistant that uses this to avoid launching a second tester on top of the one already waiting for us.
         self.cameFromLrt = cameFromLrt
         self.uiLangCode = uiLangCode
 
@@ -215,11 +221,6 @@ class RuleAssistantWindow(QMainWindow):
         self._createWebViews()
         self._populatePermutationsCombo()
         self._connectSignals()
-
-        if self.cameFromLrt:
-
-            self.testLrtButton.setEnabled(False)
-
         self._createContextMenus()
         self._setupKeyboardShortcuts()
         self._setupWebview()
@@ -904,7 +905,10 @@ class RuleAssistantWindow(QMainWindow):
     def _onTestInLrt(self) -> None:
         """Handle Test In LRT button: ask which save option to use, then save and
         close, flagging that the Live Rule Tester should be launched afterward
-        (mirrors the Java MainController.handleTestInLRT)."""
+        (mirrors the Java MainController.handleTestInLRT).
+
+        The button stays enabled even when we were launched from the Live Rule Tester (issue #1449) so every button behaves the same no matter how the Rule Assistant was started. In that case
+        closing already hands control back to the waiting Live Rule Tester, so the caller (RuleAssistantPy.StartRuleAssistant) drops the launch flag rather than starting a second, nested one."""
 
         if not self._generator:
 
