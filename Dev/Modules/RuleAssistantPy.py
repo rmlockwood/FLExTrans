@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.16.9 - 8/24/26 - Ron Lockwood
+#    Fixes #1449. Don't launch a nested Live Rule Tester when the Test in LRT button is used from a Rule Assistant that the tester itself started.
+#
 #   Version 3.16.8 - 6/26/26 - Ron Lockwood
 #    Prevent the module from starting in one-project mode.
 #
@@ -85,7 +88,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.16.8",
+        FTM_Version    : "3.16.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
@@ -480,7 +483,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testDa
         # Get and save result
         result = window.getResult()
 
-        return (result.saved, result.ruleIndex, result.launchLrt)
+        # The Test in LRT button is live even when we were started from the Live Rule Tester (issue #1449), but there we are already running inside the Live Rule Tester which re-runs itself as soon
+        # as we return. Drop the launch flag in that case so the user simply lands back in the tester they came from instead of getting a second, nested one on top of it.
+        launchLrt = result.launchLrt and not fromLRT
+
+        return (result.saved, result.ruleIndex, launchLrt)
 
     except Exception as e:
 
