@@ -3198,6 +3198,173 @@ type="tFlexx"
 ></object
 > help on how to use Regular Expressions or various websites that explain the Regular Expression language.</p
 ><p
+>Besides the standard Regular Expression features, the replace line understands some extra escape sequences that let you change the case of a letter. These are the same case modifiers that the substitution box on the regex101.com website uses. They only have an effect when the <object
+type="tButton"
+>Regular Expression</object
+> check box is checked. A rule that is not a Regular Expression does a plain literal replacement, so these sequences would end up in the text as-is.</p
+><table
+border="1"
+><tr
+><th
+>In the replace line</th
+><th
+>Meaning</th
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\u\1</object
+></td
+><td
+>Change the first character of what group 1 matched to upper case and insert the rest of the group unchanged. Any group number from <object
+type="tCourier"
+>\1</object
+> through <object
+type="tCourier"
+>\9</object
+> can be used.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\l\1</object
+></td
+><td
+>Change the first character of what group 1 matched to lower case and insert the rest of the group unchanged.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\u</object
+> followed by a letter</td
+><td
+>Change that one letter to upper case. The letter is one you typed in the replace line, not something the search line matched. For example, <object
+type="tCourier"
+>\ua</object
+> inserts <object
+type="tCourier"
+>A</object
+>.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\l</object
+> followed by a letter</td
+><td
+>Change that one letter to lower case. For example, <object
+type="tCourier"
+>\lA</object
+> inserts <object
+type="tCourier"
+>a</object
+>.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\U</object
+> ... <object
+type="tCourier"
+>\E</object
+></td
+><td
+>Change everything inserted between the two markers to upper case. This includes group references, so <object
+type="tCourier"
+>\U\1\E</object
+> upper cases the whole of what group 1 matched, and <object
+type="tCourier"
+>\Uabc\E</object
+> inserts <object
+type="tCourier"
+>ABC</object
+>. Leaving off the <object
+type="tCourier"
+>\E</object
+> means the change runs to the end of the replace line.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\L</object
+> ... <object
+type="tCourier"
+>\E</object
+></td
+><td
+>Change everything inserted between the two markers to lower case. For example, <object
+type="tCourier"
+>\L\1\E</object
+> lower cases the whole of what group 1 matched and <object
+type="tCourier"
+>\LABC\E</object
+> inserts <object
+type="tCourier"
+>abc</object
+>.</td
+></tr
+></table
+><p
+>For example, a rule with a search line of <object
+type="tCourier"
+>([.!?]\s+)(\w)</object
+> and a replace line of <object
+type="tCourier"
+>\1\u\2</object
+> capitalizes the first letter of each sentence. It turns <object
+type="tCourier"
+>this is one. and this is two.</object
+> into <object
+type="tCourier"
+>this is one. And this is two.</object
+> A search line of <object
+type="tCourier"
+>^(\w)</object
+> with a replace line of <object
+type="tCourier"
+>\u\1</object
+> capitalizes only the very first letter of the text.</p
+><p
+>Note the difference between the lower case and upper case forms of these modifiers. The lower case <object
+type="tCourier"
+>\u</object
+> and <object
+type="tCourier"
+>\l</object
+> change one character only, while the upper case <object
+type="tCourier"
+>\U</object
+> and <object
+type="tCourier"
+>\L</object
+> keep changing everything until an <object
+type="tCourier"
+>\E</object
+> stops them. So <object
+type="tCourier"
+>\u\1</object
+> capitalizes a word while <object
+type="tCourier"
+>\U\1\E</object
+> shouts it.</p
+><p
+>You can combine the two. A one character modifier wins over the surrounding many character one for the character it applies to, which gives you a handy way to fix a word typed in all capitals. A replace line of <object
+type="tCourier"
+>\u\L\1\E</object
+> lower cases everything in group 1 but then puts the first letter back into upper case, so <object
+type="tCourier"
+>HELLO</object
+> becomes <object
+type="tCourier"
+>Hello</object
+>.</p
+><p
 >Use the <object
 type="tButton"
 >Test</object
@@ -8071,6 +8238,65 @@ type="tFlexxTools"
 > app, see <sectionRef
 sec="sCollections"
 textBefore="capitalizedSingular"
+></sectionRef
+>.</p
+></section3
+><section3
+id="sTextInOutCase"
+><secTitle
+>How do I make a letter upper case or lower case in a Text In or Text Out rule?</secTitle
+><p
+>The <object
+type="tTool"
+>Text In Rules Tool</object
+> and the <object
+type="tTool"
+>Text Out Rules Tool</object
+> do search and replace on the text coming into or going out of <object
+type="tFlextrans"
+></object
+>. When a rule is marked as a Regular Expression, the replace line understands extra escape sequences that change the case of a letter. That way you do not have to write a separate rule for each letter of the alphabet.</p
+><p
+>Mark the rule as a Regular Expression and then use <object
+type="tCourier"
+>\u</object
+> to make something upper case or <object
+type="tCourier"
+>\l</object
+> to make it lower case. Put the modifier immediately before the thing it applies to. So <object
+type="tCourier"
+>\u\1</object
+> makes the first character of what group 1 matched upper case, while <object
+type="tCourier"
+>\U\1\E</object
+> makes the whole of group 1 upper case. The upper case forms keep going until an <object
+type="tCourier"
+>\E</object
+> stops them.</p
+><p
+>A common need is capitalizing the first letter of every sentence in the translated text. Add a <object
+type="tTool"
+>Text Out Rules Tool</object
+> rule with a search line of <object
+type="tCourier"
+>([.!?]\s+)(\w)</object
+> and a replace line of <object
+type="tCourier"
+>\1\u\2</object
+>. The punctuation and space are copied through by <object
+type="tCourier"
+>\1</object
+> and the letter that follows them is upper cased by <object
+type="tCourier"
+>\u\2</object
+>. Use the <object
+type="tButton"
+>Test</object
+> button in the tool to check the result before you run the process.</p
+><p
+>For the complete list of case modifiers, see <sectionRef
+sec="sTextIn"
+showTitle="full"
 ></sectionRef
 >.</p
 ></section3

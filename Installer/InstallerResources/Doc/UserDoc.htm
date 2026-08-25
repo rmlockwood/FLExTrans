@@ -225,6 +225,7 @@
                      <li><a href="#sPVBothPhrasal">8.4.6.3&nbsp;The source uses a phrasal verb and the target also uses a phrasal verb (and the components don't match).</a></li>
                   </ul>
                   <li><a href="#sLinkDup">8.4.7&nbsp;I just copied my source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project to become my target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. Is there a way to link all the senses?</a></li>
+                  <li><a href="#sTextInOutCase">8.4.8&nbsp;How do I make a letter upper case or lower case in a Text In or Text Out rule?</a></li>
                </ul>
             </ul>
             <li><a href="#sTroubleshooting">9&nbsp;Troubleshooting</a></li>
@@ -1786,6 +1787,59 @@
          <span style="font-style:normal; font-weight:bold; ">Update</span> button. You will see the edited form now in the list.
       </p>
       <p>If the search and replace lines are Regular Expressions, check the <span style="font-style:normal; font-weight:bold; ">Regular Expression</span> check box. See the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> help on how to use Regular Expressions or various websites that explain the Regular Expression language.
+      </p>
+      <p>Besides the standard Regular Expression features, the replace line understands some extra escape sequences that let you change
+         the case of a letter. These are the same case modifiers that the substitution box on the regex101.com website uses. They only
+         have an effect when the <span style="font-style:normal; font-weight:bold; ">Regular Expression</span> check box is checked. A rule that is not a Regular Expression does a plain literal replacement, so these sequences would
+         end up in the text as-is.
+      </p>
+      <div align="left">
+         <table style="" border="1">
+            <tr style="">
+               <th align="left" valign="top" style="padding-left:.2em; ">In the replace line</th>
+               <th align="left" valign="top" style="padding-left:.2em; ">Meaning</th>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\u\1</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change the first character of what group 1 matched to upper case and insert the rest of the group unchanged. Any group number
+                  from <span style="font-family:Courier New; font-size:100%; ">\1</span> through <span style="font-family:Courier New; font-size:100%; ">\9</span> can be used.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\l\1</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change the first character of what group 1 matched to lower case and insert the rest of the group unchanged.</td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\u</span> followed by a letter
+               </td>
+               <td align="left" valign="top" style="padding-left:.2em">Change that one letter to upper case. The letter is one you typed in the replace line, not something the search line matched.
+                  For example, <span style="font-family:Courier New; font-size:100%; ">\ua</span> inserts <span style="font-family:Courier New; font-size:100%; ">A</span>.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\l</span> followed by a letter
+               </td>
+               <td align="left" valign="top" style="padding-left:.2em">Change that one letter to lower case. For example, <span style="font-family:Courier New; font-size:100%; ">\lA</span> inserts <span style="font-family:Courier New; font-size:100%; ">a</span>.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\U</span> ... <span style="font-family:Courier New; font-size:100%; ">\E</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change everything inserted between the two markers to upper case. This includes group references, so <span style="font-family:Courier New; font-size:100%; ">\U\1\E</span> upper cases the whole of what group 1 matched, and <span style="font-family:Courier New; font-size:100%; ">\Uabc\E</span> inserts <span style="font-family:Courier New; font-size:100%; ">ABC</span>. Leaving off the <span style="font-family:Courier New; font-size:100%; ">\E</span> means the change runs to the end of the replace line.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\L</span> ... <span style="font-family:Courier New; font-size:100%; ">\E</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change everything inserted between the two markers to lower case. For example, <span style="font-family:Courier New; font-size:100%; ">\L\1\E</span> lower cases the whole of what group 1 matched and <span style="font-family:Courier New; font-size:100%; ">\LABC\E</span> inserts <span style="font-family:Courier New; font-size:100%; ">abc</span>.
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>For example, a rule with a search line of <span style="font-family:Courier New; font-size:100%; ">([.!?]\s+)(\w)</span> and a replace line of <span style="font-family:Courier New; font-size:100%; ">\1\u\2</span> capitalizes the first letter of each sentence. It turns <span style="font-family:Courier New; font-size:100%; ">this is one. and this is two.</span> into <span style="font-family:Courier New; font-size:100%; ">this is one. And this is two.</span> A search line of <span style="font-family:Courier New; font-size:100%; ">^(\w)</span> with a replace line of <span style="font-family:Courier New; font-size:100%; ">\u\1</span> capitalizes only the very first letter of the text.
+      </p>
+      <p>Note the difference between the lower case and upper case forms of these modifiers. The lower case <span style="font-family:Courier New; font-size:100%; ">\u</span> and <span style="font-family:Courier New; font-size:100%; ">\l</span> change one character only, while the upper case <span style="font-family:Courier New; font-size:100%; ">\U</span> and <span style="font-family:Courier New; font-size:100%; ">\L</span> keep changing everything until an <span style="font-family:Courier New; font-size:100%; ">\E</span> stops them. So <span style="font-family:Courier New; font-size:100%; ">\u\1</span> capitalizes a word while <span style="font-family:Courier New; font-size:100%; ">\U\1\E</span> shouts it.
+      </p>
+      <p>You can combine the two. A one character modifier wins over the surrounding many character one for the character it applies
+         to, which gives you a handy way to fix a word typed in all capitals. A replace line of <span style="font-family:Courier New; font-size:100%; ">\u\L\1\E</span> lower cases everything in group 1 but then puts the first letter back into upper case, so <span style="font-family:Courier New; font-size:100%; ">HELLO</span> becomes <span style="font-family:Courier New; font-size:100%; ">Hello</span>.
       </p>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Test</span> button to check that your rules are doing what you expect.
       </p>
@@ -3959,6 +4013,17 @@
       <p>There is a <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> module called <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Link All Senses As Duplicate</span>. This module is ideal when you duplicate one <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project to be another one. In such a situation all the sense ids are exactly the same so it can be a big head start to link
          all source senses to their matches in the target project. The end result is that you will have a link for every source sense
          to every corresponding target sense. To add this module to your <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app, see Section&nbsp;<a href="#sCollections">3.3</a>.
+      </p>
+      <h3 style=""><a name="sTextInOutCase"></a>8.4.8&nbsp;How do I make a letter upper case or lower case in a Text In or Text Out rule?
+      </h3>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span> and the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span> do search and replace on the text coming into or going out of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. When a rule is marked as a Regular Expression, the replace line understands extra escape sequences that change the case
+         of a letter. That way you do not have to write a separate rule for each letter of the alphabet.
+      </p>
+      <p>Mark the rule as a Regular Expression and then use <span style="font-family:Courier New; font-size:100%; ">\u</span> to make something upper case or <span style="font-family:Courier New; font-size:100%; ">\l</span> to make it lower case. Put the modifier immediately before the thing it applies to. So <span style="font-family:Courier New; font-size:100%; ">\u\1</span> makes the first character of what group 1 matched upper case, while <span style="font-family:Courier New; font-size:100%; ">\U\1\E</span> makes the whole of group 1 upper case. The upper case forms keep going until an <span style="font-family:Courier New; font-size:100%; ">\E</span> stops them.
+      </p>
+      <p>A common need is capitalizing the first letter of every sentence in the translated text. Add a <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span> rule with a search line of <span style="font-family:Courier New; font-size:100%; ">([.!?]\s+)(\w)</span> and a replace line of <span style="font-family:Courier New; font-size:100%; ">\1\u\2</span>. The punctuation and space are copied through by <span style="font-family:Courier New; font-size:100%; ">\1</span> and the letter that follows them is upper cased by <span style="font-family:Courier New; font-size:100%; ">\u\2</span>. Use the <span style="font-style:normal; font-weight:bold; ">Test</span> button in the tool to check the result before you run the process.
+      </p>
+      <p>For the complete list of case modifiers, see &#8220;<a href="#sTextIn">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span></a>&#8221;.
       </p>
       <h1 style=""><a name="sTroubleshooting"></a>9&nbsp;Troubleshooting
       </h1>
