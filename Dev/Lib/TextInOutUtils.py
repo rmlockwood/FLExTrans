@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.16.3 - 8/24/26 - Ron Lockwood
+#    Completed the #1350 case modifiers: \U...\E and \L...\E now case-force group references too, not just literal characters (Perl/regex101 semantics).
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay() (added import Utils).
 #
@@ -273,112 +276,123 @@ def create_replacer(pattern):
 
     r"""Return a callable replacement function for use with regex.sub().
 
-    Python's regex.sub() normally interprets the replacement string itself,
-    which only supports \1-\9 backreferences.  This factory parses the
-    replacement pattern manually so that the same case-modifier escapes
-    supported by regex101.com's substitution box work here too.
+    Python's regex.sub() normally interprets the replacement string itself, which only supports \1-\9 backreferences.  This factory parses the
+    replacement pattern manually so that the same case-modifier escapes supported by regex101.com's substitution box work here too.  The semantics
+    follow Perl/PCRE, which is what regex101 models.
 
     Supported escape sequences in the replacement pattern:
 
-      \1 .. \9   Insert the text matched by capture group N.  \0 inserts
-                 the entire match (same as group 0).
+      \1 .. \9   Insert the text matched by capture group N.  \0 inserts the entire match (same as group 0).
 
-      \l\1       Lowercase the FIRST CHARACTER of group N; the rest of the
-                 group is inserted unchanged.  e.g. \l\1 on "HELLO" → "hELLO".
-      \u\1       Uppercase the FIRST CHARACTER of group N; the rest of the
-                 group is inserted unchanged.  e.g. \u\1 on "hello" → "Hello".
-      \lX        Lowercase the single literal character X (not a group).
-      \uX        Uppercase the single literal character X (not a group).
+      \u         Change just the NEXT character to upper case.  It applies to whatever is inserted next, so \u\1 upper cases the first character of
+                 group N and leaves the rest of the group alone (e.g. \u\1 on "hello" gives "Hello"), while \ux upper cases the single literal
+                 character x that follows.
+      \l         Same, but changes the next character to lower case.  e.g. \l\1 on "HELLO" gives "hELLO".
 
-      \L...\E    Lowercase every literal character between \L and \E.
-                 Backreferences inside this section are NOT expanded —
-                 the two characters \ and 1 are each lowercased in place.
-                 Use \l\1 to lowercase the first char of a group, or a
-                 future \L\1\E extension to lowercase a whole group.
-      \U...\E    Uppercase every literal character between \U and \E.
-                 Same caveat: backreferences are not expanded inside.
+      \U...\E    Change everything inserted between \U and \E to upper case.  This includes backreferences, so \U\1\E upper cases the whole of group
+                 N (e.g. \U\1\E on "hello" gives "HELLO") and \Uabc\E inserts "ABC".  A missing \E means the case forcing runs to the end of the
+                 replacement pattern.
+      \L...\E    Same, but changes everything to lower case.
+      \E         Ends the case forcing started by \U or \L.
 
-    Any other backslash sequence (e.g. \n, \t, \s, \w) is passed through
-    unchanged as the two-character string \x, matching regex101 behaviour.
+    A \u or \l takes precedence over an enclosing \U or \L for the one character it applies to, so \u\L\1\E gives "Hello" for a group matching
+    "HELLO" - the first character is upper cased and the rest is lower cased.
+
+    Any other backslash sequence (e.g. \n, \t, \s, \w) is passed through unchanged as the two-character string \x, matching regex101 behaviour.
     """
-    
+
     def replacer(match):
 
         result = ""
         i = 0
 
+        # Case-forcing state. caseMode is set by \U or \L and stays in effect until an \E or the end of the replacement pattern. oneShotCase is set by
+        # \u or \l and applies to only the first character appended after it, whether that character is a literal or the start of a group's matched text.
+        caseMode = None
+        oneShotCase = None
+
+        # Append text to the result with the current case treatment applied: the pending \u or \l (if any) affects the first character and the
+        # enclosing \U or \L affects the rest. Everything inserted goes through here, which is what makes \U\1\E upper case a whole group.
+        def applyCase(text):
+
+            nonlocal oneShotCase
+
+            if not text:
+
+                return ""
+
+            firstChar = text[:1]
+            restChars = text[1:]
+
+            # A pending \u or \l wins over the enclosing \U or \L for this one character, then is used up.
+            if oneShotCase == 'upper':
+
+                firstChar = firstChar.upper()
+                oneShotCase = None
+
+            elif oneShotCase == 'lower':
+
+                firstChar = firstChar.lower()
+                oneShotCase = None
+
+            elif caseMode == 'upper':
+
+                firstChar = firstChar.upper()
+
+            elif caseMode == 'lower':
+
+                firstChar = firstChar.lower()
+
+            # The remaining characters get only the enclosing \U or \L.
+            if caseMode == 'upper':
+
+                restChars = restChars.upper()
+
+            elif caseMode == 'lower':
+
+                restChars = restChars.lower()
+
+            return firstChar + restChars
+
         while i < len(pattern):
 
             if pattern[i] == '\\' and i + 1 < len(pattern):
 
-                next_char = pattern[i+1]
+                nextChar = pattern[i+1]
 
-                # Handle backreferences \1, \2, etc.
-                if next_char.isdigit():
+                # Handle backreferences \0 - \9. The inserted text gets the current case treatment just like a literal would.
+                if nextChar.isdigit():
 
-                    group_num = int(next_char)
-                    result += match.group(group_num) or ""
+                    result += applyCase(match.group(int(nextChar)) or "")
                     i += 2
 
-                # Handle \l — lowercase the NEXT CHARACTER only:
-                #   \l\N  → first char of group N lowercased, rest of group unchanged
-                #   \lX   → literal char X lowercased
-                elif next_char == 'l' and i + 2 < len(pattern):
+                # Handle \u and \l. These only record what to do; applyCase() does it to whatever gets inserted next.
+                elif nextChar == 'u' or nextChar == 'l':
 
-                    if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
-
-                        group_num = int(pattern[i+3])
-                        group_str = match.group(group_num) or ""
-                        result += group_str[:1].lower() + group_str[1:]
-                        i += 4
-                    else:
-                        result += pattern[i+2].lower()
-                        i += 3
-
-                # Handle \u — uppercase the NEXT CHARACTER only:
-                #   \u\N  → first char of group N uppercased, rest of group unchanged
-                #   \uX   → literal char X uppercased
-                elif next_char == 'u' and i + 2 < len(pattern):
-
-                    if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
-
-                        group_num = int(pattern[i+3])
-                        group_str = match.group(group_num) or ""
-                        result += group_str[:1].upper() + group_str[1:]
-                        i += 4
-                    else:
-                        result += pattern[i+2].upper()
-                        i += 3
-
-                # Handle \L...\E - lowercase section
-                elif next_char == 'L':
-
+                    oneShotCase = 'upper' if nextChar == 'u' else 'lower'
                     i += 2
 
-                    while i < len(pattern) and pattern[i:i+2] != '\\E':
+                # Handle \U and \L. These start case forcing that lasts until \E or the end of the replacement pattern.
+                elif nextChar == 'U' or nextChar == 'L':
 
-                        result += pattern[i].lower()
-                        i += 1
-
-                    i += 2  # Skip \E
-
-                # Handle \U...\E - uppercase section
-                elif next_char == 'U':
-
+                    caseMode = 'upper' if nextChar == 'U' else 'lower'
                     i += 2
 
-                    while i < len(pattern) and pattern[i:i+2] != '\\E':
+                # Handle \E, which ends the case forcing started by \U or \L.
+                elif nextChar == 'E':
 
-                        result += pattern[i].upper()
-                        i += 1
-                        
-                    i += 2  # Skip \E
+                    caseMode = None
+                    i += 2
 
+                # Any other backslash sequence is passed through as the two characters it was typed as. Emit the backslash raw so that a pending \u or
+                # \l is not wasted on it, then let the next loop iteration handle the character that follows.
                 else:
                     result += pattern[i]
                     i += 1
+
+            # An ordinary literal character.
             else:
-                result += pattern[i]
+                result += applyCase(pattern[i])
                 i += 1
 
         return result
