@@ -8,6 +8,9 @@
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.2 - 7/2/26 - Ron Lockwood
 #    Silenced type-checker warnings on os.remove/glob calls and guarded the bilingual backup regex against a None path.
 #
@@ -96,7 +99,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  

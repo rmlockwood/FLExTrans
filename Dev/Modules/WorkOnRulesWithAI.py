@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.12 - 7/28/26 - Ron Lockwood
 #    Updated the module synopsis and description to cover the explain feature, to note it works on macros as well as rules, and that the user's description and the AI's explanation can be in any language.
 #
@@ -84,7 +87,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "AI Rule Studio"),
-        FTM_Version    : "3.16.12",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Use AI to create, modify, or explain your transfer rules and macros."),
         FTM_Help       : "",

@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.2 - 7/28/26 - Ron Lockwood
 #    Added lexicalUnitToHtml, which color-codes one lexical unit into an HTML string (reusing processLexicalUnit) so callers building their own HTML can drop in Source/Target-viewer-style colored lexical units.
 #

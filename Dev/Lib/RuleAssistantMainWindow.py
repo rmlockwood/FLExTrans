@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.28 - 8/24/26 - Ron Lockwood
 #    Fixes #1449. Leave the Test in LRT button enabled when the Rule Assistant was launched from the Live Rule Tester, so all the buttons behave the same no matter how the tool was started.
 #

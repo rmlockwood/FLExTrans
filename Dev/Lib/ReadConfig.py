@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.4 - 7/8/26 - Ron Lockwood
 #    Fixes #1392. Added the ApplyTextOutRulesInTestbed setting that controls whether Text Out rules are applied to the synthesis before the testbed extracts results.
 #

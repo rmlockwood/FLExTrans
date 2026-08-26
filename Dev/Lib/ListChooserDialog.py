@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.3 - 7/9/26 - Ron Lockwood
 #    Fixes #1407. Selected item now shows white text (over the highlight background), matching the split feature grid.
 #

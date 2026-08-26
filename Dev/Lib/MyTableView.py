@@ -5,6 +5,9 @@
 #   SIL International
 #   11/1/2016
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16 - 7/13/26 - Ron Lockwood
 #    Type fixes for the PyQt6 upgrade: call the correct base-class __init__, use the
 #    StateFlag/Key enum paths, guard the Optional returns from style()/parent()/model, and cast QEvent to its mouse/key subclass.

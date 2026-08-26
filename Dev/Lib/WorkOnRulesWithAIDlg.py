@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.27 - 8/21/26 - Ron Lockwood
 #    Starting a new rule now offers to save an unapproved rule preview first.
 #

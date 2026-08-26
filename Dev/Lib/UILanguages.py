@@ -5,6 +5,9 @@
 #   SIL International
 #   7/9/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.3 - 7/22/26 - Ron Lockwood
 #    Comment-only: refer to the module by its new name "AI Rule Studio" (renamed from "Work on Rules with AI").
 #

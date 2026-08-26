@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.6 - 7/25/26 - Ron Lockwood
 #    Fixed Pylance warnings: two .reomve() typos, a malformed dict type annotation, and None-safety for XML attribute and element lookups.
 #

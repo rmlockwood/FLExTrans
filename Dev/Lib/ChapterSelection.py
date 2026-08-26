@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.3 - 7/29/26 - Ron Lockwood
 #    Put the FLExTrans icon on the overwrite-chapters message box.
 #

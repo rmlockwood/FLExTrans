@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.3 - 8/24/26 - Ron Lockwood
 #    Completed the #1350 case modifiers: \U...\E and \L...\E now case-force group references too, not just literal characters (Perl/regex101 semantics).
 #

@@ -4,6 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -83,7 +86,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'InterlinData', 'Mixpanel']
 # Documentation that the user sees:
 docs = {
     FTM_Name: _translate("GenStc", "Generate Sentences from Model"),
-    FTM_Version: "3.16.2",
+    FTM_Version: "3.17",
     FTM_ModifiesDB: False,
     FTM_Synopsis: _translate("GenStc", "Iterate over certain grammatical categories in a model sentence to produce variations."),
     FTM_Help: "",
