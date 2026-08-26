@@ -61,7 +61,7 @@ x-Create the release in Git with the new version string.
 -announce the new release on the FLEx list
 -Send out the FLExTrans newsletter
 -Setup things for the next release (so that new builds don't overwrite the just released one.)
- -See "Do these things when making a new release (when a beta release is not already set up)"  above
+ -See "Do these things when making a new release (when a beta release is not already set up)" above
 
 Switching to a newer version of Python
 ======================================
