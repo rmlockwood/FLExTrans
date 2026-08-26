@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.19 - 8/26/26 - Ron Lockwood
+#    Let the splitter panels shrink to one line of text - no further (the source tabs were squashed to a few pixels) and no sooner (the rule execution panel wouldn't shrink).
+#
+#   Version 3.16.18 - 8/26/26 - Ron Lockwood
+#    Keep the source zoom controls in place when the advanced options checkbox is clicked.
+#
 #   Version 3.16.17 - 8/21/26 - Ron Lockwood
 #    Fixes #1500. Keep keyboard focus on the advanced-options checkbox after changing modes.
 #
@@ -340,7 +346,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.17",
+        FTM_Version    : "3.16.19",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -356,6 +362,7 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.""")}
 
 ZOOM_INCREASE_FACTOR = 1.15
+TEXT_BOX_VERTICAL_PADDING = 8  # Space a text box needs above and below its text, over and above the frame: the document margin in the text edits, row padding in the list views.
 ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
 STANDARD_MODE_DEFAULT_DIMENSIONS = (628, 656)
 SAMPLE_LOGIC = 'Sample logic'
@@ -1109,6 +1116,10 @@ class Main(QMainWindow):
         self.interChunkTabText = self.ui.tabRules.tabText(1)
         self.postChunkTabText = self.ui.tabRules.tabText(2)
 
+        # Let each content box shrink to one line of text, which is what bounds how far the splitter panels can be dragged closed. Do this before the splitter is built so the panels
+        # start out with the right minimum heights.
+        self.applyOneLineBoxMinimums()
+
         # Wrap the main content areas in a vertical splitter so the user can drag to resize them. Must happen before AdvancedOptionsCheckboxClicked, which
         # rearranges the splitter panels depending on the mode.
         self.buildResizeSplitter()
@@ -1118,6 +1129,31 @@ class Main(QMainWindow):
 
         self.setMinimumHeight(500)
         self.retVal = True
+
+    def oneLineBoxHeight(self, box):
+
+        # The height this box needs in order to show one line of its text: the font's line height plus the frame it draws and the padding between frame and text. Measured from the box
+        # rather than hard-coded so that a different UI font, or a zoom step (see setSourceWidgetsFont / setTargetWidgetsFont), still leaves a full line readable.
+        metrics = QtGui.QFontMetrics(box.font())
+
+        return metrics.lineSpacing() + 2 * box.frameWidth() + TEXT_BOX_VERTICAL_PADDING
+
+    def applyOneLineBoxMinimums(self):
+
+        # Give every scrolling box in the splitter panels an explicit minimum height of one line of text, so a splitter drag can shrink a panel down to a single readable line but no
+        # further. This fixes two opposite problems. Qt's own minimum for a scrolling box (its minimumSizeHint) is around 70 pixels - it reserves room for a usable scroll bar - which
+        # kept the rule execution panel from shrinking anywhere near as far as the others. Going the other way, tabSource and tabRules carried a hard 50 pixel minimum from the .ui, and
+        # an explicit minimum replaces the calculated one rather than being combined with it, so the tab contents were squashed to a few pixels regardless of what they needed. Clearing
+        # those two lets the tab widgets derive their minimum from the tab bar plus the boxes on the pages, which now ask for one line each.
+        for box in [self.ui.scrollArea, self.ui.SelectedWordsEdit, self.ui.listSentences, self.ui.SelectedSentencesEdit, self.ui.ManualEdit,
+                    self.ui.listTransferRules, self.ui.listInterChunkRules, self.ui.listPostChunkRules,
+                    self.ui.LogEdit, self.ui.TargetTextEdit, self.ui.SynthTextEdit]:
+
+            box.setMinimumHeight(self.oneLineBoxHeight(box))
+
+        # Drop the .ui's fixed minimum on the two tab widgets so it can't override what their pages now ask for.
+        self.ui.tabSource.setMinimumHeight(0)
+        self.ui.tabRules.setMinimumHeight(0)
 
     def buildResizeSplitter(self):
 
@@ -1236,6 +1272,10 @@ class Main(QMainWindow):
 
             self.recordCurrentSplitterSizes()
 
+        # The drag moved the source tab's bottom edge, so re-position the floating source zoom controls on it. This happens in both modes, since only a window resize would
+        # otherwise put them back.
+        self.positionZoomWidgets()
+
     def restoreOrResetSplitter(self):
 
         # Restore the saved panel sizes for the current mode, or fall back to the proportional reset when there is no usable saved set. A saved set is used only when it has exactly one
@@ -1248,6 +1288,9 @@ class Main(QMainWindow):
         else:
 
             self.applySplitterStretch()
+
+        # The panel heights just changed, which moves the source tab's bottom edge, so the floating source zoom controls have to be re-positioned to follow it.
+        self.positionZoomWidgets()
 
     def AdvancedOptionsCheckboxClicked(self):
 
@@ -1365,6 +1408,10 @@ class Main(QMainWindow):
         # Done rearranging, let resizeEvent record dimensions again
         self.switchingModes = False
 
+        # Re-position the floating source zoom controls once the event loop has applied the new layout. The resize events fired while switching modes above position them against
+        # geometry that is still mid-rearrangement, which left them stranded off the source tab - they looked like they had disappeared until the next window resize put them back.
+        QtCore.QTimer.singleShot(0, self.positionZoomWidgets)
+
         # Keep arrow keys from changing the source text after the layout switch moves focus to the source text combo box.
         self.ui.advancedOptionsCheckbox.setFocus()
 
@@ -1451,6 +1498,12 @@ class Main(QMainWindow):
         self.ui.ZoomDecreaseSource.move(x, y)
         self.ui.ZoomIncreaseSource.move(x-23, y)
         self.ui.ZoomLabel_2.move(x-23-184, y)
+
+        # These are free-floating children of the central widget rather than layout items, so re-assert their stacking order. A mode switch reparents widgets in and out of the
+        # layouts around them, which can otherwise leave them behind a sibling and looking like they vanished.
+        self.ui.ZoomLabel_2.raise_()
+        self.ui.ZoomIncreaseSource.raise_()
+        self.ui.ZoomDecreaseSource.raise_()
         
     def sourceTextComboChanged(self):
 
@@ -3286,6 +3339,9 @@ class Main(QMainWindow):
         self.ui.SynthTextEdit.setFont(myFont)
         self.ui.TargetTextEdit.setFont(myFont)
 
+        # A line of the new font is a different height, so re-figure how far these boxes are allowed to shrink.
+        self.applyOneLineBoxMinimums()
+
     def setSourceWidgetsFont(self, fontSize):
 
         myFont = self.ui.SelectedSentencesEdit.font()
@@ -3304,6 +3360,9 @@ class Main(QMainWindow):
 
         # Set the tooltip size globally
         QToolTip.setFont(myFont)
+
+        # A line of the new font is a different height, so re-figure how far these boxes are allowed to shrink.
+        self.applyOneLineBoxMinimums()
 
 def get_component_count(e):
 
