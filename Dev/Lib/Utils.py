@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.7 - 7/24/26 - Ron Lockwood
 #    Fixes #1456. Factored the text 'Copy' naming algorithm out of createUniqueTitle into a reusable makeUniqueName(title, existingNames) so the Rule Assistant can share it.
 #

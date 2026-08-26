@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.12 - 7/28/26 - Ron Lockwood
 #    Lexical units the model writes into an explanation (e.g. ^book1.1<n><pl><gen>$) are now color-coded like the Source/Target viewer: colorLexicalUnitsInMarkdown stashes each one past the
 #    Markdown render and swaps in the colored HTML Testbed.lexicalUnitToHtml builds for it.

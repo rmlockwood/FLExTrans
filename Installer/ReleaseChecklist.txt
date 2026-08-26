@@ -26,8 +26,8 @@ Do these things when making a new release (when a beta release is not already se
 -Change TeamCity 
  -Click on Build FLExTrans Installer
  -Click on Settings
- -Under Build Configurations, Build FLExTrans Installer, click Edit
- -Change artifact paths for the new version
+ -Under the General tab
+  -Change artifact paths for the new version
  -Click Save
 -Build and test the install locally
 -Do another commit that has the install changes
@@ -36,10 +36,10 @@ Do these things when making a new release (when a beta release is not already se
 
 Do these things when you are going live with the release
 =========================================================
-x-Make a new .download_info file changing the relevant data. 3 changes.
+-Make a new .download_info file changing the relevant data. 3 changes.
 -Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
-x-Check in last changes
-x-Create the release in Git with the new version string. 
+-Check in last changes
+-Create the release in Git with the new version string. 
  -Go to Code
  -Go to tags, switch to Releases
  -Click draft new release
@@ -49,14 +49,15 @@ x-Create the release in Git with the new version string.
  -Publish
  -Edit release notes.
 -Update the user documentation
- x-Create a subfolder for the old version (e.g. 3.13.1) in the FTP server's resources folder
- \-Move UserDoc.htm to this folder
- \-Move the Images folder to the new subfolder
+ -Create a subfolder for the old version (e.g. 3.13.1) in the FTP server's resources folder
+ -Move UserDoc.htm to this folder
+ -Move the Images folder to the new subfolder
  -Move UserDoc.htm in the beta folder up one level
  -Move the Images folder under beta up one level as well.
+-Delete unneeded previous installs. E.g. If there is 3.15 and 3.15.1 and 3.15.2, just keep 3.15.2
 -Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
 -Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
-\-Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
+-Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
 -Update the instructions on the download and installation web pages as necessary.
 -announce the new release on the FLEx list
 -Send out the FLExTrans newsletter

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.23 - 7/29/26 - Ron Lockwood
 #    Tightened the detected "language" code so example rules/comments in another language no longer sway it: the language description and a new line pinned to the USER REQUEST section
 #    both say to judge the code from the user's request text alone (ignoring project data, examples, existing rules, and macro definitions) and to default to "en" when it's too short.
