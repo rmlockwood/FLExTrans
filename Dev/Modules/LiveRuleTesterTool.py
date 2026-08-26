@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.20 - 8/26/26 - Ron Lockwood
+#    Drop the minimum height for the window. The previous fix makes the smallest panel heights useable.
+#
 #   Version 3.16.19 - 8/26/26 - Ron Lockwood
 #    Let the splitter panels shrink to one line of text - no further (the source tabs were squashed to a few pixels) and no sooner (the rule execution panel wouldn't shrink).
 #
@@ -346,7 +349,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.19",
+        FTM_Version    : "3.16.20",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1127,7 +1130,8 @@ class Main(QMainWindow):
         # Hide the advanced widgets if needed
         self.AdvancedOptionsCheckboxClicked()
 
-        self.setMinimumHeight(500)
+        # No explicit minimum height for the window: the layout's own minimum (the panels at one line of text each, plus the fixed rows above and below) is the limit, so the window can
+        # be resized down far enough for every panel to actually reach that one line.
         self.retVal = True
 
     def oneLineBoxHeight(self, box):
