@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Fixed a crash on mousing over a cluster work-project combo box: QEvent.TypeEnter should be the PyQt6 scoped enum QEvent.Type.Enter.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -777,7 +780,7 @@ class TextInOutRulesWindow(QMainWindow):
     def eventFilter(self, obj, event):
 
         # Show popup when mouse enters key widget
-        if event.type() == QtCore.QEvent.TypeEnter and obj in self.keyWidgetList:
+        if event.type() == QtCore.QEvent.Type.Enter and obj in self.keyWidgetList:
 
             # Always close any existing popup before opening a new one
             if hasattr(self, 'rulesPopup') and self.rulesPopup:
