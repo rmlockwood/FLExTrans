@@ -5,6 +5,15 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17.3 - 8/28/26 - Ron Lockwood
+#    Replaced the one-line description at the top with a code description block: overview, how a rule is applied, the window, cluster projects, objects and code structure.
+#
+#   Version 3.17.2 - 8/28/26 - Ron Lockwood
+#    The rules list and the test input/output boxes sit in a vertical splitter now, so their heights can be dragged; the sizes are remembered between sessions.
+#
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Fixed a crash on mousing over a cluster work-project combo box: QEvent.TypeEnter should be the PyQt6 scoped enum QEvent.Type.Enter.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -85,7 +94,91 @@
 #   Version 3.10.2 - 7/1/24 - Ron Lockwood
 #    Initial version.
 #
-#   Shared functions, classes and constants for text in and out processing.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This library is where the Text In Rules and Text Out Rules modules work is actually done. TextInRules.py and TextOutRules.py are thin wrappers that read the configuration file and then open the window
+#   class below, differing only in which configuration setting names the rules file and in the textIn flag. 
+#   
+#   A rule is a search string paired with a replacement string, optionally treated as a
+#   regular expression, optionally marked inactive, and optionally carrying a comment. Rules are stored in an XML file, one file per work project, named by the Text In Rules File / Text Out Rules
+#   File setting; when that setting is empty the module falls back to Output/fixup_paratext_rules.xml or Output/fixup_synthesis_rules.xml, creating the file if it isn't there.
+#
+#   The two rule sets are applied at opposite ends of the translation pipeline. Text In rules clean up the text coming out of Paratext as it is imported (ImportFromParatext). Text Out rules clean
+#   up the text coming out of synthesis, and several modules run them: ExportToParatext, InsertTargetText, EndTestbed, FixUpSynthText and the Live Rule Tester. Those modules don't open this window;
+#   they call applySearchReplaceRules() or applyTextOutRulesFromConfig() on the rules file the settings point at.
+#
+#   HOW A RULE IS APPLIED
+#
+#   Rules are applied in the order they appear in the file, each one to the output of the one before it, which is why the move up and move down buttons matter. Rules marked inactive are skipped
+#   entirely. Before each rule runs, both the text and the search string are normalized to decomposed Unicode (NFD), because that is how FLEx stores text while the user may well have typed the
+#   composed form into the search box.
+#
+#   A plain rule is a straight string replacement. A rule marked RegEx goes through regex.sub() with a replacement callable built by create_replacer(). That function exists because Python's own
+#   replacement strings only understand backslash 1 through 9, while users write their rules against regex101.com, which follows Perl. So create_replacer() parses the replacement pattern itself and
+#   adds the case modifiers on top: \u and \l for the next character only, \U and \L to force case until \E or the end of the pattern, with \u and \l winning over an enclosing \U or \L for the
+#   one character they apply to. Its docstring has the details and the examples.
+#
+#   When a rule fails - almost always a bad regular expression - the run stops there rather than carrying on. applyRulesToString() returns the text as far as it got plus a message naming the
+#   offending rule by its 1-based number, so the Test button can show the user how much of the input made it through. applySearchReplaceRules(), which is what the other modules call, throws that
+#   partial text away and returns None instead, because those callers test for None to detect failure.
+#
+#   THE WINDOW
+#
+#   The top of the window edits one rule: the search box, the replace box, a comment box, the RegEx and Inactive checkboxes, and Add, Update and Delete. Clicking a rule in the list loads it into
+#   those boxes. Add inserts a new rule at the selected row - so at the top when nothing is selected - Update overwrites the selected rule, and Delete removes it.
+#
+#   The list itself shows each rule as the search string, an arrow and the replace string, followed by (RegEx) if it is a regular expression, a no-entry sign if it is inactive, and the comment
+#   after a dash. Characters that would otherwise be invisible are shown as bracketed aliases - [SP], [TAB], [ZWSP], [RLM] and so on, from replacementsMap - so the user can see what a rule is
+#   really matching on.
+#
+#   Every rule in the list has a checkbox, and it is worth being clear about what those do: they control only which rules the Test button applies. They are not saved anywhere and they have no
+#   effect on what runs during a real translation - that is what the Inactive flag is for. The tri-state checkbox above the list flips them all at once.
+#
+#   Below the list are the test input and test output boxes. Test writes the rules out to XML first, then applies the checked rules to the input text and puts the result in the output box. On a
+#   failure the error box at the bottom names the rule that failed and the output box still shows how far the text got. The rules list and the two test boxes sit in a vertical splitter, so the
+#   user can drag any of the three taller or shorter; those heights are remembered in the settings file.
+#
+#   Edits go straight into the in-memory element tree as they are made. The file is written by writeXMLfile(), which runs when the window closes, when Test is clicked, and whenever the cluster
+#   selection changes. Each rules file is backed up to a .bak copy when it is opened.
+#
+#   CLUSTER PROJECTS
+#
+#   When the Cluster Projects setting lists projects, this window edits all of them at once: every add, update, delete and reorder is applied to the current project's rules file and to the rules
+#   file of each selected cluster project. The current project is always slot 0 - the default project, in the code - and the selected cluster projects follow it. The four parallel lists
+#   xmlTreeList, xmlRootList, xmlParentObjList and filePathList are all indexed that way.
+#
+#   The catch is that the other projects' rules files may hold the same rules in a different order, so a row number from the default project can't be trusted anywhere else. Only slot 0 is addressed
+#   by row. For every other slot findMatch() looks the rule up by search string, replace string and regular expression flag, and if it isn't there the error box says which project and which rule,
+#   and that project is left alone for that one operation.
+#
+#   Each selected cluster project gets a row with a combo box naming which work project folder to use. Hovering over one of those combo boxes pops up a RulesPopup listing that project's rules, so
+#   the user can see what they are about to edit. A combo box still showing ... means no folder has been picked yet, and checkForValidFolders() disables editing until every row names a real one.
+#
+#   OBJECTS
+#
+#   - SearchReplaceRuleData - one rule as plain data: searchStr, replStr, isRegEx, isInactive and comment. getRuleFromElement() builds one from an XML element, initDataObj() builds one from the
+#     edit boxes, and setElementInfo() writes the edit boxes back into an element. buildRuleString() turns one into the line shown in the list.
+#   - RulesPopup - the small borderless window listing another work project's rules on mouse-over. eventFilter() and _maybeClosePopup() open and close it, the latter on a short timer so that
+#     moving the mouse off the combo box and onto the popup itself doesn't dismiss it.
+#   - TextInOutRulesWindow - the QMainWindow. It owns the widgets (Ui_TextInOutMainWindow, generated from Lib/Windows/TextInOut.ui), the QStandardItemModel behind the rules list, and the parallel
+#     per-project XML lists described above.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the constants - the settings file keys, then the XML element and attribute names - then SearchReplaceRuleData and RulesPopup, then the module level functions, then
+#   TextInOutRulesWindow, which is the rest of the file.
+#
+#   The module level functions come in roughly the order the work happens. getRuleFromElement(), buildRuleString() and getPrintableString() turn XML into the strings the user sees. create_replacer()
+#   builds the replacement callable for regular expression rules. applyRulesToString() is the shared core that both the Test button and real runs go through. applySearchReplaceRules() is what other
+#   modules call when they already have the tree parsed, and applyTextOutRulesFromConfig() is the convenience wrapper around it that finds the text out rules file from the configuration, parses it
+#   and reports through the FlexTools report object.
+#
+#   In the window class, __init__ reads the settings JSON, builds the cluster project widgets, wires up the signals, sets up the splitter and loads the rules. initLists() (re)parses every project's
+#   rules file into the parallel lists, and runs again whenever the cluster selection changes. loadRules() fills the list model. From there each button has its own method, and closing the window
+#   writes the XML files and the settings JSON.
+#
+#   A word on Wildebeest: the checkbox, the step and language code controls, the XML elements and runWildebeest() are all still here, but the calls are commented out and the controls hidden,
+#   because the wildebeest package isn't compatible with Python 3.13. Search for Wildebeest to find every place that has to be turned back on when it is.
 #
 
 import unicodedata
@@ -115,6 +208,7 @@ _translate = QCoreApplication.translate
 TEXT_IN_SETTINGS_FILE = 'TextInSettings.json'
 TEXT_OUT_SETTINGS_FILE = 'TextOutSettings.json'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
+SPLITTER_SIZES = 'splitterSizes'
 WORK_PROJECTS = 'workProjects'
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
 SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules' 
@@ -137,6 +231,13 @@ WB_ADD_STEP_ATTRIB = 'AddStep'
 WB_SKIP_STEP_ATTRIB = 'SkipStep'
 
 TEXTOUT_MODULENAME = "Text Out Rules"
+
+# Space a text box needs above and below its text, over and above the frame: the document margin in the text edits, row padding in the list view. Used to work out how tall a box has to
+# be to show one line, which is how far a splitter drag is allowed to shrink it.
+TEXT_BOX_VERTICAL_PADDING = 8
+
+# Relative heights the splitter panels get when there are no saved sizes to restore: the rules list is the box the user works in most, so it starts out the tallest.
+SPLITTER_PANEL_WEIGHTS = [3, 2, 2]
 
 ARROW_CHAR = '⭢'
 
@@ -561,6 +662,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.lastSelectAllState = QtCore.Qt.CheckState.Checked
         self.retVal = True
         self.keyWidgetList = []
+        self.splitterSizes = []
 
         # Wildebeest widgets
         self.WBcontrols = [
@@ -640,6 +742,10 @@ class TextInOutRulesWindow(QMainWindow):
 
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
+        # The splitter panel heights the user left behind last time. Held in an attribute rather than read from the splitter when saving, because writeXMLfile also runs on every cluster
+        # selection change, when the splitter may not have been laid out yet.
+        self.splitterSizes = self.settingsMap.get(SPLITTER_SIZES, [])
+
         # Create all the possible widgets we need for all the cluster projects
         ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_4, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
                                         originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
@@ -709,10 +815,72 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.dummyLabel.setVisible(False)
         self.ui.dummyLabel.setText('')
 
+        # Make the rules list and the two test boxes draggable against each other
+        self.setupSplitter()
+
         # Load the rules
         self.checkForValidFolders()
         self.loadRules()
     
+    def setupSplitter(self):
+
+        # Let the user drag the boundaries between the rules list, the test input box and the test output box. The splitter and its three panels come from the .ui file; what is left to do
+        # here is give each scrolling box a sensible floor to shrink to, put the panels back where the user left them, and arrange to remember them again.
+        self.applyOneLineBoxMinimums()
+
+        # The splitter takes whatever height is left over in the container; the Close button and error message row below it keep their natural height.
+        self.ui.verticalLayout_3.setStretch(0, 1)
+        self.ui.verticalLayout_3.setStretch(1, 0)
+
+        # Stretch factors keep the panels' proportions when the window itself is resized, whether those proportions came from the saved sizes or from the defaults below.
+        for i, weight in enumerate(SPLITTER_PANEL_WEIGHTS):
+
+            self.ui.mainSplitter.setStretchFactor(i, weight)
+
+        # Restore the saved heights, but only when the saved set has exactly one size per panel. A set written under a different arrangement - or a settings file from before the splitter
+        # existed - is ignored rather than misapplied.
+        if len(self.splitterSizes) == self.ui.mainSplitter.count():
+
+            self.ui.mainSplitter.setSizes(self.splitterSizes)
+        else:
+            self.applyDefaultSplitterSizes()
+
+        self.ui.mainSplitter.splitterMoved.connect(self.splitterMoved)
+
+    def applyOneLineBoxMinimums(self):
+
+        # Give each scrolling box in the splitter an explicit minimum height of one line of its text, so a drag can shrink a panel down to a single readable line but no further. Without
+        # this Qt falls back to the box's own minimum size hint - around 70 pixels, since it reserves room for a usable scroll bar - and a drag stops well before the box is really small.
+        # The height is measured from the box rather than hard-coded so that a different UI font still leaves a full line readable.
+        for box in [self.ui.rulesList, self.ui.inputText, self.ui.outputText]:
+
+            metrics = QtGui.QFontMetrics(box.font())
+            box.setMinimumHeight(metrics.lineSpacing() + 2 * box.frameWidth() + TEXT_BOX_VERTICAL_PADDING)
+
+    def applyDefaultSplitterSizes(self):
+
+        # Start the panels off at the proportions in SPLITTER_PANEL_WEIGHTS. The splitter hasn't been shown yet when this runs, so fall back to a nominal height - Qt scales the requested
+        # sizes to whatever height the panels actually end up with, which preserves the proportions either way.
+        available = max(self.ui.mainSplitter.height(), 400)
+        total = sum(SPLITTER_PANEL_WEIGHTS)
+
+        self.ui.mainSplitter.setSizes([int(available * weight / total) for weight in SPLITTER_PANEL_WEIGHTS])
+
+    def splitterMoved(self, pos, index):
+
+        # The user dragged a handle, so remember where they put it. writeXMLfile saves this to the settings file.
+        self.splitterSizes = self.ui.mainSplitter.sizes()
+
+    def resizeEvent(self, event):
+
+        # A window resize redistributes the panels without emitting splitterMoved, so the new heights have to be picked up here too. Only once the window is up though: the layout passes
+        # that happen while it is still being built would otherwise overwrite the heights we just restored with a measurement taken before anything was shown.
+        super().resizeEvent(event)
+
+        if self.isVisible():
+
+            self.splitterSizes = self.ui.mainSplitter.sizes()
+
     def setWorkProjectComboBox(self, comboWidget):
 
         # Fill the combo box
@@ -777,7 +945,7 @@ class TextInOutRulesWindow(QMainWindow):
     def eventFilter(self, obj, event):
 
         # Show popup when mouse enters key widget
-        if event.type() == QtCore.QEvent.TypeEnter and obj in self.keyWidgetList:
+        if event.type() == QtCore.QEvent.Type.Enter and obj in self.keyWidgetList:
 
             # Always close any existing popup before opening a new one
             if hasattr(self, 'rulesPopup') and self.rulesPopup:
@@ -1634,6 +1802,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.settingsMap = {}
         self.settingsMap[WORK_PROJECTS] = [myCombo.currentText() for myCombo in self.keyWidgetList]
         self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
+        self.settingsMap[SPLITTER_SIZES] = self.splitterSizes
 
         try:
             with open(self.settingsPath, 'w', encoding='utf-8') as f:
