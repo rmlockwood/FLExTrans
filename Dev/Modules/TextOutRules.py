@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Replaced the description at the top with a short code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -53,8 +56,15 @@
 #   Version 3.10.2 - 6/29/24 - Ron Lockwood
 #    Initial version.
 #
-#   Define and test a set of search and replace operations to be used to fix up the text that comes out of 
-#   synthesis. Regular expression can be used if desired.
+#   OVERVIEW (AI generated)
+#
+#   This module lets the user define and test the search and replace rules that fix up the text coming out of synthesis. A rule is a search string paired with a replacement string, optionally
+#   treated as a regular expression. The rules are stored in the XML file named by the Text Out Rules File setting, and several modules apply them to synthesized text: ExportToParatext,
+#   InsertTargetText, EndTestbed, FixUpSynthText and the Live Rule Tester.
+#
+#   This file is only the wrapper FlexTools sees. It reads the configuration file, logs the module start for analytics, and opens TextInOutUtils.TextInOutRulesWindow with textIn=False and the
+#   Text Out Rules File setting - the same window Text In Rules uses, with the other setting. The rules format, the search and replace logic, the window itself and cluster project support all live
+#   in Lib/TextInOutUtils.py, and the code description at the top of that file covers them.
 #
 
 from flextoolslib import * # type: ignore
@@ -88,7 +98,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TextOutRules", "Text Out Rules"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help       : "",
