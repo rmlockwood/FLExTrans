@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place. 
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Removed the Rule Assistant folder and exe constants. The Java rule assistant program is no longer installed; the Python port runs in-process.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -62,5 +65,3 @@ TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
 GENERATE_HC_CONFIG = 'GenerateHCConfigForFLExTrans.exe'
 HC_SYNTHESIZE      = 'HCSynthByGloss.exe'
-RULE_ASSISTANT_DIR = 'FLExTransRuleAssistant'
-RULE_ASSISTANT     = 'FLExTransRuleAssistant.exe'

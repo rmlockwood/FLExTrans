@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Get the project grounding data from RuleAssistantPy now that the obsolete RuleAssistant module is gone.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -87,7 +90,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "AI Rule Studio"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Use AI to create, modify, or explain your transfer rules and macros."),
         FTM_Help       : "",
@@ -303,7 +306,7 @@ def MainFunction(DB, report, modify=True):
     # FlexTools session. We hold it open across the dialog because GetRuleAssistantStartData's data may reference the open project.
     try:
 
-        from RuleAssistant import GetRuleAssistantStartData
+        from RuleAssistantPy import GetRuleAssistantStartData
         startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
         includeProjectNames = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES, report, giveError=False) == 'y'
