@@ -17,14 +17,10 @@
       <location filename="../FLExTransMenu.py" line="141"/>
       <source>{name} version {version}
 
-Build {build}, {build_date}
-
-software.sil.org/flextrans</source>
+Build {build}, {build_date}</source>
       <translation>{name} Version {version}
 
-Build {build}, {build_date}
-
-software.sil.org/flextrans</translation>
+Build {build}, {build_date}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="148"/>
