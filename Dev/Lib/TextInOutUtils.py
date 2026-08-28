@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17.2 - 8/28/26 - Ron Lockwood
+#    The rules list and the test input/output boxes sit in a vertical splitter now, so their heights can be dragged; the sizes are remembered between sessions.
+#
 #   Version 3.17.1 - 8/28/26 - Ron Lockwood
 #    Fixed a crash on mousing over a cluster work-project combo box: QEvent.TypeEnter should be the PyQt6 scoped enum QEvent.Type.Enter.
 #
@@ -118,6 +121,7 @@ _translate = QCoreApplication.translate
 TEXT_IN_SETTINGS_FILE = 'TextInSettings.json'
 TEXT_OUT_SETTINGS_FILE = 'TextOutSettings.json'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
+SPLITTER_SIZES = 'splitterSizes'
 WORK_PROJECTS = 'workProjects'
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
 SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules' 
@@ -140,6 +144,13 @@ WB_ADD_STEP_ATTRIB = 'AddStep'
 WB_SKIP_STEP_ATTRIB = 'SkipStep'
 
 TEXTOUT_MODULENAME = "Text Out Rules"
+
+# Space a text box needs above and below its text, over and above the frame: the document margin in the text edits, row padding in the list view. Used to work out how tall a box has to
+# be to show one line, which is how far a splitter drag is allowed to shrink it.
+TEXT_BOX_VERTICAL_PADDING = 8
+
+# Relative heights the splitter panels get when there are no saved sizes to restore: the rules list is the box the user works in most, so it starts out the tallest.
+SPLITTER_PANEL_WEIGHTS = [3, 2, 2]
 
 ARROW_CHAR = '⭢'
 
@@ -564,6 +575,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.lastSelectAllState = QtCore.Qt.CheckState.Checked
         self.retVal = True
         self.keyWidgetList = []
+        self.splitterSizes = []
 
         # Wildebeest widgets
         self.WBcontrols = [
@@ -643,6 +655,10 @@ class TextInOutRulesWindow(QMainWindow):
 
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
+        # The splitter panel heights the user left behind last time. Held in an attribute rather than read from the splitter when saving, because writeXMLfile also runs on every cluster
+        # selection change, when the splitter may not have been laid out yet.
+        self.splitterSizes = self.settingsMap.get(SPLITTER_SIZES, [])
+
         # Create all the possible widgets we need for all the cluster projects
         ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_4, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
                                         originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
@@ -712,10 +728,72 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.dummyLabel.setVisible(False)
         self.ui.dummyLabel.setText('')
 
+        # Make the rules list and the two test boxes draggable against each other
+        self.setupSplitter()
+
         # Load the rules
         self.checkForValidFolders()
         self.loadRules()
     
+    def setupSplitter(self):
+
+        # Let the user drag the boundaries between the rules list, the test input box and the test output box. The splitter and its three panels come from the .ui file; what is left to do
+        # here is give each scrolling box a sensible floor to shrink to, put the panels back where the user left them, and arrange to remember them again.
+        self.applyOneLineBoxMinimums()
+
+        # The splitter takes whatever height is left over in the container; the Close button and error message row below it keep their natural height.
+        self.ui.verticalLayout_3.setStretch(0, 1)
+        self.ui.verticalLayout_3.setStretch(1, 0)
+
+        # Stretch factors keep the panels' proportions when the window itself is resized, whether those proportions came from the saved sizes or from the defaults below.
+        for i, weight in enumerate(SPLITTER_PANEL_WEIGHTS):
+
+            self.ui.mainSplitter.setStretchFactor(i, weight)
+
+        # Restore the saved heights, but only when the saved set has exactly one size per panel. A set written under a different arrangement - or a settings file from before the splitter
+        # existed - is ignored rather than misapplied.
+        if len(self.splitterSizes) == self.ui.mainSplitter.count():
+
+            self.ui.mainSplitter.setSizes(self.splitterSizes)
+        else:
+            self.applyDefaultSplitterSizes()
+
+        self.ui.mainSplitter.splitterMoved.connect(self.splitterMoved)
+
+    def applyOneLineBoxMinimums(self):
+
+        # Give each scrolling box in the splitter an explicit minimum height of one line of its text, so a drag can shrink a panel down to a single readable line but no further. Without
+        # this Qt falls back to the box's own minimum size hint - around 70 pixels, since it reserves room for a usable scroll bar - and a drag stops well before the box is really small.
+        # The height is measured from the box rather than hard-coded so that a different UI font still leaves a full line readable.
+        for box in [self.ui.rulesList, self.ui.inputText, self.ui.outputText]:
+
+            metrics = QtGui.QFontMetrics(box.font())
+            box.setMinimumHeight(metrics.lineSpacing() + 2 * box.frameWidth() + TEXT_BOX_VERTICAL_PADDING)
+
+    def applyDefaultSplitterSizes(self):
+
+        # Start the panels off at the proportions in SPLITTER_PANEL_WEIGHTS. The splitter hasn't been shown yet when this runs, so fall back to a nominal height - Qt scales the requested
+        # sizes to whatever height the panels actually end up with, which preserves the proportions either way.
+        available = max(self.ui.mainSplitter.height(), 400)
+        total = sum(SPLITTER_PANEL_WEIGHTS)
+
+        self.ui.mainSplitter.setSizes([int(available * weight / total) for weight in SPLITTER_PANEL_WEIGHTS])
+
+    def splitterMoved(self, pos, index):
+
+        # The user dragged a handle, so remember where they put it. writeXMLfile saves this to the settings file.
+        self.splitterSizes = self.ui.mainSplitter.sizes()
+
+    def resizeEvent(self, event):
+
+        # A window resize redistributes the panels without emitting splitterMoved, so the new heights have to be picked up here too. Only once the window is up though: the layout passes
+        # that happen while it is still being built would otherwise overwrite the heights we just restored with a measurement taken before anything was shown.
+        super().resizeEvent(event)
+
+        if self.isVisible():
+
+            self.splitterSizes = self.ui.mainSplitter.sizes()
+
     def setWorkProjectComboBox(self, comboWidget):
 
         # Fill the combo box
@@ -1637,6 +1715,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.settingsMap = {}
         self.settingsMap[WORK_PROJECTS] = [myCombo.currentText() for myCombo in self.keyWidgetList]
         self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
+        self.settingsMap[SPLITTER_SIZES] = self.splitterSizes
 
         try:
             with open(self.settingsPath, 'w', encoding='utf-8') as f:
