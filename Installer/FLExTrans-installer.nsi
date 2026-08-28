@@ -261,6 +261,10 @@ Section "MainSection" SEC01
 
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
   Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\FTPaths.py"
+
+  # Delete the obsolete "Rule Assistant Old" module (for old installs). It ran the separate Java rule assistant program, which we no longer install, so the module can't work. The Python
+  # port (RuleAssistantPy.py) replaced it. We have to delete it explicitly because installing unzips over the existing files and never removes ones that are no longer shipped.
+  Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\Modules\FLExTrans\RuleAssistant.py"
   
   # Fix up ini files, both collection ones and flextools.ini in all work project folders
   SetOutPath ${WORKPROJECTSDIR}
@@ -350,9 +354,11 @@ Section "MainSection" SEC01
           DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
         ${EndIf}
 
-        # Migrate the Tools collection off the old "Rule Assistant" module: it was renamed (RuleAssistant.py -> RuleAssistantPy.py) and the new "AI Rule Studio" module (file WorkOnRulesWithAI.py) was added. Detect the
-        # Tools collection by the presence of the old Rule Assistant module rather than the collection's file name, which is localized (e.g. Werkzeuge.ini in German). (/c: makes findstr treat the bracketed string as a literal, not a regex.)
-        nsExec::Exec 'findstr /c:"[FLExTrans\RuleAssistant.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+        # Bring the Tools collection up to date on the rule modules: the old "Rule Assistant" module was renamed (RuleAssistant.py -> RuleAssistantPy.py) and its file is no longer installed, and the new
+        # "AI Rule Studio" module (file WorkOnRulesWithAI.py) was added. Detect the Tools collection by the presence of the Live Rule Tester module rather than the collection's file name, which is localized
+        # (e.g. Werkzeuge.ini in German). The Live Rule Tester is the right marker because it appears only in the Tools collection, so we won't touch the other collections. (/c: makes findstr treat the
+        # bracketed string as a literal, not a regex.)
+        nsExec::Exec 'findstr /c:"[FLExTrans\LiveRuleTesterTool.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
         Pop $R2   # 0 = found, non-zero = not found
 
         ${If} $R2 == 0
