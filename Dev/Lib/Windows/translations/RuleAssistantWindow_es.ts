@@ -17,7 +17,7 @@
     </message>
     <message>
       <source>FLExTrans Rule Assistant</source>
-      <translation>Asistente de Reglas de FLExTrans</translation>
+      <translation>Asistente de reglas de FLExTrans</translation>
     </message>
     <message>
       <source>Help</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
       <source>Overwrite previous rule(s) that have the same name.</source>
-      <translation>Sobrescribir regla(s) anterior(es) que tienen el mismo nombre.</translation>
+      <translation>Sobrescribir las regla anteriores que tienen el mismo nombre.</translation>
     </message>
     <message>
       <source>Overwrite rules(s)</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
       <source>Set split features</source>
-      <translation>Establecer rásgos divididos</translation>
+      <translation>Establecer rasgos divididos</translation>
     </message>
     <message>
       <source>Test in LRT</source>
