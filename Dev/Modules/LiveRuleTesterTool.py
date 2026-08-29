@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.1 - 8/29/26 - Ron Lockwood
+#    Have the Refresh Target Lexicon button do the extracting right away instead of waiting for the next synthesis.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -352,7 +355,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1932,10 +1935,157 @@ class Main(QMainWindow):
                 return True
         return False
 
+    def setUpHermitCrab(self):
+
+        # Get the HermitCrab configuration file path and, the first time through, load the HermitCrab synthesis DLL. Returns the configuration file path or None if something went wrong,
+        # in which case the user has already been told what happened. The caller is responsible for the wait cursor.
+        HCconfigPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, self.__report)
+
+        if not HCconfigPath:
+
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Configuration Error'), _translate('LiveRuleTesterTool', 'HermitCrab settings not found.'))
+            return None
+
+        useHCsynthDll = True
+        if useHCsynthDll and self.HCdllObj is None:
+
+            # Change to the Fieldworks folder for doing the dll operations
+            fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
+
+            if not fieldworksDir:
+                QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Fieldworks directory is not set.'))
+                return None
+
+            try:
+                os.chdir(fieldworksDir)
+
+            except OSError as e:
+                QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format(fieldworksDir=Utils.shortenPathForDisplay(fieldworksDir), e=e))
+                return None
+
+            # Import the clr module from pythonnet
+            import clr
+
+            # Load the DLL
+            try:
+                clr.AddReference('HCSynthByGlossDll') # type: ignore
+                from SIL.HCSynthByGloss import HCSynthByGlossDll # type: ignore
+            except:
+
+                # try loading the old version (HCSynthByGloss2) of the DLL for compatibility with older versions of FLExTrans
+                # Newer versions of FLEx have this dll installed by FLEx (3.8+), but older versions don't and the dll was installed by FLExTrans (3.14.1 or earlier).
+                try:
+                    from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
+
+                except Exception as e:
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
+                    return None
+
+            # Initialize the object with the output file name
+            try:
+                self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
+
+            except Exception as e:
+
+                QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
+                return None
+
+        return HCconfigPath
+
+    def refreshTargetLexicon(self, HCconfigPath, forceRebuild=False):
+
+        # Catalog the target affixes and extract the target lexicon. This is the slow part of synthesizing, so normally we only do it when something needs doing - the first time through or after
+        # the user clicks the Refresh Target Lexicon button. That button passes forceRebuild=True so the lexicon gets rebuilt even when the cached files look up to date. Returns False if a fatal
+        # error happened, in which case the user has already been told what happened. The caller is responsible for the wait cursor.
+        ## CATALOG
+        # Catalog all the target affixes
+        if self.__doCatalog or forceRebuild:
+
+            try:
+                errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+            except:
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Locked DB?'), _translate('LiveRuleTesterTool', 'The project could be locked. Check if sharing is checked for the target project. \
+                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.'))
+                return False
+
+            # check for fatal errors
+            fatal, msg = Utils.checkForFatalError(errorList, None)
+
+            if fatal:
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Catalog Prefix Error'), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
+                return False
+
+            # Check for warnings. This should only be duplicate affix warnings.
+            warn, msgList = Utils.checkForWarning(errorList, None)
+
+            if warn:
+                self.ui.warningTextEdit.setPlainText(msgList)
+
+            self.__doCatalog = False
+
+        ## EXTRACT
+        # Extract the target lexicon
+        if self.__extractIt or forceRebuild:
+
+            # We have two possible extracts, one for STAMP and one for HermitCrab
+            if self.doHermitCrabSynthesisBool:
+
+                # Extract the lexicon, HermitCrab style. (The whole HC configuration file, actually) When the user asked for a refresh, don't settle for the cached configuration file, rebuild it.
+                errorList = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=not forceRebuild, DLLobj=self.HCdllObj)
+
+                # check for fatal errors
+                fatal, msg = Utils.checkForFatalError(errorList, None)
+
+                if fatal:
+                    errorStr = msg
+                    if not self.HCdllObj:
+                        errorStr += _translate('LiveRuleTesterTool', '\nRun the {0} module separately for more details.').format(DoHermitCrabSynthesis.docs[FTM_Name])
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoHermitCrabSynthesis.docs[FTM_Name]), errorStr)
+                    return False
+            else:
+                # Extract the lexicon, STAMP style. This one always rebuilds the dictionary files, it never uses the cached ones.
+                errorList = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
+
+                # check for fatal errors
+                fatal, msg = Utils.checkForFatalError(errorList, None)
+
+                if fatal:
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoStampSynthesis.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, DoStampSynthesis.docs[FTM_Name]))
+                    return False
+
+            self.__extractIt = False
+
+        return True
+
     def RefreshTargetLexiconButtonClicked(self):
+
         self.ui.SynthTextEdit.setPlainText('')
-        self.__extractIt = True
-        self.__doCatalog = True
+        self.ui.warningTextEdit.setPlainText('')
+
+        # Cataloging and extracting take a while, so put up the hourglass. Process the events so the cursor actually gets painted before we start and disable the button so an impatient user
+        # can't kick off a second refresh on top of this one.
+        self.setCursor(QtCore.Qt.CursorShape.WaitCursor)
+        self.ui.refreshTargetLexiconButton.setEnabled(False)
+        QApplication.processEvents()
+
+        try:
+            # HermitCrab synthesis needs the configuration file path and the synthesis DLL before we can extract anything.
+            HCconfigPath = None
+
+            if self.doHermitCrabSynthesisBool:
+
+                HCconfigPath = self.setUpHermitCrab()
+
+                if not HCconfigPath:
+                    return
+
+            # Do the work now instead of setting a flag for the next synthesis to act on. Force the rebuild - the user clicked this button because they want the lexicon rebuilt, not because
+            # a date stamp says it's out of date. The next synthesis then skips these steps and goes faster.
+            self.refreshTargetLexicon(HCconfigPath, forceRebuild=True)
+
+        finally:
+            self.ui.refreshTargetLexiconButton.setEnabled(True)
+            self.unsetCursor()
 
     def SynthesizeButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
@@ -1959,92 +2109,23 @@ class Main(QMainWindow):
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
 
+        HCconfigPath = None
+
         if self.doHermitCrabSynthesisBool:
 
-            HCconfigPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, self.__report)
+            HCconfigPath = self.setUpHermitCrab()
 
             if not HCconfigPath:
 
-                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Configuration Error'), _translate('LiveRuleTesterTool', 'HermitCrab settings not found.'))
-                self.unsetCursor()
-                return
-            
-            useHCsynthDll = True
-            if useHCsynthDll and self.HCdllObj is None:
-
-                # Change to the Fieldworks folder for doing the dll operations
-                fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
-
-                if not fieldworksDir:
-                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Fieldworks directory is not set.'))
-                    self.unsetCursor()
-                    return
-
-                try:
-                    os.chdir(fieldworksDir)
-
-                except OSError as e:
-                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format(fieldworksDir=Utils.shortenPathForDisplay(fieldworksDir), e=e))
-                    self.unsetCursor()
-                    return
-
-                # Import the clr module from pythonnet
-                import clr 
-
-                # Load the DLL 
-                try:
-                    clr.AddReference('HCSynthByGlossDll') # type: ignore
-                    from SIL.HCSynthByGloss import HCSynthByGlossDll # type: ignore
-                except:
-
-                    # try loading the old version (HCSynthByGloss2) of the DLL for compatibility with older versions of FLExTrans
-                    # Newer versions of FLEx have this dll installed by FLEx (3.8+), but older versions don't and the dll was installed by FLExTrans (3.14.1 or earlier).
-                    try:
-                        from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
-
-                    except Exception as e:
-                        QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
-                        self.unsetCursor()
-                        return
-
-                # Initialize the object with the output file name
-                try:
-                    self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
-
-                except Exception as e:
-
-                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
-                    self.unsetCursor()
-                    return
-
-        ## CATALOG
-        # Catalog all the target affixes
-        # We only need to do this once, until the user requests to refresh the lexicon
-        if self.__doCatalog:
-
-            try:
-                errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
-            except:
-                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Locked DB?'), _translate('LiveRuleTesterTool', 'The project could be locked. Check if sharing is checked for the target project. \
-                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.'))
                 self.unsetCursor()
                 return
 
-            # check for fatal errors
-            fatal, msg = Utils.checkForFatalError(errorList, None)
+        ## CATALOG & EXTRACT
+        # Catalog the target affixes and extract the target lexicon. Nothing happens here if the Refresh Target Lexicon button already took care of it.
+        if self.refreshTargetLexicon(HCconfigPath) == False:
 
-            if fatal:
-                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Catalog Prefix Error'), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
-                self.unsetCursor()
-                return
-
-            # Check for warnings. This should only be duplicate affix warnings.
-            warn, msgList = Utils.checkForWarning(errorList, None)
-
-            if warn:
-                self.ui.warningTextEdit.setPlainText(msgList)
-
-            self.__doCatalog = False
+            self.unsetCursor()
+            return
 
         ## CONVERT
         # if the target text has changed, we need to do the affixes and convert the target text to STAMP format
@@ -2062,51 +2143,6 @@ class Main(QMainWindow):
                 return
 
             self.__convertIt = False
-
-        ## EXTRACT
-        # if the refresh lexicon button was pressed or this is the first run, extract the target lexicon
-        if self.__extractIt == True:
-
-            # We have two possible extracts, one for STAMP and one for HermitCrab
-            if self.doHermitCrabSynthesisBool:
-
-                # Extract the lexicon, HermitCrab style. (The whole HC configuration file, actually)
-                errorList = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True, DLLobj=self.HCdllObj)
-
-                # check for fatal errors
-                fatal, msg = Utils.checkForFatalError(errorList, None)
-
-                if fatal:
-                    errorStr = msg
-                    if not self.HCdllObj:
-                        errorStr += _translate('LiveRuleTesterTool', '\nRun the {0} module separately for more details.').format(DoHermitCrabSynthesis.docs[FTM_Name])
-                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoHermitCrabSynthesis.docs[FTM_Name]), errorStr)
-                    self.unsetCursor()
-                    return
-            else:
-                # Redo the catalog of prefixes in case the user changed an affix
-                if self.__doCatalog:
-
-                    errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
-
-                    # check for fatal errors
-                    fatal, msg = Utils.checkForFatalError(errorList, None)
-
-                    if fatal:
-                        QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(CatalogTargetAffixes.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
-                        self.unsetCursor()
-                        return
-
-                # Extract the lexicon, STAMP style
-                errorList = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
-
-                # check for fatal errors
-                fatal, msg = Utils.checkForFatalError(errorList, None)
-
-                if fatal:
-                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoStampSynthesis.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, DoStampSynthesis.docs[FTM_Name]))
-                    self.unsetCursor()
-                    return
 
         ## SYNTHESIZE
         # We have two possible syntheses, one for STAMP and one for HermitCrab
@@ -2168,9 +2204,6 @@ class Main(QMainWindow):
             synthText = 'Synthesis produced no output.'
 
         self.ui.SynthTextEdit.setPlainText(synthText)
-
-        # Set a flag so that we don't extract the dictionary next time
-        self.__extractIt = False
 
         # See if we have synthesis text without @'s. If so, enable the Add to Testbed button
         if len(synthText) > 0 and re.search('@', synthText) == None:
