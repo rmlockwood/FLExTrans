@@ -48,17 +48,17 @@ This is typically called target_text-aper.txt and is usually in the Build folder
       <translation>Das Attribut: &quot;{attribStr}&quot; in &quot;{attrName}&quot; enthält einen Punkt. Es muss ein Unterstrich sein. Ihre Regeln funktionieren möglicherweise nicht wie erwartet.</translation>
     </message>
     <message>
-      <location filename="../RunApertium.py" line="434"/>
+      <location filename="../RunApertium.py" line="435"/>
       <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}</source>
       <translation>Die zweisprachige Wörterbuchdatei existiert nicht. Möglicherweise müssen Sie das Modul {buildLex} ausführen. Die Datei sollte sein: {file}</translation>
     </message>
     <message>
-      <location filename="../RunApertium.py" line="444"/>
+      <location filename="../RunApertium.py" line="445"/>
       <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}</source>
       <translation>Die analysierte Textdatei existiert nicht. Möglicherweise müssen Sie das Modul {extrSource} ausführen. Die Datei sollte sein: {file}</translation>
     </message>
     <message>
-      <location filename="../RunApertium.py" line="459"/>
+      <location filename="../RunApertium.py" line="460"/>
       <source>The transfer rules file does not exist. The file should be at: {file}</source>
       <translation>Die Transferregeldatei existiert nicht. Die Datei sollte sich befinden unter: {file}</translation>
     </message>

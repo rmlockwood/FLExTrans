@@ -162,6 +162,9 @@
                     <property name="text">
                      <string>Rule Name:</string>
                     </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -171,6 +174,9 @@
                    <widget class="QLabel" name="ruleDescLabel">
                     <property name="text">
                      <string>Description:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
                     </property>
                    </widget>
                   </item>

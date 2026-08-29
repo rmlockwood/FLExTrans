@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>9 July 2026</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>24 August 2026</small></center>
       <center><small>Version: 3.16</small></center>
       <hr>
       <div>
@@ -61,8 +61,9 @@
                <ul>
                   <li><a href="#sTesterQuickGuide">4.2.1&nbsp;Quick Guide</a></li>
                   <li><a href="#sLRTChangeSource">4.2.2&nbsp;Change Source Text</a></li>
-                  <li><a href="#sHover">4.2.3&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
-                  <li><a href="#sTesterOther">4.2.4&nbsp;Advanced Parts of the Tool</a></li>
+                  <li><a href="#sAddTestbed">4.2.3&nbsp;Add to Testbed</a></li>
+                  <li><a href="#sHover">4.2.4&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
+                  <li><a href="#sTesterOther">4.2.5&nbsp;Advanced Parts of the Tool</a></li>
                </ul>
                <li><a href="#sViewSrcTgt">4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium Text Tool</span></a></li>
                <li><a href="#sParatext">4.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools</a></li>
@@ -104,7 +105,7 @@
                <li><a href="#sTextIn">4.8&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span></a></li>
                <li><a href="#sTextOut">4.9&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span></a></li>
                <li><a href="#sReplEditTool">4.10&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span></a></li>
-               <li><a href="#sWorkOnRulesAI">4.11&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> Tool</a></li>
+               <li><a href="#sWorkOnRulesAI">4.11&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">AI Rule Studio</span> Tool</a></li>
                <ul>
                   <li><a href="#sAIApiKeys">4.11.1&nbsp;Getting an API key</a></li>
                   <li><a href="#sAIExampleData">4.11.2&nbsp;Giving the AI example language data</a></li>
@@ -224,6 +225,7 @@
                      <li><a href="#sPVBothPhrasal">8.4.6.3&nbsp;The source uses a phrasal verb and the target also uses a phrasal verb (and the components don't match).</a></li>
                   </ul>
                   <li><a href="#sLinkDup">8.4.7&nbsp;I just copied my source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project to become my target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. Is there a way to link all the senses?</a></li>
+                  <li><a href="#sTextInOutCase">8.4.8&nbsp;How do I make a letter upper case or lower case in a Text In or Text Out rule?</a></li>
                </ul>
             </ul>
             <li><a href="#sTroubleshooting">9&nbsp;Troubleshooting</a></li>
@@ -1023,7 +1025,7 @@
             words and, when you do, the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Sentences</span> tab and clicking on the sentence you want.
          </li>
          <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
-            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button.
+            appropriate. Check or uncheck them all with outside check box.
          </li>
          <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored <span style="font-style:italic; ">Target Text</span> area.
          </li>
@@ -1031,21 +1033,24 @@
          </li>
          <li>Now you are ready to synthesize. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button and you will synthesize the target text into target words in the salmon-colored <span style="font-style:italic; ">Synthesized Text</span> area.
          </li>
-         <li>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the <a href="#sTestbed">FLExTrans Testbed</a>. This is essentially a database of expected results for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to see if you are still getting the results you expect.
-         </li>
       </ol>
       <h3 style=""><a name="sLRTChangeSource"></a>4.2.2&nbsp;Change Source Text
       </h3>
-      <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart.
+      <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart. If you have made changes in your source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project&#8212;either to the text you are testing or to its lexicon&#8212;click the <span style="font-style:normal; font-weight:bold; ">Refresh Source Project</span> button to reload the current source text so those changes are picked up.
       </p>
-      <h3 style=""><a name="sHover"></a>4.2.3&nbsp;Hover to See Bilingual Lexicon Entry
+      <h3 style=""><a name="sAddTestbed"></a>4.2.3&nbsp;Add to Testbed
+      </h3>
+      <p>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the <a href="#sTestbed">FLExTrans Testbed</a>. This is essentially a database of expected results for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to see if you are still getting the results you expect. Add a comment to go with your testbed test if desired. This will
+         be visible in the testbed log.
+      </p>
+      <h3 style=""><a name="sHover"></a>4.2.4&nbsp;Hover to See Bilingual Lexicon Entry
       </h3>
       <p>When you are in the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Words</span> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown
          in the image above when you hover over the word &#8216;liebe&#8217;, use see that the bilingual lexicon maps &#8216;lieben&#8217; to &#8216;&auml;lska&#8217;. This
          feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well.
          If you have used &#8220;<a href="#sReplEditTool">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span></a>&#8221;, you may see multiple mappings in the pop-up image.
       </p>
-      <h3 style=""><a name="sTesterOther"></a>4.2.4&nbsp;Advanced Parts of the Tool
+      <h3 style=""><a name="sTesterOther"></a>4.2.5&nbsp;Advanced Parts of the Tool
       </h3>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1076,9 +1081,6 @@
       <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing the bilingual lexicon. The <span style="font-style:normal; font-weight:bold; ">Replacement Dictionary Editor</span> button will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span> module.
       </p>
       <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it so that upon synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> uses the changed target lexicon.
-      </p>
-      <p>There is a check box that says <span style="font-style:normal; font-weight:bold; ">Add multiple words to the testbed word by word</span>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you
-         have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> in one go. Each pair will be its own test.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">Open Rule Assistant</span> button will launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> and the test data shown in it will be from the source text that is currently shown in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
       </p>
@@ -1524,7 +1526,7 @@
       </div>
       <p>Select the item you wish to use. They are as follows:</p>
       <ul>
-         <li><span style="font-weight:bold; ">Duplicate</span>: creates a complete copy of the current word.
+         <li><span style="font-weight:bold; ">Copy</span>: creates a complete copy of the current word.
          </li>
          <li><span style="font-weight:bold; ">Change number</span>: modifies the word's number. If you choose a number of another word, then that other word will be set to the original number
             of the word you are changing.
@@ -1663,7 +1665,7 @@
       </div>
       <p>Select the item you wish to use. They are as follows:</p>
       <ul>
-         <li><span style="font-weight:bold; ">Duplicate</span>: creates a complete copy of the current affix.
+         <li><span style="font-weight:bold; ">Copy</span>: creates a complete copy of the current affix.
          </li>
          <li><span style="font-weight:bold; ">Toggle affix type</span>: changes the type from prefix to suffix or from suffix to prefix.
          </li>
@@ -1786,6 +1788,59 @@
       </p>
       <p>If the search and replace lines are Regular Expressions, check the <span style="font-style:normal; font-weight:bold; ">Regular Expression</span> check box. See the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> help on how to use Regular Expressions or various websites that explain the Regular Expression language.
       </p>
+      <p>Besides the standard Regular Expression features, the replace line understands some extra escape sequences that let you change
+         the case of a letter. These are the same case modifiers that the substitution box on the regex101.com website uses. They only
+         have an effect when the <span style="font-style:normal; font-weight:bold; ">Regular Expression</span> check box is checked. A rule that is not a Regular Expression does a plain literal replacement, so these sequences would
+         end up in the text as-is.
+      </p>
+      <div align="left">
+         <table style="" border="1">
+            <tr style="">
+               <th align="left" valign="top" style="padding-left:.2em; ">In the replace line</th>
+               <th align="left" valign="top" style="padding-left:.2em; ">Meaning</th>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\u\1</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change the first character of what group 1 matched to upper case and insert the rest of the group unchanged. Any group number
+                  from <span style="font-family:Courier New; font-size:100%; ">\1</span> through <span style="font-family:Courier New; font-size:100%; ">\9</span> can be used.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\l\1</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change the first character of what group 1 matched to lower case and insert the rest of the group unchanged.</td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\u</span> followed by a letter
+               </td>
+               <td align="left" valign="top" style="padding-left:.2em">Change that one letter to upper case. The letter is one you typed in the replace line, not something the search line matched.
+                  For example, <span style="font-family:Courier New; font-size:100%; ">\ua</span> inserts <span style="font-family:Courier New; font-size:100%; ">A</span>.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\l</span> followed by a letter
+               </td>
+               <td align="left" valign="top" style="padding-left:.2em">Change that one letter to lower case. For example, <span style="font-family:Courier New; font-size:100%; ">\lA</span> inserts <span style="font-family:Courier New; font-size:100%; ">a</span>.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\U</span> ... <span style="font-family:Courier New; font-size:100%; ">\E</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change everything inserted between the two markers to upper case. This includes group references, so <span style="font-family:Courier New; font-size:100%; ">\U\1\E</span> upper cases the whole of what group 1 matched, and <span style="font-family:Courier New; font-size:100%; ">\Uabc\E</span> inserts <span style="font-family:Courier New; font-size:100%; ">ABC</span>. Leaving off the <span style="font-family:Courier New; font-size:100%; ">\E</span> means the change runs to the end of the replace line.
+               </td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">\L</span> ... <span style="font-family:Courier New; font-size:100%; ">\E</span></td>
+               <td align="left" valign="top" style="padding-left:.2em">Change everything inserted between the two markers to lower case. For example, <span style="font-family:Courier New; font-size:100%; ">\L\1\E</span> lower cases the whole of what group 1 matched and <span style="font-family:Courier New; font-size:100%; ">\LABC\E</span> inserts <span style="font-family:Courier New; font-size:100%; ">abc</span>.
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>For example, a rule with a search line of <span style="font-family:Courier New; font-size:100%; ">([.!?]\s+)(\w)</span> and a replace line of <span style="font-family:Courier New; font-size:100%; ">\1\u\2</span> capitalizes the first letter of each sentence. It turns <span style="font-family:Courier New; font-size:100%; ">this is one. and this is two.</span> into <span style="font-family:Courier New; font-size:100%; ">this is one. And this is two.</span> A search line of <span style="font-family:Courier New; font-size:100%; ">^(\w)</span> with a replace line of <span style="font-family:Courier New; font-size:100%; ">\u\1</span> capitalizes only the very first letter of the text.
+      </p>
+      <p>Note the difference between the lower case and upper case forms of these modifiers. The lower case <span style="font-family:Courier New; font-size:100%; ">\u</span> and <span style="font-family:Courier New; font-size:100%; ">\l</span> change one character only, while the upper case <span style="font-family:Courier New; font-size:100%; ">\U</span> and <span style="font-family:Courier New; font-size:100%; ">\L</span> keep changing everything until an <span style="font-family:Courier New; font-size:100%; ">\E</span> stops them. So <span style="font-family:Courier New; font-size:100%; ">\u\1</span> capitalizes a word while <span style="font-family:Courier New; font-size:100%; ">\U\1\E</span> shouts it.
+      </p>
+      <p>You can combine the two. A one character modifier wins over the surrounding many character one for the character it applies
+         to, which gives you a handy way to fix a word typed in all capitals. A replace line of <span style="font-family:Courier New; font-size:100%; ">\u\L\1\E</span> lower cases everything in group 1 but then puts the first letter back into upper case, so <span style="font-family:Courier New; font-size:100%; ">HELLO</span> becomes <span style="font-family:Courier New; font-size:100%; ">Hello</span>.
+      </p>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Test</span> button to check that your rules are doing what you expect.
       </p>
       <h2 style=""><a name="sTextOut"></a>4.9&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span></h2>
@@ -1826,9 +1881,9 @@
             </tr>
          </table>
       </div>
-      <h2 style=""><a name="sWorkOnRulesAI"></a>4.11&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> Tool
+      <h2 style=""><a name="sWorkOnRulesAI"></a>4.11&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">AI Rule Studio</span> Tool
       </h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">AI Rule Studio</span> tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated
          rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer
          rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.
       </p>
@@ -1840,7 +1895,7 @@
       <h3 style=""><a name="sAIApiKeys"></a>4.11.1&nbsp;Getting an API key
       </h3>
       <p>An API key is a long string of letters and numbers that identifies your personal account to the AI service, a bit like a password.
-         Treat it like one: don&#8217;t share it or put it in files you send to others. Get a key from the provider you chose in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>, then paste it into the box the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> tool shows when it asks for it.
+         Treat it like one: don&#8217;t share it or put it in files you send to others. Get a key from the provider you chose in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>, then paste it into the box the <span style="font-family:Courier New; font-weight:bold; color:navy; ">AI Rule Studio</span> tool shows when it asks for it.
       </p>
       <p>Google Gemini (the default provider): go to <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>, sign in with a Google account, and click Create API key. Copy the key. The gemini-2.5-flash model can be used free of charge
          with daily usage limits; other Gemini models such as gemini-2.5-pro require setting up billing on the account.
@@ -1853,7 +1908,7 @@
       </p>
       <h3 style=""><a name="sAIExampleData"></a>4.11.2&nbsp;Giving the AI example language data
       </h3>
-      <p>You can give the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Work on Rules with AI</span> tool example language data to send along with your request. In some cases this gives the AI valuable context about how the
+      <p>You can give the <span style="font-family:Courier New; font-weight:bold; color:navy; ">AI Rule Studio</span> tool example language data to send along with your request. In some cases this gives the AI valuable context about how the
          source and target languages actually behave, and helps it make or modify a rule better.
       </p>
       <p>The easiest way to bring this data into the module is to copy it straight from a text where the rule would be applicable.
@@ -2337,7 +2392,7 @@
       <h4 style=""><a name="sProc"></a>6.2.3.1&nbsp;Procedures
       </h4>
       <ol style="list-style-type:decimal; ">
-         <li>If the source language grammatical category tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">12</a>]</span></li>
+         <li>If the source language affix tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language affix tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">12</a>]</span></li>
       </ol>
       <h4 style=""><a name="sDecl"></a>6.2.3.2&nbsp;Declarations
       </h4>
@@ -2433,8 +2488,6 @@
       <p>Let&#8217;s see what data stream output we get for the first two words right now. To do this we will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> which is a great tool for applying a single rule to one or more words and checking the result. See section&nbsp;<a href="#sRuleTester">4.2</a>.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Close the <span style="font-weight:bold; ">English-FLExTrans-Sample</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
-         </li>
          <li>Bring up the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app.
          </li>
          <li>Click the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection.
@@ -2861,7 +2914,7 @@
       <ol style="list-style-type:decimal; ">
          <li>Output a skeleton pronoun.<br><br>So, we need to take the person and number information from the verb &#8220;be&#8221;, and the rest we need to just declare to be outputted.
             Let&#8217;s start with outputting the string <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">propers<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom</span></span>; we won&#8217;t worry about the <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">2 sg</span></span> tags yet.<br><br></li>
-         <li>In the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section, insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(85)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string)</span> then click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span>, do an Insert After... and choose <span style="font-style:italic; ">lit-tag(literal_tag)</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element comes after and is <span style="text-decoration:underline; ">indented at the same level</span> as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span>.
+         <li>In the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section, insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(85)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string-tag)</span>.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -2894,7 +2947,7 @@
                </table>
             </div>
          </li>
-         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(87)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_target_language)</span>. Do this twice.
+         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(87)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_target_lang)</span>. Do this twice.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -3960,6 +4013,17 @@
       <p>There is a <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> module called <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Link All Senses As Duplicate</span>. This module is ideal when you duplicate one <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project to be another one. In such a situation all the sense ids are exactly the same so it can be a big head start to link
          all source senses to their matches in the target project. The end result is that you will have a link for every source sense
          to every corresponding target sense. To add this module to your <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app, see Section&nbsp;<a href="#sCollections">3.3</a>.
+      </p>
+      <h3 style=""><a name="sTextInOutCase"></a>8.4.8&nbsp;How do I make a letter upper case or lower case in a Text In or Text Out rule?
+      </h3>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span> and the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span> do search and replace on the text coming into or going out of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. When a rule is marked as a Regular Expression, the replace line understands extra escape sequences that change the case
+         of a letter. That way you do not have to write a separate rule for each letter of the alphabet.
+      </p>
+      <p>Mark the rule as a Regular Expression and then use <span style="font-family:Courier New; font-size:100%; ">\u</span> to make something upper case or <span style="font-family:Courier New; font-size:100%; ">\l</span> to make it lower case. Put the modifier immediately before the thing it applies to. So <span style="font-family:Courier New; font-size:100%; ">\u\1</span> makes the first character of what group 1 matched upper case, while <span style="font-family:Courier New; font-size:100%; ">\U\1\E</span> makes the whole of group 1 upper case. The upper case forms keep going until an <span style="font-family:Courier New; font-size:100%; ">\E</span> stops them.
+      </p>
+      <p>A common need is capitalizing the first letter of every sentence in the translated text. Add a <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text Out Rules Tool</span> rule with a search line of <span style="font-family:Courier New; font-size:100%; ">([.!?]\s+)(\w)</span> and a replace line of <span style="font-family:Courier New; font-size:100%; ">\1\u\2</span>. The punctuation and space are copied through by <span style="font-family:Courier New; font-size:100%; ">\1</span> and the letter that follows them is upper cased by <span style="font-family:Courier New; font-size:100%; ">\u\2</span>. Use the <span style="font-style:normal; font-weight:bold; ">Test</span> button in the tool to check the result before you run the process.
+      </p>
+      <p>For the complete list of case modifiers, see &#8220;<a href="#sTextIn">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Text In Rules Tool</span></a>&#8221;.
       </p>
       <h1 style=""><a name="sTroubleshooting"></a>9&nbsp;Troubleshooting
       </h1>

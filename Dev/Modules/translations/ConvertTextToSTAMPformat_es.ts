@@ -90,9 +90,9 @@ Para HermitCrab, el archivo es el que especificó en la configuración 'Hermit C
 NOTA: Los mensajes y la barra de tareas mostrarán que se está utilizando el proyecto fuente. En realidad, se está utilizando el proyecto de destino.</translation>
     </message>
     <message>
-      <location filename="../ConvertTextToSTAMPformat.py" line="1420"/>
+      <location filename="../ConvertTextToSTAMPformat.py" line="1421"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>El módulo {modname} debe ejecutarse antes de este módulo. El archivo: ...\{filePath} no existe.</translation>
     </message>
   </context>
 </TS>

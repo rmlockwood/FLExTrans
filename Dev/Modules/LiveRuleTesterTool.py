@@ -5,6 +5,50 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.20 - 8/26/26 - Ron Lockwood
+#    Drop the minimum height for the window. The previous fix makes the smallest panel heights useable.
+#
+#   Version 3.16.19 - 8/26/26 - Ron Lockwood
+#    Let the splitter panels shrink to one line of text - no further (the source tabs were squashed to a few pixels) and no sooner (the rule execution panel wouldn't shrink).
+#
+#   Version 3.16.18 - 8/26/26 - Ron Lockwood
+#    Keep the source zoom controls in place when the advanced options checkbox is clicked.
+#
+#   Version 3.16.17 - 8/21/26 - Ron Lockwood
+#    Fixes #1500. Keep keyboard focus on the advanced-options checkbox after changing modes.
+#
+#   Version 3.16.16 - 7/28/26 - Ron Lockwood
+#    Persist the splitter panel sizes in the TOML window-settings file, stored per mode (advanced/standard have different panel counts) and restored on open and across a mode switch.
+#
+#   Version 3.16.15 - 7/28/26 - Ron Lockwood
+#    Wrap the main content areas in a vertical splitter so the user can drag to resize the source, rules, rule-execution, target and synthesis boxes.
+#
+#   Version 3.16.14 - 7/28/26 - Ron Lockwood
+#    Select (highlight) the rule row when its check box or label is clicked, so it's clear which rule the up/down arrow buttons will move. This fixes a problem where no
+#    selection was seen after clicking, but doing a up or down button actually moved the one that had been clicked on. I.e. it was selected but it didn't look like it.
+#
+#   Version 3.16.13 - 7/28/26 - Ron Lockwood
+#    Consolidated duplicated code: an XXE launch helper, table-driven file selection in TransferClicked, a shared rule-move helper, and a hoisted rules-tab tail.
+#
+#   Version 3.16.12 - 7/28/26 - Ron Lockwood
+#    Converted the remaining file open() calls to 'with' blocks and gave the file handles descriptive names.
+#
+#   Version 3.16.11 - 7/28/26 - Ron Lockwood
+#    Renamed snake_case locals in TransferClicked/displayRules to camelCase to satisfy the naming-convention lint.
+#
+#   Version 3.16.10 - 7/28/26 - Ron Lockwood
+#    Removed the ancient .aper fallback and opened the target-results and log files with 'with' blocks.
+#
+#   Version 3.16.9 - 7/28/26 - Ron Lockwood
+#    Store the window settings file in TOML format (via tomllib/tomli_w) for better maintainability.
+#
+#   Version 3.16.8 - 7/28/26 - Ron Lockwood
+#    Close and reopen the source project in MainFunction on restart so the cache is cleared and any source changes will get picked up.
+#    This fixes a longstanding probelm where switching source texts or doing the refresh source lexicon had no effect.
+#
 #   Version 3.16.7 - 7/11/26 - Ron Lockwood
 #    Restore the saved window size when switching between advanced and standard mode instead of clobbering it with programmatic resizes.
 #
@@ -256,6 +300,7 @@ import unicodedata
 import copy
 import xml.etree.ElementTree as ET
 import shutil
+import tomllib
 from datetime import datetime
 from subprocess import call
 
@@ -268,12 +313,12 @@ from flexlibs import FLExProject
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
 from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint, QEvent
-from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QVBoxLayout, QSplitter, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
 
 import Mixpanel
 import InterlinData
 import TextInOutUtils
-from Testbed import *
+from  Testbed import *
 import RunApertium
 import Utils
 import ReadConfig
@@ -307,7 +352,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.7",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -322,10 +367,8 @@ transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.""")}
 
-#app.quit()
-#del app
-
 ZOOM_INCREASE_FACTOR = 1.15
+TEXT_BOX_VERTICAL_PADDING = 8  # Space a text box needs above and below its text, over and above the frame: the document margin in the text edits, row padding in the list views.
 ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
 STANDARD_MODE_DEFAULT_DIMENSIONS = (628, 656)
 SAMPLE_LOGIC = 'Sample logic'
@@ -362,23 +405,25 @@ def firstLower(myStr):
         return myStr
 
 class FlowLayout(QLayout):
+
     def __init__(self, parent=None, margin=1, spacing=3):
+
         super().__init__(parent)
         self.setContentsMargins(margin, margin, margin, margin)
         self.setSpacing(spacing)
-        self.item_list = []
+        self.itemList = []
 
     def addItem(self, item):
-        self.item_list.append(item)
+        self.itemList.append(item)
 
     def count(self):
-        return len(self.item_list)
+        return len(self.itemList)
 
     def itemAt(self, index):
-        return self.item_list[index] if 0 <= index < len(self.item_list) else None
+        return self.itemList[index] if 0 <= index < len(self.itemList) else None
 
     def takeAt(self, index):
-        return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
+        return self.itemList.pop(index) if 0 <= index < len(self.itemList) else None
 
     def expandingDirections(self):
         return QtCore.Qt.Orientation(0)
@@ -387,12 +432,16 @@ class FlowLayout(QLayout):
         return True
 
     def heightForWidth(self, width):
+
         x, y, line_height = 0, 0, 0
-        for item in self.item_list:
+
+        for item in self.itemList:
+
             w = item.widget().sizeHint().width()
             h = item.widget().sizeHint().height()
 
             if x + w > width and x > 0:
+
                 x = 0
                 y += line_height + self.spacing()
                 line_height = 0
@@ -411,26 +460,34 @@ class FlowLayout(QLayout):
         y = 0
         line_height = 0
 
-        for item in self.item_list:
+        for item in self.itemList:
+
             widget = item.widget()
             hint = widget.sizeHint()
 
             if is_rtl:
+
                 next_x = x - hint.width() - self.spacing()
+
                 if next_x < 0:
+
                     x = rect.width()
                     y += line_height + self.spacing()
                     next_x = x - hint.width() - self.spacing()
                     line_height = 0
+
                 item.setGeometry(QtCore.QRect(QtCore.QPoint(next_x, y), hint))
                 x = next_x
             else:
                 next_x = x + hint.width() + self.spacing()
+
                 if next_x > rect.width():
+
                     x = 0
                     y += line_height + self.spacing()
                     next_x = x + hint.width() + self.spacing()
                     line_height = 0
+
                 item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), hint))
                 x = next_x
 
@@ -443,21 +500,25 @@ class FlowLayout(QLayout):
         return QtCore.QSize(20, self.heightForWidth(40))
 
 class FlowContainer(QWidget):
+
     def __init__(self):
+
         super().__init__()
-        self.layout = FlowLayout()
-        self.setLayout(self.layout)
+        self.layout = FlowLayout() # type: ignore
+        self.setLayout(self.layout) # type: ignore
 
     def sizeHint(self):
+
         parent_widget = self.parentWidget()
         width = parent_widget.width() if parent_widget else 40
-        height = self.layout.heightForWidth(width)
+        height = self.layout.heightForWidth(width) # type: ignore
         return QtCore.QSize(width, height)
 
     def minimumSizeHint(self):
+
         parent_widget = self.parentWidget()
         width = parent_widget.width() if parent_widget else 40
-        height = self.layout.heightForWidth(width)
+        height = self.layout.heightForWidth(width) # type: ignore
         return QtCore.QSize(width, height)
     
 # Model class for list of sentences.
@@ -493,11 +554,14 @@ class SentenceList(QtCore.QAbstractListModel):
     def setData(self, index, value, role = QtCore.Qt.ItemDataRole.EditRole):
         return True
     def joinTupParts(self, tupList, i):
+
         ret = ''
 
         for t in tupList:
+
             # don't put a space before sentence punctuation
             if len(t) > i+1 and re.search(SENT_TAG, t[i+1]):
+
                 ret += t[i]
             else:
                 ret += ' ' + t[i]
@@ -509,23 +573,21 @@ CHKBOX_BOX  = 14   # indicator size in pixels
 CHKBOX_PAD  = 4    # left margin before box (delegate only)
 CHKBOX_GAP  = 6    # gap between box and text
 
-
 def paint_checkbox_indicator(painter: QPainter, box_x: int, box_y: int,
                               checked: bool) -> None:
-    """Draw a 14-px checkbox indicator at (box_x, box_y).
-    Blue filled box + white tick when checked; white box + grey border when not.
+    """Draw a 14-px checkbox indicator at (box_x, box_y). Blue filled box + white tick when checked; white box + grey border when not.
     Caller is responsible for save/restore and setting RenderHint.Antialiasing.
     """
     s = CHKBOX_BOX
     box_rect = QRect(box_x, box_y, s, s)
 
     if checked:
+
         painter.setBrush(QBrush(QColor("#0078d4")))
         painter.setPen(QPen(QColor("#0078d4"), 1.5))
         painter.drawRoundedRect(box_rect, 3, 3)
 
-        pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine,
-                   Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+        pen = QPen(QColor("white"), 1.8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
         painter.setPen(pen)
         p1 = QPoint(box_x + int(s * 0.18), box_y + int(s * 0.50))
         p2 = QPoint(box_x + int(s * 0.42), box_y + int(s * 0.72))
@@ -539,15 +601,15 @@ def paint_checkbox_indicator(painter: QPainter, box_x: int, box_y: int,
 
 
 class CheckboxDelegate(QStyledItemDelegate):
-    """Draws a 14-px checkbox with a white tick in a QListView.
-    Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds.
-    """
+    """Draws a 14-px checkbox with a white tick in a QListView. Fixes PyQt6 issue where checked indicator becomes invisible on colored backgrounds."""
 
     def sizeHint(self, option, index):
+
         sh = super().sizeHint(option, index)
         return sh.__class__(sh.width(), max(sh.height(), CHKBOX_BOX + 8))
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+
         painter.save()
 
         from PyQt6.QtWidgets import QStyle
@@ -557,8 +619,11 @@ class CheckboxDelegate(QStyledItemDelegate):
 
         # Background
         if is_selected:
+
             painter.fillRect(rect, option.palette.highlight())
+
         elif is_hover:
+
             painter.fillRect(rect, option.palette.highlight().color().lighter(190))
         else:
             painter.fillRect(rect, option.palette.base())
@@ -573,39 +638,52 @@ class CheckboxDelegate(QStyledItemDelegate):
         # Text
         text_x = box_x + CHKBOX_BOX + CHKBOX_GAP
         text_rect = QRect(text_x, rect.top(), rect.right() - text_x, rect.height())
+
         if is_selected:
+
             painter.setPen(QPen(option.palette.highlightedText().color()))
         else:
             painter.setPen(QPen(option.palette.text().color()))
-        painter.setFont(option.font)
-        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter,
-                         index.data(Qt.ItemDataRole.DisplayRole) or "")
 
+        painter.setFont(option.font)
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter, index.data(Qt.ItemDataRole.DisplayRole) or "")
         painter.restore()
 
     def editorEvent(self, event, model, option, index):
         """Toggle check state on click anywhere in the row."""
+
         if not index.isValid() or not event or not model:
+
             return False
+        
         if event.type() == QEvent.Type.MouseButtonPress:
+
+            # Select the clicked row so it shows the selection highlight. This handler consumes the press to toggle the check box, which suppresses the view's own click-to-select, so we select the row explicitly here. The highlight is critical: it shows which rule the up/down arrow buttons will move.
+            view = self.parent()
+
+            if isinstance(view, QAbstractItemView):
+
+                view.setCurrentIndex(index)
+
             current = index.data(Qt.ItemDataRole.CheckStateRole)
-            new_state = (Qt.CheckState.Unchecked
-                         if current == Qt.CheckState.Checked.value
-                         else Qt.CheckState.Checked)
+            new_state = (Qt.CheckState.Unchecked if current == Qt.CheckState.Checked.value else Qt.CheckState.Checked)
             model.setData(index, new_state, Qt.ItemDataRole.CheckStateRole)
             return True
+        
         if event.type() == QEvent.Type.MouseButtonRelease:
+
             return True  # consume to prevent base class double-toggle
+        
         return super().editorEvent(event, model, option, index)
 
 
 class CustomCheckBox(QCheckBox):
-    """QCheckBox that paints its own indicator — same style as CheckboxDelegate.
-    Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds.
-    """
+    """QCheckBox that paints its own indicator — same style as CheckboxDelegate. Fixes PyQt6 issue where the checked indicator is invisible on colored backgrounds."""
 
     def __init__(self, parent=None):
+
         super().__init__(parent)
+
         # Hide Qt's built-in indicator; we draw our own in paintEvent
         self.setStyleSheet("""
             QCheckBox { spacing: 0px; }
@@ -614,17 +692,19 @@ class CustomCheckBox(QCheckBox):
         """)
 
     def sizeHint(self):
+
         sh = super().sizeHint()
         text_w = self.fontMetrics().horizontalAdvance(self.text())
-        return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4,
-                            max(sh.height(), CHKBOX_BOX + 6))
+        return QtCore.QSize(CHKBOX_BOX + CHKBOX_GAP + text_w + 4, max(sh.height(), CHKBOX_BOX + 6))
 
     def mousePressEvent(self, event):
+
         """Toggle on click anywhere in the widget (box or text label)."""
         self.setChecked(not self.isChecked())
         self.clicked.emit(self.isChecked())
 
     def paintEvent(self, event):
+
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
@@ -642,12 +722,13 @@ class CustomCheckBox(QCheckBox):
 
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
+    def __init__(self, sentence_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
+        
         QMainWindow.__init__(self)
         self.ui = Ui_LRTWindow()
         self.ui.setupUi(self)
 
-        self.__biling_file = biling_file
+        self.__bilingFile = bilingFile
         self.__sourceText = sourceText
         self.__DB = DB
         Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__sourceText, sourceTextList)
@@ -701,6 +782,11 @@ class Main(QMainWindow):
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
         self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
+        # Saved splitter panel heights, kept per mode because the two modes have different panel counts (advanced has 4 panels, standard adds the rule-execution/log panel for 5). Empty
+        # means "no saved sizes yet" - the splitter then falls back to the proportional reset in applySplitterStretch. Loaded from the settings file below and re-saved on close.
+        self.standardModeSplitterSizes = []
+        self.advancedModeSplitterSizes = []
+
         # True while AdvancedOptionsCheckboxClicked is rearranging the layout, so resizeEvent doesn't record the programmatic resizes it causes
         self.switchingModes = False
 
@@ -709,8 +795,6 @@ class Main(QMainWindow):
             self.ui.startRuleAssistant,
             self.ui.viewBilingualLexiconButton,
             self.ui.editReplacementButton,
-            # self.ui.selectAllButton,
-            # self.ui.unselectAllButton,
             self.ui.upButton,
             self.ui.downButton,
             self.ui.editTransferRulesButton,
@@ -760,7 +844,7 @@ class Main(QMainWindow):
         self.ui.refreshTargetLexiconButton.clicked.connect(self.RefreshTargetLexiconButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
-        self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
+        self.ui.editTestbedButton.clicked.connect(self.EditTestbedButtonClicked)
         self.ui.rebuildBilingLexButton.clicked.connect(self.RebuildBilingLexButtonClicked)
         self.ui.viewBilingualLexiconButton.clicked.connect(self.ViewBilingualLexiconButtonClicked)
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
@@ -781,7 +865,6 @@ class Main(QMainWindow):
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
         self.buildFolder = FTPaths.BUILD_DIR
-
         self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
         self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE
         self.transferResultsPath = self.testerFolder + '\\' + TARGET_FILE
@@ -795,11 +878,11 @@ class Main(QMainWindow):
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
 
-        self.content_widget = FlowContainer()
+        self.contentWidget = FlowContainer()
 
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = CustomCheckBox(self.content_widget)
+            myCheck = CustomCheckBox(self.contentWidget)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
 
@@ -809,7 +892,7 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
-        self.ui.scrollArea.setWidget(self.content_widget)
+        self.ui.scrollArea.setWidget(self.contentWidget)
 
         # Make sure we are on right tabs
         ruleTab = 0            # default to transfer rules tab
@@ -822,63 +905,48 @@ class Main(QMainWindow):
         # Clear text boxes and labels
         self.__ClearStuff()
 
-        # Open a settings file to see which tabs were last used.
-        # Put this in a try so that if the number of values in the users file are fewer than expected,
-        # We won't crash and instead just ignore the saved values
+        # Load the saved window settings from a TOML file to see which tabs, checkboxes, fonts, source text and window sizes were last used.
+        # Wrap it all in a try so that a missing, older or malformed file just falls back to the defaults set above instead of crashing.
         try:
-            with open(self.windowsSettingsFile) as f:
+            with open(self.windowsSettingsFile, 'rb') as settingsFile:
 
-                line = f.readline()
+                settings = tomllib.load(settingsFile)
 
-                ruleTab, sourceTab, selectWordsSentNum, savedSourceTextName = line.split('|')
-                ruleTab = int(ruleTab)
-                sourceTab = int(sourceTab)
-                selectWordsSentNum = int(selectWordsSentNum)
-                savedSourceTextName = savedSourceTextName.strip()
+            ruleTab = settings.get('rulesTab', 0)
+            sourceTab = settings.get('sourceTab', 0)
+            selectWordsSentNum = settings.get('lastSentNum', 0)
+            savedSourceTextName = settings.get('sourceText', '')
 
-                # Read the 2nd line which is the state of the rule checkboxes
-                checkBoxStateStr = f.readline().strip()
-                self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
+            # The rule and word checkbox states are each stored as a list of 0/1 integers.
+            self.rulesCheckedList = [int(val) for val in settings.get('rulesChecked', [])]
+            self.wordsCheckedList = [int(val) for val in settings.get('wordsChecked', [])]
 
-                # Read the 3rd line which is the state of the word checkboxes
-                checkBoxStateWordsStr = f.readline().strip()
-                self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
+            # Font sizes are stored as floats, but the code below expects strings (an empty string means "no saved size").
+            sourceFontSizeStr = str(settings['sourceFontSize']) if 'sourceFontSize' in settings else ''
+            targetFontSizeStr = str(settings['targetFontSize']) if 'targetFontSize' in settings else ''
 
-                # Read the 4th line which is the source and target font size
-                fontSizesStr = f.readline().strip()
-                sourceFontSizeStr, targetFontSizeStr = fontSizesStr.split('|')
+            # Restore the Apply Text Out rules, Do not clean up unknown words and Advanced options checkboxes.
+            self.ui.applyTextOutRulesCheckbox.setChecked(settings.get('applyTextOutRules', False))
+            self.ui.DoNotCleanupCheckbox.setChecked(settings.get('doNotCleanup', False))
+            self.ui.advancedOptionsCheckbox.setChecked(settings.get('advancedOptions', False))
 
-                # Read the 5th line which is the checkbox values for Apply Text Out rules and Do not clean up unknown words
-                checkBoxStateStr = f.readline().strip()
+            # Window sizes are stored as [width, height] lists; only override the defaults when a valid pair is present.
+            standardDims = settings.get('standardModeDimensions', [])
 
-                # Assuming checkBoxStateStr contains two characters, each either '1' or '0'
-                if len(checkBoxStateStr) == 2:
+            if len(standardDims) == 2:
 
-                    # Set the checkboxes based on the values in the list
-                    self.ui.applyTextOutRulesCheckbox.setChecked(checkBoxStateStr[0] == '1')
-                    self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
+                self.standardModeDimensions = (int(standardDims[0]), int(standardDims[1]))
 
-                # Read the 6th line which is the state of the advanced options checkbox
-                advancedOptionsStr = f.readline().strip()
+            advancedDims = settings.get('advancedModeDimensions', [])
 
-                if len(advancedOptionsStr) > 0:
+            if len(advancedDims) == 2:
 
-                    self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
+                self.advancedModeDimensions = (int(advancedDims[0]), int(advancedDims[1]))
 
-                # Read the 7th and 8th lines which are the width and height of standard and advanced modes
-                dimensionsStr = f.readline().strip()
-
-                if len(dimensionsStr) > 0:
-
-                    standardWidth, standardHeight = dimensionsStr.split('|')
-                    self.standardModeDimensions = (int(standardWidth), int(standardHeight))
-
-                dimensionsStr = f.readline().strip()
-
-                if len(dimensionsStr) > 0:
-
-                    advancedWidth, advancedHeight = dimensionsStr.split('|')
-                    self.advancedModeDimensions = (int(advancedWidth), int(advancedHeight))
+            # Splitter panel heights are stored per mode as a list of pixel sizes (one per panel). Kept as ints; restoreOrResetSplitter only applies a set whose length matches the panels
+            # actually present in the current mode, so a list from an older/other arrangement is harmlessly ignored.
+            self.standardModeSplitterSizes = [int(size) for size in settings.get('standardModeSplitterSizes', [])]
+            self.advancedModeSplitterSizes = [int(size) for size in settings.get('advancedModeSplitterSizes', [])]
         except:
             pass
 
@@ -901,7 +969,7 @@ class Main(QMainWindow):
             return
 
         # Set the models
-        self.__sent_model = SentenceList(sentence_list)
+        self.__sentModel = SentenceList(sentence_list)
 
         # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
@@ -919,7 +987,7 @@ class Main(QMainWindow):
 
                     self.ui.listSentences.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
                     self.ui.SentCombo.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-                    self.__sent_model.setRTL(True)
+                    self.__sentModel.setRTL(True)
                     found_rtl = True
                     break
 
@@ -943,8 +1011,8 @@ class Main(QMainWindow):
             except:
                 pass
 
-        self.ui.listSentences.setModel(self.__sent_model)
-        self.ui.SentCombo.setModel(self.__sent_model)
+        self.ui.listSentences.setModel(self.__sentModel)
+        self.ui.SentCombo.setModel(self.__sentModel)
         selection_model = self.ui.listSentences.selectionModel()
         assert selection_model is not None
         selection_model.selectionChanged.connect(self.listSentClicked)
@@ -959,7 +1027,7 @@ class Main(QMainWindow):
 
             # Set the index of the combo box and sentence list to what was saved before
             self.ui.SentCombo.setCurrentIndex(int(selectWordsSentNum))
-            qIndex = self.__sent_model.createIndex(int(selectWordsSentNum), 0)
+            qIndex = self.__sentModel.createIndex(int(selectWordsSentNum), 0)
             self.ui.listSentences.setCurrentIndex(qIndex)
 
             # Scroll to the selected item and center it in the viewable area
@@ -978,7 +1046,8 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+            shutil.copy(self.__bilingFile, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+
         except:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
@@ -1025,11 +1094,13 @@ class Main(QMainWindow):
         testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
 
         if not testbedLog:
+
             self.retVal = False
             self.close()
             return
 
         if os.path.exists(testbedLog) == False:
+
             self.ui.viewTestbedLogButton.setEnabled(False)
 
         # See if we are doing HermitCrab synthesis
@@ -1043,7 +1114,6 @@ class Main(QMainWindow):
 
             # Set HermitCrab tracing checkbox to hidden if we are doing STAMP synthesis
             self.ui.traceHermitCrabSynthesisCheckBox.hide()
-
             self.doHermitCrabSynthesisBool = False
 
         self.textOutElemTree = None
@@ -1052,16 +1122,187 @@ class Main(QMainWindow):
         self.interChunkTabText = self.ui.tabRules.tabText(1)
         self.postChunkTabText = self.ui.tabRules.tabText(2)
 
+        # Let each content box shrink to one line of text, which is what bounds how far the splitter panels can be dragged closed. Do this before the splitter is built so the panels
+        # start out with the right minimum heights.
+        self.applyOneLineBoxMinimums()
+
+        # Wrap the main content areas in a vertical splitter so the user can drag to resize them. Must happen before AdvancedOptionsCheckboxClicked, which
+        # rearranges the splitter panels depending on the mode.
+        self.buildResizeSplitter()
+
         # Hide the advanced widgets if needed
         self.AdvancedOptionsCheckboxClicked()
 
-        self.setMinimumHeight(500)
+        # No explicit minimum height for the window: the layout's own minimum (the panels at one line of text each, plus the fixed rows above and below) is the limit, so the window can
+        # be resized down far enough for every panel to actually reach that one line.
         self.retVal = True
+
+    def oneLineBoxHeight(self, box):
+
+        # The height this box needs in order to show one line of its text: the font's line height plus the frame it draws and the padding between frame and text. Measured from the box
+        # rather than hard-coded so that a different UI font, or a zoom step (see setSourceWidgetsFont / setTargetWidgetsFont), still leaves a full line readable.
+        metrics = QtGui.QFontMetrics(box.font())
+
+        return metrics.lineSpacing() + 2 * box.frameWidth() + TEXT_BOX_VERTICAL_PADDING
+
+    def applyOneLineBoxMinimums(self):
+
+        # Give every scrolling box in the splitter panels an explicit minimum height of one line of text, so a splitter drag can shrink a panel down to a single readable line but no
+        # further. This fixes two opposite problems. Qt's own minimum for a scrolling box (its minimumSizeHint) is around 70 pixels - it reserves room for a usable scroll bar - which
+        # kept the rule execution panel from shrinking anywhere near as far as the others. Going the other way, tabSource and tabRules carried a hard 50 pixel minimum from the .ui, and
+        # an explicit minimum replaces the calculated one rather than being combined with it, so the tab contents were squashed to a few pixels regardless of what they needed. Clearing
+        # those two lets the tab widgets derive their minimum from the tab bar plus the boxes on the pages, which now ask for one line each.
+        for box in [self.ui.scrollArea, self.ui.SelectedWordsEdit, self.ui.listSentences, self.ui.SelectedSentencesEdit, self.ui.ManualEdit,
+                    self.ui.listTransferRules, self.ui.listInterChunkRules, self.ui.listPostChunkRules,
+                    self.ui.LogEdit, self.ui.TargetTextEdit, self.ui.SynthTextEdit]:
+
+            box.setMinimumHeight(self.oneLineBoxHeight(box))
+
+        # Drop the .ui's fixed minimum on the two tab widgets so it can't override what their pages now ask for.
+        self.ui.tabSource.setMinimumHeight(0)
+        self.ui.tabRules.setMinimumHeight(0)
+
+    def buildResizeSplitter(self):
+
+        # Create a vertical QSplitter so the user can drag to resize the main content areas. Each content box is grouped with its header row into a panel,
+        # so the draggable handles land between the boxes. In standard mode the panels are Source, Rules, Rule-execution/Log, Target and Synthesis (4 handles);
+        # in advanced mode the log box moves up beside the rules, so the Rule-execution panel drops out and there are 3 handles. The fixed source-selection row
+        # at the top and the button row at the bottom stay outside the splitter. Panel sizes are persisted per mode (see recordCurrentSplitterSizes / restoreOrResetSplitter); a mode with no
+        # saved sizes yet resets to sensible proportions (applySplitterStretch).
+
+        # Small helper that returns a panel container widget with a tight vertical layout to hold a header row plus its content box.
+        def makePanel():
+
+            panel = QWidget()
+            layout = QVBoxLayout(panel)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(2)
+
+            return panel, layout
+
+        self.panelSource, self.panelSourceLayout = makePanel()
+        self.panelRules, self.panelRulesLayout = makePanel()
+        self.panelRuleExec, self.panelRuleExecLayout = makePanel()
+        self.panelTarget, self.panelTargetLayout = makePanel()
+        self.panelSynth, self.panelSynthLayout = makePanel()
+
+        # Pull the content rows out of the main vertical layout so we can regroup them. These references match the .ui's default (advanced) arrangement:
+        # the log box sits beside the rules, so horizontalLayout_4 is the target header and there is no separate rule-execution panel yet.
+        self.ui.verticalLayout.removeWidget(self.ui.tabSource)
+        self.ui.verticalLayout.removeItem(self.ui.horizontalLayout_9)
+        self.ui.verticalLayout.removeItem(self.ui.horizLayoutTransferRules)
+        self.ui.verticalLayout.removeItem(self.ui.horizontalLayout_4)
+        self.ui.verticalLayout.removeWidget(self.ui.TargetTextEdit)
+        self.ui.verticalLayout.removeItem(self.ui.horizontalLayout_3)
+        self.ui.verticalLayout.removeWidget(self.ui.SynthTextEdit)
+
+        # Source panel: just the source tabs (the source-selection combo row stays fixed above the splitter).
+        self.panelSourceLayout.addWidget(self.ui.tabSource)
+
+        # Rules panel: the rule-selection header row and the transfer-rules tabs (in advanced mode the log box joins horizLayoutTransferRules beside the tabs).
+        self.panelRulesLayout.addLayout(self.ui.horizontalLayout_9)
+        self.panelRulesLayout.addLayout(self.ui.horizLayoutTransferRules)
+
+        # Target panel: in the advanced default the action row (horizontalLayout_4) is the target header, followed by the target text box.
+        self.panelTargetLayout.addLayout(self.ui.horizontalLayout_4)
+        self.panelTargetLayout.addWidget(self.ui.TargetTextEdit)
+
+        # Synthesis panel: the synthesized-text header row and the synthesized text box.
+        self.panelSynthLayout.addLayout(self.ui.horizontalLayout_3)
+        self.panelSynthLayout.addWidget(self.ui.SynthTextEdit)
+
+        # The rule-execution/log panel starts empty (it only exists in standard mode); AdvancedOptionsCheckboxClicked fills and inserts it when needed.
+
+        # Build the splitter with the panels visible in the advanced arrangement.
+        self.vSplitter = QSplitter(QtCore.Qt.Orientation.Vertical)
+        self.vSplitter.setChildrenCollapsible(False)  # a drag can shrink a box but not make it vanish entirely
+        self.vSplitter.setHandleWidth(6)
+        self.vSplitter.addWidget(self.panelSource)
+        self.vSplitter.addWidget(self.panelRules)
+        self.vSplitter.addWidget(self.panelTarget)
+        self.vSplitter.addWidget(self.panelSynth)
+
+        # Keep the handles invisible (no groove line); they stay draggable via the handle width set above. The cursor still changes to a resize cursor over them.
+        self.vSplitter.setStyleSheet("QSplitter::handle { background: transparent; }")
+
+        # Record the panel sizes whenever the user drags a handle, so they can be restored next open. (Window resizes redistribute the panels without emitting this signal; resizeEvent
+        # captures those.)
+        self.vSplitter.splitterMoved.connect(self.onSplitterMoved)
+
+        # Insert the splitter into the main layout just below the fixed source-selection row (index 1) and above the fixed button row, and let it take the slack.
+        self.ui.verticalLayout.insertWidget(1, self.vSplitter)
+        self.ui.verticalLayout.setStretch(0, 0)
+        self.ui.verticalLayout.setStretch(1, 1)
+        self.ui.verticalLayout.setStretch(2, 0)
+
+        self.applySplitterStretch()
+
+    def applySplitterStretch(self):
+
+        # Reset the splitter panels to sensible relative heights. Called after building the splitter and after each mode switch, because sizes aren't persisted
+        # and a mode switch changes which panels are present. The weights are rough proportions; the user can drag from there. Stretch factors keep the
+        # proportions when the window itself is resized, and setSizes gives a clean initial split. Keyed by id() so the panels currently in the splitter
+        # (which Qt types as QWidget | None) look up cleanly.
+        weightFor = {id(self.panelSource): 3, id(self.panelRules): 3, id(self.panelRuleExec): 2, id(self.panelTarget): 2, id(self.panelSynth): 2}
+
+        weights = [weightFor.get(id(self.vSplitter.widget(i)), 1) for i in range(self.vSplitter.count())]
+        total = sum(weights) or 1
+        available = max(self.vSplitter.height(), 400)
+
+        for i, weight in enumerate(weights):
+
+            self.vSplitter.setStretchFactor(i, weight)
+
+        self.vSplitter.setSizes([int(available * weight / total) for weight in weights])
+
+    def currentModeSplitterSizes(self):
+
+        # The saved splitter sizes belonging to whichever mode is active now. The two modes are stored separately because their panel counts differ (advanced 4, standard 5).
+        return self.advancedModeSplitterSizes if self.ui.advancedOptionsCheckbox.isChecked() else self.standardModeSplitterSizes
+
+    def recordCurrentSplitterSizes(self):
+
+        # Remember the splitter's current panel heights in the active mode's slot, so a later mode switch or the next open can restore them. Called on a handle drag (onSplitterMoved) and
+        # on a user window resize (resizeEvent).
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            self.advancedModeSplitterSizes = self.vSplitter.sizes()
+        else:
+
+            self.standardModeSplitterSizes = self.vSplitter.sizes()
+
+    def onSplitterMoved(self, pos, index):
+
+        # A handle drag is a user action, so record the new sizes - unless a mode switch is rearranging the panels, whose programmatic changes aren't user intent (the same guard
+        # resizeEvent uses for the window dimensions).
+        if not self.switchingModes:
+
+            self.recordCurrentSplitterSizes()
+
+        # The drag moved the source tab's bottom edge, so re-position the floating source zoom controls on it. This happens in both modes, since only a window resize would
+        # otherwise put them back.
+        self.positionZoomWidgets()
+
+    def restoreOrResetSplitter(self):
+
+        # Restore the saved panel sizes for the current mode, or fall back to the proportional reset when there is no usable saved set. A saved set is used only when it has exactly one
+        # size per panel currently in the splitter, so a set written under a different arrangement (or a settings file from before sizes were persisted) is ignored rather than misapplied.
+        savedSizes = self.currentModeSplitterSizes()
+
+        if len(savedSizes) == self.vSplitter.count():
+
+            self.vSplitter.setSizes(savedSizes)
+        else:
+
+            self.applySplitterStretch()
+
+        # The panel heights just changed, which moves the source tab's bottom edge, so the floating source zoom controls have to be re-positioned to follow it.
+        self.positionZoomWidgets()
 
     def AdvancedOptionsCheckboxClicked(self):
 
         # Suppress dimension saving in resizeEvent while we rearrange the layout. The checkbox is already in the new state at this point, so the resize
-        # events fired by adjustSize() and the layout changes below would otherwise overwrite the new mode's saved dimensions before we restore them.
+        # events fired by the layout changes below would otherwise overwrite the new mode's saved dimensions before we restore them.
         self.switchingModes = True
 
         # Show or hide the advanced widgets and tabs
@@ -1070,30 +1311,30 @@ class Main(QMainWindow):
             for widget in self.advancedWidgetsList:
 
                 widget.show()
-            
-            # Move the log edit edit box beside the rules if needed
+
+            # Move the log edit box up beside the rules if it isn't already there (i.e. we're coming from standard mode). This collapses the separate
+            # rule-execution panel: the action row becomes the target header and the log box shares horizLayoutTransferRules with the transfer-rules tabs.
             if self.ui.horizLayoutTransferRules.count() < 2:
 
-                # Remove LogEdit from its current layout
-                self.ui.verticalLayout.removeWidget(self.ui.LogEdit)
+                # Move LogEdit from the rule-execution panel to the right of the rules list.
+                self.panelRuleExecLayout.removeWidget(self.ui.LogEdit)
+                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit)
 
-                # Add LogEdit to horizLayoutTransferRules at the desired position
-                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
-
-                # Align ruleExecutionLabel to the right.
+                # Align ruleExecutionLabel to the right and move it from the action row to the end of the rule-selection header row.
                 self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignBottom)
-
-                # Move ruleExecutionLabel from horizontalLayout_4 to horizontalLayout_9.
                 self.ui.horizontalLayout_4.removeWidget(self.ui.ruleExecutionLabel)
-
-                # Add it at the end.
                 self.ui.horizontalLayout_9.addWidget(self.ui.ruleExecutionLabel)
 
-                # Remove the targetTextLabel from verticalLayout
-                self.ui.verticalLayout.removeWidget(self.ui.targetTextLabel)
+                # Move the action row (horizontalLayout_4) from the rule-execution panel to the top of the target panel, so it heads the target text box.
+                self.panelRuleExecLayout.removeItem(self.ui.horizontalLayout_4)
+                self.panelTargetLayout.insertLayout(0, self.ui.horizontalLayout_4)
 
-                # Add it to horizontalLayout_4 at the beginning.
+                # Move the "Target Text" label from the target panel into the action row (it shares that row with the Transfer button in advanced mode).
+                self.panelTargetLayout.removeWidget(self.ui.targetTextLabel)
                 self.ui.horizontalLayout_4.insertWidget(0, self.ui.targetTextLabel)
+
+                # The rule-execution panel is now empty, so take it out of the splitter.
+                self.panelRuleExec.setParent(None)
 
             # Add advanced tabs
             self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
@@ -1113,52 +1354,52 @@ class Main(QMainWindow):
             textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
 
             if textOutRulesFile:
-                
+
                 # Check if the file exists.
                 if os.path.exists(textOutRulesFile):
 
                     try:
                         self.textOutElemTree = ET.parse(textOutRulesFile)
-                        self.ui.applyTextOutRulesCheckbox.show() 
+                        self.ui.applyTextOutRulesCheckbox.show()
                     except:
-                        pass 
+                        pass
 
             # Show the Do not clean up... checkbox if the applicable setting is not 'y'
             if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
 
                 self.ui.DoNotCleanupCheckbox.hide()
-        
+
         # Not advanced options, hide the widgets and tabs
         else:
             for widget in self.advancedWidgetsList:
 
                 widget.hide()
 
-            # Move the log edit edit box below the rules if needed
+            # Split the log box out into its own rule-execution panel below the rules if it's still beside them (i.e. we're coming from advanced mode). The
+            # action row moves down to head the log box, the "Target Text" label becomes the target panel's own header again, and the panel rejoins the splitter.
             if self.ui.horizLayoutTransferRules.count() > 1:
 
-                # Remove LogEdit from its current layout
-                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
-
-                # Add LogEdit to verticalLayout at the desired position
-                count = self.ui.verticalLayout.count()
-                insert_position = count - 4  # 4th from the bottom
-                self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
-
-                # Align ruleExecutionLabel to the left.
+                # Align ruleExecutionLabel to the left and move it from the rule-selection header back to the front of the action row.
                 self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignBottom)
-
-                # Move ruleExecutionLabel from horizontalLayout_9 to horizontalLayout_4.
                 self.ui.horizontalLayout_9.removeWidget(self.ui.ruleExecutionLabel)
-
-                # Add it at the beginning.
                 self.ui.horizontalLayout_4.insertWidget(0, self.ui.ruleExecutionLabel)
 
-                # Remove the targetTextLabel from horizontalLayout_4
+                # Take the "Target Text" label out of the action row; it becomes the target panel's own header once the action row moves away.
                 self.ui.horizontalLayout_4.removeWidget(self.ui.targetTextLabel)
 
-                # Add it to the verticalLayout above the LogEdit
-                self.ui.verticalLayout.insertWidget(insert_position+1, self.ui.targetTextLabel)
+                # Move the action row (horizontalLayout_4) from the target panel to the rule-execution panel (it heads the log box in standard mode).
+                self.panelTargetLayout.removeItem(self.ui.horizontalLayout_4)
+                self.panelRuleExecLayout.addLayout(self.ui.horizontalLayout_4)
+
+                # Put the "Target Text" label back as the top of the target panel.
+                self.panelTargetLayout.insertWidget(0, self.ui.targetTextLabel)
+
+                # Move LogEdit from beside the rules down into the rule-execution panel, below the action row.
+                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
+                self.panelRuleExecLayout.addWidget(self.ui.LogEdit)
+
+                # Insert the rule-execution panel into the splitter between the rules panel (index 1) and the target panel.
+                self.vSplitter.insertWidget(2, self.panelRuleExec)
 
             # Remove advanced tabs
             self.ui.tabSource.removeTab(2) # Remove Manual tab
@@ -1168,8 +1409,18 @@ class Main(QMainWindow):
             # Restore the standard mode window size. Do this after removing the tabs so the advanced layout's larger minimum size can't clamp the resize.
             self.restoreModeDimensions(self.standardModeDimensions[0], self.standardModeDimensions[1])
 
+        # Restore this mode's saved panel sizes (or reset to proportions if it has none yet) for the panels now present.
+        self.restoreOrResetSplitter()
+
         # Done rearranging, let resizeEvent record dimensions again
         self.switchingModes = False
+
+        # Re-position the floating source zoom controls once the event loop has applied the new layout. The resize events fired while switching modes above position them against
+        # geometry that is still mid-rearrangement, which left them stranded off the source tab - they looked like they had disappeared until the next window resize put them back.
+        QtCore.QTimer.singleShot(0, self.positionZoomWidgets)
+
+        # Keep arrow keys from changing the source text after the layout switch moves focus to the source text combo box.
+        self.ui.advancedOptionsCheckbox.setFocus()
 
     def restoreModeDimensions(self, width, height):
 
@@ -1212,9 +1463,16 @@ class Main(QMainWindow):
                 # Save the dimensions of the standard mode
                 self.standardModeDimensions = (self.width(), self.height())
 
+            # A window resize redistributes the splitter panels without emitting splitterMoved, so capture the new panel sizes here too (once the splitter exists) to keep the saved set
+            # current for the next mode switch or open.
+            if getattr(self, 'vSplitter', None) is not None:
+
+                self.recordCurrentSplitterSizes()
+
         self.positionZoomWidgets()
 
     def showEvent(self, event):
+
         super().showEvent(event)
         self.positionZoomWidgets()
 
@@ -1226,15 +1484,33 @@ class Main(QMainWindow):
             self.sourceFocusInitialized = True
             QtCore.QTimer.singleShot(0, self.setFocusToActiveSourceTab)
 
+            # Now that the window is at its real size, apply this mode's saved panel sizes (or a clean proportional split if it has none). At build time the splitter had no height, so an
+            # early proportional split was computed against a fallback height; redoing it here, deferred so the final window size is in effect, gives the correct sizes on first paint.
+            QtCore.QTimer.singleShot(0, self.restoreOrResetSplitter)
+
     def positionZoomWidgets(self):
 
-        mainWidth = self.width()
-        tabSourceGeom = self.ui.tabSource.geometry()
-        x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
-        y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
+        # The source zoom buttons float over the bottom-right corner of the source tab area. The source tab now lives inside a QSplitter panel rather than
+        # directly in the window layout, so map its bottom edge into the zoom buttons' own parent coordinate space; otherwise the coordinates would be
+        # relative to the panel and the buttons would be mispositioned.
+        zoomParent = self.ui.ZoomDecreaseSource.parentWidget()
+
+        if zoomParent is None:
+
+            return
+
+        tabBottom = self.ui.tabSource.mapTo(zoomParent, QPoint(0, self.ui.tabSource.height()))
+        x = zoomParent.width() - 8 - self.ui.ZoomDecreaseSource.width()
+        y = tabBottom.y() - self.ui.ZoomDecreaseSource.height()
         self.ui.ZoomDecreaseSource.move(x, y)
         self.ui.ZoomIncreaseSource.move(x-23, y)
         self.ui.ZoomLabel_2.move(x-23-184, y)
+
+        # These are free-floating children of the central widget rather than layout items, so re-assert their stacking order. A mode switch reparents widgets in and out of the
+        # layouts around them, which can otherwise leave them behind a sibling and looking like they vanished.
+        self.ui.ZoomLabel_2.raise_()
+        self.ui.ZoomIncreaseSource.raise_()
+        self.ui.ZoomDecreaseSource.raise_()
         
     def sourceTextComboChanged(self):
 
@@ -1260,7 +1536,7 @@ class Main(QMainWindow):
 
         # Read the XML file
         try:
-            bilingEtree = ET.parse(self.__biling_file)
+            bilingEtree = ET.parse(self.__bilingFile)
 
         except:
 
@@ -1270,17 +1546,18 @@ class Main(QMainWindow):
 
         # try to read the XML file again
         try:
-            bilingEtree = ET.parse(self.__biling_file)
+            bilingEtree = ET.parse(self.__bilingFile)
 
         except IOError:
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Read Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} could not be read.').format(self.__biling_file))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Read Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} could not be read.').format(self.__bilingFile))
             return False
 
         # Get the root node
         bilingRoot = bilingEtree.getroot()
 
         def tagSequence(node):
+
             return [s.attrib['n'] for s in node.iter('s')]
 
         # Loop through all the bilingual entries
@@ -1293,6 +1570,7 @@ class Main(QMainWindow):
 
             # If we can't find it, it must be an <i> (identity), skip it
             if left == None:
+
                 continue
 
             # Get the right part
@@ -1307,40 +1585,33 @@ class Main(QMainWindow):
                 self.__bilingMap[key] = [(left, right)]
             else:
                 if tagSequence(left) == tagSequence(self.__bilingMap[key][0][0]):
-                    # The current entry has the same source language tags
-                    # as the first entry with this lemma in the file,
-                    # so it's a replacement, and we should use the later one.
+
+                    # The current entry has the same source language tags as the first entry with this lemma in the file, so it's a replacement, and we should use the later one.
                     self.__bilingMap[key][0] = (left, right)
                 else:
                     self.__bilingMap[key].append((left, right))
 
         return True
 
-    def ViewBilingualLexiconButtonClicked(self):
+    def launchInXXE(self, filePath, notFoundMsg):
 
-        if os.path.exists(self.__biling_file) == False:
+        # Warn and bail if the file isn't there. The caller supplies its own (already translated) not-found message so each file type keeps its specific wording.
+        if not filePath or not os.path.exists(filePath):
 
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__biling_file))
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), notFoundMsg)
             return
 
-        progFilesFolder = os.environ['ProgramFiles(x86)']
+        # Launch the XMLmind XML Editor (xxe) on the file.
+        xxe = os.path.join(os.environ['ProgramFiles(x86)'], 'XMLmind_XML_Editor', 'bin', 'xxe.exe')
+        call([xxe, filePath])
 
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+    def ViewBilingualLexiconButtonClicked(self):
 
-        call([xxe, self.__biling_file])
+        self.launchInXXE(self.__bilingFile, _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__bilingFile))
 
     def EditTransferRulesButtonClicked(self):
 
-        if not self.__transfer_rules_file or not os.path.exists(self.__transfer_rules_file):
-
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file or ''))
-            return
-
-        progFilesFolder = os.environ['ProgramFiles(x86)']
-
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
-
-        call([xxe, self.__transfer_rules_file])
+        self.launchInXXE(self.__transfer_rules_file, _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file or ''))
 
     def EditReplacementButton(self):
 
@@ -1354,6 +1625,7 @@ class Main(QMainWindow):
         self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
 
         if self.advancedTransfer:
+            
             self.__ruleModel = self.__interChunkModel
             self.__rulesElement = self.__interchunkRulesElement
             self.SelectAllCheckBoxClicked()
@@ -1444,7 +1716,7 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
+            shutil.copy(self.__bilingFile, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
@@ -1473,18 +1745,9 @@ class Main(QMainWindow):
         self.startRuleAssistant = True
         self.close()
 
-    def EditTestbedLogButtonClicked(self):
+    def EditTestbedButtonClicked(self):
 
-        if not self.__testbedPath or not os.path.exists(self.__testbedPath):
-
-            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
-            return
-
-        progFilesFolder = os.environ['ProgramFiles(x86)']
-
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
-
-        call([xxe, self.__testbedPath])
+        self.launchInXXE(self.__testbedPath, _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
 
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
@@ -1566,7 +1829,7 @@ class Main(QMainWindow):
             return
 
         # Set the direction attribute
-        if self.__sent_model.getRTL():
+        if self.__sentModel.getRTL():
             direction = RTL
         else:
             direction = LTR
@@ -1878,8 +2141,9 @@ class Main(QMainWindow):
                 return
 
         # Load the synthesized result into the text box
-        synf = open(self.synthesisFilePath, encoding='utf-8')
-        synthText = synf.read()
+        with open(self.synthesisFilePath, encoding='utf-8') as synthResultFile:
+
+            synthText = synthResultFile.read()
 
         # Apply Text Out Rules if desired
         if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and len(synthText) > 0:
@@ -1905,8 +2169,6 @@ class Main(QMainWindow):
 
         self.ui.SynthTextEdit.setPlainText(synthText)
 
-        synf.close()
-
         # Set a flag so that we don't extract the dictionary next time
         self.__extractIt = False
 
@@ -1922,56 +2184,50 @@ class Main(QMainWindow):
         return
 
     def UpButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() > 0 and self.__rulesElement and self.__ruleModel:
 
-            # get current list item and insert it one above and remove it from its old position
-            elemToMove = self.__rulesElement[self.TRIndex.row()]
-            self.__rulesElement.remove(elemToMove)
-            self.__rulesElement.insert(self.TRIndex.row()-1, elemToMove)
-
-            # copy the selection
-            curr_item = self.__ruleModel.item(self.TRIndex.row())
-            prev_item = self.__ruleModel.item(self.TRIndex.row() - 1)
-
-            # Only perform the swap if both items actually exist
-            if curr_item and prev_item:
-                cur_state = curr_item.checkState()
-                oth_state = prev_item.checkState()
-                
-                curr_item.setCheckState(oth_state)
-                prev_item.setCheckState(cur_state)
-
-            myIndex = self.__ruleModel.index(self.TRIndex.row()-1, self.TRIndex.column())
-            self.ui.listTransferRules.setCurrentIndex(myIndex)
-
-            # redo the display
-            self.rulesListClicked(myIndex)
+        self.moveSelectedRule(-1)
 
     def DownButtonClicked(self):
-        if self.TRIndex and self.__rulesElement and self.__ruleModel and self.TRIndex.row() < len(list(self.__rulesElement))-1:
 
-            # get current list item and insert it one above and remove it from its old position
-            elemToMove = self.__rulesElement[self.TRIndex.row()]
-            self.__rulesElement.remove(elemToMove)
-            self.__rulesElement.insert(self.TRIndex.row()+1, elemToMove)
+        self.moveSelectedRule(1)
 
-            # copy the selection
-            curr_item = self.__ruleModel.item(self.TRIndex.row())
-            next_item = self.__ruleModel.item(self.TRIndex.row()+1)
+    def moveSelectedRule(self, direction):
 
-            # Only perform the swap if both items actually exist
-            if curr_item and next_item:
-                cur_state = curr_item.checkState()
-                oth_state = next_item.checkState()
+        # direction is -1 to move the selected rule up, +1 to move it down. Bail unless there is a selection and the models exist.
+        if not (self.TRIndex and self.__rulesElement and self.__ruleModel):
 
-                curr_item.setCheckState(oth_state)
-                next_item.setCheckState(cur_state)
+            return
 
-            myIndex = self.__ruleModel.index(self.TRIndex.row()+1, self.TRIndex.column())
-            self.ui.listTransferRules.setCurrentIndex(myIndex)
+        row = self.TRIndex.row()
+        targetRow = row + direction
 
-            # redo the display
-            self.rulesListClicked(myIndex)
+        # Bail if the target row would be off either end of the list.
+        if not (0 <= targetRow < len(list(self.__rulesElement))):
+
+            return
+
+        # Get the current list item and move it to the target position.
+        elemToMove = self.__rulesElement[row]
+        self.__rulesElement.remove(elemToMove)
+        self.__rulesElement.insert(targetRow, elemToMove)
+
+        # Swap the check states of the current and target items, but only if both actually exist.
+        currItem = self.__ruleModel.item(row)
+        targetItem = self.__ruleModel.item(targetRow)
+
+        if currItem and targetItem:
+
+            currState = currItem.checkState()
+            targetState = targetItem.checkState()
+
+            currItem.setCheckState(targetState)
+            targetItem.setCheckState(currState)
+
+        myIndex = self.__ruleModel.index(targetRow, self.TRIndex.column())
+        self.ui.listTransferRules.setCurrentIndex(myIndex)
+
+        # redo the display
+        self.rulesListClicked(myIndex)
 
     def SelectAllCheckBoxClicked(self):
         
@@ -2127,7 +2383,7 @@ class Main(QMainWindow):
             self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
 
             # Turn the lexical unit into color-coded html.
-            processLexicalUnit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
+            processLexicalUnit(tokens[j+1]+' ', paragraph_element, self.__sentModel.getRTL(), True) # last parameter: show UNK categories
 
         # Add a space at the end
         self.__lexicalUnits += ' '
@@ -2135,7 +2391,7 @@ class Main(QMainWindow):
     def SourceCheckBoxClicked(self):
         self.ui.TestsAddedLabel.setText('')
 
-        mySent = self.__sent_model.getSent(self.lastSentNum)
+        mySent = self.__sentModel.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
 
         # Create a <p> html element
@@ -2163,7 +2419,7 @@ class Main(QMainWindow):
     def listSentClicked(self):
 
         self.lastSentNum = self.ui.listSentences.currentIndex().row()
-        mySent = self.__sent_model.getSent(self.lastSentNum)
+        mySent = self.__sentModel.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
 
         # Create a <p> html element
@@ -2257,7 +2513,7 @@ class Main(QMainWindow):
             # if no selection (-1), don't set the current index
             if self.lastSentNum != -1:
 
-                qIndex = self.__sent_model.createIndex(self.lastSentNum, 0)
+                qIndex = self.__sentModel.createIndex(self.lastSentNum, 0)
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
@@ -2289,9 +2545,6 @@ class Main(QMainWindow):
 
                 self.ui.ManualEdit.setPlainText(self.__tranferPrevSourceLUs)
 
-                self.rulesListClicked(self.TRIndex)
-                self.__ClearStuff()
-
             elif self.ui.tabRules.currentIndex() == 1: #'tab_interchunk_rules':
                 self.__ruleModel = self.__interChunkModel
                 self.__rulesElement = self.__interchunkRulesElement
@@ -2310,9 +2563,6 @@ class Main(QMainWindow):
                     self.ui.ManualEdit.setPlainText(self.__interchunkPrevSourceLUs)
                     self.__lexicalUnits = self.__interchunkPrevSourceLUs
 
-                self.rulesListClicked(self.TRIndex)
-                self.__ClearStuff()
-
             else: # postchunk
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
@@ -2325,15 +2575,16 @@ class Main(QMainWindow):
                 self.ui.ManualEdit.setPlainText(self.__interchunkLexicalUnitsResult)
                 self.__lexicalUnits = self.__interchunkLexicalUnitsResult
 
-                self.rulesListClicked(self.TRIndex)
-                self.__ClearStuff()
+            # After switching tabs, redo the rule numbering display and clear the result areas.
+            self.rulesListClicked(self.TRIndex)
+            self.__ClearStuff()
 
             self.__prevTab = self.ui.tabRules.currentIndex()
 
     def listSentComboClicked(self):
 
         self.lastSentNum = self.ui.SentCombo.currentIndex()
-        mySent = self.__sent_model.getSent(self.lastSentNum)
+        mySent = self.__sentModel.getSent(self.lastSentNum)
 
         # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
@@ -2341,14 +2592,14 @@ class Main(QMainWindow):
         self.__lexicalUnits = ''
         self.ui.ManualEdit.setPlainText('')
 
-        if self.__sent_model.getRTL():
+        if self.__sentModel.getRTL():
 
             self.ui.scrollArea.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
-        # Remove all widgets from self.content_widget
-        layout = self.content_widget.layout
-        while layout.count():
-            item = layout.takeAt(0)
+        # Remove all widgets from self.contentWidget
+        layout = self.contentWidget.layout
+        while layout.count(): # type: ignore
+            item = layout.takeAt(0) # type: ignore
             widget = item.widget()
             if widget is not None:
                 widget.setParent(None)  # Detach from parent (removes from UI)
@@ -2364,7 +2615,7 @@ class Main(QMainWindow):
             myCheck = self.__checkBoxList[i]
 
             # Add widget to the content widget of the scroll area
-            self.content_widget.layout.addWidget(myCheck)
+            self.contentWidget.layout.addWidget(myCheck) # type: ignore
             myCheck.show()
 
             # Set the text of the check box from the first tuple element. This will be the surface form.
@@ -2418,7 +2669,7 @@ class Main(QMainWindow):
     def formatTextForToolTip(self, srcTrgtPairsList):
 
         tipStr = ''
-        isRtl = self.__sent_model.getRTL()
+        isRtl = self.__sentModel.getRTL()
 
         # Between the source and target we want an arrow, choose left or right arrows depending on the text direction
         if isRtl:
@@ -2453,39 +2704,44 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
 
-        # Save which rules were checked.
+        # Save which rules and which words were checked (this populates self.rulesCheckedList and self.wordsCheckedList).
         self.saveChecked()
-        checkedStateStr = ''.join(map(str, self.rulesCheckedList))
-
-        # Save which words were checked.
         self.saveCheckedWords()
-        checkedWordsState = ''.join(map(str, self.wordsCheckedList))
 
-        # Get the font sizes of source and target widgets
-        myFont = self.ui.SelectedSentencesEdit.font()
-        sourceFontSizeStr = str(myFont.pointSizeF())
-        myFont = self.ui.SynthTextEdit.font()
-        targetFontSizeStr = str(myFont.pointSizeF())
+        # Get the font sizes of the source and target widgets.
+        sourceFontSize = self.ui.SelectedSentencesEdit.font().pointSizeF()
+        targetFontSize = self.ui.SynthTextEdit.font().pointSizeF()
 
-        # Get checkbox values
-        checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
-        checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
-        checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
+        # Capture the splitter's live panel sizes for the mode showing now (drag/resize handlers keep the other mode's set current), so the latest arrangement is the one written out.
+        if getattr(self, 'vSplitter', None) is not None:
 
-        standardDimensionsStr = f'{self.standardModeDimensions[0]}|{self.standardModeDimensions[1]}'
-        advancedDimensionsStr = f'{self.advancedModeDimensions[0]}|{self.advancedModeDimensions[1]}'
-        
-        with open(self.windowsSettingsFile, 'w') as f:
+            self.recordCurrentSplitterSizes()
 
-            # Save current rules tab, current source tab, last sentence # selected and the last source text
-            f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
-            f.write(f'{checkedStateStr}\n')
-            f.write(f'{checkedWordsState}\n')
-            f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
-            f.write(f'{checkboxStr1}{checkboxStr2}\n')
-            f.write(f'{checkboxStr3}\n')
-            f.write(f'{standardDimensionsStr}\n')
-            f.write(f'{advancedDimensionsStr}\n')   
+        # Collect everything worth remembering into a plain dict, then write it out as a self-describing TOML settings file.
+        settings = {
+            'rulesTab': rulesTab,
+            'sourceTab': sourceTab,
+            'lastSentNum': self.lastSentNum,
+            'sourceText': self.__sourceText or '',
+            'rulesChecked': self.rulesCheckedList,
+            'wordsChecked': self.wordsCheckedList,
+            'sourceFontSize': sourceFontSize,
+            'targetFontSize': targetFontSize,
+            'applyTextOutRules': self.ui.applyTextOutRulesCheckbox.isChecked(),
+            'doNotCleanup': self.ui.DoNotCleanupCheckbox.isChecked(),
+            'advancedOptions': self.ui.advancedOptionsCheckbox.isChecked(),
+            'standardModeDimensions': [self.standardModeDimensions[0], self.standardModeDimensions[1]],
+            'advancedModeDimensions': [self.advancedModeDimensions[0], self.advancedModeDimensions[1]],
+            'standardModeSplitterSizes': self.standardModeSplitterSizes,
+            'advancedModeSplitterSizes': self.advancedModeSplitterSizes,
+        }
+
+        # Import tomli_w lazily so this module can still be imported when the package isn't installed (e.g. CI unit tests).
+        import tomli_w
+
+        with open(self.windowsSettingsFile, 'wb') as settingsFile:
+
+            tomli_w.dump(settings, settingsFile)
 
         if self.HCdllObj:
 
@@ -2505,6 +2761,7 @@ class Main(QMainWindow):
 
         # Escape some characters and write as NFD unicode.
         if RunApertium.stripRulesFile(self.__report, self.testerFolder, self.__transfer_rules_file, RULE_FILE1) == True:
+
             return True
         
         test_tree = ET.parse(str(self.__transfer_rules_file))
@@ -2522,8 +2779,15 @@ class Main(QMainWindow):
 
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
-            self.ui.listTransferRules.setItemDelegate(CheckboxDelegate(None))
+            self.ui.listTransferRules.setItemDelegate(CheckboxDelegate(self.ui.listTransferRules))
             self.__transferModel.dataChanged.connect(lambda *_: self.rulesListClicked())
+
+            # Keep TRIndex (the row the up/down arrows act on) in sync with the selected/highlighted row.
+            transferSelectionModel = self.ui.listTransferRules.selectionModel()
+
+            if transferSelectionModel:
+
+                transferSelectionModel.currentChanged.connect(lambda current, previous: self.rulesListClicked(current) if current.isValid() else None)
 
         else:
             QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Rules File'), \
@@ -2537,6 +2801,7 @@ class Main(QMainWindow):
 
             # Escape some characters and write as NFD unicode.
             if RunApertium.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
+
                 return True
 
             interchunk_tree = ET.parse(interchunk_rules_file)
@@ -2544,13 +2809,21 @@ class Main(QMainWindow):
             self.__interchunkRulesElement = interchunk_rt.find('section-rules')
 
             if self.__interchunkRulesElement is not None:
+
                 self.__interChunkRuleFileXMLtree = interchunk_tree
                 self.__interChunkModel = QStandardItemModel()
                 self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
-                self.ui.listInterChunkRules.setItemDelegate(CheckboxDelegate(None))
+                self.ui.listInterChunkRules.setItemDelegate(CheckboxDelegate(self.ui.listInterChunkRules))
                 self.__interChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
+
+                # Keep TRIndex (the row the up/down arrows act on) in sync with the selected/highlighted row.
+                interChunkSelectionModel = self.ui.listInterChunkRules.selectionModel()
+
+                if interChunkSelectionModel:
+
+                    interChunkSelectionModel.currentChanged.connect(lambda current, previous: self.rulesListClicked(current) if current.isValid() else None)
             else:
                 QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Interchunk Rules File'), \
                 _translate('LiveRuleTesterTool', 'The interchunk transfer file has no transfer element or no section-rules element'))
@@ -2570,13 +2843,21 @@ class Main(QMainWindow):
                 self.__postchunkRulesElement = postchunk_rt.find('section-rules')
 
                 if self.__postchunkRulesElement is not None:
+
                     self.__postChunkRuleFileXMLtree = postchunk_tree
                     self.__postChunkModel = QStandardItemModel()
                     self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
-                    self.ui.listPostChunkRules.setItemDelegate(CheckboxDelegate(None))
+                    self.ui.listPostChunkRules.setItemDelegate(CheckboxDelegate(self.ui.listPostChunkRules))
                     self.__postChunkModel.dataChanged.connect(lambda *_: self.rulesListClicked())
+
+                    # Keep TRIndex (the row the up/down arrows act on) in sync with the selected/highlighted row.
+                    postChunkSelectionModel = self.ui.listPostChunkRules.selectionModel()
+
+                    if postChunkSelectionModel:
+
+                        postChunkSelectionModel.currentChanged.connect(lambda current, previous: self.rulesListClicked(current) if current.isValid() else None)
                 else:
                     QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid postchunk Rules File'), \
                     _translate('LiveRuleTesterTool', 'The postchunk transfer file has no transfer element or no section-rules element'))
@@ -2586,17 +2867,21 @@ class Main(QMainWindow):
                 self.advancedTransfer = True
 
         if self.advancedTransfer:
+
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+
                 # Set these global variables to the transfer ones
                 self.__ruleModel = self.__transferModel
                 self.__rulesElement = self.__transferRulesElement
 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+
                 # Set these global variables to the interchunk ones
                 self.__ruleModel = self.__interChunkModel
                 self.__rulesElement = self.__interchunkRulesElement
 
             else: # postchunk
+
                 # Set these global variables to the postchunk ones
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
@@ -2636,11 +2921,14 @@ class Main(QMainWindow):
 
                 # Read state BEFORE setText, which can reset it in some Qt6 builds
                 item = self.__ruleModel.item(i) if self.__ruleModel else None
+
                 if item is None:
                     continue
+
                 itemState = item.checkState()
 
                 if itemState == QtCore.Qt.CheckState.Checked:
+
                     oneBoxChecked = True
                     item.setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
                     item.setCheckState(itemState)  # restore after setText
@@ -2652,9 +2940,12 @@ class Main(QMainWindow):
 
             # Update the select-all checkbox to reflect current state
             if oneBoxChecked and oneBoxUnchecked:
+
                 self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.PartiallyChecked)
                 self.lastSelectAllState = QtCore.Qt.CheckState.PartiallyChecked
+
             elif oneBoxChecked:
+
                 self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.CheckState.Checked)
                 self.lastSelectAllState = QtCore.Qt.CheckState.Checked
             else:
@@ -2664,16 +2955,16 @@ class Main(QMainWindow):
         finally:
             self._rulesListUpdating = False
 
-    def displayRules(self, rules_element, ruleModel):
+    def displayRules(self, rulesElement, ruleModel):
 
-        if rules_element is None:
+        if rulesElement is None:
             return
 
         # Loop through each rule
-        for rule_el in rules_element:
+        for ruleEl in rulesElement:
 
             # Get the comment for the rule
-            comment = rule_el.get('comment')
+            comment = ruleEl.get('comment')
 
             if comment == None:
                 comment = _translate('LiveRuleTesterTool', 'missing comment')
@@ -2710,49 +3001,36 @@ class Main(QMainWindow):
 
         self.__convertIt = True
 
-        if self.advancedTransfer:
-            if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
-                source_file = os.path.join(self.testerFolder, SOURCE_APERT)
-                tr_file = os.path.join(self.testerFolder, RULE_FILE1)
-                tgt_file = os.path.join(self.testerFolder, TARGET_FILE1)
-                log_file = os.path.join(self.testerFolder, LOG_FILE)
+        # Pick the source/rule/target/log file names and the rule-file XML tree for the current mode. In advanced mode each rules tab (transfer/interchunk/postchunk) 
+        # chains off the previous tab's output; in standard mode there is just the transfer set, but its target is the final TARGET_FILE rather than TARGET_FILE1.
+        tabIndex = self.ui.tabRules.currentIndex()
 
-                # Copy the xml structure to a new object
-                myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-                ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
+        if not self.advancedTransfer:
 
-            elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
-                source_file = os.path.join(self.testerFolder, TARGET_FILE1)
-                tr_file = os.path.join(self.testerFolder, RULE_FILE2)
-                tgt_file = os.path.join(self.testerFolder, TARGET_FILE2)
-                log_file = os.path.join(self.testerFolder, LOG_FILE2)
+            sourceName, ruleName, targetName, logName, ruleFileTree = SOURCE_APERT, RULE_FILE1, TARGET_FILE, LOG_FILE, self.__transferRuleFileXMLtree
 
-                # Copy the xml structure to a new object
-                myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
-                ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
+        elif tabIndex == 0: # transfer
 
-            else: # postchunk
-                source_file = os.path.join(self.testerFolder, TARGET_FILE2)
-                tr_file = os.path.join(self.testerFolder, RULE_FILE3)
-                tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
-                log_file = os.path.join(self.testerFolder, LOG_FILE3)
+            sourceName, ruleName, targetName, logName, ruleFileTree = SOURCE_APERT, RULE_FILE1, TARGET_FILE1, LOG_FILE, self.__transferRuleFileXMLtree
 
-                # Copy the xml structure to a new object
-                myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
-                ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
+        elif tabIndex == 1: # interchunk
 
-        else:
-            source_file = os.path.join(self.testerFolder, SOURCE_APERT)
-            tr_file = os.path.join(self.testerFolder, RULE_FILE1)
-            tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
-            log_file = os.path.join(self.testerFolder, LOG_FILE)
+            sourceName, ruleName, targetName, logName, ruleFileTree = TARGET_FILE1, RULE_FILE2, TARGET_FILE2, LOG_FILE2, self.__interChunkRuleFileXMLtree
 
-            # Copy the xml structure to a new object
-            myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-            ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
+        else: # postchunk
 
-        # Save the source text to the tester folder
-        sf = open(source_file, 'w', encoding='utf-8')
+            sourceName, ruleName, targetName, logName, ruleFileTree = TARGET_FILE2, RULE_FILE3, TARGET_FILE, LOG_FILE3, self.__postChunkRuleFileXMLtree
+
+        sourceFile = os.path.join(self.testerFolder, sourceName)
+        trFile = os.path.join(self.testerFolder, ruleName)
+        tgtFile = os.path.join(self.testerFolder, targetName)
+        logFile = os.path.join(self.testerFolder, logName)
+
+        # Copy the xml structure to a new object
+        myTree = copy.deepcopy(ruleFileTree)
+        ruleFileRoot = ruleFileTree.getroot()
+
+        # Get the source text data stream to save to the tester folder
         myStr = self.getActiveLexicalUnits()
 
         if len(myStr) < 1:
@@ -2775,8 +3053,9 @@ class Main(QMainWindow):
                 myStr += f' ^{tok}$'
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
-        sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
-        sf.close()
+        with open(sourceFile, 'w', encoding='utf-8') as sourceStreamFile:
+
+            sourceStreamFile.write(self.escapeDataStreamsLemmas(myStr.strip()))
 
         # Only rewrite the transfer rules file if there was a change
         if self.rulesChanged or self.fixBilingLex:
@@ -2784,35 +3063,38 @@ class Main(QMainWindow):
             # Copy the xml structure to a new object
             myRoot = myTree.getroot()
 
-            sr_element = myRoot.find('section-rules')
-            if sr_element is None:
+            srElement = myRoot.find('section-rules')
+            if srElement is None:
                 return
             
             # Remove the section-rules element
-            myRoot.remove(sr_element)
+            myRoot.remove(srElement)
 
             # Recreate the section-rules element
-            new_sr_element = ET.SubElement(myRoot, 'section-rules')
+            newSrElement = ET.SubElement(myRoot, 'section-rules')
 
-            rules_element = ruleFileRoot.find('section-rules')
-            if rules_element is None:
+            rulesElement = ruleFileRoot.find('section-rules')
+            if rulesElement is None:
                 return
 
             # Loop through all the selected rules
-            for i, rule_el in enumerate(rules_element):
+            for i, ruleEl in enumerate(rulesElement):
 
                 # Add to the xml structure if it is a selected rule
                 item = self.__ruleModel.item(i) if self.__ruleModel else None
+
                 if item is None:
+
                     continue
+
                 if item.checkState() == QtCore.Qt.CheckState.Checked:
-                    new_sr_element.append(rule_el)
+                    newSrElement.append(ruleEl)
 
             # If no rules were selected, create a dummy rule
-            if len(list(new_sr_element)) < 1:
+            if len(list(newSrElement)) < 1:
 
                 # Create a dummy rule that does nothing
-                ruleElement = ET.SubElement(new_sr_element, 'rule')
+                ruleElement = ET.SubElement(newSrElement, 'rule')
                 patternElement = ET.SubElement(ruleElement, 'pattern')
                 patternItemElement = ET.SubElement(patternElement, 'pattern-item')
                 patternItemElement.attrib['n'] = 'c_dummy'
@@ -2822,16 +3104,17 @@ class Main(QMainWindow):
                 sectionDefCatsElement = myRoot.find('section-def-cats')
 
                 if sectionDefCatsElement:
+
                     defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
                     defCatElement.attrib['n'] = 'c_dummy'
                     catItemElement = ET.SubElement(defCatElement, 'cat-item')
                     catItemElement.attrib['tags'] = 'dummy'
 
             # Write out the file
-            myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+            myTree.write(trFile, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
 
             # Convert the file to be decomposed unicode
-            Utils.decompose(tr_file)
+            Utils.decompose(trFile)
 
         if self.fixBilingLex:
 
@@ -2839,7 +3122,7 @@ class Main(QMainWindow):
             subPairs = RunApertium.fixProblemChars(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
 
             # Substitute symbols with problem characters with fixed ones in the transfer file
-            RunApertium.subProbSymbols('.', tr_file, subPairs)
+            RunApertium.subProbSymbols('.', trFile, subPairs)
 
             self.fixBilingLex = False
 
@@ -2854,7 +3137,9 @@ class Main(QMainWindow):
             errorList = RunApertium.checkRuleAttributesXML(ruleFileRoot)
 
             for i, triplet in enumerate(errorList):
+
                 if i == 0:
+
                     self.ui.warningTextEdit.setPlainText(triplet[0])
                 else:
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
@@ -2869,17 +3154,17 @@ class Main(QMainWindow):
             destName = f"{baseName[0]}_created_{stamp}{baseName[1]}"
             shutil.copy2(self.__transfer_rules_file, os.path.join(historyDir, destName))
 
-        # Run the makefile to run Apertium tools to do the transfer
-        # component of FLExTrans. Pass in the folder of the bash
-        # file to run. The current directory is FlexTools
+        # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. Pass in the folder of the bash file to run. The current directory is FlexTools
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
         if ret:
             apertErrStr = _translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:')
 
             try:
-                f = open(os.path.join(self.buildFolder, RunApertium.APERTIUM_ERROR_FILE), encoding='utf-8')
-                lines = f.readlines()
+                with open(os.path.join(self.buildFolder, RunApertium.APERTIUM_ERROR_FILE), encoding='utf-8') as apertErrFile:
+
+                    lines = apertErrFile.readlines()
+
                 apertErrStr = '\n'.join([apertErrStr] + lines)
             except:
                 pass
@@ -2892,34 +3177,19 @@ class Main(QMainWindow):
         if self.rulesChanged:
 
             # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
-            RunApertium.unfixProblemCharsRuleFile(os.path.join(tr_file))
+            RunApertium.unfixProblemCharsRuleFile(os.path.join(trFile))
 
         # Load the target text contents into the results edit box
         try:
-            tgtf = open(tgt_file, encoding='utf-8')
+            with open(tgtFile, encoding='utf-8') as targetResultFile:
 
-        except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
+                targetOutput = targetResultFile.read()
 
-            tgt_file = re.sub(r'\.txt', '.aper', tgt_file)
-            err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=Utils.shortenPathForDisplay(tgt_file))
-
-            try:
-                tgtf = open(tgt_file, encoding='utf-8')
-
-                # Set this for use in Convert2Stamp
-                self.transferResultsPath = self.testerFolder + '\\' + os.path.basename(tgt_file)
-
-            except FileNotFoundError:
-                self.ui.TargetTextEdit.setPlainText(err_msg)
-                self.unsetCursor()
-                return
         except:
-            err_msg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgt_file}.').format(tgt_file=Utils.shortenPathForDisplay(tgt_file))
-            self.ui.TargetTextEdit.setPlainText(err_msg)
+            errMsg = _translate('LiveRuleTesterTool', 'Problem opening file: {tgtFile}.').format(tgtFile=Utils.shortenPathForDisplay(tgtFile))
+            self.ui.TargetTextEdit.setPlainText(errMsg)
             self.unsetCursor()
             return
-
-        targetOutput = tgtf.read()
 
         # Create a <p> html element
         pElem = ET.Element('p')
@@ -2933,13 +3203,10 @@ class Main(QMainWindow):
             processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuationPresent=True)
 
         else:
-            # parse the lexical units. This will give us tokens before, between
-            # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
-            #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
+            # Parse the lexical units. This will give us tokens before, between and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
             tokens = re.split(r'\^|\$', targetOutput)
 
-            # process pairs of tokens (punctuation and lexical unit)
-            # ignore the punctuation (spaces)
+            # Process pairs of tokens (punctuation and lexical unit) ignore the punctuation (spaces)
             for i in range(0, len(tokens)-1, 2):
 
                 # Turn the lexical units into color-coded html.
@@ -2955,34 +3222,37 @@ class Main(QMainWindow):
 
         self.ui.TargetTextEdit.setText(htmlVal)
 
-        tgtf.close()
-
-        # Store the actual data stream in __lexicalUnits for use elsewhere when in advanced mode
-        # Store the html in another member
+        # Store the actual data stream in __lexicalUnits for use elsewhere when in advanced mode. Store the html in another member.
         if self.advancedTransfer:
+
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+
                 self.__transferHtmlResult = htmlVal
                 self.__transferLexicalUnitsResult = targetOutput
                 self.__tranferPrevSourceHtml = self.getActiveSrcTextEditVal()
                 self.__tranferPrevSourceLUs = self.getActiveLexicalUnits()
+
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+
                 self.__interchunkHtmlResult = htmlVal
                 self.__interchunkLexicalUnitsResult = targetOutput
                 self.__interchunkPrevSource = self.getActiveSrcTextEditVal()
                 self.__interchunkPrevSourceLUs = self.getActiveLexicalUnits()
+
             else: # 'tab_postchunk_rules':
+                
                 self.__postchunkPrevSource = self.getActiveSrcTextEditVal()
                 self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
 
         # Load the log file
-        lf = open(log_file, encoding='utf-8')
+        with open(logFile, encoding='utf-8') as logFileHandle:
 
-        # fix up the output of the log file to colorize it and remove unneeded stuff
-        myLines = lf.readlines()
+            myLines = logFileHandle.readlines()
+
+        # Fix up the output of the log file to colorize it and remove unneeded stuff
         newText = self.processLogLines(myLines)
         self.ui.LogEdit.setText(newText)
 
-        lf.close()
         self.rulesChanged = False
         self.unsetCursor()
 
@@ -3032,13 +3302,13 @@ class Main(QMainWindow):
                 paragraphEl = ET.Element('p')
 
                 # Start the span with 'Rule' + #
-                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sent_model.getRTL())
+                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sentModel.getRTL())
 
                 # process all the lexical units
                 for lexUnit in lexUnitList:
 
                     # Mark up the lexical unit with color, etc.
-                    processFunc(lexUnit+' ', paragraphEl, self.__sent_model.getRTL(), True)
+                    processFunc(lexUnit+' ', paragraphEl, self.__sentModel.getRTL(), True)
 
                 # Convert the ET element to an html string
                 coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
@@ -3049,29 +3319,38 @@ class Main(QMainWindow):
         return retStr
 
     def ZoomIncreaseTargetClicked(self):
+
         myFont = self.ui.SynthTextEdit.font()
         self.setTargetWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
 
     def ZoomDecreaseTargetClicked(self):
+
         myFont = self.ui.SynthTextEdit.font()
         self.setTargetWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
 
     def ZoomIncreaseSourceClicked(self):
+
         myFont = self.ui.SelectedSentencesEdit.font()
         self.setSourceWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
 
     def ZoomDecreaseSourceClicked(self):
+
         myFont = self.ui.SelectedSentencesEdit.font()
         self.setSourceWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
 
     def setTargetWidgetsFont(self, fontSize):
+
         myFont = self.ui.SynthTextEdit.font()
         myFont.setPointSizeF(fontSize)
 
         self.ui.SynthTextEdit.setFont(myFont)
         self.ui.TargetTextEdit.setFont(myFont)
 
+        # A line of the new font is a different height, so re-figure how far these boxes are allowed to shrink.
+        self.applyOneLineBoxMinimums()
+
     def setSourceWidgetsFont(self, fontSize):
+
         myFont = self.ui.SelectedSentencesEdit.font()
         myFont.setPointSizeF(fontSize)
 
@@ -3081,8 +3360,7 @@ class Main(QMainWindow):
         self.ui.SentCombo.setFont(myFont)
         self.ui.LogEdit.setFont(myFont)
 
-        # Set the font size of all the check boxes.
-        # This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
+        # Set the font size of all the check boxes. This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
         for check in self.__checkBoxList:
 
             check.setFont(myFont)
@@ -3090,19 +3368,30 @@ class Main(QMainWindow):
         # Set the tooltip size globally
         QToolTip.setFont(myFont)
 
+        # A line of the new font is a different height, so re-figure how far these boxes are allowed to shrink.
+        self.applyOneLineBoxMinimums()
+
 def get_component_count(e):
+
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
+
         if entryRef.RefType == 1: # 1=complex form, 0=variant
+
             return entryRef.ComponentLexemesRS.Count
 
 def get_position_in_component_list(e, complex_e):
+
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in complex_e.EntryRefsOS:
+
         if entryRef.RefType == 1: # 1=complex form, 0=variant
+
             # loop through components
             for i, my_e in enumerate(entryRef.ComponentLexemesRS):
+
                 if e == my_e:
+
                     return i
 
 RESTART_MODULE = 0
@@ -3145,35 +3434,41 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
     else:
         TreeTranSort = True
 
-    # Check if we are using an Insert Words File for TreeTran
-    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
-
-    if not treeTranInsertWordsFile:
-        insertWordsFile = False
-    else:
-        insertWordsFile = True
-
-        insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
-
-        if insertWordsList == None:
-            return ERROR_HAPPENED # error already reported
-
-    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
+
+        # Check if we are using an Insert Words File for TreeTran
+        treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
+
+        if not treeTranInsertWordsFile:
+
+            insertWordsFile = False
+        else:
+            insertWordsFile = True
+
+            insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+
+            if insertWordsList == None:
+
+                return ERROR_HAPPENED # error already reported
+
+        # We need to also find the TreeTran output file, if not don't do a Tree Tran sort. Just open it (and let the with block close it) to confirm it exists and is readable.
         try:
-            f_treeTranResultFile = open(str(treeTranResultFile), encoding='utf-8')
-            f_treeTranResultFile.close()
+            with open(str(treeTranResultFile), encoding='utf-8'):
+
+                pass
+
         except:
             report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=Utils.shortenPathForDisplay(treeTranResultFile)))
             return ERROR_HAPPENED
 
-        # get the list of guids from the TreeTran results file
+        # Get the list of guids from the TreeTran results file
         treeSentList = InterlinData.getTreeSents(treeTranResultFile, report)
 
         if treeSentList == None:
+
             return ERROR_HAPPENED # error already reported
 
-        # get log info. that tells us which sentences have a syntax parse and # words per sent
+        # Get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = InterlinData.importGoodParsesLog()
 
     # Get various bits of data for the get interlinear function
@@ -3181,6 +3476,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
     # Check for an error
     if interlinParams == None:
+
         return
 
     # Get interlinear data. A complex text object is returned.
@@ -3192,6 +3488,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
         # If we are using an Insert Words file, add the words to the text object
         if insertWordsFile == True:
+
             myText.addInsertedWordsList(insertWordsList)
 
         # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
@@ -3208,10 +3505,12 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             # If we have a parse for a sentence, TreeTran may have rearranged the words.
             # We need to put them out in the new TreeTran order.
             if parsed == True:
+
                 myTreeSent = treeSentList[p]
 
                 myFLExSent = myText.getSent(sentNum)
                 if myFLExSent is None:
+
                     report.Error(_translate('LiveRuleTesterTool', 'Sentence {sentNum} from TreeTran not found').format(sentNum=sentNum))
                     return ERROR_HAPPENED
 
@@ -3221,17 +3520,22 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
                 # Loop through each word in the sentence and get the Guids
                 for wrdNum in range(0, myTreeSent.getLength()):
+
                     myGuid = myTreeSent.getNextGuidAndIncrement()
 
                     if not myGuid:
+
                         report.Error(_translate('LiveRuleTesterTool', 'Null Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
 
                     # If we couldn't find the guid, see if there's a reason
                     if myFLExSent.haveGuid(myGuid) == False:
+
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
+
                         if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+
                             report.Warning(_translate('LiveRuleTesterTool', 'Could not find the desired Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     else:
                         surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
@@ -3267,15 +3571,17 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
     else:
         # Normal, non-TreeTran processing
         if myText.haveData() == True:
+
+            # Get pairs of surface forms with word data
             segment_list = myText.getSurfaceAndDataTupleListBySent()
 
-    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText),
-                DB.BuildGotoURL(textObj))
+    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText), DB.BuildGotoURL(textObj))
 
     if len(segment_list) > 0:
 
         # if the bilingual file path is relative, add on the current directory
         if re.search(':', bilingFile):
+
             pass
         else:
             pwd = os.getcwd()
@@ -3285,23 +3591,24 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount, sentPunc=sentPunc)
 
         if window.retVal == False:
+
             report.Error(_translate('LiveRuleTesterTool', 'An error occurred getting things initialized.'))
             return ERROR_HAPPENED
 
         window.show()
+
         if app:
             app.exec()
 
-        # Save needed attributes then explicitly destroy window before Python GC
-        # runs, to prevent QThreadStorage/mutex destruction-ordering crashes
-        restartTester        = window.restartTester
+        # Save the needed attributes then explicitly destroy window before Python garbage clean up runs, to prevent QThreadStorage/mutex destruction-ordering crashes
+        restartTester         = window.restartTester
         startTestbedLogViewer = window.startTestbedLogViewer
-        startRuleAssistant   = window.startRuleAssistant
-        startReplacementEditor = window.startReplacementEditor
+        startRuleAssistant    = window.startRuleAssistant
+        startReplacementEditor= window.startReplacementEditor
         window.deleteLater()
         del window
 
-        # If the user changed the source text combo, the restart member is set to True
+        # If the user changed the source text combo, the restart member is set to True. The actual close/reopen of the project happens in MainFunction, which owns the DB variable that the restart loop reuses (a reassignment here would be local to RunModule and lost).
         if restartTester:
 
             return RESTART_MODULE
@@ -3353,7 +3660,22 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         retVal = RunModule(DB, report, configMap, ruleCount, app)
 
-        if retVal == START_RULE_ASSISTANT:
+        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
+        if retVal == RESTART_MODULE:
+
+            savedDBName = DB.ProjectName()
+            DB.CloseProject()
+            DB = Utils.openProject(report, savedDBName)
+
+            # If the reopen failed, bail out rather than looping with a closed project.
+            if not DB:
+
+                retVal = ERROR_HAPPENED
+                break
+
+            ruleCount = None
+
+        elif retVal == START_RULE_ASSISTANT:
 
             from RuleAssistantPy import MainFunction as RA
             from RuleAssistantPy import docs as RA_docs

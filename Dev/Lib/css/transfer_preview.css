@@ -38,6 +38,41 @@ body {
     padding-left: 12px;
 }
 
+/* Vertical indent guides down the children of the lengthy logic blocks (INDENT_GUIDE_TAGS in TransferPreview tags them with the "guide" class - a set kept separate from the collapsible
+   elements), so the eye can track which rows line up with which block, like a code editor's indent guides. The margin+padding split keeps the total indent at the standard 12px, line 4px in. */
+.el.guide > .children {
+    border-left: 1px solid #c8c8c8;
+    margin-left: 4px;
+    padding-left: 8px;
+}
+
+/* The collapser box in front of a collapsible block's label: the XXE minus-box / plus-box icons (13x13, embedded as data URIs so the document stays self-contained), toggled by a click
+   (see COLLAPSER_SCRIPT in TransferPreview.py). A collapsed block hides its children and shows the plus icon. */
+.collapser {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    margin-right: 4px;
+    vertical-align: -1px;
+    cursor: pointer;
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAACYktHRAD/h4/MvwAAAAl2cEFnAAAACQAAAAkA4x9XiAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMS0wNC0wNFQxNDo0ODoyMCswMjowMEacDQoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMDgtMDQtMjRUMTE6Mzk6MjYrMDI6MDBu43XxAAAANElEQVQoU2NkYGD4D8QkAbAmIIDwiACMjIwMTFA2SWCQa4IHBMiDhABM3WjoQQEZaY+BAQA3whERhcWUSAAAAABJRU5ErkJggg==") no-repeat center;
+}
+
+.el.collapsed > .rowline > .collapser {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAACYktHRAD/h4/MvwAAAAl2cEFnAAAACQAAAAkA4x9XiAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMS0wNC0wNFQxNDo0ODoyMCswMjowMEacDQoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMDgtMDQtMjRUMTE6Mzk6MjYrMDI6MDBu43XxAAAASklEQVQoU2NkYGD4D8QkAbAmIIDwiACMjIwMTFA2BgBJ4gI4NeED9NMEDwh8foABmDqcoQeSxCU+yAMCpyZs/oEBcEBAmMQCBgYAjaEXEbVdVCEAAAAASUVORK5CYII=") ;
+}
+
+.el.collapsed > .children {
+    display: none;
+}
+
+/* The caseless check-box ('case insensitive'), rendered like XXE's: always shown on the comparison elements that support the attribute, checked when caseless="yes". Disabled because it
+   reflects the rule - the preview isn't an editor. */
+.caseless-box {
+    vertical-align: -2px;
+    margin: 0 3px 0 8px;
+}
+
 /* A few leaf items carry extra indentation in the XXE stylesheet, via their own margin-left on top of the parent's .125in padding: pattern-item by .4in, attr-item and list-item by
    .2in. Match those so, e.g., "item:" under "pattern:" sits as far right as it does in XXE (the standard .125in elements like clip under a lexical unit already lined up). */
 .el.pattern-item {
@@ -119,8 +154,9 @@ body {
     margin: 2px 0;
 }
 
-/* Best-effort diff highlighting for the before/after comparison. */
-.changed > .rowline { background: #FFF3B0; }
+/* Best-effort diff highlighting for the before/after comparison. Changed rows are pale orange, not yellow - pale yellow is already the comment-box background above, so a yellow change
+   marker would read as a comment. */
+.changed > .rowline { background: #FFD8A8; }
 .added   > .rowline { background: #CFF5D1; }
 .removed > .rowline { background: #F7CAC9; }
 
@@ -129,6 +165,25 @@ body {
     display: flex;
     gap: 16px;
     align-items: flex-start;
+}
+
+/* Two-pane documents (rule preview, before/after comparison, rule + explanation) get body.split: the body itself never scrolls, each pane scrolls on its own, so the explanation (or the
+   modified rule) stays in view while the user scrolls through a long rule in the other pane. The legend, when present, stays fixed above the panes. */
+body.split {
+    height: calc(100vh - 16px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+body.split .compare {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+}
+
+body.split .pane {
+    overflow-y: auto;
 }
 
 .pane {
@@ -154,8 +209,84 @@ body {
     line-height: 1.5;
 }
 
+.pane.explanation.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
 .pane.explanation p {
     margin: 0 0 9px;
+}
+
+/* The explanation arrives as Markdown, rendered by TransferPreview.markdownToHtml. Keep its headings, lists, and inline code modest so it reads as prose beside the rule. */
+.pane.explanation h1,
+.pane.explanation h2 {
+    font-size: 19px;
+    margin: 10px 0 6px;
+}
+
+.pane.explanation h3,
+.pane.explanation h4 {
+    font-size: 17px;
+    margin: 8px 0 4px;
+}
+
+.pane.explanation ul,
+.pane.explanation ol {
+    margin: 0 0 9px;
+    padding-left: 24px;
+}
+
+.pane.explanation.rtl ul,
+.pane.explanation.rtl ol {
+    padding-left: 0;
+    padding-right: 24px;
+}
+
+.pane.explanation li {
+    margin: 2px 0;
+}
+
+.pane.explanation code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+/* Fenced code blocks (Python-Markdown's fenced_code extension wraps them in <pre><code>). The <pre> carries the box so the inline-code border above doesn't double up inside it. */
+.pane.explanation pre {
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 4px 6px;
+    margin: 0 0 9px;
+    overflow-x: auto;
+}
+
+.pane.explanation pre code {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Tables (Python-Markdown's tables extension). Browsers render them borderless by default, which reads as misaligned text; give them light grid lines and a shaded header row. */
+.pane.explanation table {
+    border-collapse: collapse;
+    margin: 0 0 9px;
+}
+
+.pane.explanation th,
+.pane.explanation td {
+    border: 1px solid #ccc;
+    padding: 2px 8px;
+    text-align: left;
+}
+
+.pane.explanation th {
+    background: #f2f2f2;
 }
 
 .legend {

@@ -969,9 +969,9 @@ mots qui peuvent être insérés avec une règle TreeTran.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2011"/>
-      <source>The AI service the Work on Rules with AI module sends requests to.
+      <source>The AI service the AI Rule Studio module sends requests to.
 You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
-      <translation>Le service d'IA auquel le module 'Travailler sur les règles avec l'IA' envoie les requêtes.
+      <translation>Le service d'IA auquel le module 'Studio de règles IA' envoie les requêtes.
 Vous avez besoin de votre propre clé API pour le fournisseur choisi ; le module la demande la première fois que vous l'exécutez.</translation>
     </message>
     <message>
@@ -1005,9 +1005,9 @@ Choisissez Non si les noms des projets sont eux-mêmes des informations sensible
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2020"/>
-      <source>If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to
+      <source>If Yes, everything the AI Rule Studio module sends to and receives from the AI provider is appended to
 AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
-      <translation>Si Oui, tout ce que le module 'Travailler sur les règles avec l'IA' envoie au fournisseur d'IA et en reçoit est ajouté à
+      <translation>Si Oui, tout ce que le module 'Studio de règles IA' envoie au fournisseur d'IA et en reçoit est ajouté à
 AIRulesPromptLog.txt dans le dossier Build du projet. Laissez Non sauf en cas de dépannage.</translation>
     </message>
     <message>
@@ -1039,9 +1039,9 @@ Choisissez d'abord le Fournisseur d'IA, puis choisissez l'un des modèles propos
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2073"/>
-      <source>Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
+      <source>Whether the AI Rule Studio module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
 The module also asks this the first time you run it; you can review or change your answer here.</source>
-      <translation>Indique si le module « Travailler sur les règles avec l'IA » peut envoyer votre description de la règle et les catégories grammaticales, les traits et les affixes du projet au fournisseur d'IA.
+      <translation>Indique si le module « Studio de règles IA » peut envoyer votre description de la règle et les catégories grammaticales, les traits et les affixes du projet au fournisseur d'IA.
 Le module pose aussi cette question la première fois que vous l'exécutez ; vous pouvez revoir ou modifier votre réponse ici.</translation>
     </message>
     <message>

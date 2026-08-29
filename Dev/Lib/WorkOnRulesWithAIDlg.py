@@ -5,6 +5,41 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.27 - 8/21/26 - Ron Lockwood
+#    Starting a new rule now offers to save an unapproved rule preview first.
+#
+#   Version 3.16.26 - 7/28/26 - Ron Lockwood
+#    The Modify/Explain tab's Rules and Macros lists now get a minimum height sized to show at least three rows (the collapsed tab area had left room for only two); ensureListsShowThreeRows
+#    sets it in showEvent, just before the tab area is collapsed to its minimum-size hint. Lexical units in an AI explanation are now color-coded (via TransferPreview / Testbed) like the viewer.
+#
+#   Version 3.16.25 - 7/27/26 - Ron Lockwood
+#    Fixes #1470. A rule that fails validation no longer confronts the user with the raw parser text (e.g. expat's baffling "mismatched tag: line N, column M"): the dialog now leads with a
+#    plain-language summary of what went wrong plus a "rephrase as one clear sentence and try again" nudge, and tucks the raw parser/compiler errors behind the message box's "Show Details" button.
+#
+#   Version 3.16.24 - 7/27/26 - Ron Lockwood
+#    Closing the window now offers to approve and write an unapproved create/modify draft first (the same offer a tab switch or rule click makes), so the draft isn't silently discarded;
+#    if the write is requested and fails, the window stays open so the draft can be retried rather than lost.
+#
+#   Version 3.16.23 - 7/22/26 - Ron Lockwood
+#    Fixes #1459. The Create/Modify descriptions are cleaned before being sent to the AI: line endings are unified and blank lines (including a stray one left by pressing Enter before clicking Create)
+#    are dropped, so that empty trailing line no longer pushes the model into malformed output and its baffling "XML is not well-formed" validation error.
+#
+#   Version 3.16.22 - 7/16/26 - Ron Lockwood
+#    The preview pane's right-click context menu is disabled (the rendered rule is read-only, so the browser Back/Reload/Save menu doesn't apply); the QWebEngineView is now built in one
+#    shared createPreviewView helper that sets the zoom and the NoContextMenu policy.
+#
+#   Version 3.16.21 - 7/16/26 - Ron Lockwood
+#    Macro support: the Modify/Explain tab now has Rules and Macros sub-tabs (two lists; macros can be modified and explained like rules), and the Create tab gained a "Create a macro
+#    instead of a rule" checkbox. Macros a rule/macro calls, and macros the user's description names (partial match), are sent with the prompt; a named macro that isn't found blocks the
+#    send with a message listing the file's macros. Clicking another rule/macro, or switching the Rules/Macros sub-tabs, now offers to approve an unwritten draft first (like tab switches).
+#
+#   Version 3.16.20 - 7/10/26 - Ron Lockwood
+#    Dropped the transfer.dtd dependency: neither Open-in-XXE (XXE resolves the DOCTYPE via its own addon DTD) nor the validation loop (apertium-preprocess-transfer needs no DTD) required it,
+#    so the dtdPath constructor parameter and the beside-the-temp-file copy are gone.
+#
 #   Version 3.16.19 - 7/10/26 - Ron Lockwood
 #    The dialog now always opens on the Create tab, set explicitly in code (pyuic had baked in the Modify tab as the startup tab because it was the active tab when the .ui was last saved).
 #
@@ -316,10 +351,11 @@ class GenerateWorker(QObject):
             self.failed.emit(str(err))
 
 class WorkOnRulesWithAIDlg(QDialog):
-    '''Create, modify, or explain one Apertium transfer rule with AI assistance. Two tabs: "Create new rule" (describe it, then Create) and "Modify or explain an existing rule" (pick a
-    rule - its preview shows at once on the left - then Modify with a description, or Explain in a chosen language). The layout comes from WorkOnRulesWithAIWindow.ui (pyuic).'''
+    '''Create, modify, or explain one Apertium transfer rule or macro with AI assistance. Two tabs: "Create new rule" (describe it, then Create - with a checkbox to create a macro
+    instead) and "Modify or explain an existing rule or macro" (pick a rule or macro from the Rules/Macros sub-tabs - its preview shows at once on the left - then Modify with a
+    description, or Explain in a chosen language). The layout comes from WorkOnRulesWithAIWindow.ui (pyuic).'''
 
-    def __init__(self, transferPath, ruleNames, ruleXmlByComment, systemInstruction, defsSummary, projectData, engine, dtdPath, compilerExe, parent=None):
+    def __init__(self, transferPath, ruleNames, ruleXmlByComment, macroNames, macroXmlByName, systemInstruction, defsSummary, projectData, engine, compilerExe, parent=None):
 
         super().__init__(parent)
 
@@ -329,19 +365,23 @@ class WorkOnRulesWithAIDlg(QDialog):
         # {comment: rule-XML} for every rule in the file, so clicking a rule in the picker renders its preview from memory instead of re-reading and re-parsing the whole transfer file
         # each time. Rebuilt from the file whenever the list is reloaded (Refresh Rules / after an approve).
         self.ruleXmlByComment = ruleXmlByComment or {}
+        # Same idea for macros: the names fill the Macros list, and {name: def-macro-XML} renders a picked macro's preview and supplies macro definitions for the prompt.
+        self.macroNames = macroNames or []
+        self.macroXmlByName = macroXmlByName or {}
         self.systemInstruction = systemInstruction
         self.defsSummary = defsSummary
         self.projectData = projectData
         self.engine = engine
-        self.dtdPath = dtdPath
         self.compilerExe = compilerExe
 
-        # Draft/preview state. currentTask names what the preview currently shows ('create'/'modify'/'explain'/'select'); currentRuleXml and currentTargetComment describe the rule
-        # selected in the modify/explain list; ruleResult holds a generated create/modify draft; draftWritten marks it approved so Explain doesn't re-offer to write it.
+        # Draft/preview state. currentTask names what the preview currently shows ('create'/'modify'/'explain'/'select'); currentRuleXml and currentTargetComment describe the rule or
+        # macro selected in the modify/explain lists (for a macro, currentTargetComment holds its n name); currentIsMacro says whether the selection/draft is a macro rather than a rule;
+        # ruleResult holds a generated create/modify draft; draftWritten marks it approved so Explain doesn't re-offer to write it.
         self.ruleResult = None
         self.currentRuleXml = None
         self.currentTargetComment = None
         self.currentTask = 'create'
+        self.currentIsMacro = False
         self.draftWritten = False
         self.genThread = None
         self.worker = None
@@ -378,9 +418,11 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.splitterSized = False
 
         self.ui.ruleList.addItems(self.ruleNames)
+        self.ui.macroList.addItems(self.macroNames)
 
-        # Start with no rule selected: the preview shows its placeholder until the user actually picks a rule (or creates/modifies/explains one) - we don't auto-select the first rule.
+        # Start with no rule or macro selected: the preview shows its placeholder until the user actually picks one (or creates/modifies/explains one) - we don't auto-select a first row.
         self.ui.ruleList.setCurrentRow(-1)
+        self.ui.macroList.setCurrentRow(-1)
 
         # The preview QWebEngineView is created lazily (see ensurePreview) and only added to the window when a preview is actually shown: an embedded Chromium view installs input hooks
         # that can steal arrow/navigation keys from sibling text widgets. Constructing it is slow (Chromium starts up), so we warm it up just after the window appears - see warmUpPreview.
@@ -395,9 +437,13 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.modifyButton.clicked.connect(self.onModify)
         self.ui.explainButton.clicked.connect(self.onExplain)
         self.ui.ruleList.currentItemChanged.connect(self.onRuleSelected)
+        self.ui.macroList.currentItemChanged.connect(self.onMacroSelected)
         self.ui.modeTabs.currentChanged.connect(self.onTabChanged)
-        # tabBarClicked fires on the click, before the tab actually changes (and before the list's focus-driven auto-select), so it's where we mark that a switch is starting.
+        # tabBarClicked fires on the click, before the tab actually changes (and before the list's focus-driven auto-select), so it's where we mark that a switch is starting. The same
+        # applies to the Rules/Macros sub-tabs on the Modify/Explain tab.
         self.ui.modeTabs.tabBarClicked.connect(self.onTabBarClicked)
+        self.ui.listTabs.currentChanged.connect(self.onListTabChanged)
+        self.ui.listTabs.tabBarClicked.connect(self.onListTabBarClicked)
         self.ui.refreshButton.clicked.connect(self.onRefreshRules)
         self.ui.approveButton.clicked.connect(self.onApprove)
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
@@ -428,6 +474,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         # __init__ because the widgets' real size hints aren't known until the window is laid out; the guard keeps a later re-show from undoing a splitter drag the user has since made.
         if not self.splitterSized:
 
+            # Give the Rules/Macros lists enough height to show at least three rows before the tab area is collapsed to its minimum height below. Done here (not __init__) so the per-row
+            # measurement is taken once the widgets are laid out, and before the setSizes call so the taller lists are already reflected in the tab area's minimum-size hint it reads.
+            self.ensureListsShowThreeRows()
+
             self.ui.mainSplitter.setSizes([self.ui.modeTabs.minimumSizeHint().height(), self.height()])
             self.splitterSized = True
 
@@ -435,17 +485,51 @@ class WorkOnRulesWithAIDlg(QDialog):
         # builds the view during the next idle moment - by the time the user navigates to a rule the engine is ready. warmUpPreview is idempotent, so repeated shows don't rebuild it.
         QTimer.singleShot(0, self.warmUpPreview)
 
+    def ensureListsShowThreeRows(self, rowsToShow=3):
+        '''Give the Modify/Explain tab's Rules and Macros lists a minimum height tall enough to show at least `rowsToShow` rows at once. The tab area is sized to its minimum-size hint (see
+        showEvent), and with no floor on the list height that hint left room for only two rows. The per-row height comes from the list's own row size hint (falling back to the font height
+        when the list is empty), so this stays correct across fonts and screen scaling; a QTabWidget wraps each list, so the raised minimum flows up through it into the tab area's hint.'''
+
+        for listWidget in (self.ui.ruleList, self.ui.macroList):
+
+            rowHeight = listWidget.sizeHintForRow(0) if listWidget.count() else listWidget.fontMetrics().height()
+
+            # sizeHintForRow returns -1 for an empty list on some styles; fall back to the font height so we still have a sensible per-row figure.
+            if rowHeight <= 0:
+                rowHeight = listWidget.fontMetrics().height()
+
+            # The row heights, plus the list's frame on top and bottom and a few pixels of slack, so the requested number of rows are fully visible rather than clipped at the last one.
+            listWidget.setMinimumHeight(rowHeight * rowsToShow + listWidget.frameWidth() * 2 + 6)
+
+    def createPreviewView(self):
+        '''Create the preview QWebEngineView, applying the remembered zoom and disabling the right-click context menu. The preview is a read-only rendering of the rule, so the default
+        browser menu (Back / Reload / Save / View source) is meaningless here; NoContextMenu suppresses it. Shared by warmUpPreview and ensurePreview so the view is always built the same way.'''
+
+        view = QWebEngineView()
+        view.setZoomFactor(self.previewZoomFactor)
+        view.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+        return view
+
     def warmUpPreview(self):
         '''Construct the QWebEngineView ahead of time (paying the Chromium start-up cost) but leave it out of the window until a preview is actually rendered (ensurePreview adds it),
         so it can't steal arrow keys from the description boxes before it's needed.'''
 
         if self.preview is None:
-            self.preview = QWebEngineView()
-            self.preview.setZoomFactor(self.previewZoomFactor)
+            self.preview = self.createPreviewView()
 
     def closeEvent(self, event):
-        '''Close (the Close button and the window's X both route here). If a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which
-        would crash - when the dialog is garbage-collected after the event loop returns.'''
+        '''Close (the Close button and the window's X both route here). If a generated rule/macro hasn't been written to the file yet, offer to approve and write it first so closing the
+        window doesn't silently discard the draft (the same offer a tab switch or rule click makes). If the user asked for the write and it failed, keep the window open so the draft isn't
+        lost. Then, if a generation is still running, wait for it to finish first so the worker thread isn't destroyed mid-run - which would crash - when the dialog is garbage-collected
+        after the event loop returns.'''
+
+        # Offer to write a pending draft before the close discards it. A False return means the user asked for the write and it failed (the error was already shown); leave the window open
+        # so they can retry rather than lose the draft.
+
+        if not self.offerToWritePendingDraft():
+
+            event.ignore()
+            return
 
         self.cleanupThread()
 
@@ -486,6 +570,49 @@ class WorkOnRulesWithAIDlg(QDialog):
         item = self.ui.ruleList.currentItem()
         return item.text() if item else None
 
+    def selectedMacroName(self):
+
+        item = self.ui.macroList.currentItem()
+        return item.text() if item else None
+
+    def activeListIsMacros(self) -> bool:
+        '''Whether the Macros sub-tab (rather than Rules) is the one showing on the Modify/Explain tab.'''
+
+        return self.ui.listTabs.currentWidget() is self.ui.macrosTab
+
+    def offerToWritePendingDraft(self) -> bool:
+        '''If a generated rule/macro draft hasn't been written to the file yet, offer to approve and write it before the caller discards it (switching tabs, switching the Rules/Macros
+        sub-tabs, clicking another rule or macro, or explaining over a modified draft). Returns False only when the user asked for the write and it failed (the caller should then stop
+        rather than discard the draft); True otherwise. The list-selection handlers are suppressed while the write reloads the lists, so the reload's re-selection can't re-enter here.'''
+
+        if not (self.ruleResult and self.ruleResult.valid and not self.draftWritten and self.currentTask in ('create', 'modify')):
+            return True
+
+        if self.currentIsMacro:
+
+            title = _translate('WorkOnRulesWithAI', 'Unapproved macro')
+            message = _translate('WorkOnRulesWithAI', 'You have a macro that has not been written to the transfer file. Approve and write it before continuing?')
+        else:
+
+            title = _translate('WorkOnRulesWithAI', 'Unapproved rule')
+            message = _translate('WorkOnRulesWithAI', 'You have a rule that has not been written to the transfer file. Approve and write it before continuing?')
+
+        answer = QMessageBox.question(self, title, message, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+
+        if answer != QMessageBox.StandardButton.Yes:
+            return True
+
+        # approveDraft reloads the lists, which re-fires the selection signals; switchingTabs makes onRuleSelected/onMacroSelected ignore those synthetic re-selections (restored to its
+        # prior value afterwards, since a tab-switch caller may still be mid-switch).
+        prior = self.switchingTabs
+        self.switchingTabs = True
+
+        try:
+            return self.approveDraft()
+
+        finally:
+            self.switchingTabs = prior
+
     def onTabBarClicked(self, index):
         '''The user clicked a tab. This fires before the tab actually changes and before the Modify/Explain list's focus-driven auto-select, so it's our chance to mark that a switch is
         starting - which tells onRuleSelected to ignore that spurious auto-select and so preserve any pending draft for onTabChanged's save offer. A click on the current tab is not a
@@ -497,20 +624,15 @@ class WorkOnRulesWithAIDlg(QDialog):
         '''Switching tabs starts fresh: blank the preview and drop any pending draft, so a rule shown on one tab isn't left over on another. On the Create tab it simply stays blank; on
         the Modify/Explain tab we also clear the rule list and keep focus out of it, so nothing is previewed until the user actually clicks a rule (see clearRuleSelection for why).'''
 
-        # If a generated rule hasn't been written to the file yet, switching tabs would discard it below. Offer to approve and write it first so the work isn't lost. This covers both
-        # directions - a new rule made on the Create tab and a modified rule made on the Modify/Explain tab (currentTask tells approveDraft which) - and mirrors the offer Explain makes.
-        if self.ruleResult and self.ruleResult.valid and not self.draftWritten and self.currentTask in ('create', 'modify'):
-
-            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Unapproved rule'), _translate('WorkOnRulesWithAI', 'You have a rule that has not been written to the transfer file. Approve and write it before switching?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
-
-            if answer == QMessageBox.StandardButton.Yes:
-
-                self.approveDraft()
+        # If a generated rule/macro hasn't been written to the file yet, switching tabs would discard it below. Offer to approve and write it first so the work isn't lost. This covers
+        # both directions - a draft made on the Create tab and one made on the Modify/Explain tab (currentTask tells approveDraft which) - and mirrors the offer Explain makes.
+        self.offerToWritePendingDraft()
 
         self.blankPreview()
         self.ruleResult = None
         self.currentRuleXml = None
         self.currentTargetComment = None
+        self.currentIsMacro = False
         self.draftWritten = False
         self.currentTask = 'create' if self.ui.modeTabs.widget(index) is self.ui.createTab else 'select'
         self.ui.approveButton.setEnabled(False)
@@ -526,19 +648,49 @@ class WorkOnRulesWithAIDlg(QDialog):
             # the next event-loop turn: clear the selection and move the cursor to the description box, leaving the list unselected until the user deliberately clicks a rule.
             QTimer.singleShot(0, self.clearRuleSelection)
 
+    def onListTabBarClicked(self, index):
+        '''A click on the Rules/Macros sub-tabs, before the switch happens: same spurious-auto-select suppression as the main tabs (see onTabBarClicked).'''
+
+        self.switchingTabs = index != self.ui.listTabs.currentIndex()
+
+    def onListTabChanged(self, index):
+        '''Switching between the Rules and Macros lists starts fresh, like a main tab switch: offer to write a pending draft first, then blank the preview and clear both selections so
+        nothing stale is left showing.'''
+
+        self.offerToWritePendingDraft()
+
+        self.blankPreview()
+        self.ruleResult = None
+        self.currentRuleXml = None
+        self.currentTargetComment = None
+        self.currentIsMacro = False
+        self.draftWritten = False
+        self.currentTask = 'select'
+        self.ui.approveButton.setEnabled(False)
+        self.ui.xxeButton.setEnabled(False)
+        self.ui.statusLabel.setText('')
+
+        # The switch is over; a rule/macro the user now clicks is a genuine selection again.
+        self.switchingTabs = False
+
+        # Undo the automatic first-row selection the newly shown list makes when focus lands on it, the same way a switch to the Modify/Explain tab does.
+        QTimer.singleShot(0, self.clearRuleSelection)
+
     def clearRuleSelection(self):
-        '''Leave the rule list with nothing selected and the preview blank, and put the cursor in the change-description box so focus doesn't sit on the list (which would re-select its
-        first row). Runs just after a switch to the Modify/Explain tab to cancel the automatic first-row selection Qt makes when focus lands on the list.'''
+        '''Leave the rule and macro lists with nothing selected and the preview blank, and put the cursor in the change-description box so focus doesn't sit on a list (which would
+        re-select its first row). Runs just after a switch to the Modify/Explain tab (or between the Rules/Macros sub-tabs) to cancel the automatic first-row selection Qt makes when
+        focus lands on a list.'''
 
         self.ui.ruleList.setCurrentRow(-1)
+        self.ui.macroList.setCurrentRow(-1)
         self.currentRuleXml = None
         self.currentTargetComment = None
         self.blankPreview()
         self.ui.modifyDescriptionEdit.setFocus()
 
     def onRuleSelected(self, current=None, previous=None):
-        '''A rule was picked in the modify/explain list: fetch its XML, show it immediately in the left preview pane, and discard any pending draft (a previously shown before/after or
-        explanation no longer applies to the newly selected rule).'''
+        '''A rule was picked in the modify/explain Rules list: fetch its XML, show it immediately in the left preview pane, and discard any pending draft (a previously shown before/after
+        or explanation no longer applies to the newly selected rule) - after offering to write that draft, so clicking another rule can't silently lose generated work.'''
 
         # Ignore the row the list auto-selects when it gains focus during a tab switch. It isn't a real pick, and acting on it would null the pending draft (below) before onTabChanged can
         # offer to write it. clearRuleSelection, scheduled by onTabChanged, then leaves the list unselected. A rule the user clicks after the switch has settled comes through normally.
@@ -550,8 +702,12 @@ class WorkOnRulesWithAIDlg(QDialog):
         if not comment:
             return
 
+        # Clicking a different rule discards the pending draft below, so make the same offer to approve and write it that a tab switch makes.
+        self.offerToWritePendingDraft()
+
         self.currentTargetComment = comment
         self.currentRuleXml = self.ruleXmlByComment.get(comment)
+        self.currentIsMacro = False
 
         # A newly selected rule invalidates any pending draft.
         self.ruleResult = None
@@ -565,9 +721,39 @@ class WorkOnRulesWithAIDlg(QDialog):
             self.ensurePreview().setHtml(TransferPreview.renderRulePreviewHtml(self.currentRuleXml, lang=self.interfaceLangCode()))
             self.ui.statusLabel.setText('')
 
+    def onMacroSelected(self, current=None, previous=None):
+        '''A macro was picked in the modify/explain Macros list: the def-macro counterpart of onRuleSelected - show its preview at once and (after the write offer) discard any pending draft.'''
+
+        if self.switchingTabs:
+            return
+
+        name = self.selectedMacroName()
+
+        if not name:
+            return
+
+        self.offerToWritePendingDraft()
+
+        self.currentTargetComment = name
+        self.currentRuleXml = self.macroXmlByName.get(name)
+        self.currentIsMacro = True
+
+        # A newly selected macro invalidates any pending draft.
+        self.ruleResult = None
+        self.draftWritten = False
+        self.currentTask = 'select'
+        self.ui.approveButton.setEnabled(False)
+        self.ui.xxeButton.setEnabled(False)
+
+        if self.currentRuleXml:
+
+            self.ensurePreview().setHtml(TransferPreview.renderRulePreviewHtml(self.currentRuleXml, lang=self.interfaceLangCode()))
+            self.ui.statusLabel.setText('')
+
     def reloadRules(self):
-        '''Re-read the transfer file so the rule picker and the definition summary sent to the AI reflect the current on-disk state. Called after a rule is approved (a new/changed rule
-        must appear in the list) and by the Refresh Rules button (the user may have edited the file in another window). The current picker selection is preserved when it still exists.'''
+        '''Re-read the transfer file so the rule and macro pickers and the definition summary sent to the AI reflect the current on-disk state. Called after a rule/macro is approved (the
+        new/changed one must appear in its list) and by the Refresh Rules button (the user may have edited the file in another window). Each picker's current selection is preserved when
+        it still exists.'''
 
         try:
             defs = AIRules.extractExistingDefs(self.transferPath)
@@ -579,17 +765,30 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         self.ruleNames = defs['ruleNames']
         self.ruleXmlByComment = defs['ruleXml']
+        self.macroNames = defs['macros']
+        self.macroXmlByName = defs['macroXml']
         self.defsSummary = defs['summaryText']
 
-        previous = self.selectedRuleComment()
+        previousRule = self.selectedRuleComment()
+        previousMacro = self.selectedMacroName()
 
         self.ui.ruleList.clear()
         self.ui.ruleList.addItems(self.ruleNames)
+        self.ui.macroList.clear()
+        self.ui.macroList.addItems(self.macroNames)
 
-        # Restore the previous selection if that rule still exists (this re-fires onRuleSelected, re-previewing the rule).
-        if previous:
+        # Restore the visible list's previous selection if that rule/macro still exists (this re-fires onRuleSelected/onMacroSelected, re-previewing it). Only the visible list is
+        # restored: re-selecting the hidden one too would fire its handler as well, and whichever ran last would steal the current-selection state from the list the user is looking at.
+        if previousMacro and self.activeListIsMacros():
 
-            matches = self.ui.ruleList.findItems(previous, Qt.MatchFlag.MatchExactly)
+            matches = self.ui.macroList.findItems(previousMacro, Qt.MatchFlag.MatchExactly)
+
+            if matches:
+                self.ui.macroList.setCurrentItem(matches[0])
+
+        elif previousRule and not self.activeListIsMacros():
+
+            matches = self.ui.ruleList.findItems(previousRule, Qt.MatchFlag.MatchExactly)
 
             if matches:
                 self.ui.ruleList.setCurrentItem(matches[0])
@@ -597,7 +796,7 @@ class WorkOnRulesWithAIDlg(QDialog):
     def onRefreshRules(self):
 
         self.reloadRules()
-        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule list refreshed ({n} rules).').format(n=len(self.ruleNames)))
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule list refreshed ({n} rules, {m} macros).').format(n=len(self.ruleNames), m=len(self.macroNames)))
 
     # --- example data ----------------------------------------------------
 
@@ -642,14 +841,62 @@ class WorkOnRulesWithAIDlg(QDialog):
 
     # --- the three actions -----------------------------------------------
 
+    def cleanDescription(self, text: str) -> str:
+        '''Normalize a description the user typed before it is sent to the AI: unify line endings, strip trailing whitespace from each line, and drop every blank line (leading, trailing,
+        and interior). Pressing Enter before clicking Create - a natural mistake, since the Create button looks focused - leaves a stray empty line in the box; that blank line can push the
+        model into malformed output whose "XML is not well-formed" validation error is baffling to an ordinary user, so we clean it out here rather than let it reach the AI.'''
+
+        # Unify Windows (\r\n) and old-Mac (\r) line endings to a plain '\n' so splitting and re-joining below behaves the same on every platform.
+        lines = text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+
+        # Strip trailing whitespace from each line, then keep only the lines that actually carry content - this removes blank lines at the top and bottom as well as any blank line in the middle.
+        lines = [line.rstrip() for line in lines if line.strip()]
+
+        return '\n'.join(lines)
+
+    def gatherMacrosForPrompt(self, description: str, xmlText) -> tuple:
+        '''Collect the macro definitions to send with a request: every macro the rule/macro being worked on calls (recursively), plus any macro the description names (partial,
+        case-insensitive match) along with what those call in turn. Returns (macrosText, missingTokens): macrosText is the blank-line-joined XML of the macros found, and missingTokens
+        are description tokens that clearly name a macro but match none in the file - the caller warns and does not send the prompt.'''
+
+        # The macro being modified/explained is itself already in the prompt as CURRENT MACRO, so it is excluded from the reference list.
+        excludeNames = [self.currentTargetComment] if self.currentIsMacro and self.currentTargetComment else []
+
+        names = AIRules.collectCalledMacros(xmlText, self.macroXmlByName, excludeNames) if xmlText else []
+
+        found, missing = AIRules.findMacroMentions(description, list(self.macroXmlByName)) if description else ([], [])
+
+        # A macro named in the description is included too - and so is whatever it calls, so the model sees the whole chain.
+        for name in found:
+
+            if name not in names and name not in excludeNames:
+                names.append(name)
+
+            names.extend(AIRules.collectCalledMacros(self.macroXmlByName.get(name, ''), self.macroXmlByName, excludeNames + names))
+
+        macrosText = '\n\n'.join(self.macroXmlByName[name] for name in names if name in self.macroXmlByName)
+        return macrosText, missing
+
+    def warnMissingMacros(self, missing) -> None:
+        '''Tell the user which macro name(s) in their description matched nothing in the rule file (and what macros the file does have), so they can fix the description. The prompt was
+        not sent.'''
+
+        available = ', '.join(self.macroNames) if self.macroNames else _translate('WorkOnRulesWithAI', '(none)')
+
+        QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Macro not found'),
+                            _translate('WorkOnRulesWithAI', 'Your description mentions a macro that is not in the transfer rules file: {missing}\n\nMacros in the file: {names}\n\nNothing was sent to the AI. Correct the macro name and try again.').format(missing=', '.join(missing), names=available))
+
     def onCreate(self):
 
-        description = self.ui.descriptionEdit.toPlainText().strip()
+        description = self.cleanDescription(self.ui.descriptionEdit.toPlainText())
 
         if not description:
 
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
+
+        # Creating a new rule replaces the current preview and draft, so offer to write an unapproved one before continuing. Whether the user says Yes or No, go ahead and go on.
+        self.offerToWritePendingDraft()
 
         # Starting a new rule after approving the previous one: the example data given for that rule may not fit this one, so ask once whether to keep it. Reopening the data grids
         # disarms the question (onSourceData/onTargetData).
@@ -665,58 +912,84 @@ class WorkOnRulesWithAIDlg(QDialog):
 
             self.askAboutDataOnNextGenerate = False
 
+        isMacro = self.ui.createMacroCheckbox.isChecked()
+
+        # If the description names a macro, its definition is sent along; a name that matches nothing blocks the send so the user can correct it.
+        macrosText, missing = self.gatherMacrosForPrompt(description, None)
+
+        if missing:
+
+            self.warnMissingMacros(missing)
+            return
+
         self.currentRuleXml = None
         self.currentTargetComment = None
-        userContent = AIRules.buildUserContent('create', description, self.defsSummary, self.projectData, None, 'English', self.sourceDataText, self.targetDataText)
-        self.startRuleGeneration('create', userContent, None)
+        userContent = AIRules.buildUserContent('create', description, self.defsSummary, self.projectData, None, 'English', self.sourceDataText, self.targetDataText, isMacro=isMacro, macrosText=macrosText)
+        self.startRuleGeneration('create', userContent, None, isMacro)
 
     def onModify(self):
 
         if not self.currentRuleXml:
 
-            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+            if self.activeListIsMacros():
+                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No macro selected'), _translate('WorkOnRulesWithAI', 'Please select a macro to modify.'))
+            else:
+                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to modify.'))
+
             return
 
-        description = self.ui.modifyDescriptionEdit.toPlainText().strip()
+        description = self.cleanDescription(self.ui.modifyDescriptionEdit.toPlainText())
 
         if not description:
 
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the change you want.'))
             return
 
-        userContent = AIRules.buildUserContent('modify', description, self.defsSummary, self.projectData, self.currentRuleXml, 'English', self.sourceDataText, self.targetDataText)
-        self.startRuleGeneration('modify', userContent, self.currentTargetComment)
+        # Send along the macros this rule/macro calls and any the description names; a named macro that matches nothing blocks the send so the user can correct it.
+        macrosText, missing = self.gatherMacrosForPrompt(description, self.currentRuleXml)
+
+        if missing:
+
+            self.warnMissingMacros(missing)
+            return
+
+        userContent = AIRules.buildUserContent('modify', description, self.defsSummary, self.projectData, self.currentRuleXml, 'English', self.sourceDataText, self.targetDataText, isMacro=self.currentIsMacro, macrosText=macrosText)
+        self.startRuleGeneration('modify', userContent, self.currentTargetComment, self.currentIsMacro)
 
     def onExplain(self):
 
         if not self.currentRuleXml:
 
-            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to explain.'))
+            if self.activeListIsMacros():
+                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No macro selected'), _translate('WorkOnRulesWithAI', 'Please select a macro to explain.'))
+            else:
+                QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No rule selected'), _translate('WorkOnRulesWithAI', 'Please select a rule to explain.'))
+
             return
 
-        # If an unapproved modified rule is showing on the right, the explanation would replace it - offer to write it to the file first so the work isn't lost.
-        if self.ruleResult and self.ruleResult.valid and not self.draftWritten and self.currentTask == 'modify':
+        # If an unapproved draft is showing on the right, the explanation would replace it - offer to write it to the file first so the work isn't lost. A False return means the user
+        # asked for the write and it failed (the error was already shown); don't discard the draft by explaining over it.
+        if not self.offerToWritePendingDraft():
+            return
 
-            answer = QMessageBox.question(self, _translate('WorkOnRulesWithAI', 'Unapproved rule'), _translate('WorkOnRulesWithAI', 'You have a modified rule that has not been written to the transfer file. Approve and write it before explaining?'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
-
-            if answer == QMessageBox.StandardButton.Yes and not self.approveDraft():
-
-                # The write failed (approveDraft already showed the error); don't discard the draft by explaining over it.
-                return
+        # The macros this rule/macro calls go into the prompt so the explanation can say what each call actually does.
+        macrosText = self.gatherMacrosForPrompt('', self.currentRuleXml)[0]
 
         explainLang = self.explanationLanguage()
-        userContent = AIRules.buildUserContent('explain', '', self.defsSummary, self.projectData, self.currentRuleXml, explainLang, self.sourceDataText, self.targetDataText)
+        userContent = AIRules.buildUserContent('explain', '', self.defsSummary, self.projectData, self.currentRuleXml, explainLang, self.sourceDataText, self.targetDataText, isMacro=self.currentIsMacro, macrosText=macrosText)
 
         self.currentTask = 'explain'
         self.startWorker(AIRules.explainRule, {'engine': self.engine, 'systemInstruction': self.systemInstruction, 'userContent': userContent}, _translate('WorkOnRulesWithAI', 'Explaining…'))
 
-    def startRuleGeneration(self, mode: str, userContent: str, targetComment):
-        '''Kick off a create or modify generation (generateValidatedRule) on the worker thread, remembering the target rule so a later Approve writes to the right place.'''
+    def startRuleGeneration(self, mode: str, userContent: str, targetComment, isMacro: bool = False):
+        '''Kick off a create or modify generation (generateValidatedRule) on the worker thread, remembering the target rule/macro so a later Approve writes to the right place.'''
 
         # The authorship-stamp sentences, localized to the FLExTrans UI language. Whole sentences (with a {when} placeholder) so they translate cleanly regardless of word order.
         authorshipComments = {
-            'added':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
-            'modified': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
+            'added':         _translate('WorkOnRulesWithAI', 'The AI Assistant added this rule on {when}.'),
+            'modified':      _translate('WorkOnRulesWithAI', 'The AI Assistant modified this rule on {when}.'),
+            'addedMacro':    _translate('WorkOnRulesWithAI', 'The AI Assistant added this macro on {when}.'),
+            'modifiedMacro': _translate('WorkOnRulesWithAI', 'The AI Assistant modified this macro on {when}.'),
         }
 
         # Localize the stamp's date/time to the interface language the same way the testbed log does (Utils.LocalizedDateTimeFormatter). The custom Qt format gives a spelled-out,
@@ -736,16 +1009,17 @@ class WorkOnRulesWithAIDlg(QDialog):
             'systemInstruction': self.systemInstruction,
             'userContent': userContent,
             'transferPath': self.transferPath,
-            'dtdPath': self.dtdPath,
             'mode': mode,
             'targetComment': targetComment,
             'compilerExe': self.compilerExe,
             'authorshipComments': authorshipComments,
             'whenStr': whenStr,
+            'isMacro': isMacro,
         }
 
         self.currentTask = mode
         self.currentTargetComment = targetComment
+        self.currentIsMacro = isMacro
         self.startWorker(AIRules.generateValidatedRule, params, _translate('WorkOnRulesWithAI', 'Generating…'))
 
     def startWorker(self, fn, params: dict, statusText: str):
@@ -790,8 +1064,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         actually shown.'''
 
         if self.preview is None:
-            self.preview = QWebEngineView()
-            self.preview.setZoomFactor(self.previewZoomFactor)
+            self.preview = self.createPreviewView()
 
         # The view is created unparented by warmUpPreview; addWidget reparents it into the preview area. Only do this once - after that it already lives in the layout.
         if self.preview.parent() is None:
@@ -873,11 +1146,46 @@ class WorkOnRulesWithAIDlg(QDialog):
         if result.valid:
 
             self.ui.approveButton.setEnabled(True)
-            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Valid rule generated (attempt {n}). {expl}').format(n=result.attempts, expl=result.explanation))
+
+            if self.currentIsMacro:
+                self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Valid macro generated (attempt {n}). {expl}').format(n=result.attempts, expl=result.explanation))
+            else:
+                self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Valid rule generated (attempt {n}). {expl}').format(n=result.attempts, expl=result.explanation))
         else:
+
             self.ui.approveButton.setEnabled(False)
-            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not produce a valid rule after {n} attempts. See errors; you can still open it in XXE.').format(n=result.attempts))
-            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Validation failed'), result.errors)
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.').format(n=result.attempts))
+            self.showValidationFailed(result.errors)
+
+    def showValidationFailed(self, errors):
+        '''Explain a failed validation in plain language. The raw parser/compiler text (e.g. expat's baffling "mismatched tag: line N, column M") is kept out of the main message - it goes
+        behind the "Show Details" button - so an ordinary user reads what went wrong and what to try next, while the technical detail stays one click away for a bug report.'''
+
+        # Lead with a non-technical sentence describing the failure, chosen the same way AIRules.friendlyValidationSummary classifies it, but translated to the interface language here.
+        text = errors or ''
+
+        if 'XML is not well-formed' in text:
+            summary = _translate('WorkOnRulesWithAI', "The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.")
+
+        elif 'apertium-preprocess-transfer failed' in text:
+            summary = _translate('WorkOnRulesWithAI', "The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.")
+
+        else:
+            summary = _translate('WorkOnRulesWithAI', "The AI couldn't build a valid rule from this request.")
+
+        # Actionable next step. Odd or contradictory wording is the usual trigger, so steer the user toward a single, plain sentence and trying again.
+        guidance = _translate('WorkOnRulesWithAI', 'Try rephrasing your description as a single, clear sentence and generate again.')
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(_translate('WorkOnRulesWithAI', 'Could not build a valid rule'))
+        box.setText(summary + '\n\n' + guidance)
+
+        # Keep the raw errors available for a bug report or a technical user, but collapsed behind "Show Details" so they don't confront the average user with parser jargon.
+        if text:
+            box.setDetailedText(text)
+
+        box.exec()
 
     def onGenerateFailed(self, message):
 
@@ -912,8 +1220,9 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.approveDraft()
 
     def approveDraft(self) -> bool:
-        '''Write the current create/modify draft to the transfer file after backing it up. Returns True on success. Shared by the Approve button and the "approve before explaining"
-        prompt. The window stays open; Approve disables until the next generation so the same rule can't be written twice, and the rule list is re-read so the new/changed rule shows.'''
+        '''Write the current create/modify draft (a rule or a macro) to the transfer file after backing it up. Returns True on success. Shared by the Approve button and the "approve
+        before continuing" offers. The window stays open; Approve disables until the next generation so the same draft can't be written twice, and the lists are re-read so the
+        new/changed rule or macro shows.'''
 
         if not (self.ruleResult and self.ruleResult.valid):
             return False
@@ -922,7 +1231,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         targetComment = self.currentTargetComment if mode == 'modify' else None
 
         try:
-            backupPath = AIRules.applyRule(self.transferPath, self.ruleResult, mode, targetComment)
+            backupPath = AIRules.applyRule(self.transferPath, self.ruleResult, mode, targetComment, self.currentIsMacro)
 
         except Exception as err:
 
@@ -933,11 +1242,15 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.approveButton.setEnabled(False)
         self.reloadRules()
 
-        # This rule is done; if example data was given for it, the next create Generate will ask whether to keep that data for the next rule.
+        # This rule/macro is done; if example data was given for it, the next create Generate will ask whether to keep that data for the next one.
         if self.sourceDataText or self.targetDataText:
             self.askAboutDataOnNextGenerate = True
 
-        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
+        if self.currentIsMacro:
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.').format(backup=os.path.basename(backupPath)))
+        else:
+            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
+
         return True
 
     def onOpenInXxe(self):
@@ -952,8 +1265,9 @@ class WorkOnRulesWithAIDlg(QDialog):
         # leak to one folder per Open-in-XXE click within a single session instead of forever.
         workDir = tempfile.mkdtemp(prefix='airules_xxe_')
         self.xxeTempDirs.append(workDir)
-        shutil.copyfile(self.dtdPath, os.path.join(workDir, 'transfer.dtd'))
-        tempPath = AIRules.spliceIntoTemp(self.transferPath, self.ruleResult.ruleXml, self.ruleResult.newDefs, mode, targetComment, workDir)
+        # No need to drop a transfer.dtd beside the temp file: XXE resolves the DOCTYPE against the copy in its own ApertiumTransfer addon (dtds/transfer.dtd), so the file's relative DTD
+        # reference is satisfied without a local copy. (The AI validation loop still copies the DTD into its own scratch dir, because apertium-preprocess-transfer resolves it relative to the file.)
+        tempPath = AIRules.spliceIntoTemp(self.transferPath, self.ruleResult.ruleXml, self.ruleResult.newDefs, mode, targetComment, workDir, self.currentIsMacro)
 
         try:
             os.startfile(tempPath)   # Windows: open with the registered handler (XXE)

@@ -329,149 +329,62 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QCheckBox" name="selectAllCheckBox">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <property name="tristate">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="rulesLabel">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Rules</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QListView" name="rulesList">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>26</height>
-          </size>
+        <widget class="QSplitter" name="mainSplitter">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
+         <property name="handleWidth">
+          <number>6</number>
          </property>
-         <property name="editTriggers">
-          <set>QAbstractItemView::EditTrigger::EditKeyPressed</set>
+         <property name="childrenCollapsible">
+          <bool>false</bool>
          </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <item alignment="Qt::AlignmentFlag::AlignTop">
-          <widget class="QPushButton" name="moveUpButton">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>14</pointsize>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>Move the selected rule up.</string>
-           </property>
-           <property name="text">
-            <string notr="true"/>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignmentFlag::AlignTop">
-          <widget class="QPushButton" name="moveDownButton">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>14</pointsize>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>Move the selected rule down.</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+         <widget class="QWidget" name="rulesPanel" native="true">
+          <layout class="QVBoxLayout" name="rulesPanelLayout">
            <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
-              <widget class="QCheckBox" name="wildebeestCheckBox">
-               <property name="enabled">
+              <widget class="QCheckBox" name="selectAllCheckBox">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
                 <bool>true</bool>
                </property>
+               <property name="tristate">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="rulesLabel">
                <property name="font">
                 <font>
                  <pointsize>8</pointsize>
                 </font>
                </property>
-               <property name="toolTip">
-                <string>This tool will run before other rules.</string>
-               </property>
                <property name="text">
-                <string notr="true">Run the Wildebeest cleanup tool</string>
+                <string>Rules</string>
                </property>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_6">
+              <spacer name="horizontalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -482,50 +395,67 @@
                 </size>
                </property>
               </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="WBlinkLabel">
-               <property name="text">
-                <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::TextFormat::RichText</enum>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-               <property name="openExternalLinks">
-                <bool>true</bool>
-               </property>
-               <property name="textInteractionFlags">
-                <set>Qt::TextInteractionFlag::TextBrowserInteraction</set>
-               </property>
-              </widget>
              </item>
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_16">
-             <item>
-              <widget class="QLabel" name="WBstepsLabel">
+            <widget class="QListView" name="rulesList">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::EditTrigger::EditKeyPressed</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item alignment="Qt::AlignmentFlag::AlignTop">
+              <widget class="QPushButton" name="moveUpButton">
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
-                 <height>0</height>
+                 <width>40</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="font">
                 <font>
-                 <pointsize>8</pointsize>
+                 <pointsize>14</pointsize>
                 </font>
                </property>
+               <property name="toolTip">
+                <string>Move the selected rule up.</string>
+               </property>
                <property name="text">
-                <string>Steps:</string>
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item alignment="Qt::AlignmentFlag::AlignTop">
+              <widget class="QPushButton" name="moveDownButton">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>Move the selected rule down.</string>
+               </property>
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_4">
+              <spacer name="horizontalSpacer_3">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -538,108 +468,68 @@
               </spacer>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
+              <layout class="QVBoxLayout" name="verticalLayout_2">
                <property name="spacing">
                 <number>0</number>
                </property>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <item>
-                  <widget class="QRadioButton" name="WBstepsDefaultRadio">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>17</height>
-                    </size>
-                   </property>
-                   <property name="toolTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Default</string>
-                   </property>
-                   <property name="checked">
+                  <widget class="QCheckBox" name="wildebeestCheckBox">
+                   <property name="enabled">
                     <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="WBstepsAllRadio">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>17</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>All</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="WBstepsNoneRadio">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>17</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>None</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="WBlangLabel">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>15</height>
-                    </size>
                    </property>
                    <property name="font">
                     <font>
                      <pointsize>8</pointsize>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string>This tool will run before other rules.</string>
+                   </property>
                    <property name="text">
-                    <string>Lang:</string>
+                    <string notr="true">Run the Wildebeest cleanup tool</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="WBlangCodeTextBox">
-                   <property name="minimumSize">
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
                     <size>
-                     <width>0</width>
-                     <height>0</height>
+                     <width>40</width>
+                     <height>20</height>
                     </size>
                    </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                    </font>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="WBlinkLabel">
+                   <property name="text">
+                    <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="toolTip">
-                    <string>3-letter ISO 639-3 code</string>
+                   <property name="textFormat">
+                    <enum>Qt::TextFormat::RichText</enum>
                    </property>
-                   <property name="placeholderText">
-                    <string>code</string>
+                   <property name="alignment">
+                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
+                   <property name="textInteractionFlags">
+                    <set>Qt::TextInteractionFlag::TextBrowserInteraction</set>
                    </property>
                   </widget>
                  </item>
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_17">
+                <layout class="QHBoxLayout" name="horizontalLayout_16">
                  <item>
-                  <widget class="QLabel" name="WBaddLabel">
+                  <widget class="QLabel" name="WBstepsLabel">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -652,53 +542,189 @@
                     </font>
                    </property>
                    <property name="text">
-                    <string>Add:</string>
+                    <string>Steps:</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="WBaddStepsTextBox">
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                    </font>
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
                    </property>
-                   <property name="toolTip">
-                    <string>Steps to add to the base number of steps selected above.
-Separate steps with spaces or commas.</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="WBskipLabel">
-                   <property name="minimumSize">
+                   <property name="sizeHint" stdset="0">
                     <size>
-                     <width>0</width>
-                     <height>0</height>
+                     <width>40</width>
+                     <height>20</height>
                     </size>
                    </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>8</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Skip:</string>
-                   </property>
-                  </widget>
+                  </spacer>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="WBskipStepsTextBox">
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                    </font>
+                  <layout class="QVBoxLayout" name="verticalLayout_5">
+                   <property name="spacing">
+                    <number>0</number>
                    </property>
-                   <property name="toolTip">
-                    <string>Steps to skip from the base number of steps selected above.
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                     <item>
+                      <widget class="QRadioButton" name="WBstepsDefaultRadio">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>17</height>
+                        </size>
+                       </property>
+                       <property name="toolTip">
+                        <string/>
+                       </property>
+                       <property name="text">
+                        <string>Default</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="WBstepsAllRadio">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>17</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>All</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="WBstepsNoneRadio">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>17</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>None</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="WBlangLabel">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>15</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>8</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Lang:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="WBlangCodeTextBox">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="toolTip">
+                        <string>3-letter ISO 639-3 code</string>
+                       </property>
+                       <property name="placeholderText">
+                        <string>code</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <item>
+                      <widget class="QLabel" name="WBaddLabel">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>8</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Add:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="WBaddStepsTextBox">
+                       <property name="font">
+                        <font>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="toolTip">
+                        <string>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</string>
-                   </property>
-                  </widget>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="WBskipLabel">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>8</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Skip:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="WBskipStepsTextBox">
+                       <property name="font">
+                        <font>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="toolTip">
+                        <string>Steps to skip from the base number of steps selected above.
+Separate steps with spaces or commas.</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
@@ -707,40 +733,49 @@ Separate steps with spaces or commas.</string>
             </layout>
            </item>
           </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="testInputLabel">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Test input</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTextEdit" name="inputText">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color: black;
+         </widget>
+         <widget class="QWidget" name="testInputPanel" native="true">
+          <layout class="QVBoxLayout" name="testInputPanelLayout">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="testInputLabel">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Test input</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTextEdit" name="inputText">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: black;
 background-color: rgb(225, 255, 255);</string>
-         </property>
-         <property name="html">
-          <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+             </property>
+             <property name="html">
+              <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
@@ -748,90 +783,103 @@ li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_18">
-         <item>
-          <widget class="QPushButton" name="testButton">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_18">
+             <item>
+              <widget class="QPushButton" name="testButton">
+               <property name="font">
+                <font>
+                 <pointsize>8</pointsize>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>Test the checked rules above with the input text.</string>
+               </property>
+               <property name="text">
+                <string>Test</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="dummyLabel">
+               <property name="font">
+                <font>
+                 <pointsize>8</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string notr="true">dummy</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="testOutputPanel" native="true">
+          <layout class="QVBoxLayout" name="testOutputPanelLayout">
+           <property name="spacing">
+            <number>2</number>
            </property>
-           <property name="toolTip">
-            <string>Test the checked rules above with the input text.</string>
+           <property name="leftMargin">
+            <number>0</number>
            </property>
-           <property name="text">
-            <string>Test</string>
+           <property name="topMargin">
+            <number>0</number>
            </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
+           <property name="rightMargin">
+            <number>0</number>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
+           <property name="bottomMargin">
+            <number>0</number>
            </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="dummyLabel">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string notr="true">dummy</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="testInputLabel_2">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Test output</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTextEdit" name="outputText">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color: black;
+           <item>
+            <widget class="QLabel" name="testInputLabel_2">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Test output</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTextEdit" name="outputText">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: black;
 background-color: rgb(229, 255, 236);</string>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-         <property name="markdown">
-          <string/>
-         </property>
-         <property name="html">
-          <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="markdown">
+              <string/>
+             </property>
+             <property name="html">
+              <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
@@ -839,13 +887,17 @@ li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
-         </property>
-         <property name="placeholderText">
-          <string/>
-         </property>
+             </property>
+             <property name="textInteractionFlags">
+              <set>Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+             </property>
+             <property name="placeholderText">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
        <item>

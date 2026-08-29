@@ -5,6 +5,24 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.28 - 8/24/26 - Ron Lockwood
+#    Fixes #1449. Leave the Test in LRT button enabled when the Rule Assistant was launched from the Live Rule Tester, so all the buttons behave the same no matter how the tool was started.
+#
+#   Version 3.16.27 - 7/25/26 - Ron Lockwood
+#    Fixes #1447. Select the affected rule after duplicating, inserting, moving, or deleting a rule, instead of always jumping back to the first rule.
+#
+#   Version 3.16.26 - 7/25/26 - Ron Lockwood
+#    Fixes #1450. Added tooltips to the Save, Save & Write, and Save & Write All buttons explaining how they differ.
+#
+#   Version 3.16.25 - 7/24/26 - Ron Lockwood
+#    Fixes #1456. Renamed the word/affix/rule 'Duplicate' context-menu items to 'Copy' and gave a copied rule a unique 'X - Copy' style name via the shared Utils.makeUniqueName algorithm.
+#
+#   Version 3.16.24 - 7/13/26 - Ron Lockwood
+#    Fixes #1432. Splitter handles can no longer drag a pane completely shut (setChildrenCollapsible(False) on all three splitters).
+#
 #   Version 3.16.23 - 7/9/26 - Ron Lockwood
 #    Fixes #1407. Selected rule in the rule list now shows white text (over the highlight background), matching the split feature grid.
 #
@@ -172,6 +190,9 @@ class RuleAssistantWindow(QMainWindow):
         self.ruleFile = ruleFile
         self.flexDataFile = flexDataFile
         self.testDataFile = testDataFile
+
+        # Recorded for the caller's benefit only. Every button, Test in LRT included, works the same whether or not we were started from the Live Rule Tester (issue #1449); it is
+        # StartRuleAssistant that uses this to avoid launching a second tester on top of the one already waiting for us.
         self.cameFromLrt = cameFromLrt
         self.uiLangCode = uiLangCode
 
@@ -203,11 +224,6 @@ class RuleAssistantWindow(QMainWindow):
         self._createWebViews()
         self._populatePermutationsCombo()
         self._connectSignals()
-
-        if self.cameFromLrt:
-
-            self.testLrtButton.setEnabled(False)
-
         self._createContextMenus()
         self._setupKeyboardShortcuts()
         self._setupWebview()
@@ -242,10 +258,20 @@ class RuleAssistantWindow(QMainWindow):
         self.saveAllButton = self.ui.save_all_button
         self.helpButton = self.ui.help_button
 
+        # Spell out how the three Save buttons differ, since the labels alone don't make it obvious (issue #1450).
+        self.saveButton.setToolTip(_translate("RuleAssistantWindow", "Save your rules in the Rule Assistant only. Nothing is written to the transfer rule file."))
+        self.saveCreateButton.setToolTip(_translate("RuleAssistantWindow", "Save your rules and write the currently selected rule to the transfer rule file."))
+        self.saveAllButton.setToolTip(_translate("RuleAssistantWindow", "Save your rules and write all of the rules to the transfer rule file."))
+
         # Splitter proportions (runtime tweak, not expressible in the .ui).
         self.ui.main_splitter.setSizes([200, 460])
         self.ui.v_splitter.setSizes([250, 750])
         self.ui.h_splitter.setSizes([400, 300])
+
+        # Don't let a splitter handle drag a pane all the way shut. setChildrenCollapsible(False) keeps every pane visible so the widgets to the left of a handle can never be completely hidden.
+        self.ui.main_splitter.setChildrenCollapsible(False)
+        self.ui.v_splitter.setChildrenCollapsible(False)
+        self.ui.h_splitter.setChildrenCollapsible(False)
 
     def _createWebViews(self) -> None:
         """Create the QWebEngineViews in code (kept out of the .ui to preserve the
@@ -312,7 +338,7 @@ class RuleAssistantWindow(QMainWindow):
 
         # Word context menu
         self._wordMenu = QMenu()
-        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onWordDuplicate)
+        self._wordMenu.addAction(_translate("RuleAssistantWindow", "Copy"), self._onWordDuplicate)
         self._wordMenu.addSeparator()
         self._wordMenu.addAction(_translate("RuleAssistantWindow", "Change number"), self._onWordChangeNumber)
         self._cmWordMarkAsHead = self._addAction(self._wordMenu, _translate("RuleAssistantWindow", "Mark as head"), self._onWordMarkAsHead)
@@ -349,7 +375,7 @@ class RuleAssistantWindow(QMainWindow):
 
         # Affix context menu
         self._affixMenu = QMenu()
-        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onAffixDuplicate)
+        self._affixMenu.addAction(_translate("RuleAssistantWindow", "Copy"), self._onAffixDuplicate)
         self._affixMenu.addSeparator()
         self._affixMenu.addAction(_translate("RuleAssistantWindow", "Toggle affix type"), self._onAffixToggleType)
         self._affixMenu.addSeparator()
@@ -368,7 +394,7 @@ class RuleAssistantWindow(QMainWindow):
 
         # Rule list context menu
         self._ruleMenu = QMenu()
-        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Duplicate"), self._onRuleDuplicate)
+        self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Copy"), self._onRuleDuplicate)
         self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Insert new before"), self._onRuleInsertBefore)
         self._ruleMenu.addAction(_translate("RuleAssistantWindow", "Insert new after"), self._onRuleInsertAfter)
         self._ruleMenu.addSeparator()
@@ -403,8 +429,12 @@ class RuleAssistantWindow(QMainWindow):
 
         self._dirty = False
 
-    def _populateRuleList(self) -> None:
-        """Populate the rule list from generator."""
+    def _populateRuleList(self, selectRow: int = 0) -> None:
+        """Populate the rule list from the generator and select `selectRow`.
+
+        Callers pass the row that should end up selected (e.g. the newly duplicated rule, or a
+        rule that was just moved), because selecting a row here fires _onRuleSelected which sets
+        _currentRuleIndex. Out-of-range values fall back to the first rule."""
 
         self.ruleList.clear()
 
@@ -415,10 +445,14 @@ class RuleAssistantWindow(QMainWindow):
                 item = QListWidgetItem(rule.name or f"Rule {i+1}")
                 self.ruleList.addItem(item)
 
-        # Select first rule
+        # Select the requested rule (clamped to a valid row), which drives _currentRuleIndex via the selection handler.
         if self.ruleList.count() > 0:
 
-            self.ruleList.setCurrentRow(0)
+            if selectRow < 0 or selectRow >= self.ruleList.count():
+
+                selectRow = 0
+
+            self.ruleList.setCurrentRow(selectRow)
 
     def _showRule(self, index: int) -> None:
         """Show a rule in the editor.
@@ -874,7 +908,10 @@ class RuleAssistantWindow(QMainWindow):
     def _onTestInLrt(self) -> None:
         """Handle Test In LRT button: ask which save option to use, then save and
         close, flagging that the Live Rule Tester should be launched afterward
-        (mirrors the Java MainController.handleTestInLRT)."""
+        (mirrors the Java MainController.handleTestInLRT).
+
+        The button stays enabled even when we were launched from the Live Rule Tester (issue #1449) so every button behaves the same no matter how the Rule Assistant was started. In that case
+        closing already hands control back to the waiting Live Rule Tester, so the caller (RuleAssistantPy.StartRuleAssistant) drops the launch flag rather than starting a second, nested one."""
 
         if not self._generator:
 
@@ -1786,12 +1823,24 @@ class RuleAssistantWindow(QMainWindow):
 
     # Rule menu handlers
     def _onRuleDuplicate(self) -> None:
-        """Duplicate selected rule."""
+        """Copy the selected rule, giving the new rule a unique 'X - Copy' style name."""
 
         if self._generator:
 
-            self._generator.duplicateRule(self._currentRuleIndex)
-            self._populateRuleList()
+            # Collect the existing rule names before duplicating so we can find a name that doesn't collide.
+            existingNames = [rule.name for rule in self._generator.flexTransRules]
+
+            # duplicateRule inserts the new rule at this index, so that's the row to select afterwards.
+            newIndex = self._currentRuleIndex
+            newRule = self._generator.duplicateRule(self._currentRuleIndex)
+
+            if newRule:
+
+                # Apply the shared 'Copy' naming algorithm (the same one used when inserting a target text into FLEx) so the copy gets a unique name.
+                newRule.name = Utils.makeUniqueName(newRule.name, existingNames)
+
+            # Select the newly duplicated rule so the user can edit it immediately (issue #1447).
+            self._populateRuleList(newIndex)
             self._markDirty()
 
     def _onRuleInsertBefore(self) -> None:
@@ -1821,8 +1870,7 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         self._generator.insertNewRule(index, f"Rule {len(self._generator.flexTransRules) + 1}")
-        self._populateRuleList()
-        self.ruleList.setCurrentRow(index)
+        self._populateRuleList(index)
         self._markDirty()
 
     def _onRuleMoveUp(self) -> None:
@@ -1834,9 +1882,8 @@ class RuleAssistantWindow(QMainWindow):
 
         rules = self._generator.flexTransRules
         rules[self._currentRuleIndex], rules[self._currentRuleIndex - 1] = rules[self._currentRuleIndex - 1], rules[self._currentRuleIndex]
-        self._currentRuleIndex -= 1
-        self._populateRuleList()
-        self.ruleList.setCurrentRow(self._currentRuleIndex)
+        # Keep the moved rule selected rather than jumping back to the first rule (issue #1447).
+        self._populateRuleList(self._currentRuleIndex - 1)
         self._markDirty()
 
     def _onRuleMoveDown(self) -> None:
@@ -1848,9 +1895,8 @@ class RuleAssistantWindow(QMainWindow):
 
         rules = self._generator.flexTransRules
         rules[self._currentRuleIndex], rules[self._currentRuleIndex + 1] = rules[self._currentRuleIndex + 1], rules[self._currentRuleIndex]
-        self._currentRuleIndex += 1
-        self._populateRuleList()
-        self.ruleList.setCurrentRow(self._currentRuleIndex)
+        # Keep the moved rule selected rather than jumping back to the first rule (issue #1447).
+        self._populateRuleList(self._currentRuleIndex + 1)
         self._markDirty()
 
     def _onRuleDelete(self) -> None:
@@ -1867,16 +1913,15 @@ class RuleAssistantWindow(QMainWindow):
             return
 
         self._generator.flexTransRules.pop(self._currentRuleIndex)
-        self._populateRuleList()
 
-        if self._currentRuleIndex >= len(self._generator.flexTransRules):
+        # After removing a rule, keep the selection on the rule that shifted into its place, or the new last rule if we removed the last one.
+        newIndex = self._currentRuleIndex
 
-            self._currentRuleIndex = len(self._generator.flexTransRules) - 1
+        if newIndex >= len(self._generator.flexTransRules):
 
-        if self._currentRuleIndex >= 0:
+            newIndex = len(self._generator.flexTransRules) - 1
 
-            self.ruleList.setCurrentRow(self._currentRuleIndex)
-
+        self._populateRuleList(newIndex)
         self._markDirty()
 
     # Helper methods

@@ -5,8 +5,8 @@
     <name>WorkOnRulesWithAI</name>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="103"/>
-      <source>Work on Rules with AI</source>
-      <translation>Travailler sur les règles avec l'IA</translation>
+      <source>AI Rule Studio</source>
+      <translation>Studio de règles IA</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="104"/>
@@ -90,18 +90,13 @@
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="168"/>
-      <source>Modify or explain an existing rule</source>
-      <translation>Modifier ou expliquer une règle existante</translation>
+      <source>Modify or explain an existing rule or macro</source>
+      <translation>Modifier ou expliquer une règle ou une macro existante</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="157"/>
       <source>Create</source>
       <translation>Créer</translation>
-    </message>
-    <message>
-      <location filename="../WorkOnRulesWithAIWindow.py" line="159"/>
-      <source>Rule:</source>
-      <translation>Règle :</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="162"/>
@@ -129,19 +124,35 @@
       <translation>p. ex. Supprimer l'affixe IND de la sortie.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
-        <source>Zoom:</source>
-        <translation>Zoom :</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
+      <source>Zoom:</source>
+      <translation>Zoom :</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
-        <source>Magnify the preview text</source>
-        <translation>Agrandir le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
+      <source>Magnify the preview text</source>
+      <translation>Agrandir le texte de l'aperçu</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
-        <source>Reduce the preview text</source>
-        <translation>Réduire le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
+      <source>Reduce the preview text</source>
+      <translation>Réduire le texte de l'aperçu</translation>
     </message>
-</context>
+    <message>
+      <source>Rules</source>
+      <translation>Règles</translation>
+    </message>
+    <message>
+      <source>Macros</source>
+      <translation>Macros</translation>
+    </message>
+    <message>
+      <source>Create a macro instead of a rule</source>
+      <translation>Créer une macro au lieu d'une règle</translation>
+    </message>
+    <message>
+      <source>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</source>
+      <translation>Si cochée, l'IA crée une macro réutilisable au lieu d'une règle. Les macros contiennent une logique que plusieurs règles peuvent appeler.</translation>
+    </message>
+  </context>
 </TS>

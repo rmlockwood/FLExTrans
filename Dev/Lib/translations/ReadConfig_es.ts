@@ -4,34 +4,34 @@
   <context>
     <name>ReadConfig</name>
     <message>
-      <location filename="../ReadConfig.py" line="193"/>
+      <location filename="../ReadConfig.py" line="194"/>
       <source>Error reading the file: &quot;{path}/{file}&quot;. Check that it exists.</source>
-      <translation>Error al leer el archivo: &quot;{path}/{file}&quot;. Verifique que exista.</translation>
+      <translation>Error al leer el archivo: &quot;{path}/{file}&quot;. Verifica que exista.</translation>
     </message>
     <message>
-      <location filename="../ReadConfig.py" line="230"/>
+      <location filename="../ReadConfig.py" line="231"/>
       <source>Setting: &quot;{setting}&quot; not found in the configuration file.</source>
       <translation>Configuración: &quot;{setting}&quot; no encontrada en el archivo de configuración.</translation>
     </message>
     <message>
-      <location filename="../ReadConfig.py" line="269"/>
+      <location filename="../ReadConfig.py" line="270"/>
       <source>Problem reading the file: &quot;{file}&quot;. A line without &quot;=&quot; was found.</source>
       <translation>Problema al leer el archivo: &quot;{file}&quot;. Se encontró una línea sin &quot;=&quot;.</translation>
     </message>
     <message>
-      <location filename="../ReadConfig.py" line="279"/>
+      <location filename="../ReadConfig.py" line="280"/>
       <source>Problem reading the file: &quot;{file}&quot;. A line with more than one &quot;=&quot; was found.</source>
       <translation>Problema al leer el archivo: &quot;{file}&quot;. Se encontró una línea sin &quot;=&quot;.</translation>
     </message>
     <message>
-      <location filename="../ReadConfig.py" line="303"/>
+      <location filename="../ReadConfig.py" line="304"/>
       <source>Error in the file: &quot;{file}&quot;. A value for &quot;{key}&quot; was not found.</source>
       <translation>Error en el archivo: &quot;{file}&quot;. No se encontró un valor para &quot;{key}&quot;.</translation>
     </message>
     <message>
-      <location filename="../ReadConfig.py" line="329"/>
+      <location filename="../ReadConfig.py" line="330"/>
       <source>Error in the file: &quot;{file}&quot;. The value for &quot;{key}&quot; is supposed to be a comma separated list. For a single value, end it with a comma.</source>
-      <translation>Error en el archivo: &quot;{file}&quot;. El valor para &quot;{key}&quot; debe ser una lista separada por comas. Para un solo valor, termínelo con una coma.</translation>
+      <translation>Error en el archivo: &quot;{file}&quot;. El valor para &quot;{key}&quot; debe ser una lista separada por comas. Para un solo valor, termínalo con una coma.</translation>
     </message>
   </context>
 </TS>

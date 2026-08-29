@@ -975,9 +975,9 @@ die mit einer TreeTran-Regel eingefügt werden können.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2011"/>
-      <source>The AI service the Work on Rules with AI module sends requests to.
+      <source>The AI service the AI Rule Studio module sends requests to.
 You need your own API key for the chosen provider; the module asks for it the first time you run it.</source>
-      <translation>Der KI-Dienst, an den das Modul 'Regeln mit KI bearbeiten' Anfragen sendet.
+      <translation>Der KI-Dienst, an den das Modul 'KI-Regelstudio' Anfragen sendet.
 Sie brauchen einen eigenen API-Schlüssel für den gewählten Anbieter; das Modul fragt beim ersten Ausführen danach.</translation>
     </message>
     <message>
@@ -1011,9 +1011,9 @@ Wählen Sie Nein, wenn die Projektnamen selbst sensible Informationen sind.</tra
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2020"/>
-      <source>If Yes, everything the Work on Rules with AI module sends to and receives from the AI provider is appended to
+      <source>If Yes, everything the AI Rule Studio module sends to and receives from the AI provider is appended to
 AIRulesPromptLog.txt in the project's Build folder. Leave this No except when troubleshooting.</source>
-      <translation>Wenn Ja, wird alles, was das Modul 'Regeln mit KI bearbeiten' an den KI-Anbieter sendet und von ihm empfängt, an
+      <translation>Wenn Ja, wird alles, was das Modul 'KI-Regelstudio' an den KI-Anbieter sendet und von ihm empfängt, an
 AIRulesPromptLog.txt im Build-Ordner des Projekts angehängt. Lassen Sie dies auf Nein, außer bei der Fehlersuche.</translation>
     </message>
     <message>
@@ -1045,9 +1045,9 @@ Wählen Sie zuerst den KI-Anbieter und dann eines der für ihn angebotenen Model
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2073"/>
-      <source>Whether the Work on Rules with AI module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
+      <source>Whether the AI Rule Studio module may send your rule description and the project's grammatical categories, features, and affixes to the AI provider.
 The module also asks this the first time you run it; you can review or change your answer here.</source>
-      <translation>Gibt an, ob das Modul „Regeln mit KI bearbeiten“ Ihre Regelbeschreibung und die grammatischen Kategorien, Merkmale und Affixe des Projekts an den KI-Anbieter senden darf.
+      <translation>Gibt an, ob das Modul „KI-Regelstudio“ Ihre Regelbeschreibung und die grammatischen Kategorien, Merkmale und Affixe des Projekts an den KI-Anbieter senden darf.
 Das Modul stellt diese Frage auch beim ersten Ausführen; Sie können Ihre Antwort hier ansehen oder ändern.</translation>
     </message>
     <message>

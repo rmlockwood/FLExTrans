@@ -11,7 +11,7 @@ Unicode True
 !define PRODUCT_WEB_SITE "https://software.sil.org/flextrans"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_VERSION "3.16"
+!define PRODUCT_VERSION "3.17"
 !define PYTHON_MAJOR "3"
 !define PYTHON_MINOR "13"
 !define PYTHON_PATCH "12"
@@ -50,7 +50,7 @@ VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
 ; Always 4 numerals
-VIProductVersion 3.16.0.${BUILD_NUM}
+VIProductVersion 3.17.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -105,7 +105,7 @@ Var /GLOBAL STR_INSTALL_XMLMIND
 ; ==============================================================
 ; The authoritative UI-language list is Dev\Lib\UILanguages.py; everything per-language in this
 ; script comes from the GENERATED include below. See Dev\README-AddingUILanguage.md for the full
-; checklist (add the language there, translate a LangForInstallerScript\XX.nsh, run
+; checklist (add the language to UILanguages.py, translate a LangForInstallerScript\XX.nsh, run
 ; python Dev\updateLanguageFiles.py, add the transfer-rules and XXE addon translations).
 ; ==============================================================
 
@@ -261,6 +261,10 @@ Section "MainSection" SEC01
 
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
   Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\FTPaths.py"
+
+  # Delete the obsolete "Rule Assistant Old" module (for old installs). It ran the separate Java rule assistant program, which we no longer install, so the module can't work. The Python
+  # port (RuleAssistantPy.py) replaced it. We have to delete it explicitly because installing unzips over the existing files and never removes ones that are no longer shipped.
+  Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\Modules\FLExTrans\RuleAssistant.py"
   
   # Fix up ini files, both collection ones and flextools.ini in all work project folders
   SetOutPath ${WORKPROJECTSDIR}
@@ -350,6 +354,44 @@ Section "MainSection" SEC01
           DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\FixUpSynthText.py"
         ${EndIf}
 
+        # Bring the Tools collection up to date on the rule modules: the old "Rule Assistant" module was renamed (RuleAssistant.py -> RuleAssistantPy.py) and its file is no longer installed, and the new
+        # "AI Rule Studio" module (file WorkOnRulesWithAI.py) was added. Detect the Tools collection by the presence of the Live Rule Tester module rather than the collection's file name, which is localized
+        # (e.g. Werkzeuge.ini in German). The Live Rule Tester is the right marker because it appears only in the Tools collection, so we won't touch the other collections. (/c: makes findstr treat the
+        # bracketed string as a literal, not a regex.)
+        nsExec::Exec 'findstr /c:"[FLExTrans\LiveRuleTesterTool.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+        Pop $R2   # 0 = found, non-zero = not found
+
+        ${If} $R2 == 0
+
+          # Drop the old Rule Assistant section.
+          DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$3" "FLExTrans\RuleAssistant.py"
+
+          # Add the renamed Rule Assistant module, but only if it isn't already there so we don't create a duplicate section. NSIS has no "write section header only" call, so we append the header line
+          # directly (the leading CRLF guarantees a clean line break even if the file didn't end in a newline). The new section lands at the end of the collection, which is fine for the tool list.
+          nsExec::Exec 'findstr /c:"[FLExTrans\RuleAssistantPy.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $R3   # 0 = already present, non-zero = absent
+
+          ${If} $R3 != 0
+
+            FileOpen $R4 "${WORKPROJECTSDIR}\$1\Config\Collections\$3" a
+            FileSeek $R4 0 END
+            FileWrite $R4 "$\r$\n[FLExTrans\RuleAssistantPy.py]$\r$\n"
+            FileClose $R4
+          ${EndIf}
+
+          # Also add the new "AI Rule Studio" module (file WorkOnRulesWithAI.py), again only if it isn't already present. Same append approach as above.
+          nsExec::Exec 'findstr /c:"[FLExTrans\WorkOnRulesWithAI.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $R3   # 0 = already present, non-zero = absent
+
+          ${If} $R3 != 0
+
+            FileOpen $R4 "${WORKPROJECTSDIR}\$1\Config\Collections\$3" a
+            FileSeek $R4 0 END
+            FileWrite $R4 "$\r$\n[FLExTrans\WorkOnRulesWithAI.py]$\r$\n"
+            FileClose $R4
+          ${EndIf}
+        ${EndIf}
+
         FindNext $2 $3
         Goto collectionLoop
 
@@ -357,7 +399,7 @@ Section "MainSection" SEC01
       FindClose $2
     ${EndIf}
 
-    # If it was in the testbed collection, enable the replacement setting in this work project's config, but only when the key isn't already there so we don't override a choice the user
+    # If FixUpSynthText was in the testbed collection, enable the replacement setting in this work project's config, but only when the key isn't already there so we don't override a choice the user
     # has since made in the Settings dialog. (The config is a flat key=value file, so we append a line rather than using an INI writer.)
     ${If} $6 == "1"
 

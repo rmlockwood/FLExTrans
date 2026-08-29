@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.3 - 7/10/26 - Ron Lockwood
 #    Declared Main.chapSel (set externally by ChapterSelection) so pyright recognizes it, and skip a cluster project when Utils.openProject returns None instead of crashing on CloseProject.
 #
@@ -192,7 +195,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.16.3",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",

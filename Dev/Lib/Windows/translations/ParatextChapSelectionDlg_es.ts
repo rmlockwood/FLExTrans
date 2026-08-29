@@ -81,7 +81,7 @@
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="137"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Proyectos de clúster a los que aplicar</translation>
+      <translation>Proyectos de clúster para aplicar</translation>
     </message>
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="140"/>
@@ -91,7 +91,7 @@
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="141"/>
       <source>Clicking any chapter of a book selects all chapters of the book</source>
-      <translation>Hacer clic en cualquier capítulo de un libro selecciona todos los capítulos del libro</translation>
+      <translation>Al hacer clic en cualquier capítulo de un libro, se seleccionan todos los capítulos del libro</translation>
     </message>
     <message>
       <location filename="../ParatextChapSelectionDlg.py" line="142"/>
@@ -99,7 +99,7 @@
       <translation>Textos bíblicos</translation>
     </message>
     <message>
-      <location filename="../ParatextChapSelectionDlg.py" line="138"/>
+      <location filename="../ParatextChapSelectionDlg.py" line="139"/>
       <source>Overwrite a text that has the same name. For example, 
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
       <translation>Sobrescribir un texto que tenga el mismo nombre. Por ejemplo, 

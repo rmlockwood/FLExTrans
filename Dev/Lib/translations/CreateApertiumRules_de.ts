@@ -24,17 +24,17 @@
       <translation>Verwendet von Makro {macid}</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="848"/>
+      <location filename="../CreateApertiumRules.py" line="849"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
       <translation>Die Variable leeren, um sicherzustellen, dass wir nicht versehentlich einen vorherigen Wert behalten</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="650"/>
+      <location filename="../CreateApertiumRules.py" line="651"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
       <translation>Keine Ziel-Affixe für das Merkmal '{trgSpec.label}' der Wortart {trgSpec.category} gefunden.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="651"/>
+      <location filename="../CreateApertiumRules.py" line="652"/>
       <source>There are no target affixes, so there's nothing further to do here.</source>
       <translation>Es gibt keine Ziel-Affixe, daher gibt es hier nichts weiter zu tun.</translation>
     </message>
@@ -54,17 +54,17 @@
       <translation>Wir sollten die entsprechende Singular-Substantivklasse überprüfen, wenn eines der folgenden zutrifft:</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="763"/>
+      <location filename="../CreateApertiumRules.py" line="764"/>
       <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
       <translation>Das Quellsubstantiv hat keinen Plural-Affix angehängt. (Wahrscheinlich hat es einen Singular-Affix.)</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="767"/>
+      <location filename="../CreateApertiumRules.py" line="768"/>
       <source>The target noun doesn't take plural agreement (marked as such).</source>
       <translation>Das Zielsubstantiv nimmt keinen Plural-Übereinstimmung an (als solche gekennzeichnet).</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="771"/>
+      <location filename="../CreateApertiumRules.py" line="772"/>
       <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
       <translation>Wenn das Zielsubstantiv keinen Singular-Übereinstimmung an nimmt (als solche gekennzeichnet), dann werden wir eine Plural-Substantivklasse haben.</translation>
     </message>
@@ -144,6 +144,10 @@
       <translation>Der Regelname &quot;{ruleName}&quot; existiert bereits in der Regeldatei. Umbenennung der hinzugefügten Regel in &quot;{altName}&quot;.</translation>
     </message>
     <message>
+      <source>The transfer rule file already contains a rule named &quot;{ruleName}&quot; that was not created by the Rule Assistant. To avoid overwriting a hand-written rule, no rules were written. Please rename or remove that rule, or rename your Rule Assistant rule.</source>
+      <translation>Die Transferregeldatei enthält bereits eine Regel namens &quot;{ruleName}&quot;, die nicht vom Regelassistenten erstellt wurde. Um das Überschreiben einer von Hand geschriebenen Regel zu vermeiden, wurden keine Regeln geschrieben. Bitte benennen Sie diese Regel um oder entfernen Sie sie, oder benennen Sie Ihre Regelassistent-Regel um.</translation>
+    </message>
+    <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
       <source>Rule Assistant Description: {desc}</source>
       <translation>Regelassistent-Beschreibung: {desc}</translation>
@@ -199,7 +203,7 @@
       <translation>Bestimmen Sie das entsprechende {label}-Tag für {cat} und speichern Sie es in einer Variablen namens {varid}.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1487"/>
+      <location filename="../CreateApertiumRules.py" line="1444"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
       <translation>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</translation>
     </message>
@@ -209,7 +213,7 @@
       <translation>Unerwarteter Co-Feature-Wert &quot;{val}&quot; in einer geteilten Feature-Menge gefunden. Nur &quot;sg&quot;, &quot;pl&quot; oder &quot;many&quot; erwartet. Dieser Wert wird ignoriert.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1514"/>
+      <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
       <translation>Bitte stellen Sie sicher, dass der Co-Feature &quot;number&quot; sowohl die Werte &quot;sg&quot; als auch &quot;pl&quot; hat.</translation>
     </message>
@@ -227,6 +231,10 @@
       <location filename="../CreateApertiumRules.py" line="1594"/>
       <source>Copying prior version of transfer rules to {backupPath}.</source>
       <translation>Kopieren der vorherigen Version der Übertragungsregeln nach {backupPath}.</translation>
+    </message>
+    <message>
+      <source>If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.</source>
+      <translation>Wenn Sie diese Regel manuell bearbeiten, überschreibt der Regelassistent möglicherweise Ihre Änderungen. Bitte benennen Sie die Regel um, um dies zu vermeiden.</translation>
     </message>
   </context>
 </TS>

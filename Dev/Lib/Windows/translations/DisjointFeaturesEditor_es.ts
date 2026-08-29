@@ -17,19 +17,19 @@
     </message>
     <message>
       <source>Split feature set</source>
-      <translation>Conjunto de rásgos divididos</translation>
+      <translation>Conjunto de característica dividida</translation>
     </message>
     <message>
       <source>Split Features Editor</source>
-      <translation>Editor de Rásgos Divididos</translation>
+      <translation>Editor de características dividido</translation>
     </message>
     <message>
       <source>Distinguishing feature</source>
-      <translation>Rásgo distintivo</translation>
+      <translation>Rasgo distintivo</translation>
     </message>
     <message>
       <source>Feature value</source>
-      <translation>Valor del rásgo</translation>
+      <translation>Valor del rasgo</translation>
     </message>
     <message>
       <source>Language</source>
@@ -41,11 +41,11 @@
     </message>
     <message>
       <source>Number of subfeatures:</source>
-      <translation>Número de subrásgos:</translation>
+      <translation>Número de subrasgos:</translation>
     </message>
     <message>
       <source>Subfeature</source>
-      <translation>Subrásgo</translation>
+      <translation>Subrasgo</translation>
     </message>
   </context>
 </TS>

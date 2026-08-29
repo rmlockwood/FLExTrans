@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.15.2 - 4/7/26 - Ron Lockwood
 #    Take care of lint problems.
 #

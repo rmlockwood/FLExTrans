@@ -17,7 +17,10 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 1. **Add the language to the authoritative list.** In `Dev/Lib/UILanguages.py`, add one `UILang(...)` line to `LANGUAGES`: the two-letter `code`, the `englishName` (e.g. `Portuguese`), the
    `nativeName` (what the installer's language picker shows, e.g. `Português`), the `localeName` for date/time formatting (e.g. `pt_BR`), the NSIS language-file name `nsisName` (e.g.
    `Portuguese` — see `C:\Program Files (x86)\NSIS\Contrib\Language files` for the valid names), and `crowdinId` only if Crowdin's id for the language differs from the two-letter code
-   (as with Spanish, `es-ES`). The position of the line in `LANGUAGES` is the position in the installer's language-picker dialog.
+   (as with Spanish, `es-ES`). The position of the line in `LANGUAGES` is the position in the installer's language-picker dialog. In the same file, also add the language's entries to
+   `MACRO_NOUNS`, `MACRO_NAMING_WORDS`, and `MACRO_STOP_WORDS` — respectively the word for "macro", the fillers a description might use when naming one ("the macro **called** m_x"), and the
+   common function words that can sit next to "macro" in prose without being a name ("the macro **that** …") — which the AI Rule Studio module uses to spot macro references and to
+   avoid mistaking prose for a mistyped macro name; a missing entry doesn't break anything, it only means less accurate macro-reference detection for descriptions written in that language.
 
 2. **Translate the installer strings.** Copy `Installer/InstallerResources/LangForInstallerScript/en.nsh` to `XX.nsh` in the same folder and make these three edits, then translate all the
    string values (including the five collection-tab `LangString`s) and set `XX_DISPLAY_NAME` to the same native name you put in `UILanguages.py`:
@@ -44,7 +47,7 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 
    At install time the installer unzips the base (English) addon first and then overlays the language zip for the chosen `$LANGCODE`, so the five translated files shadow their English
    counterparts. Everything downstream is automatic: `CreateInstaller.bat` zips every `translations/<code>` folder it finds in `LANG_CODES` into `AddOnsForXMLmind_<code><version>.zip`,
-   the generated `languages.nsh` bundles each zip into the installer, and `derive_preview_specs.py` (also run by `CreateInstaller.bat`) derives `Dev/Lib/preview_spec_XX.json` from the
+   the generated `languages.nsh` bundles each zip into the installer, and `derive_preview_specs.py` (also run by `CreateInstaller.bat`) derives `Dev/Lib/AI/preview_spec_XX.json` from the
    translated `transfer.css` for the in-app rule preview (it prints a SKIP and the preview falls back to English until the translated CSS exists).
 
 5. **Add the language-specific transfer-rules files** (e.g. `transfer_rules-Swedish_XX.t1x`) to `Installer/InstallerResources/TransferRules/`. The installer copies them by `$LANGCODE` at
@@ -56,8 +59,8 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
 
 ## Maintaining the XXE rule-preview stylesheet (`transfer.css`)
 
-The in-app rule preview (the "Work on Rules with AI" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,
-[`Dev/derive_preview_specs.py`](derive_preview_specs.py), parses each `transfer.css` into a compact `Dev/Lib/preview_spec_<code>.json` that `TransferPreview` loads. Each spec captures, per rule
+The in-app rule preview (the "AI Rule Studio" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,
+[`Dev/derive_preview_specs.py`](derive_preview_specs.py), parses each `transfer.css` into a compact `Dev/Lib/AI/preview_spec_<code>.json` that `TransferPreview` loads. Each spec captures, per rule
 element, the label text, the attribute chips shown on it, and the chip colours (the colours come from the stylesheet's `@property-value` declarations, so the preview's box colours match XXE).
 
 **When to run it:** any time an XXE `transfer.css` changes — a colour edit, a new element rule, a changed label — and after adding a new language's translated stylesheet (step 4 above).

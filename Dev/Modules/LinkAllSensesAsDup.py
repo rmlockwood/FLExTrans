@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.2 - 7/10/26 - Ron Lockwood
 #    Lint fixes.
 #
@@ -87,7 +90,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",

@@ -11,7 +11,7 @@
     <message>
       <location filename="../GenStc.py" line="81"/>
       <source>Iterate over certain grammatical categories in a model sentence to produce variations.</source>
-      <translation>Itérer sur certaines catégories grammaticales dans une phrase modèle pour produire des variations.</translation>
+      <translation>Parcourir certaines catégories grammaticales dans une phrase modèle pour produire des variations.</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="178"/>
@@ -50,7 +50,7 @@
     </message>
     <message>
       <source>This module only works in Two Project mode.</source>
-      <translation>Ce module fonctionne uniquement en mode deux projets.</translation>
+      <translation>Ce module fonctionne uniquement en mode Deux Projets.</translation>
     </message>
   </context>
 </TS>

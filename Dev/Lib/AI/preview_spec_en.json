@@ -1,4 +1,22 @@
 {
+ "_collapsible": [
+  "action",
+  "def-attr",
+  "def-cat",
+  "def-list",
+  "def-macro",
+  "otherwise",
+  "out",
+  "rule",
+  "section-def-attrs",
+  "section-def-cats",
+  "section-def-lists",
+  "section-def-macros",
+  "section-def-vars",
+  "section-rules",
+  "tags",
+  "when"
+ ],
  "_colors": {
   "c-attr": "#F5DEB3",
   "c-cat": "#FFB6C1",
@@ -16,11 +34,11 @@
   []
  ],
  "and": [
-  " et: ",
+  " and: ",
   []
  ],
  "append": [
-  " ajouter à: ",
+  " append to: ",
   [
    [
     "n",
@@ -30,7 +48,7 @@
   ]
  ],
  "attr-item": [
-  "étiquettes:  ",
+  "tags:  ",
   [
    [
     "tags",
@@ -40,19 +58,31 @@
   ]
  ],
  "b": [
-  " espace vide: ",
+  " blank space: ",
   []
  ],
  "begins-with": [
-  " commence par: ",
-  []
+  " begins with: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "begins-with-list": [
-  " commence par quelque chose dans la liste: ",
-  []
+  " begins with something in list: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "call-macro": [
-  "appeler macro: ",
+  "call macro: ",
   [
    [
     "n",
@@ -62,7 +92,7 @@
   ]
  ],
  "case-of": [
-  " casse de -  élément: ",
+  " case of -  item: ",
   [
    [
     "pos",
@@ -71,18 +101,18 @@
    ],
    [
     "side",
-    "  côté: ",
+    "  side: ",
     "c-plain"
    ],
    [
     "part",
-    "  partie: ",
+    "  part: ",
     "c-attr"
    ]
   ]
  ],
  "cat-item": [
-  "étiquettes:  ",
+  "tags:  ",
   [
    [
     "tags",
@@ -91,17 +121,17 @@
    ],
    [
     "lemma",
-    " lemme: ",
+    " lemma: ",
     "c-chunk"
    ]
   ]
  ],
  "choose": [
-  "choisir: ",
+  "choose: ",
   []
  ],
  "chunk": [
-  " morceau - nom: ",
+  " chunk - name: ",
   [
    [
     "name",
@@ -110,13 +140,13 @@
    ],
    [
     "namefrom",
-    " morceau - obtenir le nom de la variable: ",
+    " chunk - get name from variable: ",
     "c-var"
    ]
   ]
  ],
  "clip": [
-  " clip -  élément: ",
+  " clip -  item: ",
   [
    [
     "pos",
@@ -125,12 +155,12 @@
    ],
    [
     "side",
-    " côté: ",
+    " side: ",
     "c-plain"
    ],
    [
     "part",
-    " partie: ",
+    " part: ",
     "c-attr"
    ]
   ]
@@ -140,11 +170,17 @@
   []
  ],
  "contains-substring": [
-  " contient sous-chaîne: ",
-  []
+  " contains substring: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "def-attr": [
-  " attribut: ",
+  " attribute: ",
   [
    [
     "n",
@@ -154,7 +190,7 @@
   ]
  ],
  "def-cat": [
-  " catégorie: ",
+  " category: ",
   [
    [
     "n",
@@ -164,7 +200,7 @@
   ]
  ],
  "def-list": [
-  " liste: ",
+  " list: ",
   [
    [
     "n",
@@ -183,7 +219,7 @@
    ],
    [
     "npar",
-    " nombre d'éléments = ",
+    " number of items = ",
     "c-pos"
    ]
   ]
@@ -199,19 +235,37 @@
   ]
  ],
  "ends-with": [
-  " se termine par: ",
-  []
+  " ends with: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "ends-with-list": [
-  " se termine par quelque chose dans la liste: ",
-  []
+  " ends with something in list: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "equal": [
-  " égal: ",
-  []
+  " equal: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "get-case-from": [
-  " obtenir la casse de  élément: ",
+  " get case from  item: ",
   [
    [
     "pos",
@@ -221,15 +275,21 @@
   ]
  ],
  "in": [
-  " dans la liste: ",
-  []
+  " in list: ",
+  [
+   [
+    "caseless",
+    "case insensitive",
+    "c-checkbox"
+   ]
+  ]
  ],
  "let": [
   " let: ",
   []
  ],
  "list": [
-  " liste:  ",
+  " list:  ",
   [
    [
     "n",
@@ -239,7 +299,7 @@
   ]
  ],
  "list-item": [
-  "élément:  ",
+  "item:  ",
   [
    [
     "v",
@@ -249,7 +309,7 @@
   ]
  ],
  "lit": [
-  " chaîne littérale:  ",
+  " literal string:  ",
   [
    [
     "v",
@@ -259,7 +319,7 @@
   ]
  ],
  "lit-tag": [
-  " étiquette littérale:  ",
+  " literal tag:  ",
   [
    [
     "v",
@@ -269,39 +329,39 @@
   ]
  ],
  "lu": [
-  " unité lexicale: ",
+  " lexical unit: ",
   []
  ],
  "mlu": [
-  " multi-mot: ",
+  " multi-word: ",
   []
  ],
  "modify-case": [
-  " modifier la casse: ",
+  " modify case: ",
   []
  ],
  "not": [
-  " non: ",
+  " not: ",
   []
  ],
  "or": [
-  " ou: ",
+  " or: ",
   []
  ],
  "otherwise": [
-  " sinon: ",
+  " otherwise: ",
   []
  ],
  "out": [
-  " sortie: ",
+  " output: ",
   []
  ],
  "pattern": [
-  " motif: ",
+  " pattern: ",
   []
  ],
  "pattern-item": [
-  "élément:  ",
+  "item:  ",
   [
    [
     "n",
@@ -311,7 +371,7 @@
   ]
  ],
  "rule": [
-  " règle: ",
+  " rule: ",
   [
    [
     "comment",
@@ -321,15 +381,15 @@
   ]
  ],
  "section-def-attrs": [
-  " Attributs: ",
+  " Attributes: ",
   []
  ],
  "section-def-cats": [
-  " Catégories: ",
+  " Categories: ",
   []
  ],
  "section-def-lists": [
-  " Listes: ",
+  " Lists: ",
   []
  ],
  "section-def-macros": [
@@ -341,15 +401,15 @@
   []
  ],
  "section-rules": [
-  " Règles: ",
+  " Rules: ",
   []
  ],
  "tag": [
-  " étiquette: ",
+  " tag: ",
   []
  ],
  "tags": [
-  " étiquettes: ",
+  " tags: ",
   []
  ],
  "test": [
@@ -371,11 +431,11 @@
   ]
  ],
  "when": [
-  " quand: ",
+  " when: ",
   []
  ],
  "with-param": [
-  " avec élément: ",
+  " with item: ",
   [
    [
     "pos",

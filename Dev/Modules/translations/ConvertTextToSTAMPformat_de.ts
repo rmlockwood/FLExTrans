@@ -91,7 +91,7 @@ Für HermitCrab ist die Datei die, die Sie in der Einstellung „Hermit Crab Mas
 HINWEIS: Die Meldungen und die Taskleiste zeigen das Quellprojekt als verwendet an. Tatsächlich wird jedoch das Zielprojekt verwendet.</translation>
     </message>
     <message>
-      <location filename="../ConvertTextToSTAMPformat.py" line="1420"/>
+      <location filename="../ConvertTextToSTAMPformat.py" line="1421"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
       <translation>Das Modul {modname} muss vor diesem Modul ausgeführt werden. Die Datei: ...\{filePath} existiert nicht.</translation>
     </message>

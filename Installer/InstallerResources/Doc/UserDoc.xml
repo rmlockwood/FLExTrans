@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->9 July 2026</date
+>24 August 2026</date
 ><version
 >3.16</version
 ><contents
@@ -1670,13 +1670,7 @@ type="tTab"
 >Select Sentences</object
 > tab and clicking on the sentence you want.</li
 ><li
->Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the <object
-type="tButton"
->Select All</object
-> button. Uncheck them all with the <object
-type="tButton"
->Unselect All</object
-> button.</li
+>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check or uncheck them all with outside check box.</li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -1701,20 +1695,6 @@ type="tButton"
 type="tArea"
 >Synthesized Text</object
 > area.</li
-><li
->Use the <object
-type="tButton"
->Add to Testbed</object
-> button to add the input words and synthesized result to the <genericRef
-gref="sTestbed"
->FLExTrans Testbed</genericRef
->. This is essentially a database of expected results for a certain inputs. In another part of <object
-type="tFlextrans"
-></object
-> you can run the <object
-type="tTestbed"
-></object
-> to see if you are still getting the results you expect.</li
 ></ol
 ></section3
 ><section3
@@ -1728,7 +1708,32 @@ type="tButton"
 > drop-down box and select the desired text. At this point, the <object
 type="tLiveRuleTester"
 ></object
-> will close and restart.</p
+> will close and restart. If you have made changes in your source <object
+type="tFlexx"
+></object
+> project—either to the text you are testing or to its lexicon—click the <object
+type="tButton"
+>Refresh Source Project</object
+> button to reload the current source text so those changes are picked up.</p
+></section3
+><section3
+id="sAddTestbed"
+><secTitle
+>Add to Testbed</secTitle
+><p
+>Use the <object
+type="tButton"
+>Add to Testbed</object
+> button to add the input words and synthesized result to the <genericRef
+gref="sTestbed"
+>FLExTrans Testbed</genericRef
+>. This is essentially a database of expected results for a certain inputs. In another part of <object
+type="tFlextrans"
+></object
+> you can run the <object
+type="tTestbed"
+></object
+> to see if you are still getting the results you expect. Add a comment to go with your testbed test if desired. This will be visible in the testbed log.</p
 ></section3
 ><section3
 id="sHover"
@@ -1829,20 +1834,6 @@ type="tButton"
 type="tFlextrans"
 ></object
 > uses the changed target lexicon.</p
-><p
->There is a check box that says <object
-type="tButton"
->Add multiple words to the testbed word by word</object
->. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you have a "sentence" that runs through a paradigm. When you click <object
-type="tButton"
->Add to Testbed</object
->, <object
-type="tFlextrans"
-></object
-> will add each individual word and its corresponding synthesis to the <object
-type="tTestbed"
-></object
-> in one go. Each pair will be its own test.</p
 ><p
 >The <object
 type="tButton"
@@ -2788,7 +2779,7 @@ src="Images/WordContextMenu.png"
 ><li
 ><object
 type="tBold"
->Duplicate</object
+>Copy</object
 >: creates a complete copy of the current word.</li
 ><li
 ><object
@@ -2998,7 +2989,7 @@ src="Images/AffixContextMenu.png"
 ><li
 ><object
 type="tBold"
->Duplicate</object
+>Copy</object
 >: creates a complete copy of the current affix.</li
 ><li
 ><object
@@ -3207,6 +3198,173 @@ type="tFlexx"
 ></object
 > help on how to use Regular Expressions or various websites that explain the Regular Expression language.</p
 ><p
+>Besides the standard Regular Expression features, the replace line understands some extra escape sequences that let you change the case of a letter. These are the same case modifiers that the substitution box on the regex101.com website uses. They only have an effect when the <object
+type="tButton"
+>Regular Expression</object
+> check box is checked. A rule that is not a Regular Expression does a plain literal replacement, so these sequences would end up in the text as-is.</p
+><table
+border="1"
+><tr
+><th
+>In the replace line</th
+><th
+>Meaning</th
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\u\1</object
+></td
+><td
+>Change the first character of what group 1 matched to upper case and insert the rest of the group unchanged. Any group number from <object
+type="tCourier"
+>\1</object
+> through <object
+type="tCourier"
+>\9</object
+> can be used.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\l\1</object
+></td
+><td
+>Change the first character of what group 1 matched to lower case and insert the rest of the group unchanged.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\u</object
+> followed by a letter</td
+><td
+>Change that one letter to upper case. The letter is one you typed in the replace line, not something the search line matched. For example, <object
+type="tCourier"
+>\ua</object
+> inserts <object
+type="tCourier"
+>A</object
+>.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\l</object
+> followed by a letter</td
+><td
+>Change that one letter to lower case. For example, <object
+type="tCourier"
+>\lA</object
+> inserts <object
+type="tCourier"
+>a</object
+>.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\U</object
+> ... <object
+type="tCourier"
+>\E</object
+></td
+><td
+>Change everything inserted between the two markers to upper case. This includes group references, so <object
+type="tCourier"
+>\U\1\E</object
+> upper cases the whole of what group 1 matched, and <object
+type="tCourier"
+>\Uabc\E</object
+> inserts <object
+type="tCourier"
+>ABC</object
+>. Leaving off the <object
+type="tCourier"
+>\E</object
+> means the change runs to the end of the replace line.</td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>\L</object
+> ... <object
+type="tCourier"
+>\E</object
+></td
+><td
+>Change everything inserted between the two markers to lower case. For example, <object
+type="tCourier"
+>\L\1\E</object
+> lower cases the whole of what group 1 matched and <object
+type="tCourier"
+>\LABC\E</object
+> inserts <object
+type="tCourier"
+>abc</object
+>.</td
+></tr
+></table
+><p
+>For example, a rule with a search line of <object
+type="tCourier"
+>([.!?]\s+)(\w)</object
+> and a replace line of <object
+type="tCourier"
+>\1\u\2</object
+> capitalizes the first letter of each sentence. It turns <object
+type="tCourier"
+>this is one. and this is two.</object
+> into <object
+type="tCourier"
+>this is one. And this is two.</object
+> A search line of <object
+type="tCourier"
+>^(\w)</object
+> with a replace line of <object
+type="tCourier"
+>\u\1</object
+> capitalizes only the very first letter of the text.</p
+><p
+>Note the difference between the lower case and upper case forms of these modifiers. The lower case <object
+type="tCourier"
+>\u</object
+> and <object
+type="tCourier"
+>\l</object
+> change one character only, while the upper case <object
+type="tCourier"
+>\U</object
+> and <object
+type="tCourier"
+>\L</object
+> keep changing everything until an <object
+type="tCourier"
+>\E</object
+> stops them. So <object
+type="tCourier"
+>\u\1</object
+> capitalizes a word while <object
+type="tCourier"
+>\U\1\E</object
+> shouts it.</p
+><p
+>You can combine the two. A one character modifier wins over the surrounding many character one for the character it applies to, which gives you a handy way to fix a word typed in all capitals. A replace line of <object
+type="tCourier"
+>\u\L\1\E</object
+> lower cases everything in group 1 but then puts the first letter back into upper case, so <object
+type="tCourier"
+>HELLO</object
+> becomes <object
+type="tCourier"
+>Hello</object
+>.</p
+><p
 >Use the <object
 type="tButton"
 >Test</object
@@ -3302,13 +3460,13 @@ src="Images/ReplacementEditor.png"
 id="sWorkOnRulesAI"
 ><secTitle
 >The <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > Tool</secTitle
 ><p
 >The <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.</p
 ><p
 >Before the first use, open the <object
@@ -3324,8 +3482,8 @@ id="sAIApiKeys"
 type="tSettingsTool"
 ></object
 >, then paste it into the box the <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > tool shows when it asks for it.</p
 ><p
 >Google Gemini (the default provider): go to <link
@@ -3349,8 +3507,8 @@ id="sAIExampleData"
 >Giving the AI example language data</secTitle
 ><p
 >You can give the <object
-type="tTool"
->Work on Rules with AI</object
+type="tAIRuleStudio"
+></object
 > tool example language data to send along with your request. In some cases this gives the AI valuable context about how the source and target languages actually behave, and helps it make or modify a rule better.</p
 ><p
 >The easiest way to bring this data into the module is to copy it straight from a text where the rule would be applicable. In <object
@@ -4388,13 +4546,13 @@ id="sProc"
 >Procedures</secTitle
 ><ol
 ><li
->If the source language grammatical category tag is<langData
+>If the source language affix tag is<langData
 lang="lVernacular"
 > <object
 type="tluAffix"
 >ptcp_f_sg</object
 ></langData
->, change the target language tag to <langData
+>, change the target language affix tag to <langData
 lang="lVernacular"
 ><object
 type="tluAffix"
@@ -4754,14 +4912,6 @@ textBefore="singular"
 ></sectionRef
 >.</p
 ><ol
-><li
->Close the <object
-type="tBold"
->English-FLExTrans-Sample</object
-> <object
-type="tFlexx"
-></object
-> project.</li
 ><li
 >Bring up the <object
 type="tFlexxTools"
@@ -5617,22 +5767,7 @@ num="xLexUnitPron"
 ><p
 >You can do an Insert Before... and choose <object
 type="tItalic"
->lu(lexical_unit_lit-string)</object
-> then click on the <object
-type="tRuleElemInXXE"
->literal string</object
->, do an Insert After... and choose <object
-type="tItalic"
->lit-tag(literal_tag)</object
->. The <object
-type="tRuleElemInXXE"
->blank space</object
-> element comes after and is <object
-type="tUnderline"
->indented at the same level</object
-> as <object
-type="tRuleElemInXXE"
->lexical unit</object
+>lu(lexical_unit_lit-string-tag)</object
 >.</p
 ><example
 num="xLexUnitPron"
@@ -5728,7 +5863,7 @@ type="tRuleElemInXXE"
 >literal tag</object
 > element and Insert After... and choose <object
 type="tItalic"
->clip(clip_target_language)</object
+>clip(clip_target_lang)</object
 >. Do this twice.</p
 ><example
 num="xLexUnitPronPerNum"
@@ -8106,6 +8241,65 @@ textBefore="capitalizedSingular"
 ></sectionRef
 >.</p
 ></section3
+><section3
+id="sTextInOutCase"
+><secTitle
+>How do I make a letter upper case or lower case in a Text In or Text Out rule?</secTitle
+><p
+>The <object
+type="tTool"
+>Text In Rules Tool</object
+> and the <object
+type="tTool"
+>Text Out Rules Tool</object
+> do search and replace on the text coming into or going out of <object
+type="tFlextrans"
+></object
+>. When a rule is marked as a Regular Expression, the replace line understands extra escape sequences that change the case of a letter. That way you do not have to write a separate rule for each letter of the alphabet.</p
+><p
+>Mark the rule as a Regular Expression and then use <object
+type="tCourier"
+>\u</object
+> to make something upper case or <object
+type="tCourier"
+>\l</object
+> to make it lower case. Put the modifier immediately before the thing it applies to. So <object
+type="tCourier"
+>\u\1</object
+> makes the first character of what group 1 matched upper case, while <object
+type="tCourier"
+>\U\1\E</object
+> makes the whole of group 1 upper case. The upper case forms keep going until an <object
+type="tCourier"
+>\E</object
+> stops them.</p
+><p
+>A common need is capitalizing the first letter of every sentence in the translated text. Add a <object
+type="tTool"
+>Text Out Rules Tool</object
+> rule with a search line of <object
+type="tCourier"
+>([.!?]\s+)(\w)</object
+> and a replace line of <object
+type="tCourier"
+>\1\u\2</object
+>. The punctuation and space are copied through by <object
+type="tCourier"
+>\1</object
+> and the letter that follows them is upper cased by <object
+type="tCourier"
+>\u\2</object
+>. Use the <object
+type="tButton"
+>Test</object
+> button in the tool to check the result before you run the process.</p
+><p
+>For the complete list of case modifiers, see <sectionRef
+sec="sTextIn"
+showTitle="full"
+></sectionRef
+>.</p
+></section3
 ></section2
 ></section1
 ><section1
@@ -8896,6 +9090,11 @@ id="hr"
 ><types
 ><comment
 >The following types are provided as pre-set examples. You may well want to create your own types that refer to one or more of these. You do that by typing in the names of the types in the types attribute of your type.</comment
+><type
+after="AI Rule Studio"
+id="tAIRuleStudio"
+types="tTool"
+></type
 ><type
 font-style="italic"
 id="tArea"

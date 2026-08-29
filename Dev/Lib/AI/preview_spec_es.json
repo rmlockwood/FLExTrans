@@ -1,4 +1,22 @@
 {
+ "_collapsible": [
+  "action",
+  "def-attr",
+  "def-cat",
+  "def-list",
+  "def-macro",
+  "otherwise",
+  "out",
+  "rule",
+  "section-def-attrs",
+  "section-def-cats",
+  "section-def-lists",
+  "section-def-macros",
+  "section-def-vars",
+  "section-rules",
+  "tags",
+  "when"
+ ],
  "_colors": {
   "c-attr": "#F5DEB3",
   "c-cat": "#FFB6C1",
@@ -12,15 +30,15 @@
   "c-var": "#AFEEEE"
  },
  "action": [
-  " Aktion: ",
+  " acción: ",
   []
  ],
  "and": [
-  " und: ",
+  " y: ",
   []
  ],
  "append": [
-  " anhängen an: ",
+  " añadir a: ",
   [
    [
     "n",
@@ -30,7 +48,7 @@
   ]
  ],
  "attr-item": [
-  "Tags:  ",
+  "etiquetas:  ",
   [
    [
     "tags",
@@ -40,19 +58,31 @@
   ]
  ],
  "b": [
-  " Leerzeichen: ",
+  " espacio en blanco: ",
   []
  ],
  "begins-with": [
-  " beginnt mit: ",
-  []
+  " comienza con: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "begins-with-list": [
-  " beginnt mit etwas aus Liste: ",
-  []
+  " comienza con algo en la lista: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "call-macro": [
-  "Makro aufrufen: ",
+  "llamar macro: ",
   [
    [
     "n",
@@ -62,7 +92,7 @@
   ]
  ],
  "case-of": [
-  " Fall von -  element: ",
+  " caso de -  elemento: ",
   [
    [
     "pos",
@@ -71,18 +101,18 @@
    ],
    [
     "side",
-    "  seite: ",
+    "  lado: ",
     "c-plain"
    ],
    [
     "part",
-    "  teil: ",
+    "  parte: ",
     "c-attr"
    ]
   ]
  ],
  "cat-item": [
-  "Tags:  ",
+  "etiquetas:  ",
   [
    [
     "tags",
@@ -91,17 +121,17 @@
    ],
    [
     "lemma",
-    " lemma: ",
+    " lema: ",
     "c-chunk"
    ]
   ]
  ],
  "choose": [
-  "wählen: ",
+  "elegir: ",
   []
  ],
  "chunk": [
-  " Chunk - Name: ",
+  " fragmento - nombre: ",
   [
    [
     "name",
@@ -110,13 +140,13 @@
    ],
    [
     "namefrom",
-    " Chunk - Name aus Variable holen: ",
+    " fragmento - obtener nombre de variable: ",
     "c-var"
    ]
   ]
  ],
  "clip": [
-  " Clip -  element: ",
+  " recorte -  elemento: ",
   [
    [
     "pos",
@@ -125,26 +155,32 @@
    ],
    [
     "side",
-    " seite: ",
+    " lado: ",
     "c-plain"
    ],
    [
     "part",
-    " teil: ",
+    " parte: ",
     "c-attr"
    ]
   ]
  ],
  "concat": [
-  " verketten: ",
+  " concatenar: ",
   []
  ],
  "contains-substring": [
-  " enthält Teilzeichenkette: ",
-  []
+  " contiene subcadena: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "def-attr": [
-  " Attribut: ",
+  " atributo: ",
   [
    [
     "n",
@@ -154,7 +190,7 @@
   ]
  ],
  "def-cat": [
-  " Kategorie: ",
+  " categoría: ",
   [
    [
     "n",
@@ -164,7 +200,7 @@
   ]
  ],
  "def-list": [
-  " Liste: ",
+  " lista: ",
   [
    [
     "n",
@@ -174,7 +210,7 @@
   ]
  ],
  "def-macro": [
-  " Makro: ",
+  " macro: ",
   [
    [
     "n",
@@ -183,13 +219,13 @@
    ],
    [
     "npar",
-    " Anzahl der Elemente = ",
+    " número de elementos = ",
     "c-pos"
    ]
   ]
  ],
  "def-var": [
-  " Variable: ",
+  " variable: ",
   [
    [
     "n",
@@ -199,19 +235,37 @@
   ]
  ],
  "ends-with": [
-  " endet mit: ",
-  []
+  " termina con: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "ends-with-list": [
-  " endet mit etwas aus Liste: ",
-  []
+  " termina con algo en la lista: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "equal": [
-  " gleich: ",
-  []
+  " igual: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "get-case-from": [
-  " Fall holen von  element: ",
+  " obtener caso de  elemento: ",
   [
    [
     "pos",
@@ -221,15 +275,21 @@
   ]
  ],
  "in": [
-  " in Liste: ",
-  []
+  " en lista: ",
+  [
+   [
+    "caseless",
+    "sin distinguir mayúsculas",
+    "c-checkbox"
+   ]
+  ]
  ],
  "let": [
-  " lassen: ",
+  " dejar: ",
   []
  ],
  "list": [
-  " Liste:  ",
+  " lista:  ",
   [
    [
     "n",
@@ -239,7 +299,7 @@
   ]
  ],
  "list-item": [
-  "Element:  ",
+  "elemento:  ",
   [
    [
     "v",
@@ -249,7 +309,7 @@
   ]
  ],
  "lit": [
-  " Literalzeichenkette:  ",
+  " cadena literal:  ",
   [
    [
     "v",
@@ -259,7 +319,7 @@
   ]
  ],
  "lit-tag": [
-  " Literal-Tag:  ",
+  " etiqueta literal:  ",
   [
    [
     "v",
@@ -269,39 +329,39 @@
   ]
  ],
  "lu": [
-  " lexikalische Einheit: ",
+  " unidad léxica: ",
   []
  ],
  "mlu": [
-  " Mehrwort: ",
+  " multi-palabra: ",
   []
  ],
  "modify-case": [
-  " Fall ändern: ",
+  " modificar caso: ",
   []
  ],
  "not": [
-  " nicht: ",
+  " no: ",
   []
  ],
  "or": [
-  " oder: ",
+  " o: ",
   []
  ],
  "otherwise": [
-  " ansonsten: ",
+  " de lo contrario: ",
   []
  ],
  "out": [
-  " Ausgabe: ",
+  " salida: ",
   []
  ],
  "pattern": [
-  " Muster: ",
+  " patrón: ",
   []
  ],
  "pattern-item": [
-  "Element:  ",
+  "elemento:  ",
   [
    [
     "n",
@@ -311,7 +371,7 @@
   ]
  ],
  "rule": [
-  " Regel: ",
+  " regla: ",
   [
    [
     "comment",
@@ -321,39 +381,39 @@
   ]
  ],
  "section-def-attrs": [
-  " Attribute: ",
+  " Atributos: ",
   []
  ],
  "section-def-cats": [
-  " Kategorien: ",
+  " Categorías: ",
   []
  ],
  "section-def-lists": [
-  " Listen: ",
+  " Listas: ",
   []
  ],
  "section-def-macros": [
-  " Makros: ",
+  " Macros: ",
   []
  ],
  "section-def-vars": [
-  " Variablen: ",
+  " Variables: ",
   []
  ],
  "section-rules": [
-  " Regeln: ",
+  " Reglas: ",
   []
  ],
  "tag": [
-  " Tag: ",
+  " etiqueta: ",
   []
  ],
  "tags": [
-  " Tags: ",
+  " etiquetas: ",
   []
  ],
  "test": [
-  " Test: ",
+  " prueba: ",
   []
  ],
  "transfer": [
@@ -361,7 +421,7 @@
   []
  ],
  "var": [
-  " Variable:  ",
+  " variable:  ",
   [
    [
     "n",
@@ -371,11 +431,11 @@
   ]
  ],
  "when": [
-  " wenn: ",
+  " cuando: ",
   []
  ],
  "with-param": [
-  " mit Element: ",
+  " con elemento: ",
   [
    [
     "pos",

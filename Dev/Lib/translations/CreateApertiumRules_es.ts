@@ -24,17 +24,17 @@
       <translation>Usado por macro {macid}</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="848"/>
+      <location filename="../CreateApertiumRules.py" line="849"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
       <translation>Limpie la variable para asegurarse de que no se retenga accidentalmente un valor anterior</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="650"/>
+      <location filename="../CreateApertiumRules.py" line="651"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
       <translation>No se encontraron afijos de destino para la característica '{trgSpec.label}' de la categoría gramatical {trgSpec.category}.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="651"/>
+      <location filename="../CreateApertiumRules.py" line="652"/>
       <source>There are no target affixes, so there's nothing further to do here.</source>
       <translation>No hay afijos de destino, por lo que no hay nada más que hacer aquí.</translation>
     </message>
@@ -54,17 +54,17 @@
       <translation>Deberíamos verificar la clase de sustantivo singular adecuada si se cumple alguna de las siguientes condiciones:</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="763"/>
+      <location filename="../CreateApertiumRules.py" line="764"/>
       <source>The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)</source>
       <translation>El sustantivo fuente no tiene un afijo plural adjunto. (Probablemente tenga un afijo singular.)</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="767"/>
+      <location filename="../CreateApertiumRules.py" line="768"/>
       <source>The target noun doesn't take plural agreement (marked as such).</source>
       <translation>El sustantivo indicado no toma concordancia plural (marcado como tal).</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="771"/>
+      <location filename="../CreateApertiumRules.py" line="772"/>
       <source>But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.</source>
       <translation>Pero si el sustantivo indicado no toma concordancia singular (marcado como tal), entonces tendremos una clase de sustantivo plural.</translation>
     </message>
@@ -144,6 +144,10 @@
       <translation>El nombre de la regla &quot;{ruleName}&quot; ya existe en el archivo de reglas. Renombrando la regla añadida a &quot;{altName}&quot;.</translation>
     </message>
     <message>
+      <source>The transfer rule file already contains a rule named &quot;{ruleName}&quot; that was not created by the Rule Assistant. To avoid overwriting a hand-written rule, no rules were written. Please rename or remove that rule, or rename your Rule Assistant rule.</source>
+      <translation>El archivo de reglas de transferencia ya contiene una regla llamada &quot;{ruleName}&quot; que no fue creada por el Asistente de Reglas. Para evitar sobrescribir una regla escrita a mano, no se escribió ninguna regla. Cambia el nombre de esa regla o elimínala, o cambia el nombre de tu regla del Asistente de Reglas.</translation>
+    </message>
+    <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
       <source>Rule Assistant Description: {desc}</source>
       <translation>Descripción del Asistente de Reglas: {desc}</translation>
@@ -176,7 +180,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1272"/>
       <source>Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Determine el lema apropiado para {cat} y guárdelo en una variable llamada {spec.varid}.</translation>
+      <translation>Determina el lema apropiado para {cat} y guárdalo en una variable llamada {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
@@ -186,7 +190,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
       <source>Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.</source>
-      <translation>Determine el afijo apropiado para {cat} y guárdelo en una variable llamada {spec.varid}.</translation>
+      <translation>Determina el afijo apropiado para {cat} y guárdalo en una variable llamada {spec.varid}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1367"/>
@@ -196,12 +200,12 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1393"/>
       <source>Determine the appropriate {label} tag for {cat} and store it in a variable named {varid}.</source>
-      <translation>Determine la etiqueta {label} apropiada para {cat} y guárdela en una variable llamada {varid}.</translation>
+      <translation>Determina la etiqueta {label} apropiada para {cat} y guárdala en una variable llamada {varid}.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1487"/>
+      <location filename="../CreateApertiumRules.py" line="1444"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corríjalo.</translation>
+      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corrígelo.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
@@ -209,24 +213,28 @@
       <translation>Valor de co-característica inesperado &quot;{val}&quot; encontrado en un conjunto de características dividido. Solo se espera &quot;sg&quot;, &quot;pl&quot; o &quot;many&quot;. Este valor será ignorado.</translation>
     </message>
     <message>
-      <location filename="../CreateApertiumRules.py" line="1514"/>
+      <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Por favor, asegúrese de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
+      <translation>Por favor, asegúrate de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>
       <source>Added {ruleCount} rule(s) from {fileName}.</source>
-      <translation>Se añadieron {ruleCount} regla(s) desde {fileName}.</translation>
+      <translation>Se añadieron {ruleCount} reglas desde {fileName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1585"/>
       <source>No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool</source>
-      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecute la herramienta Configurar categorías y Atributos de Reglas</translation>
+      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecuta la herramienta Configurar categorías y Atributos de Reglas</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1594"/>
       <source>Copying prior version of transfer rules to {backupPath}.</source>
       <translation>Copiando la versión anterior de las reglas de transferencia a {backupPath}.</translation>
+    </message>
+    <message>
+      <source>If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.</source>
+      <translation>Si editas esta regla manualmente, el Asistente de Reglas podría sobrescribir tus cambios. Cambia el nombre de la regla para evitarlo.</translation>
     </message>
   </context>
 </TS>

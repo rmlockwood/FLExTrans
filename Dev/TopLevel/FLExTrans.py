@@ -1,6 +1,9 @@
 #
 #   A shell module to launch FlexTools
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.15.3 - 4/14/26 - Ron Lockwood
 #    Add icon path to the main function call.
 #

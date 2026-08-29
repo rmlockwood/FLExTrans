@@ -35,9 +35,9 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
       <translation>Se encontró un grafema nulo para la clase natural: {natClassName}. Omitiendo.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="963"/>
+      <location filename="../DoStampSynthesis.py" line="964"/>
       <source>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</source>
-      <translation>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</translation>
+      <translation>Cancelando la exportación del léxico de destino porque el campo personalizado XAMPLE no es una lista. Cuando defina el campo personalizado XAMPLE, debe ser una lista.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="974"/>
@@ -150,14 +150,14 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
       <translation>Síntesis completa.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1408"/>
+      <location filename="../DoStampSynthesis.py" line="1409"/>
       <source>An error happened when running the STAMP tool.</source>
-      <translation>An error happened when running the STAMP tool.</translation>
+      <translation>Se produjo un error al ejecutar la herramienta STAMP.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1439"/>
+      <location filename="../DoStampSynthesis.py" line="1440"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>El módulo {modname} debe ejecutarse antes de este módulo. El archivo: ...\{filePath} no existe.</translation>
     </message>
   </context>
 </TS>

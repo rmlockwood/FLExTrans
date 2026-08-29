@@ -16,7 +16,7 @@ Do these things when making a maintenance release
 
 Do these things when making a new release (when a beta release is not already set up)
 =====================================================================================
--Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
+-Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x. Use updateVersionsInCommentsAndDoc.py to do this.
 -Finish code changes and commit
 -Edit CreateInstaller.bat and set FLEXTRANS_VERSION at the top to the new version #.
 -Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
@@ -26,8 +26,8 @@ Do these things when making a new release (when a beta release is not already se
 -Change TeamCity 
  -Click on Build FLExTrans Installer
  -Click on Settings
- -Under Build Configurations, Build FLExTrans Installer, click Edit
- -Change artifact paths for the new version
+ -Under the General tab
+  -Change artifact paths for the new version
  -Click Save
 -Build and test the install locally
 -Do another commit that has the install changes
@@ -43,9 +43,9 @@ Do these things when you are going live with the release
  -Go to Code
  -Go to tags, switch to Releases
  -Click draft new release
- -Choose a tag (dropdown) and give new vx.x.x and click Create new tag xxx on publish
+ -Select tag (dropdown) and click Create new tag, enter x.x and click Create
  -Fill out Title (e.g. 3.7 - Sense Linker and Live Rule Tester Improvements)
- -Auto-generate release notes.
+ -Auto-generate release notes or have AI generate them.
  -Publish
  -Edit release notes.
 -Update the user documentation
@@ -54,6 +54,7 @@ Do these things when you are going live with the release
  -Move the Images folder to the new subfolder
  -Move UserDoc.htm in the beta folder up one level
  -Move the Images folder under beta up one level as well.
+-Delete unneeded previous installs. E.g. If there is 3.15 and 3.15.1 and 3.15.2, just keep 3.15.2
 -Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
 -Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
 -Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
@@ -61,7 +62,7 @@ Do these things when you are going live with the release
 -announce the new release on the FLEx list
 -Send out the FLExTrans newsletter
 -Setup things for the next release (so that new builds don't overwrite the just released one.)
- -See steps at the top
+ -See "Do these things when making a new release (when a beta release is not already set up)" above
 
 Switching to a newer version of Python
 ======================================
