@@ -11,12 +11,12 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="113"/>
       <source>Overwrite existing inflection feature attributes</source>
-      <translation>Sobrescribir atributos de características de flexión existentes</translation>
+      <translation>Sobrescribir atributos de rasgos de flexión existentes</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="112"/>
       <source>Populate inflection features as attributes</source>
-      <translation>Rellenar características de flexión como atributos</translation>
+      <translation>Rellenar rasgos de flexión como atributos</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="119"/>
