@@ -106,7 +106,7 @@
     <message>
       <location filename="../TextInOut.py" line="446"/>
       <source>Default</source>
-      <translation>Pred.</translation>
+      <translation>Predeterminado</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="447"/>
@@ -143,7 +143,7 @@
       <source>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</source>
       <translation>Pasos para agregar al número base de pasos seleccionados arriba.
-Separe los pasos con espacios o comas.</translation>
+Separa los pasos con espacios o comas.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="455"/>
@@ -155,7 +155,7 @@ Separe los pasos con espacios o comas.</translation>
       <source>Steps to skip from the base number of steps selected above.
 Separate steps with spaces or commas.</source>
       <translation>Pasos para omitir del número base de pasos seleccionados arriba.
-Separe los pasos con espacios o comas.</translation>
+Separa los pasos con espacios o comas.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="458"/>
