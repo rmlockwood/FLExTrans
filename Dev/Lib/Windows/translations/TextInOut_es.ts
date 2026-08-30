@@ -71,17 +71,17 @@
     <message>
       <location filename="../TextInOut.py" line="439"/>
       <source>Current project automatically included</source>
-      <translation>Current project automatically included</translation>
+      <translation>El proyecto actual se incluye automáticamente</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="440"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Cluster Projects to Apply to</translation>
+      <translation>Proyectos de clúster para presentar una solicitud</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="441"/>
       <source>Rules</source>
-      <translation>Rules</translation>
+      <translation>Reglas</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="442"/>
