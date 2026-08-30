@@ -41,12 +41,12 @@
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="116"/>
       <source>Populate template slots as attributes</source>
-      <translation>Rellenar ranuras de plantilla como atributos</translation>
+      <translation>Rellenar los espacios de plantilla como atributos</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="117"/>
       <source>Overwrite existing template slot attributes</source>
-      <translation>Sobrescribir atributos de ranuras de plantilla existentes</translation>
+      <translation>Sobrescribir atributos de espacios de plantilla existentes</translation>
     </message>
     <message>
       <location filename="../RuleCatsAndAttribs.py" line="118"/>
