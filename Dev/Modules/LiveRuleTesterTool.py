@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.2 - 8/29/26 - Ron Lockwood
+#    Replaced the prose description at the top with a code description block: overview, the sandbox folder, transfer, synthesis, color coding, objects and code structure.
+#
 #   Version 3.17.1 - 8/29/26 - Ron Lockwood
 #    Have the Refresh Target Lexicon button do the extracting right away instead of waiting for the next synthesis.
 #
@@ -276,24 +279,138 @@
 #
 #   Earlier version history removed on 2/4/25.
 #
-#   Allow the user to test source language input live against transfer rules.
+#   OVERVIEW (AI generated, then edited)
 #
-#   By default the transfer rules file, the bilingual lexicon file and the
-#   source text file are loaded according to the configuration file. These
-#   can be changed as desired.
+#   This module lets the user run transfer rules and synthesis against a handful of hand-picked words or a sentence instead of against the whole text with all of the rules. That is what makes it
+#   useful for finding out why a rule isn't doing what was expected: zero in on one word and one rule rather than hunting through the output of a full run. The module reads the interlinear data
+#   for the configured source text, turns each sentence into a list of (surface form, data stream) pairs, and shows a window where the user checks off which source words or which sentence to
+#   test and which transfer rules to apply. The Transfer button writes those source words out as an Apertium data stream and those rules out as a cut-down transfer rules file, runs the Apertium
+#   tools over them, and shows the resulting target data stream together with the rule-execution log. The Synthesize button takes that target data stream the rest of the way to real target words
+#   with either STAMP or HermitCrab. Neither FLEx project is changed - everything happens in files in a sandbox folder (Build\LiveRuleTester).
 #
-#   The user can choose to select words from a sentence in the source text or
-#   select a whole sentence or manually enter words in data stream format.
-#   In the first two cases, the selection(s) are converted to data stream format.
-#   The user can also choose which transfer rules to "turn on".
-#   When Test button is pressed the selected transfer rules are run against the
-#   source data stream and the target data stream is put into the target box.
-#   Also the info. window will show errors and/or rules that have been matched.
+#   THE SANDBOX FOLDER
 #
-#   Behind the scenes this tool is modifying a special source text file and
-#   transfer rule file. It thens runs Apertium tools to get the results.
+#   That folder holds a Makefile that drives the Apertium tools. The file names there are fixed, and the constants near the top of this module have to stay
+#   identical with that Makefile. Transfer works with four of them: source_text.txt is the source data stream written from the words the user checked, transfer_rules.t1x is the trimmed rule file
+#   holding only the checked rules, target_text.txt is what the Apertium tools produce, and apertium_log.txt is the rule-execution log that says which rules matched and applied. Alongside those
+#   sits bilingual.dix, a copy of the real bilingual lexicon, always under that name because the Makefile expects it. Synthesis then adds target_affix_glosses.txt (the cataloged target affixes),
+#   myText.ana (the target data stream converted to the format STAMP wants) and myText.txt (the synthesized result that lands in the Synthesized Text box). window.settings.txt in the same folder
+#   is where the window state is saved between runs. Advanced mode brings in more files, since each extra transfer phase needs its own rule file, output file and log (transfer_rules.t2x and .t3x,
+#   target_text1.txt and target_text2.txt, apertium_log2.txt and apertium_log3.txt), and choosing HermitCrab synthesis over STAMP adds the HermitCrab* files in place of myText.ana.
 #
-#   Synthesis is done with either STAMP or HermitCrab.
+#   THE THREE WAYS TO PICK SOURCE WORDS
+#
+#   The Source tabs are three different routes to the same thing - the Apertium data stream string that Transfer will run, held in __lexicalUnits:
+#    - Select Words. A sentence is picked in the combo box and a check box appears for each word in it. Checking or unchecking rebuilds __lexicalUnits from the checked words only. Each check
+#      box carries a tooltip showing what the bilingual lexicon maps that word to, which is often the fastest way to see that a word is not linked yet.
+#    - Select Sentences. A list of the whole text, one sentence per row. Clicking a row takes every word in that sentence.
+#    - Manual (advanced mode only). The data stream is typed or pasted straight in. This is the way to test a lexical unit that isn't in the text at all, or to tweak one by hand.
+#
+#   getActiveLexicalUnits() is what the rest of the code asks rather than reading any of the boxes directly: it returns __lexicalUnits for the first two tabs and the contents of the manual box
+#   for the third. MAX_CHECKBOXES check boxes are created once in __init__ and reused for every sentence, laid out by FlowLayout so they wrap like words in a paragraph as the panel is resized.
+#
+#   WHAT THE TRANSFER BUTTON DOES
+#
+#   TransferClicked() is the heart of the tool. In order it: picks the source, rule, target and log file names for the phase being tested; writes the active lexical units to the source file,
+#   dropping the punctuation between them (sentence punctuation still goes out) and putting a backslash before Apertium's reserved characters in each lemma; rebuilds the rule file's
+#   section-rules element from the checked rules only, and if none are checked writes a dummy rule that matches a dummy category so the Apertium tools still have something valid to run;
+#   writes that file as decomposed unicode; substitutes any problem characters in the bilingual lexicon's symbols and in the rule file to match; saves a timestamped copy of the real rule file
+#   under Output\rule-history\created; and then runs the Makefile. If the tools fail, the contents of apertium_error.txt is shown in the target box instead of a result.
+#
+#   Rewriting the rule file is skipped unless rulesChanged or fixBilingLex says something actually changed, since that is the slow part. rulesChanged is set by rulesListClicked (any check,
+#   uncheck or reorder) and fixBilingLex by a bilingual lexicon rebuild.
+#
+#   On success the target file is read and turned into color-coded html, the log file is read and processLogLines() picks out the 'Applied rule N' lines and colorizes the lexical units in
+#   them, and both are put in their boxes. __convertIt is set so the next synthesis knows the target data stream is new.
+#
+#   WHAT THE SYNTHESIZE BUTTON DOES
+#
+#   Synthesis is four steps: catalog the affixes, extract the target lexicon, convert the target data stream, and then synthesize. The first three are slow, so each is skipped when it isn't
+#   needed. Three flags say what still needs doing, all three starting out True in __init__:
+#    - __doCatalog - catalog the target affixes (CatalogTargetAffixes) into target_affix_glosses.txt.
+#    - __extractIt - extract the target lexicon: the STAMP dictionary files (DoStampSynthesis.extract_target_lex) or, for HermitCrab, the whole HermitCrab configuration file
+#      (DoHermitCrabSynthesis.extractHermitCrabConfig).
+#    - __convertIt - convert the target data stream to the .ana format STAMP wants (ConvertTextToSTAMPformat), which TransferClicked sets each time it produces a new target data stream.
+#
+#   The first two live in refreshTargetLexicon(), which both the Synthesize button and the Refresh Target Lexicon button call. The Refresh Target Lexicon button passes forceRebuild=True, so it
+#   does the cataloging and extracting right then (behind an hourglass) rather than leaving a flag for the next synthesis, and it rebuilds even when the cached files look up to date. Doing it
+#   there is what makes the synthesis that follows quick. Then comes the actual synthesis - synthesizeWithHermitCrab() or DoStampSynthesis.synthesize() - and the result is read back, optionally
+#   run through the Text Out rules, and shown. An @ anywhere in the result means a form couldn't be synthesized, and that is what keeps the Add to Testbed button disabled.
+#
+#   For HermitCrab, setUpHermitCrab() gets the configuration file path and, the first time it is needed, loads the HCSynthByGloss DLL into self.HCdllObj, which is then kept for the rest of the
+#   session, so only the first synthesis or refresh pays for loading it.
+#
+#   STANDARD AND ADVANCED
+#
+#   Two separate things are both called advanced and it is worth keeping them apart:
+#    - advancedTransfer is about the data. loadTransferRules() sets it to True when the interchunk and postchunk rule files both exist, meaning this project uses Apertium's three-phase chunking
+#      transfer. It decides which files each phase reads and writes, and whether the results are parsed as chunks or as ordinary lexical units.
+#    - The Advanced options check box is about the window. AdvancedOptionsCheckboxClicked() shows or hides the widgets in advancedWidgetsList, adds or removes the Manual, Interchunk and
+#      Postchunk tabs, and rearranges the splitter panels: in advanced mode the log box sits beside the rules list, in standard mode it drops into a panel of its own below them. Each mode has
+#      its own remembered window size and panel heights.
+#
+#   In advanced mode each rules tab chains off the one before it, and rulesTabClicked() is what wires that up: switching to Interchunk loads the transfer phase's output as its source, and
+#   switching to Postchunk loads the interchunk phase's output. That is why the results of each phase are held in their own members (__transferLexicalUnitsResult and friends).
+#
+#   COLOR CODING
+#
+#   The source, target and log boxes all show lexical units colored by processLexicalUnit() in Lib/Testbed.py, so one scheme covers all three:
+#    - Black lemma with a blue first symbol (the grammatical category) and green symbols after it (affixes and features). The homograph and sense numbers become a subscript.
+#    - Red lemma - the word was not found. These come back from the tools with an @ in front, which is stripped before display.
+#    - Dark pink lemma with a pink UNK category - the tools didn't recognize the word at all.
+#    - Orange - punctuation.
+#    - Purple lemma, darker blue category and brighter green affixes - chunk format, which is what interchunk and postchunk data looks like. The different palette is so a glance tells chunk data
+#      from ordinary data.
+#
+#   BUTTONS THAT CLOSE THE WINDOW
+#
+#   Several buttons can't do their work while this window is up, so they set a member, close the window, and let MainFunction() act on the return code RunModule() hands back:
+#    - Changing the source text combo box, or the Refresh Source Project button, returns RESTART_MODULE. MainFunction() then closes and reopens the FLEx project - which is the point, since that
+#      is what clears the cache so edits made in FLEx get picked up - and loops round to build the window again on the new text.
+#    - View Testbed Log returns START_LOG_VIEWER, Rule Assistant returns START_RULE_ASSISTANT (which runs it and then restarts the tester), and Edit Replacement File returns
+#      START_REPLACEMENT_EDITOR.
+#
+#   OTHER KEY FEATURES
+#
+#   Rebuild Bilingual Lexicon re-extracts the bilingual lexicon, which means closing and reopening the project, so it also saves and restores the sentence and word selection around it. The up
+#   and down arrows reorder the rule in the highlighted row; that reorder only affects the copy written to the tester folder, so it is a way to try a different rule order without touching the
+#   real rule file. The select-all check box above the rule list is tri-state and reflects the rules below it. Add to Testbed pairs the source lexical units with the synthesis result and writes
+#   them into the testbed file, prompting before overwriting a test that has the same lexical units, and cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
+#   punctuation that isn't sentence punctuation is dropped (running the Text Out rules over the sentence punctuation first, if that box is checked, so the comparison is fair). The zoom buttons
+#   scale the source and target widget fonts independently. View Bilingual Lexicon and Edit Transfer Rules open those files in XMLmind XML Editor. Right-to-left text is detected by looking at
+#   the first few sentences and again at each result, and the layout direction and RTL marks are set accordingly.
+#
+#   Nearly all of the window state is remembered between runs. closeEvent() writes window.settings.txt as TOML - which tabs were showing, the last sentence, the source text name, which rules
+#   and which words were checked, the two font sizes, the three option check boxes, and the per-mode window dimensions and splitter panel heights - and __init__ reads it back inside a try so a
+#   missing, older or malformed file just falls back to the defaults. The checked words are only restored when the saved source text name matches the text being opened.
+#
+#   OBJECTS
+#
+#   Besides Main there are five small support classes, none of which holds any of the tool's logic:
+#    - SentenceList - the QAbstractListModel behind the sentence list and the sentence combo box. Each sentence is a list of (surface form, data stream) tuples; data() joins the surface forms
+#      for display while getSent() hands the raw tuples back for the check boxes to work from. It also carries the one RTL flag for the whole text.
+#    - FlowLayout and FlowContainer - a QLayout that places widgets left to right and wraps to the next line, plus the widget that holds it. Used for the word check boxes so they reflow when
+#      the panel is resized; heightForWidth() is what lets the scroll area size itself correctly.
+#    - CustomCheckBox and CheckboxDelegate - the word check boxes and the rule list check boxes respectively. Both draw their own 14-pixel indicator through paint_checkbox_indicator(), because
+#      PyQt6's own indicator turns invisible on a colored background. The delegate also toggles on a click anywhere in the row and selects that row, since the selection highlight is what tells
+#      the user which rule the up and down arrows will move.
+#
+#   Main itself owns Ui_LRTWindow (generated from Lib/Windows/LiveRuleTester.ui) and everything else: the three rule models, __ruleModel and __rulesElement pointing at whichever set the current
+#   tab is showing, __bilingMap for the tooltips, the HermitCrab DLL object, and retVal, which RunModule() checks to find out whether initialization got far enough to show the window.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary FlexTools displays, the constants (the Makefile file names among them), firstLower(), the five support classes, Main, two module level
+#   helpers, the return codes, RunModule(), MainFunction(), and the FlexToolsModule declaration at the very bottom that FlexTools looks for.
+#
+#   Main's methods fall into groups: window layout and geometry (buildResizeSplitter through positionZoomWidgets, plus AdvancedOptionsCheckboxClicked and the zoom and font functions); source
+#   selection (listSentComboClicked, SourceCheckBoxClicked, listSentClicked, doLexicalUnitProcessing and the save/restore check state helpers); the rules (loadTransferRules, displayRules,
+#   rulesListClicked, SelectAllCheckBoxClicked, moveSelectedRule); the real work (TransferClicked, setUpHermitCrab, refreshTargetLexicon, SynthesizeButtonClicked, processLogLines); and the
+#   testbed (AddTestbedButtonClicked and its helpers).
+#
+#   Control flow: FlexTools calls MainFunction(), which loops calling RunModule() for as long as it returns RESTART_MODULE, closing and reopening the project each time round. RunModule() reads
+#   the settings, gets the interlinear data for the source text (optionally reordered to match TreeTran results, if a TreeTran output file is configured), flattens it into the segment list of
+#   (surface form, data stream) tuples, constructs Main, shows it, and once the window closes turns the members the window set into one of the return codes.
 #
 
 import os
@@ -316,7 +433,7 @@ from flexlibs import FLExProject
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
 from PyQt6.QtCore import QCoreApplication, Qt, QRect, QPoint, QEvent
-from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QVBoxLayout, QSplitter, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QToolTip, QWidget, QLayout, QVBoxLayout, QSplitter, QAbstractItemView, QStyledItemDelegate, QStyleOptionViewItem
 
 import Mixpanel
 import InterlinData
@@ -355,7 +472,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -3403,29 +3520,6 @@ class Main(QMainWindow):
 
         # A line of the new font is a different height, so re-figure how far these boxes are allowed to shrink.
         self.applyOneLineBoxMinimums()
-
-def get_component_count(e):
-
-    # loop through all entryRefs (we'll use just the complex form one)
-    for entryRef in e.EntryRefsOS:
-
-        if entryRef.RefType == 1: # 1=complex form, 0=variant
-
-            return entryRef.ComponentLexemesRS.Count
-
-def get_position_in_component_list(e, complex_e):
-
-    # loop through all entryRefs (we'll use just the complex form one)
-    for entryRef in complex_e.EntryRefsOS:
-
-        if entryRef.RefType == 1: # 1=complex form, 0=variant
-
-            # loop through components
-            for i, my_e in enumerate(entryRef.ComponentLexemesRS):
-
-                if e == my_e:
-
-                    return i
 
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
