@@ -6,7 +6,7 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="145"/>
       <source>Source/Target Viewer</source>
-      <translation>Visor de origen/objetivo</translation>
+      <translation>Visor de origen/destino</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="146"/>
@@ -16,12 +16,12 @@
     <message>
       <location filename="../SrcTgtViewer.py" line="147"/>
       <source>Source</source>
-      <translation>Fuente</translation>
+      <translation>Origen</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="148"/>
       <source>Target</source>
-      <translation>Objetivo</translation>
+      <translation>Destino</translation>
     </message>
     <message>
       <location filename="../SrcTgtViewer.py" line="149"/>
