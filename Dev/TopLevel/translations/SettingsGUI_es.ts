@@ -102,7 +102,7 @@ Introduce letras individuales separadas por espacios, con un número par de letr
     <message>
       <location filename="../SettingsGUI.py" line="1524"/>
       <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto podría deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña "Compartir" del diálogo "Propiedades del proyecto de Fieldworks". Se encuentra en el menú en "Archivo" &gt; "Administración de proyectos" &gt; "Propiedades del proyecto de Fieldworks".</translation>
+      <translation>No se pudo abrir el proyecto &apos;{projectName}&apos;. Esto podría deberse a que tienes el proyecto abierto y no has activado la opción de compartir en la pestaña "Compartir" del diálogo "Propiedades del proyecto de Fieldworks". Se encuentra en el menú en "Archivo" &gt; "Administración de proyectos" &gt; "Propiedades del proyecto de Fieldworks".</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1541"/>
@@ -117,7 +117,7 @@ Introduce letras individuales separadas por espacios, con un número par de letr
     <message>
       <location filename="../SettingsGUI.py" line="1576"/>
       <source>Do you want to save your changes?</source>
-      <translation>¿Desea guardar sus cambios?</translation>
+      <translation>¿Deseas guardar sus cambios?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1610"/>
@@ -190,7 +190,7 @@ proyecto FLEx fuente. Es posible elegir no traducir los nombres propios.</transl
       <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</source>
       <translation>Indica si el sistema debe evitar regenerar datos que no han cambiado.
-Use el módulo CleanFiles para forzar la regeneración de los datos.</translation>
+Usa el módulo CleanFiles para forzar la regeneración de los datos.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1633"/>
@@ -201,8 +201,8 @@ Use el módulo CleanFiles para forzar la regeneración de los datos.</translatio
       <location filename="../SettingsGUI.py" line="1634"/>
       <source>When editing the transfer rules file or the testbed, if Yes, characters with 
 diacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).</source>
-      <translation>Al editar el archivo de reglas de transferencia o el banco de pruebas, si elige Sí, los caracteres con
-diacríticos se compondrán (NFC) en caracteres únicos (cuando sea posible). Si elige No, los caracteres se descompondrán (NFD).</translation>
+      <translation>Al editar el archivo de reglas de transferencia o el banco de pruebas, si eliges Sí, los caracteres con
+diacríticos se compondrán (NFC) en caracteres únicos (cuando sea posible). Si eliges No, los caracteres se descompondrán (NFD).</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1637"/>
@@ -214,7 +214,7 @@ diacríticos se compondrán (NFC) en caracteres únicos (cuando sea posible). Si
       <source>A list of punctuation that ends a sentence.
 In transfer rules you can check for the end of a sentence.</source>
       <translation>Una lista de signos de puntuación que terminan una oración.
-En las reglas de transferencia, puede verificar el final de una oración.</translation>
+En las reglas de transferencia, puedes verificar el final de una oración.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1640"/>
