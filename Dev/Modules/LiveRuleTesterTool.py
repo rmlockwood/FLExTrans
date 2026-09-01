@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.5 - 9/1/26 - Ron Lockwood
+#    Use the shared APERTIUM_LOG_FILE constant from Testbed.py instead of defining the apertium_log.txt name a second time and documented that the log names must match the tester makefiles.
+#
 #   Version 3.17.4 - 9/1/26 - Ron Lockwood
 #    Lint fix.
 #
@@ -479,7 +482,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.4",
+        FTM_Version    : "3.17.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -510,11 +513,19 @@ HC_MASTER_FILE = 'HermitCrabMaster.txt'
 HC_SURFACE_FORMS_FILE = 'HermitCrabSurfaceForms.txt'
 ENVIR_VAR_FIELDWORKSDIR = 'FIELDWORKSDIR'
 
-# These strings need to be identical with the Makefile in the LiveRuleTester folder
+# These strings need to be identical with the makefiles in the LiveRuleTester folder - Makefile for standard transfer and Makefile.advanced for advanced transfer. Those two are installed there from
+# Installer/InstallerResources/Makefiles (MakefileForLiveRuleTester and MakefileForLiveRuleTester.advanced), so a name changed here has to be changed in both of those source makefiles as well, or
+# the tester will go looking for a file the Apertium tools never wrote.
 SOURCE_APERT = 'source_text.txt'
 RULE_FILE1 = 'transfer_rules.t1x'
 TARGET_FILE1 = 'target_text1.txt'
-LOG_FILE = 'apertium_log.txt'
+
+# The three log file names likewise have to match the makefiles. MakefileForLiveRuleTester.advanced redirects each tool's standard error to a log of its own - transfer to apertium_log.txt,
+# interchunk to apertium_log2.txt, postchunk to apertium_log3.txt - so that the execution log for a rules tab shows only the stage that tab ran. (The Build folder's Makefile.advanced works the
+# other way: it appends all three stages to the one apertium_log.txt, since a full FLExTrans run wants the whole trace together.) The transfer-stage name is the one FLExTrans shares everywhere, so
+# take it from Testbed.py rather than spelling the string out a second time.
+LOG_FILE = APERTIUM_LOG_FILE
+
 RULE_FILE2 = 'transfer_rules.t2x'
 TARGET_FILE2 = 'target_text2.txt'
 LOG_FILE2 = 'apertium_log2.txt'
