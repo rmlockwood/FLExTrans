@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.2 - 9/1/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.17.1 - 8/31/26 - Ron Lockwood
 #    Store which transfer rules fired for which lexical units of a test, added the Apertium log/rules-file parsing that finds them and pretty printed the testbed and testbed results files.
 #
@@ -59,14 +62,11 @@
 #   Classes that model objects for the testbed.
 #   See design diagrams here: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb 
 
-from email.mime import text
-from platform import node
 import re
 import os
 import xml.etree.ElementTree as ET
 import uuid
 import unicodedata
-from datetime import datetime
 
 import TestbedValidator
 import ReadConfig 
@@ -214,12 +214,18 @@ class LexicalUnit():
     def toString(self):
         
         if self.__plainString == None:
-            
+
+            # A well-formed lexical unit always has a headword and category; callers check isWellFormed() before using it
+            assert self.__headWord is not None and self.__gramCat is not None
+
             ret_str = self.__headWord
-            
+
             if self.__gramCat != SENT:
+
+                assert self.__senseNum is not None
+
                 ret_str += '.' + self.__senseNum
-                
+
             ret_str += ' ' + self.__gramCat
             
             for tag in self.__otherTags:
@@ -232,18 +238,24 @@ class LexicalUnit():
     def toFormattedString(self, rtl = False):
         
         if self.__formatedString == None:
-            
+
+            # A well-formed lexical unit always has a headword and category; callers check isWellFormed() before using it
+            assert self.__headWord is not None and self.__gramCat is not None
+
             # Create an element
             p = ET.Element('span')
-            
+
             # Split off the homograph_num (if present; sent punctuation won't have it)
             lemma_parts = re.split(r'(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
-            
+
             # Output the lexeme
             span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
-        
+
             # Output the subscript homograph # and sense # (if they exist)
             if self.__gramCat != SENT:
+
+                assert self.__senseNum is not None
+
                 addSubscript(span, lemma_parts[1]+'.'+self.__senseNum)
             
             # Check for RTL
@@ -275,11 +287,17 @@ class LexicalUnit():
         return self.__formatedString
     
     def toApertiumString(self):
-        
+
+        # A well-formed lexical unit always has a headword and category; callers check isWellFormed() before using it
+        assert self.__headWord is not None and self.__gramCat is not None
+
         # Escape reserved characters with a backslash
         ret_str = '^' + Utils.escapeReservedApertChars(self.__headWord)
 
         if self.__gramCat != SENT:
+
+            assert self.__senseNum is not None
+
             ret_str += '.' + self.__senseNum
 
         # Add grammatical category as a tag
@@ -404,7 +422,10 @@ class LexicalUnitParser():
         # Split on the . that's between homograph # and sense #
         # We'll get something like: ['ich1', '1 pro lieben2', '2 v 1/3SG dich3', '44 pro suf1 suf2']
         tokens = re.split(r'\.', myStr)
-        
+
+        # Initialize headword so it's always bound; the first token (i == 0) sets it before the later iterations use it
+        headword = ''
+
         # Go through the tokens
         for i, tok in enumerate(tokens):
             
@@ -499,15 +520,27 @@ class TestbedTestXMLObject():
     def __createLUListFromXMLStructure(self):
         self.__luList = []
 
+        # This is only called when a test node was given to the constructor, and a <test> element always has the source input / lexical units structure
+        assert self.__testNode is not None
+
         sourceInputNode = self.__testNode.find(SOURCE_INPUT)
+        assert sourceInputNode is not None
+
         lexicalUnitsNode = sourceInputNode.find(LEXICAL_UNITS)
-        
-        # Go through all the lexical units 
+        assert lexicalUnitsNode is not None
+
+        # Go through all the lexical units
         for luNode in list(lexicalUnitsNode):
 
-            # Do hash on headword + sense number + tags concatenated (don't need gramm. cat since x1.1 will generally have same gramm. cat)            
-            tags = ''.join([x.text for x in list(luNode.find(OTHER_TAGS))])
-            myHash = hash(tuple((luNode.find(HEAD_WORD).text, luNode.find(SENSE_NUM).text, tags)))
+            # A <lexicalUnit> element always has these child elements
+            headWordNode = luNode.find(HEAD_WORD)
+            senseNumNode = luNode.find(SENSE_NUM)
+            otherTagsNode = luNode.find(OTHER_TAGS)
+            assert headWordNode is not None and senseNumNode is not None and otherTagsNode is not None
+
+            # Do hash on headword + sense number + tags concatenated (don't need gramm. cat since x1.1 will generally have same gramm. cat)
+            tags = ''.join([x.text or '' for x in list(otherTagsNode)])
+            myHash = hash(tuple((headWordNode.text, senseNumNode.text, tags)))
             
             # See if this hash value is in the cache and if so use it.
             if myHash in self.__luCache:
@@ -520,6 +553,10 @@ class TestbedTestXMLObject():
             self.__luList.append(lu)
             
     def __createXMLStructureFromLUList(self):
+
+        # This is only called when the constructor was given a lexical unit list, and the origin always comes along with it
+        assert self.__luList is not None and self.__origin is not None
+
         self.__testNode = ET.Element(TEST)
         self.__testNode.attrib[ID] = str(uuid.uuid4())
         self.__testNode.attrib[IS_VALID] = YES
@@ -556,23 +593,54 @@ class TestbedTestXMLObject():
             comment.text = self.__comment
     
     def getID(self):
-        return self.__testNode.attrib[ID]
+        return self.getTestNode().attrib[ID]
+
     def isValid(self):
-        if self.__testNode.attrib[IS_VALID] == YES:
+
+        if self.getTestNode().attrib[IS_VALID] == YES:
             return True
+
         return False
+
     def getOrigin(self):
-        return self.__testNode.find(SOURCE_INPUT).attrib[ORIGIN]
+
+        # A <test> element always has a <sourceInput> child
+        sourceInputNode = self.getTestNode().find(SOURCE_INPUT)
+        assert sourceInputNode is not None
+
+        return sourceInputNode.attrib[ORIGIN]
+
     def getExpectedResult(self):
+
         if self.__expResult == None:
-            self.__expResult = self.__testNode.find(TGT_EXPECTED).text
+
+            # A <test> element always has the target output / expected result structure
+            expectedNode = self.getTestNode().find(TGT_EXPECTED)
+            assert expectedNode is not None
+
+            self.__expResult = expectedNode.text
+
         return self.__expResult
+
     def getActualResult(self):
+
         if self.__actResult == None:
-            self.__actResult = self.__testNode.find(TGT_ACTUAL).text
+
+            # A <test> element always has the target output / actual result structure
+            actualNode = self.getTestNode().find(TGT_ACTUAL)
+            assert actualNode is not None
+
+            self.__actResult = actualNode.text
+
         return self.__actResult
+
     def setActualResult(self, myStr):
-        self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
+
+        # A <test> element always has the target output / actual result structure
+        actualNode = self.getTestNode().find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
+        assert actualNode is not None
+
+        actualNode.text = myStr
 
     # Record which transfer rules fired for this test, in the order they fired. appliedRuleList is a list of (rule number, rule comment, lexical unit list) tuples - the rule's sequential number in the
     # transfer rules file, the comment that names it there, and the lexical units the rule matched. The comment is stored along with the number because the rules file goes on being edited after a
@@ -580,15 +648,15 @@ class TestbedTestXMLObject():
     def setAppliedRules(self, appliedRuleList):
 
         # Throw away what an earlier extraction of this same result put here, so re-running the extraction doesn't pile up duplicates.
-        oldNode = self.__testNode.find(APPLIED_RULES)
+        oldNode = self.getTestNode().find(APPLIED_RULES)
 
         if oldNode is not None:
-            self.__testNode.remove(oldNode)
+            self.getTestNode().remove(oldNode)
 
         if not appliedRuleList:
             return
 
-        appliedRulesNode = ET.SubElement(self.__testNode, APPLIED_RULES)
+        appliedRulesNode = ET.SubElement(self.getTestNode(), APPLIED_RULES)
 
         for ruleNum, ruleComment, luList in appliedRuleList:
 
@@ -605,7 +673,7 @@ class TestbedTestXMLObject():
     def getAppliedRules(self):
 
         appliedRuleList = []
-        appliedRulesNode = self.__testNode.find(APPLIED_RULES)
+        appliedRulesNode = self.getTestNode().find(APPLIED_RULES)
 
         if appliedRulesNode is None:
             return appliedRuleList
@@ -618,35 +686,55 @@ class TestbedTestXMLObject():
         return appliedRuleList
 
     def getTestNode(self):
+
+        # __init__ always leaves the test node set - either the node that was passed in or the one built from the lexical unit list - so this also narrows the Optional type for the methods above
+        assert self.__testNode is not None
+
         return self.__testNode
+
     def getComment(self):
-        node = self.__testNode.find("comment")
+        node = self.getTestNode().find("comment")
         return node.text if node is not None else ""
+
     def setComment(self, text):
-        node = self.__testNode.find("comment")
+
+        node = self.getTestNode().find("comment")
+
         if node is None:
-            node = ET.SubElement(self.__testNode, "comment")
+
+            node = ET.SubElement(self.getTestNode(), "comment")
+
         node.text = text
-    # Convert all the lexical units into one string    
+    # Convert all the lexical units into one string
     def getLUString(self):
         ret_str = ''
-        
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
+
         for lu in self.__luList:
             ret_str += ' ' + lu.toString()
-        
+
         return ret_str.strip()
+
     # Return colorized html form of all LUs
     def getFormattedLUString(self, rtl=False):
         ret_str = ''
-        
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
+
         for lu in self.__luList:
             ret_str += ' ' + lu.toFormattedString(rtl)
-        
+
         return ret_str.strip()
-    
+
     def getApertiumString(self):
         ret_str = ''
-        
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
+
         for lu in self.__luList:
             myStr = lu.toApertiumString()
             if re.search(SENT_TAG, myStr):
@@ -682,6 +770,9 @@ class TestbedTestXMLObject():
             prevInvalidFlag = True
         else:
             prevInvalidFlag = False
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
 
         for lu in self.__luList:
             
@@ -829,7 +920,12 @@ class FLExTransTestbedXMLObject():
     def __getTestsNode(self):
         # For now we assume just one testbed (named 'default')
         # In the future we will support a user selected testbed or testbeds
-        return self.__rootNode.find(TESTBEDS+'/'+TESTBED+'/'+TESTS)
+        testsNode = self.__rootNode.find(TESTBEDS+'/'+TESTBED+'/'+TESTS)
+
+        # A testbed file always has the testbeds/testbed/tests structure
+        assert testsNode is not None
+
+        return testsNode
     
     def getTestXMLObjectList(self):
         return self.__TestXMLObjectList
@@ -979,6 +1075,9 @@ class FlexTransTestbedFile():
 
     def write(self):
 
+        # __init__ raises a ValueError if the testbed path setting is missing, so by the time write() can be called the path is always set
+        assert self.__testbedPath is not None
+
         # Indent the tree before writing so the testbed comes out one element per line instead of as a single enormous line. A tab per level is what XMLmind uses when the user edits the testbed
         # there, so writing it the same way here keeps the file from being reformatted end to end every time it passes between the two.
         ET.indent(self.__testbedTree, space='\t')
@@ -1022,7 +1121,7 @@ class TestbedResultXMLObject():
             parentNode.insert(0, self.__rootNode)
             
         else:
-            for testbedNode in list(self.__rootNode):
+            for testbedNode in list(rootNode):
                 # create a testbed object and add it to the list
                 testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
                 self.__testbedXMLObjList.append(testbedXMLObj)
@@ -1031,13 +1130,17 @@ class TestbedResultXMLObject():
         return self.__testbedXMLObjList
     
     def getRoot(self):
+
+        # __init__ always leaves the root node set - either the <result> element that was passed in or the new one it creates - so this also narrows the Optional type for the methods below
+        assert self.__rootNode is not None
+
         return self.__rootNode
-    
+
     def getStartDateTime(self):
-        return self.__rootNode.attrib[START_DATE_TIME]
-        
+        return self.getRoot().attrib[START_DATE_TIME]
+
     def getEndDateTime(self):
-        return self.__rootNode.attrib[END_DATE_TIME]
+        return self.getRoot().attrib[END_DATE_TIME]
         
     def getFailedAndInvalid(self):
         tot_failed = 0
@@ -1055,19 +1158,21 @@ class TestbedResultXMLObject():
         return total
     
     def isIncomplete(self):
-        if self.__rootNode.attrib[END_DATE_TIME] == '':
+
+        if self.getRoot().attrib[END_DATE_TIME] == '':
             return True
+
         return False
-   
+
     def endTest(self):
-        self.__rootNode.attrib[END_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
+        self.getRoot().attrib[END_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
 
     def startTest(self, testbedXMLObj):
-        self.__rootNode.attrib[START_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
-        self.__rootNode.attrib[END_DATE_TIME] = ''
-        
+        self.getRoot().attrib[START_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
+        self.getRoot().attrib[END_DATE_TIME] = ''
+
         # add the <FLExTransTestbed> element below the <testResult> element
-        self.__rootNode.append(testbedXMLObj.getRoot())
+        self.getRoot().append(testbedXMLObj.getRoot())
         
         # add the testbed object to the internal list
         self.__testbedXMLObjList.append(testbedXMLObj)
@@ -1128,7 +1233,11 @@ class FLExTransTestbedResultsXMLObject():
         return self.__rootNode
     
     def __createTestbedResultXMLObjectList(self):
-        # loop through all the result objects 
+
+        # This is only called when a root node was given to the constructor
+        assert self.__rootNode is not None
+
+        # loop through all the result objects
         for resultNode in list(self.__rootNode):
 
             # initialize a result object and add it to the list
@@ -1653,7 +1762,10 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
             
         retStr += 'style="white-space: nowrap;"'
         retStr += f'>'
-        
+
+        # outputLUSpan always gives the span a text string
+        assert spanEl.text is not None
+
         # substitute a space with a non-breaking space and a hypen with a non-breaking hyphen
         textPart = re.sub(' ', '&nbsp;', spanEl.text)
         textPart = re.sub('-', '&#8209;', textPart)
