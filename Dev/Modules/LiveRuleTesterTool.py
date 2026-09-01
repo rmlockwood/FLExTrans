@@ -5,6 +5,16 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.5 - 9/1/26 - Ron Lockwood
+#    Use the shared APERTIUM_LOG_FILE constant from Testbed.py instead of defining the apertium_log.txt name a second time and documented that the log names must match the tester makefiles.
+#
+#   Version 3.17.4 - 9/1/26 - Ron Lockwood
+#    Lint fix.
+#
+#   Version 3.17.3 - 9/1/26 - Ron Lockwood
+#    Read the Apertium log with the shared Testbed.parseAppliedRulesLog instead of a second copy of the parsing. The execution log now shows only the units a rule really matched, names the rule
+#    after them in parentheses, and no longer cuts a lexical unit short when a tag holds a slash, e.g. <1/3SG>.
+#
 #   Version 3.17.2 - 8/29/26 - Ron Lockwood
 #    Replaced the prose description at the top with a code description block: overview, the sandbox folder, transfer, synthesis, color coding, objects and code structure.
 #
@@ -472,7 +482,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -503,11 +513,19 @@ HC_MASTER_FILE = 'HermitCrabMaster.txt'
 HC_SURFACE_FORMS_FILE = 'HermitCrabSurfaceForms.txt'
 ENVIR_VAR_FIELDWORKSDIR = 'FIELDWORKSDIR'
 
-# These strings need to be identical with the Makefile in the LiveRuleTester folder
+# These strings need to be identical with the makefiles in the LiveRuleTester folder - Makefile for standard transfer and Makefile.advanced for advanced transfer. Those two are installed there from
+# Installer/InstallerResources/Makefiles (MakefileForLiveRuleTester and MakefileForLiveRuleTester.advanced), so a name changed here has to be changed in both of those source makefiles as well, or
+# the tester will go looking for a file the Apertium tools never wrote.
 SOURCE_APERT = 'source_text.txt'
 RULE_FILE1 = 'transfer_rules.t1x'
 TARGET_FILE1 = 'target_text1.txt'
-LOG_FILE = 'apertium_log.txt'
+
+# The three log file names likewise have to match the makefiles. MakefileForLiveRuleTester.advanced redirects each tool's standard error to a log of its own - transfer to apertium_log.txt,
+# interchunk to apertium_log2.txt, postchunk to apertium_log3.txt - so that the execution log for a rules tab shows only the stage that tab ran. (The Build folder's Makefile.advanced works the
+# other way: it appends all three stages to the one apertium_log.txt, since a full FLExTrans run wants the whole trace together.) The transfer-stage name is the one FLExTrans shares everywhere, so
+# take it from Testbed.py rather than spelling the string out a second time.
+LOG_FILE = APERTIUM_LOG_FILE
+
 RULE_FILE2 = 'transfer_rules.t2x'
 TARGET_FILE2 = 'target_text2.txt'
 LOG_FILE2 = 'apertium_log2.txt'
@@ -3394,77 +3412,59 @@ class Main(QMainWindow):
                 self.__postchunkPrevSource = self.getActiveSrcTextEditVal()
                 self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
 
-        # Load the log file
-        with open(logFile, encoding='utf-8') as logFileHandle:
-
-            myLines = logFileHandle.readlines()
-
         # Fix up the output of the log file to colorize it and remove unneeded stuff
-        newText = self.processLogLines(myLines)
+        newText = self.processLogLines(logFile, trFile)
         self.ui.LogEdit.setText(newText)
 
         self.rulesChanged = False
         self.unsetCursor()
 
-    def processLogLines(self, inputLines):
+    def processLogLines(self, logFile, rulesFile):
 
         retStr = ''
 
         # Process advanced (chunk) data differently. Interchunk and Postchunk phases have the chunk format
         if self.advancedTransfer and self.ui.tabRules.currentIndex() != 0: # transfer tab
 
-            delimeter = '} '
             processFunc = processAdvancedResults
         else:
-            delimeter = '> '
             processFunc = processLexicalUnit
 
-        for line in inputLines:
+        # How many units each rule matches, read from the very rules file that was compiled and run for this phase, so its rule numbers are the ones the log reports.
+        ruleInfo = getTransferRuleInfo(rulesFile)
 
-            # A typical line may look like this:
-            # apertium-transfer: Applied rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
-            # or
-            # apertium-transfer: Matched rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+        # Pull the rule applications out of the log. The tester runs one phase at a time and gives each phase its own log file, so there is no need to say which tool's lines to take - a toolName of
+        # None takes them all. Picking the units out of a trace line is fiddly enough (a lemma can hold spaces, a tag can hold a slash) that it lives in Testbed, shared with the testbed's own use of it.
+        for ruleNum, lexUnitList in parseAppliedRulesLog(logFile, toolName=''):
 
-            # If we have a line matching 'Applied rule N', process it
-            if re.search(r'Applied rule \d+', line):
+            # Show only what the rule matched. Apertium reads one unit past a match to find out the match is over and prints that one alongside the matched ones, but the rule did nothing to it, so
+            # leaving it in would misrepresent what the rule did. The rule's own pattern says how many units it takes. Without a readable rules file (patternLength of 0) the window is left whole.
+            ruleComment, patternLength = ruleInfo.get(ruleNum, ('', 0))
 
-                # Extract the rule # and the lexical units
-                matchObj = re.search(r'(.+)(Applied rule )(\d+)( line \d+ )(.+)', line)
-                if matchObj is None:
-                    continue
-                ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
-                lexUnitsStr = matchObj.group(5).strip()
+            if patternLength:
 
-                # Translate the word 'Rule' to the localized version
-                ruleStr = re.sub('Applied rule ', _translate('LiveRuleTesterTool', 'Applied rule '), ruleStr)
+                lexUnitList = lexUnitList[:patternLength]
 
-                # Put a delimeter between multiple lexical units
-                lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
+            # Create a <p> html element
+            paragraphEl = ET.Element('p')
 
-                # Split into lexical units
-                lexUnitList = lexUnitsStr.split('\t')
+            # Start the span with 'Applied rule' + #, the word translated and the number padded to two digits so the rows line up under one another
+            ruleStr = _translate('LiveRuleTesterTool', 'Applied rule ') + str(ruleNum).zfill(2)
+            outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sentModel.getRTL())
 
-                # Each lexical unit also has / plus the target lexical unit. Remove these.
-                lexUnitList = [myLU.split('/')[0] for myLU in lexUnitList]
+            # process all the lexical units
+            for lexUnit in lexUnitList:
 
-                # Create a <p> html element
-                paragraphEl = ET.Element('p')
+                # Mark up the lexical unit with color, etc.
+                processFunc(lexUnit+' ', paragraphEl, self.__sentModel.getRTL(), True)
 
-                # Start the span with 'Rule' + #
-                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sentModel.getRTL())
+            # Round the row off with the rule's name from the rules file, in parentheses, so it says which rule fired rather than only which number it is. A rule with no comment just ends with its units.
+            if ruleComment:
 
-                # process all the lexical units
-                for lexUnit in lexUnitList:
+                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'({ruleComment})', self.__sentModel.getRTL())
 
-                    # Mark up the lexical unit with color, etc.
-                    processFunc(lexUnit+' ', paragraphEl, self.__sentModel.getRTL(), True)
-
-                # Convert the ET element to an html string
-                coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
-
-                # add the html for this line to the reest
-                retStr += coloredLUStr
+            # Convert the ET element to an html string and add it to the rest
+            retStr += ET.tostring(paragraphEl, encoding='unicode')
 
         return retStr
 

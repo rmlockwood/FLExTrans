@@ -5,6 +5,12 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.17.2 - 9/1/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17.1 - 8/31/26 - Ron Lockwood
+#    Write the stripped transfer rules file indented, one element per line, so apertium-transfer's line numbers point at the right rule.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -68,7 +74,60 @@
 #
 #   earlier version history removed on 3/5/25
 #
-#   Runs the makefile that calls Apertium 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is the transfer step of FLExTrans. It takes the analyzed source text - the Apertium data stream of source lexical units that Extract Source Text (or Start Testbed) wrote - and runs
+#   the Apertium tools over it to produce a target data stream. Two things happen in that run: lexical transfer, where lt-proc looks each source lexical unit up in the compiled bilingual lexicon and
+#   swaps in the target word the user linked it to, and structural transfer, where apertium-transfer applies the user's transfer rules to turn source morphemes and word order into target ones. The
+#   result lands in the file named by the Target Transfer Results File setting, typically target_text-aper.txt in the Build folder, ready for synthesis.
+#
+#   The Apertium tools are not called directly. Everything is driven by the makefile in the Build folder, which is what keeps the compiling steps from being redone when nothing has changed: the
+#   bilingual lexicon is compiled to bilingual.bin only when the .dix file is newer, and the rules are compiled to transfer_rules.t1x.bin only when the rules file is newer. With advanced (three
+#   phase) transfer the makefile chains apertium-interchunk and then apertium-postchunk on after apertium-transfer, each with its own rules file. The tools' standard error goes to apertium_log.txt,
+#   which is the rule trace that End Testbed and the Live Rule Tester read to find out which rules fired.
+#
+#   PREPARING THE RULES FILE
+#
+#   The rules file the user edits is not the one the tools see. stripRulesFile() parses it and writes a cut-down copy into the Build folder as tr.t1x (tr.t2x and tr.t3x for the second and third
+#   phases), doing three things on the way:
+#    - Comments and headers are dropped, a side effect of round-tripping the file through ElementTree. That is no longer necessary on newer versions of apertium-transfer, but it does no harm.
+#    - Characters that mean something to Apertium are escaped. In a <cat-item> lemma only * needs it, since it would otherwise be treated as a glob matching any sequence of characters; under <test>
+#      the <lit> and <list-item> values get the fuller escaping, angle brackets excepted - those are legal in a literal string.
+#    - The output is indented one element per line and written as decomposed unicode. The indenting matters because apertium-transfer reports line numbers back to the user ("Applied rule 18 line 1");
+#      with the whole file on a single line every message would say line 1 and point nowhere.
+#
+#   The stripped file's modification date is then set back to that of the original rules file, so that the makefile doesn't recompile rules that haven't actually changed.
+#
+#   PROBLEM CHARACTERS
+#
+#   Some characters that are perfectly legal in a FLEx grammatical category or feature are not legal in an Apertium symbol. fixProblemChars() rewrites them in the bilingual lexicon, keeping the
+#   original as a .before_fix copy, and hands back the substitutions it made so that subProbSymbols() can make those very same substitutions in the stripped rules file - the two have to agree or the
+#   rules would no longer match anything. Afterwards the backup copy is put back over the lexicon and unfixProblemCharsRuleFile() converts the transfer results back, so the user never sees the
+#   substituted forms.
+#
+#   RULE ATTRIBUTE CHECKS
+#
+#   checkRuleAttributes() reads the user's rules file and warns about two things that won't stop the tools but will make rules behave in ways the user doesn't expect: an attribute whose tag is the
+#   same as one of the grammatical categories in the special a_gram_cat attribute, and an attribute with a period in it where an underscore was meant. These come back as a list of warnings that get
+#   reported, and then transfer carries on regardless.
+#
+#   HOW THE MAKEFILE IS RUN
+#
+#   run_makefile() writes do_make.bat into the Build folder and runs it. The batch file sets the makefile's four path variables (bilingual lexicon, source text, target text, and the FlexTools folder
+#   where the Apertium executables and DLLs live), empties PATH so that nothing else on the machine can be picked up in place of those, changes drive and directory to the Build folder and runs make
+#   there, sending standard error to apertium_error.txt. The three file paths are made relative to the Build folder, since that is where make will be running. The batch file is written in the Windows
+#   ANSI codepage and the Build folder is named by its Windows short path, both so that non-ASCII characters in the paths don't break it. If make comes back with a failure, the contents of
+#   apertium_error.txt is reported to the user line by line.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary FlexTools displays, the file name constants (which have to stay identical with the makefile), the problem character tables, the problem character
+#   functions (fixProblemChars, getListOfSymbolSubPairs, unfixProblemCharsDict, unfixProblemCharsRuleFile and subProbSymbols), stripRulesFile(), the attribute checks, turnPathIntoEnvironPath() and
+#   run_makefile(), then runApertium() and MainFunction(), and the FlexToolsModule declaration at the very bottom that FlexTools looks for.
+#
+#   runApertium() is where the order of the work is set: check that the bilingual lexicon, the analyzed text and the rules file all exist (naming, for the first two, the module that would produce the
+#   missing one), strip the rules file and any advanced phase rules files, check the rule attributes, fix the problem characters in the lexicon and then in the rules, restore the stripped rules
+#   file's modification date, run the makefile, and finally undo the problem character fixes whether or not the run succeeded.
 #
 
 import os
@@ -115,7 +174,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -261,8 +320,17 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
             if 'v' in node.attrib:
                 node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'], notAngleBrackets=True)
 
+    # Without this, ET.tostring() would put the whole rules file on a single line. That matters because apertium-transfer reports line numbers back to the user - the trace says things like
+    # "Applied rule 18 line 1" and warnings say things like "<let> on line 2890 sometimes discards its value". With everything on one line every message would say "line 1" and point nowhere.
+    # Indenting one element per line makes those line numbers identify the rule again. We use a tab per level because that is what XMLmind produces when a user edits a transfer rules file and
+    # what the existing indented tr.t1x files use. Indenting only adds whitespace between elements, which apertium-preprocess-transfer ignores - compiling a rules file with and without it was
+    # checked to give a byte-identical .bin.
+    ET.indent(tree, space='\t')
+
     outPath = os.path.join(buildFolder, strippedRulesFileName)
+
     with open(outPath, 'w', encoding='utf-8') as fout:
+
         text = ET.tostring(tree, encoding='unicode')
         # Always write transfer rule data as decomposed
         text = unicodedata.normalize('NFD', text)

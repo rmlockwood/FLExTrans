@@ -5,6 +5,21 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.5 - 9/1/26 - Ron Lockwood
+#    Noted in the APERTIUM_LOG_FILE comment that the Live Rule Tester shares this constant.
+#
+#   Version 3.17.4 - 9/1/26 - Ron Lockwood
+#    Return True from LexicalUnit.isWellFormed() for a well-formed unit instead of falling off the end, and default the lexical unit and test caches to None instead of a shared {}.
+#
+#   Version 3.17.3 - 9/1/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17.2 - 9/1/26 - Ron Lockwood
+#    Lint fixes.
+#
+#   Version 3.17.1 - 8/31/26 - Ron Lockwood
+#    Store which transfer rules fired for which lexical units of a test, added the Apertium log/rules-file parsing that finds them and pretty printed the testbed and testbed results files.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -53,17 +68,127 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   Classes that model objects for the testbed.
-#   See design diagrams here: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This file holds everything the testbed is made of: the classes that model the testbed and the testbed results log, the class that models a single lexical unit, and the functions that color code
+#   a lexical unit into html. The four testbed modules are thin by comparison - Start Testbed, End Testbed and the Testbed Log Viewer are largely just orchestration over what is here, and the Live
+#   Rule Tester's Add to Testbed button builds its test with these same classes. The color coding functions have spread well beyond the testbed and are now what the Live Rule Tester, the View
+#   Source/Target Apertium Text tool and the transfer preview all use to display an Apertium data stream. See the design diagrams at: https://app.moqups.com/pNl8pLlTB6/view/page/a8dd9b3cb
+#
+#   WHAT A TEST IS
+#
+#   A test is a handful of source lexical units - normally one word or a short phrase - paired with the target text they are expected to produce. It is created in the Live Rule Tester, where the
+#   user transfers and synthesizes those words, likes the result, and presses Add to Testbed. Running the testbed then feeds every test through the ordinary FLExTrans machinery and records what
+#   each one actually produced this time, so that a rule change which quietly breaks something that was already working shows up as a failed test. Later we will have a Testbed Editor tool, but
+#   for now the user can edit the testbed file by hand in XMLmind XML Editor if they want to change a test or add one that was missed.
+#
+#   Besides its lexical units and its expected result, a test carries a uuid, the name of the source text the words came from, an is_valid flag with the reason when it is not valid, optionally a
+#   comment the user wrote about it, and - filled in after a run - the actual result and the transfer rules that fired for it.
+#
+#   THE TWO FILES
+#
+#   Two XML files are modeled here, both named by settings, and the second holds copies of the first:
+#    - The testbed file (Testbed File setting) is the tests themselves, which the user builds up over time. Its shape is FLExTransTestbed / testbeds / testbed / tests / test, with each test holding
+#      sourceInput / lexicalUnits / lexicalUnit elements and a targetOutput with expectedResult and actualResult. The testbed element carries a name; only the one named default is used for now, but
+#      the level is there so that a user could one day keep several testbeds. The FLExTransTestbed element also carries source_direction, which is where right-to-left-ness comes from.
+#    - The testbed results file (Testbed Results File setting) is the log of runs. Its shape is FLExTransTestbedResults / testbedResult, one testbedResult per run, stamped with a start and an end
+#      date-time and holding a whole copy of the testbed as it stood when that run began. Newest goes first. Keeping a copy rather than a reference is what lets the log viewer show an old run
+#      faithfully after the testbed itself has moved on.
+#
+#   THE OBJECT LAYERS
+#
+#   The classes mirror those two shapes, one class per level of nesting, each holding the ElementTree element for its level and a list of the objects for the level below:
+#    - FlexTransTestbedFile - the testbed file. Reads it, or creates an empty structure when there isn't one yet (isNew/exists say which), and writes it back.
+#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), overwriteInTestbed() and validate() live.
+#    - TestbedTestXMLObject - one test. Everything about a single test, described below.
+#    - LexicalUnit - one lexical unit of a test.
+#   and on the results side:
+#    - FlexTransTestbedResultsFile - the results file, read or created the same way.
+#    - FLExTransTestbedResultsXMLObject - all the runs. initTestResult() starts a new one, endTest() stamps the newest one as finished.
+#    - TestbedResultXMLObject - one run: its start and end date-times, and the copy of the testbed taken when it started.
+#   and below that it is FLExTransTestbedXMLObject again, since what a run holds is a testbed.
+#
+#   Several methods - dump(), extractResults(), getNumTests(), getFailedAndInvalid(), isRTL() - simply recurse down through those levels, each one summing or forwarding to the level below until it
+#   reaches the tests. That is why Start Testbed can dump a whole run with one call and End Testbed can extract a whole run with another.
+#
+#   ONE TEST
+#
+#   TestbedTestXMLObject is where most of the detail sits. It can be built either way round: give it a list of LexicalUnit objects (plus the source text name, the synthesis result and optionally a
+#   comment) and it builds the XML for a new test, or give it an existing test element and it builds the LexicalUnit list from that. The two directions are __createXMLStructureFromLUList() and
+#   __createLUListFromXMLStructure(), and everything else works the same afterwards either way.
+#
+#   Its methods fall into a few groups. There are the straight accessors on the XML (getID, isValid, getOrigin, getExpectedResult, getActualResult, getComment and their setters). There are the
+#   string forms of the test's lexical units - getLUString() plain, getFormattedLUString() as colored html, getApertiumString() as an Apertium data stream - each of which is just the matching
+#   LexicalUnit method run over the list. There are dump() and extractResults(), the two halves of a run: dump() writes the Apertium form out on a line of its own with a dummy EOL lexical unit
+#   appended so that a transfer rule matching at the end of one test can't run on into the next, and extractResults() reads one line back, strips that EOL off again (it comes back looking different
+#   depending on whether STAMP or HermitCrab did the synthesis), collapses runs of spaces, and stores the line as the actual result normalized to decomposed unicode so that the comparison against
+#   the expected result is fair. There is validate(), which asks a TestbedValidator whether every lexical unit still exists in the source FLEx project and marks the test invalid with a reason when
+#   one doesn't - and sets a changed flag, so that the file only gets rewritten when a mark actually changed. And there are setAppliedRules() and getAppliedRules(), which store the rules that fired
+#   for the test under an appliedRules element, each rule as its number, the comment that named it in the rules file, and the lexical units it matched written as an Apertium stream so that a lemma
+#   containing a space survives the round trip. The comment is stored next to the number because the rules file goes on being edited: by the time someone reads the log, rule 18 may well be a
+#   different rule than the one that fired here.
+#
+#   A LEXICAL UNIT AND ITS THREE FORMS
+#
+#   A LexicalUnit is a headword (with its homograph number), a sense number, a grammatical category and zero or more other tags - affix glosses, inflection features, classes. It too can be built
+#   two ways: from an existing lexicalUnit element, or by parsing a string. A string containing a > is parsed as Apertium style (haus1.1<n><pl>) and anything else as plain text (haus1.1 n pl).
+#   Sentence punctuation is the exception running through all of this: its category is sent and it has no sense number, so nearly every method has a branch for it.
+#
+#   Three methods turn one back into a string, and the plain and formatted ones are cached since the log viewer asks for them repeatedly:
+#    - toString() - the plain form, which is what tests are compared by.
+#    - toApertiumString() - ^haus1.1<n><pl>$, with reserved characters escaped, which is what gets dumped for a run.
+#    - toFormattedString() - the colored html form, with the homograph and sense numbers as a subscript.
+#   isWellFormed() is the check that a parse produced something usable. LexicalUnitParser is the same thing for a whole string of several lexical units: it splits the string up and builds a
+#   LexicalUnit from each piece - again Apertium style or plain text, and plain text is the awkward one, since with no ^ and $ to split on the only thing marking a boundary is the
+#   homograph.sense number.
+#
+#   COLOR CODING
+#
+#   The bottom of the file is the display side, and it has nothing to do with the testbed classes above it - it is used anywhere FLExTrans shows an Apertium data stream to the user. Everything is
+#   built as ElementTree span elements with an inline color style, which is what lets a QLabel render it:
+#    - processLexicalUnit() is the usual entry point: parse one lexical unit into a lemma and its symbols, take the escaping back off, and hand it to colorInnerLU(). lexicalUnitToHtml() is the same
+#      thing returning a string, for callers assembling html of their own.
+#    - colorInnerLU() applies the scheme: black lemma, blue first symbol (the grammatical category), green symbols after it (affixes and features), the homograph and sense numbers as a subscript.
+#      A lemma with an @ in front was not found by the tools, so the @ comes off and the lemma goes red; a first symbol of UNK means the tools didn't recognize the word at all, so the lemma goes
+#      dark pink and the UNK itself pink. Punctuation is orange, applied by the callers rather than here.
+#    - processChunkLexicalUnit() is the same thing in a second palette - purple lemma, darker blue category, brighter green affixes - for chunk data, which is what the interchunk and postchunk
+#      stages of advanced transfer work on. The different palette is so that a glance tells chunk data from ordinary data.
+#    - processAdvancedResults() lays out a whole line of chunk output, splitting it on the braces and bracketing each chunk's contents so that the nesting is visible.
+#    - convertXMLEntryToColoredString() colors an entry read out of the bilingual lexicon rather than a data stream, and builds its html by hand so that spaces and hyphens can be made non-breaking -
+#      it is used for tooltips, where a lexical unit wrapped across two lines would be unreadable.
+#   parseString() underpins all of them. It splits a lexical unit into its lemma and its symbols, and is fussier than it looks: the symbols are only the run of <...> groups at the very end of the
+#   string, since angle brackets are perfectly legal inside a lemma (escaped as \< and \>, but also bare, as in >><sent>).
+#
+#   READING THE APERTIUM LOG
+#
+#   Three functions read what the Apertium tools leave behind, and they are what let End Testbed and the Live Rule Tester say which rules fired. parseAppliedRulesLog() picks the "Applied rule N line
+#   M" lines out of a log and returns the rule numbers along with the lexical units each rule saw; getTransferRuleInfo() reads a rules file for each rule's comment and pattern length; and
+#   getSourceFormOfTraceLU() pulls the source half out of one unit of a trace line. Each has a long comment of its own covering the traps - which stage's lines to take, why a slash can't simply be
+#   split on, and why the window of units the log prints is sometimes one unit longer than what the rule actually took.
+#
+#   HOW THE FILES ARE WRITTEN
+#
+#   Both files are indented one element per line before being written, with a tab per level, which is what XMLmind XML Editor produces when the user edits the testbed there - writing it the same way
+#   keeps the file from being reformatted end to end each time it passes between the two. The testbed file additionally gets the XMLmind DOCTYPE line put back after the XML declaration, and gets
+#   normalized on the way through: decomposed when it is read, since that is the form all the FLEx values are in, and composed or decomposed on the way out according to the Composed Characters
+#   setting.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the XML element and attribute name constants, then the viewer color constants, then LexicalUnit and LexicalUnitParser, then the four testbed classes working upward
+#   from a test to the file, then the same three levels for the results side, then the Apertium log functions, and finally the color coding functions.
+#
+#   Two caches are worth knowing about. __luCache is shared down through a testbed so that the same lexical unit occurring in many tests becomes one shared LexicalUnit object, which is what keeps
+#   opening a large log quick. __testCache alongside it was meant to do the same for whole tests but is currently disabled - the hash is hard coded to 0 and the line that would store an object is
+#   commented out. A caller that doesn't supply a cache gets a fresh one of its own; the parameters default to None rather than to {}, since a {} default is evaluated once when the method is
+#   defined and would hand every such caller the same dictionary for the life of the process.
+#
 
-from email.mime import text
-from platform import node
 import re
 import os
 import xml.etree.ElementTree as ET
 import uuid
 import unicodedata
-from datetime import datetime
 
 import TestbedValidator
 import ReadConfig 
@@ -99,6 +224,10 @@ EXPECTED_RESULT = 'expectedResult'
 ACTUAL_RESULT = 'actualResult' 
 TGT_EXPECTED = TARGET_OUTPUT+'/'+EXPECTED_RESULT
 TGT_ACTUAL = TARGET_OUTPUT+'/'+ACTUAL_RESULT
+APPLIED_RULES = 'appliedRules'
+APPLIED_RULE = 'appliedRule'
+RULE_NUMBER = 'num'
+RULE_COMMENT = 'comment'
 SOURCE_DIRECTION = 'source_direction' 
 TARGET_DIRECTION = 'target_direction' 
 N_ATTRIB = 'n' 
@@ -114,6 +243,9 @@ NO = 'no'
 DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 XML_DATETIME_FORMAT_QT = 'yyyy-MM-dd hh:mm:ss' # Qt format for date time
+
+# The dummy lexical unit that dump() adds to the end of every test line so that a transfer rule matching at the end of one test can't run on into the test on the next line.
+EOL_LEXICAL_UNIT = 'EOL<eol>'
 
 ## Viewer constants
 # Main color of the headwords
@@ -200,16 +332,25 @@ class LexicalUnit():
                 # Check senseNum
                 if not self.__senseNum.isdigit():
                     return False
-            
+
+        # Nothing above objected, so it's well formed. Note this used to fall off the end returning None here, which worked only because every caller compares against False.
+        return True
+
     def toString(self):
         
         if self.__plainString == None:
-            
+
+            # A well-formed lexical unit always has a headword and category; callers check isWellFormed() before using it
+            assert self.__headWord is not None and self.__gramCat is not None
+
             ret_str = self.__headWord
-            
+
             if self.__gramCat != SENT:
+
+                assert self.__senseNum is not None
+
                 ret_str += '.' + self.__senseNum
-                
+
             ret_str += ' ' + self.__gramCat
             
             for tag in self.__otherTags:
@@ -222,18 +363,24 @@ class LexicalUnit():
     def toFormattedString(self, rtl = False):
         
         if self.__formatedString == None:
-            
+
+            # A well-formed lexical unit always has a headword and category; callers check isWellFormed() before using it
+            assert self.__headWord is not None and self.__gramCat is not None
+
             # Create an element
             p = ET.Element('span')
-            
+
             # Split off the homograph_num (if present; sent punctuation won't have it)
             lemma_parts = re.split(r'(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
-            
+
             # Output the lexeme
             span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
-        
+
             # Output the subscript homograph # and sense # (if they exist)
             if self.__gramCat != SENT:
+
+                assert self.__senseNum is not None
+
                 addSubscript(span, lemma_parts[1]+'.'+self.__senseNum)
             
             # Check for RTL
@@ -265,11 +412,17 @@ class LexicalUnit():
         return self.__formatedString
     
     def toApertiumString(self):
-        
+
+        # A well-formed lexical unit always has a headword and category; callers check isWellFormed() before using it
+        assert self.__headWord is not None and self.__gramCat is not None
+
         # Escape reserved characters with a backslash
         ret_str = '^' + Utils.escapeReservedApertChars(self.__headWord)
 
         if self.__gramCat != SENT:
+
+            assert self.__senseNum is not None
+
             ret_str += '.' + self.__senseNum
 
         # Add grammatical category as a tag
@@ -394,7 +547,10 @@ class LexicalUnitParser():
         # Split on the . that's between homograph # and sense #
         # We'll get something like: ['ich1', '1 pro lieben2', '2 v 1/3SG dich3', '44 pro suf1 suf2']
         tokens = re.split(r'\.', myStr)
-        
+
+        # Initialize headword so it's always bound; the first token (i == 0) sets it before the later iterations use it
+        headword = ''
+
         # Go through the tokens
         for i, tok in enumerate(tokens):
             
@@ -454,7 +610,8 @@ class TestbedTestXMLObject():
     # You can initialize this class in two ways:
     # 1) Give it a list of LexicalUnit objects + origin + synthesis result and it creates the testbed XML object
     # 2) Give it a <test> XML object (ElementTree.Element) and it initializes the LexicalUnit List
-    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None, luCache={}, comment=None):
+    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None, luCache=None, comment=None):
+
         self.__luList = luList
         self.__origin = origin
         self.__synthResult = synthResult
@@ -462,7 +619,11 @@ class TestbedTestXMLObject():
         self.__testChanged = False
         self.__actResult = None
         self.__expResult = None
-        self.__luCache = luCache
+
+        # Give ourselves a cache of our own when the caller didn't supply one to share. This defaulted to {} before, which is evaluated once when the method is defined, so every caller that left
+        # it out shared one dictionary for the life of the process instead of getting a fresh one.
+        self.__luCache = luCache if luCache is not None else {}
+
         self.__comment = comment
         
         # If no lexical unit object list is given, create it
@@ -489,15 +650,27 @@ class TestbedTestXMLObject():
     def __createLUListFromXMLStructure(self):
         self.__luList = []
 
+        # This is only called when a test node was given to the constructor, and a <test> element always has the source input / lexical units structure
+        assert self.__testNode is not None
+
         sourceInputNode = self.__testNode.find(SOURCE_INPUT)
+        assert sourceInputNode is not None
+
         lexicalUnitsNode = sourceInputNode.find(LEXICAL_UNITS)
-        
-        # Go through all the lexical units 
+        assert lexicalUnitsNode is not None
+
+        # Go through all the lexical units
         for luNode in list(lexicalUnitsNode):
 
-            # Do hash on headword + sense number + tags concatenated (don't need gramm. cat since x1.1 will generally have same gramm. cat)            
-            tags = ''.join([x.text for x in list(luNode.find(OTHER_TAGS))])
-            myHash = hash(tuple((luNode.find(HEAD_WORD).text, luNode.find(SENSE_NUM).text, tags)))
+            # A <lexicalUnit> element always has these child elements
+            headWordNode = luNode.find(HEAD_WORD)
+            senseNumNode = luNode.find(SENSE_NUM)
+            otherTagsNode = luNode.find(OTHER_TAGS)
+            assert headWordNode is not None and senseNumNode is not None and otherTagsNode is not None
+
+            # Do hash on headword + sense number + tags concatenated (don't need gramm. cat since x1.1 will generally have same gramm. cat)
+            tags = ''.join([x.text or '' for x in list(otherTagsNode)])
+            myHash = hash(tuple((headWordNode.text, senseNumNode.text, tags)))
             
             # See if this hash value is in the cache and if so use it.
             if myHash in self.__luCache:
@@ -510,6 +683,10 @@ class TestbedTestXMLObject():
             self.__luList.append(lu)
             
     def __createXMLStructureFromLUList(self):
+
+        # This is only called when the constructor was given a lexical unit list, and the origin always comes along with it
+        assert self.__luList is not None and self.__origin is not None
+
         self.__testNode = ET.Element(TEST)
         self.__testNode.attrib[ID] = str(uuid.uuid4())
         self.__testNode.attrib[IS_VALID] = YES
@@ -546,59 +723,148 @@ class TestbedTestXMLObject():
             comment.text = self.__comment
     
     def getID(self):
-        return self.__testNode.attrib[ID]
+        return self.getTestNode().attrib[ID]
+
     def isValid(self):
-        if self.__testNode.attrib[IS_VALID] == YES:
+
+        if self.getTestNode().attrib[IS_VALID] == YES:
             return True
+
         return False
+
     def getOrigin(self):
-        return self.__testNode.find(SOURCE_INPUT).attrib[ORIGIN]
+
+        # A <test> element always has a <sourceInput> child
+        sourceInputNode = self.getTestNode().find(SOURCE_INPUT)
+        assert sourceInputNode is not None
+
+        return sourceInputNode.attrib[ORIGIN]
+
     def getExpectedResult(self):
+
         if self.__expResult == None:
-            self.__expResult = self.__testNode.find(TGT_EXPECTED).text
+
+            # A <test> element always has the target output / expected result structure
+            expectedNode = self.getTestNode().find(TGT_EXPECTED)
+            assert expectedNode is not None
+
+            self.__expResult = expectedNode.text
+
         return self.__expResult
+
     def getActualResult(self):
+
         if self.__actResult == None:
-            self.__actResult = self.__testNode.find(TGT_ACTUAL).text
+
+            # A <test> element always has the target output / actual result structure
+            actualNode = self.getTestNode().find(TGT_ACTUAL)
+            assert actualNode is not None
+
+            self.__actResult = actualNode.text
+
         return self.__actResult
+
     def setActualResult(self, myStr):
-        self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
-    def setRuleNumbers(self, ruleNums):
-        node = self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
-        node.set('ruleNumbers', ','.join(str(n) for n in ruleNums))
-    def getRuleNumbers(self):
-        node = self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
-        return node.get('ruleNumbers', '') if node is not None else ''
+
+        # A <test> element always has the target output / actual result structure
+        actualNode = self.getTestNode().find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
+        assert actualNode is not None
+
+        actualNode.text = myStr
+
+    # Record which transfer rules fired for this test, in the order they fired. appliedRuleList is a list of (rule number, rule comment, lexical unit list) tuples - the rule's sequential number in the
+    # transfer rules file, the comment that names it there, and the lexical units the rule matched. The comment is stored along with the number because the rules file goes on being edited after a
+    # test run, so by the time someone looks at this result in the log viewer, rule 18 may well be a different rule than the one that fired here.
+    def setAppliedRules(self, appliedRuleList):
+
+        # Throw away what an earlier extraction of this same result put here, so re-running the extraction doesn't pile up duplicates.
+        oldNode = self.getTestNode().find(APPLIED_RULES)
+
+        if oldNode is not None:
+            self.getTestNode().remove(oldNode)
+
+        if not appliedRuleList:
+            return
+
+        appliedRulesNode = ET.SubElement(self.getTestNode(), APPLIED_RULES)
+
+        for ruleNum, ruleComment, luList in appliedRuleList:
+
+            appliedRuleNode = ET.SubElement(appliedRulesNode, APPLIED_RULE)
+            appliedRuleNode.attrib[RULE_NUMBER] = str(ruleNum)
+            appliedRuleNode.attrib[RULE_COMMENT] = ruleComment
+
+            # Write the lexical units as an Apertium stream (^...$ around each one) so that a lemma containing a space - a multiword entry such as "ji ber ve yeke1.1<adv>" - can still be told apart
+            # from its neighbors when the list is read back.
+            appliedRuleNode.text = ' '.join(['^' + lu + '$' for lu in luList])
+
+    # The reverse of setAppliedRules: the rules that fired for this test as a list of (rule number, rule comment, lexical unit list) tuples. A test from before this was recorded - or one no rule
+    # fired for - gives back an empty list.
+    def getAppliedRules(self):
+
+        appliedRuleList = []
+        appliedRulesNode = self.getTestNode().find(APPLIED_RULES)
+
+        if appliedRulesNode is None:
+            return appliedRuleList
+
+        for appliedRuleNode in list(appliedRulesNode):
+
+            luList = re.findall(r'\^(.*?)\$', appliedRuleNode.text if appliedRuleNode.text else '')
+            appliedRuleList.append((appliedRuleNode.get(RULE_NUMBER, ''), appliedRuleNode.get(RULE_COMMENT, ''), luList))
+
+        return appliedRuleList
+
     def getTestNode(self):
+
+        # __init__ always leaves the test node set - either the node that was passed in or the one built from the lexical unit list - so this also narrows the Optional type for the methods above
+        assert self.__testNode is not None
+
         return self.__testNode
+
     def getComment(self):
-        node = self.__testNode.find("comment")
+        node = self.getTestNode().find("comment")
         return node.text if node is not None else ""
+
     def setComment(self, text):
-        node = self.__testNode.find("comment")
+
+        node = self.getTestNode().find("comment")
+
         if node is None:
-            node = ET.SubElement(self.__testNode, "comment")
+
+            node = ET.SubElement(self.getTestNode(), "comment")
+
         node.text = text
-    # Convert all the lexical units into one string    
+    # Convert all the lexical units into one string
     def getLUString(self):
         ret_str = ''
-        
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
+
         for lu in self.__luList:
             ret_str += ' ' + lu.toString()
-        
+
         return ret_str.strip()
+
     # Return colorized html form of all LUs
     def getFormattedLUString(self, rtl=False):
         ret_str = ''
-        
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
+
         for lu in self.__luList:
             ret_str += ' ' + lu.toFormattedString(rtl)
-        
+
         return ret_str.strip()
-    
+
     def getApertiumString(self):
         ret_str = ''
-        
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
+
         for lu in self.__luList:
             myStr = lu.toApertiumString()
             if re.search(SENT_TAG, myStr):
@@ -634,6 +900,9 @@ class TestbedTestXMLObject():
             prevInvalidFlag = True
         else:
             prevInvalidFlag = False
+
+        # __init__ always leaves the lexical unit list set - either the list that was passed in or the one built from the XML structure
+        assert self.__luList is not None
 
         for lu in self.__luList:
             
@@ -676,7 +945,7 @@ class TestbedTestXMLObject():
         
         # each test goes on its own line. Add a dummy EOL lexical unit so that
         # transfer rules don't go to the next line unintentially 
-        f_out.write(self.getApertiumString() + ' ^EOL<eol>$\n')
+        f_out.write(self.getApertiumString() + ' ^' + EOL_LEXICAL_UNIT + '$\n')
 
     def extractResults(self, f_out):
         
@@ -781,7 +1050,12 @@ class FLExTransTestbedXMLObject():
     def __getTestsNode(self):
         # For now we assume just one testbed (named 'default')
         # In the future we will support a user selected testbed or testbeds
-        return self.__rootNode.find(TESTBEDS+'/'+TESTBED+'/'+TESTS)
+        testsNode = self.__rootNode.find(TESTBEDS+'/'+TESTBED+'/'+TESTS)
+
+        # A testbed file always has the testbeds/testbed/tests structure
+        assert testsNode is not None
+
+        return testsNode
     
     def getTestXMLObjectList(self):
         return self.__TestXMLObjectList
@@ -930,6 +1204,14 @@ class FlexTransTestbedFile():
             self.write()
 
     def write(self):
+
+        # __init__ raises a ValueError if the testbed path setting is missing, so by the time write() can be called the path is always set
+        assert self.__testbedPath is not None
+
+        # Indent the tree before writing so the testbed comes out one element per line instead of as a single enormous line. A tab per level is what XMLmind uses when the user edits the testbed
+        # there, so writing it the same way here keeps the file from being reformatted end to end every time it passes between the two.
+        ET.indent(self.__testbedTree, space='\t')
+
         self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
         
         # Re-open the testbed file
@@ -958,7 +1240,10 @@ class TestbedResultXMLObject():
     # You can initialize this class in two ways:
     # 1) Give just a parent element and it creates an empty <result> element for the parent
     # 2) Give it a <result> XML object (ElementTree.Element) and it initializes the testbed object list from the testbed xml elements.
-    def __init__(self, parentNode, rootNode=None, luCache={}, testCache={}):
+    # luCache and testCache are accepted for the sake of the callers that pass them down, but nothing here uses them - the caching happens a level down, in FLExTransTestbedXMLObject. They default
+    # to None rather than {} so that callers leaving them out don't all share one dictionary, which is what a {} default would give them.
+    def __init__(self, parentNode, rootNode=None, luCache=None, testCache=None):
+
         self.__rootNode = rootNode
         self.__testbedXMLObjList = []
         
@@ -969,7 +1254,7 @@ class TestbedResultXMLObject():
             parentNode.insert(0, self.__rootNode)
             
         else:
-            for testbedNode in list(self.__rootNode):
+            for testbedNode in list(rootNode):
                 # create a testbed object and add it to the list
                 testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
                 self.__testbedXMLObjList.append(testbedXMLObj)
@@ -978,13 +1263,17 @@ class TestbedResultXMLObject():
         return self.__testbedXMLObjList
     
     def getRoot(self):
+
+        # __init__ always leaves the root node set - either the <result> element that was passed in or the new one it creates - so this also narrows the Optional type for the methods below
+        assert self.__rootNode is not None
+
         return self.__rootNode
-    
+
     def getStartDateTime(self):
-        return self.__rootNode.attrib[START_DATE_TIME]
-        
+        return self.getRoot().attrib[START_DATE_TIME]
+
     def getEndDateTime(self):
-        return self.__rootNode.attrib[END_DATE_TIME]
+        return self.getRoot().attrib[END_DATE_TIME]
         
     def getFailedAndInvalid(self):
         tot_failed = 0
@@ -1002,19 +1291,21 @@ class TestbedResultXMLObject():
         return total
     
     def isIncomplete(self):
-        if self.__rootNode.attrib[END_DATE_TIME] == '':
+
+        if self.getRoot().attrib[END_DATE_TIME] == '':
             return True
+
         return False
-   
+
     def endTest(self):
-        self.__rootNode.attrib[END_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
+        self.getRoot().attrib[END_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
 
     def startTest(self, testbedXMLObj):
-        self.__rootNode.attrib[START_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
-        self.__rootNode.attrib[END_DATE_TIME] = ''
-        
+        self.getRoot().attrib[START_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
+        self.getRoot().attrib[END_DATE_TIME] = ''
+
         # add the <FLExTransTestbed> element below the <testResult> element
-        self.__rootNode.append(testbedXMLObj.getRoot())
+        self.getRoot().append(testbedXMLObj.getRoot())
         
         # add the testbed object to the internal list
         self.__testbedXMLObjList.append(testbedXMLObj)
@@ -1075,7 +1366,11 @@ class FLExTransTestbedResultsXMLObject():
         return self.__rootNode
     
     def __createTestbedResultXMLObjectList(self):
-        # loop through all the result objects 
+
+        # This is only called when a root node was given to the constructor
+        assert self.__rootNode is not None
+
+        # loop through all the result objects
         for resultNode in list(self.__rootNode):
 
             # initialize a result object and add it to the list
@@ -1147,7 +1442,134 @@ class FlexTransTestbedResultsFile():
         return self.__XMLObject
     
     def write(self):
+
+        # Indent the whole tree before writing so that the results file comes out one element per line rather than as a single enormous line.
+        ET.indent(self.__testbedResultsTree, space='\t')
+
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
+
+# The name of the log file the Apertium tools write their rule trace to. The makefile in the Build folder sends apertium-transfer's standard error there (and, when advanced transfer is turned on,
+# appends the interchunk and postchunk traces to the same file). The Live Rule Tester's makefile uses the same name for its transfer stage, so that module takes the name from here rather than
+# defining it again - see LOG_FILE in LiveRuleTesterTool.py.
+APERTIUM_LOG_FILE = 'apertium_log.txt'
+
+# The three Apertium tools that write "Applied rule" lines to a log, one per stage of transfer. Which of them a given log holds depends on how the tools were run: the FLExTrans build sends all
+# three stages to the same apertium_log.txt, while the Live Rule Tester runs one stage at a time and gives each its own log file.
+APERTIUM_TRANSFER_TOOL = 'apertium-transfer'
+APERTIUM_INTERCHUNK_TOOL = 'apertium-interchunk'
+APERTIUM_POSTCHUNK_TOOL = 'apertium-postchunk'
+
+# The units in a trace line are separated by a space, but a lemma can itself contain spaces (a multiword entry such as "ji ber ve yeke1.1<adv>"), so splitting on whitespace alone would tear those
+# apart. A lexical unit always ends with a tag, and a chunk - what the interchunk and postchunk stages work on - always ends with a closing brace, so split only where a space follows one of those.
+# Inside a chunk the units are separated by "$ ^" instead, which this deliberately leaves alone: a chunk stays whole.
+TRACE_LU_SEPARATOR_RE = re.compile(r'(?<=[>}])\s+')
+
+# Pull the source form out of one lexical unit of a trace line - the part ahead of the slash that separates it from the target form, as in lieben1.1<v><1/3SG>/aelska1.1<v><1/3SG>. The separator
+# can't be found by simply splitting on the first slash: a slash is perfectly legal inside a tag, since a grammatical category or feature the user named with a slash (1/3SG here) becomes a tag as
+# it stands, and a slash inside a lemma is escaped with a backslash (see Utils.escapeReservedApertChars). So walk the text and stop at the first slash that is neither escaped nor inside a tag.
+def getSourceFormOfTraceLU(luChunk):
+
+    insideTag = False
+    escaped = False
+
+    for charPos, myChar in enumerate(luChunk):
+
+        if escaped:
+            escaped = False
+
+        elif myChar == '\\':
+            escaped = True
+
+        elif myChar == '<':
+            insideTag = True
+
+        elif myChar == '>':
+            insideTag = False
+
+        elif myChar == '/' and not insideTag:
+            return luChunk[:charPos]
+
+    return luChunk
+
+# Return what we need to know about each rule in an Apertium transfer rules file, as a map of rule number to a (comment, pattern length) pair. The rules are numbered the way apertium-transfer
+# numbers them in its log: from 1, in the order they appear in <section-rules>. The comment is the one that names the rule in the file, or an empty string if it has none. The pattern length is
+# how many lexical units the rule matches, which is simply the number of <pattern-item> elements in its <pattern>; it's what lets a caller tell the words a rule really took from the one extra
+# word the log prints after them. A file that can't be read or parsed gives back an empty map rather than an error - the rule numbers from the log are still worth showing on their own.
+def getTransferRuleInfo(rulesFilePath):
+
+    ruleInfo = {}
+
+    try:
+        rulesRoot = ET.parse(rulesFilePath).getroot()
+
+    except:
+        return ruleInfo
+
+    rulesSection = rulesRoot.find('section-rules')
+
+    if rulesSection is None:
+        return ruleInfo
+
+    for ruleNum, ruleNode in enumerate(list(rulesSection), start=1):
+
+        patternNode = ruleNode.find('pattern')
+        patternLength = len(list(patternNode)) if patternNode is not None else 0
+
+        ruleInfo[ruleNum] = (ruleNode.get(RULE_COMMENT, ''), patternLength)
+
+    return ruleInfo
+
+# Return every rule application recorded in an Apertium log, in the order the rules fired, as a list of (rule number, unit list) pairs. A unit is the source form of one lexical unit, or one whole
+# chunk for the interchunk and postchunk stages. toolName says which stage's lines to pick out - a log can hold more than one, and each stage numbers its rules against its own rules file (tr.t1x,
+# tr.t2x or tr.t3x), so mixing them would name rules from the wrong file; pass None to take every stage's lines, which is what a log holding a single stage wants.
+#
+# A trace line looks like this:
+#   apertium-transfer: Applied rule 18 line 1 Bav1.1<n><m>/xyz1.1<n><m> ji1.1<prep>/abc1.1<prep>
+# The number after "rule" is the rule's sequential position in the rules file. The "line" number is where the rule sits in that file rather than a line of the text being translated, so it says
+# nothing about which sentence is being worked on and is skipped over here.
+#
+# Note the window of units is not always only what the rule took: apertium reads one unit past a match to find out the match is over, and prints that one too, so a window is either exactly as long
+# as the rule's pattern or one longer. Trimming it needs the pattern length from the rules file, so that is left to the caller (see getTransferRuleInfo). A log that isn't there (the tools may never
+# have been run, or the Build folder was cleaned out) gives back an empty list.
+def parseAppliedRulesLog(logFilePath, toolName=APERTIUM_TRANSFER_TOOL):
+
+    logEntries = []
+
+    # Anchor the pattern on the tool that wrote the line, unless the caller wants them all.
+    toolPrefix = re.escape(toolName) + ': ' if toolName else ''
+    appliedRuleRE = re.compile(toolPrefix + r'Applied rule (\d+) line \d+ (.+)')
+
+    try:
+        # Read the log a line at a time rather than all at once - translating a whole book leaves a log of many megabytes, of which only the handful of lines matched below are of any interest.
+        with open(logFilePath, encoding='utf-8') as logFile:
+
+            for logLine in logFile:
+
+                matchObj = appliedRuleRE.search(logLine)
+
+                if matchObj is None:
+                    continue
+
+                # Break the window into lexical units and keep the source form of each one.
+                luList = []
+
+                for luChunk in TRACE_LU_SEPARATOR_RE.split(matchObj.group(2).strip()):
+
+                    sourceLU = getSourceFormOfTraceLU(luChunk).strip()
+
+                    if sourceLU:
+
+                        luList.append(sourceLU)
+
+                if luList:
+
+                    logEntries.append((int(matchObj.group(1)), luList))
+
+    # No log to read (the Apertium tools may never have been run, or the Build folder was cleaned out), or it gave out part way through - either way, hand back whatever was gathered.
+    except:
+        pass
+
+    return logEntries
 
 # Create a span element and set the color and text
 def outputLUSpan(parent, color, text_str, rtl):
@@ -1474,7 +1896,10 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
             
         retStr += 'style="white-space: nowrap;"'
         retStr += f'>'
-        
+
+        # outputLUSpan always gives the span a text string
+        assert spanEl.text is not None
+
         # substitute a space with a non-breaking space and a hypen with a non-breaking hyphen
         textPart = re.sub(' ', '&nbsp;', spanEl.text)
         textPart = re.sub('-', '&#8209;', textPart)

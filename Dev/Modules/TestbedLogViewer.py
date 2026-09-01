@@ -5,6 +5,13 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.17.2 - 9/1/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17.1 - 8/31/26 - Ron Lockwood
+#    Show under each test a "Rules applied:" node listing the transfer rules that fired for it - each rule's number in the rules file and its comment, plus the lexical units the rule matched.
+#    The font size now reaches rows built after it was set, so a node opened later comes up at the size the user chose rather than the default.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -67,8 +74,56 @@
 #
 #   earlier version history removed on 3/10/25
 #
-#   Show the testbed log which shows the results of tests run for a certain
-#   date/time. See design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module shows the results of testbed runs. Each run is one line of a tree - when it started and how it came out - and opening it up shows the individual tests, each with the source lexical
+#   units that went in, the target text that was expected and the target text that actually came out. Opening a test up further shows the comment the user wrote for it and the transfer rules that
+#   fired while it was being translated. Nothing here is edited: the module only reads the testbed results file (Testbed Results File setting) that Start Testbed and End Testbed write between them.
+#   The Edit Testbed button is for editing, and it just opens the testbed file itself in XMLmind XML Editor. See the design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
+#
+#   Only the most recent MAX_RESULTS_TO_DISPLAY runs are shown - results are kept newest first in the file, so that is simply the top of the list - and a run with no end date-time is skipped
+#   altogether, since that is an unfinished run whose tests have no actual results yet.
+#
+#   WHAT THE TREE LOOKS LIKE
+#
+#   There are four kinds of row, each a class deriving from BaseTreeItem:
+#    - TestStatsItem (top-level)- one testbed run. Column 0 is the start date and time, formatted for the user's locale, and column 1 is the summary "N Tests, N Failed, N Invalid", colored green when 
+#      everything passed, orange when something was invalid and red when something failed. Hovering gives how long the run took, worked out from the start and end date-times.
+#    - TestResultItem - one test. Column 0 is the source lexical units, color coded the way they are everywhere else in FLExTrans (see processLexicalUnit() in Lib/Testbed.py) and preceded by an icon:
+#      a green check when the test passed, a red X when it failed, a yellow triangle when it is invalid. Column 1 is the expected result and column 2 the actual one - in red when it differs from the
+#      expected, as the expected repeated in green when it matches, and as n/a for an invalid test, which was never really run. An invalid test's lexical units are all recolored orange and its tooltip
+#      carries the reason it is invalid; every test's tooltip names the source text the test came from.
+#    - CommentTreeItem - the comment the user wrote for that test, in gray italics. Only there if the test has one.
+#    - RulesAppliedTreeItem and AppliedRuleTreeItem - a "Rules applied:" heading with one row under it for each transfer rule that fired for this test, column 0 names the rule by its number in the rules file
+#      together with the comment it carried there, and showing in column 1 the lexical units that rule matched. Keeping them under a heading of their own is what lets a test stay a single line until
+#      the user opens it up to look at the rules. End Testbed is what works this information out and stores it, so a run made before it started doing that simply has no such rows.
+#
+#   HOW THE ROWS ARE DRAWN
+#
+#   The model's data() always returns None - none of this is drawn by the view itself. Every cell is instead a widget handed to the view through setIndexWidget, because the cell contents are html:
+#   the lexical unit coloring is spans of html, which a plain view item can't render but a QLabel can. Each item class says what widget it wants through createTheWidget(), which is a QLabel for most
+#   cells and, for a test's first column, the ITWidget that puts the pass/fail icon beside the label.
+#
+#   Those widgets are built lazily, in __createIndex(), the first time the view asks for the row - so a node the user never opens costs nothing to have in the tree. That lazy building is why the font
+#   size the spin control sets has to be remembered on the model as well as applied right away: a row built later has to come up at the size the user chose rather than at the default. Applying it
+#   means handing the size down the whole tree, and each widget has to be given it outright, since an index widget doesn't reliably inherit the view's font.
+#
+#   The __cache member and the hashing around it were an attempt to reuse TestResultItem objects for a test that appears in more than one run. It is currently disabled - the hash is hard coded to 1
+#   and the line that would store an item is commented out - so every run builds its own items.
+#
+#   OTHER KEY FEATURES
+#
+#   The three columns are given 50, 30 and 20 percent of the width on every resize, with a few pixels held back so no horizontal scroll bar appears. The window opens with the most recent run already
+#   expanded, and the column headers are bold. When the testbed language is right to left the whole tree is laid out right to left and the labels are aligned to match.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary FlexTools displays, the icon file names and MAX_RESULTS_TO_DISPLAY, the Stats class (a run's start and end times and its test counts, plus the
+#   elapsed time and the colored summary string built from them), the four tree item classes and their BaseTreeItem base, ITWidget, TestbedLogModel, the LogViewerMain window, and then
+#   RunTestbedLogViewer(), MainFunction() and the FlexToolsModule declaration at the very bottom that FlexTools looks for.
+#
+#   SetupModelData() is where the tree gets built, walking the results, the testbeds inside each result and the tests inside each testbed. RunTestbedLogViewer() is the entry point, and the Live Rule
+#   Tester calls it directly as well - its View Testbed Log button closes the tester, runs this, and then reopens the tester.
 #
 
 import os
@@ -113,7 +168,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -202,6 +257,19 @@ class BaseTreeItem(object):
         if self.parent:
             return self.parent.children.index(self)
         return 0
+
+    # Set the size of the fonts of this item's widgets. The tree view's own font doesn't reliably reach them: they are index widgets rather than rows the view draws itself, and any of them carrying
+    # a style sheet that mentions a font property stops inheriting the view's font altogether. So each one is given the size outright.
+    def setFontPointSize(self, pointSize):
+
+        for widget in self.widget:
+
+            if widget is not None:
+
+                font = widget.font()
+                font.setPointSize(pointSize)
+                widget.setFont(font)
+
     def createTheWidget(self, col):
         return QtWidgets.QLabel()
     
@@ -364,35 +432,87 @@ class TestResultItem(BaseTreeItem):
             
         return myWidget
 
+# A row under a test result holding the comment the user wrote for that test.
 class CommentTreeItem(BaseTreeItem):
 
-    def __init__(self, inParent, rtl, commentText, ruleNumber):
+    def __init__(self, inParent, rtl, commentText):
         super(CommentTreeItem, self).__init__(inParent, rtl)
         self.commentText = commentText
-        self.ruleNumber = ruleNumber
 
     def ColumnCount(self):
-        return 2
+        return 3
 
     def Data(self, inColumn):
         if inColumn == 0:
-            return "Comment: " + self.commentText
-        if inColumn == 1:
-            return ("Rule: " + self.ruleNumber) if self.ruleNumber else ""
+            return _translate("TestbedLogViewer", "Comment: {comment}").format(comment=self.commentText)
         return ""
-
-    def changeFontSize(self, sizeChange):
-        for widget in self.widget:
-            if widget is not None:
-                font = widget.font()
-                font.setPointSize(font.pointSize() + sizeChange)
-                widget.setFont(font)
 
     def createTheWidget(self, col):
         label = QtWidgets.QLabel(self.Data(col))
         if col == 0:
             label.setStyleSheet("color: gray; font-style: italic;")
-        elif col == 1:
+        return label
+
+# The row under a test result that gathers up the transfer rules that fired for that test. It holds nothing itself beyond its heading - the rules hang underneath it (see AppliedRuleTreeItem), so
+# that a test result stays a single line until the user opens this node up to look at the rules.
+class RulesAppliedTreeItem(BaseTreeItem):
+
+    def ColumnCount(self):
+        return 3
+
+    def Data(self, inColumn):
+        if inColumn == 0:
+            return _translate("TestbedLogViewer", "Rules applied:")
+        return ""
+
+    def createTheWidget(self, col):
+        label = QtWidgets.QLabel(self.Data(col))
+        if col == 0:
+            label.setStyleSheet("color: gray;")
+        return label
+
+# A row under the "Rules applied:" node for one transfer rule that fired while that test was being translated: which rule it was, and the lexical units the rule matched, color-coded the same way
+# the test's own lexical units are. The rule is named by its sequential number in the transfer rules file together with the comment it carried there when the test was run - the number on its own
+# would go stale as soon as a rule is added to or removed from the file.
+class AppliedRuleTreeItem(BaseTreeItem):
+
+    def __init__(self, inParent, rtl, ruleNum, ruleComment, luList):
+        super(AppliedRuleTreeItem, self).__init__(inParent, rtl)
+        self.ruleNum = ruleNum
+        self.ruleComment = ruleComment
+
+        # Leave out the dummy EOL lexical unit that ends every test line. It's there to keep a rule from running on into the next test, not something the user put in the test.
+        self.luList = [lu for lu in luList if lu != EOL_LEXICAL_UNIT]
+
+    def ColumnCount(self):
+        return 3
+
+    def Data(self, inColumn):
+
+        # Which rule it was
+        if inColumn == 0:
+
+            if self.ruleComment:
+                return _translate("TestbedLogViewer", "Rule {number}: {comment}").format(number=self.ruleNum, comment=self.ruleComment)
+
+            return _translate("TestbedLogViewer", "Rule {number}").format(number=self.ruleNum)
+
+        # The lexical units the rule matched
+        elif inColumn == 1:
+
+            paragraphEl = ET.Element('p')
+
+            for lexUnit in self.luList:
+
+                processLexicalUnit(lexUnit + ' ', paragraphEl, self.isRTL(), True)
+
+            return ET.tostring(paragraphEl, encoding='unicode')
+
+        return ""
+
+    def createTheWidget(self, col):
+        label = QtWidgets.QLabel(self.Data(col))
+        if col == 0:
             label.setStyleSheet("color: gray; font-weight: bold;")
         return label
 
@@ -439,6 +559,9 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         self.yellowTriangle = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, YELLOW_TRIANGLE))
         self.__cache = {}
 
+        # The font size the user has dialed in, or None until they have. Kept here because the widgets of a row aren't built until the view first asks for that row - a node the user has never
+        # opened has no widgets yet - so a size set now has to be remembered and given to those widgets when they are eventually built.
+        self.__fontPointSize = None
 
         # initialize base class
         super(TestbedLogModel, self).__init__(parent)
@@ -456,6 +579,22 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
     
     def setView(self, view):
         self.__view = view
+
+    # Set the font size for the whole tree: every widget that has been built so far, and - by way of the remembered size - every one built from here on.
+    def setFontPointSize(self, pointSize):
+
+        self.__fontPointSize = pointSize
+
+        self.applyFontPointSize(self.rootItem, pointSize)
+
+    # Hand a size down to an item and everything under it.
+    def applyFontPointSize(self, item, pointSize):
+
+        item.setFontPointSize(pointSize)
+
+        for child in item.children:
+
+            self.applyFontPointSize(child, pointSize)
 
     def getStats(self, resultObj):
         
@@ -519,13 +658,26 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                         resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
                                   test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
                         
-                                            # Add comment child
+                        # Add a child row for the comment the user wrote for this test
                         commentText = test.getComment()
-                        ruleNumStr = test.getRuleNumbers()
 
-                        if commentText or ruleNumStr:
-                            commentItem = CommentTreeItem(resultItem, self.getRTL(), commentText, ruleNumStr)
+                        if commentText:
+
+                            commentItem = CommentTreeItem(resultItem, self.getRTL(), commentText)
                             resultItem.AddChild(commentItem)
+
+                        # Gather the transfer rules that fired for this test under a "Rules applied:" node the user can open up
+                        appliedRuleList = test.getAppliedRules()
+
+                        if appliedRuleList:
+
+                            rulesItem = RulesAppliedTreeItem(resultItem, self.getRTL())
+                            resultItem.AddChild(rulesItem)
+
+                            for ruleNum, ruleComment, luList in appliedRuleList:
+
+                                rulesItem.AddChild(AppliedRuleTreeItem(rulesItem, self.getRTL(), ruleNum, ruleComment, luList))
+
                         #self.__cache[myHash] = resultItem
                                      
                     # Add the result item to the current stats item
@@ -558,6 +710,14 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
             
             # Create the needed widget depending on item type
             widget = node.createTheWidget(column)
+
+            # Bring it up at the size that is in force, which the user may well have set long before they opened the node this row sits under.
+            if self.__fontPointSize is not None:
+
+                widgetFont = widget.font()
+                widgetFont.setPointSize(self.__fontPointSize)
+                widget.setFont(widgetFont)
+
             node.widget[column] = widget
 
             if self.__view:
@@ -641,11 +801,11 @@ class LogViewerMain(QMainWindow):
         
         self.ui.OKButton.clicked.connect(self.okClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
-        self.__previousFontSize = 12
         self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
-        # Start the font size at 12
+        # Start the font size at 12. Call the handler outright rather than leaving it to the signal, which doesn't fire if the spin control already stands at 12.
         self.ui.fontSizeSpinBox.setValue(12)
+        self.FontSizeSpinBoxClicked()
         
         # Make the header text bold. header() is typed as Optional in the Qt stubs but a QTreeView always has one; assert it so we can use it.
         header = self.ui.logTreeView.header()
@@ -656,22 +816,15 @@ class LogViewerMain(QMainWindow):
         header.setFont(headerFont)
 
     def FontSizeSpinBoxClicked(self):
-        myFont = self.ui.logTreeView.font()
+
         currentSize = self.ui.fontSizeSpinBox.value()
-        sizeChange = currentSize - self.__previousFontSize
-        self.__previousFontSize = currentSize
+
+        myFont = self.ui.logTreeView.font()
         myFont.setPointSize(currentSize)
         self.ui.logTreeView.setFont(myFont)
 
-        self.__changeCommentFontSize(self.__model.rootItem, sizeChange)
+        self.__model.setFontPointSize(currentSize)
 
-    def __changeCommentFontSize(self, item, sizeChange):
-        if isinstance(item, CommentTreeItem):
-            item.changeFontSize(sizeChange)
-
-        for child in item.children:
-            self.__changeCommentFontSize(child, sizeChange)
-        
     def getModel(self):
         return self.__model
     

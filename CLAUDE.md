@@ -67,6 +67,18 @@ Group imports into these blocks, in this order, separated by a single blank line
   in `Dev/Lib/ReadConfig.py`, insert it in **alphabetical order** by variable name
   (e.g. `LOG_STATISTICS` sorts before `LOWERCASE_UPPERCASE_PAIRS`).
 
+## Lint pass before finalizing
+- **Before calling a code change done, make a lint pass over it.** "Lint" here means the editor's type checker (Pylance/Pyright) — there is no linter config or CI lint step in the repo, so the
+  warnings to clear are the ones VS Code shows on the file. Report what you found and fixed; if you can't run a checker, say so rather than claiming the file is clean.
+- **Scope the pass to the code you touched**, plus anything your change made newly warn. Cleaning up a whole file's pre-existing warnings is worthwhile but is its own change — ask before folding
+  it in, so the diff stays reviewable.
+- **Fix the warning without changing behavior.** The common ones are `None`-safety on XML lookups (`find()` returns `Optional`) and on Qt getters the stubs type as `Optional` (`header()`,
+  `layout()`). Prefer a real guard that returns or errors when the value genuinely can be `None`; use an `assert` only where it can't be, and add a comment saying why. See
+  `Dev/Modules/ExportFlexToParatext.py` for the established pattern of commenting a narrowing or a cast.
+- Don't silence warnings with a blanket `# type: ignore`. The existing ones on `SIL.LCModel` and `flextoolslib` imports are deliberate — those packages ship no stubs — but a new one needs a reason
+  in a comment.
+- A lint-only change still gets a version-history line (see below); `Lint fixes.` is the usual description.
+
 ## Versioning
 - Each module/lib file starts with a version-history header block:
   `# Version X.Y.Z - M/D/YY - Ron Lockwood` followed by an indented one-line
