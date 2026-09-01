@@ -6432,7 +6432,7 @@ type="tFlexx"
 > source text the words came from. If the rule was invalid, the pop-up text will also tell you why <object
 type="tFlextrans"
 ></object
-> found the test invalid.</p
+> found the test invalid. Expand a test to see more about it: the comment you gave the test, if any, and a Rules applied: node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the comment that names the rule, followed by the lexical units the rule matched. That comment is the one the rule carried when the testbed was run, so an old result still tells you which rule fired even after rules have been added to or removed from the rules file.</p
 ><example
 num="xViewerImage"
 ><chart

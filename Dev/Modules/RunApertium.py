@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.17.1 - 8/31/26 - Ron Lockwood
+#    Write the stripped transfer rules file indented, one element per line, so apertium-transfer's line numbers point at the right rule.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -115,7 +118,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -261,8 +264,17 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
             if 'v' in node.attrib:
                 node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'], notAngleBrackets=True)
 
+    # Without this, ET.tostring() would put the whole rules file on a single line. That matters because apertium-transfer reports line numbers back to the user - the trace says things like
+    # "Applied rule 18 line 1" and warnings say things like "<let> on line 2890 sometimes discards its value". With everything on one line every message would say "line 1" and point nowhere.
+    # Indenting one element per line makes those line numbers identify the rule again. We use a tab per level because that is what XMLmind produces when a user edits a transfer rules file and
+    # what the existing indented tr.t1x files use. Indenting only adds whitespace between elements, which apertium-preprocess-transfer ignores - compiling a rules file with and without it was
+    # checked to give a byte-identical .bin.
+    ET.indent(tree, space='\t')
+
     outPath = os.path.join(buildFolder, strippedRulesFileName)
+
     with open(outPath, 'w', encoding='utf-8') as fout:
+
         text = ET.tostring(tree, encoding='unicode')
         # Always write transfer rule data as decomposed
         text = unicodedata.normalize('NFD', text)

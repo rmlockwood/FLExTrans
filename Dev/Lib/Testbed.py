@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.1 - 8/31/26 - Ron Lockwood
+#    Store which transfer rules fired for which lexical units of a test, added the Apertium log/rules-file parsing that finds them and pretty printed the testbed and testbed results files.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -99,6 +102,10 @@ EXPECTED_RESULT = 'expectedResult'
 ACTUAL_RESULT = 'actualResult' 
 TGT_EXPECTED = TARGET_OUTPUT+'/'+EXPECTED_RESULT
 TGT_ACTUAL = TARGET_OUTPUT+'/'+ACTUAL_RESULT
+APPLIED_RULES = 'appliedRules'
+APPLIED_RULE = 'appliedRule'
+RULE_NUMBER = 'num'
+RULE_COMMENT = 'comment'
 SOURCE_DIRECTION = 'source_direction' 
 TARGET_DIRECTION = 'target_direction' 
 N_ATTRIB = 'n' 
@@ -114,6 +121,9 @@ NO = 'no'
 DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 XML_DATETIME_FORMAT_QT = 'yyyy-MM-dd hh:mm:ss' # Qt format for date time
+
+# The dummy lexical unit that dump() adds to the end of every test line so that a transfer rule matching at the end of one test can't run on into the test on the next line.
+EOL_LEXICAL_UNIT = 'EOL<eol>'
 
 ## Viewer constants
 # Main color of the headwords
@@ -563,12 +573,50 @@ class TestbedTestXMLObject():
         return self.__actResult
     def setActualResult(self, myStr):
         self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
-    def setRuleNumbers(self, ruleNums):
-        node = self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
-        node.set('ruleNumbers', ','.join(str(n) for n in ruleNums))
-    def getRuleNumbers(self):
-        node = self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT)
-        return node.get('ruleNumbers', '') if node is not None else ''
+
+    # Record which transfer rules fired for this test, in the order they fired. appliedRuleList is a list of (rule number, rule comment, lexical unit list) tuples - the rule's sequential number in the
+    # transfer rules file, the comment that names it there, and the lexical units the rule matched. The comment is stored along with the number because the rules file goes on being edited after a
+    # test run, so by the time someone looks at this result in the log viewer, rule 18 may well be a different rule than the one that fired here.
+    def setAppliedRules(self, appliedRuleList):
+
+        # Throw away what an earlier extraction of this same result put here, so re-running the extraction doesn't pile up duplicates.
+        oldNode = self.__testNode.find(APPLIED_RULES)
+
+        if oldNode is not None:
+            self.__testNode.remove(oldNode)
+
+        if not appliedRuleList:
+            return
+
+        appliedRulesNode = ET.SubElement(self.__testNode, APPLIED_RULES)
+
+        for ruleNum, ruleComment, luList in appliedRuleList:
+
+            appliedRuleNode = ET.SubElement(appliedRulesNode, APPLIED_RULE)
+            appliedRuleNode.attrib[RULE_NUMBER] = str(ruleNum)
+            appliedRuleNode.attrib[RULE_COMMENT] = ruleComment
+
+            # Write the lexical units as an Apertium stream (^...$ around each one) so that a lemma containing a space - a multiword entry such as "ji ber ve yeke1.1<adv>" - can still be told apart
+            # from its neighbors when the list is read back.
+            appliedRuleNode.text = ' '.join(['^' + lu + '$' for lu in luList])
+
+    # The reverse of setAppliedRules: the rules that fired for this test as a list of (rule number, rule comment, lexical unit list) tuples. A test from before this was recorded - or one no rule
+    # fired for - gives back an empty list.
+    def getAppliedRules(self):
+
+        appliedRuleList = []
+        appliedRulesNode = self.__testNode.find(APPLIED_RULES)
+
+        if appliedRulesNode is None:
+            return appliedRuleList
+
+        for appliedRuleNode in list(appliedRulesNode):
+
+            luList = re.findall(r'\^(.*?)\$', appliedRuleNode.text if appliedRuleNode.text else '')
+            appliedRuleList.append((appliedRuleNode.get(RULE_NUMBER, ''), appliedRuleNode.get(RULE_COMMENT, ''), luList))
+
+        return appliedRuleList
+
     def getTestNode(self):
         return self.__testNode
     def getComment(self):
@@ -676,7 +724,7 @@ class TestbedTestXMLObject():
         
         # each test goes on its own line. Add a dummy EOL lexical unit so that
         # transfer rules don't go to the next line unintentially 
-        f_out.write(self.getApertiumString() + ' ^EOL<eol>$\n')
+        f_out.write(self.getApertiumString() + ' ^' + EOL_LEXICAL_UNIT + '$\n')
 
     def extractResults(self, f_out):
         
@@ -930,6 +978,11 @@ class FlexTransTestbedFile():
             self.write()
 
     def write(self):
+
+        # Indent the tree before writing so the testbed comes out one element per line instead of as a single enormous line. A tab per level is what XMLmind uses when the user edits the testbed
+        # there, so writing it the same way here keeps the file from being reformatted end to end every time it passes between the two.
+        ET.indent(self.__testbedTree, space='\t')
+
         self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
         
         # Re-open the testbed file
@@ -1147,7 +1200,133 @@ class FlexTransTestbedResultsFile():
         return self.__XMLObject
     
     def write(self):
+
+        # Indent the whole tree before writing so that the results file comes out one element per line rather than as a single enormous line.
+        ET.indent(self.__testbedResultsTree, space='\t')
+
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
+
+# The name of the log file the Apertium tools write their rule trace to. The makefile in the Build folder sends apertium-transfer's standard error there (and, when advanced transfer is turned on,
+# appends the interchunk and postchunk traces to the same file).
+APERTIUM_LOG_FILE = 'apertium_log.txt'
+
+# The three Apertium tools that write "Applied rule" lines to a log, one per stage of transfer. Which of them a given log holds depends on how the tools were run: the FLExTrans build sends all
+# three stages to the same apertium_log.txt, while the Live Rule Tester runs one stage at a time and gives each its own log file.
+APERTIUM_TRANSFER_TOOL = 'apertium-transfer'
+APERTIUM_INTERCHUNK_TOOL = 'apertium-interchunk'
+APERTIUM_POSTCHUNK_TOOL = 'apertium-postchunk'
+
+# The units in a trace line are separated by a space, but a lemma can itself contain spaces (a multiword entry such as "ji ber ve yeke1.1<adv>"), so splitting on whitespace alone would tear those
+# apart. A lexical unit always ends with a tag, and a chunk - what the interchunk and postchunk stages work on - always ends with a closing brace, so split only where a space follows one of those.
+# Inside a chunk the units are separated by "$ ^" instead, which this deliberately leaves alone: a chunk stays whole.
+TRACE_LU_SEPARATOR_RE = re.compile(r'(?<=[>}])\s+')
+
+# Pull the source form out of one lexical unit of a trace line - the part ahead of the slash that separates it from the target form, as in lieben1.1<v><1/3SG>/aelska1.1<v><1/3SG>. The separator
+# can't be found by simply splitting on the first slash: a slash is perfectly legal inside a tag, since a grammatical category or feature the user named with a slash (1/3SG here) becomes a tag as
+# it stands, and a slash inside a lemma is escaped with a backslash (see Utils.escapeReservedApertChars). So walk the text and stop at the first slash that is neither escaped nor inside a tag.
+def getSourceFormOfTraceLU(luChunk):
+
+    insideTag = False
+    escaped = False
+
+    for charPos, myChar in enumerate(luChunk):
+
+        if escaped:
+            escaped = False
+
+        elif myChar == '\\':
+            escaped = True
+
+        elif myChar == '<':
+            insideTag = True
+
+        elif myChar == '>':
+            insideTag = False
+
+        elif myChar == '/' and not insideTag:
+            return luChunk[:charPos]
+
+    return luChunk
+
+# Return what we need to know about each rule in an Apertium transfer rules file, as a map of rule number to a (comment, pattern length) pair. The rules are numbered the way apertium-transfer
+# numbers them in its log: from 1, in the order they appear in <section-rules>. The comment is the one that names the rule in the file, or an empty string if it has none. The pattern length is
+# how many lexical units the rule matches, which is simply the number of <pattern-item> elements in its <pattern>; it's what lets a caller tell the words a rule really took from the one extra
+# word the log prints after them. A file that can't be read or parsed gives back an empty map rather than an error - the rule numbers from the log are still worth showing on their own.
+def getTransferRuleInfo(rulesFilePath):
+
+    ruleInfo = {}
+
+    try:
+        rulesRoot = ET.parse(rulesFilePath).getroot()
+
+    except:
+        return ruleInfo
+
+    rulesSection = rulesRoot.find('section-rules')
+
+    if rulesSection is None:
+        return ruleInfo
+
+    for ruleNum, ruleNode in enumerate(list(rulesSection), start=1):
+
+        patternNode = ruleNode.find('pattern')
+        patternLength = len(list(patternNode)) if patternNode is not None else 0
+
+        ruleInfo[ruleNum] = (ruleNode.get(RULE_COMMENT, ''), patternLength)
+
+    return ruleInfo
+
+# Return every rule application recorded in an Apertium log, in the order the rules fired, as a list of (rule number, unit list) pairs. A unit is the source form of one lexical unit, or one whole
+# chunk for the interchunk and postchunk stages. toolName says which stage's lines to pick out - a log can hold more than one, and each stage numbers its rules against its own rules file (tr.t1x,
+# tr.t2x or tr.t3x), so mixing them would name rules from the wrong file; pass None to take every stage's lines, which is what a log holding a single stage wants.
+#
+# A trace line looks like this:
+#   apertium-transfer: Applied rule 18 line 1 Bav1.1<n><m>/xyz1.1<n><m> ji1.1<prep>/abc1.1<prep>
+# The number after "rule" is the rule's sequential position in the rules file. The "line" number is where the rule sits in that file rather than a line of the text being translated, so it says
+# nothing about which sentence is being worked on and is skipped over here.
+#
+# Note the window of units is not always only what the rule took: apertium reads one unit past a match to find out the match is over, and prints that one too, so a window is either exactly as long
+# as the rule's pattern or one longer. Trimming it needs the pattern length from the rules file, so that is left to the caller (see getTransferRuleInfo). A log that isn't there (the tools may never
+# have been run, or the Build folder was cleaned out) gives back an empty list.
+def parseAppliedRulesLog(logFilePath, toolName=APERTIUM_TRANSFER_TOOL):
+
+    logEntries = []
+
+    # Anchor the pattern on the tool that wrote the line, unless the caller wants them all.
+    toolPrefix = re.escape(toolName) + ': ' if toolName else ''
+    appliedRuleRE = re.compile(toolPrefix + r'Applied rule (\d+) line \d+ (.+)')
+
+    try:
+        # Read the log a line at a time rather than all at once - translating a whole book leaves a log of many megabytes, of which only the handful of lines matched below are of any interest.
+        with open(logFilePath, encoding='utf-8') as logFile:
+
+            for logLine in logFile:
+
+                matchObj = appliedRuleRE.search(logLine)
+
+                if matchObj is None:
+                    continue
+
+                # Break the window into lexical units and keep the source form of each one.
+                luList = []
+
+                for luChunk in TRACE_LU_SEPARATOR_RE.split(matchObj.group(2).strip()):
+
+                    sourceLU = getSourceFormOfTraceLU(luChunk).strip()
+
+                    if sourceLU:
+
+                        luList.append(sourceLU)
+
+                if luList:
+
+                    logEntries.append((int(matchObj.group(1)), luList))
+
+    # No log to read (the Apertium tools may never have been run, or the Build folder was cleaned out), or it gave out part way through - either way, hand back whatever was gathered.
+    except:
+        pass
+
+    return logEntries
 
 # Create a span element and set the color and text
 def outputLUSpan(parent, color, text_str, rtl):

@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.17.1 - 8/31/26 - Ron Lockwood
+#    Store on each test which transfer rules fired for which of its lexical units, read out of the Apertium transfer log, so the testbed log viewer can show them.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -65,6 +68,7 @@
 import io
 import os
 import re
+import unicodedata
 
 from SIL.LCModel import * # type: ignore
 from flextoolslib import * # type: ignore
@@ -99,7 +103,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",
@@ -108,6 +112,103 @@ docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
 
 #app.quit()
 #del app
+
+# The source lexical units of one test, as plain Apertium strings without the ^ and $ around them, in the order the transfer rules saw them. The dummy EOL lexical unit that the testbed dump adds
+# to the end of every test line is one of the units the rules saw, so it belongs on the end of the list too.
+def getTestLexicalUnits(testObj):
+
+    luList = re.findall(r'\^(.*?)\$', testObj.getApertiumString())
+    luList.append(EOL_LEXICAL_UNIT)
+
+    return luList
+
+# Lexical units from the log and from the testbed XML both come from the same dump, but compare them forgivingly all the same: same Unicode composition and same case, since a word carries whatever
+# capitalization it had in the text it came from.
+def normalizeForCompare(luStr):
+
+    return unicodedata.normalize('NFD', luStr).lower()
+
+# Where luToFind sits in luList at or after startAt, or -1 if it isn't there.
+def findLexicalUnit(luList, luToFind, startAt):
+
+    try:
+        return luList.index(luToFind, startAt)
+
+    except ValueError:
+        return -1
+
+# Work out which transfer rules fired for which test and store that on each test of the run that just finished, so the testbed log viewer can show, underneath a test, the lexical units a rule
+# matched and which rule it was. The Apertium transfer log lists the rules in the order they fired along with the lexical units each one saw, but it can't tell us which test a rule application
+# belongs to: the "line" number it reports is a line of the rules file, which FLExTrans writes all on one line. So we walk the log and the tests forward together, placing each rule application by
+# its first lexical unit - transfer works through the tests in the order they were dumped, so the log and the test list only ever move forward.
+def recordAppliedRules(resultsXMLObj):
+
+    logEntries = parseAppliedRulesLog(os.path.join(FTPaths.BUILD_DIR, APERTIUM_LOG_FILE))
+    resultObjList = resultsXMLObj.getTestbedResultXMLObjectList()
+
+    if not logEntries or not resultObjList:
+        return
+
+    # Take the rule information from the copy of the rules file that was compiled for this run, so the numbers in the log, the comments stored alongside them and the pattern lengths used to trim
+    # the windows below all come from one and the same file.
+    ruleInfo = getTransferRuleInfo(os.path.join(FTPaths.BUILD_DIR, Utils.STRIPPED_RULES))
+
+    # The tests of the run that just finished - results are kept newest first - in the order they were dumped into the source file, which is the order transfer ran through them.
+    testList = []
+
+    for testbedXMLObj in resultObjList[0].getFLExTransTestbedXMLObjectList():
+
+        testList.extend(testbedXMLObj.getTestXMLObjectList())
+
+    testLUlists = [[normalizeForCompare(lu) for lu in getTestLexicalUnits(testObj)] for testObj in testList]
+
+    appliedRulesByTest = {}
+    testIndex = 0
+    luIndex = 0
+
+    for ruleNum, luList in logEntries:
+
+        ruleComment, patternLength = ruleInfo.get(ruleNum, ('', 0))
+
+        # Keep only the words the rule actually took. Apertium reads one word past a match to find out that the match is over and prints that word along with the matched ones, but the rule did
+        # nothing to it - it is usually the first word of the next rule's match - so showing it to the user would misrepresent what the rule did. The rule's own pattern says how many words it
+        # takes, and the rule consumes exactly those, which also tells us where the next rule can start looking.
+        if patternLength:
+
+            luList = luList[:patternLength]
+            wordsTaken = len(luList)
+
+        # With no rules file to consult there is no telling the matched words from the one that ended the match, so keep the window whole and leave its last word where the next rule can still find it.
+        else:
+            wordsTaken = max(1, len(luList) - 1)
+
+        firstLU = normalizeForCompare(luList[0])
+        luPosition = -1
+
+        # Find the test this rule application belongs to: the first test, from the one we are on onward, that still has this lexical unit ahead of where the previous rule left off.
+        while testIndex < len(testLUlists):
+
+            luPosition = findLexicalUnit(testLUlists[testIndex], firstLU, luIndex)
+
+            if luPosition >= 0:
+                break
+
+            testIndex += 1
+            luIndex = 0
+
+        # We have run off the end of the tests, so whatever is left in the log belongs to some other run of the Apertium tools than the one that produced these results.
+        if luPosition < 0:
+            break
+
+        appliedRulesByTest.setdefault(testIndex, []).append((ruleNum, ruleComment, luList))
+
+        # Step over the words this rule took, so the next rule is looked for after them.
+        luIndex = luPosition + wordsTaken
+
+    # Store what was found on each test. A test no rule fired for gets an empty list, which also clears out anything an earlier extraction of this same result left behind.
+    for testNum, testObj in enumerate(testList):
+
+        testObj.setAppliedRules(appliedRulesByTest.get(testNum, []))
 
 #----------------------------------------------------------------
 # The main processing function
@@ -167,30 +268,8 @@ def MainFunction(DB, report, modifyAllowed):
     # If we were successful write the end date-time and save the file
     if count > 0:
 
-        # Parse the Apertium log: "Applied rule N line M" where M is the test line number
-        logPath = os.path.join(FTPaths.BUILD_DIR, 'apertium_log.txt')
-        lineRuleMap = {}
-        try:
-            with open(logPath, encoding='utf-8') as logFile:
-                for logLine in logFile:
-                    m = re.search(r'Applied rule (\d+) line (\d+)', logLine)
-                    if m:
-                        ruleNum = int(m.group(1))
-                        lineNum = int(m.group(2))
-                        lineRuleMap.setdefault(lineNum, []).append(ruleNum)
-        except IOError:
-            pass
-
-        report.Info(_translate("EndTestbed", "Rule map from log: {lineRuleMap}").format(lineRuleMap=str(lineRuleMap)))
-
-        # Set rule numbers on each test — line number in log = test index (1-based)
-        # testLine = 1
-        # resultObj = resultsXMLObj.getTestbedResultXMLObjectList()[0]
-        # for testbed in resultObj.getFLExTransTestbedXMLObjectList():
-        #     for test in testbed.getTestXMLObjectList():
-        #         if testLine in lineRuleMap:
-        #             test.setRuleNumbers(lineRuleMap[testLine])
-        #         testLine += 1
+        # Note on each test which transfer rules fired for which of its words, so the testbed log viewer can show them under the test.
+        recordAppliedRules(resultsXMLObj)
 
         resultsXMLObj.endTest()
         resultsFileObj.write()

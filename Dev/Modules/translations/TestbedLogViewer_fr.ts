@@ -69,6 +69,26 @@
       <translation>Texte source : {origin}.</translation>
     </message>
     <message>
+      <location filename="../TestbedLogViewer.py" line="396"/>
+      <source>Comment: {comment}</source>
+      <translation>Commentaire : {comment}</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="414"/>
+      <source>Rules applied:</source>
+      <translation>Règles appliquées :</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="445"/>
+      <source>Rule {number}: {comment}</source>
+      <translation>Règle {number} : {comment}</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="447"/>
+      <source>Rule {number}</source>
+      <translation>Règle {number}</translation>
+    </message>
+    <message>
       <location filename="../TestbedLogViewer.py" line="647"/>
       <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
       <translation>Fichier test : {testbedPath} n'existe pas. Veuillez ajouter des tests au fichier test.</translation>
