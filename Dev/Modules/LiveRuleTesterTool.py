@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.4 - 9/1/26 - Ron Lockwood
+#    Lint fix.
+#
 #   Version 3.17.3 - 9/1/26 - Ron Lockwood
 #    Read the Apertium log with the shared Testbed.parseAppliedRulesLog instead of a second copy of the parsing. The execution log now shows only the units a rule really matched, names the rule
 #    after them in parentheses, and no longer cuts a lexical unit short when a tag holds a slash, e.g. <1/3SG>.
@@ -476,7 +479,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -3421,7 +3424,7 @@ class Main(QMainWindow):
 
         # Pull the rule applications out of the log. The tester runs one phase at a time and gives each phase its own log file, so there is no need to say which tool's lines to take - a toolName of
         # None takes them all. Picking the units out of a trace line is fiddly enough (a lemma can hold spaces, a tag can hold a slash) that it lives in Testbed, shared with the testbed's own use of it.
-        for ruleNum, lexUnitList in parseAppliedRulesLog(logFile, toolName=None):
+        for ruleNum, lexUnitList in parseAppliedRulesLog(logFile, toolName=''):
 
             # Show only what the rule matched. Apertium reads one unit past a match to find out the match is over and prints that one alongside the matched ones, but the rule did nothing to it, so
             # leaving it in would misrepresent what the rule did. The rule's own pattern says how many units it takes. Without a readable rules file (patternLength of 0) the window is left whole.
