@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.17.2 - 9/1/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
 #   Version 3.17.1 - 8/31/26 - Ron Lockwood
 #    Store on each test which transfer rules fired for which of its lexical units, read out of the Apertium transfer log, so the testbed log viewer can show them.
 #
@@ -61,8 +64,45 @@
 #
 #   earlier version history removed on 3/10/25
 #
-#   Conclude a the testbed log result. Put the results for each test into the 
-#   log and start the log viewer. Put in an end time in the log.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module finishes a testbed run that Start Testbed began. Start Testbed dumped the testbed's tests into the analyzed text file, one test per line, and the rest of the FLExTrans chain then
+#   transferred and synthesized them like it would any other text. This module reads that synthesized output back, one line per test in the same order the tests were dumped, and records what each
+#   test actually produced next to what it was expected to produce. It also notes which transfer rules fired for which test, stamps the result with an end date-time and writes the testbed results
+#   file, at which point the Testbed Log Viewer can show the run.
+#
+#   WHAT IT READS AND WRITES
+#
+#   The synthesis output file (Target Output Synthesis File setting) is read whole into memory rather than being handed straight to the extraction, because it may first need the Text Out (Fix Up
+#   Synthesis Text) rules run over it. Those are the rules Insert Target Text and Export to Paratext apply to the final output, so running them here too means the testbed compares against the same
+#   text the user would actually see. That is optional and controlled by the Apply Text Out Rules In Testbed setting, since a user may well prefer to test the raw synthesis.
+#
+#   Extraction walks the topmost result in the testbed results file - the one Start Testbed created and left with an empty end date-time - and reads one line of synthesized text for each test that
+#   result holds, trimming off the dummy EOL lexical unit and normalizing to decomposed unicode before storing the line as that test's actual result. Nothing is written back unless at least one
+#   result came out of that.
+#
+#   WHICH RULES FIRED FOR WHICH TEST
+#
+#   recordAppliedRules() is what lets the log viewer show, underneath a test, the transfer rules that fired for it. The raw material is apertium_log.txt in the Build folder, where the makefile sends
+#   apertium-transfer's trace. That trace lists the rules in the order they fired along with the lexical units each one saw, but it can't tell us which test a rule application belongs to: the "line"
+#   number it reports is a line of the rules file, not a line of the text being translated.
+#
+#   So the log and the tests are walked forward together. Transfer works through the tests in the order they were dumped, so the log and the test list only ever move forward, and each rule
+#   application can be placed by its first lexical unit: find the first test, from the one we are on onward, that still has that lexical unit ahead of where the previous rule left off. The window of
+#   lexical units the log prints has to be trimmed first, because apertium reads one word past a match to find out that the match is over and prints that word along with the matched ones - the
+#   rule's own pattern length, read out of the copy of the rules file that was compiled for this run, says how many words the rule really took. Comparisons are forgiving about unicode composition
+#   and case, since a word carries whatever capitalization it had in the text it came from. When the log runs past the end of the tests, whatever is left in it belongs to some other run of the
+#   Apertium tools and is dropped.
+#
+#   Each test then gets the list of (rule number, rule comment, lexical units) that was collected for it, or an empty list if no rule fired for it - which also clears out anything an earlier
+#   extraction of this same result left behind. The rule is named by number and comment together because the number on its own would go stale as soon as a rule is added to or removed from the file.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary FlexTools displays, the three small helpers the rule matching needs (getTestLexicalUnits, normalizeForCompare and findLexicalUnit),
+#   recordAppliedRules(), MainFunction(), and the FlexToolsModule declaration at the very bottom that FlexTools looks for. MainFunction() reads the settings, reads and optionally rule-adjusts the
+#   synthesis text, extracts the results, records the applied rules, ends the result and writes the file. The log parsing itself (parseAppliedRulesLog), the rules file reading (getTransferRuleInfo)
+#   and all of the testbed XML classes live in Lib/Testbed.py.
 #
 
 import io
@@ -103,7 +143,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("EndTestbed", "End Testbed"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help       : "",

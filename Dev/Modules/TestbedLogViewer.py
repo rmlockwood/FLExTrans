@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.17.2 - 9/1/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
 #   Version 3.17.1 - 8/31/26 - Ron Lockwood
 #    Show under each test a "Rules applied:" node listing the transfer rules that fired for it - each rule's number in the rules file and its comment, plus the lexical units the rule matched.
 #    The font size now reaches rows built after it was set, so a node opened later comes up at the size the user chose rather than the default.
@@ -71,8 +74,56 @@
 #
 #   earlier version history removed on 3/10/25
 #
-#   Show the testbed log which shows the results of tests run for a certain
-#   date/time. See design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module shows the results of testbed runs. Each run is one line of a tree - when it started and how it came out - and opening it up shows the individual tests, each with the source lexical
+#   units that went in, the target text that was expected and the target text that actually came out. Opening a test up further shows the comment the user wrote for it and the transfer rules that
+#   fired while it was being translated. Nothing here is edited: the module only reads the testbed results file (Testbed Results File setting) that Start Testbed and End Testbed write between them.
+#   The Edit Testbed button is for editing, and it just opens the testbed file itself in XMLmind XML Editor. See the design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
+#
+#   Only the most recent MAX_RESULTS_TO_DISPLAY runs are shown - results are kept newest first in the file, so that is simply the top of the list - and a run with no end date-time is skipped
+#   altogether, since that is an unfinished run whose tests have no actual results yet.
+#
+#   WHAT THE TREE LOOKS LIKE
+#
+#   There are four kinds of row, each a class deriving from BaseTreeItem:
+#    - TestStatsItem (top-level)- one testbed run. Column 0 is the start date and time, formatted for the user's locale, and column 1 is the summary "N Tests, N Failed, N Invalid", colored green when 
+#      everything passed, orange when something was invalid and red when something failed. Hovering gives how long the run took, worked out from the start and end date-times.
+#    - TestResultItem - one test. Column 0 is the source lexical units, color coded the way they are everywhere else in FLExTrans (see processLexicalUnit() in Lib/Testbed.py) and preceded by an icon:
+#      a green check when the test passed, a red X when it failed, a yellow triangle when it is invalid. Column 1 is the expected result and column 2 the actual one - in red when it differs from the
+#      expected, as the expected repeated in green when it matches, and as n/a for an invalid test, which was never really run. An invalid test's lexical units are all recolored orange and its tooltip
+#      carries the reason it is invalid; every test's tooltip names the source text the test came from.
+#    - CommentTreeItem - the comment the user wrote for that test, in gray italics. Only there if the test has one.
+#    - RulesAppliedTreeItem and AppliedRuleTreeItem - a "Rules applied:" heading with one row under it for each transfer rule that fired for this test, column 0 names the rule by its number in the rules file
+#      together with the comment it carried there, and showing in column 1 the lexical units that rule matched. Keeping them under a heading of their own is what lets a test stay a single line until
+#      the user opens it up to look at the rules. End Testbed is what works this information out and stores it, so a run made before it started doing that simply has no such rows.
+#
+#   HOW THE ROWS ARE DRAWN
+#
+#   The model's data() always returns None - none of this is drawn by the view itself. Every cell is instead a widget handed to the view through setIndexWidget, because the cell contents are html:
+#   the lexical unit coloring is spans of html, which a plain view item can't render but a QLabel can. Each item class says what widget it wants through createTheWidget(), which is a QLabel for most
+#   cells and, for a test's first column, the ITWidget that puts the pass/fail icon beside the label.
+#
+#   Those widgets are built lazily, in __createIndex(), the first time the view asks for the row - so a node the user never opens costs nothing to have in the tree. That lazy building is why the font
+#   size the spin control sets has to be remembered on the model as well as applied right away: a row built later has to come up at the size the user chose rather than at the default. Applying it
+#   means handing the size down the whole tree, and each widget has to be given it outright, since an index widget doesn't reliably inherit the view's font.
+#
+#   The __cache member and the hashing around it were an attempt to reuse TestResultItem objects for a test that appears in more than one run. It is currently disabled - the hash is hard coded to 1
+#   and the line that would store an item is commented out - so every run builds its own items.
+#
+#   OTHER KEY FEATURES
+#
+#   The three columns are given 50, 30 and 20 percent of the width on every resize, with a few pixels held back so no horizontal scroll bar appears. The window opens with the most recent run already
+#   expanded, and the column headers are bold. When the testbed language is right to left the whole tree is laid out right to left and the labels are aligned to match.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary FlexTools displays, the icon file names and MAX_RESULTS_TO_DISPLAY, the Stats class (a run's start and end times and its test counts, plus the
+#   elapsed time and the colored summary string built from them), the four tree item classes and their BaseTreeItem base, ITWidget, TestbedLogModel, the LogViewerMain window, and then
+#   RunTestbedLogViewer(), MainFunction() and the FlexToolsModule declaration at the very bottom that FlexTools looks for.
+#
+#   SetupModelData() is where the tree gets built, walking the results, the testbeds inside each result and the tests inside each testbed. RunTestbedLogViewer() is the entry point, and the Live Rule
+#   Tester calls it directly as well - its View Testbed Log button closes the tester, runs this, and then reopens the tester.
 #
 
 import os
@@ -117,7 +168,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 

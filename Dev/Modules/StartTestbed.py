@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.17.1 - 9/1/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -34,8 +37,37 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   Initialize the testbed log and create a source text from the testbed. The
-#   source text can be fed into the normal FLExTrans process.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module begins a testbed run. The testbed is an XML file of tests - each one a handful of source lexical units paired with the target text they are expected to produce - built up over time
+#   with the Add to Testbed button in the Live Rule Tester or possibly manual edits to the testbed file. Running the testbed means feeding those tests through the normal FLExTrans machinery instead 
+#   of feeding a real source text through it, so this module takes the place of Extract Source Text: it writes the tests out as the analyzed text file and starts a new result in the testbed log. 
+#   The user then runs the rest of the chain (Run Apertium ... Synthesis) as usual and finishes with End Testbed, which reads the synthesized output back and records what each test actually produced.
+#
+#   WHAT IT WRITES
+#
+#   Two files get written, both named by settings:
+#    - The testbed results file (Testbed Results File setting) gets a new testbedResult element holding a copy of the testbed as it stands right now, stamped with a start date-time and an empty end
+#      date-time. Results are kept newest first, so the new one goes on the top. The empty end date-time is what marks the run as still in progress: End Testbed looks for it to know which result to
+#      fill in, and the log viewer skips a result that still has it.
+#    - The analyzed text file (Analyzed Text Output File setting, typically source_text.aper in the Build folder) gets the source lexical units of every test, one test per line. A dummy EOL lexical
+#      unit goes on the end of each line so that a transfer rule matching at the end of one test can't run on into the next test.
+#
+#   Along the way the transfer rules file is copied, with a timestamp in its name, into Output\rule-history\run. That leaves a record of exactly which rules produced a given run's results, since the
+#   rules file itself will have moved on by the time the user looks back at the log. (The Live Rule Tester saves its own copies alongside, under Output\rule-history\created.)
+#
+#   VALIDATION
+#
+#   Before anything is dumped, every test in the testbed is validated against the source FLEx project by TestbedValidator: each lexical unit's headword and sense number, its grammatical category and
+#   its other tags all have to still exist there. A test with even one bad lexical unit is marked invalid in the testbed file along with the reason why, and the testbed file is rewritten if any of
+#   those marks changed. Invalid tests still get dumped, but the log viewer shows them with a yellow triangle and no actual result rather than as a pass or a fail. This matters because the source
+#   project changes underneath the testbed - a sense gets renumbered, a category renamed - and without the check those tests would simply look like failures.
+#
+#   CODE STRUCTURE
+#
+#   init_new_result() does the testbed side: it opens the testbed file, validates it, and initializes the new result in the results file, returning the results XML object or None if there is no
+#   testbed to run. MainFunction() does the rest - reads the settings, opens the analyzed text file, calls init_new_result(), dumps the tests into that file, copies the rules file to the rule history
+#   folder, and reports how many tests were prepared. The XML classes it all works through (FlexTransTestbedFile, FlexTransTestbedResultsFile and the XML objects under them) live in Lib/Testbed.py.
 #
 
 import os
@@ -72,7 +104,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
-        FTM_Version: "3.17",
+        FTM_Version: "3.17.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
         FTM_Help: "",
