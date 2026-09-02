@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    The backup of the prior transfer rules now goes in Output\rule-file-history through RuleFileHistory instead of the single .old file beside the rules file.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -65,7 +68,6 @@
 #
 
 import os
-import shutil
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -88,6 +90,7 @@ import Mixpanel
 import FTPaths
 import Utils
 import ReadConfig
+import RuleFileHistory
 from RuleCatsAndAttribs import Ui_CatsAndAttribsWindow
 
 # Define _translate for convenience
@@ -109,7 +112,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
@@ -559,11 +562,19 @@ def MainFunction(DB, report, modify=True):
         closeTarget()
         return
     
-    # Make a backup copy of the transfer rule file
-    try:
-        shutil.copy2(transferRulesFile, transferRulesFile+'.old')
-    except:
+    # This tool rewrites the transfer rules file, so a copy of the prior version has to be in hand before it does. That copy goes in the one rule file history folder the other rule-changing tools
+    # save into, dated, instead of the single .old file beside the rules file that earlier versions overwrote each run. Only the main rules file is saved; this tool writes no other phase.
+    if not os.path.isfile(transferRulesFile):
+
         report.Error(_translate("SetUpTransferRuleGramCat", 'There was a problem finding the transfer rules file. Check your configuration.'))
+        closeTarget()
+        return
+
+    _, errorMsg = RuleFileHistory.saveHistoryCopy(transferRulesFile, RuleFileHistory.TAG_BEFORE_CAT_SETUP)
+
+    if errorMsg:
+
+        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file could not be saved to the rule file history folder, so it was left unchanged. The error was: {errorText}').format(errorText=errorMsg))
         closeTarget()
         return
 

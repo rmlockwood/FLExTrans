@@ -1043,6 +1043,10 @@
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the <a href="#sTestbed">FLExTrans Testbed</a>. This is essentially a database of expected results for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to see if you are still getting the results you expect. Add a comment to go with your testbed test if desired. This will
          be visible in the testbed log.
       </p>
+      <p>Each time a test is added, a copy of your transfer rule file is saved, so that you can always see which rules produced the
+         result the test expects. Look for it in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\rule-file-history</span> folder, under a name like <span style="font-style:italic; ">transfer_rules_2026-09-02_14-35-01_test_added.t1x</span> - your rule file&#8217;s name with the date, the time and a tag saying what saved it. If your project uses advanced transfer, the
+         interchunk and postchunk rule files are saved as well.
+      </p>
       <h3 style=""><a name="sHover"></a>4.2.4&nbsp;Hover to See Bilingual Lexicon Entry
       </h3>
       <p>When you are in the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Words</span> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown
@@ -1242,6 +1246,10 @@
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> will populate categories and attributes in your transfer rule file. Use this tool when you are first setting up your transfer
          rules. You are given a choice for populating attributes as shown in <a href="#xSetupCatAttrib">(27)</a>. Source categories &amp; the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute are always processed.
       </p>
+      <p>Because this tool rewrites your transfer rule file, it first saves a copy of the previous version of it. Look for it in the
+         <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\rule-file-history</span> folder, under a name like <span style="font-style:italic; ">transfer_rules_2026-09-02_16-05-12_before_cat_setup.t1x</span> - your rule file&#8217;s name with the date, the time and a tag saying what saved it. Earlier versions of FLExTrans instead kept
+         a single copy called <span style="font-style:italic; ">transfer_rules.t1x.old</span> beside your rule file and overwrote it on every run. That file is no longer made, so you now get one dated copy per run.
+      </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
@@ -1418,6 +1426,10 @@
          <li>Rearranging affix order &#8211; including deleting affixes or adding affixes.</li>
       </ol>
       <p>For enforcing agreement between phrase constituents you must assign the appropriate feature in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> to the affixes or stems involved.
+      </p>
+      <p>Whenever the Rule Assistant writes rules, it first saves a copy of the previous version of your transfer rule file, so nothing
+         you had before is lost. Look for it in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\rule-file-history</span> folder, under a name like <span style="font-style:italic; ">transfer_rules_2026-09-02_15-20-05_before_RA_changes.t1x</span> - your rule file&#8217;s name with the date, the time and a tag saying what saved it. The same folder holds the copies saved by
+         the other tools that change or record your rules.
       </p>
       <h3 style=""><a name="sRuleAssistAppearance"></a>4.7.1&nbsp;Appearance
       </h3>
@@ -1891,6 +1903,10 @@
          key for the chosen provider &#8212; see the next section. The first time you run the module it asks for the key and stores it securely
          in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the
          module if you need to enter a different key later.
+      </p>
+      <p>Before an approved rule is written, a copy of the previous version of your transfer rule file is saved, so nothing you had
+         before is lost. Look for it in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\rule-file-history</span> folder, under a name like <span style="font-style:italic; ">transfer_rules_2026-09-02_15-41-33_before_AI_changes.t1x</span> - your rule file&#8217;s name with the date, the time and a tag saying what saved it. The module also shows you the name of that
+         copy after it writes the rule.
       </p>
       <h3 style=""><a name="sAIApiKeys"></a>4.11.1&nbsp;Getting an API key
       </h3>
@@ -3292,7 +3308,11 @@
       <h3 style=""><a name="sTestbedLogViewer"></a>7.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></h3>
       <p>This module you will find in both the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> and <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the
          results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units
-         of a test to see some pop-up text of which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> found the test invalid.
+         of a test to see some pop-up text of which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> found the test invalid. Expand a test to see more about it: the comment you gave the test, if any, and a Rules applied: node.
+         Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's
+         number in the transfer rules file and the comment that names the rule, followed by the lexical units the rule matched. That
+         comment is the one the rule carried when the testbed was run, so an old result still tells you which rule fired even after
+         rules have been added to or removed from the rules file.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -3310,6 +3330,10 @@
       </div>
       <h3 style=""><a name="sStartTestbed"></a>7.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></h3>
       <p>This module you will find at the top of the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <span style="font-weight:bold; color:#964B00; ">Analyzed Text Output</span> as defined in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> (the default is the<span style="font-style:italic; ">source_text.txt</span> file).
+      </p>
+      <p>Starting a testbed run also saves a copy of your transfer rule file, so that you can still tell which rules produced a given
+         run&#8217;s results after the rule file itself has moved on. Look for it in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\rule-file-history</span> folder, under a name like <span style="font-style:italic; ">transfer_rules_2026-09-02_15-02-40_testbed_run.t1x</span> - your rule file&#8217;s name with the date, the time and a tag saying what saved it. If your project uses advanced transfer, the
+         interchunk and postchunk rule files are saved as well.
       </p>
       <h3 style=""><a name="sEndTestbed"></a>7.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></h3>
       <p>This module you will find as the next to last module in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection. It takes the results of running the transfer and synthesis processes (the <span style="font-style:italic; ">source_text.txt</span> file) and adds the tests run and whether they passed or not to the testbed log.

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Added getTransferRuleFiles(): the configured transfer rules files that exist, in phase order, so callers can handle advanced transfer without repeating the three setting reads.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -362,6 +365,24 @@ def getConfigVal(my_map, key, report, giveError=True, basePath=None):
                     return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
+
+def getTransferRuleFiles(configMap, report):
+    '''Return the transfer rules files this project actually has, in phase order - the main one first, then the interchunk and postchunk files that only an advanced (three phase) project sets.
+       Only files that are configured and really on disk come back, so a caller can loop over the result without knowing or caring whether this project uses advanced transfer.'''
+
+    ruleFiles = []
+
+    for settingName in (TRANSFER_RULES_FILE, TRANSFER_RULES_FILE2, TRANSFER_RULES_FILE3):
+
+        # giveError=False plus a truthiness test is what every other reader of the two advanced settings does. A project that isn't using advanced transfer has them present but empty, so a file
+        # that isn't there is the normal case rather than something to complain about.
+        rulesFile = getConfigVal(configMap, settingName, report, giveError=False)
+
+        if rulesFile and os.path.isfile(rulesFile):
+
+            ruleFiles.append(rulesFile)
+
+    return ruleFiles
 
 def configValIsList(my_map, key, report):
 

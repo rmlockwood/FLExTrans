@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    applyRule's backup of the transfer file now goes in Output\rule-file-history through RuleFileHistory, and it refuses to write the rule if that copy can't be made.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -116,8 +119,9 @@ import dataclasses
 from typing import Optional, cast
 import xml.etree.ElementTree as ET
 
-# Qt-free by design (see the module comment), so importing it here keeps AIRules usable standalone.
+# Qt-free by design (see the module comment), so importing these here keeps AIRules usable standalone.
 import UILanguages
+import RuleFileHistory
 
 # Generation settings. The provider and model are chosen from config (see getProvider / buildEngine); these limits are provider-independent.
 MAX_TOKENS = 16000
@@ -1251,13 +1255,18 @@ def applyRule(transferPath: str, result: RuleResult, mode: str, targetComment: O
     '''Write the approved rule (or, with `isMacro`, the approved def-macro) into the real transfer file after backing it up.
 
     Uses surgical text insertion/replacement so the rest of the file is preserved byte-for-byte (XXE re-lays-out the touched rule on next open) rather than reserializing the whole
-    tree and reformatting every rule. Returns the backup path.'''
+    tree and reformatting every rule. Returns the path of the backup, which goes in the rule file history folder; raises without touching the transfer file if that backup can't be made.'''
 
     with open(transferPath, encoding='utf-8') as fin:
         text = fin.read()
 
-    backupPath = transferPath + datetime.datetime.now().strftime('.%Y%m%d_%H%M%S.bak')
-    shutil.copyfile(transferPath, backupPath)
+    # The backup goes in the one rule file history folder that every other rule-changing tool saves into, not as a .bak beside the rules file. Only the main rules file is saved, since this tool
+    # never writes the interchunk or postchunk file. A backup that can't be made is fatal here: the file about to be overwritten is exactly what the backup protects, so refuse rather than write.
+    backupPath, errorMsg = RuleFileHistory.saveHistoryCopy(transferPath, RuleFileHistory.TAG_BEFORE_AI_CHANGES)
+
+    if not backupPath:
+
+        raise RuntimeError('The transfer file could not be backed up ({errorText}), so the rule was not written.'.format(errorText=errorMsg))
 
     ruleText = result.ruleXml.strip()
     tagName = 'def-macro' if isMacro else 'rule'

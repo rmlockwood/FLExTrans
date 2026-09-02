@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    The Rule Assistant's backup of the prior transfer rules now goes in Output\rule-file-history through RuleFileHistory instead of a .bak file beside the rules file.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -74,8 +77,6 @@
 
 import re
 import os
-import shutil
-import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
@@ -85,6 +86,7 @@ import dataclasses
 from PyQt6.QtCore import QCoreApplication
 
 import Utils
+import RuleFileHistory
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -1812,15 +1814,23 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
 
     if os.path.exists(transferRulePath):
 
-        datetimeStr = re.sub(':', '-', datetime.datetime.now().isoformat(sep=' ', timespec='seconds'))
-        backupPath = f'{transferRulePath}.{datetimeStr}.bak'
-        report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=Utils.shortenPathForDisplay(backupPath)))
-        shutil.copy(transferRulePath, backupPath)
+        # Save the prior version of the rules in the one rule file history folder that the Live Rule Tester, Start Testbed and the other rule-changing tools all save into, rather than as a .bak
+        # file beside the rules file. Only the main rules file is saved: the Rule Assistant never writes the interchunk or postchunk file, so a copy of those would say nothing about this change.
+        backupPath, errorMsg = RuleFileHistory.saveHistoryCopy(transferRulePath, RuleFileHistory.TAG_BEFORE_RA_CHANGES)
+
+        if backupPath:
+
+            report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=Utils.shortenPathForDisplay(backupPath)))
+
+        elif errorMsg:
+
+            report.Warning(_translate('CreateApertiumRules', 'The prior version of the transfer rules could not be saved. The error was: {errorText}').format(errorText=errorMsg))
+
         generator.ProcessExistingTransferFile(transferRulePath)
 
     ruleCount = generator.ProcessAssistantFile(ruleAssistantFile, ruleNumber)
 
-    # Don't touch the transfer file if we aborted to protect a hand-written rule; the original file (and its .bak) stay exactly as they were.
+    # Don't touch the transfer file if we aborted to protect a hand-written rule; the original file, and the copy just saved in the rule file history folder, stay exactly as they were.
     if generator.abortWrite:
 
         return ruleCount
