@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, the prompt, validation and code structure.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    applyRule's backup of the transfer file now goes in Output\rule-file-history through RuleFileHistory, and it refuses to write the rule if that copy can't be made.
 #
@@ -106,8 +109,72 @@
 #    Prototype. Core logic for the "Work on Rules with AI" module: assemble the prompt, call the configured AI provider (Anthropic by default, Gemini or others selectable) to generate or
 #    modify an Apertium transfer rule, and run the generated rule through a DTD + compile validation-retry loop. No Qt and no FLEx dependencies here so it can be exercised standalone.
 #
-#   Given a plain-language description (and, for modifications, an existing rule), ask the provider for an Apertium <rule> plus any supporting definitions, then splice it into a copy of the
-#   transfer file and validate before returning it.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This file is the whole brain of the AI Rule Studio module: it assembles the prompt, calls the configured AI provider, validates what comes back, and writes the approved rule into the transfer
+#   file. The module that goes with it (Modules/WorkOnRulesWithAI.py) is the dialog around this - it collects what the user typed, shows the result, asks for approval and does the translating.
+#   Nothing here imports Qt, FLEx or flextoolslib, deliberately, so this file can be exercised from a plain Python prompt and unit tested without a FLEx project (see unit_tests/test_AIRules.py).
+#
+#   Three things can be asked for: create a new rule, modify an existing one, and explain an existing one in plain language. A rule and a macro (a def-macro) travel the same paths - the isMacro flag
+#   that runs through buildUserContent, spliceIntoTemp, markAuthorship, generateValidatedRule and applyRule is what switches the wording, the element asked for, and how the target is identified: a
+#   rule by its comment attribute, a macro by its n attribute.
+#
+#   THE PROMPT
+#
+#   The prompt is deliberately split into a part that never changes and a part that does, because the unchanging part caches at the provider and the changing part doesn't:
+#    - The system instruction (buildSystemInstruction) is the house conventions file plus the longest few rules and macros out of the project's own transfer file, as style examples. It is identical
+#      request after request, so it caches well. The transfer DTD is deliberately NOT sent - it is thousands of tokens the model doesn't need, and the validation pass below is the real structural check.
+#    - The user content (buildUserContent) is everything that varies: the project's real categories and features, a summary of the definitions already in the transfer file so the model reuses them
+#      instead of inventing near-duplicates, any interlinearized example data the user pasted, the definitions of any macros involved, the rule being modified or explained, and the user's request.
+#
+#   The reply comes back as structured JSON rather than free text - each provider is handed the same schema (RULE_SCHEMA for a rule, EXPLAIN_SCHEMA for an explanation) in whatever form that provider
+#   supports - so the rule XML, the new definitions, the explanation and the detected language arrive as separate fields with no prose to parse. The language field is what lets the dialog answer the
+#   user in the language they wrote their request in, and the prompt is careful to pin that judgement to the request text alone: everything else in the prompt is project data that may be in any
+#   language and must not sway it.
+#
+#   PROVIDERS AND KEYS
+#
+#   A provider is a small class with a name, a display name, a default model, a model list, makeClient() and generate() - Anthropic, Gemini and OpenAI are implemented, and adding another means
+#   writing those two methods and registering the class in PROVIDERS. Engine bundles a provider with its client and the chosen model and is what the rest of the module passes around, so nothing
+#   below the provider layer knows which service is being used. Each provider's SDK is imported inside its own makeClient(), so only the SDK of the provider actually in use has to be installed.
+#
+#   API keys are never written to a settings file. They live in the operating system's credential vault (keyring) in a slot per provider, so switching providers doesn't lose the key of the one being
+#   switched away from. Prompt logging (PROMPT_LOG_PATH, off unless the AIRulesLogPrompts setting turns it on) writes every prompt and reply to a file for diagnosing a bad generation on a user's
+#   machine; it is opt-in because those prompts contain project data.
+#
+#   VALIDATION
+#
+#   A rule the model returns is never trusted. generateValidatedRule() is the loop everything goes through: generate, stamp it with the authorship comment, splice it into a COPY of the transfer file
+#   in a scratch directory, and validate that copy. Validating is a well-formedness parse with the standard library plus a run of apertium-preprocess-transfer, the real Apertium compiler, which is
+#   the authoritative check that the rule fits the transfer grammar. On a failure the errors are appended to the prompt and the model is asked again, up to MAX_VALIDATION_ATTEMPTS times. The last
+#   candidate is returned either way, valid or not, and the caller looks at RuleResult.valid. friendlyValidationSummary() turns the raw compiler or parser error into one plain sentence for a user
+#   who has no interest in what a mismatched tag is.
+#
+#   WRITING THE RULE
+#
+#   applyRule() writes into the real transfer file, and only after the user has approved the rule. It saves a copy of the file first, in the same Output\rule-file-history folder every other
+#   rule-changing part of FLExTrans saves into, tagged before_AI_changes; if that copy can't be made it refuses to write at all, since the file it would overwrite is exactly what the copy protects.
+#   The write itself is a text splice rather than a re-serialization of the XML tree, so every rule the user didn't touch stays byte-for-byte as it was instead of being reformatted. On a
+#   modification the element to replace is located by parsing the file and matching that position against the raw-text spans; if the two don't line up it refuses rather than guess, because appending
+#   a duplicate or replacing the wrong rule is worse than stopping. Each write prepends an authorship comment saying that the AI Assistant added or modified this and when, keeping the earlier stamps
+#   beneath it so that a rule carries its whole edit history, newest first.
+#
+#   MACROS IN THE PROMPT
+#
+#   A rule that calls a macro can't be understood or modified without seeing what that macro does, so the macros a rule calls are gathered recursively (findCalledMacroNames, collectCalledMacros) and
+#   sent along with it. Macros the user's request names in prose are gathered too (findMacroMentions), which is also how a mistyped macro name is caught and reported before a request is ever sent.
+#   The patterns that spot 'the macro called X' are built from per-UI-language word lists in UILanguages.py, so each interface language recognizes its own ways of saying it.
+#
+#   The sample rule and sample definitions that ship in the transfer file template (SAMPLE_LOGIC_RULE_NAME and SAMPLE_DEF_NAMES) are filtered out everywhere - the rule picker, the definition summary
+#   and the style examples - because they are placeholders rather than the project's own work, and would teach the model the wrong style.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the generation limits and the sample-name filters, the prompt-logging helper, the rate-limit error, the JSON schemas for the two tasks, the RuleResult dataclass, the
+#   three provider classes and the PROVIDERS registry, the credential-vault functions, Engine and buildEngine, then the prompt-building functions (parseTransferFile, getSampleRulesAndMacros,
+#   buildSystemInstruction, extractExistingDefs, the macro-gathering functions, buildUserContent), then the calls themselves (generateRule, explainRule), then the validation side (spliceIntoTemp,
+#   validateFile, friendlyValidationSummary, markAuthorship, generateValidatedRule), and finally applyRule, which is the only thing here that writes the real transfer file.
+#
 
 import os
 import re

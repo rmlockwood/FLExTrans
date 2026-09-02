@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, what gets generated, overwriting and code structure.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    The Rule Assistant's backup of the prior transfer rules now goes in Output\rule-file-history through RuleFileHistory instead of a .bak file beside the rules file.
 #
@@ -73,7 +76,49 @@
 #   Version 3.9 - 9/11/23 - Ron Lockwood
 #    Initial version
 #
-#   Given an xml file defining the rules, create Apertium-style rules
+#   OVERVIEW (AI generated, then edited)
+#
+#   This is the back end of the Rule Assistant. The Rule Assistant's window lets the user build a rule by picking source words with their categories and features and saying what the target words
+#   should be, and saves that as a Rule Assistant XML file; this module turns that file into real Apertium transfer rules in the project's transfer rules file. The user never sees the rules being
+#   written, which is the point of the Rule Assistant: they describe the change in linguistic terms and the Apertium XML - the pattern, the clips, the categories, the attributes, and whatever macros
+#   and variables are needed to carry a feature from a source word to a target word - is generated for them.
+#
+#   THE TWO FILES
+#
+#   The Rule Assistant file (a FLExTransRule element per rule, holding Source and Target words with their features and affixes) is read-only input. The transfer rules file is both input and output:
+#   an existing one is loaded first, so that generated names don't collide with what is already there and so that the user's own hand-written rules survive, and the result is written back over it.
+#   Only the main transfer rules file is involved - the Rule Assistant never writes the interchunk or postchunk file of an advanced project.
+#
+#   WHAT GETS GENERATED
+#
+#   Besides the rule itself, a rule usually needs supporting definitions, and this module creates whatever is missing and reuses whatever isn't: a def-cat per part of speech, a def-attr per feature
+#   whose values a rule tests or sets, and, when a target form depends on a source feature in a way a plain clip can't express, a def-macro and a def-var to work it out. Two of those cases are worth
+#   knowing about:
+#    - A one-to-one feature correspondence (source gender to target gender, say) becomes an attribute macro mapping each source value to its target value - or nothing at all, when the values line up
+#      and the source can simply be clipped across.
+#    - A target lemma or affix that depends on several features at once becomes a multi-feature macro that walks the combinations. Split ("Bantu") noun class agreement, where one FLEx feature is
+#      really singular and plural classes kept apart, gets a hand-crafted macro of its own (MakeBantuMacro) built around a co-feature named number with sg, pl and optionally many values.
+#
+#   Every generated rule is stamped with two XML comments: one warning that a hand edit may be overwritten the next time the Rule Assistant runs, and one carrying the rule's description prefixed with
+#   the 'Rule Assistant Description:' marker. That marker is not decoration - it is how a later run tells its own rules apart from the user's.
+#
+#   OVERWRITING AND NAME COLLISIONS
+#
+#   When the Rule Assistant file asks to overwrite rules, every existing rule whose name could have come from a rule about to be regenerated is checked for that marker BEFORE anything is changed. If
+#   even one of them was written by hand, the whole write is abandoned (abortWrite) and the transfer file is left untouched, rather than silently destroying the user's work. Rules that are the Rule
+#   Assistant's own are removed and regenerated, and any macros and variables left with nothing calling them are trimmed away. When a name is in use and is not being overwritten, the new one gets a
+#   'Copy' suffix instead: ' - Copy', then ' - Copy (2)' for rule names, matching how FLEx renames a text, and '_Copy', then '_Copy_2' for XML ids, which can't contain spaces.
+#
+#   Before any of this, the prior version of the transfer rules file is copied into Output\rule-file-history with the tag before_RA_changes - the same folder the Live Rule Tester, Start Testbed, AI
+#   Rule Studio and Set Up Transfer Rule Categories all save into, so the whole history of a project's rules is one sorted listing.
+#
+#   CODE STRUCTURE
+#
+#   Nearly everything is the RuleGenerator class, whose docstring carries a step-by-step outline of how one rule is built; read that before reading the methods. The state the class accumulates -
+#   which categories, attributes, variables, lists, macros, rule names and XML ids already exist - is what lets it reuse a definition rather than create a near-duplicate, and it is built up both from
+#   the existing transfer file (ProcessExistingTransferFile) and as new things are created. CreateRules() at the bottom is the entry point the callers use: it parses the Rule Assistant file, saves
+#   the history copy, loads the existing transfer file, calls ProcessAssistantFile() to do the work, and writes the result unless the run was aborted to protect a hand-written rule.
+#
 
 import re
 import os

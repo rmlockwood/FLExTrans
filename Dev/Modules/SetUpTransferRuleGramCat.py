@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, what it writes and code structure.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    The backup of the prior transfer rules now goes in Output\rule-file-history through RuleFileHistory instead of the single .old file beside the rules file.
 #
@@ -60,11 +63,38 @@
 #
 #   earlier version history removed on 3/10/25
 #
-#   Take the grammatical categories from the bilingual lexicon file and put them
-#   into the transfer rule file as tags of an attribute called a_gram_cat. It is
-#   helpful to use the categories from the bilingual lexicon file because the 
-#   list created there is the synthesis of unique grammatical categories from 
-#   both the source and target lexicons.
+#   OVERVIEW (AI generated, then edited)
+#
+#   Transfer rules are written in terms of categories and attributes - a rule matches a c_verb, tests an a_gender_feature, sets an a_tense_feature - and all of those have to be defined at the top of
+#   the transfer rules file before any rule can use them. This module is what fills that part of the file in, taking the definitions from the FLEx projects so that the user doesn't have to type them
+#   or keep them up to date by hand. It rewrites the categories and attributes sections of the transfer rules file and touches nothing else, so it can be run again whenever a project gains a
+#   category or a feature.
+#
+#   WHAT IT WRITES
+#
+#   Three kinds of thing go into the file:
+#    - A def-cat named c_<category> for every grammatical category in the SOURCE project, holding a cat-item for the bare tag and one for tag.* so that the category matches a word whether or not it
+#      carries further tags. A category already in the file is left exactly as it is, since the user may have hand-tuned it; only missing ones are added.
+#    - The a_gram_cat attribute, which is the list of every category name a rule can compare against. This one is deleted and rebuilt from scratch on each run, from the categories of BOTH projects
+#      merged and de-duplicated - the same synthesis the bilingual lexicon is built from, which is what lets a rule name a target category as well as a source one.
+#    - An attribute per inflection feature, inflection class and template slot, named a_<name>_<kind>, holding that thing's possible values: the values of a closed feature, the abbreviations of a
+#      part of speech's inflection classes, or the glosses of the affixes that fill a slot. Which of the three kinds get written, and whether an attribute that already exists is overwritten or left
+#      alone, is what the checkboxes in the window shown at the start decide.
+#
+#   Names coming out of FLEx are put through the same conventions the bilingual lexicon uses - spaces become underscores, periods and slashes are dropped - and anything that had to be corrected is
+#   reported as a warning, so the user can see why a name in the rules file doesn't look quite like the one in FLEx. Both sections are sorted alphabetically on the way out, with each element's
+#   preceding XML comments carried along with it so that a comment never ends up attached to the wrong definition.
+#
+#   Because the whole file is rewritten, a copy of the prior version is saved first in Output\rule-file-history, tagged before_cat_setup. That is the same folder the Live Rule Tester, Start Testbed,
+#   the Rule Assistant and AI Rule Studio save into, so the whole history of a project's rules is one sorted listing. If that copy can't be made, the module stops without writing anything.
+#
+#   CODE STRUCTURE
+#
+#   Main is the small window of checkboxes shown before any work happens; MainFunction reads what it was set to and drives the rest. getThings() is the gathering half - it walks the source project
+#   and, unless the project is in One project mode (where the target is the same project), the target project too, calling processFeatures(), processClassesForPos() or processSlots() on each item to
+#   build up masterAttribList, a map of name to AttribInfo holding the values, the kind and whether to override. getSlot2AffixListMap() is the extra pass that slots need, since a slot's values are
+#   the glosses of the affixes that go in it rather than anything on the slot itself. fillOutDefCat(), fillOutGramCat() and fillOutDefAttr() are the writing half, and sortChildren() is the
+#   comment-aware sort they finish with.
 #
 
 import os
@@ -112,7 +142,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
