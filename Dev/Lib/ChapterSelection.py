@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Made the Paratext chapter selection window a fixed size so the user can't resize it to where controls get clipped.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -107,7 +110,7 @@ from shutil import copyfile
 import winreg
 import glob
 import json
-from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication
+from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication, QWIDGETSIZE_MAX
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtGui import QIcon
 
@@ -311,6 +314,25 @@ def setTextMetaData(DB, text):
     # Set the IsTranslated field
     text.IsTranslated = True
 
+def lockWindowSize(self):
+
+    # All the controls in the chapter selection window are placed with absolute geometry (there are no layouts), so resizing the window doesn't rearrange anything. Shrinking it clips
+    # whatever is near the bottom and right edges out of view and enlarging it just adds empty space, so pin the window to the size we laid out for the controls that are showing.
+    self.setFixedSize(self.width(), self.height())
+
+def unlockWindowSize(self):
+
+    # Lift the pinning from lockWindowSize so the window can be resized in code again. Without this, a resize call would be clamped to the size that was pinned last.
+    self.setMinimumSize(0, 0)
+    self.setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX)
+
+def showClusterWidgets(self):
+
+    # ClusterUtils resizes the window to fit however many cluster project rows are showing, so the window has to be unpinned while it does that. Then pin the new size.
+    unlockWindowSize(self)
+    ClusterUtils.showClusterWidgets(self)
+    lockWindowSize(self)
+
 def InitControls(self, export=True, fromFLEx=False):
     
     self.chapSel = None
@@ -443,6 +465,9 @@ def InitControls(self, export=True, fromFLEx=False):
 
         # Connect a custom signal to a function
         self.ui.scriptureTextsComboBox.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
+
+    # Now that the controls have been shown/hidden and positioned for this module, keep the user from resizing the window to where they would be clipped
+    lockWindowSize(self)
 
 def getParatextPath():
 

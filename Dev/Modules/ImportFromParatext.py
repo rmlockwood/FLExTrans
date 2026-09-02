@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Made the chapter selection window a fixed size so the user can't resize it to where controls get clipped.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -195,7 +198,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -269,7 +272,7 @@ class Main(QMainWindow):
     
     def clusterSelectionChanged(self):
 
-        ClusterUtils.showClusterWidgets(self)
+        ChapterSelection.showClusterWidgets(self)
 
     def CancelClicked(self):
         self.retVal = False

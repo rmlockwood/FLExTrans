@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Made the chapter selection window a fixed size so the user can't resize it to where controls get clipped.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -103,7 +106,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
@@ -174,7 +177,7 @@ class Main(QMainWindow):
         else:
             self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {DB} to Paratext").format(DB=self.targetDB.ProjectName()))
 
-        ClusterUtils.showClusterWidgets(self)
+        ChapterSelection.showClusterWidgets(self)
 
     def CancelClicked(self):
         self.retVal = False
