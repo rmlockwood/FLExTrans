@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    Made the chapter selection window a fixed size so the user can't resize it to where controls get clipped.
 #
@@ -144,14 +147,57 @@
 #
 #   earlier version history removed on 1/13/25
 #
-#   Import chapters from Paratext. The user is prompted which chapters and which
-#   Paratext project.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is the front of the FLExTrans pipeline: it brings chapters out of a Paratext book and creates them as text(s) in the current FLEx project, ready to be interlinearized and translated.
+#   The user gives the Paratext project abbreviation, the book abbreviation and a from and to chapter, and then chooses what to bring along - footnotes, cross references, the introductory material
+#   ahead of chapter 1 - and what to do with the result: one text for the whole range or one text per chapter, the full book name or just the abbreviation in the title, overwrite a text that already
+#   has that name, and make the new text the active FLExTrans source text.
+#
+#   The chapters are read straight out of the project's .SFM or .USFM file. Before they are put into FLEx the Text In rules are applied (the search and replace rules the Text In Rules module edits,
+#   read here from the file named by the Text In Rules File setting), which is where Paratext text gets cleaned up for translation. ChapterSelection.insertParagraphs() then does the insertion,
+#   putting markers and references in the Analysis writing system and the text content in the Vernacular writing system so the user only has to interlinearize the actual text.
+#
+#   THE WINDOW AND ITS OPTIONS
+#
+#   The window is the shared Choose Chapters dialog in its fullest configuration - importing is the only one of the three modules that shows all of the checkboxes. Two of them are only enabled when
+#   they make sense, and the spin box handlers keep that up to date as the user changes chapters: include introduction is only available when the from chapter is 1, since the introduction sits ahead
+#   of chapter 1, and one text per chapter is only available when the range covers more than one chapter. The from and to spin boxes also keep themselves in order, dragging the other one along rather
+#   than letting the range invert.
+#
+#   WHAT GETS PULLED OUT OF THE BOOK FILE
+#
+#   do_import() builds a regular expression that starts at \c <fromChap> - or at the main title \mt when introductory material was asked for - and ends either at \c <toChap+1> or at the end of the
+#   file when there is no such chapter. If the starting chapter isn't in the book at all that is an error. When chapter 1 is in the range the file's \id book identifier line is grabbed and prepended
+#   to the imported text as its own paragraph; it stays in the Vernacular writing system so it travels through translation, and export writes it back into the Paratext book. After the Text In rules
+#   run, the old USFM \fig syntax is converted, and footnotes (\f ... \f*) and cross references (\x ... \x* and \r up to the next \p) are stripped unless the user asked to keep them. If one text per
+#   chapter was chosen the result is split on \c markers, otherwise the whole range stays together as one text.
+#
+#   TEXT TITLES AND OVERWRITING
+#
+#   A title is the book - the full name or the abbreviation, depending on the checkbox - plus the zero padded chapter number, and for a range kept in one text the to chapter is appended as well: JHN
+#   01, John 01, JHN 01-03. When overwrite existing text is on, the FLEx text with that name is deleted and recreated, but only after a message box has warned the user not to be in the Text & Words
+#   area of FLEx while that happens; its "Overwrite all selected chapters" checkbox is there so the warning only has to be answered once for a range of chapters. Without overwrite,
+#   Utils.createUniqueTitle() adds a " - Copy" suffix instead so nothing is lost. Making the new text active means writing SourceTextName into FLExTools.config (a .copy backup is made first) and
+#   asking FlexTools to refresh its status bar; for a range imported as several texts it is the first one that becomes active.
+#
+#   CLUSTER PROJECTS
+#
+#   With cluster projects configured, one run can import into several FLEx projects at once, each from its own Paratext project. ClusterUtils.initClusterWidgets() creates a label and a Paratext
+#   project combo box for every possible cluster project up front and clusterSelectionChanged() shows the rows for the ones the user checked, resizing the window to fit them. A row left on '...' is
+#   skipped. Each project is opened, imported into and closed in turn, except the project FlexTools handed the module, which is already open.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom: the docs dictionary FlexTools displays, the Main window class, setSourceNameInConfigFile(), do_import(), MainFunction() and the FlexToolsModule declaration at the bottom that
+#   FlexTools looks for. Main puts the shared window up through ChapterSelection.InitControls(), owns the spin box and cluster project handlers, and hands OK off to
+#   ChapterSelection.doOKbuttonValidation(), which is what validates the entries and builds the ChapterSelection object the import then works from. MainFunction() reads the settings, parses the Text
+#   In rules file, shows the window and then calls do_import() once per cluster project or once for the current project.
 #
 #
 
 import os
 import re
-import sys
 from shutil import copyfile
 import xml.etree.ElementTree as ET
 
@@ -198,7 +244,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",

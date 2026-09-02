@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -84,17 +87,41 @@
 #
 #   earlier version history removed on 1/14/25
 #
-#   Export chapters from FLExTrans to Paratext. The user is prompted which Paratext 
-#   project to use and the book, from and to chapter come from the current SourceName 
-#   in the config file. The text from the TargetOutputSynthesisFile is used to populate
-#   the Paratext book and chapter(s). 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is the last step of the FLExTrans pipeline: it takes the draft that Synthesize Text produced and puts those chapters back into Paratext. Nothing about which book or which chapters is
+#   asked for. The text the user has been translating is named in the Source Text Name setting, and a scripture text's name says what it is - GEN 01, or Genesis 23-38 - so the module parses the book
+#   and the chapter range straight out of that name and shows them in the window greyed out. All the user supplies is the Paratext project abbreviation to export to.
+#
+#   The draft itself is read from the file named by the Target Output Synthesis File setting, typically target_text-syn.txt in the Build folder. Before anything is written out, the Text Out rules are
+#   run over it (the same search and replace rules the Text Out Rules module edits), which is where the last cleanups of the synthesized text happen. The result is handed to
+#   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it.
+#
+#   HOW THE TEXT NAME IS PARSED
+#
+#   parseSourceTextName() does that work. A trailing " - Copy" or " - Copy (2)" is dropped first, so a text the user duplicated in FLEx is still usable. What's left is split on spaces: the last piece
+#   is the chapter or the chapter range and everything before it is the book, which lets book names with spaces like 1 Samuel through. The book can be either a Paratext abbreviation or a book name in
+#   the UI language; names are compared after normalizing to decomposed Unicode (NFD), because FLEx text names are NFD. A range has to be two numbers separated by a hyphen, both digits, neither zero,
+#   and the second not smaller than the first. Anything else is an error telling the user what a name should look like.
+#
+#   WHAT THE WINDOW SHOWS
+#
+#   The window is the shared Choose Chapters dialog, put up here in its smallest configuration. ChapterSelection.InitControls() with export=True hides all of the import-only checkboxes, and because
+#   this module doesn't support cluster projects it hides the cluster project rows as well. On top of that the module fills in the book abbreviation and the from and to chapter spin boxes from the
+#   parsed text name and disables all three, so what is left for the user is the Paratext project abbreviation and the OK and Cancel buttons.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom: the docs dictionary FlexTools displays, the Main window class, parseSourceTextName(), doExportToParatext(), MainFunction() and the FlexToolsModule declaration at the bottom that
+#   FlexTools looks for. Main is thin on purpose - InitControls() sets the window up and OKClicked() hands the validation to ChapterSelection.doOKbuttonValidation() - so the flow to read is
+#   doExportToParatext(): parse the text name, show the window, and if the user clicked OK read the synthesis file, apply the Text Out rules and call doExport(). Cancelling reports a warning and
+#   writes nothing.
 #
 #
 
 import os
 import re
 import unicodedata
-import xml.etree.ElementTree as ET
 
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication
@@ -136,7 +163,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
