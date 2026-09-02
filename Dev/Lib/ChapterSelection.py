@@ -5,6 +5,12 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Made the Paratext chapter selection window a fixed size so the user can't resize it to where controls get clipped.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -96,8 +102,71 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   ChapterSelection Class which is for data associated with import and export
-#   from and to Paratext. 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This library holds what the three Paratext chapter modules have in common: the ChapterSelection class that carries the user's choices around, the code behind the Choose Chapters window that all
+#   three of them put up, the map of Paratext book abbreviations to book names, the marker aware code that turns Paratext text into FLEx paragraphs, and doExport() which splices chapters back into a
+#   Paratext book file. The three modules are Import From Paratext, Export FLExTrans Draft to Paratext and Export Text from Target FLEx to Paratext. Each one builds the window from
+#   Lib/Windows/ParatextChapSelectionDlg.ui, hands it to InitControls() to be filled in and fitted to the job, and once the user clicks OK reads the ChapterSelection object back off the window.
+#
+#   Paratext itself is found through the registry. getParatextPath() reads the Settings_Directory value under SOFTWARE\Wow6432Node\Paratext\8, and getParatextProjects() lists the project folders
+#   under it, skipping cms, Temp Files and anything starting with an underscore or UserSettings. The Alternate Paratext Folder setting overrides that whole scheme when it is set, which is how a
+#   module can work against a folder of book files that isn't a Paratext installation. getBookPath() finds the book file itself, trying *<book><project>.SFM first and then *<book><project>.USFM.
+#
+#   THE WINDOW
+#
+#   One dialog serves all three modules and InitControls() is what makes it fit the module that opened it. It loads the settings from last time, then hides what doesn't apply. For either export the
+#   import-only checkboxes go away (footnotes, cross references, make active, full book name, one text per chapter, include introduction and overwrite existing text) and the window shrinks by
+#   EXP_SHRINK_WINDOW_PIXELS. Exporting from FLEx additionally hides the book abbreviation and the two chapter spin boxes, because that information comes from the text titles the user picks instead,
+#   and gives FROM_FLEX_EXP_PIXELS of that shrink back. Anything that isn't exporting from FLEx hides the scripture texts combo box and its label. Cluster project rows are only set up for importing
+#   and for exporting from FLEx; the other module hides them. Two of the combo boxes are swapped at runtime for a CheckableComboBox (here for scripture texts, in ClusterUtils for cluster projects)
+#   so the user can check several entries instead of picking one.
+#
+#   The controls in the .ui file are placed with absolute geometry rather than Qt layouts, so the window has no idea what size it needs and resizing it doesn't rearrange anything - it just clips
+#   controls out of view. That is why the size is pinned: lockWindowSize() fixes the window at whatever size was just laid out, unlockWindowSize() lifts the pin so code can resize the window again,
+#   and showClusterWidgets() wraps the ClusterUtils call in that unpin and repin because the window grows and shrinks by a row every time the user checks or unchecks a cluster project.
+#
+#   doOKbuttonValidation() is the OK handler for all three windows. It reads every control, then validates as much as it can: the book abbreviation has to be in bookMap, the Paratext path has to
+#   have come out of the registry and exist, the project folder under it has to exist and (when importing) the book file has to be there. With cluster projects selected, the project and book checks
+#   are skipped here, since each project has its own Paratext project and gets checked as it is processed. If everything passes it builds the ChapterSelection object, saves the settings and closes
+#   the window with retVal set to True. Every validation failure puts up a message box and leaves the window open.
+#
+#   THE SETTINGS FILE
+#
+#   The user's choices are remembered in ParatextImportSettings.json, in the same Config folder as flextools.ini. ChapterSelection.dump() defines what goes in it and doOKbuttonValidation() writes
+#   it. The one subtlety is that the file holds both an export project abbreviation and an import project abbreviation. Whichever one the running module isn't using is carried through untouched in
+#   the window's otherProj member, so that importing doesn't wipe out the project the user exports to, or the other way around.
+#
+#   BOOK NAMES AND TEXT TITLES
+#
+#   bookMap, at the bottom of the file, maps each three letter Paratext book abbreviation to its book name, and the names go through _translate() so they come out in the UI language. It covers the
+#   66 books plus the deuterocanonical and extra books that Paratext knows about. bookChapterPattern parses a FLEx text title into a book part and one or two two-digit chapter numbers, and tolerates
+#   a trailing " - Copy" or " - Copy (2)" that FLEx adds when a title is duplicated. getScriptureText() uses it to filter a project's text titles down to the ones that look like scripture: the book
+#   part has to be an abbreviation or a book name in either English or the UI language. Comparisons normalize to decomposed Unicode (NFD) because that is how FLEx stores text.
+#
+#   MARKERS AND WRITING SYSTEMS
+#
+#   insertParagraphs() is what actually puts Paratext text into a FLEx text, and the writing systems matter as much as the text does. splitSFMs() splits the string into markers and references on one
+#   side and text content on the other; the markers and references are put in the Analysis writing system so FLEx doesn't ask the user to interlinearize them, and the content goes in the Vernacular
+#   writing system (or, in One project mode, whichever vernacular writing system the caller passes in). Its regular expression is long because every marker shape has to be recognized - end markers,
+#   footnotes and their references, cross references, verses and verse ranges, chapters, attributes running from a vertical bar to a closing marker, and markers preceded by a plus. The \id book
+#   identifier is the deliberate exception: it stays in the Vernacular writing system so the book id survives translation and can be written back on export. A new FLEx paragraph is started at every
+#   line feed. convertFigSyntax() rewrites the old USFM 1.0 and 2.0 \fig syntax into the 3.0 form, and setTextMetaData() marks a created text with Source of FLExTrans and IsTranslated.
+#
+#   SPLICING CHAPTERS BACK INTO A PARATEXT BOOK
+#
+#   doExport() is the export half, shared by both export modules. It first asks the user to confirm overwriting the chapters it found in the text, offering a do-not-ask-again checkbox when cluster
+#   projects are in play so the question only has to be answered once. Then it backs the book file up to <book>.bak, and if the incoming text carries an \id line (import put it there) that line
+#   replaces the book's own \id line. The incoming text is split on \c markers and each chapter is dealt with on its own: if the book already has that chapter, the text from that \c marker up to the
+#   next one (or to the end of the file for the last chapter) is replaced; if it doesn't, the chapter is inserted ahead of the next higher chapter in the book; and if there is no higher chapter it is
+#   appended. Backslashes in the replacement text are doubled first, because re.sub() would otherwise read them as group references.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the constants and bookChapterPattern, the ChapterSelection class with its dump() and getBookPath(), the marker and paragraph functions (splitSFMs, convertFigSyntax,
+#   insertParagraphs, setTextMetaData), the window functions (lockWindowSize, unlockWindowSize, showClusterWidgets, InitControls), getParatextPath, doOKbuttonValidation, the project and title
+#   helpers (getFilteredSubdirectories, getParatextProjects, getScriptureText), doExport, and finally the module level QApplication and translator setup followed by bookMap. bookMap has to come
+#   after the translations are loaded, which is why the biggest thing in the file is also the last thing in it.
 #
 
 import os
@@ -107,7 +176,7 @@ from shutil import copyfile
 import winreg
 import glob
 import json
-from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication
+from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication, QWIDGETSIZE_MAX
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtGui import QIcon
 
@@ -311,6 +380,25 @@ def setTextMetaData(DB, text):
     # Set the IsTranslated field
     text.IsTranslated = True
 
+def lockWindowSize(self):
+
+    # All the controls in the chapter selection window are placed with absolute geometry (there are no layouts), so resizing the window doesn't rearrange anything. Shrinking it clips
+    # whatever is near the bottom and right edges out of view and enlarging it just adds empty space, so pin the window to the size we laid out for the controls that are showing.
+    self.setFixedSize(self.width(), self.height())
+
+def unlockWindowSize(self):
+
+    # Lift the pinning from lockWindowSize so the window can be resized in code again. Without this, a resize call would be clamped to the size that was pinned last.
+    self.setMinimumSize(0, 0)
+    self.setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX)
+
+def showClusterWidgets(self):
+
+    # ClusterUtils resizes the window to fit however many cluster project rows are showing, so the window has to be unpinned while it does that. Then pin the new size.
+    unlockWindowSize(self)
+    ClusterUtils.showClusterWidgets(self)
+    lockWindowSize(self)
+
 def InitControls(self, export=True, fromFLEx=False):
     
     self.chapSel = None
@@ -443,6 +531,9 @@ def InitControls(self, export=True, fromFLEx=False):
 
         # Connect a custom signal to a function
         self.ui.scriptureTextsComboBox.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
+
+    # Now that the controls have been shown/hidden and positioned for this module, keep the user from resizing the window to where they would be clipped
+    lockWindowSize(self)
 
 def getParatextPath():
 

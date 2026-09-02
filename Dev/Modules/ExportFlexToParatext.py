@@ -5,6 +5,12 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Made the chapter selection window a fixed size so the user can't resize it to where controls get clipped.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -51,15 +57,43 @@
 #   Version 3.12 - 1/10/25 - Ron Lockwood
 #    Initial version.
 #
-#   Export texts that represent on or more scripture chapters from FLEx to Paratext. 
-#   The text comes from the baseline text. The user is prompted which Paratext 
-#   project to use. The book, from and to chapter come from the text(s) selected. 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module exports scripture texts that are sitting in a FLEx project out to Paratext. It is the counterpart to Export FLExTrans Draft to Paratext, which exports the synthesized draft file; here
+#   the text has already been put into FLEx (normally into the target project by Insert Target Text) and it is the FLEx text that gets exported. Because of that the user doesn't type a book and a
+#   chapter range. Instead the window offers the list of the project's scripture texts and the user checks the ones to export, and each title tells the module which book and chapters it holds.
+#
+#   The list is built by ChapterSelection.getScriptureText(), which keeps only the titles whose book part matches a Paratext abbreviation or a book name and which carry a chapter number or a range of
+#   chapter numbers. For each checked title the module pulls the text's paragraphs out of FLEx, works the book abbreviation out of the title, and calls ChapterSelection.doExport() to splice the
+#   chapters into that book's Paratext file.
+#
+#   PICKING THE TEXTS
+#
+#   The scripture texts combo box is replaced at runtime with a CheckableComboBox, so several titles can be checked at once. The window also has a "Clicking any chapter of a book selects all chapters
+#   of the book" checkbox: with it on, titlesSelectionChanged() takes whatever the user just clicked and checks or unchecks every other title for the same book to match, which is how a whole book's
+#   worth of chapter texts gets selected in one click.
+#
+#   CLUSTER PROJECTS AND ONE PROJECT MODE
+#
+#   With cluster projects configured, the same set of titles can be exported from several FLEx projects in one run, each to its own Paratext project. ClusterUtils.initClusterWidgets() creates a label
+#   and a Paratext project combo box for every possible cluster project up front, and clusterSelectionChanged() shows the rows for the projects the user checked, resizes the window to fit them and
+#   retitles the window after the selection. A cluster row left on '...' is skipped. Each project is opened in turn, exported from, and closed again, except for the main and target projects which are
+#   already open.
+#
+#   One project mode (the Two Project Mode setting set to no) changes where the texts come from. In that mode the target text was inserted into the source project in a second writing system, so there
+#   is no separate target project to open and the module exports from the project FlexTools handed it.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom: the docs dictionary FlexTools displays, the Main window class, exportAllSelectedTitles(), makeTextStr(), MainFunction() and the FlexToolsModule declaration at the bottom that
+#   FlexTools looks for. Main puts the shared Choose Chapters window up through ChapterSelection.InitControls(), wires up the cluster project rows and the title selection behavior, and hands OK off
+#   to ChapterSelection.doOKbuttonValidation(). MainFunction() has the run of things: read the settings, open the target project (or reuse the source project in One project mode), filter the title
+#   list, show the window, and then export either once per cluster project or once from the target project.
 #
 #
 
 import os
 import re
-import sys
 import unicodedata
 from typing import cast
 
@@ -103,7 +137,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
@@ -174,7 +208,7 @@ class Main(QMainWindow):
         else:
             self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {DB} to Paratext").format(DB=self.targetDB.ProjectName()))
 
-        ClusterUtils.showClusterWidgets(self)
+        ChapterSelection.showClusterWidgets(self)
 
     def CancelClicked(self):
         self.retVal = False
