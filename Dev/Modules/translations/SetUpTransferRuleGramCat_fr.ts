@@ -71,5 +71,10 @@ doivent être écrasés.</translation>
       <source>{catCount} categories added to the categories section.</source>
       <translation>{catCount} catégories ajoutées à la section des catégories.</translation>
     </message>
+    <message>
+      <location filename="../SetUpTransferRuleGramCat.py" line="577"/>
+      <source>The transfer rules file could not be saved to the rule file history folder, so it was left unchanged. The error was: {errorText}</source>
+      <translation>Le fichier de règles de transfert n’a pas pu être enregistré dans le dossier de l’historique des fichiers de règles ; il n’a donc pas été modifié. L’erreur était : {errorText}</translation>
+    </message>
   </context>
 </TS>

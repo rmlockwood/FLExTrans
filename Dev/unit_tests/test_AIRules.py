@@ -1119,6 +1119,16 @@ class TestGenerateValidatedRule(TempDirTestCase):
 
 class TestApplyRule(TempDirTestCase):
 
+    def setUp(self):
+
+        super().setUp()
+
+        # applyRule saves its backup through RuleFileHistory, which puts it in a folder under FTPaths.OUTPUT_DIR - a path worked out from the process's working directory. Point it at this test's
+        # scratch directory instead, so the tests neither depend on nor write into a real work project.
+        patcher = mock.patch.object(AIRules.RuleFileHistory, 'getHistoryDir', return_value=self.workDir)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def _result(self, ruleXml=VALID_RULE, newDefs=None):
         return AIRules.RuleResult(ruleXml=ruleXml, newDefs=newDefs or [], explanation='', language='en', valid=True, errors='', attempts=1)
 
@@ -1212,7 +1222,7 @@ class TestApplyRule(TempDirTestCase):
             after = fin.read()
 
         self.assertEqual(before, after)
-        backups = [f for f in os.listdir(self.workDir) if '.bak' in f]
+        backups = [f for f in os.listdir(self.workDir) if AIRules.RuleFileHistory.TAG_BEFORE_AI_CHANGES in f]
         self.assertTrue(backups)
 
 # ---------------------------------------------------------------------------
