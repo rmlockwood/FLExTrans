@@ -9,7 +9,7 @@ Do these things when making a maintenance release
 -Make a new .download_info file in the C:\Data\FLExTrans\Installer folder changing the relevant data. 3 changes. See older versions.
 -Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
 -If just doing a minor release without release notes and want to create a tag
- -Go to tags, switch to Releases
+ -Go to tags,switch to Releases
  -Click draft new release
  -Choose a tag (dropdown) and give new vx.x.x and click Create new tag xxx on publish
  -Publish, then delete the release, the tag will remain
