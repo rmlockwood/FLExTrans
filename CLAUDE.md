@@ -67,6 +67,18 @@ Group imports into these blocks, in this order, separated by a single blank line
   in `Dev/Lib/ReadConfig.py`, insert it in **alphabetical order** by variable name
   (e.g. `LOG_STATISTICS` sorts before `LOWERCASE_UPPERCASE_PAIRS`).
 
+## Widgets belong in the `.ui` file
+- **Never build a widget in Python when the window has a `.ui`.** Add it in the `.ui` (Qt Designer, or by hand in the XML), regenerate the companion `.py`, and reach the widget through
+  `self.ui.<objectName>`. Creating widgets in code — `QPushButton(...)` plus `layout.insertWidget(...)` — splits one window's layout across two files, so the next person cannot see the real
+  window in a designer and cannot rearrange it without reading the Python. `Dev/Lib/WorkOnRulesWithAIDlg.py` with `Dev/Lib/Windows/WorkOnRulesWithAIWindow.ui` is the pattern to follow.
+- **Regenerate with the same tool and version** that produced the file's header (`pyuic6 <name>.ui -o <name>.py` from the folder holding the `.ui`), so the diff shows only your change. Don't
+  hand-edit the generated `.py` — see **Blank lines** above.
+- **Set only run-time text in code.** Static labels, button captions, tooltips, placeholder text, `editable`, size policies and the like are `.ui` properties. Python sets what depends on a value
+  only known at run time, e.g. `self.ui.providerLabel.setText(_translate(...).format(provider=...))`.
+- **Translations follow the file the string lives in.** A caption moved into the `.ui` is extracted from the generated `.py`, so its entry moves from `translations/<Dialog>.ts` to the generated
+  window's `<Window>.ts` (e.g. `Dev/Lib/Windows/translations/WorkOnRulesWithAIWindow_de.ts`). Delete the entry from the file it left, add it to the one it joined, and recompile both `.qm`s.
+  Because pyuic uses the top-level widget's object name as the Qt context, both files usually share one context and merge at run time.
+
 ## File description blocks
 - Below the version history, every module/lib file should carry a **description block**: `#` comment lines explaining what the file is for and how it hangs together, so someone opening it cold
   doesn't have to reverse-engineer it. `Dev/Modules/LinkSenseTool.py` is the canonical example; `Dev/Lib/Testbed.py`, `Dev/Lib/AIRules.py` and `Dev/Modules/StartTestbed.py` are others.

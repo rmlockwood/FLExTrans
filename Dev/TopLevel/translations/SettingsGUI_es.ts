@@ -985,9 +985,9 @@ Necesitas tu propia clave API para el proveedor elegido; el módulo la pide la p
     <message>
       <location filename="../SettingsGUI.py" line="2014"/>
       <source>The model to use. Pick one that belongs to the chosen AI provider.
-gemini-2.5-flash is available on Google's free tier.</source>
+gemini-3.8-flash is available on Google's free tier.</source>
       <translation>El modelo que se usará. Elige uno que pertenezca al proveedor de IA elegido.
-gemini-2.5-flash está disponible en el nivel gratuito de Google.</translation>
+gemini-3.8-flash está disponible en el nivel gratuito de Google.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2016"/>

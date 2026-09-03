@@ -154,5 +154,29 @@
       <source>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</source>
       <translation>Wenn dies angekreuzt ist, erstellt die KI ein wiederverwendbares Makro statt einer Regel. Makros enthalten Logik, die mehrere Regeln aufrufen können.</translation>
     </message>
-  </context>
+      <message>
+      <source>Open Rule File</source>
+      <translation>Regeldatei öffnen</translation>
+    </message>
+    <message>
+      <source>Open the transfer rules file in the XML editor. After saving there, use Refresh Rules so this window picks up your changes.</source>
+      <translation>Öffnet die Übertragungsregeldatei im XML-Editor. Verwenden Sie nach dem Speichern dort Regeln aktualisieren, damit dieses Fenster Ihre Änderungen übernimmt.</translation>
+    </message>
+    <message>
+      <source>Model:</source>
+      <translation>Modell:</translation>
+    </message>
+    <message>
+      <source>The model used for this run. Whichever model last worked becomes the default for the next run. The provider comes from the AI Provider setting in the FLExTrans Settings tool and cannot be changed here.</source>
+      <translation>Das für diesen Lauf verwendete Modell. Das Modell, das zuletzt funktioniert hat, wird zur Vorgabe für den nächsten Lauf. Der Anbieter stammt aus der Einstellung KI-Anbieter im FLExTrans-Einstellungswerkzeug und kann hier nicht geändert werden.</translation>
+    </message>
+    <message>
+      <source>Open a temporary copy of the transfer rules file, with the rule just generated spliced into it, in the XML editor. Your real rule file is not touched - use Approve to write the rule into it. Available once a rule has been generated.</source>
+      <translation>Öffnet eine temporäre Kopie der Übertragungsregeldatei mit der gerade erzeugten Regel darin im XML-Editor. Ihre eigentliche Regeldatei wird nicht verändert - verwenden Sie Genehmigen, um die Regel dort hineinzuschreiben. Verfügbar, sobald eine Regel erzeugt wurde.</translation>
+    </message>
+    <message>
+      <source>Write the rule shown in the preview into your transfer rules file. A copy of the file as it is now is saved in the Output\rule-file-history folder first, so nothing you already had is lost. Available once a valid rule has been generated, and disabled again after the write so the same rule cannot be written twice.</source>
+      <translation>Schreibt die in der Vorschau gezeigte Regel in Ihre Übertragungsregeldatei. Eine Kopie der Datei in ihrem jetzigen Zustand wird zuvor im Ordner Output\rule-file-history gesichert, sodass nichts von dem verloren geht, was Sie bereits hatten. Verfügbar, sobald eine gültige Regel erzeugt wurde, und danach wieder deaktiviert, damit dieselbe Regel nicht zweimal geschrieben werden kann.</translation>
+    </message>
+</context>
 </TS>
