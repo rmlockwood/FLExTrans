@@ -16,12 +16,12 @@
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="107"/>
       <source>Describe the rule you want:</source>
-      <translation>Describa la regla que desea:</translation>
+      <translation>Describe la regla que deseas:</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="108"/>
       <source>e.g. In a definite article + noun phrase, remove the article and add the definite singular common gender affix.</source>
-      <translation>p. ej. En un sintagma nominal con artículo definido, quite el artículo y agregue el afijo definido singular de género común.</translation>
+      <translation>p. ej. En un sintagma nominal con artículo definido, quita el artículo y agrega el afijo definido singular de género común.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="110"/>
@@ -46,7 +46,7 @@
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="115"/>
       <source>Approve &amp;&amp; Write to Rule File</source>
-      <translation>Aprobar &amp;&amp; escribir en el archivo de reglas</translation>
+      <translation>Aprobar y escribir en el archivo de reglas</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="118"/>
