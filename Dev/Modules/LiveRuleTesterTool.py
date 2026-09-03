@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.6 - 9/2/26 - Ron Lockwood
+#    Save the copy of the transfer rules in Output\rule-file-history when a test is added to the testbed rather than on every Transfer, save every phase's rules for an advanced project, and convert a leftover rule-history folder from an earlier version.
+#
 #   Version 3.17.5 - 9/1/26 - Ron Lockwood
 #    Use the shared APERTIUM_LOG_FILE constant from Testbed.py instead of defining the apertium_log.txt name a second time and documented that the log names must match the tester makefiles.
 #
@@ -324,8 +327,9 @@
 #   TransferClicked() is the heart of the tool. In order it: picks the source, rule, target and log file names for the phase being tested; writes the active lexical units to the source file,
 #   dropping the punctuation between them (sentence punctuation still goes out) and putting a backslash before Apertium's reserved characters in each lemma; rebuilds the rule file's
 #   section-rules element from the checked rules only, and if none are checked writes a dummy rule that matches a dummy category so the Apertium tools still have something valid to run;
-#   writes that file as decomposed unicode; substitutes any problem characters in the bilingual lexicon's symbols and in the rule file to match; saves a timestamped copy of the real rule file
-#   under Output\rule-history\created; and then runs the Makefile. If the tools fail, the contents of apertium_error.txt is shown in the target box instead of a result.
+#   writes that file as decomposed unicode; substitutes any problem characters in the bilingual lexicon's symbols and in the rule file to match; and then runs the Makefile. If the tools fail, the
+#   contents of apertium_error.txt is shown in the target box instead of a result. Nothing is archived here - the copy of the rules that goes in Output\rule-file-history is saved by Add to Testbed,
+#   where it belongs to a test worth keeping, rather than on every press of this button.
 #
 #   Rewriting the rule file is skipped unless rulesChanged or fixBilingLex says something actually changed, since that is the slow part. rulesChanged is set by rulesListClicked (any check,
 #   uncheck or reorder) and fixBilingLex by a bilingual lexicon rebuild.
@@ -386,7 +390,9 @@
 #   and down arrows reorder the rule in the highlighted row; that reorder only affects the copy written to the tester folder, so it is a way to try a different rule order without touching the
 #   real rule file. The select-all check box above the rule list is tri-state and reflects the rules below it. Add to Testbed pairs the source lexical units with the synthesis result and writes
 #   them into the testbed file, prompting before overwriting a test that has the same lexical units, and cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
-#   punctuation that isn't sentence punctuation is dropped (running the Text Out rules over the sentence punctuation first, if that box is checked, so the comparison is fair). The zoom buttons
+#   punctuation that isn't sentence punctuation is dropped (running the Text Out rules over the sentence punctuation first, if that box is checked, so the comparison is fair). Once a test really
+#   has been added it also saves a copy of every phase's transfer rules in Output\rule-file-history, tagged test_added, so there is a record of the rules that produced the result the new test
+#   now expects; see Lib/RuleFileHistory.py for the naming. Cancelling the overwrite prompt adds no test and so saves no copy. The zoom buttons
 #   scale the source and target widget fonts independently. View Bilingual Lexicon and Edit Transfer Rules open those files in XMLmind XML Editor. Right-to-left text is detected by looking at
 #   the first few sentences and again at each result, and the layout direction and RTL marks are set accordingly.
 #
@@ -431,7 +437,6 @@ import copy
 import xml.etree.ElementTree as ET
 import shutil
 import tomllib
-from datetime import datetime
 from subprocess import call
 
 from SIL.LCModel import * # type: ignore
@@ -458,6 +463,8 @@ import DoStampSynthesis
 import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
 import TestbedLogViewer
+import RuleFileHistory
+import OldRuleHistoryConversion  # TEMPORARY (old rule history conversion)
 
 from LiveRuleTester import Ui_LRTWindow
 import FTPaths
@@ -482,7 +489,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.5",
+        FTM_Version    : "3.17.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -2051,7 +2058,13 @@ class Main(QMainWindow):
 
         # Write the XML file
         if cnt > 0:
+
             fileObj.write()
+
+            # Save a copy of every transfer rules file this project has, so there is a record of the rules that produced the result this test now expects. An advanced project's interchunk and
+            # postchunk files go too, since the test went through all of those phases. The result is ignored on purpose: failing to save a copy must not undo a test the user has just added, and a
+            # message raised here wouldn't be seen until the tester window closes anyway, which would put it a long way from what caused it.
+            RuleFileHistory.saveHistoryCopies(ReadConfig.getTransferRuleFiles(self.__configMap, self.__report), RuleFileHistory.TAG_TEST_ADDED)
 
     def getExistingTest(self, testXMLObjList, myTestXMLObj):
 
@@ -3312,16 +3325,6 @@ class Main(QMainWindow):
                 else:
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
 
-        # Copy the transfer rules file to the rule history folder
-        if self.__transfer_rules_file and os.path.isfile(self.__transfer_rules_file):
-
-            historyDir = os.path.join(FTPaths.OUTPUT_DIR, 'rule-history', 'created')
-            os.makedirs(historyDir, exist_ok=True)
-            stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            baseName = os.path.splitext(os.path.basename(self.__transfer_rules_file))
-            destName = f"{baseName[0]}_created_{stamp}{baseName[1]}"
-            shutil.copy2(self.__transfer_rules_file, os.path.join(historyDir, destName))
-
         # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. Pass in the folder of the bash file to run. The current directory is FlexTools
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
@@ -3770,6 +3773,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
     retVal = RESTART_MODULE
     loggedStart = False
+
+    OldRuleHistoryConversion.convert(report)  # TEMPORARY (old rule history conversion) - delete this line and the import when Lib/OldRuleHistoryConversion.py goes.
 
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:

@@ -236,5 +236,10 @@
       <source>If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.</source>
       <translation>Si editas esta regla manualmente, el Asistente de Reglas podría sobrescribir tus cambios. Cambia el nombre de la regla para evitarlo.</translation>
     </message>
+    <message>
+      <location filename="../CreateApertiumRules.py" line="1827"/>
+      <source>The prior version of the transfer rules could not be saved. The error was: {errorText}</source>
+      <translation>No se pudo guardar la versión anterior de las reglas de transferencia. El error fue: {errorText}</translation>
+    </message>
   </context>
 </TS>
