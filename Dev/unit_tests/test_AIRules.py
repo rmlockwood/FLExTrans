@@ -135,6 +135,25 @@ class TestRateLimitError(unittest.TestCase):
         self.assertEqual(err.retryAfter, 12.0)
         self.assertIsInstance(err, RuntimeError)
 
+class TestUnknownModelError(unittest.TestCase):
+
+    def test_message_names_provider_and_model(self):
+
+        err = AIRules.UnknownModelError('OpenAI ChatGPT', 'gpt-5.1')
+        text = str(err)
+
+        self.assertIn('OpenAI ChatGPT', text)
+        self.assertIn('gpt-5.1', text)
+        self.assertIn('AIRulesModel', text)
+
+    def test_carries_fields(self):
+
+        err = AIRules.UnknownModelError('Google Gemini', 'gemini-1.0-pro')
+
+        self.assertEqual(err.providerDisplay, 'Google Gemini')
+        self.assertEqual(err.model, 'gemini-1.0-pro')
+        self.assertIsInstance(err, RuntimeError)
+
 # ---------------------------------------------------------------------------
 # Provider registry
 # ---------------------------------------------------------------------------
@@ -168,8 +187,14 @@ class TestProviderRegistry(unittest.TestCase):
         self.assertIs(AIRules.getProvider('openai'), AIRules.PROVIDERS['openai'])
 
     def test_find_model_owner(self):
-        self.assertIs(AIRules.findModelOwner('claude-opus-4-8'), AIRules.PROVIDERS['anthropic'])
-        self.assertIs(AIRules.findModelOwner('gpt-5.1'), AIRules.PROVIDERS['openai'])
+        self.assertIs(AIRules.findModelOwner('claude-opus-5'), AIRules.PROVIDERS['anthropic'])
+        self.assertIs(AIRules.findModelOwner('gpt-5.6-sol'), AIRules.PROVIDERS['openai'])
+
+    def test_default_model_is_in_each_providers_list(self):
+
+        for provider in AIRules.PROVIDERS.values():
+
+            self.assertIn(provider.defaultModel, provider.models, provider.name)
 
     def test_find_model_owner_unknown(self):
         self.assertIsNone(AIRules.findModelOwner('some-future-model'))
