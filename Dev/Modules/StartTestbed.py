@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.16.2 - 9/2/26 - Ron Lockwood
+#    Save a copy of every phase's transfer rules in Output\rule-file-history through RuleFileHistory, and convert a leftover rule-history folder from an earlier version.
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -35,10 +38,6 @@
 #   source text can be fed into the normal FLExTrans process.
 #
 
-import os
-import shutil
-from datetime import datetime
-
 from SIL.LCModel import * # type: ignore
 from flextoolslib import * # type: ignore
 
@@ -49,7 +48,8 @@ from Testbed import *
 import Mixpanel
 import ReadConfig
 import Utils
-import FTPaths
+import RuleFileHistory
+import OldRuleHistoryConversion  # TEMPORARY (old rule history conversion)
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -69,7 +69,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
-        FTM_Version: "3.16.1",
+        FTM_Version: "3.16.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
         FTM_Help: "",
@@ -159,15 +159,15 @@ def MainFunction(DB, report, modifyAllowed):
     count = resultsXMLObj.dump(f_out)
     f_out.close()
 
-    # Copy the transfer rules file to the rule history folder
-    ruleFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
-    if ruleFileVal and os.path.isfile(ruleFileVal):
-        historyDir = os.path.join(FTPaths.OUTPUT_DIR, 'rule-history', 'run')
-        os.makedirs(historyDir, exist_ok=True)
-        stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        baseName = os.path.splitext(os.path.basename(ruleFileVal))
-        destName = f"{baseName[0]}_run_{stamp}{baseName[1]}"
-        shutil.copy2(ruleFileVal, os.path.join(historyDir, destName))
+    OldRuleHistoryConversion.convert(report)  # TEMPORARY (old rule history conversion) - delete this line and the import when Lib/OldRuleHistoryConversion.py goes.
+
+    # Save a copy of every transfer rules file this project has, so there is a record of exactly which rules produced this run's results - the rules file itself will have moved on by the time the
+    # user looks back at the log. An advanced project's interchunk and postchunk files are saved too, since the testbed text goes through all of those phases and not just the first one.
+    _, errorMsg = RuleFileHistory.saveHistoryCopies(ReadConfig.getTransferRuleFiles(configMap, report), RuleFileHistory.TAG_TESTBED_RUN)
+
+    if errorMsg:
+
+        report.Warning(_translate("StartTestbed", "The rule file history folder could not be updated. The error was: {errorText}").format(errorText=errorMsg))
 
     # Let the user know how many valid/invalid tests were dumped
     report.Info(

@@ -67,6 +67,24 @@ Group imports into these blocks, in this order, separated by a single blank line
   in `Dev/Lib/ReadConfig.py`, insert it in **alphabetical order** by variable name
   (e.g. `LOG_STATISTICS` sorts before `LOWERCASE_UPPERCASE_PAIRS`).
 
+## File description blocks
+- Below the version history, every module/lib file should carry a **description block**: `#` comment lines explaining what the file is for and how it hangs together, so someone opening it cold
+  doesn't have to reverse-engineer it. `Dev/Modules/LinkSenseTool.py` is the canonical example; `Dev/Lib/Testbed.py`, `Dev/Lib/AIRules.py` and `Dev/Modules/StartTestbed.py` are others.
+- **Shape.** An `OVERVIEW (AI generated, then edited)` heading, a blank `#` line, then a paragraph or two saying what the file does and why it exists. After that, as many sections as the file
+  actually needs, each under a short all-caps heading — `WHAT IT WRITES`, `COLOR CODING`, `OBJECTS`, `THE TWO FILES`, and so on. Don't force a fixed set of headings; pick the ones that answer the
+  questions this particular file raises. Finish with a `CODE STRUCTURE` section that names the main classes and functions in the order they appear and says what calls what. Close the block with a
+  bare `#` line, then a blank line, then the imports.
+- **Write for someone who has never seen the file.** Explain the why and the shape of things — what a class models, why two files are involved, what invariant a check is protecting — not a
+  paraphrase of the code. Mention the traps: the thing that looks redundant but isn't, the ordering that matters, the case that would silently corrupt data if it were done differently.
+- **When to write one.** In the course of fixing a bug or adding a feature, if the file you touched has no description block, write one. Older files often carry a one- or two-line stub description
+  at the end of the version history instead; replace that stub with a real block rather than leaving both.
+- **When to modify one.** If your change makes something in the block wrong or out of date, fix that part in the same edit — a stale description is worse than none. If the block is already good and
+  still accurate, leave it alone; it doesn't need rewriting just because you edited the file.
+- The `~200` character line-length rule applies to these blocks too, and multi-line paragraphs should fill that width (see **Line length** above).
+- Not for pyuic-generated `.py` files.
+- A description-only change still gets a version-history line (see **Versioning** below); `Added the code description block at the top with an overview, <the other sections> and code structure.` is
+  the usual description, or `Updated the code description block ...` when revising one.
+
 ## Versioning
 - Each module/lib file starts with a version-history header block:
   `# Version X.Y.Z - M/D/YY - Ron Lockwood` followed by an indented one-line

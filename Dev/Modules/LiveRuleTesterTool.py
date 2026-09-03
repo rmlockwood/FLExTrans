@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.21 - 9/2/26 - Ron Lockwood
+#    Save the copy of the transfer rules in Output\rule-file-history when a test is added to the testbed rather than on every Transfer, save every phase's rules for an advanced project, and convert a leftover rule-history folder from an earlier version.
+#
 #   Version 3.16.20 - 8/26/26 - Ron Lockwood
 #    Drop the minimum height for the window. The previous fix makes the smallest panel heights useable.
 #
@@ -298,7 +301,6 @@ import copy
 import xml.etree.ElementTree as ET
 import shutil
 import tomllib
-from datetime import datetime
 from subprocess import call
 
 from SIL.LCModel import * # type: ignore
@@ -325,6 +327,8 @@ import DoStampSynthesis
 import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
 import TestbedLogViewer
+import RuleFileHistory
+import OldRuleHistoryConversion  # TEMPORARY (old rule history conversion)
 
 from LiveRuleTester import Ui_LRTWindow
 import FTPaths
@@ -349,7 +353,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.20",
+        FTM_Version    : "3.16.21",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1910,7 +1914,13 @@ class Main(QMainWindow):
 
         # Write the XML file
         if cnt > 0:
+
             fileObj.write()
+
+            # Save a copy of every transfer rules file this project has, so there is a record of the rules that produced the result this test now expects. An advanced project's interchunk and
+            # postchunk files go too, since the test went through all of those phases. The result is ignored on purpose: failing to save a copy must not undo a test the user has just added, and a
+            # message raised here wouldn't be seen until the tester window closes anyway, which would put it a long way from what caused it.
+            RuleFileHistory.saveHistoryCopies(ReadConfig.getTransferRuleFiles(self.__configMap, self.__report), RuleFileHistory.TAG_TEST_ADDED)
 
     def getExistingTest(self, testXMLObjList, myTestXMLObj):
 
@@ -3141,16 +3151,6 @@ class Main(QMainWindow):
                 else:
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
 
-        # Copy the transfer rules file to the rule history folder
-        if self.__transfer_rules_file and os.path.isfile(self.__transfer_rules_file):
-
-            historyDir = os.path.join(FTPaths.OUTPUT_DIR, 'rule-history', 'created')
-            os.makedirs(historyDir, exist_ok=True)
-            stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            baseName = os.path.splitext(os.path.basename(self.__transfer_rules_file))
-            destName = f"{baseName[0]}_created_{stamp}{baseName[1]}"
-            shutil.copy2(self.__transfer_rules_file, os.path.join(historyDir, destName))
-
         # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. Pass in the folder of the bash file to run. The current directory is FlexTools
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
@@ -3640,6 +3640,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
     retVal = RESTART_MODULE
     loggedStart = False
+
+    OldRuleHistoryConversion.convert(report)  # TEMPORARY (old rule history conversion) - delete this line and the import when Lib/OldRuleHistoryConversion.py goes.
 
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:

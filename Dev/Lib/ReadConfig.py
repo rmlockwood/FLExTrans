@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.16.6 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, how a value comes back and code structure.
+#
+#   Version 3.16.5 - 9/2/26 - Ron Lockwood
+#    Added getTransferRuleFiles(): the configured transfer rules files that exist, in phase order, so callers can handle advanced transfer without repeating the three setting reads.
+#
 #   Version 3.16.4 - 7/8/26 - Ron Lockwood
 #    Fixes #1392. Added the ApplyTextOutRulesInTestbed setting that controls whether Text Out rules are applied to the synthesis before the testbed extracts results.
 #
@@ -76,7 +82,41 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   Functions for reading a configuration file
+#   OVERVIEW (AI generated, then edited)
+#
+#   Every FLExTrans module gets its settings from here. The settings live in one plain text file, FlexTrans.config, which sits in the Config folder of the work project the user is currently on. That
+#   folder is found from FTPaths.CONFIG_PATH - the path of the flextools.ini file that lives beside it - so the settings always follow whichever work project FlexTools is pointed at. The file is a
+#   flat list of SettingName=value lines with no sections and no quoting, which is why this module is small: read the file into a dictionary, hand values out of that dictionary, and write one line
+#   back when a module changes a setting.
+#
+#   THE SETTING NAMES
+#
+#   The block of uppercase constants below is the list of every setting FLExTrans knows about, each one tying the name used in the code to the name written in the file. Nothing else in FLExTrans
+#   should spell a setting name out as a literal string - a module reads a setting by passing one of these constants to getConfigVal() - so a rename only has to happen in one place here. Keep the
+#   block in alphabetical order by variable name. Adding a setting here is only half the job: the Settings tool rewrites the whole config file from its own list of settings when the user saves, so
+#   a setting it doesn't know about is dropped from the file the next time they press OK there.
+#
+#   HOW A VALUE COMES BACK
+#
+#   getConfigVal() does two things beyond a plain dictionary lookup, and both are decided by the setting's name rather than by any declaration:
+#    - A setting whose name contains File or Folder is treated as a path, and a relative one is made absolute against the work project folder (WORK_DIR), or against basePath when the caller passes
+#      one. FLExTrans ships with relative paths so that a work project folder can be copied or renamed and still work.
+#    - A setting listed in PROPERTIES_THAT_ARE_LISTS comes back as a list of strings when its value has a comma in it, and as a plain string when it doesn't. That is why a one-item list has to be
+#      written with a trailing comma in the file, and why a new multi-valued setting must be added to that list or its commas will be read as part of one long value.
+#
+#   A missing setting is reported through report.Error() and comes back as None, so a caller checks for None rather than catching anything. giveError=False turns that message off for a setting that
+#   is genuinely optional - the two advanced transfer rules files, for instance, which an ordinary project leaves empty. Values are normalized to decomposed (NFD) characters as they are read,
+#   because that is how FLEx stores its strings, so a setting holding a vernacular word compares equal to what comes out of the database.
+#
+#   CODE STRUCTURE
+#
+#   openConfigFile() is the one place that knows where the file is. readConfig() opens it and hands it to getConfigMap(), which parses the lines into the dictionary that every module then passes
+#   around as configMap. getConfigVal() reads one setting out of that dictionary, configValIsList() checks that a setting the caller needs a list from really gave one, and getTransferRuleFiles()
+#   answers the common question of which transfer rules files this project actually has - the main one plus the interchunk and postchunk files that only an advanced (three phase) project sets.
+#   writeConfigValue() is the only writer: it rewrites the file line by line with the one setting changed, adding it at the end when createIfMissing is set.
+#
+#   This module is deliberately import-light - FTPaths and Qt's translate, nothing from FLEx or flextoolslib - because nearly everything in FLExTrans imports it.
+#
 
 import re
 import os
@@ -359,6 +399,24 @@ def getConfigVal(my_map, key, report, giveError=True, basePath=None):
                     return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
+
+def getTransferRuleFiles(configMap, report):
+    '''Return the transfer rules files this project actually has, in phase order - the main one first, then the interchunk and postchunk files that only an advanced (three phase) project sets.
+       Only files that are configured and really on disk come back, so a caller can loop over the result without knowing or caring whether this project uses advanced transfer.'''
+
+    ruleFiles = []
+
+    for settingName in (TRANSFER_RULES_FILE, TRANSFER_RULES_FILE2, TRANSFER_RULES_FILE3):
+
+        # giveError=False plus a truthiness test is what every other reader of the two advanced settings does. A project that isn't using advanced transfer has them present but empty, so a file
+        # that isn't there is the normal case rather than something to complain about.
+        rulesFile = getConfigVal(configMap, settingName, report, giveError=False)
+
+        if rulesFile and os.path.isfile(rulesFile):
+
+            ruleFiles.append(rulesFile)
+
+    return ruleFiles
 
 def configValIsList(my_map, key, report):
 

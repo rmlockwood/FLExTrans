@@ -1734,6 +1734,14 @@ type="tFlextrans"
 type="tTestbed"
 ></object
 > to see if you are still getting the results you expect. Add a comment to go with your testbed test if desired. This will be visible in the testbed log.</p
+><p
+>Each time a test is added, a copy of your transfer rule file is saved, so that you can always see which rules produced the result the test expects. Look for it in the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>transfer_rules_2026-09-02_14-35-01_test_added.t1x</object
+> - your rule file’s name with the date, the time and a tag saying what saved it. If your project uses advanced transfer, the interchunk and postchunk rule files are saved as well.</p
 ></section3
 ><section3
 id="sHover"
@@ -2282,6 +2290,17 @@ num="xSetupCatAttrib"
 type="tCourier"
 >a_gram_cat</object
 > attribute are always processed.</p
+><p
+>Because this tool rewrites your transfer rule file, it first saves a copy of the previous version of it. Look for it in the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>transfer_rules_2026-09-02_16-05-12_before_cat_setup.t1x</object
+> - your rule file’s name with the date, the time and a tag saying what saved it. Earlier versions of FLExTrans instead kept a single copy called <object
+type="tFilename"
+>transfer_rules.t1x.old</object
+> beside your rule file and overwrote it on every run. That file is no longer made, so you now get one dated copy per run.</p
 ><example
 num="xSetupCatAttrib"
 ><chart
@@ -2616,6 +2635,14 @@ type="tTool"
 type="tFlexx"
 ></object
 > to the affixes or stems involved.</p
+><p
+>Whenever the Rule Assistant writes rules, it first saves a copy of the previous version of your transfer rule file, so nothing you had before is lost. Look for it in the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>transfer_rules_2026-09-02_15-20-05_before_RA_changes.t1x</object
+> - your rule file’s name with the date, the time and a tag saying what saved it. The same folder holds the copies saved by the other tools that change or record your rules.</p
 ><section3
 id="sRuleAssistAppearance"
 ><secTitle
@@ -3473,6 +3500,14 @@ type="tAIRuleStudio"
 type="tSettingsTool"
 ></object
 > and in the AI Assistant section (visible in the Full view) choose the AI Provider and the AI Model. You also need an API key for the chosen provider — see the next section. The first time you run the module it asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the module if you need to enter a different key later.</p
+><p
+>Before an approved rule is written, a copy of the previous version of your transfer rule file is saved, so nothing you had before is lost. Look for it in the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>transfer_rules_2026-09-02_15-41-33_before_AI_changes.t1x</object
+> - your rule file’s name with the date, the time and a tag saying what saved it. The module also shows you the name of that copy after it writes the rule.</p
 ><section3
 id="sAIApiKeys"
 ><secTitle
@@ -6468,6 +6503,14 @@ type="tSettingsTool"
 type="tFilename"
 >source_text.txt</object
 > file).</p
+><p
+>Starting a testbed run also saves a copy of your transfer rule file, so that you can still tell which rules produced a given run’s results after the rule file itself has moved on. Look for it in the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>transfer_rules_2026-09-02_15-02-40_testbed_run.t1x</object
+> - your rule file’s name with the date, the time and a tag saying what saved it. If your project uses advanced transfer, the interchunk and postchunk rule files are saved as well.</p
 ></section3
 ><section3
 id="sEndTestbed"
