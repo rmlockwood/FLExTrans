@@ -23,9 +23,7 @@ import AIRules
 # ---------------------------------------------------------------------------
 
 def makeFakeAnthropic():
-    '''A stand-in `anthropic` module exposing just the RateLimitError class that generate()'s except clause references.'''
-
-    mod = ModuleType('anthropic')
+    '''A stand-in `anthropic` module exposing the two error classes generate()'s except clauses reference: RateLimitError and NotFoundError.'''
 
     class RateLimitError(Exception):
 
@@ -33,8 +31,10 @@ def makeFakeAnthropic():
             super().__init__(*args)
             self.response = response
 
-    mod.RateLimitError = RateLimitError
-    return mod
+    class NotFoundError(Exception):
+        pass
+
+    return SimpleNamespace(RateLimitError=RateLimitError, NotFoundError=NotFoundError)
 
 def anthropicClient(response=None, exc=None):
     '''Fake anthropic client whose messages.create returns `response` or raises `exc`.'''
@@ -106,6 +106,18 @@ class TestAnthropicProvider(unittest.TestCase):
 
         self.assertEqual(ctx.exception.retryAfter, 15.0)
         self.assertEqual(ctx.exception.providerDisplay, self.provider.displayName)
+
+    def test_not_found_becomes_unknown_model_error(self):
+
+        # Anthropic answers 404 for a model name it doesn't serve - usually one retired since the AIRulesModel setting was chosen. The name has to survive into the error so the dialog can say
+        # which model is missing rather than showing the SDK's raw text.
+        client = anthropicClient(exc=self.fake.NotFoundError('model: claude-retired-1'))
+
+        with self.assertRaises(AIRules.UnknownModelError) as ctx:
+            self.provider.generate(client, 'claude-retired-1', 'SYS', 'USER')
+
+        self.assertEqual(ctx.exception.model, 'claude-retired-1')
+        self.assertEqual(ctx.exception.providerDisplay, 'Anthropic Claude')
 
     def test_rate_limit_with_bad_retry_header(self):
 
@@ -188,6 +200,17 @@ class TestGeminiProvider(unittest.TestCase):
 
         self.assertEqual(ctx.exception.retryAfter, 12.0)
 
+    def test_404_becomes_unknown_model_error(self):
+
+        err = self.APIError('models/gemini-retired-1 is not found', code=404)
+        client = geminiClient(exc=err)
+
+        with self.assertRaises(AIRules.UnknownModelError) as ctx:
+            self.provider.generate(client, 'gemini-retired-1', 'SYS', 'USER')
+
+        self.assertEqual(ctx.exception.model, 'gemini-retired-1')
+        self.assertEqual(ctx.exception.providerDisplay, 'Google Gemini')
+
     def test_malformed_json_reply_names_provider_and_suggests_retry(self):
 
         # A truncated reply (e.g. an unterminated string) must not surface as a bare JSON parse error - the message should say who produced it and that retrying usually works.
@@ -216,19 +239,17 @@ class TestGeminiProvider(unittest.TestCase):
 
 def makeFakeOpenAI():
 
-    mod = ModuleType('openai')
-
     class RateLimitError(Exception):
         pass
 
-    mod.RateLimitError = RateLimitError
+    class NotFoundError(Exception):
+        pass
 
     class OpenAI:  # referenced by makeClient, not by generate; present for completeness
         def __init__(self, api_key=None):
             self.api_key = api_key
 
-    mod.OpenAI = OpenAI
-    return mod
+    return SimpleNamespace(RateLimitError=RateLimitError, NotFoundError=NotFoundError, OpenAI=OpenAI)
 
 def openaiClient(message=None, exc=None):
 
@@ -287,6 +308,16 @@ class TestOpenAIProvider(unittest.TestCase):
             self.provider.generate(client, 'gpt-x', 'SYS', 'USER')
 
         self.assertEqual(ctx.exception.retryAfter, 8.0)
+
+    def test_not_found_becomes_unknown_model_error(self):
+
+        client = openaiClient(exc=self.fake.NotFoundError('The model `gpt-retired-1` does not exist'))
+
+        with self.assertRaises(AIRules.UnknownModelError) as ctx:
+            self.provider.generate(client, 'gpt-retired-1', 'SYS', 'USER')
+
+        self.assertEqual(ctx.exception.model, 'gpt-retired-1')
+        self.assertEqual(ctx.exception.providerDisplay, 'OpenAI ChatGPT')
 
     def test_malformed_json_reply_names_provider_and_suggests_retry(self):
 

@@ -281,5 +281,57 @@ No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.<
       <source>Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.</source>
       <translation>Macro escrita en el archivo de transferencia (copia de seguridad: {backup}). Crea o selecciona otra regla u otra macro para continuar.</translation>
     </message>
-  </context>
+    <message>
+      <source>{provider} has no model named {model}. It may have been retired, or your API key may not have access to it.</source>
+      <translation>{provider} no tiene ningún modelo llamado {model}. Puede que se haya retirado o que su clave de API no tenga acceso a él.</translation>
+    </message>
+    <message>
+      <source>Model not available</source>
+      <translation>Modelo no disponible</translation>
+    </message>
+    <message>
+      <source>Provider: {provider}</source>
+      <translation>Proveedor: {provider}</translation>
+    </message>
+    <message>
+      <source>No model</source>
+      <translation>Ningún modelo</translation>
+    </message>
+    <message>
+      <source>Choose or type the model to use in the Model box.</source>
+      <translation>Elija o escriba el modelo que se usará en el cuadro Modelo.</translation>
+    </message>
+    <message>
+      <source>Wrong provider for this model</source>
+      <translation>Proveedor incorrecto para este modelo</translation>
+    </message>
+    <message>
+      <source>{model} is a {owner} model, so {provider} cannot run it. Choose one of the {provider} models in the Model box.</source>
+      <translation>{model} es un modelo de {owner}, por lo que {provider} no puede ejecutarlo. Elija uno de los modelos de {provider} en el cuadro Modelo.</translation>
+    </message>
+    <message>
+      <source>Choose a different model in the Model box at the bottom of this window, then try again.</source>
+      <translation>Elija otro modelo en el cuadro Modelo en la parte inferior de esta ventana y vuelva a intentarlo.</translation>
+    </message>
+    <message>
+      <source>Not found</source>
+      <translation>No encontrado</translation>
+    </message>
+    <message>
+      <source>The transfer rules file is not there: {path}</source>
+      <translation>El archivo de reglas de transferencia no está ahí: {path}</translation>
+    </message>
+    <message>
+      <source>Could not open the editor</source>
+      <translation>No se pudo abrir el editor</translation>
+    </message>
+    <message>
+      <source>The transfer rules file could not be opened for editing ({err}). Open it yourself from: {path}</source>
+      <translation>No se pudo abrir el archivo de reglas de transferencia para editarlo ({err}). Ábralo usted mismo desde: {path}</translation>
+    </message>
+    <message>
+      <source>Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.</source>
+      <translation>Se abrió el archivo de reglas de transferencia en el editor XML. Después de guardar allí, haga clic en Actualizar reglas para que esta ventana recoja sus cambios.</translation>
+    </message>
+</context>
 </TS>

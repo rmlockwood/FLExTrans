@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.27 - 9/3/26 - Ron Lockwood
+#    A model name the provider no longer serves now raises UnknownModelError (new, carrying the provider display name and the model) instead of letting the SDK's raw 404 through. All three
+#    providers map their 404 to it: anthropic.NotFoundError, Gemini's APIError with code 404 (its handler now reads the code once for both 429 and 404), and openai.NotFoundError.
+#
+#   Version 3.16.26 - 9/3/26 - Ron Lockwood
+#    Refreshed each provider's model list to the models currently offered: claude-opus-5 (with 4-8, sonnet-5 and haiku-4-5) for Anthropic, gemini-3.8-flash (with the 3.x flash-lite and pro
+#    models alongside the 2.5 pair) for Gemini, and the gpt-5.6 sol/terra/luna trio for OpenAI. Each provider's docstring now says what its free tier covers and how the models rank on cost.
+#
 #   Version 3.16.25 - 9/2/26 - Ron Lockwood
 #    Added the code description block at the top with an overview, the prompt, validation and code structure.
 #
@@ -135,6 +143,10 @@
 #   writing those two methods and registering the class in PROVIDERS. Engine bundles a provider with its client and the chosen model and is what the rest of the module passes around, so nothing
 #   below the provider layer knows which service is being used. Each provider's SDK is imported inside its own makeClient(), so only the SDK of the provider actually in use has to be installed.
 #
+#   Each generate() also translates the two SDK errors that deserve a plain-language message into the module's own exceptions: a 429 becomes RateLimitError (with the retry delay when the response
+#   gives one) and a 404 on the model name becomes UnknownModelError, which names the provider and the model and points at the AIRulesModel setting - the usual cause is a model that the provider
+#   has retired since the setting was chosen. Everything else propagates as-is; the dialog shows the raw text for those.
+#
 #   API keys are never written to a settings file. They live in the operating system's credential vault (keyring) in a slot per provider, so switching providers doesn't lose the key of the one being
 #   switched away from. Prompt logging (PROMPT_LOG_PATH, off unless the AIRulesLogPrompts setting turns it on) writes every prompt and reply to a file for diagnosing a bad generation on a user's
 #   machine; it is opt-in because those prompts contain project data.
@@ -167,8 +179,9 @@
 #
 #   CODE STRUCTURE
 #
-#   Top to bottom the file goes: the generation limits and the sample-name filters, the prompt-logging helper, the rate-limit error, the JSON schemas for the two tasks, the RuleResult dataclass, the
-#   three provider classes and the PROVIDERS registry, the credential-vault functions, Engine and buildEngine, then the prompt-building functions (parseTransferFile, getSampleRulesAndMacros,
+#   Top to bottom the file goes: the generation limits and the sample-name filters, the prompt-logging helper, the two provider errors that get a user-facing message of their own (RateLimitError for a
+#   429, UnknownModelError for a 404 on the model name), the JSON schemas for the two tasks, the RuleResult dataclass, the three provider classes and the PROVIDERS registry, the credential-vault
+#   functions, Engine and buildEngine, then the prompt-building functions (parseTransferFile, getSampleRulesAndMacros,
 #   buildSystemInstruction, extractExistingDefs, the macro-gathering functions, buildUserContent), then the calls themselves (generateRule, explainRule), then the validation side (spliceIntoTemp,
 #   validateFile, friendlyValidationSummary, markAuthorship, generateValidatedRule), and finally applyRule, which is the only thing here that writes the real transfer file.
 #
@@ -239,10 +252,26 @@ class RateLimitError(RuntimeError):
         if self.retryAfter:
             msg += ' Try again in about {n} seconds.'.format(n=int(round(self.retryAfter)))
 
-        msg += (' Free tiers have low limits, and some models (e.g. gemini-2.5-pro) are not available on the '
+        msg += (' Free tiers have low limits, and some models (e.g. gemini-3.1-pro-preview) are not available on the '
                 'free tier at all. Wait and retry, choose a different model with the AIRulesModel setting, or '
                 'enable billing on your account.')
         return msg
+
+class UnknownModelError(RuntimeError):
+    '''A provider answered HTTP 404 for the model name we sent: the model doesn't exist, has been retired since the AIRulesModel setting was chosen, or this key has no access to it. Carries
+    the provider display name and the model name so the caller can name both and point the user at the setting to change, instead of showing the SDK's raw "model does not exist" text. Its
+    str() is a clean, user-facing message (the module shows it directly); the dialog builds the localized equivalent from the same two fields.'''
+
+    def __init__(self, providerDisplay: str, model: str):
+
+        self.providerDisplay = providerDisplay
+        self.model = model
+        super().__init__(str(self))
+
+    def __str__(self):
+
+        return ('{provider} has no model named "{model}" (HTTP 404). It may have been retired, or your API key may not have access to it. Choose a current model with the AIRulesModel '
+                'setting in the FLExTrans Settings tool.').format(provider=self.providerDisplay, model=self.model)
 
 def parseRetryAfter(text: str) -> Optional[float]:
     '''Best-effort extraction of a retry delay (seconds) from a 429 error's text, covering both the "retry in 28.3s" phrasing and the "retryDelay": "28s" field.'''
@@ -401,12 +430,13 @@ class RuleResult:
 # ---------------------------------------------------------------------------
 
 class AnthropicProvider:
-    '''Anthropic Claude.'''
+    '''Anthropic Claude. There is no free tier - every model needs a paid key with credit on it. claude-opus-5 is the default (best rule quality); claude-sonnet-5 costs less per token and
+    claude-haiku-4-5 less again, at some cost in rule quality. Model IDs carry no date suffix; adaptive thinking (used in generate below) requires opus-4-6 or newer.'''
 
     name = 'anthropic'
     displayName = 'Anthropic Claude'
-    defaultModel = 'claude-opus-4-8'
-    models = ['claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5-20251001']
+    defaultModel = 'claude-opus-5'
+    models = ['claude-opus-5', 'claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5']
     envVars = ('ANTHROPIC_API_KEY',)
     keyUrl = 'https://console.anthropic.com/settings/keys'
 
@@ -442,6 +472,10 @@ class AnthropicProvider:
 
             raise RateLimitError(self.displayName, retryAfter)
 
+        # Anthropic answers 404 for a model name it doesn't serve - typically one retired since the setting was chosen (or a paid model this key can't reach).
+        except anthropic.NotFoundError:
+            raise UnknownModelError(self.displayName, model)
+
         if response.stop_reason == 'refusal':
             raise RuntimeError('The model declined this request (stop_reason=refusal).')
 
@@ -453,13 +487,13 @@ class AnthropicProvider:
         raise RuntimeError('The model did not return a {name} tool call.'.format(name=tool['name']))
 
 class GeminiProvider:
-    '''Google Gemini (the default provider). Default is gemini-2.5-flash, which is available on the free tier; gemini-2.5-pro requires a billing-enabled (paid) key and returns a 429
-    with "limit: 0" on the free tier. Override with the AIRulesModel setting.'''
+    '''Google Gemini (the default provider). Default is gemini-3.8-flash, which is available on the free tier (with daily limits), as are the flash-lite models and the older 2.5 pair.
+    The Pro models are the exception: gemini-3.1-pro-preview needs a billing-enabled (paid) key and returns a 429 with "limit: 0" on a free key. Override with the AIRulesModel setting.'''
 
     name = 'gemini'
     displayName = 'Google Gemini'
-    defaultModel = 'gemini-2.5-flash'
-    models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro']
+    defaultModel = 'gemini-3.8-flash'
+    models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-pro-preview', 'gemini-2.5-flash', 'gemini-2.5-pro']
     envVars = ('GEMINI_API_KEY', 'GOOGLE_API_KEY')
     keyUrl = 'https://aistudio.google.com/apikey'
 
@@ -484,8 +518,14 @@ class GeminiProvider:
 
         except errors.APIError as err:
 
-            if getattr(err, 'code', None) == 429:
+            code = getattr(err, 'code', None)
+
+            if code == 429:
                 raise RateLimitError(self.displayName, parseRetryAfter(str(err)))
+
+            # 404 means Gemini doesn't serve this model name for this key - a retired model still sitting in the AIRulesModel setting is the usual cause.
+            if code == 404:
+                raise UnknownModelError(self.displayName, model)
 
             raise
 
@@ -504,12 +544,13 @@ class GeminiProvider:
             raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 class OpenAIProvider:
-    '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers.'''
+    '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers. There is no free tier, so a paid key
+    is required. gpt-5.6-sol is the default (best rule quality), with gpt-5.6-terra and gpt-5.6-luna as progressively cheaper alternatives.'''
 
     name = 'openai'
     displayName = 'OpenAI ChatGPT'
-    defaultModel = 'gpt-5.1'
-    models = ['gpt-5.1', 'gpt-5', 'gpt-5-mini']
+    defaultModel = 'gpt-5.6-sol'
+    models = ['gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna']
     envVars = ('OPENAI_API_KEY',)
     keyUrl = 'https://platform.openai.com/api-keys'
 
@@ -537,6 +578,10 @@ class OpenAIProvider:
 
         except openai.RateLimitError as err:
             raise RateLimitError(self.displayName, parseRetryAfter(str(err)))
+
+        # OpenAI answers 404 (model_not_found) for a retired model name or one this key isn't entitled to.
+        except openai.NotFoundError:
+            raise UnknownModelError(self.displayName, model)
 
         message = response.choices[0].message
 

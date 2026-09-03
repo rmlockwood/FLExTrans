@@ -9,8 +9,9 @@
 #   or pass the key / model as arguments (key is visible in shell history this way):
 #     python test_gemini_key.py <API_KEY> [model]
 #
-#   Default model is gemini-2.5-flash (fast/cheap for a key check). Pass
-#   gemini-2.5-pro as the 2nd argument to test the model the module uses by default.
+#   Default model is gemini-3.8-flash, which is also the model AIRules uses by
+#   default. Pass another model (e.g. gemini-3.1-pro-preview, which needs a paid
+#   key) as the 2nd argument to check that model instead.
 
 import os
 import sys
@@ -24,7 +25,7 @@ def main():
     else:
         key = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
 
-    model = sys.argv[2].strip() if len(sys.argv) > 2 else 'gemini-2.5-flash'
+    model = sys.argv[2].strip() if len(sys.argv) > 2 else 'gemini-3.8-flash'
 
     if not key:
         print('No key found. Set GEMINI_API_KEY (or GOOGLE_API_KEY), or pass the key as the first argument.')

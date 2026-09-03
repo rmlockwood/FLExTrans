@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->24 August 2026</date
+>3 September 2026</date
 ><version
->3.16</version
+>3.17</version
 ><contents
 showLevel="4"
 ></contents
@@ -3494,12 +3494,26 @@ type="tAIRuleStudio"
 >The <object
 type="tAIRuleStudio"
 ></object
-> tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side.</p
+> tool sends your plain-language description of a transfer rule to an AI service, which drafts the rule for you. The generated rule is checked for validity and shown in a preview styled like the transfer rules editor; nothing is written to your transfer rules file until you approve it. When you modify an existing rule, the preview shows the rule before and after, side by side. The window is shown in <exampleRef
+letter="xAIRuleStudio"
+num="xAIRuleStudio"
+></exampleRef
+>.</p
+><example
+num="xAIRuleStudio"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/AIRuleStudio.png"
+></img
+></chart
+></example
 ><p
 >Before the first use, open the <object
 type="tSettingsTool"
 ></object
-> and in the AI Assistant section (visible in the Full view) choose the AI Provider and the AI Model. You also need an API key for the chosen provider — see the next section. The first time you run the module it asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the module if you need to enter a different key later.</p
+> and in the AI Assistant section (visible in the Full view) choose the AI Provider and the AI Model. You also need an API key for the chosen provider — see the next section. The first time you run the module it asks for the key and stores it securely in the Windows credential vault; the key is never written to a FLExTrans settings file. Use the Change API key button in the module if you need to enter a different key later. The module window shows which service it is using next to that button, along with a Model box holding the model it will use. You can pick a different model there — or type the name of a new one — and try your request again without closing the window, which is handy when a rule comes back wrong and you want a stronger model to attempt it. A model that the service accepts becomes your AI Model setting for next time, so you do not have to set it again; a name the service does not recognize is reported and never saved. Changing the provider is still done in the Settings tool, since each provider needs its own API key. At the top right of the window is an Open Rule File button, which opens your transfer rules file in the XML editor for the kind of change that is quicker to make yourself than to describe — renaming a rule, deleting one, fixing a typo. If you have a rule waiting for approval when you click it, you are asked whether to write that rule first, and after you save in the editor use Refresh Rules so the module sees your changes.</p
 ><p
 >Before an approved rule is written, a copy of the previous version of your transfer rule file is saved, so nothing you had before is lost. Look for it in the <object
 type="tFoldername"
@@ -3524,7 +3538,7 @@ type="tAIRuleStudio"
 >Google Gemini (the default provider): go to <link
 href="https://aistudio.google.com/apikey"
 >aistudio.google.com/apikey</link
->, sign in with a Google account, and click Create API key. Copy the key. The gemini-2.5-flash model can be used free of charge with daily usage limits; other Gemini models such as gemini-2.5-pro require setting up billing on the account.</p
+>, sign in with a Google account, and click Create API key. Copy the key. The gemini-3.8-flash model (the one FLExTrans uses by default) can be used free of charge with daily usage limits, as can the flash-lite models; the Pro models such as gemini-3.1-pro-preview require setting up billing on the account.</p
 ><p
 >Anthropic Claude: go to <link
 href="https://console.anthropic.com/settings/keys"
