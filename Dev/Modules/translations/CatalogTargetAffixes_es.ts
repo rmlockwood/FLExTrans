@@ -6,7 +6,7 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="99"/>
       <source>Catalog Target Affixes</source>
-      <translation>Catalogar afijos objetivo</translation>
+      <translation>Catalogar afijos de destino</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="102"/>
