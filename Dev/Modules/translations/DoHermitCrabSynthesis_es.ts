@@ -107,7 +107,7 @@ Estas formas se utilizan para crear el texto de destino.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="470"/>
       <source>The number of surface forms does not match the number of Lexical Units.</source>
-      <translation>El número de formas superficiales no coincide con el número de Unidades Léxicas.</translation>
+      <translation>El número de formas superficiales no coincide con el número de unidades léxicas.</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="500"/>
@@ -157,7 +157,7 @@ Estas formas se utilizan para crear el texto de destino.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="805"/>
       <source>An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-      <translation>Ocurrió una excepción al intentar ejecutar (llamando a Process) la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
+      <translation>Ocurrió una excepción al intentar ejecutar (mediante la función Process) la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="825"/>
