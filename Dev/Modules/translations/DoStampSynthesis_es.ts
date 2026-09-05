@@ -37,7 +37,7 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
     <message>
       <location filename="../DoStampSynthesis.py" line="964"/>
       <source>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</source>
-      <translation>Cancelando la exportación del léxico de destino porque el campo personalizado XAMPLE no es una lista. Cuando defina el campo personalizado XAMPLE, debe ser una lista.</translation>
+      <translation>Cancelando la exportación del léxico de destino porque el campo personalizado XAMPLE no es una lista. Al definir el campo personalizado XAMPLE, debe ser una lista.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="974"/>
