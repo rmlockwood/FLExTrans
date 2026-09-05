@@ -26,7 +26,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="849"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
-      <translation>Limpie la variable para asegurarse de que no se retenga accidentalmente un valor anterior</translation>
+      <translation>Borra la variable para asegurarse de que no se retenga accidentalmente un valor anterior</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
