@@ -5,6 +5,15 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.16.29 - 9/3/26 - Ron Lockwood
+#    Added isWellFormed, so a caller can ask whether a candidate rule parses before handing it to something that will parse it (the preview renderer, spliceIntoTemp, applyRule) rather
+#    than each of them catching ParseError for itself.
+#
+#   Version 3.16.28 - 9/3/26 - Ron Lockwood
+#    A rule the model cut off part-way through no longer escapes the validation loop as a raw parser error. spliceIntoTemp is the first thing to parse the candidate, so its ET.ParseError
+#    was reaching the user as "unclosed token: line 1, column 1720" in a bare error box, with no retry; generateValidatedRule now turns it into the same well-formedness text validateFile
+#    produces, feeds it back, and retries. friendlyValidationSummary gained a case for it, since a cut-off answer is not the same complaint as tags that don't match up.
+#
 #   Version 3.16.27 - 9/3/26 - Ron Lockwood
 #    A model name the provider no longer serves now raises UnknownModelError (new, carrying the provider display name and the model) instead of letting the SDK's raw 404 through. All three
 #    providers map their 404 to it: anthropic.NotFoundError, Gemini's APIError with code 404 (its handler now reads the code once for both 429 and 404), and openai.NotFoundError.
@@ -1229,12 +1238,30 @@ def validateFile(tempPath: str, compilerExe: Optional[str] = None) -> tuple:
 
     return (len(errors) == 0, '\n'.join(errors))
 
+def isWellFormed(ruleXml: str) -> bool:
+    '''Whether a candidate rule/macro parses at all. The model can stop part-way through an element, and everything downstream of generation parses what it is handed - the preview
+    renderer, spliceIntoTemp behind Open-in-XXE, applyRule - so callers ask this once before passing a candidate on, instead of each of them catching ParseError separately. An
+    unparseable candidate is still returned by generateValidatedRule (as an invalid RuleResult) so the caller can report it; it just must not be handed to anything that parses.'''
+
+    try:
+        ET.fromstring(ruleXml or '')
+
+    except ET.ParseError:
+        return False
+
+    return True
+
 def friendlyValidationSummary(errors: str) -> str:
     '''Turn the raw validation error text (expat's "mismatched tag: line N, column M", the compiler's diagnostics) into one plain-language sentence an ordinary user can act on. The raw
     text is still shown separately (behind a "Show Details" button in the dialog) for bug reports and power users; this is just the lead-in that says, in non-technical words, what went wrong.
     Returns English here so AIRules stays Qt-free; the dialog wraps the equivalent localized sentences with QCoreApplication.translate and only falls back to this when it has no match.'''
 
     text = errors or ''
+
+    # expat says "unclosed token" when the document simply stops part-way through an element. For us that means the model's answer was cut off, not that it mis-nested anything - a
+    # different thing to tell the user, and it needs a different next step, so it is matched before the general well-formedness case below.
+    if 'unclosed token' in text:
+        return "The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it."
 
     # A well-formedness failure means the AI's XML tags did not match up (an opened element never closed, or closed in the wrong order) - the "mismatched tag" the user was baffled by.
     if 'XML is not well-formed' in text:
@@ -1337,7 +1364,19 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
             lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
             lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr, isMacro, priorRuleXml)
 
-            tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir, isMacro)
+            # A model can stop part-way through an element, leaving XML no parser will take, and spliceIntoTemp is the first thing to try parsing it. That is a bad answer, not a bug, so it
+            # belongs in this loop with every other bad answer: phrase it exactly as validateFile phrases a well-formedness failure, feed it back, and let the model try again. Letting it
+            # escape instead put raw expat text ("unclosed token: line 1, column 1720") in front of the user in a bare error box, with no retry and no plain-language explanation.
+            # markAuthorship already returns such a rule unchanged for this reason; this is the other half of that arrangement.
+            try:
+                tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir, isMacro)
+
+            except ET.ParseError as parseErr:
+
+                lastErrors = 'XML is not well-formed: ' + str(parseErr)
+                priorErrors = lastErrors
+                continue
+
             ok, lastErrors = validateFile(tempPath, compilerExe)
 
             if ok:
