@@ -101,7 +101,7 @@
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="162"/>
       <source>Describe the change (needed to Modify):</source>
-      <translation>Describa el cambio (necesario para Modificar):</translation>
+      <translation>Describe el cambio (necesario para modificar):</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="164"/>
@@ -116,7 +116,7 @@
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="170"/>
       <source>The rule preview will appear here. Select a rule to see it, or Create, Modify, or Explain a rule.</source>
-      <translation>La vista previa de la regla aparecerá aquí. Seleccione una regla para verla, o cree, modifique o explique una regla.</translation>
+      <translation>La vista previa de la regla aparecerá aquí. Selecciona una regla para verla, o crea, modifica o explica una regla.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="160"/>
@@ -126,7 +126,7 @@
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
       <source>Zoom:</source>
-      <translation>Zoom</translation>
+      <translation>Zoom:</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>

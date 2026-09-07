@@ -26,7 +26,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="849"/>
       <source>Clear the variable to be sure we don't accidentally retain a prior value</source>
-      <translation>Limpie la variable para asegurarse de que no se retenga accidentalmente un valor anterior</translation>
+      <translation>Borra la variable para asegurarse de que no se retenga accidentalmente un valor anterior</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="655"/>
       <source>Determine the appropriate noun class</source>
-      <translation>Determine la clase de sustantivo adecuada</translation>
+      <translation>Determina la clase de sustantivo adecuada</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="660"/>
@@ -71,7 +71,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="778"/>
       <source>Check for the appropriate plural noun class.</source>
-      <translation>Verifique la clase de sustantivo en plural adecuada.</translation>
+      <translation>Verifica la clase de sustantivo en plural adecuada.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="823"/>
@@ -111,12 +111,12 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="982"/>
       <source>Set {varid} based on {source.label} = {feature}.</source>
-      <translation>Establezca {varid} en función de {source.label} = {feature}.</translation>
+      <translation>Establece {varid} en función de {source.label} = {feature}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1004"/>
       <source>Set {varid} based on {source.label} = {source.default}.</source>
-      <translation>Establezca {varid} en función de {source.label} = {source.default}.</translation>
+      <translation>Establece {varid} en función de {source.label} = {source.default}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1024"/>
@@ -145,12 +145,12 @@
     </message>
     <message>
       <source>The transfer rule file already contains a rule named &quot;{ruleName}&quot; that was not created by the Rule Assistant. To avoid overwriting a hand-written rule, no rules were written. Please rename or remove that rule, or rename your Rule Assistant rule.</source>
-      <translation>El archivo de reglas de transferencia ya contiene una regla llamada &quot;{ruleName}&quot; que no fue creada por el Asistente de Reglas. Para evitar sobrescribir una regla escrita a mano, no se escribió ninguna regla. Cambia el nombre de esa regla o elimínala, o cambia el nombre de tu regla del Asistente de Reglas.</translation>
+      <translation>El archivo de reglas de transferencia ya contiene una regla llamada &quot;{ruleName}&quot; que no fue creada por el Asistente de reglas. Para evitar sobrescribir una regla escrita a mano, no se escribió ninguna regla. Cambia el nombre de esa regla o elimínala, o cambia el nombre de tu regla del Asistente de reglas.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1115"/>
       <source>Rule Assistant Description: {desc}</source>
-      <translation>Descripción del Asistente de Reglas: {desc}</translation>
+      <translation>Descripción del Asistente de reglas: {desc}</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1183"/>
@@ -215,7 +215,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Por favor, asegúrate de que la co-característica &quot;number&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
+      <translation>Por favor, asegúrate de que la co-característica &quot;número&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>
@@ -225,7 +225,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1585"/>
       <source>No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool</source>
-      <translation>No se encontró el archivo del Asistente de Reglas, por favor ejecuta la herramienta Configurar categorías y Atributos de Reglas</translation>
+      <translation>No se encontró el archivo del Asistente de reglas, por favor ejecuta la herramienta Configurar categorías y Atributos de reglas</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1594"/>
@@ -234,7 +234,7 @@
     </message>
     <message>
       <source>If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.</source>
-      <translation>Si editas esta regla manualmente, el Asistente de Reglas podría sobrescribir tus cambios. Cambia el nombre de la regla para evitarlo.</translation>
+      <translation>Si editas esta regla manualmente, el Asistente de reglas podría sobrescribir tus cambios. Cambia el nombre de la regla para evitarlo.</translation>
     </message>
   </context>
 </TS>

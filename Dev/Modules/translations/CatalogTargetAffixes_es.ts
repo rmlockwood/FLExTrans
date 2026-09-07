@@ -6,7 +6,7 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="99"/>
       <source>Catalog Target Affixes</source>
-      <translation>Catalogar afijos objetivo</translation>
+      <translation>Catalogar afijos de destino</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="102"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="187"/>
       <source>There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.</source>
-      <translation>Hubo un problema al crear el archivo de Lista de Glosas de Prefijos de Destino: {filePath}. Por favor, revise la configuración del archivo de configuración.</translation>
+      <translation>Hubo un problema al crear el archivo de lista de glosas de prefijos de destino: {filePath}. Por favor, revisa la configuración del archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="252"/>

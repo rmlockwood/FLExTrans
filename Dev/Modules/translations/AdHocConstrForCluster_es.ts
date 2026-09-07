@@ -76,23 +76,23 @@
     <message>
       <location filename="../AdHocConstrForCluster.py" line="386"/>
       <source>You need to set the key field and at least the 1st other field!</source>
-      <translation>¡Debe establecer el campo y al menos el primero de los otros campos!</translation>
+      <translation>¡Debes establecer el campo y al menos el primero de los otros campos!</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="407"/>
       <source>It looks like you may not have used the Auto Complete values. &quot;{key}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
-      <translation>Parece que no ha utilizado los valores de autocompletar. &quot;{key}&quot; por sí solo no se puede encontrar. Escriba el morfema/alomorfo en la lengua vernácula y seleccione el valor autocompletado.</translation>
+      <translation>Parece que no has utilizado los valores de autocompletar. &quot;{key}&quot; por sí solo no se puede encontrar. Escribe el morfema/alomorfo en la lengua vernácula y selecciona el valor autocompletado.</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="431"/>
       <source>It looks like you may not have used the Auto Complete values. &quot;{otherStr}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
-      <translation>Parece que no ha utilizado los valores de autocompletar. &quot;{otherStr}&quot; por sí solo no se puede encontrar. Escriba el morfema/alomorfo en la lengua vernácula y seleccione el valor autocompletado.</translation>
+      <translation>Parece que no has utilizado los valores de autocompletar. &quot;{otherStr}&quot; por sí solo no se puede encontrar. Escribe el morfema/alomorfo en la lengua vernácula y selecciona el valor autocompletado.</translation>
     </message>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="479"/>
       <source>The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
 </source>
-      <translation>No se pudo encontrar la {selectedType} {key} en el proyecto {proj}. Si el morfema era una raíz, podría ser que la url del enlace a esa raíz no fuera válida.
+      <translation>No se pudo encontrar {selectedType} {key} en el proyecto {proj}. Si el morfema era un tema, podría ser que la url del enlace a ese tema no fuera válido.
 </translation>
     </message>
     <message>
@@ -106,7 +106,7 @@
       <location filename="../AdHocConstrForCluster.py" line="499"/>
       <source>The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
 </source>
-      <translation>No se pudo encontrar la {selectedType} {otherStr} en el proyecto {proj}. Si el morfema era una raíz, podría ser la url del enlace a esa raíz no fuera válida.
+      <translation>No se pudo encontrar {selectedType} {otherStr} en el proyecto {proj}. Si el morfema era un tema, podría ser la url del enlace a ese tema no fuera válido.
 </translation>
     </message>
     <message>
@@ -139,7 +139,7 @@
     <message>
       <location filename="../AdHocConstrForCluster.py" line="906"/>
       <source>No cluster projects found. Define them in Settings.</source>
-      <translation>No se han encontrado proyectos de clúster. Definirlos en Configuración.</translation>
+      <translation>No se han encontrado proyectos de clúster. Defínelos en Configuración.</translation>
     </message>
     <message>
       <source>This module only works in Two Project mode.</source>

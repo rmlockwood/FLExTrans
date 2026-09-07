@@ -26,13 +26,12 @@ is being used. Actually the target project is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
 produce surface forms (&apos;target_words-surface.txt&apos;). 
 These forms are then used to create the target text.</source>
-      <translation>Este módulo ejecuta HermitCrab para crear el texto sintetizado. Los resultados se guardan en el archivo designado en la configuración como Archivo de Síntesis de Salida de Destino.
-Este archivo predeterminado será similar a 'target_text-syn.txt'.
+      <translation>Este módulo ejecuta HermitCrab para crear el texto sintetizado. Los resultados se guardan en el archivo designado en la configuración como Archivo de síntesis de Salida de destino.
+Este archivo predeterminado será similar a &apos;target_text-syn.txt&apos;.
 Antes de crear el texto sintetizado, este módulo extrae el léxico del idioma de destino en un archivo de configuración de HermitCrab.
-Este archivo se llama 'HermitCrab.config' y se encuentra en la carpeta 'Build'.
-
+Este archivo se llama &apos;HermitCrab.config&apos;  y se encuentra en la carpeta &apos;'Build'&apos;.
 NOTA: Los mensajes indicarán que se está utilizando el proyecto de origen. En realidad, se está utilizando el proyecto de destino.
-Información avanzada: Este módulo ejecuta HermitCrab con una lista de análisis de destino ('target_words-parses.txt') para producir formas de superficie ('target_words-surface.txt').
+Información avanzada: Este módulo ejecuta HermitCrab con una lista de análisis de destino (&apos;target_words-parses.txt&apos;) para producir formas de superficie (&apos;target_words-surface.txt&apos;).
 Estas formas se utilizan para crear el texto de destino.</translation>
     </message>
     <message>
@@ -83,7 +82,7 @@ Estas formas se utilizan para crear el texto de destino.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="287"/>
       <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
-      <translation>El error contiene una 'KeyNotFoundException' y esto a menudo indica que se debe ejecutar la utilidad FLEx Find and Fix en el proyecto {projectName}.</translation>
+      <translation>El error contiene una &apos;KeyNotFoundException&apos; y esto a menudo indica que se debe ejecutar la utilidad Find and Fix de FLEx en el proyecto {projectName}.</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="288"/>
@@ -103,12 +102,12 @@ Estas formas se utilizan para crear el texto de destino.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="455"/>
       <source>The file: {transferResultsFile} was not found. Did you run the {runApertium} module?</source>
-      <translation>El archivo: {transferResultsFile} no fue encontrado. ¿Ejecutó el módulo {runApertium}?</translation>
+      <translation>El archivo: {transferResultsFile} no fue encontrado. ¿Has ejecutado el módulo {runApertium}?</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="470"/>
       <source>The number of surface forms does not match the number of Lexical Units.</source>
-      <translation>El número de formas superficiales no coincide con el número de Unidades Léxicas.</translation>
+      <translation>El número de formas superficiales no coincide con el número de unidades léxicas.</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="500"/>
@@ -123,7 +122,7 @@ Estas formas se utilizan para crear el texto de destino.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="541"/>
       <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
-      <translation>Ocurrió un error al abrir el archivo maestro de HermitCrab. ¿Tiene activada la opción &quot;Usar síntesis HermitCrab&quot;? ¿Ejecutó el módulo Convertir texto a formato de sintetizador? Archivo: {parsesFile}</translation>
+      <translation>Ocurrió un error al abrir el archivo maestro de HermitCrab. ¿Tienes activada la opción &quot;Usar síntesis HermitCrab&quot;? ¿Has ejecutado el módulo Convertir texto a formato de sintetizador? Archivo: {parsesFile}</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="550"/>
@@ -158,7 +157,7 @@ Estas formas se utilizan para crear el texto de destino.</translation>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="805"/>
       <source>An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-      <translation>Ocurrió una excepción al intentar ejecutar (llamando a Process) la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
+      <translation>Ocurrió una excepción al intentar ejecutar (mediante la función Process) la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
     </message>
     <message>
       <location filename="../DoHermitCrabSynthesis.py" line="825"/>
