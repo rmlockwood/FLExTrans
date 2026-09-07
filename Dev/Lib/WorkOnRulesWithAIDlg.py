@@ -5,6 +5,20 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.10 - 9/3/26 - Ron Lockwood
+#    A rule the model cut off part-way through no longer takes the window down. onGenerateFinished handed the candidate straight to the preview renderer, which parses it, so the
+#    ParseError escaped the finished-signal handler; it now asks AIRules.isWellFormed first, leaves the preview blank when the answer is incomplete, disables Open-in-XXE (which splices
+#    the same XML) and says so in the status line instead of pointing at a button that cannot work.
+#
+#   Version 3.17.9 - 9/3/26 - Ron Lockwood
+#    showValidationFailed now has a case for an answer the model cut off part-way through (expat's "unclosed token"), which used to be reported as tags that didn't match up. It gets its own
+#    sentence and its own advice - try again, or ask for a smaller change - since rephrasing is not the fix when the request was understood and the answer simply ran out.
+#
+#   Version 3.17.8 - 9/3/26 - Ron Lockwood
+#    Approving no longer throws the window off the rule it just wrote. The re-read of the transfer file restores each picker's previous selection, and that restore fired the selection
+#    handlers: a macro still selected in the Modify/Explain list from earlier in the session (nothing clears it when the user leaves for the Create tab) took over the preview and made the
+#    status line say "Macro written" for a newly created rule. approveDraft now sets switchingTabs across its reload and describes the write from a value captured before it.
+#
 #   Version 3.17.7 - 9/3/26 - Ron Lockwood
 #    Added an Open Rule File button, which opens the transfer rules file in the XML editor for a hand edit. It offers to write a pending draft first (an outside edit would leave that draft
 #    unwritable) and asks for Refresh Rules afterwards, since nothing here can tell when the editor is done. It sits with Open a Temporary Version in XXE in a new right-aligned row across the
@@ -159,9 +173,14 @@
 #   Rules/Macros sub-tabs, clicking another rule or macro, explaining over a modified draft, and closing the window. It returns False only when the user asked for the write and the write
 #   failed, which tells the caller to stop rather than throw the draft away.
 #
-#   The switchingTabs flag guards a trap here. A QListWidget auto-selects its first row when a tab switch moves keyboard focus into it, synchronously, as part of the tab change - and that
-#   spurious selection would null the pending draft before onTabChanged could offer to save it. So tabBarClicked (which fires before the switch) sets the flag, the selection handlers ignore
-#   selections while it is set, and a QTimer.singleShot(0) undoes the auto-selection on the next event-loop turn. It looks like defensive clutter; it isn't.
+#   The switchingTabs flag guards two traps. The first is that a QListWidget auto-selects its first row when a tab switch moves keyboard focus into it, synchronously, as part of the tab
+#   change - and that spurious selection would null the pending draft before onTabChanged could offer to save it. So tabBarClicked (which fires before the switch) sets the flag, the
+#   selection handlers ignore selections while it is set, and a QTimer.singleShot(0) undoes the auto-selection on the next event-loop turn. It looks like defensive clutter; it isn't.
+#
+#   The second trap is the same signal from a different direction. approveDraft re-reads the transfer file so the rule just written shows up in the picker, and reloadRules restores each
+#   picker's previous selection - which fires the selection handlers again. Nothing clears those lists when the user leaves for the Create tab, so a macro clicked earlier in the session is
+#   still selected there, and that restore used to repoint the window at it: the preview jumped off the newly written rule and the status line called it a macro. So approveDraft sets the
+#   flag across its reload too, and reads what it wrote into a local before the reload rather than trusting currentIsMacro afterwards.
 #
 #   THREADING
 #
@@ -713,16 +732,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         if answer != QMessageBox.StandardButton.Yes:
             return True
 
-        # approveDraft reloads the lists, which re-fires the selection signals; switchingTabs makes onRuleSelected/onMacroSelected ignore those synthetic re-selections (restored to its
-        # prior value afterwards, since a tab-switch caller may still be mid-switch).
-        prior = self.switchingTabs
-        self.switchingTabs = True
-
-        try:
-            return self.approveDraft()
-
-        finally:
-            self.switchingTabs = prior
+        # approveDraft guards its own re-read of the lists against the synthetic re-selections that follow it, so there is nothing to suppress here.
+        return self.approveDraft()
 
     def onTabBarClicked(self, index):
         '''The user clicked a tab. This fires before the tab actually changes and before the Modify/Explain list's focus-driven auto-select, so it's our chance to mark that a switch is
@@ -1247,17 +1258,25 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ruleResult = result
         self.draftWritten = False
 
+        # The rule XML came from the model and is not guaranteed to parse - a reply cut off part-way through leaves an element unclosed. TransferPreview parses whatever it is handed, and
+        # so does the spliceIntoTemp behind Open-in-XXE, so both are held back here. Letting the ParseError out of this signal handler took the whole window down.
+        candidateParses = AIRules.isWellFormed(result.ruleXml)
+
         # Render the preview: the original rule on the left and the modified rule on the right for a modify; a single rule for a create. The label language follows the language of the
         # user's request, as reported by the model.
-        comparisonMissing = self.currentTask == 'modify' and not self.currentRuleXml
+        comparisonMissing = candidateParses and self.currentTask == 'modify' and not self.currentRuleXml
 
-        if self.currentTask == 'modify' and self.currentRuleXml:
-            html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language)
+        if not candidateParses:
+            self.blankPreview()
+
+        elif self.currentTask == 'modify' and self.currentRuleXml:
+            self.ensurePreview().setHtml(TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language))
+
         else:
-            html = TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language)
+            self.ensurePreview().setHtml(TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language))
 
-        self.ensurePreview().setHtml(html)
-        self.ui.xxeButton.setEnabled(True)
+        # Open-in-XXE splices this same XML into a temp copy of the transfer file, so it is only offered for a candidate that parses.
+        self.ui.xxeButton.setEnabled(candidateParses)
 
         # A modify with no original rule to compare against (shouldn't normally happen - the list selection supplies it) would otherwise silently drop the before/after and the change
         # highlighting, showing only the new rule. Say why, so the missing comparison isn't mistaken for "nothing changed".
@@ -1275,7 +1294,14 @@ class WorkOnRulesWithAIDlg(QDialog):
         else:
 
             self.ui.approveButton.setEnabled(False)
-            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.').format(n=result.attempts))
+
+            # Only offer XXE when there is something openable. A candidate that doesn't parse can't be previewed or spliced, so saying "open it in XXE" would send the user at a button
+            # that is now disabled.
+            if candidateParses:
+                self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.').format(n=result.attempts))
+            else:
+                self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. There is nothing to show - the AI never returned a complete rule.').format(n=result.attempts))
+
             self.showValidationFailed(result.errors)
 
     def showValidationFailed(self, errors):
@@ -1285,7 +1311,13 @@ class WorkOnRulesWithAIDlg(QDialog):
         # Lead with a non-technical sentence describing the failure, chosen the same way AIRules.friendlyValidationSummary classifies it, but translated to the interface language here.
         text = errors or ''
 
-        if 'XML is not well-formed' in text:
+        # A cut-off answer is matched first: it is a well-formedness failure too, but saying the tags "didn't match up" would be wrong about it, and what to do next is different.
+        cutOff = 'unclosed token' in text
+
+        if cutOff:
+            summary = _translate('WorkOnRulesWithAI', "The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it.")
+
+        elif 'XML is not well-formed' in text:
             summary = _translate('WorkOnRulesWithAI', "The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.")
 
         elif 'apertium-preprocess-transfer failed' in text:
@@ -1294,8 +1326,12 @@ class WorkOnRulesWithAIDlg(QDialog):
         else:
             summary = _translate('WorkOnRulesWithAI', "The AI couldn't build a valid rule from this request.")
 
-        # Actionable next step. Odd or contradictory wording is the usual trigger, so steer the user toward a single, plain sentence and trying again.
-        guidance = _translate('WorkOnRulesWithAI', 'Try rephrasing your description as a single, clear sentence and generate again.')
+        # Actionable next step. Rephrasing is the right advice when the model misunderstood, but not when it simply ran out part-way: there the request was understood and the answer was
+        # too long to finish, so the useful advice is to try again or ask for less at once.
+        if cutOff:
+            guidance = _translate('WorkOnRulesWithAI', 'Try again. If it keeps happening on a large rule or macro, ask for a smaller change.')
+        else:
+            guidance = _translate('WorkOnRulesWithAI', 'Try rephrasing your description as a single, clear sentence and generate again.')
 
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Icon.Warning)
@@ -1415,7 +1451,12 @@ class WorkOnRulesWithAIDlg(QDialog):
     def approveDraft(self) -> bool:
         '''Write the current create/modify draft (a rule or a macro) to the transfer file after backing it up. Returns True on success. Shared by the Approve button and the "approve
         before continuing" offers. The window stays open; Approve disables until the next generation so the same draft can't be written twice, and the lists are re-read so the
-        new/changed rule or macro shows.'''
+        new/changed rule or macro shows.
+
+        The re-read has to be kept from hijacking the window. reloadRules restores each picker's previous selection, and restoring it fires the selection handlers - which would repoint
+        currentIsMacro/currentTargetComment at whatever was still selected in the Modify/Explain lists and re-render the preview with it. Nothing clears those lists when the user leaves for
+        the Create tab, so a macro clicked earlier in the session was still selected: approving a newly created rule jumped the preview to that macro and reported "Macro written" for a
+        rule. Hence the two guards below - the write is described from what was captured before the reload, and switchingTabs suppresses the synthetic re-selections.'''
 
         if not (self.ruleResult and self.ruleResult.valid):
             return False
@@ -1433,13 +1474,26 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         self.draftWritten = True
         self.ui.approveButton.setEnabled(False)
-        self.reloadRules()
+
+        # What was written has to be remembered before the reload, because the reload can change currentIsMacro out from under the status message below.
+        wroteMacro = self.currentIsMacro
+
+        # Re-read the file so the new/changed rule or macro appears in its list, but stop the selection restore that does from re-previewing an unrelated rule over the one just written.
+        # switchingTabs is the flag onRuleSelected/onMacroSelected already test; save and restore it, since a caller may be part-way through a tab switch and still relying on its value.
+        prior = self.switchingTabs
+        self.switchingTabs = True
+
+        try:
+            self.reloadRules()
+
+        finally:
+            self.switchingTabs = prior
 
         # This rule/macro is done; if example data was given for it, the next create Generate will ask whether to keep that data for the next one.
         if self.sourceDataText or self.targetDataText:
             self.askAboutDataOnNextGenerate = True
 
-        if self.currentIsMacro:
+        if wroteMacro:
             self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.').format(backup=os.path.basename(backupPath)))
         else:
             self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))

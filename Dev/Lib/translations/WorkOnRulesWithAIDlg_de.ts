@@ -70,6 +70,21 @@ Einen Schlüssel erhalten Sie unter:
       <translation>Die Regel der KI war nicht korrekt aufgebaut – ihre XML-Tags passten nicht zusammen –, sodass FLExTrans sie nicht verwenden konnte.</translation>
     </message>
     <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1303"/>
+      <source>Could not build a valid rule after {n} attempts. There is nothing to show - the AI never returned a complete rule.</source>
+      <translation>Nach {n} Versuchen konnte keine gültige Regel erstellt werden. Es gibt nichts anzuzeigen – die KI hat nie eine vollständige Regel zurückgegeben.</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1298"/>
+      <source>The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it.</source>
+      <translation>Die Antwort der KI brach ab, bevor die Regel fertig war, sodass FLExTrans sie nicht verwenden konnte.</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1312"/>
+      <source>Try again. If it keeps happening on a large rule or macro, ask for a smaller change.</source>
+      <translation>Versuchen Sie es erneut. Wenn das bei einer großen Regel oder einem großen Makro wiederholt auftritt, bitten Sie um eine kleinere Änderung.</translation>
+    </message>
+    <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1138"/>
       <source>The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.</source>
       <translation>Die Regel der KI entsprach nicht dem von FLExTrans geforderten Transferregel-Format und konnte daher nicht verwendet werden.</translation>

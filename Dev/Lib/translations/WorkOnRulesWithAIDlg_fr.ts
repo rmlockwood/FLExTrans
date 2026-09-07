@@ -70,6 +70,21 @@ Obtenez une clé sur :
       <translation>La règle de l'IA n'était pas correctement construite — ses balises XML ne correspondaient pas — et FLExTrans n'a donc pas pu l'utiliser.</translation>
     </message>
     <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1303"/>
+      <source>Could not build a valid rule after {n} attempts. There is nothing to show - the AI never returned a complete rule.</source>
+      <translation>Impossible de créer une règle valide après {n} tentatives. Il n'y a rien à afficher : l'IA n'a jamais renvoyé de règle complète.</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1298"/>
+      <source>The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it.</source>
+      <translation>La réponse de l'IA a été interrompue avant que la règle ne soit terminée, si bien que FLExTrans n'a pas pu l'utiliser.</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1312"/>
+      <source>Try again. If it keeps happening on a large rule or macro, ask for a smaller change.</source>
+      <translation>Réessayez. Si cela se reproduit sur une règle ou une macro volumineuse, demandez une modification plus petite.</translation>
+    </message>
+    <message>
       <location filename="../WorkOnRulesWithAIDlg.py" line="1138"/>
       <source>The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.</source>
       <translation>La règle de l'IA ne correspondait pas au format de règle de transfert requis par FLExTrans, elle n'a donc pas pu être utilisée.</translation>
