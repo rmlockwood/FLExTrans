@@ -81,5 +81,10 @@ Il s'appelle généralement target_text-aper.txt et se trouve habituellement dan
         <source>Apertium transfer complete.</source>
         <translation>Transfert Apertium terminé.</translation>
     </message>
+    <message>
+        <location filename="../RunApertium.py" line="610"/>
+        <source>(no contents could be read from {file})</source>
+        <translation type="unfinished">(no contents could be read from {file})</translation>
+    </message>
 </context>
 </TS>
