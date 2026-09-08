@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17.1 - 9/8/26 - Ron Lockwood
+#    Copy the XAMPLE synthesis tests to the STAMP changes file again - the element holding them has no children, so truth-testing it always failed.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -207,7 +210,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -871,7 +874,9 @@ def write_synt_file(syntFileName):
     root = addOnTree.getroot()
     tests = root.find('SynthesisTests')
 
-    if tests and tests.text:
+    # SynthesisTests holds its tests as text with no child elements, so truth-testing it would always come out False - an element with no children is falsy - and the tests would never be
+    # written. Test for None instead.
+    if tests is not None and tests.text:
 
         with open(syntFileName, 'w', encoding="utf-8") as f:
 

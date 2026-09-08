@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.17.3 - 9/8/26 - Ron Lockwood
+#    Test def-attr for None rather than for truth, so that one left with no attr-items is not read as missing and duplicated.
+#
 #   Version 3.17.2 - 9/2/26 - Ron Lockwood
 #    Added the code description block at the top with an overview, what it writes and code structure.
 #
@@ -142,7 +145,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
@@ -318,13 +321,14 @@ def fillOutDefAttr(sectionDefAttrs, POSmap, masterAttribList):
         thingType = masterAttribList[attrib].thingType 
         def_attr = sectionDefAttrs.find(f"./def-attr[@n='a_{attrib}_{thingType}']")
 
-        # Skip the attribute if it already exists and we are not supposed to override it
-        if def_attr and not masterAttribList[attrib].override:
+        # Skip the attribute if it already exists and we are not supposed to override it. Test for None rather than truth here and below - an element with no children is falsy, so a def-attr
+        # left with no attr-items under it would read as missing and the SubElement call below would append a second def-attr with the same n, which is a duplicate ID.
+        if def_attr is not None and not masterAttribList[attrib].override:
 
             continue
         else:
             # If the attribute doesn't exist, we need to create it.
-            if not def_attr:
+            if def_attr is None:
 
                 def_attr = ET.SubElement(sectionDefAttrs, 'def-attr', n=f'a_{attrib}_{thingType}')
             else:

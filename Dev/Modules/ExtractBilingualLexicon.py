@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17.2 - 9/8/26 - Ron Lockwood
+#    Replaced the old description at the top with a code description block: overview, the lemma naming scheme, what each sense produces, the symbol definitions, the replacement file, whitespace, One project mode, caching and code structure.
+#
+#   Version 3.17.1 - 9/8/26 - Ron Lockwood
+#    Test the replacement dictionary root element for None rather than for truth.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -79,28 +85,92 @@
 #
 #   earlier version history removed on 3/1/25
 #
-#   Create a bilingual dictionary in Apertium format. The bilingual dictionary is one
-#   of two elements needed for the Apertium transfer system for transferring a text.
-#   the other is a rule file that transforms the stream of input words.
+#   OVERVIEW (AI generated, then edited)
 #
-#   An Apertium dictionary basically
-#   links two lemmas (as the call them) without any other information, except perhaps
-#   some tags for part of speech. For this implementation, I have chosen to name the
-#   lemma as follows: headword + sense #. The headword is made up of citation form if
-#   available or if not, lexeme form + a homograph #. If the homograph is 0 (no duplicate
-#   form), the homograph # 1 is used.
+#   This module builds the bilingual lexicon, one of the two files the Apertium transfer engine needs (the other being the transfer rules file). The lexicon is what turns a source word into a
+#   target word: for every sense in the source project it writes one entry pairing the source lemma with the target lemma the user linked it to. Everything else Apertium does - reordering words,
+#   changing features, inserting or deleting words - is the rules file's job. The output goes to the file named by the Bilingual Dictionary Output File setting, normally bilingual.dix in the
+#   Output folder, in Apertium's .dix XML format.
 #
-#   Each root/stem entry in the source project is processed and a custom sense-level link
-#   field is examined to see if it has a URL to the target entry. If no data is in the
-#   link field, an identity entry is created in the Apertium dictionary which means the
-#   source lemma will be duplicated as the target lemma in the Apertium transfer system.
-#   When there is a URL in the link field, the sense number custom field is examined. If
-#   the sense number field is empty, sense # 1 is assumed. The headword is retrieved from
-#   the target project and combined with the aforementioned sense # to form the target
-#   lemma.
+#   The links come from a custom sense-level field in the source project holding a URL to a target sense, named by the Source Custom Field for Sense Link setting; the Sense Linker module is what
+#   fills those in. This module only reads them and never writes to either FLEx project. A sense with no link still gets an entry - an identity entry that passes the source lemma through
+#   unchanged - so that no word silently disappears from the translation.
 #
-#   Other details. In addition to the lemma, the POS is output as a tag for each entry as
-#   well as any features that are present for the entry.
+#   THE LEMMA NAMING SCHEME
+#
+#   An Apertium lexicon pairs two lemmas plus a few tags and nothing else, so a lemma has to carry enough on its own to identify one FLEx sense unambiguously. The scheme is headword + '.' + sense
+#   number, where the headword is the citation form if there is one and the lexeme form otherwise, followed by a homograph number. FLEx uses homograph 0 when a form is not duplicated, so
+#   Utils.add_one() turns that into 1 and every lemma ends up with one, giving forms like house1.2. Every other FLExTrans module that emits or reads lemmas uses this same scheme, so it cannot be
+#   changed here alone.
+#
+#   WHAT EACH SENSE PRODUCES
+#
+#   Only entries whose lexeme form is a stem with a morph type listed in the Source Morpheme Types Counted As Roots setting are processed; affixes and clitics are skipped deliberately and without
+#   comment, since that is documented behavior. For each sense of such an entry one of the following is written:
+#    - The link field holds Utils.NONE_HEADWORD, meaning the user deliberately mapped the sense to nothing: a <p> with a filled <l> and an empty <r>, which deletes the word from the target text.
+#    - The link field holds a URL: the target sense is looked up in the target project and a <p> pairs the source lemma and tags with the target lemma and tags.
+#    - The link field is empty and this is One project mode: the sense links to itself, so the target lemma is that same sense read in the target writing system.
+#    - The source category appears in the Category Abbreviation Pairs setting: a <p> pairing the lemma with itself but with the category substituted, for when the two projects call the same
+#      category by different names.
+#    - Otherwise an <i> (identity) element, the one lemma standing for both sides.
+#
+#   The last two are reached through the targetFound flag rather than from the link field alone, and that is what makes the module forgiving: if anything above went wrong - no analysis object, an
+#   unknown part of speech, a target sense whose part of speech is undefined - a warning is reported and the sense still falls through to an identity entry instead of vanishing from the lexicon.
+#
+#   Two headwords that differ only in case collapse to the same lemma once Apertium lowercases them. checkForDuplicateHeadword() catches that, keyed on the lowercased headword plus the category
+#   and compared by entry Hvo so that two senses of one entry are not mistaken for a clash, and the second one is skipped with a warning.
+#
+#   THE SYMBOL DEFINITIONS
+#
+#   Every tag used anywhere in the file has to be declared in the <sdefs> section, so posMap accumulates them as the file is built: three built-in ones (sent, UNK and ERR), then all categories and
+#   inflection classes from both projects through Utils.get_categories(), then every closed-feature value from both projects through addFeatureStringsToMap(), then whatever the replacement file
+#   turns out to use. The <sdefs> element is created empty near the top of the tree but only filled in at the very end, after the replacement file has been read - that ordering is what lets a
+#   symbol used only by a hand-written replacement entry still get declared.
+#
+#   A tag of ERR means an inflection feature could not be resolved, usually because it is not properly defined in FLEx. It is written into the lexicon rather than suppressed so that the user can
+#   see where it landed, and getInflectionInfoSymbols() reports it as an error as well.
+#
+#   The last entry in the main section is not a word at all: it is an Apertium <re> (regular expression) matching any run of the characters in the Sentence Punctuation setting, mapped to the same
+#   run tagged <sent>, so that sentence punctuation passes through transfer. The characters + ? | and * have to be escaped when they appear in that setting or the expression would mean something
+#   else entirely.
+#
+#   THE REPLACEMENT FILE
+#
+#   A second .dix file, named by the Bilingual Dictionary Replacement File setting, to override or add entries that the generated ones get wrong; the Replacement Editor module is
+#   what maintains it. Its <section> elements are appended to the output whole, so they land after the generated section and win. Older replacement files wrapped word text in <leftdata> and
+#   <rightdata> elements, and convertOldEntries() rewrites those into the plain form so that an old file keeps working.
+#
+#   WHITESPACE IS DATA
+#
+#   In a .dix file the text inside <l>, <r> and <i> is the word itself, so whitespace added between tags would become part of the lemma. That has two consequences worth knowing before editing this
+#   code. A lemma containing a space cannot simply be written as text: it goes out as text plus a <b/> element whose tail carries the next word, which is what insertWord() does. And the tree
+#   cannot be pretty-printed - ET.indent() would corrupt every lemma in the file - so instead each entry element gets a hand-set tail of a newline and four spaces to keep the file readable, and
+#   the file is written with ET.tostring() after a hand-written XML declaration and DOCTYPE rather than through ElementTree.write(). The DOCTYPE names dix.dtd so the result opens in the XMLmind
+#   dictionary add-on.
+#
+#   ONE PROJECT MODE
+#
+#   When the Project Mode setting is One project there is no second FLEx project: the target is the same project read in a different writing system. TargetDB is then the very same object as DB, and
+#   a target writing-system handle is resolved from the Target Writing System setting and passed down to the lemma lookups. Every place that would close the target project therefore tests
+#   TargetDB is not DB first - closing it in One project mode would close the source project out from under the caller, which still needs it. There are three such places: two error exits and the
+#   end of the run.
+#
+#   CACHING
+#
+#   When the Cache data for faster processing? setting is on and the caller asks for the cache, the whole rebuild is skipped if nothing it depends on has changed since bilingual.dix was written.
+#   Both halves of that matter: bilingFileOutOfDate() compares the two FLEx projects' last-modified dates against the file, and replFileOutOfDate() compares the replacement file against it, since
+#   editing replacements alone has to be enough to force a rebuild.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary FlexTools displays, then the small helpers - getFileTime(), getDBTime(), bilingFileOutOfDate() and replFileOutOfDate() for the cache check,
+#   convertOldEntries() and insertWord() for building and repairing entry XML, and checkForDuplicateHeadword(), getInflectionInfoSymbols() and addFeatureStringsToMap() - then
+#   extract_bilingual_lex(), which is the whole job, and finally MainFunction() and the FlexToolsModule declaration that FlexTools looks for at the very bottom.
+#
+#   extract_bilingual_lex() sets the order of the work: read and check the settings, resolve the target project (or the target writing system in One project mode), take the cache shortcut if it
+#   can, build the output tree, loop over every entry and sense writing the entries described above, add the punctuation entry, merge the replacement file, write out the <sdefs> it accumulated
+#   along the way, write the file, and close the target project if it opened one. It collects messages into a list of tuples as it goes rather than reporting them itself, and
+#   Utils.processErrorList() turns that list into what the user sees.
 #
 
 import re
@@ -151,7 +221,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -589,7 +659,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         except:
             errorList.append((_translate("ExtractBilingualLexicon", "There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.").format(replFile=Utils.shortenPathForDisplay(replFile)), 2))
 
-        if replTree:
+        if replTree is not None:
             # get rid of <leftdata> and <rightdata> (if present)
             convertOldEntries(replTree)
             # add any missing <sdef>s

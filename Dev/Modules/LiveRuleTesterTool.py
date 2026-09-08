@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.8 - 9/8/26 - Ron Lockwood
+#    Test the section-def-cats element for None rather than for truth.
+#
 #   Version 3.17.7 - 9/7/26 - Ron Lockwood
 #    Fixes #1544. Read apertium_error.txt from the LiveRuleTester folder where make writes it instead of from the Build folder, so that a transfer error shows its contents, say which file was
 #    looked in when there is nothing in it to show, and indent the rules file written for the tester so that the line numbers apertium reports in that error point at a rule.
@@ -495,7 +498,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.7",
+        FTM_Version    : "3.17.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -3290,7 +3293,7 @@ class Main(QMainWindow):
                 # Create a dummy category to go with the rule
                 sectionDefCatsElement = myRoot.find('section-def-cats')
 
-                if sectionDefCatsElement:
+                if sectionDefCatsElement is not None:
 
                     defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
                     defCatElement.attrib['n'] = 'c_dummy'
