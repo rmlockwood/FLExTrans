@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17.5 - 9/8/26 - Ron Lockwood
+#    Test XML elements for None rather than for truth, so that an element with no children under it is not read as missing.
+#
 #   Version 3.17.4 - 7/11/26 - Ron Lockwood
 #    Lint fixes.
 #
@@ -374,7 +377,7 @@ def numRules(tree):
     root = tree.getroot()
     searchReplaceRulesElement = root.find(SEARCH_REPLACE_RULES_ELEM)
 
-    if searchReplaceRulesElement:
+    if searchReplaceRulesElement is not None:
 
         return sum(1 for i, ruleEl in enumerate(searchReplaceRulesElement) if getRuleFromElement(ruleEl).isInactive == False)
     else:
@@ -575,7 +578,7 @@ def runWildebeest(root, inputStr):
 
     WBelem = root.find(WB_SETTINGS_ELEM)
 
-    if WBelem:
+    if WBelem is not None:
 
         # Get base string
         baseStr = WBelem.get(WB_BASE_ATTRIB)
@@ -1630,7 +1633,7 @@ class TextInOutRulesWindow(QMainWindow):
         # Find the Wildebeest section
         self.WBelem = testRoot.find(WB_SETTINGS_ELEM)
 
-        if self.WBelem:
+        if self.WBelem is not None:
 
             # Set the base radio buttons
             if self.WBelem.get(WB_BASE_ATTRIB) == WB_BASE_DEFAULT:
@@ -1780,8 +1783,9 @@ class TextInOutRulesWindow(QMainWindow):
         # Find the Wildebeest section
         self.WBelem = xmlRoot.find(WB_SETTINGS_ELEM)
 
-        # Delete an existing wildebeest subelement if needed
-        if self.WBelem:
+        # Delete an existing wildebeest subelement if needed. Test for None rather than truth - an element with no children is falsy, and a WildebeestSettings element that had no add or skip
+        # steps under it would then not get removed here, leaving the SubElement call below to append a second one that find() would never see.
+        if self.WBelem is not None:
 
             xmlRoot.remove(self.WBelem)
 
