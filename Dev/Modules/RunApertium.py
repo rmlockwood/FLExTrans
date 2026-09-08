@@ -5,6 +5,12 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.17.5 - 9/8/26 - Ron Lockwood
+#    Comment updates for making attr-item's tags attribute required in the Apertium DTDs.
+#
+#   Version 3.17.4 - 9/8/26 - Ron Lockwood
+#    Handle an attr-item with no tags attribute in the rule attribute checks.
+#
 #   Version 3.17.3 - 9/7/26 - Ron Lockwood
 #    Report a failed Apertium run as one error instead of one per line of apertium_error.txt, drop the blank lines out of it, don't lose the whole message when it isn't valid utf-8,
 #    and say which file was looked in when there is nothing in it to show.
@@ -113,7 +119,9 @@
 #
 #   checkRuleAttributes() reads the user's rules file and warns about two things that won't stop the tools but will make rules behave in ways the user doesn't expect: an attribute whose tag is the
 #   same as one of the grammatical categories in the special a_gram_cat attribute, and an attribute with a period in it where an underscore was meant. These come back as a list of warnings that get
-#   reported, and then transfer carries on regardless.
+#   reported, and then transfer carries on regardless. Both checks skip an attr-item whose tags attribute is absent or empty. The DTD now makes tags mandatory, but nothing validates the rules
+#   file against the DTD at run time, rules files written before that change can still leave tags out, and tags="" is the legal way of saying the attribute may match the empty tag sequence -
+#   so in either case there is no value there to compare or scan.
 #
 #   HOW THE MAKEFILE IS RUN
 #
@@ -179,7 +187,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -369,7 +377,7 @@ def checkRuleAttributesXML(myRoot):
 
     def_attrs_element = myRoot.find('section-def-attrs')
 
-    if def_attrs_element:
+    if def_attrs_element is not None:
 
         gramCatSet = set()
 
@@ -382,8 +390,15 @@ def checkRuleAttributesXML(myRoot):
                 # Loop through each grammatical category
                 for attr_item_el in def_attr_el:
 
-                    # Add the next one to the list
-                    gramCatSet.add(attr_item_el.attrib['tags'])
+                    # The DTD makes tags mandatory, but don't count on it being there: nothing validates the rules file against the DTD at run time (stripRulesFile drops the DOCTYPE), and a
+                    # file written before that DTD change can still leave it out. An empty tags="" is legal too - it says the attribute may match the empty tag sequence. Either way there is
+                    # no grammatical category to add, so leave it out of the set.
+                    tagsStr = attr_item_el.get('tags')
+
+                    if tagsStr:
+
+                        # Add the next one to the list
+                        gramCatSet.add(tagsStr)
 
                 # Once we found the grammatical category, stop
                 break
@@ -394,7 +409,13 @@ def checkRuleAttributesXML(myRoot):
             # Loop through each attribute
             for attr_item_el in def_attr_el:
 
-                attribStr = attr_item_el.attrib['tags']
+                # Again, tags may be absent (an older rules file) or empty. Neither of the two warnings below can apply to an empty value - it can't equal a grammatical category and it can't
+                # contain a period - so skip it.
+                attribStr = attr_item_el.get('tags')
+
+                if not attribStr:
+
+                    continue
 
                 # If the attribute is the same as a grammatical category, give a warning. Of course don't check the gram cat attribute itself for this warning.
                 if def_attr_el.attrib['n'] != GRAM_CAT_ATTRIBUTE:
@@ -404,9 +425,10 @@ def checkRuleAttributesXML(myRoot):
                         error_list.append((_translate("RunApertium", 'The attribute: "{attribStr}" in "{attrName}" is the same as a gramm. cat. Your rules may not work as expected.').format(attribStr=attribStr, attrName=def_attr_el.attrib["n"]), 1))
 
                 # Make sure there are no periods in the attribute, if there are give a warning
-                if attribStr and re.search(r'\.', attribStr):
+                if re.search(r'\.', attribStr):
 
                     error_list.append((_translate("RunApertium", 'The attribute: "{attribStr}" in "{attrName}" has a period in it. It needs to be an underscore. Your rules may not work as expected.').format(attribStr=attribStr, attrName=def_attr_el.attrib["n"]), 1))
+
     return error_list
 
 # Get relative path to the given build folder and file
