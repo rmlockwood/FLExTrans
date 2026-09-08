@@ -85,11 +85,14 @@ patterns used in rules
 -->
 
 <!ELEMENT attr-item EMPTY>
-<!ATTLIST attr-item tags CDATA #IMPLIED
+<!ATTLIST attr-item tags CDATA #REQUIRED
                     c CDATA #IMPLIED>
 <!-- 
      Each 'attr-item' specifies a subsequence of the tags in
-     that lexical form (attribute 'tags')
+     that lexical form and has a mandatory attribute 'tags'.
+     Use tags="" to say that the attribute is allowed to match
+     the empty tag sequence, that is, that the tag may be
+     absent from the lexical form.
 -->
 
 <!ELEMENT section-def-vars (def-var+)>
