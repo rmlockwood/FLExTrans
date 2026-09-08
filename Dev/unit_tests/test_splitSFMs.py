@@ -162,5 +162,43 @@ class TestSplitSFMs(unittest.TestCase):
         expected_output = ['', '\\r', ' (Luke ', '17:26-30', '\u066B 34)']
         self.assertEqual(splitSFMs(input_str), expected_output)
 
+    # A real Farsi parallel reference. Every colon and dash is preceded by an invisible U+200F right-to-left mark, written here as a \u200f escape so it can be seen. Without allowing for
+    # bidi marks none of the three references matched and the whole line went to the interlinearizer as vernacular text. Note the Arabic semicolon separates the references and is not a comma.
+    def test_farsi_parallel_reference_with_bidi_marks(self): 
+        input_str = "\\r (مَرکاس 13\u200f:32\u200f–37؛ لوکا 12\u200f:42\u200f–46؛ 17\u200f:26\u200f–30، 34\u200f–36)"
+        expected_output = ['', '\\r', ' (مَرکاس ', '13\u200f:32\u200f–37', '؛ لوکا ', '12\u200f:42\u200f–46', '؛ ', '17\u200f:26\u200f–30، 34\u200f–36', ')']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
+    # A reference with no range still needs the bidi mark allowed for, since the mark sits between the chapter number and the colon.
+    def test_plain_verse_reference_with_bidi_mark(self): 
+        input_str = "(Luke 13\u200f:32)"
+        expected_output = ['(Luke ', '13\u200f:32', ')']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
+    def test_footnote_reference_with_dash_and_bidi_marks(self): 
+        input_str = "\\f + \\fr 1\u200f:5\u200f–6 \\ft note\\f*"
+        expected_output = ['', '\\f + ', '', '\\fr 1\u200f:5\u200f–6', ' ', '\\ft', ' note', '\\f*', '']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
+    def test_footnote_reference_with_bidi_mark(self): 
+        input_str = "\\f + \\fr 1\u200f:5 \\ft note\\f*"
+        expected_output = ['', '\\f + ', '', '\\fr 1\u200f:5', ' ', '\\ft', ' note', '\\f*', '']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
+    def test_origin_reference_with_dash_and_bidi_marks(self): 
+        input_str = "\\x + \\xo 1\u200f.1\u200f–5 \\xt G\\x*"
+        expected_output = ['', '\\x + ', '', '\\xo 1\u200f.1\u200f–5', ' ', '\\xt G\\x*', '']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
+    def test_origin_reference_with_bidi_mark(self): 
+        input_str = "\\x + \\xo 1\u200f.1 \\xt G\\x*"
+        expected_output = ['', '\\x + ', '', '\\xo 1\u200f.1', ' ', '\\xt G\\x*', '']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
+    def test_verse_with_dash_and_bidi_mark(self): 
+        input_str = "\\v 1\u200f–2 text"
+        expected_output = ['', '\\v 1\u200f–2 ', 'text']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
 if __name__ == "__main__":
     unittest.main()

@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.4 - 9/8/26 - Ron Lockwood
+#    Allow for the bidi control marks that right-to-left text puts beside the punctuation of a verse reference, in every reference pattern in splitSFMs.
+#
 #   Version 3.17.3 - 9/8/26 - Ron Lockwood
 #    Fixes #1546. Handle comma-separated verse ranges after a verse reference with a dash, e.g. 17:26-30, 34-36, 41, 
 #    ranges that cross a chapter boundary, e.g. 1:2-3:4, and non-ASCII commas such as the Arabic one.
@@ -282,6 +285,17 @@ class ChapterSelection(object):
 # N'Ko and reversed commas are right-to-left as well. The Arabic decimal separator U+066B is deliberately left out.
 ANY_COMMA = r'[,\u060C\u066C\u07F8\u2E41\u1363\u055D\u3001\uFF0C\uFE10\uFE11\uFE50\uFE51\u1802\u1808\uA4FE]'
 
+# Right-to-left Scripture text puts an invisible bidi control character next to the punctuation of a verse reference, so a Farsi or Urdu parallel reference reads 13<RLM>:32<RLM><EN DASH>37 rather than
+# 13:32-37. Those marks are real characters sitting between the digits and the separator, so without allowing for them here not one reference in such a line is recognised and the whole line, verse
+# numbers and all, is handed to the interlinearizer as vernacular text. \p{Bidi_Control} is the Unicode property for exactly these twelve: the marks (ALM, LRM, RLM), the embeddings and overrides
+# (U+202A-U+202E) and the isolates (U+2066-U+2069). They are allowed on both sides of every separator because which side they fall on is up to whoever typed the text.
+BIDI_MARKS = r'\p{Bidi_Control}*'
+
+# The separators of a verse reference, each able to carry bidi marks: the chapter/verse separator, the dash in a range, and the comma between the parts of a verse list.
+CV_SEP = BIDI_MARKS + r'[:.]' + BIDI_MARKS
+RANGE_DASH = BIDI_MARKS + r'[\p{Pd}]' + BIDI_MARKS
+LIST_COMMA = BIDI_MARKS + ANY_COMMA + r' ?' + BIDI_MARKS
+
 # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
 # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
 # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
@@ -294,15 +308,15 @@ def splitSFMs(inputStr):
                     r'\||'                  # verticle bar
                     r'\\\w+\*|'             # end marker
                     r'\\f \+ |'             # footnote with plus
-                    r'\\fr \d+[:.]\d+[\p{Pd}]\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
-                                            # the \p{Pd} is any unicode dash (property=Pd), so it will match the en-dash, em-dash, hyphen, etc.
-                    r'\\fr \d+[:.]\d+|'     # footnote reference
+                    r'\\fr \d+' + CV_SEP + r'\d+' + RANGE_DASH + r'\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
+                                            # RANGE_DASH is any unicode dash (property=Pd) and CV_SEP is the colon or dot, and each also allows the bidi control marks that right-to-left text puts beside them.
+                    r'\\fr \d+' + CV_SEP + r'\d+|'     # footnote reference
                     r'\\xt .+?\\xt\*|'      # target reference until target reference end marker
                     r'\\xt .+?\\x\*|'       # target reference until cross reference end marker
                     r'\\x \+ |'             # cross reference with plus
-                    r'\\xo \d+[:.]\d+[\p{Pd}]\d+|' # origin reference with dash
-                    r'\\xo \d+[:.]\d+|'     # origin reference normal
-                    r'\\v \d+[\p{Pd}]\d+ |' # verse with dash
+                    r'\\xo \d+' + CV_SEP + r'\d+' + RANGE_DASH + r'\d+|' # origin reference with dash
+                    r'\\xo \d+' + CV_SEP + r'\d+|'     # origin reference normal
+                    r'\\v \d+' + RANGE_DASH + r'\d+ |' # verse with dash
                     r'\\v \d+ |'            # verse
                     r'\\vp \S+ |'           # publication verse
                     r'\\c \d+|'             # chapter
@@ -312,8 +326,8 @@ def splitSFMs(inputStr):
                                             # The optional (?:[:.]\d+)? lets the range end at a full chapter:verse rather than a bare verse number, 
                                             # so a range that crosses a chapter boundary like 1:2-3:4 is kept whole instead of breaking after 1:2-3 and leaving :4 to be treated as vernacular text.
                                             # The possessive \d++ plus the (?![:.]) lookahead stop the comma list at something like ', 18:1' -- that's a new chap:ver ref. and gets split off on its own.
-                    r'\d+[:.]\d+[\p{Pd}]\d+(?:[:.]\d+)?(?:' + ANY_COMMA + r' ?\d++(?:[\p{Pd}]\d++)?(?![:.]))*|' 
-                    r'\d+[:.]\d+|'          # verse reference
+                    r'\d+' + CV_SEP + r'\d+' + RANGE_DASH + r'\d+(?:' + CV_SEP + r'\d+)?(?:' + LIST_COMMA + r'\d++(?:' + RANGE_DASH + r'\d++)?(?!' + BIDI_MARKS + r'[:.]))*|' 
+                    r'\d+' + CV_SEP + r'\d+|'          # verse reference
                     r'\\\+\w+|'             # marker preceded by plus
                     r'\\\w+)',              # any other marker
                     inputStr) 
