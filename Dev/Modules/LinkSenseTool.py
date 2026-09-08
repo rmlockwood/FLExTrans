@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.17.4 - 9/8/26 - Ron Lockwood
+#    Undo the Apertium escaping of punctuation in the exported unlinked senses sentences and escape the cells for XML.
+#
+#   Version 3.17.3 - 9/8/26 - Ron Lockwood
+#    Fixes #1548. Wrap the exported unlinked senses table in a real HTML document with minimal styling.
+#
 #   Version 3.17.2 - 8/28/26 - Ron Lockwood
 #    Refixes #1031. Load the font settings from the same path they are saved to, use the computed path.
 #
@@ -220,6 +226,7 @@
 #   setting and restarts the tool on the new text. In One project mode the source project doubles as the target, shown in the target writing system, and each sense defaults to a self-link that only
 #   gets written if the user retargets it somewhere else. There's also an option to export the unlinked senses to an HTML file for review. This is useful when another person needs to give input as
 #   to which target words are the appropriate matches for the source words. The other person fills out the form and the linking person can add the appropriate links.
+#   That file is a full HTML document - a lightly styled table wrapped in a head and a body - so it opens looking like a table in a browser and survives being opened and filled in in Word.
 #
 #   OBJECTS
 #
@@ -246,8 +253,8 @@
 #
 #   The module level functions come in roughly the order the work happens. getGlossMapAndTgtLexList() builds the map of target glosses and the combo box list, getHPGfromGuid() resolves a link that
 #   already exists in the custom field, getMatchesOnGloss() does the exact and then fuzzy gloss matching, getInterlinearText() pulls in the text, and processInterlinear() walks that text and builds
-#   the row list, with createMatchLinkList() and addLinkerRowsFromMatchLinkList() as its helpers. updateSourceDb() is the whole save side, and the outputHtml* helpers ending in dumpVocab() write the
-#   unlinked senses HTML report.
+#   the row list, with createMatchLinkList() and addLinkerRowsFromMatchLinkList() as its helpers. updateSourceDb() is the whole save side, and the outputHtml* helpers, buildHtmlDocument() and
+#   dumpVocab() write the unlinked senses HTML report.
 #
 #   Control flow: FlexTools calls MainFunction(), which loops calling RunModule() for as long as it returns RESTART_MODULE. That is what happens when the user picks a different source text, and the
 #   project gets closed and reopened each time around the loop so the cache is cleared and source changes get picked up. RunModule() reads the settings, opens the target project (or reuses the
@@ -260,6 +267,7 @@ import os
 import json
 import unicodedata
 import xml.etree.ElementTree as ET
+from xml.sax import saxutils
 import time
 from typing import Callable, Optional
 
@@ -307,7 +315,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-    FTM_Version    : "3.17.2",
+    FTM_Version    : "3.17.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -337,6 +345,17 @@ Set which custom field is used for linking in the settings.""")}
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
+
+# The style sheet for the exported unlinked senses document. It's deliberately tiny - just enough for the table to read as a table instead of as loose words on a page. Every rule here is direction
+# neutral so an RTL project gets the same result as an LTR one: there is no text-align (the browser's default of start already follows the table's dir attribute) and nothing keyed to left or right.
+UNLINKED_SENSE_CSS = """
+table { border-collapse: collapse; }
+th, td { border: 1px solid #999999; padding: 3px 8px; }
+th { background-color: #dddddd; }
+td[colspan] { background-color: #f5f5f5; }
+td:empty { min-width: 120px; }
+"""
+
 LINKER_SETTINGS_FILE = "LinkerSettings.json"
 MAX_GLOSS_WARNINGS = 10
 
@@ -1824,14 +1843,24 @@ def outputHtmlSentRow(tableObj, outSent, sentHPGlist, headerRow):
     
     for word in outSent.getWords():
         
-        surfaceForm = word.getSurfaceForm()
+        # Punctuation comes back from the interlinear data Apertium escaped, because TextWord.addInitialPunc() and addFinalPunc() store it that way for the transfer pipeline. This report doesn't
+        # want it, so undo it here. Otherwise Paratext markers show up as \\c and \\v instead of \c and \v, and reserved characters such as [ ] $ and * show up with a stray backslash in front of
+        # them. Surface forms are never stored escaped - setSurfaceForm() gets the raw paragraph text - so they don't go through this.
+        initialPunc = Utils.unescapeReservedApertChars(word.getInitialPunc())
+        finalPunc = Utils.unescapeReservedApertChars(word.getFinalPunc())
         
-        # If this is one of the key words going into the table, make it bold
+        # Now make all three pieces XML safe, since we assemble this cell as a string and parse it with ET.fromstring() below. This has to come after the unescaping above, which can expose a bare
+        # < or >, and the surface form needs it too - & is not an Apertium reserved character, so it arrives here raw and would fail that parse on its own.
+        initialPunc = saxutils.escape(initialPunc)
+        finalPunc = saxutils.escape(finalPunc)
+        surfaceForm = saxutils.escape(word.getSurfaceForm())
+        
+        # If this is one of the key words going into the table, make it bold. The tags go on after the escaping so they stay markup instead of being turned into visible text.
         if containsWord(sentHPGlist, word):
             
             surfaceForm = '<b>' + surfaceForm + '</b>'
             
-        fullSent += word.getInitialPunc() + surfaceForm + word.getFinalPunc()
+        fullSent += initialPunc + surfaceForm + finalPunc
         
     fullSent += '</td>'
     
@@ -1877,6 +1906,29 @@ def addIntroHtmlStuff(tableObj, srcDBname, tgtDBname):
     ET.SubElement(row, 'th').text = _translate("LinkSenseTool", 'Comment')
     
     return row
+
+def buildHtmlDocument(tableObj):
+
+    # Wrap the table in a real HTML document. On its own the table element is valid enough that a browser will render it, but with no borders, no padding and no shaded header row it reads as
+    # loose words rather than as a table. The row building functions above don't change - we just put a head and a body around what they produced.
+    htmlObj = ET.Element('html')
+
+    # If the table is right to left, make the whole document right to left too. Without this the RTL table sits against the left margin of an otherwise LTR page, which looks backwards to an RTL
+    # reader. The dir attribute stays on the table as well so nothing that looks for it there breaks.
+    if tableObj.get('dir') == 'rtl':
+
+        htmlObj.attrib['dir'] = 'rtl'
+
+    headObj = ET.SubElement(htmlObj, 'head')
+
+    # We write the file as UTF-8 (see below), so say so. Without this the browser guesses at the encoding and non-roman data can come out as mojibake.
+    ET.SubElement(headObj, 'meta', {'charset': 'utf-8'})
+    ET.SubElement(headObj, 'style').text = UNLINKED_SENSE_CSS
+
+    bodyObj = ET.SubElement(htmlObj, 'body')
+    bodyObj.append(tableObj)
+
+    return htmlObj
 
 def getFirstOccurringSent(myHPG, processedMap):
 
@@ -1966,11 +2018,14 @@ def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report
         # Build the path with the source text name
         htmlFileName = os.path.join(outputFolder, htmlFileName + UNLINKED_SENSE_FILENAME_PORTION)
         
-        # Write the html file
-        etObj = ET.ElementTree(tableObj)
+        # Serialize the document ourselves instead of using ElementTree.write(). We need a doctype line, which ElementTree can't produce, we don't want the XML declaration it would put in front
+        # of one, and we want real UTF-8 characters in the file rather than the numeric character references write() emits when it falls back to its us-ascii default.
+        htmlStr = '<!DOCTYPE html>\n' + ET.tostring(buildHtmlDocument(tableObj), encoding='unicode') + '\n'
         
+        # Write the html file
         try:
-            etObj.write(htmlFileName)
+            with open(htmlFileName, 'w', encoding='utf-8') as htmlFile:
+                htmlFile.write(htmlStr)
             
         except PermissionError:
             report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=Utils.shortenPathForDisplay(htmlFileName)))
