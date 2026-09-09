@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->3 September 2026</date
+>9 September 2026</date
 ><version
 >3.17</version
 ><contents
@@ -3569,6 +3569,77 @@ type="tFlexx"
 ><p
 >Ideally you should paste source and target data that illustrate the same meanings, so the AI can line the two languages up. As a best practice, before you copy the data hide the word gloss, word category, and free translation lines in the Print View, so that only the information helpful for rule writing is included.</p
 ></section3
+></section2
+><section2
+id="sDeleteTexts"
+><secTitle
+>The <object
+type="tTool"
+>Delete Texts</object
+> Tool</secTitle
+><p
+>This tool lets you delete one or more texts from a <object
+type="tFlexx"
+></object
+> project. Texts pile up over time: chapters imported again and again from <object
+type="tTool"
+>Paratext</object
+>, test texts, drafts, and the copies that the import makes when a text of the same name already exists. Without this tool the only way to clear them out is to open <object
+type="tFlexx"
+></object
+> and delete them one at a time.</p
+><p
+>Choose the project to work on at the top of the window. The list starts on your target project rather than your source project, because the texts you usually want to clear out are the ones <object
+type="tFlextrans"
+></object
+> inserted into the target. You can pick any <object
+type="tFlexx"
+></object
+> project, including your source project.</p
+><p
+>The tool shows a list of all the texts in the chosen project. Hold down Ctrl or Shift to select more than one, then click <object
+type="tBold"
+>OK</object
+>. Before anything is deleted, you are shown the names of the texts you selected, in alphabetical order, and asked to confirm. The confirmation lists every text you selected, so scroll through it to check the list before answering Yes.</p
+><p
+>Deleting a text this way <object
+type="tBold"
+>cannot be undone</object
+>, either in <object
+type="tFlextrans"
+></object
+> or in <object
+type="tFlexx"
+></object
+>. Before running the tool, make sure you are not in the <object
+type="tArea"
+>Texts &amp; Words</object
+> area of <object
+type="tFlexx"
+></object
+>, otherwise <object
+type="tFlexx"
+></object
+> may be left holding on to a text that no longer exists.</p
+><p
+>Only interlinear texts are listed. Scripture books do not appear and cannot be deleted with this tool. Note also that the list may show more texts than the Interlinear Texts list in <object
+type="tFlexx"
+></object
+> does, because <object
+type="tFlexx"
+></object
+> filters that list using settings that <object
+type="tFlextrans"
+></object
+> cannot see.</p
+><p
+>If you delete the text that <object
+type="tFlextrans"
+></object
+> is currently set up to translate, that row is marked in the list to warn you. The mark only appears when you are looking at your source project, since that setting names a text there. You are still allowed to delete it. If you do, the source text setting is cleared and you will need to choose a new source text in the <object
+type="tFlextrans"
+></object
+> Settings.</p
 ></section2
 ></section1
 ><section1
