@@ -77,5 +77,10 @@ This is typically called target_text-aper.txt and is usually in the Build folder
       <source>Apertium transfer complete.</source>
       <translation>Apertium-Transfer abgeschlossen.</translation>
     </message>
+  <message>
+    <location filename="../RunApertium.py" line="610"/>
+    <source>(no contents could be read from {file})</source>
+    <translation>(aus {file} konnte kein Inhalt gelesen werden)</translation>
+  </message>
   </context>
 </TS>

@@ -368,6 +368,11 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
       <source>Problem opening file: {tgt_file}.</source>
       <translation>Problema al abrir el archivo: {tgt_file}.</translation>
     </message>
+  <message>
+    <location filename="../LiveRuleTesterTool.py" line="3356"/>
+    <source>(no contents could be read from {file})</source>
+    <translation>(no se pudo leer ningún contenido de {file})</translation>
+  </message>
   </context>
   <context>
     <name>RunApertium</name>

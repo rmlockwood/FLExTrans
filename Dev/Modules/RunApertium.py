@@ -5,6 +5,10 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.16.2 - 9/7/26 - Ron Lockwood
+#    Report a failed Apertium run as one error instead of one per line of apertium_error.txt, drop the blank lines out of it, don't lose the whole message when it isn't valid utf-8,
+#    and say which file was looked in when there is nothing in it to show.
+#
 #   Version 3.16.1 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
 #
@@ -112,7 +116,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.16.1",
+        FTM_Version    : "3.16.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -509,13 +513,34 @@ def runApertium(DB, configMap, report):
     ret = run_makefile(buildFolder, report)
     
     if ret:
-        report.Error(_translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:'))
+        apertErrPath = os.path.join(buildFolder, APERTIUM_ERROR_FILE)
+
         try:
-            f = open(os.path.join(buildFolder, APERTIUM_ERROR_FILE), encoding='utf-8')
-            lines = f.readlines()
-            [report.Error(line) for line in lines]
-        except:
-            pass
+            # errors='replace' because make and the Apertium tools write their messages in the console codepage, which isn't always valid utf-8. A decoding error here would have thrown away the
+            # whole message, which is exactly the thing the user needs to see, so a few replacement characters in it are much the lesser evil.
+            with open(apertErrPath, encoding='utf-8', errors='replace') as apertErrFile:
+
+                # Blank lines are dropped - make separates its messages with them and they only turn into empty rows in the FlexTools report.
+                lines = [line for line in apertErrFile.read().splitlines() if line.strip()]
+
+        except OSError:
+
+            lines = []
+
+        # A failed run is one error, so only the heading is reported as one. The lines of the error file that follow describe that same single failure, and reporting each of them as an error of its
+        # own made FlexTools count "Errors: 3" for one mistake in the rules file, so they go out as information instead. They can't be folded into the heading either: FlexTools shows each message as
+        # one row of a list, so newlines in a message do not come out as separate lines - putting the whole thing in one Error() was tried and read worse than this does.
+        report.Error(_translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:'))
+
+        # An unreadable or empty error file would leave the user with a bare heading and no idea what went wrong, so at least say which file was looked in.
+        if not lines:
+
+            lines = [_translate("RunApertium", '(no contents could be read from {file})').format(file=Utils.shortenPathForDisplay(apertErrPath))]
+
+        # Indented so that they read as the detail of the error above them rather than as unrelated status messages.
+        for line in lines:
+
+            report.Info('   ' + line)
 
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
     unfixProblemCharsRuleFile(transferResultsPath)

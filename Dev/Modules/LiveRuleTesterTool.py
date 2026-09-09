@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.16.22 - 9/7/26 - Ron Lockwood
+#    Fixes #1544. Read apertium_error.txt from the LiveRuleTester folder where make writes it instead of from the Build folder, so that a transfer error shows its contents, say which file was
+#    looked in when there is nothing in it to show, and indent the rules file written for the tester so that the line numbers apertium reports in that error point at a rule.
+#
 #   Version 3.16.21 - 9/2/26 - Ron Lockwood
 #    Save the copy of the transfer rules in Output\rule-file-history when a test is added to the testbed rather than on every Transfer, save every phase's rules for an advanced project, and convert a leftover rule-history folder from an earlier version.
 #
@@ -353,7 +357,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.16.21",
+        FTM_Version    : "3.16.22",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -3117,8 +3121,14 @@ class Main(QMainWindow):
                     catItemElement = ET.SubElement(defCatElement, 'cat-item')
                     catItemElement.attrib['tags'] = 'dummy'
 
+            # Indent one element per line before writing, because without it the whole rules file goes out on a single line, and every line number apertium hands back then says "line 1" and points
+            # nowhere - both the trace's "Applied rule 18 line 1" and a compile error's "Error at line N, column N" that now gets shown in the target box. A tab per level is what XMLmind writes and
+            # what the shipped rules files use. Indenting only adds whitespace between elements, which apertium-preprocess-transfer ignores, and ET.indent only ever writes into text and tails that are
+            # already empty or whitespace, so nothing a rule depends on can be disturbed.
+            ET.indent(myTree, space='\t')
+
             # Write out the file
-            myTree.write(trFile, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+            myTree.write(trFile, encoding='UTF-8', xml_declaration=True)
 
             # Convert the file to be decomposed unicode
             Utils.decompose(trFile)
@@ -3152,19 +3162,34 @@ class Main(QMainWindow):
                     self.ui.warningTextEdit.setPlainText(self.ui.warningTextEdit.toPlainText()+'\n'+triplet[0])
 
         # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. Pass in the folder of the bash file to run. The current directory is FlexTools
-        ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
+        ret = RunApertium.run_makefile(self.testerFolder, self.__report)
 
         if ret:
             apertErrStr = _translate("RunApertium", 'An error happened when running the Apertium tools. The contents of apertium_error.txt is:')
 
+            # make redirects its standard error into this file in whichever folder it was run in, which for the tester is the LiveRuleTester folder and not the Build folder itself. Reading it from
+            # the Build folder gave the user the heading above with nothing under it, or worse, a stale error left there by an earlier run of the Run Apertium module.
+            apertErrPath = os.path.join(self.testerFolder, RunApertium.APERTIUM_ERROR_FILE)
+
             try:
-                with open(os.path.join(self.buildFolder, RunApertium.APERTIUM_ERROR_FILE), encoding='utf-8') as apertErrFile:
+                # errors='replace' because make and the Apertium tools write their messages in the console codepage, which isn't always valid utf-8. A decoding error here would have thrown away the
+                # whole message, which is exactly the thing this code exists to show, so a few replacement characters in it are much the lesser evil.
+                with open(apertErrPath, encoding='utf-8', errors='replace') as apertErrFile:
 
-                    lines = apertErrFile.readlines()
+                    # splitlines() rather than readlines() so that the newlines still on the ends of the lines don't come back doubled when the lines are joined below.
+                    lines = apertErrFile.read().splitlines()
 
-                apertErrStr = '\n'.join([apertErrStr] + lines)
-            except:
-                pass
+            except OSError:
+
+                lines = []
+
+            # An unreadable or empty error file would leave the user with a bare heading and no idea what went wrong, so at least say which file we looked in. This message and the heading above it
+            # are both in the RunApertium context, which the tester loads, so the two of them are translated once in RunApertium's .ts rather than a second time here.
+            if not [line for line in lines if line.strip()]:
+
+                lines = [_translate("RunApertium", '(no contents could be read from {file})').format(file=Utils.shortenPathForDisplay(apertErrPath))]
+
+            apertErrStr = '\n'.join([apertErrStr] + lines)
 
             self.ui.TargetTextEdit.setPlainText(apertErrStr)
             self.unsetCursor()
