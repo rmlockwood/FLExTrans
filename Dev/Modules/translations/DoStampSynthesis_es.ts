@@ -72,7 +72,7 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
     <message>
       <location filename="../DoStampSynthesis.py" line="1096"/>
       <source>No lexeme form. Skipping. Headword: {headword}.</source>
-      <translation>Sin forma de lexema. Omitiendo. Palabra principal: {headword}.</translation>
+      <translation>Sin forma del lexema. Omitiendo. Palabra principal: {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1100"/>
