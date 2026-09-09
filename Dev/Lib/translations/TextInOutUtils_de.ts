@@ -83,5 +83,20 @@
       <source>Error saving settings.</source>
       <translation>Fehler beim Speichern der Einstellungen.</translation>
     </message>
+    <message>
+      <location filename="../TextInOutUtils.py" line="1856"/>
+      <source>Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run.</source>
+      <translation>Warnung: {charList} innerhalb von [ ] wird niemals übereinstimmen. Zeichen werden vor der Ausführung der Regeln zerlegt.</translation>
+    </message>
+    <message>
+      <location filename="../TextInOutUtils.py" line="1858"/>
+      <source>Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run. Use {suggestion} instead.</source>
+      <translation>Warnung: {charList} innerhalb von [ ] wird niemals übereinstimmen. Zeichen werden vor der Ausführung der Regeln zerlegt. Verwenden Sie stattdessen {suggestion}.</translation>
+    </message>
+    <message>
+      <location filename="../TextInOutUtils.py" line="1893"/>
+      <source>Warning: composed characters inside [ ] will never match. Affected rule(s): {ruleNumbers}</source>
+      <translation>Warnung: zusammengesetzte Zeichen innerhalb von [ ] werden niemals übereinstimmen. Betroffene Regel(n): {ruleNumbers}</translation>
+    </message>
   </context>
 </TS>

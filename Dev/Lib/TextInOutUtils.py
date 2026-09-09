@@ -5,6 +5,10 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17.6 - 9/8/26 - Ron Lockwood
+#    Warn in the error box when an accented letter sits inside a regular expression character class, since decomposition splits it and the class then never matches. Flag the affected
+#    rules when the rules are loaded as well as when one is clicked on or typed into.
+#
 #   Version 3.17.5 - 9/8/26 - Ron Lockwood
 #    Test XML elements for None rather than for truth, so that an element with no children under it is not read as missing.
 #
@@ -119,6 +123,15 @@
 #   entirely. Before each rule runs, both the text and the search string are normalized to decomposed Unicode (NFD), because that is how FLEx stores text while the user may well have typed the
 #   composed form into the search box.
 #
+#   That decomposition has one nasty interaction with regular expressions, which findComposedCharClasses() exists to warn about. Decomposing the search string rewrites what is inside the
+#   square brackets of a character class as well, so a class written as two accented letters becomes a four-character class of two base letters and two combining marks, and it then matches a bare
+#   vowel or a lone mark rather than either accented letter. The rule silently matches nothing, and since nothing raises there is no error to report for it. Everywhere else decomposition is
+#   harmless, because a base letter and its mark stay in sequence and still match decomposed text - which is why the alternation form is the fix the warning in the error box points the user at.
+#
+#   Note that a rule can be sitting in either Unicode form and is equally broken in both, so the check is not looking for precomposed characters. A rules file that has been through this tool is
+#   stored decomposed, which means the usual case on disk is a class that already holds base letters and separate combining marks rather than accented letters. readCharClassItem() is what makes
+#   one check cover both: it reads a base letter and the combining marks after it as a single member of the class, so a member is an accented letter whichever way the rule was written.
+#
 #   A plain rule is a straight string replacement. A rule marked RegEx goes through regex.sub() with a replacement callable built by create_replacer(). That function exists because Python's own
 #   replacement strings only understand backslash 1 through 9, while users write their rules against regex101.com, which follows Perl. So create_replacer() parses the replacement pattern itself and
 #   adds the case modifiers on top: \u and \l for the next character only, \U and \L to force case until \E or the end of the pattern, with \u and \l winning over an enclosing \U or \L for the
@@ -132,6 +145,14 @@
 #
 #   The top of the window edits one rule: the search box, the replace box, a comment box, the RegEx and Inactive checkboxes, and Add, Update and Delete. Clicking a rule in the list loads it into
 #   those boxes. Add inserts a new rule at the selected row - so at the top when nothing is selected - Update overwrites the selected rule, and Delete removes it.
+#
+#   Two methods watch for that composed-character trap and report it in the error box at the bottom. checkForComposedCharsInCharClass() follows the rule being edited, firing on every keystroke in
+#   the search box, on the RegEx checkbox and on a click in the rules list, and it names the offending characters and the alternation to use instead. checkRulesForComposedChars() runs once each
+#   time the rules are loaded and names the rules that have the problem, so a file full of regular expressions that quietly match nothing says so up front instead of waiting to be clicked on.
+#
+#   Both share the error box with the Add, Update, Test and folder-check messages, so they differ in what they will erase. The keystroke one remembers its own last message in composedWarningMsg
+#   and clears the box only when the message sitting there is that one, which keeps typing from wiping out an error another part of the window put there. The load-time one records nothing,
+#   because its message is about rules the user hasn't touched and should outlast clicking through them.
 #
 #   The list itself shows each rule as the search string, an arrow and the replace string, followed by (RegEx) if it is a regular expression, a no-entry sign if it is inactive, and the comment
 #   after a dash. Characters that would otherwise be invisible are shown as bracketed aliases - [SP], [TAB], [ZWSP], [RLM] and so on, from replacementsMap - so the user can see what a rule is
@@ -174,7 +195,9 @@
 #   Top to bottom the file goes: the constants - the settings file keys, then the XML element and attribute names - then SearchReplaceRuleData and RulesPopup, then the module level functions, then
 #   TextInOutRulesWindow, which is the rest of the file.
 #
-#   The module level functions come in roughly the order the work happens. getRuleFromElement(), buildRuleString() and getPrintableString() turn XML into the strings the user sees. create_replacer()
+#   The module level functions come in roughly the order the work happens. getRuleFromElement(), buildRuleString() and getPrintableString() turn XML into the strings the user sees.
+#   findComposedCharClasses() scans a search string for the character class trap described above and buildCharClassSuggestion() turns a class it flagged into the alternation that would work;
+#   those two are the only module level functions serving the editing side rather than the running side. create_replacer()
 #   builds the replacement callable for regular expression rules. applyRulesToString() is the shared core that both the Test button and real runs go through. applySearchReplaceRules() is what other
 #   modules call when they already have the tree parsed, and applyTextOutRulesFromConfig() is the convenience wrapper around it that finds the text out rules file from the configuration, parses it
 #   and reports through the FlexTools report object.
@@ -370,6 +393,133 @@ replacementsMap = {
 '\u200D': '[ZWJ]','\u200E': '[LRM]','\u200F': '[RLM]','\u202A': '[LRE]','\u202B': '[RLE]','\u202C': '[PDF]','\u202D': '[LRO]','\u202E': '[RLO]','\u202F': '[NNBSP]',
 '\u205F': '[MMSP]','\u2060':'[WJ]', '\u2066': '[LRI]','\u2067': '[RLI]','\u2068': '[FSI]','\u2069': '[PDI]'
 }
+
+def readCharClassItem(searchStr, i, n):
+
+    # Read one member of a character class starting at position i and return it along with the position just past it. A member is not always one character. An escaped member such as backslash-w is
+    # two, and - the case that matters here - an accented letter is a base letter followed by its combining marks, which is how an accented letter appears once the string has been decomposed.
+    # Reading those as one member is what lets the rest of this code see an accented letter in a class whether the rule was typed composed or came off disk already decomposed.
+    if searchStr[i] == '\\' and i + 1 < n:
+
+        return searchStr[i:i + 2], i + 2
+
+    j = i + 1
+
+    while j < n and unicodedata.combining(searchStr[j]):
+
+        j += 1
+
+    return searchStr[i:j], j
+
+def findComposedCharClasses(searchStr):
+
+    # Find the regular expression character classes in a search string that hold an accented letter. These are a silent trap. applyRulesToString() decomposes the search string before matching, and
+    # that decomposition happens inside the brackets too, so a class written as two accented letters ends up as four separate members - two base letters and two combining marks - and matches a bare
+    # vowel or a lone mark instead of either accented letter. The rule then quietly never matches, and because nothing raises there is no error for the user to go on. Outside a character class the
+    # same decomposition is harmless: a base letter and its mark stay in sequence and still match decomposed text, which is why alternation works where the character class does not.
+    #
+    # A rule can arrive here in either Unicode form and it is broken in both, so the test is not "is this character precomposed" but "does this member take more than one character once decomposed".
+    # A precomposed accented letter answers yes because NFD splits it; a letter already followed by a combining mark answers yes because readCharClassItem() has already read the two as one member.
+    # That second case is the common one, because a rules file that has been through the tool is stored decomposed.
+    #
+    # Each offending class comes back as a (composedGraphemes, classItems, isNegated) triple. classItems holds every member of the class as an (isRange, parts) pair - parts being the one member, or
+    # the two ends of a range like a-z - because the replacement alternation has to offer all of them or it would not match what the class matched. A class of an accented letter and a b has to
+    # become the accented letter or a b.
+    offendingClasses = []
+    i = 0
+    n = len(searchStr)
+
+    while i < n:
+
+        char = searchStr[i]
+
+        # An escaped character outside a class can never open one, so step over the pair.
+        if char == '\\':
+
+            i += 2
+            continue
+
+        if char != '[':
+
+            i += 1
+            continue
+
+        # We are at the opening bracket of a class. Walk it to its closing bracket, collecting its members.
+        i += 1
+        isNegated = False
+
+        # A ^ in the first position negates the class rather than being a member of it.
+        if i < n and searchStr[i] == '^':
+
+            isNegated = True
+            i += 1
+
+        classItems = []
+        composedGraphemes = []
+        atClassStart = True
+
+        while i < n:
+
+            # A ] anywhere but the first position closes the class. In the first position it is a literal member instead.
+            if searchStr[i] == ']' and not atClassStart:
+
+                i += 1
+                break
+
+            atClassStart = False
+
+            itemText, i = readCharClassItem(searchStr, i, n)
+
+            # A hyphen makes a range only when it sits between two members, so a hyphen just before the closing bracket is only a hyphen.
+            if i + 1 < n and searchStr[i] == '-' and searchStr[i + 1] != ']':
+
+                endText, i = readCharClassItem(searchStr, i + 1, n)
+                parts = [itemText, endText]
+                classItems.append((True, parts))
+            else:
+                parts = [itemText]
+                classItems.append((False, parts))
+
+            # Either end of a range can be the accented letter that breaks the class, so check every part of the member.
+            for part in parts:
+
+                # An escape sequence stands for whatever follows the backslash, so weigh that up rather than the pair. Without this, \w would look like a base letter with a combining mark
+                # after it - two characters that are still two characters after NFD - and every class using \w, \d or \s would be reported broken when there is nothing wrong with it.
+                escapedChar = part[1:] if part.startswith('\\') else part
+
+                if len(unicodedata.normalize('NFD', escapedChar)) > 1 and part not in composedGraphemes:
+
+                    composedGraphemes.append(part)
+
+        if composedGraphemes:
+
+            offendingClasses.append((composedGraphemes, classItems, isNegated))
+
+    return offendingClasses
+
+def buildCharClassSuggestion(classItems):
+
+    # Turn the members of a character class into the alternation that will actually match decomposed text. Every member has to appear, not just the accented ones, or the suggestion would match less
+    # than the class it replaces. A single member becomes an alternative as it stands, while a range cannot be written as one and so keeps a pair of brackets to stay a range. A class with only one
+    # member needs neither alternation nor parentheses - just the member on its own. Members go through getPrintableString() so that an invisible one shows up as its bracketed alias.
+    #
+    # The group is non-capturing, and it has to be. A character class captures nothing, so if the suggestion introduced a capturing group the user would gain one wherever they pasted it, and every
+    # backreference in their replacement string numbered after that point would quietly start pointing at the wrong group. (?: ) keeps the numbering exactly as it was.
+    alternatives = []
+
+    for isRange, parts in classItems:
+
+        if isRange:
+
+            alternatives.append('[' + getPrintableString(parts[0]) + '-' + getPrintableString(parts[1]) + ']')
+        else:
+            alternatives.append(getPrintableString(parts[0]))
+
+    if len(alternatives) == 1:
+
+        return alternatives[0]
+
+    return '(?:' + '|'.join(alternatives) + ')'
 
 def numRules(tree):
     
@@ -792,6 +942,9 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.ui.errorTextBox.setText('')
 
+        # The composed-character warning shares the error box with everything else, so remember what we last put there in order to tell our own message apart from somebody else's.
+        self.composedWarningMsg = ''
+
         self.setWindowTitle(winTitle)
 
         # See if we are doing text in or out
@@ -812,6 +965,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.deleteButton.clicked.connect(self.DeleteClicked)
         self.ui.moveDownButton.clicked.connect(self.DownButtonClicked)
         self.ui.moveUpButton.clicked.connect(self.UpButtonClicked)
+        self.ui.regexCheckBox.clicked.connect(self.checkForComposedCharsInCharClass)
         self.ui.replaceTextBox.textChanged.connect(self.SearchOrReplaceChanged)
         self.ui.rulesList.clicked.connect(self.RulesListClicked)
         self.ui.searchTextBox.textChanged.connect(self.SearchOrReplaceChanged)
@@ -1470,6 +1624,9 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Set comment
         self.ui.commentTextBox.setText(searchReplaceRuleData.comment)
+
+        # Setting the search box above already fired SearchOrReplaceChanged, but the RegEx box still held the previously selected rule's setting at that point, so check again now that it doesn't.
+        self.checkForComposedCharsInCharClass()
         
         # See the beginning of the comment box.
         self.ui.commentTextBox.setCursorPosition(0)
@@ -1529,6 +1686,9 @@ class TextInOutRulesWindow(QMainWindow):
             self.ui.deleteButton.setEnabled(False)
             self.ui.regexCheckBox.setEnabled(False)
             self.ui.inactiveCheckBox.setEnabled(False)
+
+        # The search string may have just gained or lost a composed character inside a character class.
+        self.checkForComposedCharsInCharClass()
                 
     def TestClicked(self):
 
@@ -1668,6 +1828,70 @@ class TextInOutRulesWindow(QMainWindow):
 
                 self.ui.WBskipStepsTextBox.setText(skipStepsElem.text)
 
+    def checkForComposedCharsInCharClass(self):
+
+        # Work out whether there is anything to warn about in the rule currently being edited. Only a regular expression rule can fall into this trap; in a plain rule the brackets are ordinary
+        # text, and since the search string and the text being searched are both decomposed the same way they still match each other. So say nothing at all unless the RegEx box is ticked.
+        warningStr = ''
+
+        if self.ui.regexCheckBox.isChecked():
+
+            offendingClasses = findComposedCharClasses(self.ui.searchTextBox.text())
+
+            # Warn about the first bad class only. A search string almost never has two, the error box has room for one message, and fixing the first one brings the next straight back.
+            if offendingClasses:
+
+                composedGraphemes, classItems, isNegated = offendingClasses[0]
+
+                # List the offending letters one at a time rather than running the joined-up string through getPrintableString(), which would turn the spaces between them into [SP].
+                charListStr = ' '.join(getPrintableString(grapheme) for grapheme in composedGraphemes)
+
+                # A range with a composed character at either end is beyond help as well: the range itself is what decomposition breaks, and the only thing an alternation could offer for it is
+                # the very range the user already typed. Spot that here so we don't hand their own class back to them as the fix.
+                hasComposedRange = any(isRange and any(part in composedGraphemes for part in parts) for isRange, parts in classItems)
+
+                # A negated class can't be rewritten as an alternation either - there is no short way to say "any character except this accented one" - so those two just warn without a fix.
+                if isNegated or hasComposedRange:
+
+                    warningStr = _translate("TextInOutUtils", "Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run.").format(charList=charListStr)
+                else:
+                    warningStr = _translate("TextInOutUtils", "Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run. Use {suggestion} instead.").format(charList=charListStr, suggestion=buildCharClassSuggestion(classItems))
+
+        # This runs on every keystroke in the search box, so it has to share the error box politely. It will overwrite whatever is in there with a warning of its own, but when the warning goes
+        # away it only clears the box if what is sitting in it is the warning it put there last time. Otherwise typing in the search box would wipe out a folder error or an Add error still true.
+        if warningStr:
+
+            self.ui.errorTextBox.setText(warningStr)
+
+        elif self.composedWarningMsg and self.ui.errorTextBox.toPlainText() == self.composedWarningMsg:
+
+            self.ui.errorTextBox.setText('')
+
+        self.composedWarningMsg = warningStr
+
+    def checkRulesForComposedChars(self):
+
+        # Scan every rule in the current project for the same trap and name the ones that have it. Without this a rules file full of regular expressions that quietly match nothing looks perfectly
+        # healthy until the user happens to click the offending rule, so the warning goes up as soon as the rules are loaded and points at the rules worth clicking on. Inactive rules are named
+        # too: they are just as broken, and they will start mattering the moment somebody turns one back on. Rule numbers are 1-based positions in the list, the same numbers a run failure reports.
+        badRuleNumbers = []
+
+        for ruleNumber, ruleEl in enumerate(self.xmlParentObjList[0], start=1):
+
+            searchReplObj = getRuleFromElement(ruleEl)
+
+            if searchReplObj.isRegEx and findComposedCharClasses(searchReplObj.searchStr):
+
+                badRuleNumbers.append(str(ruleNumber))
+
+        if not badRuleNumbers:
+
+            return
+
+        # Deliberately not recorded in composedWarningMsg. That member is how the search box tells its own message apart from everybody else's so it knows what it may clear, and this message
+        # outlives any one rule - the other bad rules are still bad after the user clicks a good one - so it should sit there until something with a real reason to clear the box clears it.
+        self.ui.errorTextBox.setText(_translate("TextInOutUtils", "Warning: composed characters inside [ ] will never match. Affected rule(s): {ruleNumbers}").format(ruleNumbers=', '.join(badRuleNumbers)))
+
     def checkForValidFolders(self) -> bool:
 
         self.validFolders = True
@@ -1706,6 +1930,9 @@ class TextInOutRulesWindow(QMainWindow):
         # Set Wildebeest controls
         self.defaultRoot = self.xmlRootList[0]
         self.initWBcontrols(self.defaultRoot)
+
+        # Say straight away if any of the rules just loaded have a composed character inside a character class.
+        self.checkRulesForComposedChars()
 
     def enumerateWorkProjects(self):
 
