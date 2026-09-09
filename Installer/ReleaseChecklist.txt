@@ -1,5 +1,6 @@
 Do these things when making a maintenance release 
 =================================================
+-Switch to 3.16.X-patches
 -Finish code changes and commit
 -Edit CreateInstaller.bat and set FLEXTRANS_VERSION at the top to the new version #.
 -Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
