@@ -19,18 +19,12 @@
      <number>0</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QGridLayout" name="searchReplaceGridLayout" columnstretch="0,1,0,0">
       <property name="rightMargin">
        <number>4</number>
       </property>
-      <item>
+      <item row="0" column="0">
        <widget class="QLabel" name="searchLabel">
-        <property name="minimumSize">
-         <size>
-          <width>65</width>
-          <height>0</height>
-         </size>
-        </property>
         <property name="font">
          <font>
           <pointsize>8</pointsize>
@@ -41,7 +35,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="1" colspan="3">
        <widget class="QLineEdit" name="searchTextBox">
         <property name="font">
          <font>
@@ -53,14 +47,7 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="rightMargin">
-       <number>4</number>
-      </property>
-      <item>
+      <item row="1" column="0">
        <widget class="QLabel" name="replaceLabel">
         <property name="font">
          <font>
@@ -72,7 +59,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="1" column="1" colspan="3">
        <widget class="QLineEdit" name="replaceTextBox">
         <property name="font">
          <font>
@@ -84,21 +71,8 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <property name="rightMargin">
-       <number>4</number>
-      </property>
-      <item>
+      <item row="2" column="0">
        <widget class="QLabel" name="commentLabel">
-        <property name="minimumSize">
-         <size>
-          <width>65</width>
-          <height>0</height>
-         </size>
-        </property>
         <property name="font">
          <font>
           <pointsize>8</pointsize>
@@ -109,7 +83,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="2" column="1">
        <widget class="QLineEdit" name="commentTextBox">
         <property name="font">
          <font>
@@ -118,7 +92,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="2" column="2">
        <widget class="QCheckBox" name="regexCheckBox">
         <property name="enabled">
          <bool>false</bool>
@@ -136,7 +110,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="2" column="3">
        <widget class="QCheckBox" name="inactiveCheckBox">
         <property name="enabled">
          <bool>false</bool>
