@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->9 September 2026</date
+>10 September 2026</date
 ><version
 >3.17</version
 ><contents
@@ -3640,6 +3640,95 @@ type="tFlextrans"
 type="tFlextrans"
 ></object
 > Settings.</p
+></section2
+><section2
+id="sMergeTexts"
+><secTitle
+>The <object
+type="tTool"
+>Merge Texts</object
+> Tool</secTitle
+><p
+>This tool combines several texts into one, without losing any of the interlinear work you have done on them. Scripture is normally brought into <object
+type="tFlexx"
+></object
+> one chapter at a time, giving you texts named Matthew 01, Matthew 02, Matthew 03-04 and so on. Every <object
+type="tFlextrans"
+></object
+> module works on one text at a time, so drafting a whole book that way means running the whole process once per chapter. Merge the chapters into a single text and you can draft, test and export the entire book in one pass.</p
+><p
+>Nothing that has been interlinearized is lost. Each word keeps the analysis and the gloss that was approved for it, and each sentence keeps its free translation and its notes. This works because the paragraphs themselves are moved into the new text rather than being copied. Copying the words across would make <object
+type="tFlexx"
+></object
+> parse them afresh and every word would come back unanalyzed, which is exactly what this tool avoids.</p
+><p
+>At the top of the window, choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. If your texts are named in some other way, choose <object
+type="tBold"
+>(choose the texts myself)</object
+> instead and build the list by hand. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. <exampleRef
+letter="xMergeTexts"
+num="xMergeTexts"
+></exampleRef
+> shows the window with four chapters of Matthew chosen.</p
+><example
+num="xMergeTexts"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/MergeTexts.png"
+></img
+></chart
+></example
+><p
+>The line underneath the name box says how many texts you have chosen and which chapters they cover between them. It also tells you when a chapter inside that range is missing, as chapter 4 is in the picture above, or when one is covered twice. That is worth a glance before you merge, since a gap or a repeat usually means the list is not what you meant it to be.</p
+><p
+>The name offered for the new text describes the range you are actually merging, not the whole book: merging every chapter of Matthew suggests Matthew 01-28, while merging only chapters 3 to 24 suggests Matthew 03-24. You can type over the suggestion, and once you do, changing the list no longer overwrites what you typed.</p
+><p
+>Because the paragraphs are moved out of them, the texts you merge would be left with no content at all, so they are deleted once their paragraphs have gone. Before anything happens you are shown the full list of texts about to be merged and asked to confirm. Merging this way <object
+type="tBold"
+>cannot be undone</object
+>, either in <object
+type="tFlextrans"
+></object
+> or in <object
+type="tFlexx"
+></object
+>, so back up your <object
+type="tFlexx"
+></object
+> project before you run it. Make sure too that you are not in the <object
+type="tArea"
+>Texts &amp; Words</object
+> area of <object
+type="tFlexx"
+></object
+>, otherwise <object
+type="tFlexx"
+></object
+> may be left holding on to a text that no longer exists.</p
+><p
+>A few things belong to a text itself rather than to its paragraphs, and those cannot travel with a merge. Text tags are moved to the merged text for you, and the tool only offers you that choice when one of the texts actually has a tag on it. A discourse chart names the text it charts, so a chart built on one of the chapters you are merging would be left pointing at nothing. Most of the time this does not matter: <object
+type="tArea"
+>Discourse</object
+> area of <object
+type="tFlexx"
+></object
+> creates an empty chart as soon as you open the Discourse view on a text, and an empty chart is simply deleted along with its text without troubling you. Only a chart that really has words placed in it is worth keeping, and there the tool warns you and names the texts; the best course is to delete those charts in the Discourse area first and chart the merged text afterwards. A text that has media files attached is never deleted, so its media survives. You are also warned if the texts you picked use more than one writing system, since the merged text would then have mixed content.</p
+><p
+>Afterwards, check the report pane. It names the merged text and says how many texts went into it, and you can double-click that line to jump straight to the text. Behind the scenes the tool counts the interlinear analyses before and after the merge and only says anything if the two counts disagree, which would mean something had gone wrong. You may need to select the merged text under <object
+type="tArea"
+>Texts &amp; Words</object
+>, Choose Texts, before it shows up, because <object
+type="tFlexx"
+></object
+> filters that list using settings <object
+type="tFlextrans"
+></object
+> cannot see. The Abbreviation and Comment of the new text are left empty for you to fill in, since a single chapter’s would be wrong for a whole book. Finally, if the text <object
+type="tFlextrans"
+></object
+> was set up to translate was one of the ones you merged, the source text setting is moved on to the merged text for you.</p
 ></section2
 ></section1
 ><section1
