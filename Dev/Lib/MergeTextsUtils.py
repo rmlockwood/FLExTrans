@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.1 - 9/11/26 - Ron Lockwood
+#    Fixes #1561. Report chapter coverage only when every selected text has a chapter.
+#
 #   Version 3.17 - 9/9/26 - Ron Lockwood
 #    Initial version.
 #
@@ -53,7 +56,8 @@
 #   textNameSortKey - the reading-order key described above; built on parseTextName and naturalSortKey.
 #   groupTextNames - names to [(displayBase, orderedNameList)], multi-member groups only.
 #   mergedTextName - the range name for a group.
-#   chapterRangeList / chapterCoverage - what a selection covers, as plain numbers the dialog turns into a translated sentence: the range, and any gaps or overlaps in it.
+#   chapterRangeList / chapterCoverage - what a selection covers, as plain numbers the dialog turns into a translated sentence: the range, and any gaps or overlaps in it. chapterCoverage says
+#   nothing at all unless every name in the selection carries a chapter, so a merge of ordinary texts is never described as though it were scripture.
 #
 
 import re
@@ -229,7 +233,10 @@ def chapterRangeList(orderedNameList):
 
 def chapterCoverage(orderedNameList):
 
-    """What a selection covers, as (lowChap, highChap, missingList, overlapList), or None when nothing in it carries a chapter.
+    """What a selection covers, as (lowChap, highChap, missingList, overlapList), or None when the selection is not a run of chapters.
+
+    EVERY name has to carry a chapter, not just one of them. A mixture - say "Examples from Chapter 8" picked alongside a text called "Words" - is not a chapter run at all, and describing its
+    coverage would quietly drop the names that have no chapter and then announce a range and a gap check the user never asked for, which reads as FLExTrans having decided the texts are scripture.
 
     Deliberately structured rather than a ready-made sentence: this file has no user-facing strings and therefore no .ts file, so the wording has to be assembled by the caller in order to be
     translatable. MergeTextsDlg.coverageDescription() is that caller.
@@ -237,7 +244,8 @@ def chapterCoverage(orderedNameList):
 
     rangeList = chapterRangeList(orderedNameList)
 
-    if not rangeList:
+    # chapterRangeList leaves out the names with no chapter, so a rangeList shorter than the selection means at least one selected text is not a chapter of anything.
+    if not rangeList or len(rangeList) < len(orderedNameList):
 
         return None
 
