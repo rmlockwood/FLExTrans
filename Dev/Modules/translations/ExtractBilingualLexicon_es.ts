@@ -25,17 +25,17 @@ This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.</source>
-      <translation>Este módulo creará un léxico bilingüe para dos proyectos. El proyecto configurado en FlexTools es su proyecto de origen. Configure el Proyecto de destino en Configuración con el nombre de su proyecto de destino.
-Este módulo crea el léxico bilingüe basándose en los enlaces entre los sentidos de origen y los sentidos de destino presentes en su proyecto de origen. Utilice el módulo Sense Linker para crear estos enlaces.
+      <translation>Este módulo creará un léxico bilingüe para dos proyectos. El proyecto configurado en FlexTools es tu proyecto de origen. Configura el Proyecto de destino en Configuración con el nombre de tu proyecto de destino.
+Este módulo crea el léxico bilingüe basándose en los enlaces entre los sentidos de origen y los sentidos de destino presentes en tu proyecto de origen. Utiliza el módulo Sense Linker para crear estos enlaces.
 El léxico bilingüe se almacenará en el archivo especificado en la configuración del archivo de salida del diccionario bilingüe.
 Este archivo se suele llamar bilingual.dix y suele estar en la carpeta de salida.
 
-Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEditorModule}. Consulte el documento de ayuda para obtener más información.</translation>
+Puedes realizar cambios personalizados en el léxico bilingüe utilizando {replEditorModule}. Consulta el documento de ayuda para obtener más información.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="273"/>
       <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
-      <translation>El campo personalizado para enlazar no existe. Por favor, lea las instrucciones.</translation>
+      <translation>El campo personalizado para enlazar no existe. Lee las instrucciones.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="276"/>
@@ -55,7 +55,7 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEd
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="299"/>
       <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
-      <translation>El campo personalizado: {linkField} no existe. Por favor, lea las instrucciones.</translation>
+      <translation>El campo personalizado: {linkField} no existe. Lee las instrucciones.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="321"/>
