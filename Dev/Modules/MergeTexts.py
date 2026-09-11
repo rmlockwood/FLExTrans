@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.1 - 9/11/26 - Ron Lockwood
+#    Fixes #1560. Say 'multiple texts' instead of 'several texts' in the module synopsis, description and the window's intro label, since a merge can be of just two texts.
+#
 #   Version 3.17 - 9/9/26 - Ron Lockwood
 #    Initial version.
 #
@@ -98,12 +101,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'MergeTextsDlg', 'Mer
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("MergeTexts", "Merge Texts"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("MergeTexts", "Combine several texts into one, keeping all of the interlinear analyses."),
+        FTM_Synopsis   : _translate("MergeTexts", "Combine multiple texts into one, keeping all of the interlinear analyses."),
         FTM_Help       : "",
         FTM_Description: _translate("MergeTexts",
-"""Combine several texts into one new text. This is meant for Bible books that were imported one chapter at a time - texts named
+"""Combine multiple texts into one new text. This is meant for Bible books that were imported one chapter at a time - texts named
 Matthew 01, Matthew 02, Matthew 03-04 and so on get merged into a single text named for the range of chapters, e.g. Matthew 01-28.
 The module suggests these groups by looking at the text names, and you can also choose the texts yourself and put them in any order.
 No interlinear work is lost. Each word keeps the analysis and gloss that was approved for it, and each sentence keeps its free

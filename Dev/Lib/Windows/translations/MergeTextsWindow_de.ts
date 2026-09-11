@@ -80,7 +80,7 @@
     </message>
     <message>
         <location filename="../MergeTextsWindow.py" line="154" />
-        <source>Combine several texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes.</source>
+        <source>Combine multiple texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes.</source>
         <translation>Mehrere Texte zu einem neuen Text zusammenführen. Jedes Wort behält seine Interlinearanalyse, seine Glosse, seine freie Übersetzung und seine Anmerkungen.</translation>
     </message>
 </context>

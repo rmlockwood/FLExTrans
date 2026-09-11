@@ -151,7 +151,7 @@ class Ui_MergeTextsWindow(object):
     def retranslateUi(self, MergeTextsWindow):
         _translate = QtCore.QCoreApplication.translate
         MergeTextsWindow.setWindowTitle(_translate("MergeTextsWindow", "Merge Texts"))
-        self.introLabel.setText(_translate("MergeTextsWindow", "Combine several texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes."))
+        self.introLabel.setText(_translate("MergeTextsWindow", "Combine multiple texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes."))
         self.backupWarningLabel.setText(_translate("MergeTextsWindow", "<b>This CANNOT be undone</b>, in FLExTrans or in FLEx. Back up your FLEx project first, and make sure you are NOT in the Texts &amp; Words section of FLEx."))
         self.groupLabel.setText(_translate("MergeTextsWindow", "Book or group:"))
         self.availableLabel.setText(_translate("MergeTextsWindow", "Other texts in the project:"))
