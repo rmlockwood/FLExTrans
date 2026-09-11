@@ -40,12 +40,12 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEd
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="276"/>
       <source>No Source Morphnames to count as root found. Review your Settings.</source>
-      <translation>No se encontraron nombres de morfemas fuente para contar como raíz. Revise su configuración.</translation>
+      <translation>No se encontraron nombres de morfemas fuente para contar como raíz. Revisa tu configuración.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="279"/>
       <source>No Sentence Punctuation found. Review your Settings.</source>
-      <translation>No se encontraron signos de puntuación de oración. Revise su configuración.</translation>
+      <translation>No se encontraron signos de puntuación de oración. Revisa tu configuración.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="289"/>
