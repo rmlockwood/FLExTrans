@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="introLabel">
      <property name="text">
-      <string>Combine several texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes.</string>
+      <string>Combine multiple texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
