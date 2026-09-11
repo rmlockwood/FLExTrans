@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.1 - 9/11/26 - Ron Lockwood
+#    Fixes #1561. Word the coverage sentence in the singular for one chapter.
+#
 #   Version 3.17 - 9/9/26 - Ron Lockwood
 #    Initial version.
 #
@@ -549,7 +552,7 @@ class MergeTextsDlg(QDialog):
 
     def coverageDescription(self, nameList):
 
-        """A sentence saying which chapters the selection covers and whether any are missing or doubled. Empty when nothing in the selection carries a chapter number.
+        """A sentence saying which chapters the selection covers and whether any are missing or doubled. Empty unless every text in the selection carries a chapter number.
 
         MergeTextsUtils.chapterCoverage deliberately hands back plain numbers rather than a ready-made sentence, because that file has no .ts of its own. The wording is assembled here so that it
         goes through _translate and appears in the interface language.
@@ -563,7 +566,13 @@ class MergeTextsDlg(QDialog):
 
         lowChap, highChap, missingList, overlapList = coverage
 
-        descriptionStr = _translate("MergeTextsDlg", "Covers chapters {lowChap} to {highChap}.").format(lowChap=lowChap, highChap=highChap)
+        # "Covers chapters 8 to 8." reads like a mistake, so a selection that lands on one chapter gets the singular wording instead of a range with the same number at both ends.
+        if lowChap == highChap:
+
+            descriptionStr = _translate("MergeTextsDlg", "Covers chapter {chapNum}.").format(chapNum=lowChap)
+
+        else:
+            descriptionStr = _translate("MergeTextsDlg", "Covers chapters {lowChap} to {highChap}.").format(lowChap=lowChap, highChap=highChap)
 
         if missingList:
 
@@ -573,7 +582,8 @@ class MergeTextsDlg(QDialog):
 
             descriptionStr += ' ' + _translate("MergeTextsDlg", "Covered twice: {chapterList}.").format(chapterList=', '.join([str(chapNum) for chapNum in overlapList]))
 
-        if not missingList and not overlapList:
+        # A single chapter cannot have a gap in it, so the reassurance would be noise there. It is only worth saying when the selection spans a range that could have had one.
+        if not missingList and not overlapList and lowChap != highChap:
 
             descriptionStr += ' ' + _translate("MergeTextsDlg", "No gaps.")
 

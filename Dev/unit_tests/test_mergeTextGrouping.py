@@ -186,8 +186,18 @@ class TestChapterCoverage(unittest.TestCase):
     def test_no_chapters_gives_none(self):
         self.assertIsNone(chapterCoverage(['Field notes', 'Interview']))
 
+    # Issue #1561: a chapter picked alongside an ordinary text is not a chapter run, so there is nothing to say about its coverage.
+    def test_only_some_names_have_chapters_gives_none(self):
+        self.assertIsNone(chapterCoverage(['Examples from Chapter 8', 'Words']))
+
+    def test_one_chapter_plus_several_plain_names_gives_none(self):
+        self.assertIsNone(chapterCoverage(['Matthew 01', 'Field notes', 'Interview']))
+
     def test_single_text(self):
         self.assertEqual(chapterCoverage(['Matthew 01']), (1, 1, [], []))
+
+    def test_empty_selection_gives_none(self):
+        self.assertIsNone(chapterCoverage([]))
 
 if __name__ == "__main__":
     unittest.main()
