@@ -80,7 +80,7 @@ Puedes realizar cambios personalizados en el léxico bilingüe utilizando {replE
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="391"/>
       <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
-      <translation>Se encontró una entrada con uno de los siguientes caracteres no válidos: {chars} en {rawHeadWord}. Por favor, corríjalo en el léxico antes de continuar.</translation>
+      <translation>Se encontró una entrada con uno de los siguientes caracteres no válidos: {chars} en {rawHeadWord}. Por favor, corrígelo en el léxico antes de continuar.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="418"/>
