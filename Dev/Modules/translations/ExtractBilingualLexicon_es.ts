@@ -25,27 +25,27 @@ This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.</source>
-      <translation>Este módulo creará un léxico bilingüe para dos proyectos. El proyecto configurado en FlexTools es su proyecto de origen. Configure el Proyecto de destino en Configuración con el nombre de su proyecto de destino.
-Este módulo crea el léxico bilingüe basándose en los enlaces entre los sentidos de origen y los sentidos de destino presentes en su proyecto de origen. Utilice el módulo Sense Linker para crear estos enlaces.
+      <translation>Este módulo creará un léxico bilingüe para dos proyectos. El proyecto configurado en FlexTools es tu proyecto de origen. Configura el Proyecto de destino en Configuración con el nombre de tu proyecto de destino.
+Este módulo crea el léxico bilingüe basándose en los enlaces entre los sentidos de origen y los sentidos de destino presentes en tu proyecto de origen. Utiliza el módulo Sense Linker para crear estos enlaces.
 El léxico bilingüe se almacenará en el archivo especificado en la configuración del archivo de salida del diccionario bilingüe.
 Este archivo se suele llamar bilingual.dix y suele estar en la carpeta de salida.
 
-Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEditorModule}. Consulte el documento de ayuda para obtener más información.</translation>
+Puedes realizar cambios personalizados en el léxico bilingüe utilizando {replEditorModule}. Consulta el documento de ayuda para obtener más información.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="273"/>
       <source>Custom field for linking doesn&apos;t exist. Please read the instructions.</source>
-      <translation>El campo personalizado para enlazar no existe. Por favor, lea las instrucciones.</translation>
+      <translation>El campo personalizado para enlazar no existe. Lee las instrucciones.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="276"/>
       <source>No Source Morphnames to count as root found. Review your Settings.</source>
-      <translation>No se encontraron nombres de morfemas fuente para contar como raíz. Revise su configuración.</translation>
+      <translation>No se encontraron nombres de morfemas fuente para contar como raíz. Revisa tu configuración.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="279"/>
       <source>No Sentence Punctuation found. Review your Settings.</source>
-      <translation>No se encontraron signos de puntuación de oración. Revise su configuración.</translation>
+      <translation>No se encontraron signos de puntuación de oración. Revisa tu configuración.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="289"/>
@@ -55,7 +55,7 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEd
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="299"/>
       <source>Custom field: {linkField} doesn&apos;t exist. Please read the instructions.</source>
-      <translation>El campo personalizado: {linkField} no existe. Por favor, lea las instrucciones.</translation>
+      <translation>El campo personalizado: {linkField} no existe. Lee las instrucciones.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="321"/>
@@ -75,12 +75,12 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEd
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="388"/>
       <source>Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.</source>
-      <translation>Se encontró una entrada con espacios al principio o al final mientras se procesaba la entrada fuente: {rawHeadWord}. Los espacios fueron eliminados, pero por favor corríjalo en el léxico.</translation>
+      <translation>Se encontró una entrada con espacios al principio o al final mientras se procesaba la entrada fuente: {rawHeadWord}. Los espacios fueron eliminados, pero por favor corrígelo en el léxico.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="391"/>
       <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
-      <translation>Se encontró una entrada con uno de los siguientes caracteres no válidos: {chars} en {rawHeadWord}. Por favor, corríjalo en el léxico antes de continuar.</translation>
+      <translation>Se encontró una entrada con uno de los siguientes caracteres no válidos: {chars} en {rawHeadWord}. Por favor, corrígelo en el léxico antes de continuar.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="418"/>
@@ -120,17 +120,17 @@ Puede realizar cambios personalizados en el léxico bilingüe utilizando {replEd
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="520"/>
       <source>No Morph Type. Skipping. {rawHeadWord} Best Vern: {vernString}</source>
-      <translation>Sin tipo de morfema. Omitiendo. {rawHeadWord} Mejor Vern: {vernString}</translation>
+      <translation>Sin tipo de morfema. Omitiendo. {rawHeadWord} Mejor vernáculo: {vernString}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="546"/>
       <source>There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con el Archivo de Reemplazo del Diccionario Bilingüe: {replFile}. Por favor, revise la configuración del archivo.</translation>
+      <translation>Hay un problema con el Archivo de reemplazo del diccionario bilingüe: {replFile}. Por favor, revisa la configuración del archivo.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="573"/>
       <source>There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.</source>
-      <translation>Hubo un problema al crear el Archivo de Salida del Diccionario Bilingüe: {fullPathBilingFile}. Por favor, revise la configuración del archivo.</translation>
+      <translation>Hubo un problema al crear el Archivo de salida del diccionario bilingüe: {fullPathBilingFile}. Por favor, revisa la configuración del archivo.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="577"/>
