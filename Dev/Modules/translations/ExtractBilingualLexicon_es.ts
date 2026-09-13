@@ -75,7 +75,7 @@ Puedes realizar cambios personalizados en el léxico bilingüe utilizando {replE
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="388"/>
       <source>Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.</source>
-      <translation>Se encontró una entrada con espacios al principio o al final mientras se procesaba la entrada fuente: {rawHeadWord}. Los espacios fueron eliminados, pero por favor corríjalo en el léxico.</translation>
+      <translation>Se encontró una entrada con espacios al principio o al final mientras se procesaba la entrada fuente: {rawHeadWord}. Los espacios fueron eliminados, pero por favor corrígelo en el léxico.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="391"/>
@@ -120,17 +120,17 @@ Puedes realizar cambios personalizados en el léxico bilingüe utilizando {replE
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="520"/>
       <source>No Morph Type. Skipping. {rawHeadWord} Best Vern: {vernString}</source>
-      <translation>Sin tipo de morfema. Omitiendo. {rawHeadWord} Mejor Vern: {vernString}</translation>
+      <translation>Sin tipo de morfema. Omitiendo. {rawHeadWord} Mejor vernáculo: {vernString}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="546"/>
       <source>There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con el Archivo de Reemplazo del Diccionario Bilingüe: {replFile}. Por favor, revise la configuración del archivo.</translation>
+      <translation>Hay un problema con el Archivo de reemplazo del diccionario bilingüe: {replFile}. Por favor, revisa la configuración del archivo.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="573"/>
       <source>There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.</source>
-      <translation>Hubo un problema al crear el Archivo de Salida del Diccionario Bilingüe: {fullPathBilingFile}. Por favor, revise la configuración del archivo.</translation>
+      <translation>Hubo un problema al crear el Archivo de salida del diccionario bilingüe: {fullPathBilingFile}. Por favor, revisa la configuración del archivo.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="577"/>
