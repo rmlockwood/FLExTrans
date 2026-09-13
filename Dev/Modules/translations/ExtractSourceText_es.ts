@@ -32,7 +32,7 @@ This is typically called source_text-aper.txt and is usually in the Build folder
     <message>
       <location filename="../ExtractSourceText.py" line="272"/>
       <source>There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con la ruta del Archivo de Salida del Texto Analizado: {path}. Por favor, revise la configuración del archivo.</translation>
+      <translation>Hay un problema con la ruta del Archivo de salida del texto analizado: {path}. Por favor, revisa la configuración del archivo.</translation>
     </message>
     <message>
       <location filename="../ExtractSourceText.py" line="288"/>
@@ -42,12 +42,12 @@ This is typically called source_text-aper.txt and is usually in the Build folder
     <message>
       <location filename="../ExtractSourceText.py" line="321"/>
       <source>There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con la ruta del Archivo de Resultados de Tree Tran: {path}. Por favor, revise la configuración del archivo.</translation>
+      <translation>Hay un problema con la ruta del Archivo de resultados de Tree Tran: {path}. Por favor, revisa la configuración del archivo.</translation>
     </message>
     <message>
       <location filename="../ExtractSourceText.py" line="369"/>
       <source>Sentence {sentNum} from TreeTran not found</source>
-      <translation>No se encontró la oración {sentNum} de TreeTran.</translation>
+      <translation>No se encontró la oración {sentNum} de TreeTran</translation>
     </message>
     <message>
       <location filename="../ExtractSourceText.py" line="390"/>
@@ -62,7 +62,7 @@ This is typically called source_text-aper.txt and is usually in the Build folder
     <message>
       <location filename="../ExtractSourceText.py" line="455"/>
       <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
-      <translation>No se encontró la oración: {sentNum}. Verifique que los análisis correctos estén presentes.</translation>
+      <translation>No se encontró la oración: {sentNum}. Verifica que los análisis correctos estén presentes.</translation>
     </message>
     <message>
       <location filename="../ExtractSourceText.py" line="463"/>
