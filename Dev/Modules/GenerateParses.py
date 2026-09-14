@@ -1,18 +1,8 @@
 #
 #   GenerateParses
 #
-#   Create a list of all word parses that can be generated from a FLEx project with
-#   lexicon, grammatical categories, and templates for some of the categories.
-#
-#   Finds inflectional affixes (and clitics) that could go on each kind of word
-#   and generates all possible parses (morphological representations).
-#   The resulting file can be used with a Synthesis module to produce inflected words.
-#
-#   Unhandled scenarios: variant forms without senses (skipped),
-#   multiple grammatical categories, multiple MSAs for affixes,
-#   clitics (which form in parses? don't currently appear in surface forms), putting
-#   the correct homograph/sense number on root glosses
-#
+#   Version 3.17.1 - 9/12/26 - Ron Lockwood
+#    Count only stems that can generate output against the stem limit. Added the code description block.
 #
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
@@ -73,6 +63,55 @@
 #   Ron Lockwood
 #   SIL International
 #
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module walks a target FLEx project's lexicon and writes out every inflected word form that the project's affix templates are able to produce. It is the input generator for
+#   the Synthesis Test workflow: you run it to get an exhaustive list of parses, feed that list to a Synthesizer module, and then compare what the synthesizer actually produced
+#   against what the lexicon and the templates said should have been possible. That comparison is how a target project's morphology gets shaken out before the project is used for
+#   real translation.
+#
+#   Generation is driven entirely by the inflectional affix templates, not by any text data. For each stem the module finds the templates attached to the stem's category, and for
+#   each template it takes the cross product of every affix sitting in each of that template's slots (plus the empty string for a slot that is optional). Clitics are then appended
+#   to each form that comes out. The result is combinatorial, so a project of any size produces a very large file - which is why the Synthesis Test settings exist to narrow a run
+#   down to one category, one citation form, or a random sample of N stems.
+#
+#   THE TWO OUTPUT FILES
+#
+#   Every generated word is written twice, to two files that have to stay line-for-line parallel. The Transfer Results File gets the Apertium form (^lexeme1.1<pos><tag>...$), which
+#   is what a Synthesizer module consumes. The Parses Output File gets the human readable form, built from glosses rather than lexeme forms, so that a person can read down the list
+#   and see what each line was meant to mean. The parses file starts with a blank line because the synthesized file it will be compared against also starts with one; remove that
+#   line and every comparison afterward is off by one.
+#
+#   CATEGORY HIERARCHIES
+#
+#   FLEx grammatical categories form a tree - 'Transitive Verb' can sit under 'Verb' - and a template hung on a parent category applies to all of its descendants. get_cat2focus
+#   builds cat2focus, which maps each category to itself plus every category beneath it, so that a template found on 'Verb' also gets registered for the child categories. Note that
+#   categories are keyed throughout by abbreviation *plus* GUID (abbr2str), never by abbreviation alone, because FLEx is perfectly happy to let two different categories share an
+#   abbreviation.
+#
+#   THE STEM LIMIT
+#
+#   The SynthesisTestLimitStemCount setting is meant to mean 'generate from this many stems', and honoring it takes two steps that are easy to get backwards. standardSpellList
+#   collects every stem entry in the lexicon regardless of its category, so before that list is shuffled and sliced down to the limit it first has to be filtered to the stems that
+#   will actually produce output - and a stem produces output only if its own category is a focus category or if a derivational affix moves it into one. Slicing the unfiltered list
+#   instead fills the sample with a mix of usable and unusable stems, and the run then quietly generates from fewer stems than were asked for.
+#
+#   UNHANDLED SCENARIOS
+#
+#   Variant forms that have no senses of their own are skipped rather than resolved back to the entry they vary. An entry with more than one grammatical category is reduced to the
+#   category of its first sense, and an affix with more than one MSA is likewise reduced. Clitics are generated but it is not settled which form of a clitic belongs in a parse, and
+#   they do not currently show up in the surface forms. Root glosses get a hard-coded '1.1' homograph and sense number instead of the real ones from FLEx.
+#
+#   CODE STRUCTURE
+#
+#   name2str and abbr2str build the GUID-qualified keys described above. Slot and Template are dataclasses read out of FLEx by their fromDB methods; Template.generate yields the
+#   prefix/suffix tag combinations for one template, and Template.inflect wraps those around a stem and appends clitics, producing the (Apertium form, gloss form) pairs that get
+#   written out. get_cat2focus builds the category hierarchy map along with the set of focus categories, and get_templ_list collects the Active templates for those categories.
+#   stemYieldsOutput answers whether a single stem's category can reach a focus category, and is what filters the stem list before the limit is applied. get_stems then walks the
+#   filtered list and yields one entry per (stem, output category) pair, derived categories included. MainFunction ties it all together: read the settings, loop through the lexicon
+#   once to fill standardSpellList (stems), cat2CliticList (clitics), derivAffixList (derivational affixes) and slot2AffixList (inflectional affixes by slot), apply the stem limit,
+#   and then for every stem run every template belonging to its category and write both output files.
+#
 
 from dataclasses import dataclass
 import itertools
@@ -113,7 +152,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("GenerateParses", "Generate All Parses"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
         FTM_Help       : "",
@@ -264,6 +303,22 @@ def get_templ_list(myDB, cat2focus, report):
             templates[templObj.name] = templObj
 
     return cat2templ, templates
+
+# Will this stem produce any output? It will if its own category is one of the focus categories, or if a derivational affix moves it into one. Only stems that answer yes ever
+# reach the output files, so only those should be counted against the stem limit.
+def stemYieldsOutput(posKey, derivAffixList, outputCats):
+
+    if posKey in outputCats:
+
+        return True
+
+    for _, toPos, _ in derivAffixList[posKey]:
+
+        if toPos in outputCats:
+
+            return True
+
+    return False
 
 def get_stems(standardSpellList, derivAffixList, maxStems, outputCats):
     random.shuffle(standardSpellList)
@@ -533,7 +588,12 @@ def MainFunction(DB, report, modifyAllowed):
             else:
                 logger.info(_translate("GenerateParses", "Morph type {morphType} ignored.").format(morphType=morphType))
 
+    # standardSpellList holds every stem entry in the lexicon, including ones in categories we aren't generating for. Those have to be dropped before the sample is taken, otherwise
+    # they use up slots in it and the run generates from fewer stems than the user asked for - ask for five and get three because two of the five drawn were the wrong category.
+    standardSpellList = [stemInfo for stemInfo in standardSpellList if stemYieldsOutput(stemInfo[3], derivAffixList, outputCats)]
+
     if len(standardSpellList) > maxStems:
+
         random.shuffle(standardSpellList)
         standardSpellList = standardSpellList[:maxStems]
         standardSpellList.sort()
