@@ -11,7 +11,7 @@
     <message>
       <location filename="../FixFLExProjects.py" line="81"/>
       <source>Run the Find and Fix utility on the FLEx projects you choose.</source>
-      <translation>Ejecute la utilidad &quot;Buscar y Corregir&quot; en los proyectos FLEx que elija.</translation>
+      <translation>Ejecuta la utilidad "Buscar y Corregir"; en los proyectos FLEx que elijas.</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="83"/>
