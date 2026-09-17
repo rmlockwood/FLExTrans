@@ -18,8 +18,8 @@
       <source>Run the Find and Fix utility on the FLEx projects you choose. This is the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.</source>
-      <translation>Ejecute la utilidad &quot;Buscar y Corregir&quot; en los proyectos FLEx que elija. Esta es la misma utilidad que está disponible en FLEx. 
-No puede ejecutar esta utilidad en un proyecto que esté abierto actualmente en FLEx o en el proyecto fuente actual, incluso si no está abierto. Los errores corregidos se registran en el panel de informes.</translation>
+      <translation>Ejecuta la utilidad "Buscar y Corregir"; en los proyectos FLEx que elijas. Esta es la misma utilidad que está disponible en FLEx. 
+No puedes ejecutar esta utilidad en un proyecto que esté abierto actualmente en FLEx o en el proyecto fuente actual, incluso si no está abierto. Los errores corregidos se registran en el panel de informes.</translation>
     </message>
     <message>
       <location filename="../FixFLExProjects.py" line="209"/>
