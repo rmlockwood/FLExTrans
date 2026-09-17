@@ -11,12 +11,12 @@
     <message>
       <location filename="../FixUpSynthText.py" line="88"/>
       <source>Run a set of post-synthesis search and replace operations.</source>
-      <translation>Ejecute un conjunto de operaciones de búsqueda y reemplazo posteriores a la síntesis.</translation>
+      <translation>Ejecuta un conjunto de operaciones de búsqueda y reemplazo posteriores a la síntesis.</translation>
     </message>
     <message>
       <location filename="../FixUpSynthText.py" line="128"/>
       <source>The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.</source>
-      <translation>No se pudo encontrar el archivo de reglas: {textOutRulesFile}. Utilice el módulo "Text Out Rules" para definir las reglas.</translation>
+      <translation>No se pudo encontrar el archivo de reglas: {textOutRulesFile}. Utiliza el módulo "Reglas de salida de texto" para definir las reglas.</translation>
     </message>
     <message>
       <location filename="../FixUpSynthText.py" line="141"/>
