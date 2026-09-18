@@ -35,7 +35,7 @@ y afijos) en el archivo de salida de análisis especificado en la configuración
     <message>
       <location filename="../GenerateParses.py" line="171"/>
       <source>No tags found for slot {slotName} of template {templateName}. Skipping.</source>
-      <translation>No se encontraron etiquetas para el slot {slotName} de la plantilla {templateName}. Omitiendo.</translation>
+      <translation>No se encontraron etiquetas para el espacio {slotName} de la plantilla {templateName}. Omitiendo.</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="245"/>
@@ -60,12 +60,12 @@ y afijos) en el archivo de salida de análisis especificado en la configuración
     <message>
       <location filename="../GenerateParses.py" line="324"/>
       <source>  No focus POS. Please select at least one POS with a template.</source>
-      <translation>  Sin POS de enfoque. Por favor, seleccione al menos un POS con una plantilla.</translation>
+      <translation>  Sin categoría gramatical de enfoque. Por favor, selecciona al menos una categoría gramatical con una plantilla.</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="330"/>
       <source>  Only collecting templates for these POS: {focusPOS}</source>
-      <translation>  Solo recopilando plantillas para estos POS: {focusPOS}</translation>
+      <translation>  Solo recopilando plantillas para estas categorías gramaticales: {focusPOS}</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="334"/>
@@ -75,12 +75,12 @@ y afijos) en el archivo de salida de análisis especificado en la configuración
     <message>
       <location filename="../GenerateParses.py" line="345"/>
       <source>  Not limiting number of stems</source>
-      <translation>  No limitando el número de raíces</translation>
+      <translation>  No limitando el número de temas</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="348"/>
       <source>  Only generating on the first {maxStems} stems</source>
-      <translation>  Solo generando en las primeras {maxStems} raíces</translation>
+      <translation>  Solo generando en los primeros {maxStems} temas</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="353"/>
@@ -91,13 +91,13 @@ y afijos) en el archivo de salida de análisis especificado en la configuración
       <location filename="../GenerateParses.py" line="383"/>
       <source>  Only generating on stem [{lex}]
 </source>
-      <translation>  Solo generando en la raíz [{lex}]
+      <translation>  Solo generando en el tema [{lex}]
 </translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="393"/>
       <source>  Skipping Variant with {count} Senses: {lex}</source>
-      <translation>  Omitiendo variante con {count} sentidos: {lex}</translation>
+      <translation>  Omitiendo variante con {count} acepciones: {lex}</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="426"/>
@@ -112,22 +112,22 @@ y afijos) en el archivo de salida de análisis especificado en la configuración
     <message>
       <location filename="../GenerateParses.py" line="451"/>
       <source>Skipping deriv MSA for {lex}</source>
-      <translation>Omitiendo deriv MSA para {lex}</translation>
+      <translation>Omitiendo MSA derivado para {lex}</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="505"/>
       <source>MSA missing POS in {lexForm} {lex}</source>
-      <translation>MSA falta POS en {lexForm} {lex}</translation>
+      <translation>MSA sin categoría gramatical en {lexForm} {lex}</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="508"/>
       <source>POS msaPOS missing Abbreviation label</source>
-      <translation>POS msaPOS falta etiqueta de abreviatura</translation>
+      <translation>Falta la etiqueta de la abreviatura msaPOS en la categoría gramatical</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="513"/>
       <source>      Adding affix {lexForm} {lex} to slot [{slotName}]</source>
-      <translation>      Agregando afijo {lexForm} {lex} al slot [{slotName}]</translation>
+      <translation>      Agregando afijo {lexForm} {lex} al espacio [{slotName}]</translation>
     </message>
     <message>
       <location filename="../GenerateParses.py" line="517"/>
