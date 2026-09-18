@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.2 - 7/10/26 - Ron Lockwood
 #    Check the TreeTran result file with os.path.isfile() instead of opening and immediately closing it in a bare try/except.
 #
@@ -107,7 +110,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'Text
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractSourceText", "Extract Source Text"),
-        FTM_Version    : "3.16.2",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB: False,
         FTM_Synopsis   : _translate("ExtractSourceText", "Exports an Analyzed FLEx text into Apertium format."),
         FTM_Help : '',

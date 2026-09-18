@@ -1142,5 +1142,37 @@ class DeleteOldRules(GermanEnglishDoubleDefault):
         rules = Rule2Index(self.t1xFile)
         self.assertNotIn('def n simple (123)', rules)
 
+class RefuseOverwriteHandWrittenRule(GermanEnglishDoubleDefault):
+    '''When overwriting, a same-named rule that lacks the "Rule Assistant Description:"
+    marker was written by hand, so the Rule Assistant must refuse the whole write and
+    leave the file untouched rather than clobber it (issue #1455).'''
+
+    RuleFile = 'GermanEnglishDoubleDefaultOverwrite.xml'
+    TransferFile = 'HandWrittenOldRule.t1x'
+
+    def runTest(self):
+        # Don't call super().runTest(): we expect the write to be refused, so there is no compiled/transduced output to check.
+        prefix = os.path.join(TestFolder, self.__class__.__name__)
+        self.t1xFile = prefix + '.t1x'
+
+        if os.path.exists(self.t1xFile):
+            os.remove(self.t1xFile)
+
+        shutil.copy(os.path.join(DataFolder, self.TransferFile), self.t1xFile)
+        CreateApertiumRules.Utils.DATA = self.Data
+
+        report = Reporter()
+        path = os.path.join(DataFolder, self.RuleFile)
+        result = CreateApertiumRules.CreateRules('source', 'target', report, None, path, self.t1xFile, self.RuleNumber)
+        CreateApertiumRules.Utils.DATA = {}
+
+        # The write is refused: no rules created and an error reported.
+        self.assertFalse(result)
+        self.assertTrue(report.errors)
+
+        # The hand-written rule is still present and untouched in the file.
+        rules = Rule2Index(self.t1xFile)
+        self.assertIn('def n simple', rules)
+
 if __name__ == '__main__':
     unittest.main()

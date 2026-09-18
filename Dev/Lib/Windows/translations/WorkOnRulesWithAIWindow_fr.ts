@@ -5,8 +5,8 @@
     <name>WorkOnRulesWithAI</name>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="103"/>
-      <source>Work on Rules with AI</source>
-      <translation>Travailler sur les règles avec l'IA</translation>
+      <source>AI Rule Studio</source>
+      <translation>Studio de règles IA</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="104"/>
@@ -90,18 +90,13 @@
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="168"/>
-      <source>Modify or explain an existing rule</source>
-      <translation>Modifier ou expliquer une règle existante</translation>
+      <source>Modify or explain an existing rule or macro</source>
+      <translation>Modifier ou expliquer une règle ou une macro existante</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="157"/>
       <source>Create</source>
       <translation>Créer</translation>
-    </message>
-    <message>
-      <location filename="../WorkOnRulesWithAIWindow.py" line="159"/>
-      <source>Rule:</source>
-      <translation>Règle :</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAIWindow.py" line="162"/>
@@ -129,19 +124,59 @@
       <translation>p. ex. Supprimer l'affixe IND de la sortie.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
-        <source>Zoom:</source>
-        <translation>Zoom :</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="207"/>
+      <source>Zoom:</source>
+      <translation>Zoom :</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
-        <source>Magnify the preview text</source>
-        <translation>Agrandir le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="208"/>
+      <source>Magnify the preview text</source>
+      <translation>Agrandir le texte de l'aperçu</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
-        <source>Reduce the preview text</source>
-        <translation>Réduire le texte de l'aperçu</translation>
+      <location filename="../WorkOnRulesWithAIWindow.py" line="209"/>
+      <source>Reduce the preview text</source>
+      <translation>Réduire le texte de l'aperçu</translation>
+    </message>
+    <message>
+      <source>Rules</source>
+      <translation>Règles</translation>
+    </message>
+    <message>
+      <source>Macros</source>
+      <translation>Macros</translation>
+    </message>
+    <message>
+      <source>Create a macro instead of a rule</source>
+      <translation>Créer une macro au lieu d'une règle</translation>
+    </message>
+    <message>
+      <source>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</source>
+      <translation>Si cochée, l'IA crée une macro réutilisable au lieu d'une règle. Les macros contiennent une logique que plusieurs règles peuvent appeler.</translation>
+    </message>
+      <message>
+      <source>Open Rule File</source>
+      <translation>Ouvrir le fichier de règles</translation>
+    </message>
+    <message>
+      <source>Open the transfer rules file in the XML editor. After saving there, use Refresh Rules so this window picks up your changes.</source>
+      <translation>Ouvre le fichier de règles de transfert dans l’éditeur XML. Après y avoir enregistré, utilisez Actualiser les règles pour que cette fenêtre prenne en compte vos modifications.</translation>
+    </message>
+    <message>
+      <source>Model:</source>
+      <translation>Modèle :</translation>
+    </message>
+    <message>
+      <source>The model used for this run. Whichever model last worked becomes the default for the next run. The provider comes from the AI Provider setting in the FLExTrans Settings tool and cannot be changed here.</source>
+      <translation>Le modèle utilisé pour cette exécution. Le dernier modèle qui a fonctionné devient celui par défaut pour la prochaine fois. Le fournisseur provient du paramètre Fournisseur d'IA dans l'outil Paramètres de FLExTrans et ne peut pas être modifié ici.</translation>
+    </message>
+    <message>
+      <source>Open a temporary copy of the transfer rules file, with the rule just generated spliced into it, in the XML editor. Your real rule file is not touched - use Approve to write the rule into it. Available once a rule has been generated.</source>
+      <translation>Ouvre dans l’éditeur XML une copie temporaire du fichier de règles de transfert, avec la règle qui vient d’être générée insérée dedans. Votre véritable fichier de règles n’est pas modifié : utilisez Approuver pour y écrire la règle. Disponible dès qu’une règle a été générée.</translation>
+    </message>
+    <message>
+      <source>Write the rule shown in the preview into your transfer rules file. A copy of the file as it is now is saved in the Output\rule-file-history folder first, so nothing you already had is lost. Available once a valid rule has been generated, and disabled again after the write so the same rule cannot be written twice.</source>
+      <translation>Écrit la règle affichée dans l’aperçu dans votre fichier de règles de transfert. Une copie du fichier dans son état actuel est d’abord enregistrée dans le dossier Output\rule-file-history, afin que rien de ce que vous aviez déjà ne soit perdu. Disponible dès qu’une règle valide a été générée, puis désactivé après l’écriture pour que la même règle ne puisse pas être écrite deux fois.</translation>
     </message>
 </context>
 </TS>

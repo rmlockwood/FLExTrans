@@ -610,7 +610,7 @@ class Ui_LRTWindow(object):
         _translate = QtCore.QCoreApplication.translate
         LRTWindow.setWindowTitle(_translate("LRTWindow", "Live Rule Tester"))
         self.label_4.setText(_translate("LRTWindow", "Source Text"))
-        self.refreshSourceLexiconButton.setText(_translate("LRTWindow", "Refresh Source Lexicon"))
+        self.refreshSourceLexiconButton.setText(_translate("LRTWindow", "Refresh Source Project"))
         self.rebuildBilingLexButton.setText(_translate("LRTWindow", "Rebuild &Bilingual Lexicon"))
         self.viewBilingualLexiconButton.setText(_translate("LRTWindow", "&View Bilingual Lexicon"))
         self.editReplacementButton.setText(_translate("LRTWindow", "Replacement Dictionary Editor"))

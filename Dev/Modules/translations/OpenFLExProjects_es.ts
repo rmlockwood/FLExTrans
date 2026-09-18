@@ -34,6 +34,11 @@
       <translation>Cancelar</translation>
     </message>
     <message>
+      <location filename="../OpenFLExProjects.py" line="175"/>
+      <source>Could not find the FLEx executable: {flexExe}.</source>
+      <translation>No se pudo encontrar el ejecutable de FLEx: {flexExe}.</translation>
+    </message>
+    <message>
       <location filename="../OpenFLExProjects.py" line="168"/>
       <source>The {proj} project is already open. Skipping.</source>
       <translation>El proyecto {proj} ya está abierto. Omitiendo.</translation>

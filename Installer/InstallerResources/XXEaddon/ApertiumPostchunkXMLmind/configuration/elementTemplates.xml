@@ -42,25 +42,25 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="new">
-    <attr-item name="aaa"/>
+    <attr-item tags="aaa"/>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="attribute">
     <def-attr n="a_">
-      <attr-item name="aaa"/>
+      <attr-item tags="aaa"/>
     </def-attr>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="attribute_2">
     <def-attr n="a_">
-      <attr-item name="aaa"/>
-      <attr-item name="aaa"/>
+      <attr-item tags="aaa"/>
+      <attr-item tags="aaa"/>
     </def-attr>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="attribute_3">
     <def-attr n="a_">
-      <attr-item name="aaa"/>
-      <attr-item name="aaa"/>
-      <attr-item name="aaa"/>
+      <attr-item tags="aaa"/>
+      <attr-item tags="aaa"/>
+      <attr-item tags="aaa"/>
     </def-attr>
   </cfg:elementTemplate>
 

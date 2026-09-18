@@ -267,9 +267,13 @@ class TestLowercaseSection(unittest.TestCase):
     def test_two_sections(self):
         self.assertEqual(sub(r'x', r'\LFOO\E-\LBAR\E', 'x'), 'foo-bar')
 
-    def test_backref_inside_not_processed(self):
-        # \1 inside \L...\E is NOT expanded; its chars are lowercased literally (\→\, 1→1)
-        self.assertEqual(sub(r'(\w+)', r'\L\1\E', 'HELLO'), '\\1')
+    def test_backref_inside_is_case_forced(self):
+        # \1 inside \L...\E IS expanded and the whole group is lowercased, matching Perl/PCRE (and regex101)
+        self.assertEqual(sub(r'(\w+)', r'\L\1\E', 'HELLO'), 'hello')
+
+    def test_case_forcing_runs_to_end_without_E(self):
+        # A missing \E means the lowercasing continues to the end of the replacement pattern
+        self.assertEqual(sub(r'(\w+)', r'\L\1', 'HELLO'), 'hello')
 
 
 # ── \U...\E — uppercase literal section ──────────────────────────────────────
@@ -303,9 +307,25 @@ class TestUppercaseSection(unittest.TestCase):
     def test_two_sections(self):
         self.assertEqual(sub(r'x', r'\Ufoo\E-\Ubar\E', 'x'), 'FOO-BAR')
 
-    def test_backref_inside_not_processed(self):
-        # \1 inside \U...\E is NOT expanded; its chars are uppercased literally (\→\, 1→1)
-        self.assertEqual(sub(r'(\w+)', r'\U\1\E', 'hello'), '\\1')
+    def test_backref_inside_is_case_forced(self):
+        # \1 inside \U...\E IS expanded and the whole group is uppercased, matching Perl/PCRE (and regex101)
+        self.assertEqual(sub(r'(\w+)', r'\U\1\E', 'hello'), 'HELLO')
+
+    def test_case_forcing_runs_to_end_without_E(self):
+        # A missing \E means the uppercasing continues to the end of the replacement pattern
+        self.assertEqual(sub(r'(\w+)', r'\U\1', 'hello'), 'HELLO')
+
+    def test_case_forcing_ends_at_E_so_later_group_unaffected(self):
+        # The \E closes the section, so group 2 is inserted with its own case
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\U\1\E-\2', 'hello world'), 'HELLO-world')
+
+    def test_case_forcing_spans_groups_and_literals(self):
+        # Everything between \U and \E is uppercased, groups and literal text alike
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\U\1 \2\E', 'ab cd'), 'AB CD')
+
+    def test_literal_section_closed_before_group(self):
+        # The \E closes the section before the group, so the group keeps its own case
+        self.assertEqual(sub(r'(\w+)', r'\Uab\E\1', 'hello'), 'ABhello')
 
 
 # ── Mixed / complex patterns ──────────────────────────────────────────────────
@@ -367,18 +387,87 @@ class TestMixedPatterns(unittest.TestCase):
         # \lA → 'a', \uZ → 'Z'
         self.assertEqual(sub(r'x', r'\lA\uZ', 'x'), 'aZ')
 
+    def test_one_shot_lower_beats_enclosing_upper(self):
+        # \l applies to the first character only, and wins over the surrounding \U for that character
+        self.assertEqual(sub(r'(\w+)', r'\l\U\1\E', 'hello'), 'hELLO')
+
+    def test_one_shot_upper_beats_enclosing_lower(self):
+        # \u\L\1\E is the handy way to fix a word that was typed in all capitals
+        self.assertEqual(sub(r'(\w+)', r'\u\L\1\E', 'HELLO'), 'Hello')
+
+    def test_upper_section_then_lower_section_each_with_a_group(self):
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\U\1\E \L\2\E', 'abc DEF'), 'ABC def')
+
+    def test_pending_one_shot_carries_past_empty_group(self):
+        # Group 1 matches nothing, so the pending \u is still waiting and lands on group 2 instead
+        self.assertEqual(sub(r'()(bob)', r'\u\1\2', 'bob'), 'Bob')
+
+    def test_pending_one_shot_spent_on_uncased_literal(self):
+        # The '-' has no upper case form, so the \u is used up on it and 'zz' stays lower case
+        self.assertEqual(sub(r'()(zz)', r'\u\1-\2', 'zz'), '-zz')
+
+
+# ── A one-character modifier in the MIDDLE of a \U...\E or \L...\E run ────────
+#
+# This is the one corner of the syntax where the well known engines genuinely
+# disagree, so the expectations below record OUR choice rather than a standard.
+# For a replacement of \Uab\lcd\E the three answers are:
+#
+#   'ABcD'  GNU sed 4.9, and us:  \l takes one character, then the run resumes.
+#   'ABcd'  PCRE2 (so regex101):  \l replaces the run outright; the rest of the
+#           text is copied with no case forcing at all.
+#   'ABCD'  Perl:                 the enclosing \U wins and the \l is ignored.
+#
+# We follow the sed reading because it is the one that keeps both modifiers
+# meaning what they say: \l changes exactly one character and \U keeps forcing
+# until the \E that visibly closes it. Note that this disagreement is confined
+# to a bare \u or \l strictly inside a run - the \u\L and \l\U combinations, the
+# case forcing of group references, and where a run starts and stops are all
+# settled, and on those we match PCRE2 and Perl.
+
+class TestOneShotInsideRun(unittest.TestCase):
+
+    def test_lower_one_shot_inside_upper_run_on_literals(self):
+        self.assertEqual(sub(r'x', r'\Uab\lcd\E', 'x'), 'ABcD')
+
+    def test_upper_one_shot_inside_lower_run_on_literals(self):
+        self.assertEqual(sub(r'x', r'\Lab\uCD\E', 'x'), 'abCd')
+
+    def test_upper_run_resumes_for_the_rest_of_the_text(self):
+        # Only 'c' is lowered; 'def' shows the \U is still in force afterwards
+        self.assertEqual(sub(r'x', r'\Uab\lcdef\E', 'x'), 'ABcDEF')
+
+    def test_lower_one_shot_inside_upper_run_on_a_group(self):
+        # The \l lowers only the first character of group 2, then \U resumes
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\U\1 \l\2\E', 'abc def'), 'ABC dEF')
+
+    def test_upper_one_shot_inside_lower_run_on_a_group(self):
+        self.assertEqual(sub(r'(\w+) (\w+)', r'\L\1 \u\2\E', 'ABC DEF'), 'abc Def')
+
+    def test_two_one_shots_inside_one_run(self):
+        # Each \l consumes the character right after it, and \U applies to neither
+        self.assertEqual(sub(r'x', r'\Uab\lc\ld\E', 'x'), 'ABcd')
+
+    def test_one_shot_immediately_before_the_E(self):
+        # Nothing is left inside the run for the \l to act on
+        self.assertEqual(sub(r'x', r'\Uab\l\E', 'x'), 'AB')
+
+    def test_pending_one_shot_survives_the_E(self):
+        # The \l is still pending when \E ends the run, so it lands on the 'c' that follows
+        self.assertEqual(sub(r'x', r'\Uab\l\Ecd', 'x'), 'ABcd')
+
 
 # ── Edge cases ────────────────────────────────────────────────────────────────
 
 class TestEdgeCases(unittest.TestCase):
 
     def test_trailing_backslash_l(self):
-        # Pattern ends with \l (no following char to process): outputs literal \l
-        self.assertEqual(sub(r'x', r'\l', 'x'), '\\l')
+        # Pattern ends with \l, so the modifier has nothing to act on and produces nothing (Perl does the same)
+        self.assertEqual(sub(r'x', r'\l', 'x'), '')
 
     def test_trailing_backslash_u(self):
-        # Pattern ends with \u (no following char to process): outputs literal \u
-        self.assertEqual(sub(r'x', r'\u', 'x'), '\\u')
+        # Pattern ends with \u, so the modifier has nothing to act on and produces nothing (Perl does the same)
+        self.assertEqual(sub(r'x', r'\u', 'x'), '')
 
     def test_l_with_literal_non_backslash_char(self):
         # \lM → 'm' (M is not a backref, just lowercased)
@@ -415,7 +504,7 @@ class TestEdgeCases(unittest.TestCase):
 
 # ── Passthrough: other \ sequences must not be altered ───────────────────────
 #
-# Sequences not in {0-9, l, u, L, U} fall through to the else branch, which
+# Sequences not in {0-9, l, u, L, U, E} fall through to the else branch, which
 # outputs the backslash and then the next character separately.  The resulting
 # 2-char string is passed verbatim to regex.sub (callable API, no re-escaping).
 #
@@ -504,9 +593,10 @@ class TestPassthroughEscapes(unittest.TestCase):
     def test_backslash_x_passes_through(self):
         self.assertEqual(sub(r'x', r'\x', 'x'), '\\x')
 
-    def test_backslash_E_outside_section_passes_through(self):
-        # \E only has meaning as a terminator inside \L...\E or \U...\E
-        self.assertEqual(sub(r'x', r'\E', 'x'), '\\E')
+    def test_backslash_E_outside_section_is_discarded(self):
+        # \E is always recognized as the case-forcing terminator, so a stray one is simply dropped
+        # rather than passed through. Perl agrees, and even warns "Useless use of \E" about it.
+        self.assertEqual(sub(r'x', r'\E', 'x'), '')
 
     def test_backslash_c_passes_through(self):
         self.assertEqual(sub(r'x', r'\c', 'x'), '\\c')

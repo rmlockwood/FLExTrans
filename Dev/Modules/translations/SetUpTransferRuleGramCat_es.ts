@@ -63,5 +63,10 @@ Este módulo también rellenará la sección de categorías del archivo de regla
       <source>{catCount} categories added to the categories section.</source>
       <translation>{catCount} categorías agregadas a la sección de categorías.</translation>
     </message>
+    <message>
+      <location filename="../SetUpTransferRuleGramCat.py" line="577"/>
+      <source>The transfer rules file could not be saved to the rule file history folder, so it was left unchanged. The error was: {errorText}</source>
+      <translation>No se pudo guardar el archivo de reglas de transferencia en la carpeta del historial de archivos de reglas, por lo que no se modificó. El error fue: {errorText}</translation>
+    </message>
   </context>
 </TS>

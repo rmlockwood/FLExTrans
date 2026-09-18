@@ -6,7 +6,7 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="99"/>
       <source>Catalog Target Affixes</source>
-      <translation>Catalogar afijos objetivo</translation>
+      <translation>Catalogar afijos de destino</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="102"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="187"/>
       <source>There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.</source>
-      <translation>Hubo un problema al crear el archivo de Lista de Glosas de Prefijos de Destino: {filePath}. Por favor, revise la configuración del archivo de configuración.</translation>
+      <translation>Hubo un problema al crear el archivo de lista de glosas de prefijos de destino: {filePath}. Por favor, revisa la configuración del archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="252"/>
@@ -64,7 +64,7 @@
       <translation>{count} afijos/clíticos exportados al catálogo.</translation>
     </message>
     <message>
-      <location filename="../CatalogTargetAffixes.py" line="104"/>
+      <location filename="../CatalogTargetAffixes.py" line="105"/>
       <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the output window will show the SOURCE project

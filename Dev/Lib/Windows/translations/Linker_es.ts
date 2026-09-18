@@ -6,7 +6,7 @@
     <message>
       <location filename="../Linker.py" line="243"/>
       <source>FLExTrans Sense Linker Tool</source>
-      <translation>FLExTrans Herramienta de enlace de sentidos</translation>
+      <translation>Herramienta de enlace de sentidos FLExTrans</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="244"/>
@@ -21,7 +21,7 @@
     <message>
       <location filename="../Linker.py" line="246"/>
       <source>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation>Después de seleccionar el sentido deseado aquí, haga doble clic en la columna "Palabra principal objetivo" para la fila deseada para vincularla.</translation>
+      <translation>Después de seleccionar el sentido deseado aquí, haz doble clic en la columna "Palabra principal objetivo" para la fila deseada para vincularla.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="249"/>
@@ -89,17 +89,17 @@
       <translation>Sentidos para vincular:</translation>
     </message>
     <message>
-      <location filename="../Linker.py" line="247"/>
+      <location filename="../Linker.py" line="248"/>
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
-then double-click in the Target Head Word column for the desired row to link to it.</translation>
+      <translation>Escribe el principio de una entrada o cualquier texto (Si&apos;está marcada la opción &apos; "Filtrar en todos los campos"), 
+y, a continuación, haz doble clic en la columna "Palabra principal de destino" de la fila deseada para crear un enlace a esta.</translation>
     </message>
     <message>
-      <location filename="../Linker.py" line="260"/>
+      <location filename="../Linker.py" line="261"/>
       <source>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</source>
-      <translation>Exportar una lista de sentidos no vinculados a un archivo. Si "Ocultar nombres propios" está marcado, los nombres propios no se exportarán.</translation>
+      <translation>Exportar una lista de sentidos no vinculados a un archivo. Si la opción "Ocultar nombres propios" está marcada, los nombres propios no se exportarán.</translation>
     </message>
   </context>
 </TS>

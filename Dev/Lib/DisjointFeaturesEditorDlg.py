@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.4 - 6/19/26 - Ron Lockwood
 #    Disable the right-side editor widgets when no disjoint feature set exists; enable them when a set is added, disable again when deleted.
 #

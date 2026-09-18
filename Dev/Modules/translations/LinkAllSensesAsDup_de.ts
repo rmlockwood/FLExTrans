@@ -25,7 +25,7 @@ Dies setzt voraus, dass das Zielprojekt aus der Quelle kopiert wurde und alle Be
 eindeutigen Bezeichner (GUID) haben.</translation>
     </message>
     <message>
-      <location filename="../LinkAllSensesAsDup.py" line="106"/>
+      <location filename="../LinkAllSensesAsDup.py" line="107"/>
       <source>You need to run this module in &quot;modify mode.&quot;</source>
       <translation>Sie müssen dieses Modul im „Änderungsmodus“ ausführen.</translation>
     </message>

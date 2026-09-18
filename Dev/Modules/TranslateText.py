@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16 - 4/30/26 - Ron Lockwood
 #    Bump to version 3.16.
 #
@@ -71,7 +74,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
-        FTM_Version    : "3.16",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),
         FTM_Help       : "",

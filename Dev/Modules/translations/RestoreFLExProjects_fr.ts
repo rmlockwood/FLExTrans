@@ -63,6 +63,16 @@ L'outil attend qu'un projet soit ouvert avant de restaurer le suivant.</translat
       <translation>Impossible de trouver le dossier des projets exemples : {defaultFolder}.</translation>
     </message>
     <message>
+      <location filename="../RestoreFLExProjects.py" line="249"/>
+      <source>Could not find the FLEx executable: {flexExe}.</source>
+      <translation>Impossible de trouver l'exécutable FLEx : {flexExe}.</translation>
+    </message>
+    <message>
+      <location filename="../RestoreFLExProjects.py" line="271"/>
+      <source>Could not find the backup file: {backupPath}. Skipping.</source>
+      <translation>Impossible de trouver le fichier de sauvegarde : {backupPath}. Passage ignoré.</translation>
+    </message>
+    <message>
       <location filename="../RestoreFLExProjects.py" line="239"/>
       <source>Could not extract project name from {backupName}. Skipping.</source>
       <translation>Impossible d'extraire le nom du projet à partir de {backupName}. Passage ignoré.</translation>

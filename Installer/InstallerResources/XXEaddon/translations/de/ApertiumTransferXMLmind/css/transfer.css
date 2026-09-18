@@ -75,7 +75,7 @@ b
 
 begins-with:before
 {
-    content: " beginnt mit: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " beginnt mit: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 begins-with
 {
@@ -85,7 +85,7 @@ begins-with
 
 begins-with-list:before
 {
-    content: " beginnt mit etwas aus Liste: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " beginnt mit etwas aus Liste: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 begins-with-list
 {
@@ -213,7 +213,7 @@ concat
 
 contains-substring:before
 {
-    content: " enth‰lt Teilzeichenkette: " check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " enth‰lt Teilzeichenkette: " check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 contains-substring
 {
@@ -284,7 +284,7 @@ def-var
 
 ends-with:before
 {
-    content: " endet mit: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " endet mit: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 ends-with
 {
@@ -294,7 +294,7 @@ ends-with
 
 ends-with-list:before
 {
-    content: " endet mit etwas aus Liste: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " endet mit etwas aus Liste: "check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 ends-with-list
 {
@@ -304,7 +304,7 @@ ends-with-list
 
 equal:before
 {
-    content: " gleich: " check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " gleich: " check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 equal
 {
@@ -325,7 +325,7 @@ get-case-from
 
 in:before
 {
-    content: " in Liste: " check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " in Liste: " check-box(attribute, caseless, label, "Groﬂ-/Kleinschreibung ignorieren", unchecked-value, "no", checked-value, "yes");
 }
 in
 {

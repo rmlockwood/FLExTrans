@@ -61,6 +61,16 @@ The tool waits until one project is open before restoring the next.</source>
       <translation>No se pudo encontrar la carpeta de proyectos de muestra: {defaultFolder}.</translation>
     </message>
     <message>
+      <location filename="../RestoreFLExProjects.py" line="249"/>
+      <source>Could not find the FLEx executable: {flexExe}.</source>
+      <translation>No se pudo encontrar el ejecutable de FLEx: {flexExe}.</translation>
+    </message>
+    <message>
+      <location filename="../RestoreFLExProjects.py" line="271"/>
+      <source>Could not find the backup file: {backupPath}. Skipping.</source>
+      <translation>No se pudo encontrar el archivo de respaldo: {backupPath}. Omitiendo.</translation>
+    </message>
+    <message>
       <location filename="../RestoreFLExProjects.py" line="239"/>
       <source>Could not extract project name from {backupName}. Skipping.</source>
       <translation>No se pudo extraer el nombre del proyecto de {backupName}. Omitiendo.</translation>

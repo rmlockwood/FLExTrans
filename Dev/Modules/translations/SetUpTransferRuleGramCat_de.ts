@@ -62,5 +62,10 @@ should be overwritten.</source>
       <source>{catCount} categories added to the categories section.</source>
       <translation>{catCount} Kategorien zum Kategorienbereich hinzugefügt.</translation>
     </message>
+    <message>
+      <location filename="../SetUpTransferRuleGramCat.py" line="577"/>
+      <source>The transfer rules file could not be saved to the rule file history folder, so it was left unchanged. The error was: {errorText}</source>
+      <translation>Die Transferregeldatei konnte nicht im Ordner mit dem Regeldateiverlauf gespeichert werden und wurde daher nicht geändert. Der Fehler war: {errorText}</translation>
+    </message>
   </context>
 </TS>

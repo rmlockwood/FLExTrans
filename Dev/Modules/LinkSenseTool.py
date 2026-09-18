@@ -5,6 +5,33 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.17.4 - 9/8/26 - Ron Lockwood
+#    Undo the Apertium escaping of punctuation in the exported unlinked senses sentences and escape the cells for XML.
+#
+#   Version 3.17.3 - 9/8/26 - Ron Lockwood
+#    Fixes #1548. Wrap the exported unlinked senses table in a real HTML document with minimal styling.
+#
+#   Version 3.17.2 - 8/28/26 - Ron Lockwood
+#    Refixes #1031. Load the font settings from the same path they are saved to, use the computed path.
+#
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Updated the code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.7 - 8/21/26 - Ron Lockwood
+#    Set initial keyboard focus to the target search box.
+#
+#   Version 3.16.6 - 8/21/26 - Ron Lockwood
+#    Fixes #1499. Preserve focus on the Link it checkbox after it is toggled. Also give the Link it checkbox focus when it is pressed with the mouse.
+#
+#   Version 3.16.5 - 7/29/26 - Ron Lockwood
+#    Close and reopen the source project in MainFunction on restart so the cache is cleared and any source changes will get picked up.
+#
+#   Version 3.16.4 - 7/13/26 - Ron Lockwood
+#    Fixes #1437. When a target word is filled into an unlinked row, color the whole line green instead of just the target columns.
+#
 #   Version 3.16.3 - 7/10/26 - Ron Lockwood
 #    Type-annotation cleanup (no behavior change): typed the LinkerRow/LinkerTable attributes that start as None but are always populated before use (linkObj, font, callback, selectedHPG),
 #    let HPG.SenseNum be Optional[int], passed a QModelIndex() to rowCount, and ignored the dynamic FTPaths.CURRENT_SRC_TEXT global - clearing all the Pylance reportOptionalMemberAccess warnings.
@@ -149,25 +176,90 @@
 #
 #   earlier version history removed on 1/10/25
 #
-#   For a given text, display all the senses and if there is link data present
-#   show it. Otherwise do a fuzzy compare on gloss to suggest a possible link
-#   for the source sense. Senses where no suggestion could be made are also
-#   shown. The user can select a target sense from the combo box and then
-#   double-click on the target column to have that data inserted. Only rows
-#   that have a 1 showing in the first column will get changed in the source
-#   database. If the user clicks on the checkbox at the top, the list will be
-#   filtered down to just the senses that don't currently have a corresponding
-#   link to a target sense.
+#   OVERVIEW (AI generated, then edited)
 #
-#   Note that the user can change existing senses to be linked to something new.
-#   The fuzzy search is attempted as quick as possible by caching seen glosses
-#   and by not trying fuzzy searches if we get an exact match or if the gloss
-#   is short.
+#   This module lets the user link each source sense in a text to a sense in the target project. The link itself is stored in a sense-level custom text field in the source project (which field is
+#   set in the settings) as a FLEx hyperlink to the target sense. The module reads the interlinear data for the configured source text, builds a gloss map of every target sense whose morph type
+#   counts as a root, and then shows a window with often one table row per analyzed word occurrence. Where a sense already has a link, that link is shown; otherwise the module suggests a target sense by
+#   matching glosses. When the user clicks OK, only the rows the user linked or unlinked (via checkboxes) get written to the source database and optionally the bilingual lexicon gets rebuilt.
 #
-#   The table display will have duplicate senses since the same sense may occur 
-#   multiple times in a text. The object that goes with those senses will be
-#   the same and when it gets updated duplicates senses throughout the table
-#   will be updated.
+#   COLOR CODING
+#
+#   The background color of a row says where its link came from and what will happen to it when OK is clicked. The tests are applied in order, so the first one that matches wins:
+#    - Yellow (first column only) - this row will change the database: either a link will be written or an existing link will be removed. This is the reliable "something will happen here" marker.
+#    - Pale green (whole row) - the user assigned a target sense to this row, or unchecked a row that was linked in the database. Either way the row now differs from what is in the database.
+#    - Medium cyan - a suggested link that came from an exact match on gloss.
+#    - Light cyan - a suggested link that came from a fuzzy match on gloss (75% or better similarity).
+#    - Pink - no link and no suggestion could be made. The user has to supply a target sense before the link checkbox can even be checked.
+#    - White - a link that already exists in the source database and hasn't been touched.
+#
+#   Text (foreground) color is a separate thing: source headwords are dark green, target headwords are dark blue, and on suggested rows only, the two grammatical category cells turn red when the
+#   source and target categories don't match. That is a warning that the glosses may line up but the two words may not really be equivalent.
+#
+#   WHY ONE SENSE CAN HAVE SEVERAL ROWS
+#
+#   There are two independent reasons, and they multiply with each other:
+#    - The same sense occurs more than once in the text. Each occurrence gets its own row, but all of those rows share one Link object, so checking, unchecking or retargeting any one of them
+#      updates all the others at the same time. 
+#    - The sense's gloss matched several target senses. Each candidate match gets its own row with its own Link object so the user can pick the right one out of the set.
+#
+#   When OK is clicked the rows are walked in table order and the first row that actually does something claims that source sense; every later row for the same sense is then skipped. So if the
+#   user checks two competing candidate rows for one sense, the earlier one in the table wins. Rows left unchecked do not claim the sense, so they never block a checked row further down.
+#
+#   LINKING TO A TARGET SENSE THAT ISN'T SHOWN
+#
+#   A pink row has no suggestion at all and a suggested row may have the wrong target, so the user often needs a target that isn't displayed on the row. The combo box at the top holds every target
+#   sense in the target project and is the way to get at it:
+#    - Type in the search box to find the sense. Normally this jumps the combo box to the first target headword that starts with what was typed. With the search anything box checked, the combo box
+#      is instead filtered down to the target senses whose headword, category or gloss contains the typed text anywhere.
+#    - With the wanted sense showing in the combo box, double-click the Target Head Word cell of the row. That copies the combo box selection into the row, checks the Link it! box and turns the row
+#      green. The first item in the combo box is **none**, which is how the user deliberately links a sense to nothing.
+#    - If the target sense doesn't exist yet, the Add Entry button opens a dialog to create it in the target project (pre-filled with the search box text when the search anything box is off). The
+#      new sense is appended to the combo box and selected, with the combo box flashing yellow, and can then be double-clicked into the row like any other.
+#
+#   OTHER KEY FEATURES
+#
+#   Unchecking the Link it! box on a white row removes that existing link from the database. The box can't be checked on a pink row until a target has been assigned to it. Show only unlinked filters
+#   the table down to senses where no row for that sense is checked, and hide proper nouns drops rows whose category is the proper noun category; the senses remaining count honors both. Gloss
+#   matching is kept fast by caching glosses already looked up, by skipping the fuzzy pass when there is an exact match, when the gloss is shorter than five characters and when the source word is a
+#   proper noun, and by not fuzzy comparing two glosses whose lengths differ by more than three. Glosses of *** (empty in FLEx) are never matched on. Changing the source text combo box saves that
+#   setting and restarts the tool on the new text. In One project mode the source project doubles as the target, shown in the target writing system, and each sense defaults to a self-link that only
+#   gets written if the user retargets it somewhere else. There's also an option to export the unlinked senses to an HTML file for review. This is useful when another person needs to give input as
+#   to which target words are the appropriate matches for the source words. The other person fills out the form and the linking person can add the appropriate links.
+#   That file is a full HTML document - a lightly styled table wrapped in a head and a body - so it opens looking like a table in a browser and survives being opened and filled in in Word.
+#
+#   OBJECTS
+#
+#   The data model is three small classes that stack on each other:
+#    - HPG - headword, POS (category) and gloss. It wraps one FLEx sense together with the display strings for it plus its sense number. The same class is used for both source and target senses,
+#      and it is what the target sense combo box is a list of.
+#    - Link - one source sense paired with at most one target sense, held as two HPGs. It carries the state everything else keys off of: initialStatus (unlinked, linked, exact suggestion or fuzzy
+#      suggestion), linkIt (the checkbox), and the modified and tgtModified flags. Both the row colors and the save logic are written in terms of these.
+#    - LinkerRow - one row of the table. It holds the verse number and a reference to a Link and delegates nearly every getter and setter through to that Link. Several rows pointing at the same
+#      Link object is exactly what makes duplicate occurrences of a sense update together. getDataByColumn() turns a column number into the string to display.
+#
+#   On top of those sit the Qt classes:
+#    - LinkerCombo - the QAbstractListModel behind the target sense combo box. Just a list of HPGs plus the right-to-left flag and the currently selected HPG.
+#    - LinkerTable - the QAbstractTableModel behind the table and where most of the interesting UI logic lives. Its data() answers every Qt role: the display strings, the background and foreground
+#      colors, the checkbox state, the font and the alignment. flags() decides which cells are checkable or editable, setData() handles a checkbox click, and the EditRole branch of data() is what a
+#      double-click on the target headword uses to stamp the combo box selection into a row.
+#    - Main - the QMainWindow. It owns the widgets (Ui_SenseLinkerWindow, generated from Lib/Windows/Linker.ui) and connects them up, and it keeps the full unfiltered row list alongside the
+#      filtered list the model is currently showing. Searching, filtering, font and zoom, Add Entry and OK/Cancel all live here.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the docs dictionary that FlexTools displays, the configurable constants and column numbers, the three data classes, the two Qt model classes, Main, then the module
+#   level functions, and finally the FlexToolsModule declaration at the very bottom that FlexTools looks for.
+#
+#   The module level functions come in roughly the order the work happens. getGlossMapAndTgtLexList() builds the map of target glosses and the combo box list, getHPGfromGuid() resolves a link that
+#   already exists in the custom field, getMatchesOnGloss() does the exact and then fuzzy gloss matching, getInterlinearText() pulls in the text, and processInterlinear() walks that text and builds
+#   the row list, with createMatchLinkList() and addLinkerRowsFromMatchLinkList() as its helpers. updateSourceDb() is the whole save side, and the outputHtml* helpers, buildHtmlDocument() and
+#   dumpVocab() write the unlinked senses HTML report.
+#
+#   Control flow: FlexTools calls MainFunction(), which loops calling RunModule() for as long as it returns RESTART_MODULE. That is what happens when the user picks a different source text, and the
+#   project gets closed and reopened each time around the loop so the cache is cleared and source changes get picked up. RunModule() reads the settings, opens the target project (or reuses the
+#   source project in One project mode), builds the gloss map, calls processInterlinear() to build the rows, shows the Main window, and once that window closes calls updateSourceDb() and optionally
+#   dumpVocab(). It returns one of RESTART_MODULE, ERROR_HAPPENED, NO_ERRORS or REBUILD_BILING, and on REBUILD_BILING MainFunction() rebuilds the bilingual lexicon before returning.
 #
 
 import re
@@ -175,6 +267,7 @@ import os
 import json
 import unicodedata
 import xml.etree.ElementTree as ET
+from xml.sax import saxutils
 import time
 from typing import Callable, Optional
 
@@ -222,7 +315,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.16.3",
+    FTM_Version    : "3.17.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -252,6 +345,17 @@ Set which custom field is used for linking in the settings.""")}
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
+
+# The style sheet for the exported unlinked senses document. It's deliberately tiny - just enough for the table to read as a table instead of as loose words on a page. Every rule here is direction
+# neutral so an RTL project gets the same result as an LTR one: there is no text-align (the browser's default of start already follows the table's dir attribute) and nothing keyed to left or right.
+UNLINKED_SENSE_CSS = """
+table { border-collapse: collapse; }
+th, td { border: 1px solid #999999; padding: 3px 8px; }
+th { background-color: #dddddd; }
+td[colspan] { background-color: #f5f5f5; }
+td:empty { min-width: 120px; }
+"""
+
 LINKER_SETTINGS_FILE = "LinkerSettings.json"
 MAX_GLOSS_WARNINGS = 10
 
@@ -608,10 +712,9 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     
                     qColor = QtGui.QColor(QtGui.QColorConstants.Yellow)
                     
-                # Modified rows get a color just for the target columns
-                elif col >= COL_TGT_HEADWORD and col <= COL_TGT_GLOSS and (locData.getTgtModified() == True or \
-                                                                           (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.getLinkIt() == False)):
-                    
+                # Modified rows get a green background across the whole line, not just the target columns (fixes #1437). Column 0 is handled by the yellow branch above, so it keeps its link/unlink marker.
+                elif locData.getTgtModified() == True or (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.getLinkIt() == False):
+
                     qColor = QtGui.QColor(152, 251, 152) # pale green
                 
                 # Exact suggestion 
@@ -715,13 +818,15 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 self.__localData[row].setLinkIt(False)
                 self.__localData[row].setModified(True)
             
-            # Repaint columns link, target head-word, cat, gloss) when the checkbox is changed.
-            # Do this for all rows to display rows that are linked to the link object
-            for myCol in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
-                
-                for row in range(0,len(self.__localData)):
-                    newindex = self.index(row, myCol)    
-                    self.dataChanged.emit(newindex, newindex)
+            # Repaint the whole line for every row when the checkbox is changed, so a modified/linked row is fully green (fixes #1437), not just the target columns.
+            # Do this for all rows so rows that share the same link object update together.
+            lastCol = self.columnCount(QtCore.QModelIndex()) - 1
+
+            for row in range(0, len(self.__localData)):
+
+                topLeft = self.index(row, 0)
+                bottomRight = self.index(row, lastCol)
+                self.dataChanged.emit(topLeft, bottomRight)
             
             # Recalculate the senses to link 
             self.__callbackFunc()
@@ -743,6 +848,10 @@ class Main(QMainWindow):
         self.__fullData = myData
         self.headerData = headerData
         self.ui.tableView.setModel(self.__model)
+        tableViewport = self.ui.tableView.viewport()
+
+        if tableViewport:
+            tableViewport.installEventFilter(self)
         self.__comboData = comboData
         self.__comboModel = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__comboModel)
@@ -802,6 +911,21 @@ class Main(QMainWindow):
 
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
+        self.ui.searchTargetEdit.setFocus()
+
+    def eventFilter(self, watched, event):
+
+        # Make sure the focus stays on the clicked on checkbox.
+        if watched is self.ui.tableView.viewport() and event.type() == QtCore.QEvent.Type.MouseButtonPress:
+
+            index = self.ui.tableView.indexAt(event.position().toPoint())
+
+            if index.isValid() and index.column() == COL_LINK_IT:
+
+                self.ui.tableView.setCurrentIndex(index)
+                self.ui.tableView.setFocus()
+
+        return super().eventFilter(watched, event)
         
     def saveFontSettings(self):
 
@@ -826,7 +950,7 @@ class Main(QMainWindow):
         self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), LINKER_SETTINGS_FILE)
 
         try:
-            with open(LINKER_SETTINGS_FILE, "r", encoding="utf-8") as f:
+            with open(self.settingsPath, "r", encoding="utf-8") as f:
 
                 settings = json.load(f)
 
@@ -849,12 +973,11 @@ class Main(QMainWindow):
         if index.column() == COL_TGT_HEADWORD:
 
             self.__model.data(index, QtCore.Qt.ItemDataRole.EditRole)
-            
-            # Repaint the target headword, target POS, and target gloss columns
-            for col in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
-                
-                idx = self.__model.index(index.row(), col)
-                self.__model.dataChanged.emit(idx, idx)
+
+            # Repaint the whole row so the modified row turns green across the entire line, not just the target columns (fixes #1437).
+            topLeft = self.__model.index(index.row(), 0)
+            bottomRight = self.__model.index(index.row(), self.__model.columnCount(QtCore.QModelIndex()) - 1)
+            self.__model.dataChanged.emit(topLeft, bottomRight)
             
     def AddTargetEntry(self):
 
@@ -1188,10 +1311,16 @@ class Main(QMainWindow):
             QApplication.restoreOverrideCursor()    
 
     def CancelClicked(self):
+
         self.retVal = 0
         self.close()
         
     def filter(self):
+
+        # Save the current index so we can restore it after the filter is applied
+        currentIndex = self.ui.tableView.currentIndex()
+        currentRow = currentIndex.row()
+        currentColumn = currentIndex.column()
         self.__model.beginResetModel();
 
         # If both are unchecked, use the full list
@@ -1245,6 +1374,13 @@ class Main(QMainWindow):
             
         self.__model.endResetModel();
         self.rows = len(self.__model.getInternalData())
+
+        # Set focus to the saved row and column if they are still valid.
+        if 0 <= currentRow < self.rows and 0 <= currentColumn < self.cols:
+
+            self.ui.tableView.setCurrentIndex(self.__model.index(currentRow, currentColumn))
+            self.ui.tableView.setFocus()
+
         self.causeRepaint()
         self.ui.tableView.update()
         self.__model.resetInternalData()
@@ -1707,14 +1843,24 @@ def outputHtmlSentRow(tableObj, outSent, sentHPGlist, headerRow):
     
     for word in outSent.getWords():
         
-        surfaceForm = word.getSurfaceForm()
+        # Punctuation comes back from the interlinear data Apertium escaped, because TextWord.addInitialPunc() and addFinalPunc() store it that way for the transfer pipeline. This report doesn't
+        # want it, so undo it here. Otherwise Paratext markers show up as \\c and \\v instead of \c and \v, and reserved characters such as [ ] $ and * show up with a stray backslash in front of
+        # them. Surface forms are never stored escaped - setSurfaceForm() gets the raw paragraph text - so they don't go through this.
+        initialPunc = Utils.unescapeReservedApertChars(word.getInitialPunc())
+        finalPunc = Utils.unescapeReservedApertChars(word.getFinalPunc())
         
-        # If this is one of the key words going into the table, make it bold
+        # Now make all three pieces XML safe, since we assemble this cell as a string and parse it with ET.fromstring() below. This has to come after the unescaping above, which can expose a bare
+        # < or >, and the surface form needs it too - & is not an Apertium reserved character, so it arrives here raw and would fail that parse on its own.
+        initialPunc = saxutils.escape(initialPunc)
+        finalPunc = saxutils.escape(finalPunc)
+        surfaceForm = saxutils.escape(word.getSurfaceForm())
+        
+        # If this is one of the key words going into the table, make it bold. The tags go on after the escaping so they stay markup instead of being turned into visible text.
         if containsWord(sentHPGlist, word):
             
             surfaceForm = '<b>' + surfaceForm + '</b>'
             
-        fullSent += word.getInitialPunc() + surfaceForm + word.getFinalPunc()
+        fullSent += initialPunc + surfaceForm + finalPunc
         
     fullSent += '</td>'
     
@@ -1760,6 +1906,29 @@ def addIntroHtmlStuff(tableObj, srcDBname, tgtDBname):
     ET.SubElement(row, 'th').text = _translate("LinkSenseTool", 'Comment')
     
     return row
+
+def buildHtmlDocument(tableObj):
+
+    # Wrap the table in a real HTML document. On its own the table element is valid enough that a browser will render it, but with no borders, no padding and no shaded header row it reads as
+    # loose words rather than as a table. The row building functions above don't change - we just put a head and a body around what they produced.
+    htmlObj = ET.Element('html')
+
+    # If the table is right to left, make the whole document right to left too. Without this the RTL table sits against the left margin of an otherwise LTR page, which looks backwards to an RTL
+    # reader. The dir attribute stays on the table as well so nothing that looks for it there breaks.
+    if tableObj.get('dir') == 'rtl':
+
+        htmlObj.attrib['dir'] = 'rtl'
+
+    headObj = ET.SubElement(htmlObj, 'head')
+
+    # We write the file as UTF-8 (see below), so say so. Without this the browser guesses at the encoding and non-roman data can come out as mojibake.
+    ET.SubElement(headObj, 'meta', {'charset': 'utf-8'})
+    ET.SubElement(headObj, 'style').text = UNLINKED_SENSE_CSS
+
+    bodyObj = ET.SubElement(htmlObj, 'body')
+    bodyObj.append(tableObj)
+
+    return htmlObj
 
 def getFirstOccurringSent(myHPG, processedMap):
 
@@ -1849,11 +2018,14 @@ def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report
         # Build the path with the source text name
         htmlFileName = os.path.join(outputFolder, htmlFileName + UNLINKED_SENSE_FILENAME_PORTION)
         
-        # Write the html file
-        etObj = ET.ElementTree(tableObj)
+        # Serialize the document ourselves instead of using ElementTree.write(). We need a doctype line, which ElementTree can't produce, we don't want the XML declaration it would put in front
+        # of one, and we want real UTF-8 characters in the file rather than the numeric character references write() emits when it falls back to its us-ascii default.
+        htmlStr = '<!DOCTYPE html>\n' + ET.tostring(buildHtmlDocument(tableObj), encoding='unicode') + '\n'
         
+        # Write the html file
         try:
-            etObj.write(htmlFileName)
+            with open(htmlFileName, 'w', encoding='utf-8') as htmlFile:
+                htmlFile.write(htmlStr)
             
         except PermissionError:
             report.Error(_translate("LinkSenseTool", "Permission error writing {htmlFileName}. Perhaps the file is in use in another program?").format(htmlFileName=Utils.shortenPathForDisplay(htmlFileName)))
@@ -2124,6 +2296,18 @@ def MainFunction(DB, report, modify=False):
 
         retVal = RunModule(DB, report, configMap, app)
         
+        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
+        if retVal == RESTART_MODULE:
+
+            savedDBName = DB.ProjectName()
+            DB.CloseProject()
+            DB = Utils.openProject(report, savedDBName)
+
+            # If the reopen failed, bail out rather than looping with a closed project.
+            if not DB:
+
+                return
+
     if retVal == REBUILD_BILING:
         
         # Extract the bilingual lexicon. Force a complete rebuild instead of using the cache.        

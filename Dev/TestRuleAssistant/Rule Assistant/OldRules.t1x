@@ -134,6 +134,7 @@
       <action></action>
     </rule>
     <rule comment="def n simple (123)">
+      <!--Rule Assistant Description: -->
       <pattern>
         <pattern-item n="c_n" />
       </pattern>

@@ -5,6 +5,31 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17.6 - 9/8/26 - Ron Lockwood
+#    Warn in the error box when an accented letter sits inside a regular expression character class, since decomposition splits it and the class then never matches. Flag the affected
+#    rules when the rules are loaded as well as when one is clicked on or typed into.
+#
+#   Version 3.17.5 - 9/8/26 - Ron Lockwood
+#    Test XML elements for None rather than for truth, so that an element with no children under it is not read as missing.
+#
+#   Version 3.17.4 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
+#   Version 3.17.3 - 8/28/26 - Ron Lockwood
+#    Replaced the one-line description at the top with a code description block: overview, how a rule is applied, the window, cluster projects, objects and code structure.
+#
+#   Version 3.17.2 - 8/28/26 - Ron Lockwood
+#    The rules list and the test input/output boxes sit in a vertical splitter now, so their heights can be dragged; the sizes are remembered between sessions.
+#
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Fixed a crash on mousing over a cluster work-project combo box: QEvent.TypeEnter should be the PyQt6 scoped enum QEvent.Type.Enter.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.3 - 8/24/26 - Ron Lockwood
+#    Completed the #1350 case modifiers: \U...\E and \L...\E now case-force group references too, not just literal characters (Perl/regex101 semantics).
+#
 #   Version 3.16.2 - 6/30/26 - Ron Lockwood
 #    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay() (added import Utils).
 #
@@ -79,10 +104,114 @@
 #   Version 3.10.2 - 7/1/24 - Ron Lockwood
 #    Initial version.
 #
-#   Shared functions, classes and constants for text in and out processing.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This library is where the Text In Rules and Text Out Rules modules work is actually done. TextInRules.py and TextOutRules.py are thin wrappers that read the configuration file and then open the window
+#   class below, differing only in which configuration setting names the rules file and in the textIn flag. 
+#   
+#   A rule is a search string paired with a replacement string, optionally treated as a
+#   regular expression, optionally marked inactive, and optionally carrying a comment. Rules are stored in an XML file, one file per work project, named by the Text In Rules File / Text Out Rules
+#   File setting; when that setting is empty the module falls back to Output/fixup_paratext_rules.xml or Output/fixup_synthesis_rules.xml, creating the file if it isn't there.
+#
+#   The two rule sets are applied at opposite ends of the translation pipeline. Text In rules clean up the text coming out of Paratext as it is imported (ImportFromParatext). Text Out rules clean
+#   up the text coming out of synthesis, and several modules run them: ExportToParatext, InsertTargetText, EndTestbed, FixUpSynthText and the Live Rule Tester. Those modules don't open this window;
+#   they call applySearchReplaceRules() or applyTextOutRulesFromConfig() on the rules file the settings point at.
+#
+#   HOW A RULE IS APPLIED
+#
+#   Rules are applied in the order they appear in the file, each one to the output of the one before it, which is why the move up and move down buttons matter. Rules marked inactive are skipped
+#   entirely. Before each rule runs, both the text and the search string are normalized to decomposed Unicode (NFD), because that is how FLEx stores text while the user may well have typed the
+#   composed form into the search box.
+#
+#   That decomposition has one nasty interaction with regular expressions, which findComposedCharClasses() exists to warn about. Decomposing the search string rewrites what is inside the
+#   square brackets of a character class as well, so a class written as two accented letters becomes a four-character class of two base letters and two combining marks, and it then matches a bare
+#   vowel or a lone mark rather than either accented letter. The rule silently matches nothing, and since nothing raises there is no error to report for it. Everywhere else decomposition is
+#   harmless, because a base letter and its mark stay in sequence and still match decomposed text - which is why the alternation form is the fix the warning in the error box points the user at.
+#
+#   Note that a rule can be sitting in either Unicode form and is equally broken in both, so the check is not looking for precomposed characters. A rules file that has been through this tool is
+#   stored decomposed, which means the usual case on disk is a class that already holds base letters and separate combining marks rather than accented letters. readCharClassItem() is what makes
+#   one check cover both: it reads a base letter and the combining marks after it as a single member of the class, so a member is an accented letter whichever way the rule was written.
+#
+#   A plain rule is a straight string replacement. A rule marked RegEx goes through regex.sub() with a replacement callable built by create_replacer(). That function exists because Python's own
+#   replacement strings only understand backslash 1 through 9, while users write their rules against regex101.com, which follows Perl. So create_replacer() parses the replacement pattern itself and
+#   adds the case modifiers on top: \u and \l for the next character only, \U and \L to force case until \E or the end of the pattern, with \u and \l winning over an enclosing \U or \L for the
+#   one character they apply to. Its docstring has the details and the examples.
+#
+#   When a rule fails - almost always a bad regular expression - the run stops there rather than carrying on. applyRulesToString() returns the text as far as it got plus a message naming the
+#   offending rule by its 1-based number, so the Test button can show the user how much of the input made it through. applySearchReplaceRules(), which is what the other modules call, throws that
+#   partial text away and returns None instead, because those callers test for None to detect failure.
+#
+#   THE WINDOW
+#
+#   The top of the window edits one rule: the search box, the replace box, a comment box, the RegEx and Inactive checkboxes, and Add, Update and Delete. Clicking a rule in the list loads it into
+#   those boxes. Add inserts a new rule at the selected row - so at the top when nothing is selected - Update overwrites the selected rule, and Delete removes it.
+#
+#   Two methods watch for that composed-character trap and report it in the error box at the bottom. checkForComposedCharsInCharClass() follows the rule being edited, firing on every keystroke in
+#   the search box, on the RegEx checkbox and on a click in the rules list, and it names the offending characters and the alternation to use instead. checkRulesForComposedChars() runs once each
+#   time the rules are loaded and names the rules that have the problem, so a file full of regular expressions that quietly match nothing says so up front instead of waiting to be clicked on.
+#
+#   Both share the error box with the Add, Update, Test and folder-check messages, so they differ in what they will erase. The keystroke one remembers its own last message in composedWarningMsg
+#   and clears the box only when the message sitting there is that one, which keeps typing from wiping out an error another part of the window put there. The load-time one records nothing,
+#   because its message is about rules the user hasn't touched and should outlast clicking through them.
+#
+#   The list itself shows each rule as the search string, an arrow and the replace string, followed by (RegEx) if it is a regular expression, a no-entry sign if it is inactive, and the comment
+#   after a dash. Characters that would otherwise be invisible are shown as bracketed aliases - [SP], [TAB], [ZWSP], [RLM] and so on, from replacementsMap - so the user can see what a rule is
+#   really matching on.
+#
+#   Every rule in the list has a checkbox, and it is worth being clear about what those do: they control only which rules the Test button applies. They are not saved anywhere and they have no
+#   effect on what runs during a real translation - that is what the Inactive flag is for. The tri-state checkbox above the list flips them all at once.
+#
+#   Below the list are the test input and test output boxes. Test writes the rules out to XML first, then applies the checked rules to the input text and puts the result in the output box. On a
+#   failure the error box at the bottom names the rule that failed and the output box still shows how far the text got. The rules list and the two test boxes sit in a vertical splitter, so the
+#   user can drag any of the three taller or shorter; those heights are remembered in the settings file.
+#
+#   Edits go straight into the in-memory element tree as they are made. The file is written by writeXMLfile(), which runs when the window closes, when Test is clicked, and whenever the cluster
+#   selection changes. Each rules file is backed up to a .bak copy when it is opened.
+#
+#   CLUSTER PROJECTS
+#
+#   When the Cluster Projects setting lists projects, this window edits all of them at once: every add, update, delete and reorder is applied to the current project's rules file and to the rules
+#   file of each selected cluster project. The current project is always slot 0 - the default project, in the code - and the selected cluster projects follow it. The four parallel lists
+#   xmlTreeList, xmlRootList, xmlParentObjList and filePathList are all indexed that way.
+#
+#   The catch is that the other projects' rules files may hold the same rules in a different order, so a row number from the default project can't be trusted anywhere else. Only slot 0 is addressed
+#   by row. For every other slot findMatch() looks the rule up by search string, replace string and regular expression flag, and if it isn't there the error box says which project and which rule,
+#   and that project is left alone for that one operation.
+#
+#   Each selected cluster project gets a row with a combo box naming which work project folder to use. Hovering over one of those combo boxes pops up a RulesPopup listing that project's rules, so
+#   the user can see what they are about to edit. A combo box still showing ... means no folder has been picked yet, and checkForValidFolders() disables editing until every row names a real one.
+#
+#   OBJECTS
+#
+#   - SearchReplaceRuleData - one rule as plain data: searchStr, replStr, isRegEx, isInactive and comment. getRuleFromElement() builds one from an XML element, initDataObj() builds one from the
+#     edit boxes, and setElementInfo() writes the edit boxes back into an element. buildRuleString() turns one into the line shown in the list.
+#   - RulesPopup - the small borderless window listing another work project's rules on mouse-over. eventFilter() and _maybeClosePopup() open and close it, the latter on a short timer so that
+#     moving the mouse off the combo box and onto the popup itself doesn't dismiss it.
+#   - TextInOutRulesWindow - the QMainWindow. It owns the widgets (Ui_TextInOutMainWindow, generated from Lib/Windows/TextInOut.ui), the QStandardItemModel behind the rules list, and the parallel
+#     per-project XML lists described above.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the constants - the settings file keys, then the XML element and attribute names - then SearchReplaceRuleData and RulesPopup, then the module level functions, then
+#   TextInOutRulesWindow, which is the rest of the file.
+#
+#   The module level functions come in roughly the order the work happens. getRuleFromElement(), buildRuleString() and getPrintableString() turn XML into the strings the user sees.
+#   findComposedCharClasses() scans a search string for the character class trap described above and buildCharClassSuggestion() turns a class it flagged into the alternation that would work;
+#   those two are the only module level functions serving the editing side rather than the running side. create_replacer()
+#   builds the replacement callable for regular expression rules. applyRulesToString() is the shared core that both the Test button and real runs go through. applySearchReplaceRules() is what other
+#   modules call when they already have the tree parsed, and applyTextOutRulesFromConfig() is the convenience wrapper around it that finds the text out rules file from the configuration, parses it
+#   and reports through the FlexTools report object.
+#
+#   In the window class, __init__ reads the settings JSON, builds the cluster project widgets, wires up the signals, sets up the splitter and loads the rules. initLists() (re)parses every project's
+#   rules file into the parallel lists, and runs again whenever the cluster selection changes. loadRules() fills the list model. From there each button has its own method, and closing the window
+#   writes the XML files and the settings JSON.
+#
+#   A word on Wildebeest: the checkbox, the step and language code controls, the XML elements and runWildebeest() are all still here, but the calls are commented out and the controls hidden,
+#   because the wildebeest package isn't compatible with Python 3.13. Search for Wildebeest to find every place that has to be turned back on when it is.
 #
 
 import unicodedata
+from typing import cast
 import FTPaths
 import ReadConfig
 import Utils
@@ -109,6 +238,7 @@ _translate = QCoreApplication.translate
 TEXT_IN_SETTINGS_FILE = 'TextInSettings.json'
 TEXT_OUT_SETTINGS_FILE = 'TextOutSettings.json'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
+SPLITTER_SIZES = 'splitterSizes'
 WORK_PROJECTS = 'workProjects'
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
 SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules' 
@@ -131,6 +261,13 @@ WB_ADD_STEP_ATTRIB = 'AddStep'
 WB_SKIP_STEP_ATTRIB = 'SkipStep'
 
 TEXTOUT_MODULENAME = "Text Out Rules"
+
+# Space a text box needs above and below its text, over and above the frame: the document margin in the text edits, row padding in the list view. Used to work out how tall a box has to
+# be to show one line, which is how far a splitter drag is allowed to shrink it.
+TEXT_BOX_VERTICAL_PADDING = 8
+
+# Relative heights the splitter panels get when there are no saved sizes to restore: the rules list is the box the user works in most, so it starts out the tallest.
+SPLITTER_PANEL_WEIGHTS = [3, 2, 2]
 
 ARROW_CHAR = '⭢'
 
@@ -156,7 +293,7 @@ class RulesPopup(QWidget):
         self.textEdit = QTextEdit(self)
         self.textEdit.setReadOnly(True)
         self.textEdit.setText(rules_text)
-        self.textEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
+        self.textEdit.setWordWrapMode(QtGui.QTextOption.WrapMode.NoWrap)
 
         # Add the QTextEdit to the layout
         layout.addWidget(self.textEdit)
@@ -240,7 +377,7 @@ def buildRuleStringFromElement(element):
 
     return buildRuleString(SRobj)
 
-def getPrintableString(myStr):
+def getPrintableString(myStr: str):
     
     # If we have a special char, return the equivalent alias str, otherwise return the char.
     return ''.join(replacementsMap.get(char, char) for char in myStr)
@@ -257,13 +394,140 @@ replacementsMap = {
 '\u205F': '[MMSP]','\u2060':'[WJ]', '\u2066': '[LRI]','\u2067': '[RLI]','\u2068': '[FSI]','\u2069': '[PDI]'
 }
 
+def readCharClassItem(searchStr, i, n):
+
+    # Read one member of a character class starting at position i and return it along with the position just past it. A member is not always one character. An escaped member such as backslash-w is
+    # two, and - the case that matters here - an accented letter is a base letter followed by its combining marks, which is how an accented letter appears once the string has been decomposed.
+    # Reading those as one member is what lets the rest of this code see an accented letter in a class whether the rule was typed composed or came off disk already decomposed.
+    if searchStr[i] == '\\' and i + 1 < n:
+
+        return searchStr[i:i + 2], i + 2
+
+    j = i + 1
+
+    while j < n and unicodedata.combining(searchStr[j]):
+
+        j += 1
+
+    return searchStr[i:j], j
+
+def findComposedCharClasses(searchStr):
+
+    # Find the regular expression character classes in a search string that hold an accented letter. These are a silent trap. applyRulesToString() decomposes the search string before matching, and
+    # that decomposition happens inside the brackets too, so a class written as two accented letters ends up as four separate members - two base letters and two combining marks - and matches a bare
+    # vowel or a lone mark instead of either accented letter. The rule then quietly never matches, and because nothing raises there is no error for the user to go on. Outside a character class the
+    # same decomposition is harmless: a base letter and its mark stay in sequence and still match decomposed text, which is why alternation works where the character class does not.
+    #
+    # A rule can arrive here in either Unicode form and it is broken in both, so the test is not "is this character precomposed" but "does this member take more than one character once decomposed".
+    # A precomposed accented letter answers yes because NFD splits it; a letter already followed by a combining mark answers yes because readCharClassItem() has already read the two as one member.
+    # That second case is the common one, because a rules file that has been through the tool is stored decomposed.
+    #
+    # Each offending class comes back as a (composedGraphemes, classItems, isNegated) triple. classItems holds every member of the class as an (isRange, parts) pair - parts being the one member, or
+    # the two ends of a range like a-z - because the replacement alternation has to offer all of them or it would not match what the class matched. A class of an accented letter and a b has to
+    # become the accented letter or a b.
+    offendingClasses = []
+    i = 0
+    n = len(searchStr)
+
+    while i < n:
+
+        char = searchStr[i]
+
+        # An escaped character outside a class can never open one, so step over the pair.
+        if char == '\\':
+
+            i += 2
+            continue
+
+        if char != '[':
+
+            i += 1
+            continue
+
+        # We are at the opening bracket of a class. Walk it to its closing bracket, collecting its members.
+        i += 1
+        isNegated = False
+
+        # A ^ in the first position negates the class rather than being a member of it.
+        if i < n and searchStr[i] == '^':
+
+            isNegated = True
+            i += 1
+
+        classItems = []
+        composedGraphemes = []
+        atClassStart = True
+
+        while i < n:
+
+            # A ] anywhere but the first position closes the class. In the first position it is a literal member instead.
+            if searchStr[i] == ']' and not atClassStart:
+
+                i += 1
+                break
+
+            atClassStart = False
+
+            itemText, i = readCharClassItem(searchStr, i, n)
+
+            # A hyphen makes a range only when it sits between two members, so a hyphen just before the closing bracket is only a hyphen.
+            if i + 1 < n and searchStr[i] == '-' and searchStr[i + 1] != ']':
+
+                endText, i = readCharClassItem(searchStr, i + 1, n)
+                parts = [itemText, endText]
+                classItems.append((True, parts))
+            else:
+                parts = [itemText]
+                classItems.append((False, parts))
+
+            # Either end of a range can be the accented letter that breaks the class, so check every part of the member.
+            for part in parts:
+
+                # An escape sequence stands for whatever follows the backslash, so weigh that up rather than the pair. Without this, \w would look like a base letter with a combining mark
+                # after it - two characters that are still two characters after NFD - and every class using \w, \d or \s would be reported broken when there is nothing wrong with it.
+                escapedChar = part[1:] if part.startswith('\\') else part
+
+                if len(unicodedata.normalize('NFD', escapedChar)) > 1 and part not in composedGraphemes:
+
+                    composedGraphemes.append(part)
+
+        if composedGraphemes:
+
+            offendingClasses.append((composedGraphemes, classItems, isNegated))
+
+    return offendingClasses
+
+def buildCharClassSuggestion(classItems):
+
+    # Turn the members of a character class into the alternation that will actually match decomposed text. Every member has to appear, not just the accented ones, or the suggestion would match less
+    # than the class it replaces. A single member becomes an alternative as it stands, while a range cannot be written as one and so keeps a pair of brackets to stay a range. A class with only one
+    # member needs neither alternation nor parentheses - just the member on its own. Members go through getPrintableString() so that an invisible one shows up as its bracketed alias.
+    #
+    # The group is non-capturing, and it has to be. A character class captures nothing, so if the suggestion introduced a capturing group the user would gain one wherever they pasted it, and every
+    # backreference in their replacement string numbered after that point would quietly start pointing at the wrong group. (?: ) keeps the numbering exactly as it was.
+    alternatives = []
+
+    for isRange, parts in classItems:
+
+        if isRange:
+
+            alternatives.append('[' + getPrintableString(parts[0]) + '-' + getPrintableString(parts[1]) + ']')
+        else:
+            alternatives.append(getPrintableString(parts[0]))
+
+    if len(alternatives) == 1:
+
+        return alternatives[0]
+
+    return '(?:' + '|'.join(alternatives) + ')'
+
 def numRules(tree):
     
     # Get the parent element where the rules are listed.
     root = tree.getroot()
     searchReplaceRulesElement = root.find(SEARCH_REPLACE_RULES_ELEM)
 
-    if searchReplaceRulesElement:
+    if searchReplaceRulesElement is not None:
 
         return sum(1 for i, ruleEl in enumerate(searchReplaceRulesElement) if getRuleFromElement(ruleEl).isInactive == False)
     else:
@@ -273,112 +537,123 @@ def create_replacer(pattern):
 
     r"""Return a callable replacement function for use with regex.sub().
 
-    Python's regex.sub() normally interprets the replacement string itself,
-    which only supports \1-\9 backreferences.  This factory parses the
-    replacement pattern manually so that the same case-modifier escapes
-    supported by regex101.com's substitution box work here too.
+    Python's regex.sub() normally interprets the replacement string itself, which only supports \1-\9 backreferences.  This factory parses the
+    replacement pattern manually so that the same case-modifier escapes supported by regex101.com's substitution box work here too.  The semantics
+    follow Perl/PCRE, which is what regex101 models.
 
     Supported escape sequences in the replacement pattern:
 
-      \1 .. \9   Insert the text matched by capture group N.  \0 inserts
-                 the entire match (same as group 0).
+      \1 .. \9   Insert the text matched by capture group N.  \0 inserts the entire match (same as group 0).
 
-      \l\1       Lowercase the FIRST CHARACTER of group N; the rest of the
-                 group is inserted unchanged.  e.g. \l\1 on "HELLO" → "hELLO".
-      \u\1       Uppercase the FIRST CHARACTER of group N; the rest of the
-                 group is inserted unchanged.  e.g. \u\1 on "hello" → "Hello".
-      \lX        Lowercase the single literal character X (not a group).
-      \uX        Uppercase the single literal character X (not a group).
+      \u         Change just the NEXT character to upper case.  It applies to whatever is inserted next, so \u\1 upper cases the first character of
+                 group N and leaves the rest of the group alone (e.g. \u\1 on "hello" gives "Hello"), while \ux upper cases the single literal
+                 character x that follows.
+      \l         Same, but changes the next character to lower case.  e.g. \l\1 on "HELLO" gives "hELLO".
 
-      \L...\E    Lowercase every literal character between \L and \E.
-                 Backreferences inside this section are NOT expanded —
-                 the two characters \ and 1 are each lowercased in place.
-                 Use \l\1 to lowercase the first char of a group, or a
-                 future \L\1\E extension to lowercase a whole group.
-      \U...\E    Uppercase every literal character between \U and \E.
-                 Same caveat: backreferences are not expanded inside.
+      \U...\E    Change everything inserted between \U and \E to upper case.  This includes backreferences, so \U\1\E upper cases the whole of group
+                 N (e.g. \U\1\E on "hello" gives "HELLO") and \Uabc\E inserts "ABC".  A missing \E means the case forcing runs to the end of the
+                 replacement pattern.
+      \L...\E    Same, but changes everything to lower case.
+      \E         Ends the case forcing started by \U or \L.
 
-    Any other backslash sequence (e.g. \n, \t, \s, \w) is passed through
-    unchanged as the two-character string \x, matching regex101 behaviour.
+    A \u or \l takes precedence over an enclosing \U or \L for the one character it applies to, so \u\L\1\E gives "Hello" for a group matching
+    "HELLO" - the first character is upper cased and the rest is lower cased.
+
+    Any other backslash sequence (e.g. \n, \t, \s, \w) is passed through unchanged as the two-character string \x, matching regex101 behaviour.
     """
-    
+
     def replacer(match):
 
         result = ""
         i = 0
 
+        # Case-forcing state. caseMode is set by \U or \L and stays in effect until an \E or the end of the replacement pattern. oneShotCase is set by
+        # \u or \l and applies to only the first character appended after it, whether that character is a literal or the start of a group's matched text.
+        caseMode = None
+        oneShotCase = None
+
+        # Append text to the result with the current case treatment applied: the pending \u or \l (if any) affects the first character and the
+        # enclosing \U or \L affects the rest. Everything inserted goes through here, which is what makes \U\1\E upper case a whole group.
+        def applyCase(text):
+
+            nonlocal oneShotCase
+
+            if not text:
+
+                return ""
+
+            firstChar = text[:1]
+            restChars = text[1:]
+
+            # A pending \u or \l wins over the enclosing \U or \L for this one character, then is used up.
+            if oneShotCase == 'upper':
+
+                firstChar = firstChar.upper()
+                oneShotCase = None
+
+            elif oneShotCase == 'lower':
+
+                firstChar = firstChar.lower()
+                oneShotCase = None
+
+            elif caseMode == 'upper':
+
+                firstChar = firstChar.upper()
+
+            elif caseMode == 'lower':
+
+                firstChar = firstChar.lower()
+
+            # The remaining characters get only the enclosing \U or \L.
+            if caseMode == 'upper':
+
+                restChars = restChars.upper()
+
+            elif caseMode == 'lower':
+
+                restChars = restChars.lower()
+
+            return firstChar + restChars
+
         while i < len(pattern):
 
             if pattern[i] == '\\' and i + 1 < len(pattern):
 
-                next_char = pattern[i+1]
+                nextChar = pattern[i+1]
 
-                # Handle backreferences \1, \2, etc.
-                if next_char.isdigit():
+                # Handle backreferences \0 - \9. The inserted text gets the current case treatment just like a literal would.
+                if nextChar.isdigit():
 
-                    group_num = int(next_char)
-                    result += match.group(group_num) or ""
+                    result += applyCase(match.group(int(nextChar)) or "")
                     i += 2
 
-                # Handle \l — lowercase the NEXT CHARACTER only:
-                #   \l\N  → first char of group N lowercased, rest of group unchanged
-                #   \lX   → literal char X lowercased
-                elif next_char == 'l' and i + 2 < len(pattern):
+                # Handle \u and \l. These only record what to do; applyCase() does it to whatever gets inserted next.
+                elif nextChar == 'u' or nextChar == 'l':
 
-                    if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
-
-                        group_num = int(pattern[i+3])
-                        group_str = match.group(group_num) or ""
-                        result += group_str[:1].lower() + group_str[1:]
-                        i += 4
-                    else:
-                        result += pattern[i+2].lower()
-                        i += 3
-
-                # Handle \u — uppercase the NEXT CHARACTER only:
-                #   \u\N  → first char of group N uppercased, rest of group unchanged
-                #   \uX   → literal char X uppercased
-                elif next_char == 'u' and i + 2 < len(pattern):
-
-                    if pattern[i+2] == '\\' and i + 3 < len(pattern) and pattern[i+3].isdigit():
-
-                        group_num = int(pattern[i+3])
-                        group_str = match.group(group_num) or ""
-                        result += group_str[:1].upper() + group_str[1:]
-                        i += 4
-                    else:
-                        result += pattern[i+2].upper()
-                        i += 3
-
-                # Handle \L...\E - lowercase section
-                elif next_char == 'L':
-
+                    oneShotCase = 'upper' if nextChar == 'u' else 'lower'
                     i += 2
 
-                    while i < len(pattern) and pattern[i:i+2] != '\\E':
+                # Handle \U and \L. These start case forcing that lasts until \E or the end of the replacement pattern.
+                elif nextChar == 'U' or nextChar == 'L':
 
-                        result += pattern[i].lower()
-                        i += 1
-
-                    i += 2  # Skip \E
-
-                # Handle \U...\E - uppercase section
-                elif next_char == 'U':
-
+                    caseMode = 'upper' if nextChar == 'U' else 'lower'
                     i += 2
 
-                    while i < len(pattern) and pattern[i:i+2] != '\\E':
+                # Handle \E, which ends the case forcing started by \U or \L.
+                elif nextChar == 'E':
 
-                        result += pattern[i].upper()
-                        i += 1
-                        
-                    i += 2  # Skip \E
+                    caseMode = None
+                    i += 2
 
+                # Any other backslash sequence is passed through as the two characters it was typed as. Emit the backslash raw so that a pending \u or
+                # \l is not wasted on it, then let the next loop iteration handle the character that follows.
                 else:
                     result += pattern[i]
                     i += 1
+
+            # An ordinary literal character.
             else:
-                result += pattern[i]
+                result += applyCase(pattern[i])
                 i += 1
 
         return result
@@ -453,7 +728,7 @@ def runWildebeest(root, inputStr):
 
     WBelem = root.find(WB_SETTINGS_ELEM)
 
-    if WBelem:
+    if WBelem is not None:
 
         # Get base string
         baseStr = WBelem.get(WB_BASE_ATTRIB)
@@ -544,6 +819,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.lastSelectAllState = QtCore.Qt.CheckState.Checked
         self.retVal = True
         self.keyWidgetList = []
+        self.splitterSizes = []
 
         # Wildebeest widgets
         self.WBcontrols = [
@@ -562,14 +838,14 @@ class TextInOutRulesWindow(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         # Get cluster projects from settings;
-        self.clusterProjects = ReadConfig.getConfigVal(self.configMap, ReadConfig.CLUSTER_PROJECTS, report=None, giveError=False)
+        clusterProjectsVal = ReadConfig.getConfigVal(self.configMap, ReadConfig.CLUSTER_PROJECTS, report=None, giveError=False)
 
-        if not self.clusterProjects:
+        if not clusterProjectsVal:
 
-            self.clusterProjects = []
+            self.clusterProjects: list = []
         else:
             # Remove blank ones
-            self.clusterProjects = [x for x in self.clusterProjects if x]
+            self.clusterProjects = [x for x in clusterProjectsVal if x]
 
         currDBname = DB.ProjectName()
 
@@ -623,6 +899,10 @@ class TextInOutRulesWindow(QMainWindow):
 
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
+        # The splitter panel heights the user left behind last time. Held in an attribute rather than read from the splitter when saving, because writeXMLfile also runs on every cluster
+        # selection change, when the splitter may not have been laid out yet.
+        self.splitterSizes = self.settingsMap.get(SPLITTER_SIZES, [])
+
         # Create all the possible widgets we need for all the cluster projects
         ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.horizontalLayout_4, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, 
                                         originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
@@ -662,6 +942,9 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.ui.errorTextBox.setText('')
 
+        # The composed-character warning shares the error box with everything else, so remember what we last put there in order to tell our own message apart from somebody else's.
+        self.composedWarningMsg = ''
+
         self.setWindowTitle(winTitle)
 
         # See if we are doing text in or out
@@ -682,6 +965,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.deleteButton.clicked.connect(self.DeleteClicked)
         self.ui.moveDownButton.clicked.connect(self.DownButtonClicked)
         self.ui.moveUpButton.clicked.connect(self.UpButtonClicked)
+        self.ui.regexCheckBox.clicked.connect(self.checkForComposedCharsInCharClass)
         self.ui.replaceTextBox.textChanged.connect(self.SearchOrReplaceChanged)
         self.ui.rulesList.clicked.connect(self.RulesListClicked)
         self.ui.searchTextBox.textChanged.connect(self.SearchOrReplaceChanged)
@@ -692,10 +976,72 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.dummyLabel.setVisible(False)
         self.ui.dummyLabel.setText('')
 
+        # Make the rules list and the two test boxes draggable against each other
+        self.setupSplitter()
+
         # Load the rules
         self.checkForValidFolders()
         self.loadRules()
     
+    def setupSplitter(self):
+
+        # Let the user drag the boundaries between the rules list, the test input box and the test output box. The splitter and its three panels come from the .ui file; what is left to do
+        # here is give each scrolling box a sensible floor to shrink to, put the panels back where the user left them, and arrange to remember them again.
+        self.applyOneLineBoxMinimums()
+
+        # The splitter takes whatever height is left over in the container; the Close button and error message row below it keep their natural height.
+        self.ui.verticalLayout_3.setStretch(0, 1)
+        self.ui.verticalLayout_3.setStretch(1, 0)
+
+        # Stretch factors keep the panels' proportions when the window itself is resized, whether those proportions came from the saved sizes or from the defaults below.
+        for i, weight in enumerate(SPLITTER_PANEL_WEIGHTS):
+
+            self.ui.mainSplitter.setStretchFactor(i, weight)
+
+        # Restore the saved heights, but only when the saved set has exactly one size per panel. A set written under a different arrangement - or a settings file from before the splitter
+        # existed - is ignored rather than misapplied.
+        if len(self.splitterSizes) == self.ui.mainSplitter.count():
+
+            self.ui.mainSplitter.setSizes(self.splitterSizes)
+        else:
+            self.applyDefaultSplitterSizes()
+
+        self.ui.mainSplitter.splitterMoved.connect(self.splitterMoved)
+
+    def applyOneLineBoxMinimums(self):
+
+        # Give each scrolling box in the splitter an explicit minimum height of one line of its text, so a drag can shrink a panel down to a single readable line but no further. Without
+        # this Qt falls back to the box's own minimum size hint - around 70 pixels, since it reserves room for a usable scroll bar - and a drag stops well before the box is really small.
+        # The height is measured from the box rather than hard-coded so that a different UI font still leaves a full line readable.
+        for box in [self.ui.rulesList, self.ui.inputText, self.ui.outputText]:
+
+            metrics = QtGui.QFontMetrics(box.font())
+            box.setMinimumHeight(metrics.lineSpacing() + 2 * box.frameWidth() + TEXT_BOX_VERTICAL_PADDING)
+
+    def applyDefaultSplitterSizes(self):
+
+        # Start the panels off at the proportions in SPLITTER_PANEL_WEIGHTS. The splitter hasn't been shown yet when this runs, so fall back to a nominal height - Qt scales the requested
+        # sizes to whatever height the panels actually end up with, which preserves the proportions either way.
+        available = max(self.ui.mainSplitter.height(), 400)
+        total = sum(SPLITTER_PANEL_WEIGHTS)
+
+        self.ui.mainSplitter.setSizes([int(available * weight / total) for weight in SPLITTER_PANEL_WEIGHTS])
+
+    def splitterMoved(self, pos, index):
+
+        # The user dragged a handle, so remember where they put it. writeXMLfile saves this to the settings file.
+        self.splitterSizes = self.ui.mainSplitter.sizes()
+
+    def resizeEvent(self, event):
+
+        # A window resize redistributes the panels without emitting splitterMoved, so the new heights have to be picked up here too. Only once the window is up though: the layout passes
+        # that happen while it is still being built would otherwise overwrite the heights we just restored with a measurement taken before anything was shown.
+        super().resizeEvent(event)
+
+        if self.isVisible():
+
+            self.splitterSizes = self.ui.mainSplitter.sizes()
+
     def setWorkProjectComboBox(self, comboWidget):
 
         # Fill the combo box
@@ -757,10 +1103,13 @@ class TextInOutRulesWindow(QMainWindow):
 
         return rulesPath
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, a0: QtCore.QObject | None, a1: QtCore.QEvent | None):
+
+        # Qt always calls this with real objects, never None
+        assert a0 is not None and a1 is not None
 
         # Show popup when mouse enters key widget
-        if event.type() == QtCore.QEvent.TypeEnter and obj in self.keyWidgetList:
+        if a1.type() == QtCore.QEvent.Type.Enter and a0 in self.keyWidgetList:
 
             # Always close any existing popup before opening a new one
             if hasattr(self, 'rulesPopup') and self.rulesPopup:
@@ -776,15 +1125,18 @@ class TextInOutRulesWindow(QMainWindow):
 
                 if widget.currentText() != "...":
 
-                    if widget == obj:
+                    if widget == a0:
                         break
 
                     idx += 1
 
+            # a0 is confirmed above to be one of the combo boxes in keyWidgetList
+            keyWidget = cast(QComboBox, a0)
+
             # Check if the folder is ... and if so, don't show rules
-            if obj.currentText() == "...":
-                return super().eventFilter(obj, event)
-            
+            if keyWidget.currentText() == "...":
+                return super().eventFilter(a0, a1)
+
             # Get the rules text for the folder
             rules_text = self.getRulesTextForFolder(idx)
 
@@ -795,7 +1147,7 @@ class TextInOutRulesWindow(QMainWindow):
             self.rulesPopup.installEventFilter(self)  # Track mouse events on popup
 
             # Set the popup size and position based on the widget
-            pos = obj.mapToGlobal(obj.rect().bottomLeft())
+            pos = keyWidget.mapToGlobal(keyWidget.rect().bottomLeft())
 
             # Set the popup size to fit the text and show it
             self.rulesPopup.move(pos)
@@ -803,19 +1155,19 @@ class TextInOutRulesWindow(QMainWindow):
             self._popupActive = True
 
         # Hide popup only if mouse leaves both widget and popup
-        elif event.type() == QtCore.QEvent.Type.Leave and obj in self.keyWidgetList:
+        elif a1.type() == QtCore.QEvent.Type.Leave and a0 in self.keyWidgetList:
 
             QtCore.QTimer.singleShot(100, self._maybeClosePopup)
 
-        elif event.type() == QtCore.QEvent.Type.Leave and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+        elif a1.type() == QtCore.QEvent.Type.Leave and hasattr(self, 'rulesPopup') and a0 == self.rulesPopup:
 
             QtCore.QTimer.singleShot(100, self._maybeClosePopup)
 
-        elif event.type() == QtCore.QEvent.Type.Enter and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+        elif a1.type() == QtCore.QEvent.Type.Enter and hasattr(self, 'rulesPopup') and a0 == self.rulesPopup:
 
             self._popupActive = True
 
-        return super().eventFilter(obj, event)
+        return super().eventFilter(a0, a1)
 
     def _maybeClosePopup(self):
 
@@ -871,9 +1223,21 @@ class TextInOutRulesWindow(QMainWindow):
             widget.installEventFilter(self)
         
         self.checkForValidFolders()
-        
+
+    def _ruleItem(self, row):
+
+        # Every row in the rules model always has an item; this narrows the Optional return of QStandardItemModel.item() for callers.
+        assert self.rulesModel is not None
+        item = self.rulesModel.item(row)
+        assert item is not None
+
+        return item
+
     def AddClicked(self):
-        
+
+        # loadRules() always runs before the user can click Add
+        assert self.rulesModel is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
 
@@ -943,12 +1307,16 @@ class TextInOutRulesWindow(QMainWindow):
             self.RulesListClicked(self.ruleIndex)
 
     def UpdateClicked(self):
-        
+
+        # The Update button is only enabled when a rule is selected
+        assert self.rulesModel is not None and self.ruleIndex is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
 
         # Get the rule data at the current index selected
         myItem = self.rulesModel.itemFromIndex(self.ruleIndex)
+        assert myItem is not None
         rowNum = self.ruleIndex.row()
 
         # Get the current info for doing the find match
@@ -993,6 +1361,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         if self.ruleIndex:
 
+            assert self.rulesModel is not None
             rowCount = self.rulesModel.rowCount()
 
             # Remove the row
@@ -1065,6 +1434,9 @@ class TextInOutRulesWindow(QMainWindow):
     
     def CheckAllClicked(self):
 
+        # loadRules() always runs before the user can interact with the rule list
+        assert self.rulesModel is not None
+
         state = self.ui.selectAllCheckBox.checkState()
 
         if state == QtCore.Qt.CheckState.Checked:
@@ -1089,7 +1461,7 @@ class TextInOutRulesWindow(QMainWindow):
         for i in range(0, self.rulesModel.rowCount()):
 
             # change each box
-            self.rulesModel.item(i).setCheckState(newState)
+            self._ruleItem(i).setCheckState(newState)
 
         index = self.ui.rulesList.currentIndex()
 
@@ -1102,15 +1474,18 @@ class TextInOutRulesWindow(QMainWindow):
         self.writeXMLfile()
         self.close()
 
-    def closeEvent(self, event):
+    def closeEvent(self, a0):
 
         self.CloseClicked()
 
     def UpButtonClicked(self):
 
+        # loadRules() always runs before the user can interact with the rule list
+        assert self.rulesModel is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
-        
+
         if self.ruleIndex and self.ruleIndex.row() > 0:
             
             rowNum = defaultRowNum = self.ruleIndex.row()
@@ -1142,17 +1517,19 @@ class TextInOutRulesWindow(QMainWindow):
                     self.xmlParentObjList[i].insert(rowNum-1, elemToMove)
 
             # copy the check state from one row to the other
-            currState = self.rulesModel.item(defaultRowNum).checkState()
-            othState = self.rulesModel.item(defaultRowNum-1).checkState()
-            self.rulesModel.item(defaultRowNum).setCheckState(othState)
-            self.rulesModel.item(defaultRowNum-1).setCheckState(currState)
+            currItem = self._ruleItem(defaultRowNum)
+            othItem = self._ruleItem(defaultRowNum-1)
+            currState = currItem.checkState()
+            othState = othItem.checkState()
+            currItem.setCheckState(othState)
+            othItem.setCheckState(currState)
 
             # copy the rule string from one row to the other
-            currStr = self.rulesModel.item(defaultRowNum).text()
-            othStr = self.rulesModel.item(defaultRowNum-1).text()
-            self.rulesModel.item(defaultRowNum).setText(othStr)
-            self.rulesModel.item(defaultRowNum-1).setText(currStr)
-            
+            currStr = currItem.text()
+            othStr = othItem.text()
+            currItem.setText(othStr)
+            othItem.setText(currStr)
+
             myIndex = self.rulesModel.index(defaultRowNum-1, self.ruleIndex.column())
             self.ui.rulesList.setCurrentIndex(myIndex)
 
@@ -1160,7 +1537,10 @@ class TextInOutRulesWindow(QMainWindow):
             self.RulesListClicked(myIndex)
             
     def DownButtonClicked(self):
-        
+
+        # loadRules() always runs before the user can interact with the rule list
+        assert self.rulesModel is not None
+
         # Clear the error message widget
         self.ui.errorTextBox.setText('')
 
@@ -1195,16 +1575,18 @@ class TextInOutRulesWindow(QMainWindow):
                     self.xmlParentObjList[i].insert(rowNum+1, elemToMove)
 
             # copy the check state from one row to the other
-            currState = self.rulesModel.item(defaultRowNum).checkState()
-            othState = self.rulesModel.item(defaultRowNum+1).checkState()
-            self.rulesModel.item(defaultRowNum).setCheckState(othState)
-            self.rulesModel.item(defaultRowNum+1).setCheckState(currState)
-            
+            currItem = self._ruleItem(defaultRowNum)
+            othItem = self._ruleItem(defaultRowNum+1)
+            currState = currItem.checkState()
+            othState = othItem.checkState()
+            currItem.setCheckState(othState)
+            othItem.setCheckState(currState)
+
             # copy the rule string from one row to the other
-            currStr = self.rulesModel.item(defaultRowNum).text()
-            othStr = self.rulesModel.item(defaultRowNum+1).text()
-            self.rulesModel.item(defaultRowNum).setText(othStr)
-            self.rulesModel.item(defaultRowNum+1).setText(currStr)
+            currStr = currItem.text()
+            othStr = othItem.text()
+            currItem.setText(othStr)
+            othItem.setText(currStr)
             
             myIndex = self.rulesModel.index(defaultRowNum+1, self.ruleIndex.column())
             self.ui.rulesList.setCurrentIndex(myIndex)
@@ -1213,7 +1595,10 @@ class TextInOutRulesWindow(QMainWindow):
             self.RulesListClicked(myIndex)
 
     def RulesListClicked(self, index):
-        
+
+        # loadRules() always runs before the user can click a rule in the list
+        assert self.rulesModel is not None
+
         self.ruleIndex = index
         
         # Get rule data for current index. Get it from the element tree object.
@@ -1239,6 +1624,9 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Set comment
         self.ui.commentTextBox.setText(searchReplaceRuleData.comment)
+
+        # Setting the search box above already fired SearchOrReplaceChanged, but the RegEx box still held the previously selected rule's setting at that point, so check again now that it doesn't.
+        self.checkForComposedCharsInCharClass()
         
         # See the beginning of the comment box.
         self.ui.commentTextBox.setCursorPosition(0)
@@ -1257,7 +1645,7 @@ class TextInOutRulesWindow(QMainWindow):
         for i in range(0, self.rulesModel.rowCount()):
 
             # If active add text with the active rule #
-            if self.rulesModel.item(i).checkState() == QtCore.Qt.CheckState.Checked:
+            if self._ruleItem(i).checkState() == QtCore.Qt.CheckState.Checked:
 
                 oneBoxChecked = True
             else:
@@ -1298,6 +1686,9 @@ class TextInOutRulesWindow(QMainWindow):
             self.ui.deleteButton.setEnabled(False)
             self.ui.regexCheckBox.setEnabled(False)
             self.ui.inactiveCheckBox.setEnabled(False)
+
+        # The search string may have just gained or lost a composed character inside a character class.
+        self.checkForComposedCharsInCharClass()
                 
     def TestClicked(self):
 
@@ -1313,7 +1704,7 @@ class TextInOutRulesWindow(QMainWindow):
         #     newStr = runWildebeest(self.defaultRoot, newStr)
 
         # Apply only the rules the user has checked, but keep each rule's real 1-based number for error reporting.
-        numberedRules = [(ind + 1, ruleEl) for ind, ruleEl in enumerate(self.xmlParentObjList[0]) if self.rulesModel.item(ind).checkState() == QtCore.Qt.CheckState.Checked]
+        numberedRules = [(ind + 1, ruleEl) for ind, ruleEl in enumerate(self.xmlParentObjList[0]) if self._ruleItem(ind).checkState() == QtCore.Qt.CheckState.Checked]
 
         newStr, errorMsg = applyRulesToString(inStr, numberedRules)
 
@@ -1402,7 +1793,7 @@ class TextInOutRulesWindow(QMainWindow):
         # Find the Wildebeest section
         self.WBelem = testRoot.find(WB_SETTINGS_ELEM)
 
-        if self.WBelem:
+        if self.WBelem is not None:
 
             # Set the base radio buttons
             if self.WBelem.get(WB_BASE_ATTRIB) == WB_BASE_DEFAULT:
@@ -1436,6 +1827,70 @@ class TextInOutRulesWindow(QMainWindow):
             if skipStepsElem is not None and skipStepsElem.text:
 
                 self.ui.WBskipStepsTextBox.setText(skipStepsElem.text)
+
+    def checkForComposedCharsInCharClass(self):
+
+        # Work out whether there is anything to warn about in the rule currently being edited. Only a regular expression rule can fall into this trap; in a plain rule the brackets are ordinary
+        # text, and since the search string and the text being searched are both decomposed the same way they still match each other. So say nothing at all unless the RegEx box is ticked.
+        warningStr = ''
+
+        if self.ui.regexCheckBox.isChecked():
+
+            offendingClasses = findComposedCharClasses(self.ui.searchTextBox.text())
+
+            # Warn about the first bad class only. A search string almost never has two, the error box has room for one message, and fixing the first one brings the next straight back.
+            if offendingClasses:
+
+                composedGraphemes, classItems, isNegated = offendingClasses[0]
+
+                # List the offending letters one at a time rather than running the joined-up string through getPrintableString(), which would turn the spaces between them into [SP].
+                charListStr = ' '.join(getPrintableString(grapheme) for grapheme in composedGraphemes)
+
+                # A range with a composed character at either end is beyond help as well: the range itself is what decomposition breaks, and the only thing an alternation could offer for it is
+                # the very range the user already typed. Spot that here so we don't hand their own class back to them as the fix.
+                hasComposedRange = any(isRange and any(part in composedGraphemes for part in parts) for isRange, parts in classItems)
+
+                # A negated class can't be rewritten as an alternation either - there is no short way to say "any character except this accented one" - so those two just warn without a fix.
+                if isNegated or hasComposedRange:
+
+                    warningStr = _translate("TextInOutUtils", "Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run.").format(charList=charListStr)
+                else:
+                    warningStr = _translate("TextInOutUtils", "Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run. Use {suggestion} instead.").format(charList=charListStr, suggestion=buildCharClassSuggestion(classItems))
+
+        # This runs on every keystroke in the search box, so it has to share the error box politely. It will overwrite whatever is in there with a warning of its own, but when the warning goes
+        # away it only clears the box if what is sitting in it is the warning it put there last time. Otherwise typing in the search box would wipe out a folder error or an Add error still true.
+        if warningStr:
+
+            self.ui.errorTextBox.setText(warningStr)
+
+        elif self.composedWarningMsg and self.ui.errorTextBox.toPlainText() == self.composedWarningMsg:
+
+            self.ui.errorTextBox.setText('')
+
+        self.composedWarningMsg = warningStr
+
+    def checkRulesForComposedChars(self):
+
+        # Scan every rule in the current project for the same trap and name the ones that have it. Without this a rules file full of regular expressions that quietly match nothing looks perfectly
+        # healthy until the user happens to click the offending rule, so the warning goes up as soon as the rules are loaded and points at the rules worth clicking on. Inactive rules are named
+        # too: they are just as broken, and they will start mattering the moment somebody turns one back on. Rule numbers are 1-based positions in the list, the same numbers a run failure reports.
+        badRuleNumbers = []
+
+        for ruleNumber, ruleEl in enumerate(self.xmlParentObjList[0], start=1):
+
+            searchReplObj = getRuleFromElement(ruleEl)
+
+            if searchReplObj.isRegEx and findComposedCharClasses(searchReplObj.searchStr):
+
+                badRuleNumbers.append(str(ruleNumber))
+
+        if not badRuleNumbers:
+
+            return
+
+        # Deliberately not recorded in composedWarningMsg. That member is how the search box tells its own message apart from everybody else's so it knows what it may clear, and this message
+        # outlives any one rule - the other bad rules are still bad after the user clicks a good one - so it should sit there until something with a real reason to clear the box clears it.
+        self.ui.errorTextBox.setText(_translate("TextInOutUtils", "Warning: composed characters inside [ ] will never match. Affected rule(s): {ruleNumbers}").format(ruleNumbers=', '.join(badRuleNumbers)))
 
     def checkForValidFolders(self) -> bool:
 
@@ -1476,6 +1931,9 @@ class TextInOutRulesWindow(QMainWindow):
         self.defaultRoot = self.xmlRootList[0]
         self.initWBcontrols(self.defaultRoot)
 
+        # Say straight away if any of the rules just loaded have a composed character inside a character class.
+        self.checkRulesForComposedChars()
+
     def enumerateWorkProjects(self):
 
         return [myCombo.currentText() for myCombo in self.keyWidgetList if myCombo.currentText() != '...']
@@ -1490,6 +1948,9 @@ class TextInOutRulesWindow(QMainWindow):
         # The default project is always the first one in the list.
         path = self.getPath(None)
         try:
+            if path is None:
+                raise ValueError("getPath returned no path for the default project.")
+
             tree = ET.parse(path)
         except:
             self.report.Error(_translate("TextInOutUtils", "Error loading XML file."))
@@ -1500,6 +1961,9 @@ class TextInOutRulesWindow(QMainWindow):
         self.defaultRoot = tree.getroot()
         self.xmlRootList = [self.defaultRoot]
         searchReplaceRulesElement = self.defaultRoot.find(SEARCH_REPLACE_RULES_ELEM)
+
+        # The rules file is always in our own controlled format, so this element always exists.
+        assert searchReplaceRulesElement is not None
         self.xmlParentObjList = [searchReplaceRulesElement]
         self.filePathList = [path]
 
@@ -1527,6 +1991,9 @@ class TextInOutRulesWindow(QMainWindow):
                 root = tree.getroot()
                 self.xmlRootList.append(root)
                 searchReplaceRulesElement = root.find(SEARCH_REPLACE_RULES_ELEM)
+
+                # The rules file is always in our own controlled format, so this element always exists.
+                assert searchReplaceRulesElement is not None
                 self.xmlParentObjList.append(searchReplaceRulesElement)
                 self.filePathList.append(path)
 
@@ -1543,8 +2010,9 @@ class TextInOutRulesWindow(QMainWindow):
         # Find the Wildebeest section
         self.WBelem = xmlRoot.find(WB_SETTINGS_ELEM)
 
-        # Delete an existing wildebeest subelement if needed
-        if self.WBelem:
+        # Delete an existing wildebeest subelement if needed. Test for None rather than truth - an element with no children is falsy, and a WildebeestSettings element that had no add or skip
+        # steps under it would then not get removed here, leaving the SubElement call below to append a second one that find() would never see.
+        if self.WBelem is not None:
 
             xmlRoot.remove(self.WBelem)
 
@@ -1617,6 +2085,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.settingsMap = {}
         self.settingsMap[WORK_PROJECTS] = [myCombo.currentText() for myCombo in self.keyWidgetList]
         self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
+        self.settingsMap[SPLITTER_SIZES] = self.splitterSizes
 
         try:
             with open(self.settingsPath, 'w', encoding='utf-8') as f:

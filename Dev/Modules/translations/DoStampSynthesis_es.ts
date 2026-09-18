@@ -14,9 +14,9 @@ The synthesized text will be stored in the file specified by the Target Output S
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the source project is being used. Actually the target project is being used.</source>
       <translation>Este módulo ejecuta STAMP para crear el texto sintetizado.
-Antes de crear el texto sintetizado, este módulo extrae los archivos de léxico del idioma de destino, uno para raíces, prefijos, sufijos e infijos. Estos archivos están en formato STAMP para la síntesis. Los archivos de léxico se colocan en la carpeta designada en la configuración como &quot;Target Lexicon Files Folder&quot;. Normalmente es la carpeta &quot;Build&quot;.
-El texto sintetizado se almacenará en el archivo especificado por la configuración &quot;Target Output Synthesis File&quot;.
-Normalmente se llama target_text-syn.txt y suele estar en la carpeta Output.
+Antes de crear el texto sintetizado, este módulo extrae los archivos de léxico del idioma de destino, uno para raíces, prefijos, sufijos e infijos. Estos archivos están en formato STAMP para la síntesis. Los archivos de léxico se colocan en la carpeta designada en la configuración como "Carpeta de archivos de léxico de destino". Normalmente es la carpeta &apos;Build&apos;.
+El texto sintetizado se almacenará en el archivo especificado por la configuración "Archivo de salida de síntesis de destino".
+Normalmente se llama target_text-syn.txt y suele estar en la carpeta "Output".
 NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En realidad, se está utilizando el proyecto de destino.</translation>
     </message>
     <message>
@@ -35,9 +35,9 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
       <translation>Se encontró un grafema nulo para la clase natural: {natClassName}. Omitiendo.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="963"/>
+      <location filename="../DoStampSynthesis.py" line="964"/>
       <source>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</source>
-      <translation>Aborting target lexicon export because the custom XAMPLE field is not a list. When you define the custom XAMPLE field, it must be a list.</translation>
+      <translation>Cancelando la exportación del léxico de destino porque el campo personalizado XAMPLE no es una lista. Al definir el campo personalizado XAMPLE, debe ser una lista.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="974"/>
@@ -72,17 +72,17 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
     <message>
       <location filename="../DoStampSynthesis.py" line="1096"/>
       <source>No lexeme form. Skipping. Headword: {headword}.</source>
-      <translation>Sin forma de lexema. Omitiendo. Palabra principal: {headword}.</translation>
+      <translation>Sin forma del lexema. Omitiendo. Palabra principal: {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1100"/>
       <source>No Morph Type. Skipping. {headword} Best Vern: {vernacular}.</source>
-      <translation>Sin tipo de morfema. Omitiendo. {headword} Mejor Vernáculo: {vernacular}.</translation>
+      <translation>Sin tipo de morfema. Omitiendo. {headword} Mejor vernáculo: {vernacular}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1110"/>
       <source>Skipping entry since the lexeme is of type: {className}.</source>
-      <translation>Omitiendo la entrada ya que el lexema es del tipo: {className}.</translation>
+      <translation>Omitiendo la entrada, ya que, el lexema es del tipo: {className}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1196"/>
@@ -92,7 +92,7 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
     <message>
       <location filename="../DoStampSynthesis.py" line="1132"/>
       <source>STAMP dictionaries created. {roots} roots, {prefixes} prefixes, {suffixes} suffixes and {infixes} infixes.</source>
-      <translation>Diccionarios STAMP creados. {roots} raíces, {prefixes} prefijos, {suffixes} sufijos y {infixes} infijos.</translation>
+      <translation>Diccionarios STAMP creados. {roots} raíces, {prefixes} prefijos, {suffixes} sufijos e {infixes} infijos.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1367"/>
@@ -122,7 +122,7 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
     <message>
       <location filename="../DoStampSynthesis.py" line="1238"/>
       <source>The target project does not exist. Please check the configuration file.</source>
-      <translation>El proyecto de destino no existe. Por favor, revise el archivo de configuración.</translation>
+      <translation>El proyecto de destino no existe. Por favor, revisa el archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1243"/>
@@ -150,14 +150,14 @@ NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En rea
       <translation>Síntesis completa.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1408"/>
+      <location filename="../DoStampSynthesis.py" line="1409"/>
       <source>An error happened when running the STAMP tool.</source>
-      <translation>An error happened when running the STAMP tool.</translation>
+      <translation>Se produjo un error al ejecutar la herramienta STAMP.</translation>
     </message>
     <message>
-      <location filename="../DoStampSynthesis.py" line="1439"/>
+      <location filename="../DoStampSynthesis.py" line="1440"/>
       <source>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</source>
-      <translation>The {modname} module must be run before this module. The file: ...\{filePath} does not exist.</translation>
+      <translation>El módulo {modname} debe ejecutarse antes de este módulo. El archivo: ...\{filePath} no existe.</translation>
     </message>
   </context>
 </TS>

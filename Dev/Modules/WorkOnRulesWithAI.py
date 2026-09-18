@@ -5,6 +5,33 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Get the project grounding data from RuleAssistantPy now that the obsolete RuleAssistant module is gone.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.12 - 7/28/26 - Ron Lockwood
+#    Updated the module synopsis and description to cover the explain feature, to note it works on macros as well as rules, and that the user's description and the AI's explanation can be in any language.
+#
+#   Version 3.16.11 - 7/24/26 - Ron Lockwood
+#    Fixes #1458. When the provider/model aren't set and the user opens the Settings tool, re-check the config afterward: if they were just added, open the AI Rule Studio window instead of always returning.
+#
+#   Version 3.16.10 - 7/22/26 - Ron Lockwood
+#    Renamed the module's user-facing name from "Work on Rules with AI" to "AI Rule Studio" (the FTM_Name and the message-box titles); the file name and code identifiers are unchanged.
+#
+#   Version 3.16.9 - 7/16/26 - Ron Lockwood
+#    Pass the macro names and {name: def-macro-XML} map to the dialog for the new Macros list (modify/explain a macro, create one via the Create-tab checkbox).
+#
+#   Version 3.16.8 - 7/14/26 - Ron Lockwood
+#    Fixes #1438. Give a more helpful message when consent is declined.
+#
+#   Version 3.16.7 - 7/10/26 - Ron Lockwood
+#    Dropped the transfer.dtd dependency (apertium-preprocess-transfer validates without it): the module no longer locates, requires, or passes a DTD path to the dialog.
+#
+#   Version 3.16.6 - 7/10/26 - Ron Lockwood
+#    The AI runtime data moved to a Lib/AI subfolder: the conventions doc (system prompt) and the derived preview specs are now read from Lib/AI, and the missing-resources error points there.
+#
 #   Version 3.16.5 - 7/10/26 - Ron Lockwood
 #    The information, warning, and consent message boxes now show the FLExTrans window icon. When the provider/model aren't set yet, the module now asks (yes/no) whether to open the
 #    Settings tool and, if yes, opens it in the Full view scrolled to the AI Assistant section so the user can set them without hunting for the tool.
@@ -61,11 +88,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'Cre
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = _translate("WorkOnRulesWithAI", """This module uses AI to create new Apertium transfer rules or modify existing ones in the transfer rules file. You describe the rule you want; the AI drafts it, it is validated, and you review and approve it before it is written.""")
-docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "Work on Rules with AI"),
-        FTM_Version    : "3.16.5",
+descr = _translate("WorkOnRulesWithAI", """This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.""")
+docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "AI Rule Studio"),
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Create or modify Apertium transfer rules with AI assistance."),
+        FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Use AI to create, modify, or explain your transfer rules and macros."),
         FTM_Help       : "",
         FTM_Description : descr}
 
@@ -113,7 +140,7 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'AI Rule Studio'))
         msgBox.setText(_translate('WorkOnRulesWithAI', "This module sends your rule description, the transfer file's categories, attributes, and the project's grammatical categories, features, and affixes to " \
                        "your configured AI provider ({provider}) to generate transfer rules. Also, if you chose to include example language data, that will be sent as well. Your lexicon entries and texts are " \
                        "not sent (except for what is in the example data). Do you want to allow this?\nThere is a separate setting for sending FLEx project names.").format(provider=providerDisplay))
@@ -126,6 +153,16 @@ def checkConsent(configMap, report, providerDisplay: str) -> bool:
         return allow
 
     return ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_CONSENT, None, giveError=False) == 'y'
+
+def getProviderAndModel(configMap, report):
+    '''Read the configured AI provider name and model from the config and resolve the provider object. Returns (providerName, model, provider); provider is None when the configured name
+    matches no known provider. Shared by the initial check and the re-check done after the user visits the Settings tool, so the two stay in sync and there's only one place to maintain.'''
+
+    providerName = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_PROVIDER, report, giveError=False)
+    model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False)
+    provider = AIRules.findProvider(providerName)
+
+    return providerName, model, provider
 
 #----------------------------------------------------------------
 # The main processing function
@@ -147,30 +184,41 @@ def MainFunction(DB, report, modify=True):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # The provider and model must be chosen in the Settings tool before this module can run; there are no silent defaults, so the user always knows which service their data goes to.
-    providerName = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_PROVIDER, report, giveError=False)
-    model = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_MODEL, report, giveError=False)
-    provider = AIRules.findProvider(providerName)
+    providerName, model, provider = getProviderAndModel(configMap, report)
 
     if not provider or not model:
 
-        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.\n\nDo you want to open the Settings tool now?')
+        msg = _translate('WorkOnRulesWithAI', 'Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view).' 
+                         'Then come back to this module; it will ask for your API key.\n\nDo you want to open the Settings tool now?')
 
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'AI Rule Studio'))
         msgBox.setText(msg)
         msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
         report.Info(msg)
 
-        # If the user says yes, open the Settings tool for them so they don't have to hunt for it. Force the Full view and scroll to the bottom, where the AI Assistant settings (provider, model) live.
-        if msgBox.exec() == QMessageBox.StandardButton.Yes:
+        # If the user declines to open the Settings tool, there's nothing more we can do here.
+        if msgBox.exec() != QMessageBox.StandardButton.Yes:
+            return
 
-            import SettingsGUI # type: ignore
-            SettingsGUI.MainFunction(DB, report, forceFullView=True, scrollToBottom=True)
+        # Open the Settings tool for them so they don't have to hunt for it. Force the Full view and scroll to the bottom, where the AI Assistant settings (provider, model) live.
+        import SettingsGUI # type: ignore
+        SettingsGUI.MainFunction(DB, report, forceFullView=True, scrollToBottom=True)
 
-        return
+        # Re-read the config from disk (the in-memory configMap predates the Settings tool's changes) and re-check. If the provider and model are now set, fall through and open the AI Rule
+        # Studio window so the user doesn't have to re-launch the module; if they still aren't there, there's nothing to run, so return.
+        configMap = ReadConfig.readConfig(report)
+
+        if not configMap:
+            return
+
+        providerName, model, provider = getProviderAndModel(configMap, report)
+
+        if not provider or not model:
+            return
 
     # Reject a model that belongs to a different provider (possible via a hand-edited config file; the Settings tool itself prevents this pairing). A model no provider claims is
     # allowed - it may simply be newer than this release's model lists.
@@ -183,7 +231,7 @@ def MainFunction(DB, report, modify=True):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Icon.Warning)
         msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'Work on Rules with AI'))
+        msgBox.setWindowTitle(_translate('WorkOnRulesWithAI', 'AI Rule Studio'))
         msgBox.setText(msg)
         msgBox.exec()
 
@@ -193,7 +241,7 @@ def MainFunction(DB, report, modify=True):
     # Get consent to send data to the external service.
     if not checkConsent(configMap, report, provider.displayName):
 
-        report.Info(_translate('WorkOnRulesWithAI', 'AI rule assistance was declined. No data was sent.'))
+        report.Info(_translate('WorkOnRulesWithAI', "AI rule assistance was declined. No data was sent. To give consent, change the AI Rules Consent setting in FLExTrans' Settings."))
         return
 
     # Resolve the API key for the selected provider: OS credential vault, then env var (bring-your-own-key).
@@ -221,14 +269,15 @@ def MainFunction(DB, report, modify=True):
         report.Error(_translate('WorkOnRulesWithAI', 'Transfer rules file not found: {path}').format(path=Utils.shortenPathForDisplay(transferPath)))
         return
 
-    # The bundled resources ship in the same Lib folder as AIRules.py. Use realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder.
+    # The Work-on-Rules-with-AI runtime resources ship in the Lib/AI subfolder beside AIRules.py's Lib folder. Use realpath so this resolves through a per-file symlink (dev deploy) to the real
+    # Lib folder. The conventions doc (system prompt) lives in Lib/AI with the derived preview specs.
     libDir = os.path.dirname(os.path.realpath(AIRules.__file__))
-    conventionsPath = os.path.join(libDir, 'WorkOnRulesWithAI-Conventions.md')
-    dtdPath = os.path.join(libDir, 'transfer.dtd')
+    aiDataDir = os.path.join(libDir, 'AI')
+    conventionsPath = os.path.join(aiDataDir, 'WorkOnRulesWithAI-Conventions.md')
 
-    if not os.path.isfile(conventionsPath) or not os.path.isfile(dtdPath):
+    if not os.path.isfile(conventionsPath):
 
-        report.Error(_translate('WorkOnRulesWithAI', 'Missing WorkOnRulesWithAI-Conventions.md and/or transfer.dtd in {libDir}. Reinstall FLExTrans or copy those files there.').format(libDir=libDir))
+        report.Error(_translate('WorkOnRulesWithAI', 'Missing WorkOnRulesWithAI-Conventions.md in the Lib/AI subfolder under {libDir}. Reinstall FLExTrans or copy that file there.').format(libDir=libDir))
         return
 
     compilerExe = os.path.join(FTPaths.TOOLS_DIR, 'apertium-preprocess-transfer.exe')
@@ -257,7 +306,7 @@ def MainFunction(DB, report, modify=True):
     # FlexTools session. We hold it open across the dialog because GetRuleAssistantStartData's data may reference the open project.
     try:
 
-        from RuleAssistant import GetRuleAssistantStartData
+        from RuleAssistantPy import GetRuleAssistantStartData
         startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
         includeProjectNames = ReadConfig.getConfigVal(configMap, ReadConfig.AI_RULES_INCLUDE_PROJECT_NAMES, report, giveError=False) == 'y'
@@ -280,7 +329,7 @@ def MainFunction(DB, report, modify=True):
         # Launch the dialog. FlexTools has no running Qt event loop, so we show the dialog and run the Qt application loop (matching RuleAssistantPy / LiveRuleTesterTool). A bare dlg.exec()
         # returns immediately here and the dialog would flash open and close. app.exec() returns when the dialog (the only top-level Qt window) is closed.
         from WorkOnRulesWithAIDlg import WorkOnRulesWithAIDlg
-        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], systemInstruction, defs['summaryText'], projectData, engine, dtdPath, compilerExe)
+        dlg = WorkOnRulesWithAIDlg(transferPath, defs['ruleNames'], defs['ruleXml'], defs['macros'], defs['macroXml'], systemInstruction, defs['summaryText'], projectData, engine, compilerExe)
         dlg.show()
         thisApp.exec()
 
