@@ -988,9 +988,9 @@ Sie brauchen einen eigenen API-Schlüssel für den gewählten Anbieter; das Modu
     <message>
       <location filename="../SettingsGUI.py" line="2014"/>
       <source>The model to use. Pick one that belongs to the chosen AI provider.
-gemini-2.5-flash is available on Google's free tier.</source>
+gemini-3.8-flash is available on Google's free tier.</source>
       <translation>Das zu verwendende Modell. Wählen Sie eines, das zum gewählten KI-Anbieter gehört.
-gemini-2.5-flash ist im kostenlosen Kontingent von Google verfügbar.</translation>
+gemini-3.8-flash ist im kostenlosen Kontingent von Google verfügbar.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2016"/>

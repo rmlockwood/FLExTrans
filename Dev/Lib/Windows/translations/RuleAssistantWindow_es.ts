@@ -5,7 +5,7 @@
     <name>RuleAssistantWindow</name>
     <message>
       <source>(Right-click to edit)</source>
-      <translation>(Haga clic derecho para editar)</translation>
+      <translation>(Haz clic derecho para editar)</translation>
     </message>
     <message>
       <source>Create permutations:</source>
@@ -17,7 +17,7 @@
     </message>
     <message>
       <source>FLExTrans Rule Assistant</source>
-      <translation>Asistente de Reglas de FLExTrans</translation>
+      <translation>Asistente de reglas de FLExTrans</translation>
     </message>
     <message>
       <source>Help</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
       <source>Overwrite previous rule(s) that have the same name.</source>
-      <translation>Sobrescribir regla(s) anterior(es) que tienen el mismo nombre.</translation>
+      <translation>Sobrescribir las regla anteriores que tienen el mismo nombre.</translation>
     </message>
     <message>
       <source>Overwrite rules(s)</source>
@@ -33,7 +33,7 @@
     </message>
     <message>
       <source>Rule Name:</source>
-      <translation>Nombre:</translation>
+      <translation>Nombre de la regla:</translation>
     </message>
     <message>
       <source>Rules</source>
@@ -45,15 +45,15 @@
     </message>
     <message>
       <source>Save &amp;&amp; Write</source>
-      <translation>Guardar y Escribir</translation>
+      <translation>Guardar y escribir</translation>
     </message>
     <message>
       <source>Save &amp;&amp; Write All</source>
-      <translation>Guardar y Escribir Todo</translation>
+      <translation>Guardar y escribir todo</translation>
     </message>
     <message>
       <source>Set split features</source>
-      <translation>Establecer rásgos divididos</translation>
+      <translation>Establecer rasgos divididos</translation>
     </message>
     <message>
       <source>Test in LRT</source>

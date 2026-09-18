@@ -13,7 +13,47 @@
   <property name="windowTitle">
    <string>AI Rule Studio</string>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,0">
+   <item>
+    <layout class="QHBoxLayout" name="topRow">
+     <item>
+      <spacer name="topRowSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="openRuleFileButton">
+       <property name="toolTip">
+        <string>Open the transfer rules file in the XML editor. After saving there, use Refresh Rules so this window picks up your changes.</string>
+       </property>
+       <property name="text">
+        <string>Open Rule File</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="xxeButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Open a temporary copy of the transfer rules file, with the rule just generated spliced into it, in the XML editor. Your real rule file is not touched - use Approve to write the rule into it. Available once a rule has been generated.</string>
+       </property>
+       <property name="text">
+        <string>Open a Temporary Version in XXE</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item>
     <widget class="QSplitter" name="mainSplitter">
      <property name="lineWidth">
@@ -406,6 +446,33 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="providerLabel">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="modelLabel">
+       <property name="text">
+        <string>Model:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="modelCombo">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::InsertPolicy::NoInsert</enum>
+       </property>
+       <property name="toolTip">
+        <string>The model used for this run. Whichever model last worked becomes the default for the next run. The provider comes from the AI Provider setting in the FLExTrans Settings tool and cannot be changed here.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="buttonSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -419,16 +486,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="xxeButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Open a Temporary Version in XXE</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="closeButton">
        <property name="text">
         <string>Close</string>
@@ -439,6 +496,9 @@
       <widget class="QPushButton" name="approveButton">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Write the rule shown in the preview into your transfer rules file. A copy of the file as it is now is saved in the Output\rule-file-history folder first, so nothing you already had is lost. Available once a valid rule has been generated, and disabled again after the write so the same rule cannot be written twice.</string>
        </property>
        <property name="text">
         <string>Approve &amp;&amp; Write to Rule File</string>

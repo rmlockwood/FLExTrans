@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.1 - 6/28/26 - Ron Lockwood
 #    Handle one project (two writing systems) mode - target data is in the source project, read in the target WS.
 #
@@ -94,7 +97,7 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
-        FTM_Version:     "3.16.1",
+        FTM_Version:     "3.17",
         FTM_ModifiesDB:  False,
         FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
         FTM_Help:        "",

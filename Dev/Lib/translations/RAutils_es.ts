@@ -13,15 +13,15 @@
     </message>
     <message>
       <source>No word has been marked as the head in the target phrase.  Please mark one word as the head.</source>
-      <translation>Ninguna palabra ha sido marcada como la cabeza en la frase de destino. Por favor, marque una palabra como la cabeza.</translation>
+      <translation>Ninguna palabra ha sido marcada como la cabeza en la frase de destino. Por favor, marca una palabra como la cabeza.</translation>
     </message>
     <message>
       <source>No word or affix in the target has a feature.  Please insert at least one feature.</source>
-      <translation>Ninguna palabra o afijo en el destino tiene un rásgo. Por favor, inserte al menos uno rásgo.</translation>
+      <translation>Ninguna palabra o afijo en el destino tiene una característica. Por favor, inserta al menos una característica.</translation>
     </message>
     <message>
       <source>One or more source words do not have a category.  Please insert a category for every source word.</source>
-      <translation>Una o más palabras de origen no tienen una categoría. Por favor, inserte una categoría para cada palabra de origen.</translation>
+      <translation>Una o más palabras de origen no tienen una categoría. Por favor, inserta una categoría para cada palabra de origen.</translation>
     </message>
     <message>
       <source>phrase</source>
@@ -33,7 +33,7 @@
     </message>
     <message>
       <source>Target phrase has {0} head words; only one allowed</source>
-      <translation>Target phrase has {0} head words; only one allowed</translation>
+      <translation>La frase de destino tiene {0} palabras principales; solo se permite una</translation>
     </message>
     <message>
       <source>tgt</source>

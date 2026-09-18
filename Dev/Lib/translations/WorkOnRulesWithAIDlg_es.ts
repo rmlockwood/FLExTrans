@@ -1,285 +1,352 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es" sourcelanguage="en">
-<context>
+<TS version="2.1" language="es-ES" sourcelanguage="en">
+  <context>
     <name>WorkOnRulesWithAI</name>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="41"/>
-        <source>Enter your {provider} API key. It is stored securely in the credential vault (Windows Credential Manager), not in any project file.
+      <location filename="../WorkOnRulesWithAIDlg.py" line="41"/>
+      <source>Enter your {provider} API key. It is stored securely in the credential vault (Windows Credential Manager), not in any project file.
 
 Get a key at:
 {url}</source>
-        <translation>Introduzca su clave API de {provider}. Se guarda de forma segura en el almacén de credenciales (Administrador de credenciales de Windows), no en ningún archivo del proyecto.
+      <translation>Introduce tu clave API de {provider}. Se guarda de forma segura en el almacén de credenciales (Administrador de credenciales de Windows), no en ningún archivo del proyecto.
 
-Obtenga una clave en:
+Obtén una clave en:
 {url}</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="38"/>
-        <source>API key</source>
-        <translation>Clave API</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="38"/>
+      <source>API key</source>
+      <translation>Clave API</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="55"/>
-        <source>Could not save the key to the credential vault: {err}</source>
-        <translation>No se pudo guardar la clave en el almacén de credenciales: {err}</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="55"/>
+      <source>Could not save the key to the credential vault: {err}</source>
+      <translation>No se pudo guardar la clave en el almacén de credenciales: {err}</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="150"/>
-        <source>Missing description</source>
-        <translation>Falta la descripción</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="150"/>
+      <source>Missing description</source>
+      <translation>Falta la descripción</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="150"/>
-        <source>Please describe the rule you want.</source>
-        <translation>Describa la regla que desea.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="150"/>
+      <source>Please describe the rule you want.</source>
+      <translation>Describe la regla que deseas.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
-        <source>No rule selected</source>
-        <translation>Ninguna regla seleccionada</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
+      <source>No rule selected</source>
+      <translation>Ninguna regla seleccionada</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
-        <source>Please select a rule to modify.</source>
-        <translation>Seleccione una regla para modificar.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="162"/>
+      <source>Please select a rule to modify.</source>
+      <translation>Selecciona una regla para modificar.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="182"/>
-        <source>Generating…</source>
-        <translation>Generando…</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="182"/>
+      <source>Generating…</source>
+      <translation>Generando…</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="244"/>
-        <source>Valid rule generated (attempt {n}). {expl}</source>
-        <translation>Regla válida generada (intento {n}). {expl}</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="244"/>
+      <source>Valid rule generated (attempt {n}). {expl}</source>
+      <translation>Se ha generado una regla válida (intento {n}). {expl}</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="1124"/>
-        <source>Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.</source>
-        <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puede abrirla en XXE para inspeccionarla.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1124"/>
+      <source>Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.</source>
+      <translation>No se pudo crear una regla válida después de {n} intentos. Aun así puedes abrirla en XXE para inspeccionarla.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="1148"/>
-        <source>Could not build a valid rule</source>
-        <translation>No se pudo crear una regla válida</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1148"/>
+      <source>Could not build a valid rule</source>
+      <translation>No se pudo crear una regla válida</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="1135"/>
-        <source>The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.</source>
-        <translation>La regla de la IA no estaba bien construida: sus etiquetas XML no coincidían, por lo que FLExTrans no pudo usarla.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1135"/>
+      <source>The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.</source>
+      <translation>La regla de la IA no estaba bien construida: sus etiquetas XML no coincidían, por lo que FLExTrans no pudo usarla.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="1138"/>
-        <source>The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.</source>
-        <translation>La regla de la IA no se ajustaba al formato de regla de transferencia que requiere FLExTrans, por lo que no se pudo usar.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1303"/>
+      <source>Could not build a valid rule after {n} attempts. There is nothing to show - the AI never returned a complete rule.</source>
+      <translation>No se pudo crear una regla válida tras {n} intentos. No hay nada que mostrar: la IA nunca devolvió una regla completa.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="1141"/>
-        <source>The AI couldn't build a valid rule from this request.</source>
-        <translation>La IA no pudo crear una regla válida a partir de esta solicitud.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1298"/>
+      <source>The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it.</source>
+      <translation>La respuesta de la IA se cortó antes de terminar la regla, por lo que FLExTrans no pudo usarla.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="1144"/>
-        <source>Try rephrasing your description as a single, clear sentence and generate again.</source>
-        <translation>Intente reformular su descripción como una sola frase clara y vuelva a generar.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1312"/>
+      <source>Try again. If it keeps happening on a large rule or macro, ask for a smaller change.</source>
+      <translation>Inténtalo de nuevo. Si sigue ocurriendo con una regla o macro grande, pide un cambio más pequeño.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="254"/>
-        <source>Generation failed.</source>
-        <translation>Falló la generación.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1138"/>
+      <source>The AI's rule didn't fit the transfer-rule format FLExTrans requires, so it couldn't be used.</source>
+      <translation>La regla de la IA no se ajustaba al formato de regla de transferencia que requiere FLExTrans, por lo que no se pudo usar.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="32"/>
-        <source>Error</source>
-        <translation>Error</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1141"/>
+      <source>The AI couldn't build a valid rule from this request.</source>
+      <translation>La IA no pudo crear una regla válida a partir de esta solicitud.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
-        <source>Rate limited - try again shortly.</source>
-        <translation>Límite de solicitudes alcanzado - inténtelo de nuevo en breve.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="1144"/>
+      <source>Try rephrasing your description as a single, clear sentence and generate again.</source>
+      <translation>Intenta reformular tu descripción como una sola frase clara y vuelve a generarla.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
-        <source>Rate limited</source>
-        <translation>Límite de solicitudes</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="254"/>
+      <source>Generation failed.</source>
+      <translation>Falló la generación.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="274"/>
-        <source>Your {provider} API key was updated.</source>
-        <translation>Su clave API de {provider} se actualizó.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="32"/>
+      <source>Error</source>
+      <translation>Error</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="289"/>
-        <source>Error writing rule</source>
-        <translation>Error al escribir la regla</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
+      <source>Rate limited - try again shortly.</source>
+      <translation>Límite de solicitudes alcanzado - inténtalo de nuevo en breve.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="14"/>
-        <source>Open in XXE</source>
-        <translation>Abrir en XXE</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="261"/>
+      <source>Rate limited</source>
+      <translation>Límite de solicitudes</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="314"/>
-        <source>A copy with your rule was written to:
+      <location filename="../WorkOnRulesWithAIDlg.py" line="274"/>
+      <source>Your {provider} API key was updated.</source>
+      <translation>Tu clave API de {provider} se actualizó.</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="289"/>
+      <source>Error writing rule</source>
+      <translation>Error al escribir la regla</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="14"/>
+      <source>Open in XXE</source>
+      <translation>Abrir en XXE</translation>
+    </message>
+    <message>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="314"/>
+      <source>A copy with your rule was written to:
 {path}
 
 Open it in XXE to review.</source>
-        <translation>Se escribió una copia con su regla en:
+      <translation>Se escribió una copia con tu regla en:
 {path}
 
-Ábrala en XXE para revisarla.</translation>
+Ábrela en XXE para revisarla.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="175"/>
-        <source>The AI Assistant added this rule on {when}.</source>
-        <translation>El Asistente de IA agregó esta regla el {when}.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="175"/>
+      <source>The AI Assistant added this rule on {when}.</source>
+      <translation>El Asistente de IA agregó esta regla el {when}.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
-        <source>The AI Assistant modified this rule on {when}.</source>
-        <translation>El Asistente de IA modificó esta regla el {when}.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="176"/>
+      <source>The AI Assistant modified this rule on {when}.</source>
+      <translation>El Asistente de IA modificó esta regla el {when}.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
-        <source>Refresh Rules</source>
-        <translation>Actualizar reglas</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+      <source>Refresh Rules</source>
+      <translation>Actualizar reglas</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
-        <source>Could not re-read the transfer rules file: {err}</source>
-        <translation>No se pudo volver a leer el archivo de reglas de transferencia: {err}</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="166"/>
+      <source>Could not re-read the transfer rules file: {err}</source>
+      <translation>No se pudo volver a leer el archivo de reglas de transferencia: {err}</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="188"/>
-        <source>Rule list refreshed ({n} rules, {m} macros).</source>
-        <translation>Lista de reglas actualizada ({n} reglas, {m} macros).</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="188"/>
+      <source>Rule list refreshed ({n} rules, {m} macros).</source>
+      <translation>Lista de reglas actualizada ({n} reglas, {m} macros).</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
-        <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
-        <translation>Regla escrita en el archivo de transferencia (copia de seguridad: {backup}). Genere o seleccione otra regla para continuar.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="370"/>
+      <source>Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.</source>
+      <translation>Regla escrita en el archivo de transferencia (copia de seguridad: {backup}). Crea o selecciona otra regla para continuar.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="173"/>
-        <source>Rule to explain:</source>
-        <translation>Regla a explicar:</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="173"/>
+      <source>Rule to explain:</source>
+      <translation>Regla a explicar:</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="253"/>
-        <source>Please select a rule to explain.</source>
-        <translation>Seleccione una regla para explicar.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="253"/>
+      <source>Please select a rule to explain.</source>
+      <translation>Selecciona una regla para explicar.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="379"/>
-        <source>Explanation generated.</source>
-        <translation>Explicación generada.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="379"/>
+      <source>Explanation generated.</source>
+      <translation>Explicación generada.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="423"/>
-        <source>Source Language Data</source>
-        <translation>Datos de la lengua de origen</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="423"/>
+      <source>Source Language Data</source>
+      <translation>Datos de la lengua de origen</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="428"/>
-        <source>Target Language Data</source>
-        <translation>Datos de la lengua de destino</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="428"/>
+      <source>Target Language Data</source>
+      <translation>Datos de la lengua de destino</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
-        <source>Example language data</source>
-        <translation>Datos lingüísticos de ejemplo</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
+      <source>Example language data</source>
+      <translation>Datos lingüísticos de ejemplo</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
-        <source>Do you want to keep the example language data you provided for the previous rule?</source>
-        <translation>¿Desea conservar los datos lingüísticos de ejemplo proporcionados para la regla anterior?</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="484"/>
+      <source>Do you want to keep the example language data you provided for the previous rule?</source>
+      <translation>¿Deseas conservar los datos lingüísticos de ejemplo proporcionados para la regla anterior?</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="511"/>
-        <source>Please describe the change you want.</source>
-        <translation>Describa el cambio que desea.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="511"/>
+      <source>Please describe the change you want.</source>
+      <translation>Describe el cambio que deseas.</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="541"/>
-        <source>Explaining…</source>
-        <translation>Explicando…</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="541"/>
+      <source>Explaining…</source>
+      <translation>Explicando…</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="527"/>
-        <source>Unapproved rule</source>
-        <translation>Regla no aprobada</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="527"/>
+      <source>Unapproved rule</source>
+      <translation>Regla no aprobada</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="486"/>
-        <source>You have a rule that has not been written to the transfer file. Approve and write it before continuing?</source>
-        <translation>Tiene una regla que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de continuar?</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="486"/>
+      <source>You have a rule that has not been written to the transfer file. Approve and write it before continuing?</source>
+      <translation>Tienes una regla que no se ha escrito en el archivo de transferencia. ¿Quieres aprobarla y escribirla antes de continuar?</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
-        <source>Comparison unavailable</source>
-        <translation>Comparación no disponible</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
+      <source>Comparison unavailable</source>
+      <translation>Comparación no disponible</translation>
     </message>
     <message>
-        <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
-        <source>Could not load the original rule to show a side-by-side comparison, so only the modified rule is shown.</source>
-        <translation>No se pudo cargar la regla original para mostrar una comparación en paralelo, por lo que solo se muestra la regla modificada.</translation>
+      <location filename="../WorkOnRulesWithAIDlg.py" line="770"/>
+      <source>Could not load the original rule to show a side-by-side comparison, so only the modified rule is shown.</source>
+      <translation>No se pudo cargar la regla original para mostrar una comparación en paralelo, por lo que solo se muestra la regla modificada.</translation>
     </message>
     <message>
-        <source>Unapproved macro</source>
-        <translation>Macro no aprobada</translation>
+      <source>Unapproved macro</source>
+      <translation>Macro no aprobada</translation>
     </message>
     <message>
-        <source>You have a macro that has not been written to the transfer file. Approve and write it before continuing?</source>
-        <translation>Tiene una macro que no se ha escrito en el archivo de transferencia. ¿Aprobarla y escribirla antes de continuar?</translation>
+      <source>You have a macro that has not been written to the transfer file. Approve and write it before continuing?</source>
+      <translation>Tienes una macro que no se ha guardado en el archivo de transferencia. ¿Quieres aprobarla y guardarla antes de continuar?</translation>
     </message>
     <message>
-        <source>(none)</source>
-        <translation>(ninguna)</translation>
+      <source>(none)</source>
+      <translation>(ninguna)</translation>
     </message>
     <message>
-        <source>Macro not found</source>
-        <translation>Macro no encontrada</translation>
+      <source>Macro not found</source>
+      <translation>Macro no encontrada</translation>
     </message>
     <message>
-        <source>Your description mentions a macro that is not in the transfer rules file: {missing}
+      <source>Your description mentions a macro that is not in the transfer rules file: {missing}
 
 Macros in the file: {names}
 
 Nothing was sent to the AI. Correct the macro name and try again.</source>
-        <translation>Su descripción menciona una macro que no está en el archivo de reglas de transferencia: {missing}
+      <translation>Tu descripción menciona una macro que no está en el archivo de reglas de transferencia: {missing}
 
 Macros en el archivo: {names}
 
-No se envió nada a la IA. Corrija el nombre de la macro e inténtelo de nuevo.</translation>
+No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.</translation>
     </message>
     <message>
-        <source>No macro selected</source>
-        <translation>Ninguna macro seleccionada</translation>
+      <source>No macro selected</source>
+      <translation>Ninguna macro seleccionada</translation>
     </message>
     <message>
-        <source>Please select a macro to modify.</source>
-        <translation>Seleccione una macro para modificar.</translation>
+      <source>Please select a macro to modify.</source>
+      <translation>Selecciona una macro para modificar.</translation>
     </message>
     <message>
-        <source>Please select a macro to explain.</source>
-        <translation>Seleccione una macro para explicar.</translation>
+      <source>Please select a macro to explain.</source>
+      <translation>Selecciona una macro para explicar.</translation>
     </message>
     <message>
-        <source>The AI Assistant added this macro on {when}.</source>
-        <translation>El Asistente de IA agregó esta macro el {when}.</translation>
+      <source>The AI Assistant added this macro on {when}.</source>
+      <translation>El Asistente de IA agregó esta macro el {when}.</translation>
     </message>
     <message>
-        <source>The AI Assistant modified this macro on {when}.</source>
-        <translation>El Asistente de IA modificó esta macro el {when}.</translation>
+      <source>The AI Assistant modified this macro on {when}.</source>
+      <translation>El Asistente de IA modificó esta macro el {when}.</translation>
     </message>
     <message>
-        <source>Valid macro generated (attempt {n}). {expl}</source>
-        <translation>Macro válida generada (intento {n}). {expl}</translation>
+      <source>Valid macro generated (attempt {n}). {expl}</source>
+      <translation>Macro válida generada (intento {n}). {expl}</translation>
     </message>
     <message>
-        <source>Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.</source>
-        <translation>Macro escrita en el archivo de transferencia (copia de seguridad: {backup}). Genere o seleccione otra regla u otra macro para continuar.</translation>
+      <source>Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.</source>
+      <translation>Macro escrita en el archivo de transferencia (copia de seguridad: {backup}). Crea o selecciona otra regla u otra macro para continuar.</translation>
+    </message>
+    <message>
+      <source>{provider} has no model named {model}. It may have been retired, or your API key may not have access to it.</source>
+      <translation>{provider} no tiene ningún modelo llamado {model}. Puede que se haya retirado o que su clave de API no tenga acceso a él.</translation>
+    </message>
+    <message>
+      <source>Model not available</source>
+      <translation>Modelo no disponible</translation>
+    </message>
+    <message>
+      <source>Provider: {provider}</source>
+      <translation>Proveedor: {provider}</translation>
+    </message>
+    <message>
+      <source>No model</source>
+      <translation>Ningún modelo</translation>
+    </message>
+    <message>
+      <source>Choose or type the model to use in the Model box.</source>
+      <translation>Elija o escriba el modelo que se usará en el cuadro Modelo.</translation>
+    </message>
+    <message>
+      <source>Wrong provider for this model</source>
+      <translation>Proveedor incorrecto para este modelo</translation>
+    </message>
+    <message>
+      <source>{model} is a {owner} model, so {provider} cannot run it. Choose one of the {provider} models in the Model box.</source>
+      <translation>{model} es un modelo de {owner}, por lo que {provider} no puede ejecutarlo. Elija uno de los modelos de {provider} en el cuadro Modelo.</translation>
+    </message>
+    <message>
+      <source>Choose a different model in the Model box at the bottom of this window, then try again.</source>
+      <translation>Elija otro modelo en el cuadro Modelo en la parte inferior de esta ventana y vuelva a intentarlo.</translation>
+    </message>
+    <message>
+      <source>Not found</source>
+      <translation>No encontrado</translation>
+    </message>
+    <message>
+      <source>The transfer rules file is not there: {path}</source>
+      <translation>El archivo de reglas de transferencia no está ahí: {path}</translation>
+    </message>
+    <message>
+      <source>Could not open the editor</source>
+      <translation>No se pudo abrir el editor</translation>
+    </message>
+    <message>
+      <source>The transfer rules file could not be opened for editing ({err}). Open it yourself from: {path}</source>
+      <translation>No se pudo abrir el archivo de reglas de transferencia para editarlo ({err}). Ábralo usted mismo desde: {path}</translation>
+    </message>
+    <message>
+      <source>Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.</source>
+      <translation>Se abrió el archivo de reglas de transferencia en el editor XML. Después de guardar allí, haga clic en Actualizar reglas para que esta ventana recoja sus cambios.</translation>
     </message>
 </context>
 </TS>

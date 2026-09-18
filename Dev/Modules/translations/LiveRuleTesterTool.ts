@@ -358,20 +358,25 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
         <translation>Exécution de {name} (version {version})...</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1704"/>
+        <location filename="../LiveRuleTesterTool.py" line="1705"/>
         <source>Fieldworks directory is not set.</source>
         <translation>Le répertoire Fieldworks n'est pas défini.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2881"/>
+        <location filename="../LiveRuleTesterTool.py" line="2882"/>
         <source>Problem opening file: {tgt_file}.</source>
         <translation type="unfinished">Problem opening file: {tgt_file}.</translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="3356"/>
+        <source>(no contents could be read from {file})</source>
+        <translation type="unfinished">(no contents could be read from {file})</translation>
     </message>
 </context>
 <context>
     <name>RunApertium</name>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2842"/>
+        <location filename="../LiveRuleTesterTool.py" line="2843"/>
         <source>An error happened when running the Apertium tools. The contents of apertium_error.txt is:</source>
         <translation type="unfinished">An error happened when running the Apertium tools. The contents of apertium_error.txt is:</translation>
     </message>

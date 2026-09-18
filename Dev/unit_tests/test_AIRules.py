@@ -135,6 +135,25 @@ class TestRateLimitError(unittest.TestCase):
         self.assertEqual(err.retryAfter, 12.0)
         self.assertIsInstance(err, RuntimeError)
 
+class TestUnknownModelError(unittest.TestCase):
+
+    def test_message_names_provider_and_model(self):
+
+        err = AIRules.UnknownModelError('OpenAI ChatGPT', 'gpt-5.1')
+        text = str(err)
+
+        self.assertIn('OpenAI ChatGPT', text)
+        self.assertIn('gpt-5.1', text)
+        self.assertIn('AIRulesModel', text)
+
+    def test_carries_fields(self):
+
+        err = AIRules.UnknownModelError('Google Gemini', 'gemini-1.0-pro')
+
+        self.assertEqual(err.providerDisplay, 'Google Gemini')
+        self.assertEqual(err.model, 'gemini-1.0-pro')
+        self.assertIsInstance(err, RuntimeError)
+
 # ---------------------------------------------------------------------------
 # Provider registry
 # ---------------------------------------------------------------------------
@@ -168,8 +187,14 @@ class TestProviderRegistry(unittest.TestCase):
         self.assertIs(AIRules.getProvider('openai'), AIRules.PROVIDERS['openai'])
 
     def test_find_model_owner(self):
-        self.assertIs(AIRules.findModelOwner('claude-opus-4-8'), AIRules.PROVIDERS['anthropic'])
-        self.assertIs(AIRules.findModelOwner('gpt-5.1'), AIRules.PROVIDERS['openai'])
+        self.assertIs(AIRules.findModelOwner('claude-opus-5'), AIRules.PROVIDERS['anthropic'])
+        self.assertIs(AIRules.findModelOwner('gpt-5.6-sol'), AIRules.PROVIDERS['openai'])
+
+    def test_default_model_is_in_each_providers_list(self):
+
+        for provider in AIRules.PROVIDERS.values():
+
+            self.assertIn(provider.defaultModel, provider.models, provider.name)
 
     def test_find_model_owner_unknown(self):
         self.assertIsNone(AIRules.findModelOwner('some-future-model'))
@@ -904,6 +929,35 @@ class TestMarkAuthorship(unittest.TestCase):
 
         self.assertEqual(AIRules.markAuthorship(junk, 'create', self.now), junk)
 
+    def test_modify_keeps_running_history(self):
+
+        # The rule as it stands on disk already carries an "added" stamp. Modifying it should prepend the new "modified" stamp above the old one rather than replacing it.
+        prior = AIRules.markAuthorship(VALID_RULE, 'create', datetime.datetime(2026, 7, 1, 9, 0))
+        out = AIRules.markAuthorship(VALID_RULE, 'modify', self.now, priorRuleXml=prior)
+
+        self.assertIn('The AI Assistant modified this rule', out)
+        self.assertIn('The AI Assistant added this rule', out)
+        # Newest first: the just-added modification stamp precedes the carried-over "added" stamp.
+        self.assertLess(out.index('modified this rule'), out.index('added this rule'))
+
+    def test_modify_history_accumulates_and_stays_newest_first(self):
+
+        # A rule modified twice keeps all three stamps (added, first modify, second modify), each new one prepended so the order is newest to oldest.
+        added = AIRules.markAuthorship(VALID_RULE, 'create', datetime.datetime(2026, 7, 1, 9, 0), whenStr='July 1')
+        firstMod = AIRules.markAuthorship(VALID_RULE, 'modify', datetime.datetime(2026, 7, 2, 9, 0), whenStr='July 2', priorRuleXml=added)
+        secondMod = AIRules.markAuthorship(VALID_RULE, 'modify', datetime.datetime(2026, 7, 3, 9, 0), whenStr='July 3', priorRuleXml=firstMod)
+
+        self.assertLess(secondMod.index('July 3'), secondMod.index('July 2'))
+        self.assertLess(secondMod.index('July 2'), secondMod.index('July 1'))
+
+    def test_modify_does_not_duplicate_stamp_ai_echoed(self):
+
+        # If the AI echoes the old "added" stamp back on its returned rule, the history still comes from the on-disk rule alone - the echoed stamp is dropped so it is not doubled.
+        prior = AIRules.markAuthorship(VALID_RULE, 'create', self.now, whenStr='July 1')
+        out = AIRules.markAuthorship(prior, 'modify', self.now, whenStr='July 3', priorRuleXml=prior)
+
+        self.assertEqual(out.count('added this rule'), 1)
+
 # ---------------------------------------------------------------------------
 # Engine.generate, generateRule, explainRule (with fakes)
 # ---------------------------------------------------------------------------
@@ -1090,6 +1144,16 @@ class TestGenerateValidatedRule(TempDirTestCase):
 
 class TestApplyRule(TempDirTestCase):
 
+    def setUp(self):
+
+        super().setUp()
+
+        # applyRule saves its backup through RuleFileHistory, which puts it in a folder under FTPaths.OUTPUT_DIR - a path worked out from the process's working directory. Point it at this test's
+        # scratch directory instead, so the tests neither depend on nor write into a real work project.
+        patcher = mock.patch.object(AIRules.RuleFileHistory, 'getHistoryDir', return_value=self.workDir)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def _result(self, ruleXml=VALID_RULE, newDefs=None):
         return AIRules.RuleResult(ruleXml=ruleXml, newDefs=newDefs or [], explanation='', language='en', valid=True, errors='', attempts=1)
 
@@ -1183,7 +1247,7 @@ class TestApplyRule(TempDirTestCase):
             after = fin.read()
 
         self.assertEqual(before, after)
-        backups = [f for f in os.listdir(self.workDir) if '.bak' in f]
+        backups = [f for f in os.listdir(self.workDir) if AIRules.RuleFileHistory.TAG_BEFORE_AI_CHANGES in f]
         self.assertTrue(backups)
 
 # ---------------------------------------------------------------------------

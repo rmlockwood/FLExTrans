@@ -16,17 +16,17 @@
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
       <source>Registry Error</source>
-      <translation>Registry Error</translation>
+      <translation>Error de registro</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="465"/>
       <source>Could not find the Paratext data folder in the registry.</source>
-      <translation>Could not find the Paratext data folder in the registry.</translation>
+      <translation>No se ha podido encontrar la carpeta de datos Paratext en el registro.</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="502"/>
       <source>Not Found Error</source>
-      <translation>Error / No encontrado</translation>
+      <translation>Error: No encontrado</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="471"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="502"/>
       <source>Could not find that book file: {bookPath}.</source>
-      <translation>Could not find that book file: {bookPath}.</translation>
+      <translation>No se ha encontrado ese archivo de libro: {bookPath}.</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="596"/>
@@ -51,7 +51,7 @@
     <message>
       <location filename="../ChapterSelection.py" line="613"/>
       <source>Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?</source>
-      <translation>¿Está seguro de que desea sobrescribir {chapStr} {digitsStr} de {bookName} en el proyecto {projAbbrev}?</translation>
+      <translation>¿Estás seguro de que deseas sobrescribir {chapStr} {digitsStr} de {bookName} en el proyecto {projAbbrev}?</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="614"/>
@@ -159,7 +159,7 @@
       <translation>Nehemías</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="750"/>
+      <location filename="../ChapterSelection.py" line="751"/>
       <source>Esther</source>
       <translation>Ester</translation>
     </message>
@@ -414,7 +414,7 @@
       <translation>Tobías</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="801"/>
+      <location filename="../ChapterSelection.py" line="802"/>
       <source>Judith</source>
       <translation>Judith</translation>
     </message>

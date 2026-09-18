@@ -5,6 +5,9 @@
 #   SIL International
 #   September 2023
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16.18 - 7/25/26 - Ron Lockwood
 #    Import tomli_w lazily inside ApplicationPreferences.sync() so RAutils can be imported (e.g. by CI unit tests) without that third-party package installed.
 #

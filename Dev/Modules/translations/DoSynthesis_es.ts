@@ -21,7 +21,7 @@ then the following information from the {hermitCrabModule} module applies: {herm
 
 If in the settings you select &apos;No&apos; for &apos;Use HermitCrab synthesis?&apos;,
 then the following information from the {stampModule} module applies: {stampDescription}</source>
-      <translation>Este módulo sintetiza el texto objetivo. Si en la configuración selecciona 'Sí' para '¿Usar la síntesis de HermitCrab?',
+      <translation>Este módulo sintetiza el texto objetivo. Si en la configuración seleccionas &apos;"Sí"&apos; en &apos;"¿Usar la síntesis de HermitCrab?"&apos;,
 entonces se aplica la siguiente información del módulo {hermitCrabModule}: {hermitCrabDescription}
 
 

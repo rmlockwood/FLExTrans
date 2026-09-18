@@ -15,8 +15,8 @@
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="607"/>
-        <source>Refresh Source Lexicon</source>
-        <translation>Actualiser le lexique source</translation>
+        <source>Refresh Source Project</source>
+        <translation>Actualiser le projet source</translation>
     </message>
     <message>
         <location filename="../LiveRuleTester.py" line="608"/>

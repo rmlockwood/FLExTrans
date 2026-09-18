@@ -16,7 +16,7 @@
     <message>
       <location filename="../ReplacementEditorWindow.py" line="118"/>
       <source>Gramm. Cat.</source>
-      <translation>Cat. gram.</translation>
+      <translation>Catálogo gramatical.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="120"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../ReplacementEditorWindow.py" line="125"/>
       <source>Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</source>
-      <translation>Separe múltiples características/clases y/o afijos con un punto. Por ejemplo, f.sg para femenino singular.</translation>
+      <translation>Separa múltiples características/clases y/o afijos con un punto. Por ejemplo, f.sg para femenino singular.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="126"/>

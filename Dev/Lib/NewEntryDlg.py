@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16 - 7/13/26 - Ron Lockwood
 #    Initialize keyWidgetList in __init__ to satisfy the type checker.
 #

@@ -6,7 +6,7 @@
     <message>
       <location filename="../ExportFlexToParatext.py" line="87"/>
       <source>Export Text from Target FLEx to Paratext</source>
-      <translation>Exportar texto de FLEx objetivo a Paratext</translation>
+      <translation>Exportar texto de FLEx de destino a Paratext</translation>
     </message>
     <message>
       <location filename="../ExportFlexToParatext.py" line="90"/>

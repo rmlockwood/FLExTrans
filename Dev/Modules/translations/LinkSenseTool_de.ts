@@ -78,7 +78,7 @@ Legen Sie in den Einstellungen fest, welches benutzerdefinierte Feld für die Ve
       <translation>Mehr als {num_warnings} leere Glossen gefunden. Weitere Warnungen für leere Zielglossen werden unterdrückt.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1526"/>
+      <location filename="../LinkSenseTool.py" line="1527"/>
       <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
       <translation>Es wurden keine Wörter mit einem gültigen Wurzelmorphem-Typ gefunden. Bitte überprüfen Sie Ihre Einstellungen, insbesondere „Source Morpheme Types Counted As Roots“.</translation>
     </message>
@@ -98,7 +98,7 @@ Legen Sie in den Einstellungen fest, welches benutzerdefinierte Feld für die Ve
       <translation>1 Verknüpfung entfernt.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1643"/>
+      <location filename="../LinkSenseTool.py" line="1644"/>
       <source>{num} links removed</source>
       <translation>{num} Verknüpfungen entfernt</translation>
     </message>
@@ -193,7 +193,7 @@ Legen Sie in den Einstellungen fest, welches benutzerdefinierte Feld für die Ve
       <translation>Es wurden keine Bedeutungen zum Verknüpfen gefunden. Bitte überprüfen Sie Ihren Text und genehmigen Sie einige Wörter.</translation>
     </message>
     <message>
-      <location filename="../LinkSenseTool.py" line="1958"/>
+      <location filename="../LinkSenseTool.py" line="1959"/>
       <source>There was an error finding senses to link.</source>
       <translation>Beim Suchen der zu verknüpfenden Bedeutungen ist ein Fehler aufgetreten.</translation>
     </message>

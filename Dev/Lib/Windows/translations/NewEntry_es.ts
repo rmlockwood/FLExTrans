@@ -6,7 +6,7 @@
     <message>
       <location filename="../NewEntry.py" line="80"/>
       <source>Add New Target Entry</source>
-      <translation>Agregar nueva entrada objetivo</translation>
+      <translation>Agregar nueva entrada de destino</translation>
     </message>
     <message>
       <location filename="../NewEntry.py" line="81"/>
@@ -46,7 +46,7 @@
     <message>
       <location filename="../NewEntry.py" line="91"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Proyectos de clúster a los que aplicar</translation>
+      <translation>Proyectos de clúster para aplicar</translation>
     </message>
   </context>
 </TS>

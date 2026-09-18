@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.16 - 7/10/26 - Ron Lockwood
 #    Type fix: annotated getInterlinData's return type as TextEntirety so callers (e.g. RuleAssistant) no longer see it as object and can call .write() without a reportAttributeAccessIssue.
 #

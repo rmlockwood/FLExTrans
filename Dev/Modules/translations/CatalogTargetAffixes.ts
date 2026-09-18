@@ -64,7 +64,7 @@
         <translation>{count} affixes/clitiques exportés vers le catalogue.</translation>
     </message>
     <message>
-        <location filename="../CatalogTargetAffixes.py" line="104"/>
+        <location filename="../CatalogTargetAffixes.py" line="105"/>
         <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the output window will show the SOURCE project

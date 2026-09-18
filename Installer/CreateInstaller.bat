@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.16
+SET FLEXTRANS_VERSION=3.17
 
 rem Regenerate the language-derived files (lang_codes.bat, languages.nsh, crowdin.yml) from the authoritative UI-language list in Dev\Lib\UILanguages.py, then load the codes
 python "%~dp0..\Dev\updateLanguageFiles.py"

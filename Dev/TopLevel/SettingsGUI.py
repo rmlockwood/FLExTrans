@@ -3,6 +3,12 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.6 - 7/28/26 - Ron Lockwood
+#    Lint warning fix.
+#
 #   Version 3.16.5 - 7/22/26 - Ron Lockwood
 #    The AI Assistant setting descriptions now name the module "AI Rule Studio" (renamed from "Work on Rules with AI").
 #
@@ -1390,7 +1396,10 @@ class Main(QMainWindow):
 
         # The AI Assistant settings sit at the bottom of the Full view. Scroll all the way down so the user lands on them (used when the AI Rule Studio module opens Settings for setup).
         scrollBar = self.ui.scrollArea.verticalScrollBar()
-        scrollBar.setValue(scrollBar.maximum())
+
+        if scrollBar:
+
+            scrollBar.setValue(scrollBar.maximum())
 
     def calcViewSetting(self):
 
@@ -2281,7 +2290,7 @@ widgetList = [
     _translate("SettingsGUI", "The AI service the AI Rule Studio module sends requests to.\nYou need your own API key for the chosen provider; the module asks for it the first time you run it."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "AI Model"), "choose_ai_model", "", COMBO_BOX, object, object, object, loadAiModels, ReadConfig.AI_RULES_MODEL,\
-    _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-2.5-flash is available on Google's free tier."), DONT_GIVE_ERROR, FULL_VIEW],\
+    _translate("SettingsGUI", "The model to use. Pick one that belongs to the chosen AI provider.\ngemini-3.8-flash is available on Google's free tier."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "How do I get an API key?"), "ai_key_help_link", "sAIApiKeys", LINK, object, object, object, loadLink, None,\
     _translate("SettingsGUI", "Opens the FLExTrans documentation section that explains how to get an API key for each provider."), DONT_GIVE_ERROR, FULL_VIEW],\

@@ -5,6 +5,49 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.10 - 9/3/26 - Ron Lockwood
+#    A rule the model cut off part-way through no longer takes the window down. onGenerateFinished handed the candidate straight to the preview renderer, which parses it, so the
+#    ParseError escaped the finished-signal handler; it now asks AIRules.isWellFormed first, leaves the preview blank when the answer is incomplete, disables Open-in-XXE (which splices
+#    the same XML) and says so in the status line instead of pointing at a button that cannot work.
+#
+#   Version 3.17.9 - 9/3/26 - Ron Lockwood
+#    showValidationFailed now has a case for an answer the model cut off part-way through (expat's "unclosed token"), which used to be reported as tags that didn't match up. It gets its own
+#    sentence and its own advice - try again, or ask for a smaller change - since rephrasing is not the fix when the request was understood and the answer simply ran out.
+#
+#   Version 3.17.8 - 9/3/26 - Ron Lockwood
+#    Approving no longer throws the window off the rule it just wrote. The re-read of the transfer file restores each picker's previous selection, and that restore fired the selection
+#    handlers: a macro still selected in the Modify/Explain list from earlier in the session (nothing clears it when the user leaves for the Create tab) took over the preview and made the
+#    status line say "Macro written" for a newly created rule. approveDraft now sets switchingTabs across its reload and describes the write from a value captured before it.
+#
+#   Version 3.17.7 - 9/3/26 - Ron Lockwood
+#    Added an Open Rule File button, which opens the transfer rules file in the XML editor for a hand edit. It offers to write a pending draft first (an outside edit would leave that draft
+#    unwritable) and asks for Refresh Rules afterwards, since nothing here can tell when the editor is done. It sits with Open a Temporary Version in XXE in a new right-aligned row across the
+#    top of the window, which is also where that button moved to, keeping the bottom row short. The three buttons that act on files - both of those and Approve & Write to Rule File - now carry
+#    tooltips saying what they open or write, and that the previous version of the rule file is saved first. Every widget added here now lives in WorkOnRulesWithAIWindow.ui rather than being
+#    built in code, so the whole window can be maintained in a widget designer.
+#
+#   Version 3.17.6 - 9/3/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, the tabs, draft protection, threading, the preview and code structure (replacing the stub description on the 3.16 line).
+#
+#   Version 3.17.5 - 9/3/26 - Ron Lockwood
+#    The bottom row now says which AI service the requests go to and carries an editable Model picker, so a request can be retried on a different model without closing the window and paying
+#    the FLEx start-up again. The choice is applied when a request is sent (a model belonging to another provider is refused there), and a model the provider actually accepted becomes the
+#    AIRulesModel default for next time - written only after a reply comes back, so a typo or a retired name never reaches the settings file.
+#
+#   Version 3.17.4 - 9/3/26 - Ron Lockwood
+#    A model the provider no longer serves (HTTP 404) now gets its own plain-language dialog naming the model and pointing at the AI Model setting, instead of the SDK's raw "model does not
+#    exist" error: the worker relays AIRules.UnknownModelError through a new unknownModel signal so the sentence can be shown in the interface language.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.27 - 8/21/26 - Ron Lockwood
+#    Starting a new rule now offers to save an unapproved rule preview first.
+#
+#   Version 3.16.26 - 7/28/26 - Ron Lockwood
+#    The Modify/Explain tab's Rules and Macros lists now get a minimum height sized to show at least three rows (the collapsed tab area had left room for only two); ensureListsShowThreeRows
+#    sets it in showEvent, just before the tab area is collapsed to its minimum-size hint. Lexical units in an AI explanation are now color-coded (via TransferPreview / Testbed) like the viewer.
+#
 #   Version 3.16.25 - 7/27/26 - Ron Lockwood
 #    Fixes #1470. A rule that fails validation no longer confronts the user with the raw parser text (e.g. expat's baffling "mismatched tag: line N, column M"): the dialog now leads with a
 #    plain-language summary of what went wrong plus a "rephrase as one clear sentence and try again" nudge, and tucks the raw parser/compiler errors behind the message box's "Show Details" button.
@@ -105,6 +148,86 @@
 #    Prototype. The dialog for the "Work on Rules with AI" module: choose to create a new rule or modify an existing one, describe the change, generate with the configured AI provider
 #    (on a background thread), preview the result rendered like XXE, and Approve / Open in XXE / Cancel. Inputs are injected so the dialog can be exercised standalone; MainFunction
 #    supplies the real FLEx-derived data later.
+#
+#   OVERVIEW (AI generated, then edited)
+#
+#   This is the whole user interface of the AI Rule Studio module - the window the user actually works in. AIRules.py does the thinking (prompts, provider calls, validation, writing the
+#   transfer file) and knows nothing about Qt; this file does the talking: it collects what the user wants, hands it to AIRules on a background thread, renders what came back, and asks the
+#   questions that keep work from being lost. The split is deliberate and worth preserving - it is why AIRules can be unit-tested with no Qt, no FLEx and no network, and why every
+#   user-visible sentence is translatable here rather than baked into the engine.
+#
+#   Everything the window needs is injected by MainFunction (rule and macro names, their XML, the system instruction, the definition summary, the project data, the Engine, the compiler
+#   path), so the dialog can also be exercised standalone with hand-made data. It stays open across successive edits: only Close and the window's X end it, and each generation leaves the
+#   window ready for the next one.
+#
+#   THE TABS
+#
+#   "Create new rule" takes a description (plus a checkbox to make a macro instead). "Modify or explain an existing rule or macro" has Rules and Macros sub-tabs; clicking an entry previews
+#   it at once from the injected {comment: XML} / {name: XML} maps - no re-reading the transfer file - and then Modify (with a description) or Explain (in a chosen language) acts on it.
+#   currentTask ('create'/'modify'/'explain'/'select') records what the preview is currently showing, and currentIsMacro whether a macro rather than a rule is in play; nearly every handler
+#   branches on those two.
+#
+#   PROTECTING AN UNAPPROVED DRAFT
+#
+#   A generated rule exists only in memory until Approve writes it, so anything that would replace the preview first calls offerToWritePendingDraft: switching tabs, switching the
+#   Rules/Macros sub-tabs, clicking another rule or macro, explaining over a modified draft, and closing the window. It returns False only when the user asked for the write and the write
+#   failed, which tells the caller to stop rather than throw the draft away.
+#
+#   The switchingTabs flag guards two traps. The first is that a QListWidget auto-selects its first row when a tab switch moves keyboard focus into it, synchronously, as part of the tab
+#   change - and that spurious selection would null the pending draft before onTabChanged could offer to save it. So tabBarClicked (which fires before the switch) sets the flag, the
+#   selection handlers ignore selections while it is set, and a QTimer.singleShot(0) undoes the auto-selection on the next event-loop turn. It looks like defensive clutter; it isn't.
+#
+#   The second trap is the same signal from a different direction. approveDraft re-reads the transfer file so the rule just written shows up in the picker, and reloadRules restores each
+#   picker's previous selection - which fires the selection handlers again. Nothing clears those lists when the user leaves for the Create tab, so a macro clicked earlier in the session is
+#   still selected there, and that restore used to repoint the window at it: the preview jumped off the newly written rule and the status line called it a macro. So approveDraft sets the
+#   flag across its reload too, and reads what it wrote into a local before the reload rather than trusting currentIsMacro afterwards.
+#
+#   THREADING
+#
+#   A provider call takes many seconds, so GenerateWorker runs it on a QThread and reports back through four signals: finished, failed, rateLimited, and unknownModel. The last two exist so
+#   the two provider errors that a user can actually act on get a plain-language dialog instead of raw SDK text - a 429 says how long to wait, a 404 on the model name says which model is
+#   missing and which setting to change. unknownModel carries the model and provider names rather than a finished sentence, because the sentence has to be composed here to be translatable
+#   (AIRules is Qt-free and can only produce the English one). Everything else arrives on `failed` and is shown as-is.
+#
+#   PROVIDER AND MODEL
+#
+#   The button row says which service the requests go to and lets the model be changed. The split is deliberate: switching provider would mean a different API key, a different SDK and a fresh
+#   consent question (the consent the user gave names the service), so the provider stays a readout and lives in the FLExTrans settings, while the model - the thing worth varying, since retrying
+#   a request on a stronger model is the usual reason to want a change mid-session - is editable here. Editable rather than a fixed list, so a model released after this FLExTrans can be typed in.
+#
+#   Two rules keep that honest. The choice is applied in startWorker, not when the box changes, so what gets sent is whatever the box says at the moment the user clicks Create/Modify/Explain, and
+#   a model that belongs to a different provider is refused there (it could only draw a 404). And the AIRulesModel setting is rewritten only once a reply has actually come back - see
+#   rememberWorkingModel - so a model the provider accepted becomes the default for next time while a typo, which dies at the 404, never reaches the settings file.
+#
+#   THE PREVIEW
+#
+#   The preview is a QWebEngineView rendering HTML from TransferPreview - one rule for a create, a side-by-side before/after for a modify, the rule beside its prose for an explain. Two
+#   things about it are not obvious. It is constructed lazily and kept out of the window until a preview is actually shown, because an embedded Chromium view installs input hooks that steal
+#   arrow keys from the description boxes; and because constructing it is slow, showEvent warms it up on the next idle moment so the first preview isn't held up by Chromium starting. The
+#   zoom factor is remembered on the dialog, not just on the view, so it survives re-rendering and view rebuilds.
+#
+#   CODE STRUCTURE
+#
+#   promptForApiKey asks for a key and stores it in the provider's credential-vault slot (used both on first run and by the Change API key button). PasteDataDlg is the paste-and-review grid
+#   for interlinearized example data, bolding record-start rows and the label column and laying out right-to-left scripts accordingly. GenerateWorker is the background-thread wrapper
+#   described above.
+#
+#   Two buttons at the top right open the XML editor and are easy to confuse. Open a Temporary Version in XXE opens a throw-away copy in a temp folder with the current draft spliced in, for
+#   inspecting a rule the AI produced (the folder is cleaned up on close); Open Rule File opens the project's real transfer file for a hand edit. The second offers to write a pending draft first,
+#   because an outside edit moves the text spans applyRule matches against and would leave that draft unwritable.
+#
+#   Every widget in this window is defined in WorkOnRulesWithAIWindow.ui and reached through self.ui, including the provider readout and the model picker in the bottom row - nothing is
+#   constructed in code here. That is deliberate and worth keeping: it means the layout can be opened in a widget designer and rearranged without reading this file, and the labels and tooltips
+#   are extracted for translation from the generated WorkOnRulesWithAIWindow.py. Only text that depends on a run-time value (the provider's display name, the model list) is set here.
+#
+#   WorkOnRulesWithAIDlg is the rest of the file, roughly in this order: __init__ (inject state, build the pyuic widgets, wire the signals, add the provider/model readout), showEvent and the
+#   list/splitter sizing, the preview view helpers (createPreviewView, warmUpPreview, ensurePreview, blankPreview, the zoom trio), closeEvent (which offers to write a pending draft and
+#   cleans up the Open-in-XXE temp folders), the small selection accessors, offerToWritePendingDraft, the tab and list-selection handlers, reloadRules, the Source/Target Data handlers, the
+#   prompt helpers (cleanDescription, gatherMacrosForPrompt, warnMissingMacros), the three action handlers (onCreate, onModify, onExplain) which all funnel into startRuleGeneration ->
+#   startWorker, then the result handlers (onGenerateFinished, showValidationFailed, onGenerateFailed, onRateLimited, onUnknownModel), the model-picker trio (populateModelCombo,
+#   applyModelChoice, rememberWorkingModel), onChangeApiKey, and finally approveDraft (the only thing here that causes the real transfer file to be written - through AIRules.applyRule, which
+#   backs it up first), onOpenRuleFile and onOpenInXxe.
+#
 
 import os
 import shutil
@@ -321,6 +444,7 @@ class GenerateWorker(QObject):
     finished = pyqtSignal(object)   # AIRules.RuleResult, or (explanation, language) for the explain task
     failed = pyqtSignal(str)
     rateLimited = pyqtSignal(str)   # friendly "try again in N s" message
+    unknownModel = pyqtSignal(str, str)   # (model, provider display name) - the two fields the localized "model not available" message needs
 
     def __init__(self, fn, params: dict):
 
@@ -336,6 +460,10 @@ class GenerateWorker(QObject):
 
         except AIRules.RateLimitError as err:
             self.rateLimited.emit(str(err))
+
+        # The fields travel instead of the message text so the dialog can say it in the interface language (AIRules stays Qt-free and can only produce the English sentence).
+        except AIRules.UnknownModelError as err:
+            self.unknownModel.emit(err.model, err.providerDisplay)
 
         except Exception as err:
             self.failed.emit(str(err))
@@ -439,8 +567,20 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.xxeButton.clicked.connect(self.onOpenInXxe)
         self.ui.closeButton.clicked.connect(self.close)
         self.ui.changeKeyButton.clicked.connect(self.onChangeApiKey)
+        self.ui.openRuleFileButton.clicked.connect(self.onOpenRuleFile)
         self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
         self.ui.zoomDecreaseButton.clicked.connect(self.onZoomDecrease)
+
+        # Which AI service the requests go to, and which of its models. The provider is a fixed readout: switching it would mean a different API key, a different SDK and a fresh consent
+        # question (the consent the user gave names the service), so it stays in the FLExTrans settings. The model IS changeable here, because retrying the same request on a stronger model
+        # is the usual reason to want a change mid-session, and closing the window to visit the settings would mean paying the slow start-up - re-opening the target FLEx project and
+        # re-gathering the project data - all over again. The widgets themselves (providerLabel, modelLabel, modelCombo) come from the .ui; only the text that depends on run-time values is
+        # set here.
+        self.ui.providerLabel.setText(_translate('WorkOnRulesWithAI', 'Provider: {provider}').format(provider=self.engine.provider.displayName))
+        self.populateModelCombo()
+
+        # The model the settings asked for, so a switch can be told from a non-switch. It moves forward only once a model has actually worked - see rememberWorkingModel.
+        self.configuredModel = self.engine.model
 
         # The Source/Target Data buttons appear once on each tab (Create and Modify/Explain), but the example data they edit is global - the same data is sent with every request. Group
         # each side's buttons so the check-mark label and the busy-time enable/disable can be kept in step across both copies (see updateDataButtons / setBusy).
@@ -464,12 +604,32 @@ class WorkOnRulesWithAIDlg(QDialog):
         # __init__ because the widgets' real size hints aren't known until the window is laid out; the guard keeps a later re-show from undoing a splitter drag the user has since made.
         if not self.splitterSized:
 
+            # Give the Rules/Macros lists enough height to show at least three rows before the tab area is collapsed to its minimum height below. Done here (not __init__) so the per-row
+            # measurement is taken once the widgets are laid out, and before the setSizes call so the taller lists are already reflected in the tab area's minimum-size hint it reads.
+            self.ensureListsShowThreeRows()
+
             self.ui.mainSplitter.setSizes([self.ui.modeTabs.minimumSizeHint().height(), self.height()])
             self.splitterSized = True
 
         # Warm up the (slow-to-construct) web view once the window is on screen, so the first preview isn't held up by Chromium starting. singleShot(0) lets the window paint first, then
         # builds the view during the next idle moment - by the time the user navigates to a rule the engine is ready. warmUpPreview is idempotent, so repeated shows don't rebuild it.
         QTimer.singleShot(0, self.warmUpPreview)
+
+    def ensureListsShowThreeRows(self, rowsToShow=3):
+        '''Give the Modify/Explain tab's Rules and Macros lists a minimum height tall enough to show at least `rowsToShow` rows at once. The tab area is sized to its minimum-size hint (see
+        showEvent), and with no floor on the list height that hint left room for only two rows. The per-row height comes from the list's own row size hint (falling back to the font height
+        when the list is empty), so this stays correct across fonts and screen scaling; a QTabWidget wraps each list, so the raised minimum flows up through it into the tab area's hint.'''
+
+        for listWidget in (self.ui.ruleList, self.ui.macroList):
+
+            rowHeight = listWidget.sizeHintForRow(0) if listWidget.count() else listWidget.fontMetrics().height()
+
+            # sizeHintForRow returns -1 for an empty list on some styles; fall back to the font height so we still have a sensible per-row figure.
+            if rowHeight <= 0:
+                rowHeight = listWidget.fontMetrics().height()
+
+            # The row heights, plus the list's frame on top and bottom and a few pixels of slack, so the requested number of rows are fully visible rather than clipped at the last one.
+            listWidget.setMinimumHeight(rowHeight * rowsToShow + listWidget.frameWidth() * 2 + 6)
 
     def createPreviewView(self):
         '''Create the preview QWebEngineView, applying the remembered zoom and disabling the right-click context menu. The preview is a read-only rendering of the rule, so the default
@@ -572,16 +732,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         if answer != QMessageBox.StandardButton.Yes:
             return True
 
-        # approveDraft reloads the lists, which re-fires the selection signals; switchingTabs makes onRuleSelected/onMacroSelected ignore those synthetic re-selections (restored to its
-        # prior value afterwards, since a tab-switch caller may still be mid-switch).
-        prior = self.switchingTabs
-        self.switchingTabs = True
-
-        try:
-            return self.approveDraft()
-
-        finally:
-            self.switchingTabs = prior
+        # approveDraft guards its own re-read of the lists against the synthetic re-selections that follow it, so there is nothing to suppress here.
+        return self.approveDraft()
 
     def onTabBarClicked(self, index):
         '''The user clicked a tab. This fires before the tab actually changes and before the Modify/Explain list's focus-driven auto-select, so it's our chance to mark that a switch is
@@ -865,6 +1017,9 @@ class WorkOnRulesWithAIDlg(QDialog):
             QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Missing description'), _translate('WorkOnRulesWithAI', 'Please describe the rule you want.'))
             return
 
+        # Creating a new rule replaces the current preview and draft, so offer to write an unapproved one before continuing. Whether the user says Yes or No, go ahead and go on.
+        self.offerToWritePendingDraft()
+
         # Starting a new rule after approving the previous one: the example data given for that rule may not fit this one, so ask once whether to keep it. Reopening the data grids
         # disarms the question (onSourceData/onTargetData).
         if self.askAboutDataOnNextGenerate and (self.sourceDataText or self.targetDataText):
@@ -990,7 +1145,11 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.startWorker(AIRules.generateValidatedRule, params, _translate('WorkOnRulesWithAI', 'Generating…'))
 
     def startWorker(self, fn, params: dict, statusText: str):
-        '''Disable the controls and run `fn(**params)` on a background thread, reporting `statusText` while it runs.'''
+        '''Disable the controls and run `fn(**params)` on a background thread, reporting `statusText` while it runs. The model the picker names is applied first - params carries the Engine
+        itself, so setting the model on it here is what the request will use - and a model this provider cannot run stops the run before anything is disabled or sent.'''
+
+        if not self.applyModelChoice():
+            return
 
         self.setBusy(True)
         self.ui.statusLabel.setText(statusText)
@@ -1002,6 +1161,7 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.worker.finished.connect(self.onGenerateFinished)
         self.worker.failed.connect(self.onGenerateFailed)
         self.worker.rateLimited.connect(self.onRateLimited)
+        self.worker.unknownModel.connect(self.onUnknownModel)
         self.genThread.start()
 
     def setBusy(self, busy: bool):
@@ -1011,6 +1171,8 @@ class WorkOnRulesWithAIDlg(QDialog):
         # covered here without touching them individually.
         self.ui.modeTabs.setEnabled(not busy)
         self.ui.changeKeyButton.setEnabled(not busy)
+        self.ui.modelCombo.setEnabled(not busy)
+        self.ui.openRuleFileButton.setEnabled(not busy)
 
         if busy:
 
@@ -1077,6 +1239,9 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.cleanupThread()
         self.setBusy(False)
 
+        # A reply came back, so this model works: make it the default for next time. Done for the explain task too - it is the same provider call.
+        self.rememberWorkingModel()
+
         # The explain task returns (explanation, language) and produces no rule: render the rule beside its explanation and leave Approve / Open-in-XXE disabled (there is nothing to
         # write or open).
         if self.currentTask == 'explain':
@@ -1093,17 +1258,25 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ruleResult = result
         self.draftWritten = False
 
+        # The rule XML came from the model and is not guaranteed to parse - a reply cut off part-way through leaves an element unclosed. TransferPreview parses whatever it is handed, and
+        # so does the spliceIntoTemp behind Open-in-XXE, so both are held back here. Letting the ParseError out of this signal handler took the whole window down.
+        candidateParses = AIRules.isWellFormed(result.ruleXml)
+
         # Render the preview: the original rule on the left and the modified rule on the right for a modify; a single rule for a create. The label language follows the language of the
         # user's request, as reported by the model.
-        comparisonMissing = self.currentTask == 'modify' and not self.currentRuleXml
+        comparisonMissing = candidateParses and self.currentTask == 'modify' and not self.currentRuleXml
 
-        if self.currentTask == 'modify' and self.currentRuleXml:
-            html = TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language)
+        if not candidateParses:
+            self.blankPreview()
+
+        elif self.currentTask == 'modify' and self.currentRuleXml:
+            self.ensurePreview().setHtml(TransferPreview.renderComparisonHtml(self.currentRuleXml, result.ruleXml, lang=result.language))
+
         else:
-            html = TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language)
+            self.ensurePreview().setHtml(TransferPreview.renderRuleHtml(result.ruleXml, result.newDefs, lang=result.language))
 
-        self.ensurePreview().setHtml(html)
-        self.ui.xxeButton.setEnabled(True)
+        # Open-in-XXE splices this same XML into a temp copy of the transfer file, so it is only offered for a candidate that parses.
+        self.ui.xxeButton.setEnabled(candidateParses)
 
         # A modify with no original rule to compare against (shouldn't normally happen - the list selection supplies it) would otherwise silently drop the before/after and the change
         # highlighting, showing only the new rule. Say why, so the missing comparison isn't mistaken for "nothing changed".
@@ -1121,7 +1294,14 @@ class WorkOnRulesWithAIDlg(QDialog):
         else:
 
             self.ui.approveButton.setEnabled(False)
-            self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.').format(n=result.attempts))
+
+            # Only offer XXE when there is something openable. A candidate that doesn't parse can't be previewed or spliced, so saying "open it in XXE" would send the user at a button
+            # that is now disabled.
+            if candidateParses:
+                self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. You can still open it in XXE to inspect it.').format(n=result.attempts))
+            else:
+                self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Could not build a valid rule after {n} attempts. There is nothing to show - the AI never returned a complete rule.').format(n=result.attempts))
+
             self.showValidationFailed(result.errors)
 
     def showValidationFailed(self, errors):
@@ -1131,7 +1311,13 @@ class WorkOnRulesWithAIDlg(QDialog):
         # Lead with a non-technical sentence describing the failure, chosen the same way AIRules.friendlyValidationSummary classifies it, but translated to the interface language here.
         text = errors or ''
 
-        if 'XML is not well-formed' in text:
+        # A cut-off answer is matched first: it is a well-formedness failure too, but saying the tags "didn't match up" would be wrong about it, and what to do next is different.
+        cutOff = 'unclosed token' in text
+
+        if cutOff:
+            summary = _translate('WorkOnRulesWithAI', "The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it.")
+
+        elif 'XML is not well-formed' in text:
             summary = _translate('WorkOnRulesWithAI', "The AI's rule wasn't put together correctly - its XML tags didn't match up - so FLExTrans couldn't use it.")
 
         elif 'apertium-preprocess-transfer failed' in text:
@@ -1140,8 +1326,12 @@ class WorkOnRulesWithAIDlg(QDialog):
         else:
             summary = _translate('WorkOnRulesWithAI', "The AI couldn't build a valid rule from this request.")
 
-        # Actionable next step. Odd or contradictory wording is the usual trigger, so steer the user toward a single, plain sentence and trying again.
-        guidance = _translate('WorkOnRulesWithAI', 'Try rephrasing your description as a single, clear sentence and generate again.')
+        # Actionable next step. Rephrasing is the right advice when the model misunderstood, but not when it simply ran out part-way: there the request was understood and the answer was
+        # too long to finish, so the useful advice is to try again or ask for less at once.
+        if cutOff:
+            guidance = _translate('WorkOnRulesWithAI', 'Try again. If it keeps happening on a large rule or macro, ask for a smaller change.')
+        else:
+            guidance = _translate('WorkOnRulesWithAI', 'Try rephrasing your description as a single, clear sentence and generate again.')
 
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Icon.Warning)
@@ -1168,6 +1358,78 @@ class WorkOnRulesWithAIDlg(QDialog):
         self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rate limited - try again shortly.'))
         QMessageBox.information(self, _translate('WorkOnRulesWithAI', 'Rate limited'), message)
 
+    def onUnknownModel(self, model, providerDisplay):
+        '''The provider answered 404 for the configured model name - nearly always a model retired since the AI Model setting was chosen. Say that in plain words and name the setting to
+        change, rather than showing the SDK's raw "the model does not exist or you do not have access to it" text, which tells an ordinary user nothing about what to do next.'''
+
+        self.cleanupThread()
+        self.setBusy(False)
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Generation failed.'))
+
+        summary = _translate('WorkOnRulesWithAI', '{provider} has no model named {model}. It may have been retired, or your API key may not have access to it.').format(provider=providerDisplay, model=model)
+        guidance = _translate('WorkOnRulesWithAI', 'Choose a different model in the Model box at the bottom of this window, then try again.')
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(_translate('WorkOnRulesWithAI', 'Model not available'))
+        box.setText(summary + '\n\n' + guidance)
+        box.exec()
+
+    def populateModelCombo(self):
+        '''Fill the model picker with the current provider's models, keeping the model in use selectable even when it is not one of them - a hand-entered name, or one from a config written
+        by a newer FLExTrans - exactly as the Settings tool's model combo does. The list is only a convenience; what gets sent is whatever text the box holds when a request is made.'''
+
+        models = list(self.engine.provider.models)
+
+        if self.engine.model and self.engine.model not in models:
+            models.append(self.engine.model)
+
+        self.ui.modelCombo.clear()
+        self.ui.modelCombo.addItems(models)
+        self.ui.modelCombo.setCurrentText(self.engine.model or '')
+
+    def applyModelChoice(self) -> bool:
+        '''Point the engine at whatever model the picker now names, checked the way the Settings tool checks the pairing: a model belonging to a *different* provider is refused, since this
+        provider could only answer 404 for it, while a name no provider claims is allowed through - it may simply be newer than this release's lists. Returns False when the request must not
+        be sent, having already said why. Called from startWorker, so every create, modify and explain goes through it.'''
+
+        model = self.ui.modelCombo.currentText().strip()
+
+        if not model:
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'No model'), _translate('WorkOnRulesWithAI', 'Choose or type the model to use in the Model box.'))
+            return False
+
+        owner = AIRules.findModelOwner(model)
+
+        if owner is not None and owner is not self.engine.provider:
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Wrong provider for this model'),
+                                _translate('WorkOnRulesWithAI', '{model} is a {owner} model, so {provider} cannot run it. Choose one of the {provider} models in the Model box.').format(model=model, owner=owner.displayName, provider=self.engine.provider.displayName))
+            return False
+
+        self.engine.model = model
+        return True
+
+    def rememberWorkingModel(self):
+        '''Make the model that just worked the default for the next run. Only a model the provider has actually accepted is written: reaching here means a reply came back, so the name
+        exists and this key can use it, while a typo or a retired name raises the 404 instead and never reaches the settings file. Nothing is written when the model still matches the
+        settings, so an unchanged run leaves the file alone (and a blank AIRulesModel stays blank until the user picks something). writeConfigValue rewrites only the AIRulesModel line, so
+        no other setting can be disturbed. ReadConfig is imported here rather than at the top because it needs FTPaths, whose absence the dialog deliberately tolerates so it can be run
+        standalone; a write failure is swallowed for the same reason the write waits for success - it must never break a generation that has already worked.'''
+
+        if not self.engine.model or self.engine.model == self.configuredModel:
+            return
+
+        try:
+            import ReadConfig
+
+            if ReadConfig.writeConfigValue(None, ReadConfig.AI_RULES_MODEL, self.engine.model, createIfMissing=True):
+                self.configuredModel = self.engine.model
+
+        except Exception:
+            pass
+
     def onChangeApiKey(self):
 
         provider = self.engine.provider
@@ -1189,7 +1451,12 @@ class WorkOnRulesWithAIDlg(QDialog):
     def approveDraft(self) -> bool:
         '''Write the current create/modify draft (a rule or a macro) to the transfer file after backing it up. Returns True on success. Shared by the Approve button and the "approve
         before continuing" offers. The window stays open; Approve disables until the next generation so the same draft can't be written twice, and the lists are re-read so the
-        new/changed rule or macro shows.'''
+        new/changed rule or macro shows.
+
+        The re-read has to be kept from hijacking the window. reloadRules restores each picker's previous selection, and restoring it fires the selection handlers - which would repoint
+        currentIsMacro/currentTargetComment at whatever was still selected in the Modify/Explain lists and re-render the preview with it. Nothing clears those lists when the user leaves for
+        the Create tab, so a macro clicked earlier in the session was still selected: approving a newly created rule jumped the preview to that macro and reported "Macro written" for a
+        rule. Hence the two guards below - the write is described from what was captured before the reload, and switchingTabs suppresses the synthetic re-selections.'''
 
         if not (self.ruleResult and self.ruleResult.valid):
             return False
@@ -1207,18 +1474,58 @@ class WorkOnRulesWithAIDlg(QDialog):
 
         self.draftWritten = True
         self.ui.approveButton.setEnabled(False)
-        self.reloadRules()
+
+        # What was written has to be remembered before the reload, because the reload can change currentIsMacro out from under the status message below.
+        wroteMacro = self.currentIsMacro
+
+        # Re-read the file so the new/changed rule or macro appears in its list, but stop the selection restore that does from re-previewing an unrelated rule over the one just written.
+        # switchingTabs is the flag onRuleSelected/onMacroSelected already test; save and restore it, since a caller may be part-way through a tab switch and still relying on its value.
+        prior = self.switchingTabs
+        self.switchingTabs = True
+
+        try:
+            self.reloadRules()
+
+        finally:
+            self.switchingTabs = prior
 
         # This rule/macro is done; if example data was given for it, the next create Generate will ask whether to keep that data for the next one.
         if self.sourceDataText or self.targetDataText:
             self.askAboutDataOnNextGenerate = True
 
-        if self.currentIsMacro:
+        if wroteMacro:
             self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Macro written to the transfer file (backup: {backup}). Generate or select another rule or macro to continue.').format(backup=os.path.basename(backupPath)))
         else:
             self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
 
         return True
+
+    def onOpenRuleFile(self):
+        '''Open the real transfer rules file in the XML editor so the user can make a change by hand. Two things are done first. A pending draft is offered for writing, because this window holds
+        the file's text spans from when the draft was generated: an outside edit would leave applyRule matching against a file that has since moved, and it refuses rather than guess where the
+        rule now is - so the draft would be stuck. And the lists are left alone deliberately: nothing here can tell when the editor is finished, so the status line asks for Refresh Rules rather
+        than pretending to know. os.startfile hands the file to whatever is registered for .t1x (XXE) instead of hunting for xxe.exe, matching onOpenInXxe and keeping this window responsive
+        while the editor is open.'''
+
+        if not self.offerToWritePendingDraft():
+            return
+
+        if not os.path.isfile(self.transferPath):
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Not found'),
+                                _translate('WorkOnRulesWithAI', 'The transfer rules file is not there: {path}').format(path=self.transferPath))
+            return
+
+        try:
+            os.startfile(self.transferPath)   # Windows: open with the registered handler (XXE)
+
+        except Exception as err:
+
+            QMessageBox.warning(self, _translate('WorkOnRulesWithAI', 'Could not open the editor'),
+                                _translate('WorkOnRulesWithAI', 'The transfer rules file could not be opened for editing ({err}). Open it yourself from: {path}').format(err=err, path=self.transferPath))
+            return
+
+        self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.'))
 
     def onOpenInXxe(self):
 

@@ -66,7 +66,27 @@
     <message>
       <location filename="../TestbedLogViewer.py" line="342"/>
       <source>Source text: {origin}.</source>
-      <translation type="unfinished">Source text: {origin}.</translation>
+      <translation>Source text: {origin}.</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="396"/>
+      <source>Comment: {comment}</source>
+      <translation>Kommentar: {comment}</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="414"/>
+      <source>Rules applied:</source>
+      <translation>Angewendete Regeln:</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="445"/>
+      <source>Rule {number}: {comment}</source>
+      <translation>Regel {number}: {comment}</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="447"/>
+      <source>Rule {number}</source>
+      <translation>Regel {number}</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="647"/>

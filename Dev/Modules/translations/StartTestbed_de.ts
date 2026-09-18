@@ -37,5 +37,10 @@
       <source>{count} tests prepared for testing.</source>
       <translation>{count} Tests für das Testen vorbereitet.</translation>
     </message>
+    <message>
+      <location filename="../StartTestbed.py" line="211"/>
+      <source>The rule file history folder could not be updated. The error was: {errorText}</source>
+      <translation>Der Ordner mit dem Regeldateiverlauf konnte nicht aktualisiert werden. Der Fehler war: {errorText}</translation>
+    </message>
   </context>
 </TS>

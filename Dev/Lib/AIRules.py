@@ -5,6 +5,44 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.6 - 9/3/26 - Ron Lockwood
+#    Added isWellFormed, so a caller can ask whether a candidate rule parses before handing it to something that will parse it (the preview renderer, spliceIntoTemp, applyRule) rather
+#    than each of them catching ParseError for itself.
+#
+#   Version 3.17.5 - 9/3/26 - Ron Lockwood
+#    A rule the model cut off part-way through no longer escapes the validation loop as a raw parser error. spliceIntoTemp is the first thing to parse the candidate, so its ET.ParseError
+#    was reaching the user as "unclosed token: line 1, column 1720" in a bare error box, with no retry; generateValidatedRule now turns it into the same well-formedness text validateFile
+#    produces, feeds it back, and retries. friendlyValidationSummary gained a case for it, since a cut-off answer is not the same complaint as tags that don't match up.
+#
+#   Version 3.17.4 - 9/3/26 - Ron Lockwood
+#    A model name the provider no longer serves now raises UnknownModelError (new, carrying the provider display name and the model) instead of letting the SDK's raw 404 through. All three
+#    providers map their 404 to it: anthropic.NotFoundError, Gemini's APIError with code 404 (its handler now reads the code once for both 429 and 404), and openai.NotFoundError.
+#
+#   Version 3.17.3 - 9/3/26 - Ron Lockwood
+#    Refreshed each provider's model list to the models currently offered: claude-opus-5 (with 4-8, sonnet-5 and haiku-4-5) for Anthropic, gemini-3.8-flash (with the 3.x flash-lite and pro
+#    models alongside the 2.5 pair) for Gemini, and the gpt-5.6 sol/terra/luna trio for OpenAI. Each provider's docstring now says what its free tier covers and how the models rank on cost.
+#
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, the prompt, validation and code structure.
+#
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    applyRule's backup of the transfer file now goes in Output\rule-file-history through RuleFileHistory, and it refuses to write the rule if that copy can't be made.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.23 - 7/29/26 - Ron Lockwood
+#    Tightened the detected "language" code so example rules/comments in another language no longer sway it: the language description and a new line pinned to the USER REQUEST section
+#    both say to judge the code from the user's request text alone (ignoring project data, examples, existing rules, and macro definitions) and to default to "en" when it's too short.
+#
+#   Version 3.16.22 - 7/29/26 - Ron Lockwood
+#    Human-readable text (rule comments and explanations) now uses the interface's plain-language words for positions and macro parameters: "item N" instead of pos/pos="N"/"position N" and
+#    "with item N" instead of with-param/"parameter N", matching the labels TransferPreview shows the user. Updated EXPLAIN_STYLE_ACTION and added a convention to WorkOnRulesWithAI-Conventions.md.
+#
+#   Version 3.16.21 - 7/28/26 - Ron Lockwood
+#    A modification now keeps a running authorship history: markAuthorship carries the rule's existing authorship comments (read from the on-disk rule/macro via getRuleXmlByComment,
+#    which now handles macros too) forward beneath the new stamp instead of replacing the previous one, so each edit prepends a newest-first record rather than overwriting it.
+#
 #   Version 3.16.20 - 7/27/26 - Ron Lockwood
 #    Fixes #1470. Added friendlyValidationSummary, which turns the raw validation error text (expat's "mismatched tag..." or the compiler's diagnostics) into one plain-language sentence; the
 #    dialog leads its "could not build a valid rule" message with this (translated) and keeps the raw text behind "Show Details".
@@ -88,8 +126,77 @@
 #    Prototype. Core logic for the "Work on Rules with AI" module: assemble the prompt, call the configured AI provider (Anthropic by default, Gemini or others selectable) to generate or
 #    modify an Apertium transfer rule, and run the generated rule through a DTD + compile validation-retry loop. No Qt and no FLEx dependencies here so it can be exercised standalone.
 #
-#   Given a plain-language description (and, for modifications, an existing rule), ask the provider for an Apertium <rule> plus any supporting definitions, then splice it into a copy of the
-#   transfer file and validate before returning it.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This file is the whole brain of the AI Rule Studio module: it assembles the prompt, calls the configured AI provider, validates what comes back, and writes the approved rule into the transfer
+#   file. The module that goes with it (Modules/WorkOnRulesWithAI.py) is the dialog around this - it collects what the user typed, shows the result, asks for approval and does the translating.
+#   Nothing here imports Qt, FLEx or flextoolslib, deliberately, so this file can be exercised from a plain Python prompt and unit tested without a FLEx project (see unit_tests/test_AIRules.py).
+#
+#   Three things can be asked for: create a new rule, modify an existing one, and explain an existing one in plain language. A rule and a macro (a def-macro) travel the same paths - the isMacro flag
+#   that runs through buildUserContent, spliceIntoTemp, markAuthorship, generateValidatedRule and applyRule is what switches the wording, the element asked for, and how the target is identified: a
+#   rule by its comment attribute, a macro by its n attribute.
+#
+#   THE PROMPT
+#
+#   The prompt is deliberately split into a part that never changes and a part that does, because the unchanging part caches at the provider and the changing part doesn't:
+#    - The system instruction (buildSystemInstruction) is the house conventions file plus the longest few rules and macros out of the project's own transfer file, as style examples. It is identical
+#      request after request, so it caches well. The transfer DTD is deliberately NOT sent - it is thousands of tokens the model doesn't need, and the validation pass below is the real structural check.
+#    - The user content (buildUserContent) is everything that varies: the project's real categories and features, a summary of the definitions already in the transfer file so the model reuses them
+#      instead of inventing near-duplicates, any interlinearized example data the user pasted, the definitions of any macros involved, the rule being modified or explained, and the user's request.
+#
+#   The reply comes back as structured JSON rather than free text - each provider is handed the same schema (RULE_SCHEMA for a rule, EXPLAIN_SCHEMA for an explanation) in whatever form that provider
+#   supports - so the rule XML, the new definitions, the explanation and the detected language arrive as separate fields with no prose to parse. The language field is what lets the dialog answer the
+#   user in the language they wrote their request in, and the prompt is careful to pin that judgement to the request text alone: everything else in the prompt is project data that may be in any
+#   language and must not sway it.
+#
+#   PROVIDERS AND KEYS
+#
+#   A provider is a small class with a name, a display name, a default model, a model list, makeClient() and generate() - Anthropic, Gemini and OpenAI are implemented, and adding another means
+#   writing those two methods and registering the class in PROVIDERS. Engine bundles a provider with its client and the chosen model and is what the rest of the module passes around, so nothing
+#   below the provider layer knows which service is being used. Each provider's SDK is imported inside its own makeClient(), so only the SDK of the provider actually in use has to be installed.
+#
+#   Each generate() also translates the two SDK errors that deserve a plain-language message into the module's own exceptions: a 429 becomes RateLimitError (with the retry delay when the response
+#   gives one) and a 404 on the model name becomes UnknownModelError, which names the provider and the model and points at the AIRulesModel setting - the usual cause is a model that the provider
+#   has retired since the setting was chosen. Everything else propagates as-is; the dialog shows the raw text for those.
+#
+#   API keys are never written to a settings file. They live in the operating system's credential vault (keyring) in a slot per provider, so switching providers doesn't lose the key of the one being
+#   switched away from. Prompt logging (PROMPT_LOG_PATH, off unless the AIRulesLogPrompts setting turns it on) writes every prompt and reply to a file for diagnosing a bad generation on a user's
+#   machine; it is opt-in because those prompts contain project data.
+#
+#   VALIDATION
+#
+#   A rule the model returns is never trusted. generateValidatedRule() is the loop everything goes through: generate, stamp it with the authorship comment, splice it into a COPY of the transfer file
+#   in a scratch directory, and validate that copy. Validating is a well-formedness parse with the standard library plus a run of apertium-preprocess-transfer, the real Apertium compiler, which is
+#   the authoritative check that the rule fits the transfer grammar. On a failure the errors are appended to the prompt and the model is asked again, up to MAX_VALIDATION_ATTEMPTS times. The last
+#   candidate is returned either way, valid or not, and the caller looks at RuleResult.valid. friendlyValidationSummary() turns the raw compiler or parser error into one plain sentence for a user
+#   who has no interest in what a mismatched tag is.
+#
+#   WRITING THE RULE
+#
+#   applyRule() writes into the real transfer file, and only after the user has approved the rule. It saves a copy of the file first, in the same Output\rule-file-history folder every other
+#   rule-changing part of FLExTrans saves into, tagged before_AI_changes; if that copy can't be made it refuses to write at all, since the file it would overwrite is exactly what the copy protects.
+#   The write itself is a text splice rather than a re-serialization of the XML tree, so every rule the user didn't touch stays byte-for-byte as it was instead of being reformatted. On a
+#   modification the element to replace is located by parsing the file and matching that position against the raw-text spans; if the two don't line up it refuses rather than guess, because appending
+#   a duplicate or replacing the wrong rule is worse than stopping. Each write prepends an authorship comment saying that the AI Assistant added or modified this and when, keeping the earlier stamps
+#   beneath it so that a rule carries its whole edit history, newest first.
+#
+#   MACROS IN THE PROMPT
+#
+#   A rule that calls a macro can't be understood or modified without seeing what that macro does, so the macros a rule calls are gathered recursively (findCalledMacroNames, collectCalledMacros) and
+#   sent along with it. Macros the user's request names in prose are gathered too (findMacroMentions), which is also how a mistyped macro name is caught and reported before a request is ever sent.
+#   The patterns that spot 'the macro called X' are built from per-UI-language word lists in UILanguages.py, so each interface language recognizes its own ways of saying it.
+#
+#   The sample rule and sample definitions that ship in the transfer file template (SAMPLE_LOGIC_RULE_NAME and SAMPLE_DEF_NAMES) are filtered out everywhere - the rule picker, the definition summary
+#   and the style examples - because they are placeholders rather than the project's own work, and would teach the model the wrong style.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the generation limits and the sample-name filters, the prompt-logging helper, the two provider errors that get a user-facing message of their own (RateLimitError for a
+#   429, UnknownModelError for a 404 on the model name), the JSON schemas for the two tasks, the RuleResult dataclass, the three provider classes and the PROVIDERS registry, the credential-vault
+#   functions, Engine and buildEngine, then the prompt-building functions (parseTransferFile, getSampleRulesAndMacros,
+#   buildSystemInstruction, extractExistingDefs, the macro-gathering functions, buildUserContent), then the calls themselves (generateRule, explainRule), then the validation side (spliceIntoTemp,
+#   validateFile, friendlyValidationSummary, markAuthorship, generateValidatedRule), and finally applyRule, which is the only thing here that writes the real transfer file.
+#
 
 import os
 import re
@@ -101,8 +208,9 @@ import dataclasses
 from typing import Optional, cast
 import xml.etree.ElementTree as ET
 
-# Qt-free by design (see the module comment), so importing it here keeps AIRules usable standalone.
+# Qt-free by design (see the module comment), so importing these here keeps AIRules usable standalone.
 import UILanguages
+import RuleFileHistory
 
 # Generation settings. The provider and model are chosen from config (see getProvider / buildEngine); these limits are provider-independent.
 MAX_TOKENS = 16000
@@ -156,10 +264,26 @@ class RateLimitError(RuntimeError):
         if self.retryAfter:
             msg += ' Try again in about {n} seconds.'.format(n=int(round(self.retryAfter)))
 
-        msg += (' Free tiers have low limits, and some models (e.g. gemini-2.5-pro) are not available on the '
+        msg += (' Free tiers have low limits, and some models (e.g. gemini-3.1-pro-preview) are not available on the '
                 'free tier at all. Wait and retry, choose a different model with the AIRulesModel setting, or '
                 'enable billing on your account.')
         return msg
+
+class UnknownModelError(RuntimeError):
+    '''A provider answered HTTP 404 for the model name we sent: the model doesn't exist, has been retired since the AIRulesModel setting was chosen, or this key has no access to it. Carries
+    the provider display name and the model name so the caller can name both and point the user at the setting to change, instead of showing the SDK's raw "model does not exist" text. Its
+    str() is a clean, user-facing message (the module shows it directly); the dialog builds the localized equivalent from the same two fields.'''
+
+    def __init__(self, providerDisplay: str, model: str):
+
+        self.providerDisplay = providerDisplay
+        self.model = model
+        super().__init__(str(self))
+
+    def __str__(self):
+
+        return ('{provider} has no model named "{model}" (HTTP 404). It may have been retired, or your API key may not have access to it. Choose a current model with the AIRulesModel '
+                'setting in the FLExTrans Settings tool.').format(provider=self.providerDisplay, model=self.model)
 
 def parseRetryAfter(text: str) -> Optional[float]:
     '''Best-effort extraction of a retry delay (seconds) from a 429 error's text, covering both the "retry in 28.3s" phrasing and the "retryDelay": "28s" field.'''
@@ -189,7 +313,10 @@ DEF_TAG_TO_SECTION = {
 _RULE_XML_DESC = 'Exactly one <rule comment="...">...</rule> element - or, when the request asks for a macro, exactly one <def-macro n="...">...</def-macro> element. No wrapper, no DOCTYPE.'
 _NEW_DEFS_DESC = 'Each string is one new <def-cat>/<def-attr>/<def-var>/<def-list>/<def-macro> element the rule needs and that does not already exist. Empty list if none.'
 _EXPLANATION_DESC = 'One or two sentences describing what the rule does. Note here if the rule must be ordered before a more general rule.'
-_LANGUAGE_DESC = 'The ISO 639-1 two-letter code of the language the user\'s request is written in (e.g. "en", "es", "de", "fr"). Used to localize the rule preview.'
+_LANGUAGE_DESC = ('The ISO 639-1 two-letter code of the detected language the user typed their own request/instruction in (e.g. "en", "es", "de", "fr", ...). Judge this ONLY by detecting the language that the user\'s request text is written in. '
+                  'If you detect the user described the rule or macro in Swahili, return "sw"; if in Hausa, return "ha"; and so on. Ignore the '
+                  'language of any example rules, rule comments, category names, definitions, or other reference material included in the prompt; those are context, not the request, and their language '
+                  'must not sway this code. If the user\'s request text is empty or too short to tell, default to "en". Used to localize the rule preview.')
 
 # Gemini structured-output schema (response_mime_type=application/json + response_schema).
 RULE_SCHEMA = {
@@ -258,8 +385,9 @@ EXPLAIN_STYLE_PATTERN = (
 EXPLAIN_STYLE_ACTION = (
     '- When you explain the action, translate each piece into plain words rather than naming the XML that expresses it. A clip fetches one part of a matched word: the "lem" part is the word\'s base '
     '(dictionary) form, an "a_gram_cat" part is its grammatical category, a "whole" part is the entire word with all of its tags, and any other part is the feature or affix set named after it; side "tl" '
-    'means the matching target-language word and side "sl" the source-language word; pos (or item) N means the Nth word the pattern matched. So a clip of the "lem" part, position 1, target side is simply '
-    '"the base form of the matching target word". A literal tag just adds that tag to the word being built - say "adds the tag INF", not "a lit-tag INF".\n'
+    'means the matching target-language word and side "sl" the source-language word; a pos value N means the Nth word the pattern matched - refer to it as "item N", the word FLExTrans shows the user, not '
+    'as "pos N", pos="N", or "position N". So a clip of the "lem" part, item 1, target side is simply "the base form of the matching target word". A literal tag just adds that tag to the word being built - '
+    'say "adds the tag INF", not "a lit-tag INF". When a macro is called with a parameter, describe it as "with item N" (the interface\'s wording), not "with-param" or "parameter N".\n'
     '- When you describe what the output word looks like, name its base form and the tags it carries in plain words - for example "the target word\'s base form followed by the tags v, INF, and IND" - not in '
     'Apertium\'s lexical-unit notation with carets and angle brackets (do not write ^springa<v><INF><IND>$).\n')
 
@@ -314,12 +442,13 @@ class RuleResult:
 # ---------------------------------------------------------------------------
 
 class AnthropicProvider:
-    '''Anthropic Claude.'''
+    '''Anthropic Claude. There is no free tier - every model needs a paid key with credit on it. claude-opus-5 is the default (best rule quality); claude-sonnet-5 costs less per token and
+    claude-haiku-4-5 less again, at some cost in rule quality. Model IDs carry no date suffix; adaptive thinking (used in generate below) requires opus-4-6 or newer.'''
 
     name = 'anthropic'
     displayName = 'Anthropic Claude'
-    defaultModel = 'claude-opus-4-8'
-    models = ['claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5-20251001']
+    defaultModel = 'claude-opus-5'
+    models = ['claude-opus-5', 'claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5']
     envVars = ('ANTHROPIC_API_KEY',)
     keyUrl = 'https://console.anthropic.com/settings/keys'
 
@@ -355,6 +484,10 @@ class AnthropicProvider:
 
             raise RateLimitError(self.displayName, retryAfter)
 
+        # Anthropic answers 404 for a model name it doesn't serve - typically one retired since the setting was chosen (or a paid model this key can't reach).
+        except anthropic.NotFoundError:
+            raise UnknownModelError(self.displayName, model)
+
         if response.stop_reason == 'refusal':
             raise RuntimeError('The model declined this request (stop_reason=refusal).')
 
@@ -366,13 +499,13 @@ class AnthropicProvider:
         raise RuntimeError('The model did not return a {name} tool call.'.format(name=tool['name']))
 
 class GeminiProvider:
-    '''Google Gemini (the default provider). Default is gemini-2.5-flash, which is available on the free tier; gemini-2.5-pro requires a billing-enabled (paid) key and returns a 429
-    with "limit: 0" on the free tier. Override with the AIRulesModel setting.'''
+    '''Google Gemini (the default provider). Default is gemini-3.8-flash, which is available on the free tier (with daily limits), as are the flash-lite models and the older 2.5 pair.
+    The Pro models are the exception: gemini-3.1-pro-preview needs a billing-enabled (paid) key and returns a 429 with "limit: 0" on a free key. Override with the AIRulesModel setting.'''
 
     name = 'gemini'
     displayName = 'Google Gemini'
-    defaultModel = 'gemini-2.5-flash'
-    models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro']
+    defaultModel = 'gemini-3.8-flash'
+    models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-pro-preview', 'gemini-2.5-flash', 'gemini-2.5-pro']
     envVars = ('GEMINI_API_KEY', 'GOOGLE_API_KEY')
     keyUrl = 'https://aistudio.google.com/apikey'
 
@@ -397,8 +530,14 @@ class GeminiProvider:
 
         except errors.APIError as err:
 
-            if getattr(err, 'code', None) == 429:
+            code = getattr(err, 'code', None)
+
+            if code == 429:
                 raise RateLimitError(self.displayName, parseRetryAfter(str(err)))
+
+            # 404 means Gemini doesn't serve this model name for this key - a retired model still sitting in the AIRulesModel setting is the usual cause.
+            if code == 404:
+                raise UnknownModelError(self.displayName, model)
 
             raise
 
@@ -417,12 +556,13 @@ class GeminiProvider:
             raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 class OpenAIProvider:
-    '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers.'''
+    '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers. There is no free tier, so a paid key
+    is required. gpt-5.6-sol is the default (best rule quality), with gpt-5.6-terra and gpt-5.6-luna as progressively cheaper alternatives.'''
 
     name = 'openai'
     displayName = 'OpenAI ChatGPT'
-    defaultModel = 'gpt-5.1'
-    models = ['gpt-5.1', 'gpt-5', 'gpt-5-mini']
+    defaultModel = 'gpt-5.6-sol'
+    models = ['gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna']
     envVars = ('OPENAI_API_KEY',)
     keyUrl = 'https://platform.openai.com/api-keys'
 
@@ -450,6 +590,10 @@ class OpenAIProvider:
 
         except openai.RateLimitError as err:
             raise RateLimitError(self.displayName, parseRetryAfter(str(err)))
+
+        # OpenAI answers 404 (model_not_found) for a retired model name or one this key isn't entitled to.
+        except openai.NotFoundError:
+            raise UnknownModelError(self.displayName, model)
 
         message = response.choices[0].message
 
@@ -751,16 +895,19 @@ def extractExistingDefs(transferPath: Optional[str] = None, root=None) -> dict:
     return {
         'cats': cats, 'catItems': catItems, 'attrs': attrs, 'variables': variables, 'lists': lists, 'listItems': listItems, 'macros': macros, 'macroXml': macroXml, 'ruleNames': ruleNames, 'ruleXml': ruleXml, 'summaryText': '\n'.join(lines), }
 
-def getRuleXmlByComment(transferPath: str, comment: str) -> Optional[str]:
-    '''Return the XML text of the rule whose comment matches, or None.'''
+def getRuleXmlByComment(transferPath: str, comment: str, isMacro: bool = False) -> Optional[str]:
+    '''Return the XML text of the rule (or, with `isMacro`, the def-macro) whose identifying attribute matches, or None. Rules are matched on their comment attribute, macros on their n.'''
 
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     root = ET.parse(transferPath, parser=parser).getroot()
 
-    for rule in root.findall('.//rule'):
+    tagName = 'def-macro' if isMacro else 'rule'
+    matchAttr = 'n' if isMacro else 'comment'
 
-        if rule.get('comment') == comment:
-            return ET.tostring(rule, encoding='unicode')
+    for elem in root.findall('.//' + tagName):
+
+        if elem.get(matchAttr) == comment:
+            return ET.tostring(elem, encoding='unicode')
 
     return None
 
@@ -972,6 +1119,10 @@ def buildUserContent(mode: str, description: str, defsSummary: str, projectData:
     else:
         parts.append('MODE: create a new rule.')
 
+    # Pin the language field to the request text below, right where it appears. Everything above (project data, examples, existing rules, macro definitions) is context and may be in any
+    # language - e.g. a sample rule whose comments are in Spanish - and must not sway the detected language. Only the words the user typed under USER REQUEST decide the "language" code.
+    parts.append('')
+    parts.append('Set the "language" field to the ISO 639-1 code of the language you detect the USER REQUEST text below is written in - judged from that text alone, ignoring the language of anything above it. If you detect the USER REQUEST text is in Swahili, return "sw"; if in Hausa, return "ha"; and so on. Default to "en" if it is too short to tell.')
     parts.append('')
     parts.append('USER REQUEST:')
     parts.append(description)
@@ -1090,12 +1241,30 @@ def validateFile(tempPath: str, compilerExe: Optional[str] = None) -> tuple:
 
     return (len(errors) == 0, '\n'.join(errors))
 
+def isWellFormed(ruleXml: str) -> bool:
+    '''Whether a candidate rule/macro parses at all. The model can stop part-way through an element, and everything downstream of generation parses what it is handed - the preview
+    renderer, spliceIntoTemp behind Open-in-XXE, applyRule - so callers ask this once before passing a candidate on, instead of each of them catching ParseError separately. An
+    unparseable candidate is still returned by generateValidatedRule (as an invalid RuleResult) so the caller can report it; it just must not be handed to anything that parses.'''
+
+    try:
+        ET.fromstring(ruleXml or '')
+
+    except ET.ParseError:
+        return False
+
+    return True
+
 def friendlyValidationSummary(errors: str) -> str:
     '''Turn the raw validation error text (expat's "mismatched tag: line N, column M", the compiler's diagnostics) into one plain-language sentence an ordinary user can act on. The raw
     text is still shown separately (behind a "Show Details" button in the dialog) for bug reports and power users; this is just the lead-in that says, in non-technical words, what went wrong.
     Returns English here so AIRules stays Qt-free; the dialog wraps the equivalent localized sentences with QCoreApplication.translate and only falls back to this when it has no match.'''
 
     text = errors or ''
+
+    # expat says "unclosed token" when the document simply stops part-way through an element. For us that means the model's answer was cut off, not that it mis-nested anything - a
+    # different thing to tell the user, and it needs a different next step, so it is matched before the general well-formedness case below.
+    if 'unclosed token' in text:
+        return "The AI's answer was cut off before the rule was finished, so FLExTrans couldn't use it."
 
     # A well-formedness failure means the AI's XML tags did not match up (an opened element never closed, or closed in the wrong order) - the "mismatched tag" the user was baffled by.
     if 'XML is not well-formed' in text:
@@ -1118,11 +1287,12 @@ DEFAULT_AUTHORSHIP_COMMENTS = {
     'modifiedMacro': 'The AI Assistant modified this macro on {when}.',
 }
 
-def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False) -> str:
+def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False, priorRuleXml: Optional[str] = None) -> str:
     '''Prepend an XML comment to the <rule> (or def-macro) recording that the AI Assistant added or modified it, and when. Placed as the element's first child so it travels with it and
     shows in the preview. `authorshipComments` maps 'added'/'modified' (and, for macros, 'addedMacro'/'modifiedMacro') to a whole localized sentence containing "{when}"; missing keys fall
     back to English. `whenStr` is the date/time text, already localized to the interface language by the Qt-side caller; when omitted, a plain English date is used so AIRules stays usable
-    standalone. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
+    standalone. In modify mode `priorRuleXml` is the rule as it stood on disk before this edit; its leading authorship comments are carried over so each modification keeps a running
+    history (newest first) instead of replacing the previous stamp. Returns the original text unchanged if it can't be parsed (validation will then report the real XML error).'''
 
     templates = authorshipComments or DEFAULT_AUTHORSHIP_COMMENTS
     key = ('modified' if mode == 'modify' else 'added') + ('Macro' if isMacro else '')
@@ -1141,8 +1311,39 @@ def markAuthorship(ruleXml: str, mode: str, now: datetime.datetime, authorshipCo
     except ET.ParseError:
         return ruleXml
 
-    # cast() because the stdlib stubs type ET.Comment's return oddly; at runtime it is a normal comment element.
+    # In modify mode, build up the authorship history from the rule as it was on disk rather than trusting the AI to have echoed the old stamp back. First drop any leading comments the
+    # AI happened to include on its returned rule, so the carried-over history is authoritative and nothing gets duplicated; then collect the prior rule's own leading comments (the stamps
+    # from when it was added and any earlier modifications, already ordered newest first).
+    priorComments = []
+
+    if mode == 'modify' and priorRuleXml:
+
+        while len(elem) and elem[0].tag is ET.Comment:
+            elem.remove(elem[0])
+
+        try:
+            priorElem = ET.fromstring(priorRuleXml, parser=ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))
+
+        except ET.ParseError:
+            priorElem = None
+
+        if priorElem is not None:
+
+            for child in list(priorElem):
+
+                if child.tag is ET.Comment:
+                    priorComments.append(child)
+
+                else:
+                    break
+
+    # The new stamp goes on top, then the carried-over history beneath it (each earlier modification prepended its own stamp, so the list is already newest first). cast() because the
+    # stdlib stubs type ET.Comment's return oddly; at runtime it is a normal comment element.
     elem.insert(0, cast(ET.Element, ET.Comment(text)))
+
+    for offset, priorComment in enumerate(priorComments, start=1):
+        elem.insert(offset, priorComment)
+
     return ET.tostring(elem, encoding='unicode')
 
 def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: str, transferPath: str, mode: str, targetComment: Optional[str], compilerExe: Optional[str] = None, authorshipComments: Optional[dict] = None, whenStr: Optional[str] = None, isMacro: bool = False) -> RuleResult:
@@ -1151,6 +1352,9 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
 
     priorErrors = None
     lastRule, lastDefs, lastExpl, lastLang, lastErrors = '', [], '', 'en', ''
+
+    # For a modification, read the rule/macro as it stands on disk so markAuthorship can carry its existing authorship comments forward into a running history rather than replacing them.
+    priorRuleXml = getRuleXmlByComment(transferPath, targetComment, isMacro) if mode == 'modify' and targetComment is not None else None
 
     workDir = tempfile.mkdtemp(prefix='airules_')
 
@@ -1161,9 +1365,21 @@ def generateValidatedRule(engine: Engine, systemInstruction: str, userContent: s
         for attempt in range(1, MAX_VALIDATION_ATTEMPTS + 1):
 
             lastRule, lastDefs, lastExpl, lastLang = generateRule(engine, systemInstruction, userContent, priorErrors)
-            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr, isMacro)
+            lastRule = markAuthorship(lastRule, mode, datetime.datetime.now(), authorshipComments, whenStr, isMacro, priorRuleXml)
 
-            tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir, isMacro)
+            # A model can stop part-way through an element, leaving XML no parser will take, and spliceIntoTemp is the first thing to try parsing it. That is a bad answer, not a bug, so it
+            # belongs in this loop with every other bad answer: phrase it exactly as validateFile phrases a well-formedness failure, feed it back, and let the model try again. Letting it
+            # escape instead put raw expat text ("unclosed token: line 1, column 1720") in front of the user in a bare error box, with no retry and no plain-language explanation.
+            # markAuthorship already returns such a rule unchanged for this reason; this is the other half of that arrangement.
+            try:
+                tempPath = spliceIntoTemp(transferPath, lastRule, lastDefs, mode, targetComment, workDir, isMacro)
+
+            except ET.ParseError as parseErr:
+
+                lastErrors = 'XML is not well-formed: ' + str(parseErr)
+                priorErrors = lastErrors
+                continue
+
             ok, lastErrors = validateFile(tempPath, compilerExe)
 
             if ok:
@@ -1190,13 +1406,18 @@ def applyRule(transferPath: str, result: RuleResult, mode: str, targetComment: O
     '''Write the approved rule (or, with `isMacro`, the approved def-macro) into the real transfer file after backing it up.
 
     Uses surgical text insertion/replacement so the rest of the file is preserved byte-for-byte (XXE re-lays-out the touched rule on next open) rather than reserializing the whole
-    tree and reformatting every rule. Returns the backup path.'''
+    tree and reformatting every rule. Returns the path of the backup, which goes in the rule file history folder; raises without touching the transfer file if that backup can't be made.'''
 
     with open(transferPath, encoding='utf-8') as fin:
         text = fin.read()
 
-    backupPath = transferPath + datetime.datetime.now().strftime('.%Y%m%d_%H%M%S.bak')
-    shutil.copyfile(transferPath, backupPath)
+    # The backup goes in the one rule file history folder that every other rule-changing tool saves into, not as a .bak beside the rules file. Only the main rules file is saved, since this tool
+    # never writes the interchunk or postchunk file. A backup that can't be made is fatal here: the file about to be overwritten is exactly what the backup protects, so refuse rather than write.
+    backupPath, errorMsg = RuleFileHistory.saveHistoryCopy(transferPath, RuleFileHistory.TAG_BEFORE_AI_CHANGES)
+
+    if not backupPath:
+
+        raise RuntimeError('The transfer file could not be backed up ({errorText}), so the rule was not written.'.format(errorText=errorMsg))
 
     ruleText = result.ruleXml.strip()
     tagName = 'def-macro' if isMacro else 'rule'

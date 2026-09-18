@@ -71,17 +71,17 @@
     <message>
       <location filename="../TextInOut.py" line="439"/>
       <source>Current project automatically included</source>
-      <translation>Current project automatically included</translation>
+      <translation>El proyecto actual se incluye automáticamente</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="440"/>
       <source>Cluster Projects to Apply to</source>
-      <translation>Cluster Projects to Apply to</translation>
+      <translation>Proyectos de clúster para presentar una solicitud</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="441"/>
       <source>Rules</source>
-      <translation>Rules</translation>
+      <translation>Reglas</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="442"/>
@@ -106,7 +106,7 @@
     <message>
       <location filename="../TextInOut.py" line="446"/>
       <source>Default</source>
-      <translation>Pred.</translation>
+      <translation>Predeterminado</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="447"/>
@@ -143,7 +143,7 @@
       <source>Steps to add to the base number of steps selected above.
 Separate steps with spaces or commas.</source>
       <translation>Pasos para agregar al número base de pasos seleccionados arriba.
-Separe los pasos con espacios o comas.</translation>
+Separa los pasos con espacios o comas.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="455"/>
@@ -155,7 +155,7 @@ Separe los pasos con espacios o comas.</translation>
       <source>Steps to skip from the base number of steps selected above.
 Separate steps with spaces or commas.</source>
       <translation>Pasos para omitir del número base de pasos seleccionados arriba.
-Separe los pasos con espacios o comas.</translation>
+Separa los pasos con espacios o comas.</translation>
     </message>
     <message>
       <location filename="../TextInOut.py" line="458"/>
