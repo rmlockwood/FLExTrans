@@ -11,12 +11,12 @@
     <message>
       <location filename="../GenStc.py" line="81"/>
       <source>Iterate over certain grammatical categories in a model sentence to produce variations.</source>
-      <translation>Iterar sobre ciertas categorías gramaticales en una frase modelo para producir variaciones.</translation>
+      <translation>Iterar sobre ciertas categorías gramaticales de una frase modelo para generar variaciones.</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="178"/>
       <source>Problem with output file path: {filePath}. Please check configuration.</source>
-      <translation>Problema con la ruta del archivo de salida: {filePath}. Por favor revise la configuración.</translation>
+      <translation>Problema con la ruta del archivo de salida: {filePath}. Por favor revisa la configuración.</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="194"/>
@@ -31,7 +31,7 @@
     <message>
       <location filename="../GenStc.py" line="280"/>
       <source>valid pos: {valid_pos}</source>
-      <translation>pos válida: {valid_pos}</translation>
+      <translation>categoría gramatical válida: {valid_pos}</translation>
     </message>
     <message>
       <location filename="../GenStc.py" line="571"/>
@@ -50,7 +50,7 @@
     </message>
     <message>
       <source>This module only works in Two Project mode.</source>
-      <translation>Este módulo solo funciona en el modo de dos proyectos.</translation>
+      <translation>Este módulo solo funciona en el módulo de dos proyectos.</translation>
     </message>
   </context>
 </TS>

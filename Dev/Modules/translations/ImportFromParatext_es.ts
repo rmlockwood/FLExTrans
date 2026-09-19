@@ -23,13 +23,13 @@ If you want to use the full name of the book in the text name, instead of the ab
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
 cluster projects in the main FLExTrans Settings, then come back to this module.</source>
-      <translation>Este módulo le pregunta qué proyecto de Paratext, qué libro y qué capítulos deben importarse. 
+      <translation>Este módulo te pregunta qué proyecto de Paratext, qué libro y qué capítulos deben importarse. 
 El nombre del libro debe indicarse como una abreviatura de tres letras, como en Paratext. Estos capítulos se recopilan y 
-se insertan en el proyecto FLEx actual como un nuevo texto. Si desea incluir varios elementos, marque la casilla correspondiente.
-Si desea usar el nombre completo del libro en el nombre del texto, en lugar de la abreviatura, marque la casilla.
-Si desea que el texto recién importado sea el texto activo en FLExTrans, marque la casilla.
-Es posible importar a varios proyectos FLEx desde varios proyectos Paratext. Primero, seleccione sus proyectos de 
-clúster en la configuración principal de FLExTrans y luego regrese a este módulo.</translation>
+se insertan en el proyecto FLEx actual como un nuevo texto. Si deseas incluir varios elementos, marca la casilla correspondiente.
+Si deseas usar el nombre completo del libro en el nombre del texto, en lugar de la abreviatura, marca la casilla.
+Si deseas que el texto recién importado sea el texto activo en FLExTrans, marca la casilla.
+Es posible importar a varios proyectos FLEx desde varios proyectos Paratext. Primero, selecciona tus proyectos de 
+agrupados en la configuración principal de FLExTrans y luego regresa a este módulo.</translation>
     </message>
     <message>
       <location filename="../ImportFromParatext.py" line="221"/>
@@ -74,16 +74,16 @@ clúster en la configuración principal de FLExTrans y luego regrese a este mód
     <message>
       <location filename="../ImportFromParatext.py" line="430"/>
       <source>{numRules} &apos;Text In&apos; rules applied.</source>
-      <translation>{numRules} reglas de 'Texto Entrante' aplicadas.</translation>
+      <translation>{numRules} reglas de &apos;Texto entrante&apos; aplicadas.</translation>
     </message>
     <message>
       <location filename="../ImportFromParatext.py" line="492"/>
       <source>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
 
 Are you sure you want to continue with overwriting the text in FLEx?</source>
-      <translation>Se eligió la opción de sobrescribir el texto en FLEx. Si FLEx está abierto, asegúrese de NO estar en la sección de Texto y Palabras de FLEx.
+      <translation>Se eligió la opción de sobrescribir el texto en FLEx. Si FLEx está abierto, asegúrate de NO estar en la sección de Texto y Palabras de FLEx.
 
-¿Está seguro de que desea continuar sobrescribiendo el texto en FLEx?</translation>
+¿Estás seguro de que deseas continuar sobrescribiendo el texto en FLEx?</translation>
     </message>
     <message>
       <location filename="../ImportFromParatext.py" line="494"/>
