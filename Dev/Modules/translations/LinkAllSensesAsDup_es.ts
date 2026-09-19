@@ -27,12 +27,12 @@ identificador único (guid).</translation>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="107"/>
       <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
+      <translation>Debes ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
     </message>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="126"/>
       <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
-      <translation>No se ha establecido ningún Nombre de Texto Origen. Por favor vaya a Configuración y corrija esto.</translation>
+      <translation>No se ha establecido ningún nombre de texto origen. Ve a Configuración y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="131"/>
