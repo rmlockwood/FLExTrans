@@ -60,7 +60,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="1158"/>
       <source>Do you want to save your changes?</source>
-      <translation>¿Desea guardar los cambios?</translation>
+      <translation>¿Deseas guardar los cambios?</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1279"/>
