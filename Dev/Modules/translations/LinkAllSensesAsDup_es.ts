@@ -37,12 +37,12 @@ identificador único (guid).</translation>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="131"/>
       <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
-      <translation>No se ha establecido ningún Campo Personalizado Origen para Enlace de Entrada. Por favor vaya a Configuración y corrija esto.</translation>
+      <translation>No se ha configurado ningún campo personalizado de origen para el enlace de la entrada. Ve a Configuración y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="139"/>
       <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-      <translation>No se han seleccionado Tipos de Morfemas Origen Contados Como Raíces. Por favor vaya a Configuración y corrija esto.</translation>
+      <translation>No se han seleccionado ningún tipo de morfema de origen que se considere raíz. Ve a Configuración y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkAllSensesAsDup.py" line="177"/>
