@@ -140,17 +140,17 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="1839"/>
       <source>No Source Text Name has been set. Please go to Settings and fix this.</source>
-      <translation>No se ha establecido un nombre de texto de origen. Por favor, vaya a Configuración y solucione esto.</translation>
+      <translation>No se ha establecido un nombre de texto de origen. Ve a "Configuración" y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1844"/>
       <source>No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.</source>
-      <translation>No se ha establecido un campo personalizado de origen para el enlace de entrada. Por favor, vaya a Configuración y solucione esto.</translation>
+      <translation>No se ha establecido un campo personalizado de origen para el enlace de entrada. Ve a "Configuración" y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1850"/>
       <source>No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-      <translation>No se han seleccionado tipos de morfemas de origen contados como raíces. Por favor, vaya a Configuración y solucione esto.</translation>
+      <translation>No se han seleccionado tipos de morfemas de origen contados como raíces. Ve a "Configuración" y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1855"/>
