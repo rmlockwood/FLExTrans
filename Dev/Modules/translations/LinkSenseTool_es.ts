@@ -38,9 +38,9 @@ en el proyecto de origen a los sentidos en el proyecto de destino. Mostrará una
 con una lista de todos los sentidos en el texto. Las filas con fondo blanco indican enlaces que
 ya existen. Las filas con fondo azul indican enlaces sugeridos basados en una coincidencia exacta
 en la glosa, las filas con fondo azul claro indican enlaces sugeridos basados en una coincidencia cercana
-en la glosa (actualmente 75% similar), las filas con fondo rojo
-aún no tienen un enlace establecido. Haga doble clic en la columna &quot;Palabra principal del destino&quot; para una fila para copiar
-el sentido de destino seleccionado actualmente en el cuadro combinado superior a esa fila. Marque la casilla
+en la glosa (actualmente 75 % similar), las filas con fondo rojo
+aún no tienen un enlace establecido. Haz doble clic en la columna "Palabra principal del destino" para una fila para copiar
+el sentido de destino seleccionado actualmente en el cuadro combinado superior a esa fila. Marca la casilla
 para crear un enlace para esa fila. Es decir, el sentido de origen se vinculará al sentido de destino.
 Desmarcar una casilla para una fila blanca desvinculará el sentido especificado de su sentido de destino.
 Las coincidencias cercanas solo se intentan para palabras con cinco letras o más.
@@ -48,9 +48,9 @@ Para pares de sentidos sugeridos donde
 hay una discrepancia en la categoría gramatical, ambas categorías se colorean en rojo. Esto
 es para indicar que puede que no desee vincular los dos sentidos aunque las glosas coincidan.
 Este módulo requiere
-un campo personalizado a nivel de sentido en su proyecto de origen. Debe ser un campo de texto simple.
+un campo personalizado a nivel de sentido en tu proyecto de origen. Debe ser un campo de texto simple.
 El propósito del campo personalizado es contener el enlace a un sentido en el proyecto de destino.
-Configure qué campo personalizado se utiliza para vincular en la configuración.</translation>
+Configura qué campo personalizado se utiliza para vincular en la configuración.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1158"/>
@@ -80,7 +80,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="1527"/>
       <source>No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.</source>
-      <translation>No se encontraron palabras con un tipo de morfema raíz válido. Por favor, revise su configuración, específicamente los tipos de morfemas de origen contados como raíces.</translation>
+      <translation>No se encontraron palabras con un tipo de morfema raíz válido. Por favor, revisa tu configuración, específicamente los tipos de morfemas de origen contados como raíces.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1633"/>
@@ -155,7 +155,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="1855"/>
       <source>No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.</source>
-      <translation>No se han seleccionado tipos de morfemas de destino contados como raíces. Por favor, vaya a Configuración y solucione esto.</translation>
+      <translation>No se han seleccionado tipos de morfemas de destino contados como raíces. Ve a "Configuración" y corrígelo.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1869"/>
@@ -165,12 +165,12 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="1886"/>
       <source>{linkField} field doesn&apos;t exist. Please read the instructions.</source>
-      <translation>El campo {linkField} no existe. Por favor, lea las instrucciones.</translation>
+      <translation>El campo {linkField} no existe. Por favor, lee las instrucciones.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1900"/>
       <source>The target project does not exist. Please check the configuration file.</source>
-      <translation>El proyecto de destino no existe. Por favor, revise el archivo de configuración.</translation>
+      <translation>El proyecto de destino no existe. Por favor, revisa el archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1903"/>
@@ -190,7 +190,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="1942"/>
       <source>There were no senses found for linking. Please check your text and approve some words.</source>
-      <translation>No se encontraron sentidos para vincular. Por favor, revise su texto y apruebe algunas palabras.</translation>
+      <translation>No se encontraron sentidos para vincular. Por favor, revisa tu texto y aprueba algunas palabras.</translation>
     </message>
     <message>
       <location filename="../LinkSenseTool.py" line="1959"/>
@@ -235,7 +235,7 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
       <location filename="../LinkSenseTool.py" line="2023"/>
       <source>You need to run this module in &quot;modify mode.&quot;</source>
-      <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
+      <translation>Debes ejecutar este módulo en &quot;modo de modificación&quot;</translation>
     </message>
   </context>
 </TS>
