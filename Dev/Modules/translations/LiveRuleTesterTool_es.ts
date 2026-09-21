@@ -24,16 +24,16 @@ against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.</source>
-      <translation>Herramienta de prueba de reglas en vivo es una herramienta que le permite probar palabras
-o frases de origen en vivo contra reglas de transferencia. Esta herramienta es especialmente
-útil para descubrir por qué las reglas de transferencia no hacen lo que espera que hagan.
-Puede centrarse en el problema seleccionando solo una palabra de origen y aplicando
-la regla de transferencia pertinente. De esta manera, no tiene que ejecutar todo el sistema
-contra todo el archivo de texto y todas las reglas de transferencia. También puede probar
-que los resultados de la transferencia se sintetizan correctamente en palabras de destino.
-Si lo desea, puede agregar los elementos léxicos de origen emparejados con los resultados
-de la síntesis a un banco de pruebas. Puede ejecutar el banco de pruebas para verificar
-que está obteniendo los resultados esperados.</translation>
+      <translation>La herramienta “Prueba de reglas en vivo” es una herramienta que te permite comprobar en tiempo real si las palabras o
+frases de origen se ajustan a las reglas de transferencia. Esta herramienta resulta especialmente útil para
+averiguar por qué las reglas de transferencia no funcionan como esperabas.
+Puedes identificar el problema con precisión seleccionando solo una palabra de origen y aplicando
+la regla de transferencia correspondiente. De esta forma, no tienes que ejecutar todo el sistema
+con el archivo de texto completo y todas las reglas de transferencia. También puedes comprobar que los
+resultados de la transferencia se sintetizan correctamente en palabras de destino. Si lo deseas,
+puedes añadir a un banco de pruebas los elementos léxicos de origen emparejados con los resultados de la síntesis.
+Puedes ejecutar el banco de pruebas para comprobar que obtienes los resultados esperados.
+</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="638"/>
@@ -128,7 +128,7 @@ Do you want to overwrite it?</source>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1506"/>
       <source>Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\testbed.xml</source>
-      <translation>Problema con el archivo del banco de pruebas. Verifique que TestbedFile esté configurado con un valor en su archivo de configuración. Normalmente está configurado como ..\testbed.xml</translation>
+      <translation>Problema con el archivo del banco de pruebas. Verifica que "TestbedFile" esté configurado con un valor en tu archivo de configuración. Normalmente está configurado como ..\testbed.xml</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1552"/>
@@ -205,7 +205,7 @@ Do you want to overwrite it?</source>
       <source>{0}
 Run the {1} module separately for more details.</source>
       <translation>{0}
-Ejecute el módulo {1} por separado para obtener más detalles.</translation>
+Ejecuta el módulo {1} por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1773"/>
@@ -217,7 +217,7 @@ Ejecute el módulo {1} por separado para obtener más detalles.</translation>
       <source>{0}
 Run the Convert to {1} module separately for more details.</source>
       <translation>{0}
-Ejecute el módulo Convertir a {1} por separado para obtener más detalles.</translation>
+Ejecuta el módulo Convertir a {1} por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1840"/>
@@ -241,7 +241,7 @@ Ejecute el módulo {0} por separado para obtener más detalles.</translation>
       <source>{msg}
 Run the {moduleName} module separately for more details.</source>
       <translation>{msg}
-Ejecute el módulo {moduleName} por separado para obtener más detalles.</translation>
+Ejecuta el módulo {moduleName} por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2504"/>
