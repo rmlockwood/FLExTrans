@@ -5,6 +5,12 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.17.2 - 9/23/26 - Ron Lockwood
+#    Use the shared styled completion delegate.
+#
+#   Version 3.17.1 - 9/23/26 - Ron Lockwood
+#    Use shared completion delegates and data gathering.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -55,16 +61,11 @@
 
 import xml.etree.ElementTree as ET
 import os
-from unicodedata import normalize
 from collections import defaultdict
 
-from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter, QApplication, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QApplication, QMessageBox
 from PyQt6.QtGui import QFontMetrics, QIcon
 from PyQt6.QtCore import QCoreApplication, Qt
-
-from SIL.LCModel import IMoStemMsa                      # type: ignore
-from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
-from SIL.LCModel import IFsClosedFeatureRepository # type: ignore
 
 from flextoolslib import (
     FlexToolsModuleClass,
@@ -76,6 +77,8 @@ import ReadConfig
 import FTPaths
 import Mixpanel
 import Utils
+from CompletionData import (CompleterDelegate, gatherCompletionData,
+                            gatherPOSTags, gatherTags)
 from LinkSenseTool import docs as LinkSenseToolDocs
 
 from ReplacementEditorWindow import Ui_ReplacementEditorWindow
@@ -321,87 +324,6 @@ class TableRow:
             if infl is not None:
                 self.targetInfl.setText(infl)
 
-class SegmentedCompleter(QCompleter):
-    '''Override the Qt autocomplete class to each tag in a period-separated
-    list rather than the field value as a whole'''
-
-    def splitPath(self, path: str) -> list[str]:
-        '''Pretend the field value is solely the tag which currently
-        contains the cursor'''
-
-        pos = self.parent().cursorPosition()
-        left = path[:pos].split('.')[-1]
-        right = path[pos:].split('.')[0]
-        return [left+right]
-
-    def pathFromIndex(self, index) -> str:
-        '''A selection has been chosen, so generate the actual field value
-        from it'''
-
-        pos = self.parent().cursorPosition()
-        text = self.parent().text()
-        oldMiddle = ''
-
-        # get the tags to the left of the cursor
-        left = text[:pos]
-        if '.' in left:
-            splitPos = left.rfind('.') + 1
-            oldMiddle += left[splitPos:]
-            left = left[:splitPos]
-        else:
-            oldMiddle += left
-            left = ''
-
-        # get the tags to the right of the cursor
-        right = text[pos:]
-        if '.' in right:
-            splitPos = right.find('.')
-            oldMiddle += right[:splitPos]
-            right = right[splitPos:]
-        else:
-            oldMiddle += right
-            right = ''
-
-        # get the autocompleted tag
-        middle = super().pathFromIndex(index)
-
-        # If we we're completing a tag in the middle and we select an option,
-        # then we sometimes apply the completion twice and also replace the
-        # last tag in the input, hence this check.
-        if not middle.lower().startswith(oldMiddle.lower()):
-            return text
-
-        # I'm not quite sure where in the process to use this value,
-        # but ideally after completing we'd be able to set the user's cursor
-        # to be at the end of the tag they just completed.
-        # Unfortunately, for now I think we're stuck with the cursor jumping
-        # to the end of the input. -DGS 2024-08-09
-        self.posShouldBe = len(left + middle)
-
-        # return the final value
-        return left + middle + right
-
-class CompleterDelegate(QItemDelegate):
-    '''Intermediary between the table and the fields to ensure that when the
-    fields turn into input boxes they have autocompleters attached'''
-
-    def __init__(self, values, use_segmented):
-        super().__init__()
-        self.values = values
-        self.use_segmented = use_segmented
-
-    def createEditor(self, *args, **kwargs):
-        '''Turn a label into an input box and attach an autocompleter'''
-
-        ret = super().createEditor(*args, **kwargs)
-        if self.use_segmented:
-            comp = SegmentedCompleter(self.values, ret)
-        else:
-            comp = QCompleter(self.values)
-        comp.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        ret.setCompleter(comp)
-        return ret
-
 class Main(QMainWindow):
     def __init__(self, replaceFile, sourceDB, targetDB, report, composed, targetWSHandle=None):
         super().__init__()
@@ -419,12 +341,12 @@ class Main(QMainWindow):
         self.setWindowIcon()
         self.rows = []
 
-        self.sourceLemmas, self.sourceAffixes = self.gatherCompletionData(sourceDB, composed)
-        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB, composed, self.targetWSHandle)
-        self.sourcePOS = self.gatherPOSTags(sourceDB)
-        self.targetPOS = self.gatherPOSTags(targetDB)
-        self.sourceTags = self.gatherTags(sourceDB)
-        self.targetTags = self.gatherTags(targetDB)
+        self.sourceLemmas, self.sourceAffixes = gatherCompletionData(sourceDB, report, composed)
+        self.targetLemmas, self.targetAffixes = gatherCompletionData(targetDB, report, composed, self.targetWSHandle)
+        self.sourcePOS = gatherPOSTags(sourceDB, report)
+        self.targetPOS = gatherPOSTags(targetDB, report)
+        self.sourceTags = gatherTags(sourceDB)
+        self.targetTags = gatherTags(targetDB)
 
         delegate_data = [
             (sorted(self.sourceLemmas.keys()), False),
@@ -500,55 +422,6 @@ class Main(QMainWindow):
                 pass
         if lastRow != -1:
             self.deleteRow(lastRow)
-
-    def gatherCompletionData(self, DB, composed, wsHandle=None):
-        if composed:
-            def norm(s): return normalize('NFC', s)
-        else:
-            def norm(s): return s
-        lemmas = {}
-        affixes = set()
-        affixClasses = ['MoInflAffMsa', 'MoDerivAffMsa', 'MoUnclassifiedAffixMsa']
-        self.report.ProgressStart(DB.LexiconNumberOfEntries())
-        for index, entry in enumerate(DB.LexiconAllEntries()):
-            self.report.ProgressUpdate(index)
-            # In one project mode wsHandle selects the target writing system so these lemmas match the target side of the bilingual lexicon; otherwise use the default-vernacular headword.
-            if wsHandle is not None:
-                headWord = Utils.getHeadwordStr(entry, wsHandle)
-            else:
-                headWord = ITsString(entry.HeadWord).Text
-            headWord = Utils.add_one(headWord)
-            #headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
-            headWord = norm(headWord)
-            clitic = Utils.isClitic(entry)
-            for i, sense in enumerate(entry.SensesOS, 1):
-                if clitic:
-                    affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
-                if not sense.MorphoSyntaxAnalysisRA:
-                    continue
-                if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                    msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
-                    if not msa.PartOfSpeechRA:
-                        continue
-                    pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                    pos = Utils.convertProblemChars(pos, Utils.catProbData)
-                    tags = Utils.getInflectionTags(msa)
-                    lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
-                elif sense.MorphoSyntaxAnalysisRA.ClassName in affixClasses:
-                    affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
-        return lemmas, affixes
-
-    def gatherPOSTags(self, DB):
-        posMap = {}
-        Utils.get_categories(DB, self.report, posMap, TargetDB=None,
-                       numCatErrorsToShow=1, addInflectionClasses=False)
-        return sorted(posMap.keys())
-
-    def gatherTags(self, DB):
-        tags = set()
-        for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
-            tags.update(Utils.as_tag(val) for val in feature.ValuesOC)
-        return tags
 
     def addRow(self):
         row = TableRow(self, self.ui.tableWidget)

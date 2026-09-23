@@ -3,6 +3,18 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.6 - 9/23/26 - Ron Lockwood
+#    Remove the opaque tree selection highlight so selected text remains readable.
+#
+#   Version 3.17.5 - 9/23/26 - Ron Lockwood
+#    Auto-fill category and feature/class data after committing a lemma edit.
+#
+#   Version 3.17.4 - 9/23/26 - Ron Lockwood
+#    Restrict completion delegates to lexical-unit child rows and use styled painting.
+#
+#   Version 3.17.3 - 9/23/26 - Ron Lockwood
+#    Add ReplacementEditor-style completion data to lexical-unit child rows.
+#
 #   Version 3.17.2 - 9/23/26 - Ron Lockwood
 #    Color lexical-unit child rows by lemma, grammatical category and feature/tag type.
 #
@@ -41,7 +53,7 @@ from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QLineEdit, QMainWindow,
                              QTreeWidgetItem, QMessageBox)
 from PyQt6.QtCore import QCoreApplication, Qt
-from PyQt6.QtGui import QFont, QBrush, QColor, QIcon
+from PyQt6.QtGui import QFont, QBrush, QColor, QIcon, QPalette
 
 from flextoolslib import (
     FlexToolsModuleClass,
@@ -53,6 +65,8 @@ import ReadConfig
 import FTPaths
 import Mixpanel
 import Utils
+from CompletionData import (CompleterDelegate, gatherCompletionData,
+                            gatherPOSTags, gatherTags)
 from Testbed import (FlexTransTestbedFile, SENT,
                      HEAD_WORD, SENSE_NUM, GRAM_CAT, OTHER_TAGS, TAG,
                      SOURCE_INPUT, LEXICAL_UNITS, LEXICAL_UNIT,
@@ -67,7 +81,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.2",
+    FTM_Version:     "3.17.3",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -91,17 +105,26 @@ READ_ONLY  = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
 
 class Main(QMainWindow):
 
-    def __init__(self, testObjList, testbedFileObj, report):
+    def __init__(self, testObjList, testbedFileObj, report, DB):
         super().__init__()
         self.testObjList    = testObjList
         self.testbedFileObj = testbedFileObj
         self.report         = report
         self.unsaved        = False
+        self.sourceLemmas, self.sourceAffixes = gatherCompletionData(DB, report, testbedFileObj.composed)
+        self.sourcePOS = gatherPOSTags(DB, report, [SENT])
+        self.sourceTags = gatherTags(DB)
 
         self.ui = Ui_TestBedEditorWindow()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR,
                                               'FLExTransWindowIcon.ico')))
+
+        treePalette = self.ui.treeWidget.palette()
+        treePalette.setColor(QPalette.ColorRole.Highlight, QColor(0, 0, 0, 0))
+        treePalette.setColor(QPalette.ColorRole.HighlightedText,
+                     treePalette.color(QPalette.ColorRole.Text))
+        self.ui.treeWidget.setPalette(treePalette)
 
         self._loadTree()
 
@@ -112,6 +135,16 @@ class Main(QMainWindow):
         self.ui.saveButton.clicked.connect(self.save)
         self.ui.closeButton.clicked.connect(self.close)
         self.ui.deleteButton.setEnabled(False)
+
+        delegateData = [
+            (sorted(self.sourceLemmas.keys()), False, True),
+            (self.sourcePOS, False, True),
+            (sorted(self.sourceTags), True, True),
+            (sorted(self.sourceAffixes), True, True),
+        ]
+        self.delegates = [CompleterDelegate(*args) for args in delegateData]
+        for index, delegate in enumerate(self.delegates):
+            self.ui.treeWidget.setItemDelegateForColumn(index, delegate)
 
     # ------------------------------------------------------------------
     # Tree loading
@@ -285,6 +318,15 @@ class Main(QMainWindow):
     # ------------------------------------------------------------------
 
     def _onItemChanged(self, item, column):
+        if column == COL_SOURCE and item.parent() is not None:
+            gramCat, features = self.sourceLemmas.get(item.text(COL_SOURCE), (None, None))
+
+            if gramCat is not None:
+                item.setText(COL_GRAMCAT, gramCat)
+
+            if features is not None:
+                item.setText(COL_FEATURES, features)
+
         self.unsaved = True
         self.ui.saveLabel.setText('There are unsaved changes.')
 
@@ -396,7 +438,7 @@ def MainFunction(DB, report, modifyAllowed):
     testbedXMLObj = testbedFileObj.getFLExTransTestbedXMLObject()
     testObjList   = testbedXMLObj.getTestXMLObjectList()
 
-    window = Main(testObjList, testbedFileObj, report)
+    window = Main(testObjList, testbedFileObj, report, DB)
     window.show()
     app.exec()
 
