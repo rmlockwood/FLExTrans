@@ -3,31 +3,34 @@
 #
 #   Lærke Roager Jespersen
 #
-#   Version 3.17.1 - 9/23/26
-#    Connects Delete Test to remove the selected test after confirmation.
+#   Version 3.17.2 - 9/23/26 - Ron Lockwood
+#    Color lexical-unit child rows by lemma, grammatical category and feature/tag type.
 #
-#   Version 1.1.1 - 9/23/26
-#    Collects all Add Test text fields in one dialog.
+#   Version 3.17.1 - 9/23/26 - Ron Lockwood
+#    Connect Delete Test to remove the selected test after confirmation.
 #
-#   Version 1.1 - 9/23/26
-#    Connects Add Test to create a new test and canned lexical unit.
+#   Version 3.17 - 9/23/26 - Ron Lockwood
+#    Connect Add Test to create a new test and canned lexical unit.
 #
-#   Version 1.0 - 6/27/26
+#   Version 1.0 - 6/27/26 - Lærke Roager Jespersen
 #    First version. Loads testbed tests into an editable tree view.
 #    Double-click any cell to edit. Save writes changes back to the XML file.
 #
 
 # OVERVIEW (AI generated, then edited)
 #
-# This module provides the editable tree view for the FLExTrans testbed. Each top-level row represents a test and its child rows represent the lexical units that make up the source input. The tree is loaded from the XML model, and Save writes edits back through the model before serializing the testbed file.
+# This module provides the editable tree view for the FLExTrans testbed. Each top-level row represents a test and its child rows represent the lexical units that make up the source input. The tree is loaded 
+# from the XML model, and Save writes edits back through the model before serializing the testbed file.
 #
 # ADDING TESTS
 #
-# Add Test collects the three text fields needed by a test, creates a model object with one canned lexical unit, and appends both the model object and its tree row. Keeping the model object attached to the row is important because Save uses that object to find the new XML node.
+# Add Test collects the three text fields needed by a test, creates a model object with one canned lexical unit, and appends both the model object and its tree row. Keeping the model object attached to the row 
+# is important because Save uses that object to find the new XML node.
 #
 # CODE STRUCTURE
 #
-# Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits, save writes all rows, and closeEvent handles unsaved changes.
+# Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged 
+# tracks edits, save writes all rows, and closeEvent handles unsaved changes.
 #
 
 import html
@@ -54,7 +57,8 @@ from Testbed import (FlexTransTestbedFile, SENT,
                      HEAD_WORD, SENSE_NUM, GRAM_CAT, OTHER_TAGS, TAG,
                      SOURCE_INPUT, LEXICAL_UNITS, LEXICAL_UNIT,
                      TARGET_OUTPUT, EXPECTED_RESULT, LexicalUnit,
-                     TestbedTestXMLObject)
+                     TestbedTestXMLObject, LEMMA_COLOR, GRAM_CAT_COLOR,
+                     AFFIX_COLOR)
 
 from TestBedEditorWindow import Ui_TestBedEditorWindow
 
@@ -63,7 +67,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.1",
+    FTM_Version:     "3.17.2",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -156,6 +160,7 @@ class Main(QMainWindow):
                 otherTags = lu.getOtherTags()
                 luItem.setText(COL_FEATURES, '.'.join(otherTags) if otherTags else '')
                 luItem.setText(COL_AFFIXES,  '')
+                self._colorLexicalUnitItem(luItem)
 
             testItem.setExpanded(True)
 
@@ -215,12 +220,19 @@ class Main(QMainWindow):
         luItem.setFlags(EDITABLE)
         luItem.setText(COL_SOURCE, 'word1.1')
         luItem.setText(COL_GRAMCAT, 'n')
+        self._colorLexicalUnitItem(luItem)
         testItem.setExpanded(True)
         tree.resizeColumnToContents(COL_SOURCE)
         tree.resizeColumnToContents(COL_GRAMCAT)
 
         self.unsaved = True
         self.ui.saveLabel.setText('There are unsaved changes.')
+
+    def _colorLexicalUnitItem(self, luItem):
+        luItem.setForeground(COL_SOURCE, QBrush(QColor('#' + LEMMA_COLOR)))
+        luItem.setForeground(COL_GRAMCAT, QBrush(QColor('#' + GRAM_CAT_COLOR)))
+        luItem.setForeground(COL_FEATURES, QBrush(QColor('#' + AFFIX_COLOR)))
+        luItem.setForeground(COL_AFFIXES, QBrush(QColor('#' + AFFIX_COLOR)))
 
     def _onCurrentItemChanged(self, currentItem, previousItem):
         self.ui.deleteButton.setEnabled(currentItem is not None)
