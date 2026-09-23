@@ -11,7 +11,7 @@
     <message>
       <location filename="../LiveRuleTesterTool.py" line="284"/>
       <source>Test transfer rules and synthesis live against specific words.</source>
-      <translation>Pruebe las reglas de transferencia y la síntesis en vivo con palabras específicas.</translation>
+      <translation>Prueba las reglas de transferencia y la síntesis en vivo con palabras específicas.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="286"/>
@@ -24,21 +24,21 @@ against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.</source>
-      <translation>Herramienta de prueba de reglas en vivo es una herramienta que le permite probar palabras
-o frases de origen en vivo contra reglas de transferencia. Esta herramienta es especialmente
-útil para descubrir por qué las reglas de transferencia no hacen lo que espera que hagan.
-Puede centrarse en el problema seleccionando solo una palabra de origen y aplicando
-la regla de transferencia pertinente. De esta manera, no tiene que ejecutar todo el sistema
-contra todo el archivo de texto y todas las reglas de transferencia. También puede probar
-que los resultados de la transferencia se sintetizan correctamente en palabras de destino.
-Si lo desea, puede agregar los elementos léxicos de origen emparejados con los resultados
-de la síntesis a un banco de pruebas. Puede ejecutar el banco de pruebas para verificar
-que está obteniendo los resultados esperados.</translation>
+      <translation>La herramienta “Prueba de reglas en vivo” es una herramienta que te permite comprobar en tiempo real si las palabras o
+frases de origen se ajustan a las reglas de transferencia. Esta herramienta resulta especialmente útil para
+averiguar por qué las reglas de transferencia no funcionan como esperabas.
+Puedes identificar el problema con precisión seleccionando solo una palabra de origen y aplicando
+la regla de transferencia correspondiente. De esta forma, no tienes que ejecutar todo el sistema
+con el archivo de texto completo y todas las reglas de transferencia. También puedes comprobar que los
+resultados de la transferencia se sintetizan correctamente en palabras de destino. Si lo deseas,
+puedes añadir a un banco de pruebas los elementos léxicos de origen emparejados con los resultados de la síntesis.
+Puedes ejecutar el banco de pruebas para comprobar que obtienes los resultados esperados.
+</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="638"/>
       <source>Nothing selected. Select at least one word or sentence.</source>
-      <translation>No se seleccionó nada. Seleccione al menos una palabra o frase.</translation>
+      <translation>No se seleccionó nada. Selecciona al menos una palabra o frase.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1378"/>
@@ -48,7 +48,7 @@ que está obteniendo los resultados esperados.</translation>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1378"/>
       <source>Could not copy the bilingual file to the folder: {0}. Please check that it exists.</source>
-      <translation>No se pudo copiar el archivo bilingüe a la carpeta: {0}. Por favor, verifique que exista.</translation>
+      <translation>No se pudo copiar el archivo bilingüe a la carpeta: {0}. Por favor, verifica que exista.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1206"/>
@@ -63,7 +63,7 @@ que está obteniendo los resultados esperados.</translation>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1506"/>
       <source>Not Found Error</source>
-      <translation>Error de no encontrado</translation>
+      <translation>Error no encontrado</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1252"/>
@@ -83,7 +83,7 @@ que está obteniendo los resultados esperados.</translation>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1304"/>
       <source>The lexical unit(s) is/are incorrectly formed.</source>
-      <translation>La(s) unidad(es) léxica(s) está(n) mal formada(s).</translation>
+      <translation>Las unidades léxicas están mal formadas.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1329"/>
@@ -95,7 +95,7 @@ que está obteniendo los resultados esperados.</translation>
       <source>{0}
 Run the Extract Bilingual Lexicon module separately for more details.</source>
       <translation>{0}
-Ejecute el módulo Extraer Léxico Bilingüe por separado para obtener más detalles.</translation>
+Ejecuta el módulo "Extraer léxico bilingüe" por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1332"/>
@@ -110,7 +110,7 @@ Ejecute el módulo Extraer Léxico Bilingüe por separado para obtener más deta
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1421"/>
       <source>Test Exists</source>
-      <translation>El test existe</translation>
+      <translation>La prueba existe</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1422"/>
@@ -119,16 +119,16 @@ Ejecute el módulo Extraer Léxico Bilingüe por separado para obtener más deta
 {0}
 
 Do you want to overwrite it?</source>
-      <translation>Hay un test que ya existe en el banco de pruebas que coincide con la unidad léxica:
+      <translation>Ya existe una prueba en el entorno de pruebas que coincide con la unidad léxica:
 
 {0}
 
-¿Desea sobrescribirlo?</translation>
+¿Deseas sobrescribirla?</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1506"/>
       <source>Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\testbed.xml</source>
-      <translation>Problema con el archivo del banco de pruebas. Verifique que TestbedFile esté configurado con un valor en su archivo de configuración. Normalmente está configurado como ..\testbed.xml</translation>
+      <translation>Problema con el archivo del banco de pruebas. Verifica que "TestbedFile" esté configurado con un valor en tu archivo de configuración. Normalmente está configurado como ..\testbed.xml</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1552"/>
@@ -138,7 +138,7 @@ Do you want to overwrite it?</source>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1552"/>
       <source>There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.</source>
-      <translation>No hay un número igual de resultados de síntesis para las unidades léxicas que tiene. No se puede agregar al banco de pruebas.</translation>
+      <translation>No hay un número igual de resultados de síntesis para las unidades léxicas que tienes. No se puede agregar al banco de pruebas.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1634"/>
@@ -153,7 +153,7 @@ Do you want to overwrite it?</source>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1673"/>
       <source>There are no target text morphemes. Click the Transfer button first.</source>
-      <translation>No hay morfemas de texto de destino. Haga clic primero en el botón Transferir.</translation>
+      <translation>No hay morfemas de texto de destino. Haz clic primero en el botón "Transferir".</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1693"/>
@@ -205,7 +205,7 @@ Do you want to overwrite it?</source>
       <source>{0}
 Run the {1} module separately for more details.</source>
       <translation>{0}
-Ejecute el módulo {1} por separado para obtener más detalles.</translation>
+Ejecuta el módulo {1} por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1773"/>
@@ -217,7 +217,7 @@ Ejecute el módulo {1} por separado para obtener más detalles.</translation>
       <source>{0}
 Run the Convert to {1} module separately for more details.</source>
       <translation>{0}
-Ejecute el módulo Convertir a {1} por separado para obtener más detalles.</translation>
+Ejecuta el módulo Convertir a {1} por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1840"/>
@@ -241,7 +241,7 @@ Ejecute el módulo {0} por separado para obtener más detalles.</translation>
       <source>{msg}
 Run the {moduleName} module separately for more details.</source>
       <translation>{msg}
-Ejecute el módulo {moduleName} por separado para obtener más detalles.</translation>
+Ejecuta el módulo {moduleName} por separado para obtener más detalles.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2504"/>
