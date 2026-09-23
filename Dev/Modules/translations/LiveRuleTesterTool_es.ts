@@ -193,7 +193,7 @@ Do you want to overwrite it?</source>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1741"/>
       <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
-      <translation>El proyecto podría estar bloqueado. Verifique si la opción de compartir está activada para el proyecto de destino. Si es así, ejecute el módulo Limpiar archivos y luego el módulo Catalogar afijos de destino, y reporte cualquier error a los desarrolladores.</translation>
+      <translation>El proyecto podría estar bloqueado. Verifica si la opción de compartir está activada para el proyecto de destino. Si es así, ejecuta el módulo "Limpiar archivos" y luego el módulo "Catalogar afijos de destino", y reporta cualquier error a los desarrolladores.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1750"/>
@@ -256,7 +256,7 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
       <source>Invalid Interchunk Rules File</source>
-      <translation>Archivo de reglas interchunk inválido</translation>
+      <translation>Archivo de reglas entre bloques no válido</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
