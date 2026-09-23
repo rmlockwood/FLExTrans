@@ -261,17 +261,17 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
       <source>The interchunk transfer file has no transfer element or no section-rules element</source>
-      <translation>El archivo de transferencia interchunk no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
+      <translation>El archivo de transferencia entre fragmentos no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2556"/>
       <source>Invalid postchunk Rules File</source>
-      <translation>Archivo de reglas postchunk inválido</translation>
+      <translation>Archivo de reglas de fragmentos posteriores inválido</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2556"/>
       <source>The postchunk transfer file has no transfer element or no section-rules element</source>
-      <translation>El archivo de transferencia postchunk no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
+      <translation>El archivo de transferencia de fragmentos posterior no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2654"/>
@@ -306,7 +306,7 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3131"/>
       <source>There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con la ruta del archivo de resultados de Tree Tran: {file}. Por favor, verifique la configuración del archivo de configuración.</translation>
+      <translation>Hay un problema con la ruta del archivo de resultados de Tree Tran: {file}. Por favor, verifica la configuración del archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3179"/>
@@ -326,7 +326,7 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3219"/>
       <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
-      <translation>No se encontró la oración: {sentNum}. Verifique que los análisis correctos estén presentes.</translation>
+      <translation>No se encontró la oración: {sentNum}. Verifica que los análisis correctos estén presentes.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3226"/>
