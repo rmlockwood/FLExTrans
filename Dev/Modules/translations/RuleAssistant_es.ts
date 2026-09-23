@@ -6,7 +6,7 @@
     <message>
       <location filename="../RuleAssistant.py" line="105"/>
       <source>This module runs a tool which let&apos;s you create transfer rules.</source>
-      <translation>Este módulo ejecuta una herramienta que le permite crear reglas de transferencia.</translation>
+      <translation>Este módulo ejecuta una herramienta que te permite crear reglas de transferencia.</translation>
     </message>
     <message>
       <location filename="../RuleAssistant.py" line="106"/>
@@ -21,7 +21,7 @@
     <message>
       <location filename="../RuleAssistant.py" line="350"/>
       <source>Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.</source>
-      <translation>No se encontró el diccionario bilingüe. Compile el diccionario bilingüe para ver datos de prueba en el {ruleAssistant}.</translation>
+      <translation>No se encontró el diccionario bilingüe. Crea el diccionario bilingüe para ver datos de prueba en el {ruleAssistant}.</translation>
     </message>
     <message>
       <location filename="../RuleAssistant.py" line="362"/>
