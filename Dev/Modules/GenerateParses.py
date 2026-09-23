@@ -1,6 +1,9 @@
 #
 #   GenerateParses
 #
+#   Version 3.17.2 - 9/22/26 - Ron Lockwood
+#    Add derivational affixes to the Apertium stem as well as the human-readable parse.
+#
 #   Version 3.17.1 - 9/12/26 - Ron Lockwood
 #    Count only stems that can generate output against the stem limit. Added the code description block.
 #
@@ -152,7 +155,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("GenerateParses", "Generate All Parses"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
         FTM_Help       : "",
@@ -336,7 +339,7 @@ def get_stems(standardSpellList, derivAffixList, maxStems, outputCats):
 
         for tag, toPos, isPrefix in derivAffixList[pos_key]:
             if toPos in outputCats:
-                yield (aStem,
+                yield ((tag + aStem) if isPrefix else (aStem + tag),
                        (tag + gStem) if isPrefix else (gStem + tag),
                        toPos)
                 yield_any = True
@@ -546,6 +549,8 @@ def MainFunction(DB, report, modifyAllowed):
                     break
 
                 for sense in e.SensesOS:
+                    if not sense.MorphoSyntaxAnalysisRA:
+                        continue
                     if sense.MorphoSyntaxAnalysisRA.ClassName != 'MoDerivAffMsa':
                         continue
                     msa = IMoDerivAffMsa(sense.MorphoSyntaxAnalysisRA)
