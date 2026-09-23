@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="es-ES" sourcelanguage="en">
+  <context>
+    <name>DisjointFeaturesEditorDialog</name>
+    <message>
+      <source>Add new set</source>
+      <translation>Agregar nuevo conjunto</translation>
+    </message>
+    <message>
+      <source>Close</source>
+      <translation>Cerrar</translation>
+    </message>
+    <message>
+      <source>Delete selected set</source>
+      <translation>Eliminar conjunto seleccionado</translation>
+    </message>
+    <message>
+      <source>Split feature set</source>
+      <translation>Conjunto de característica dividida</translation>
+    </message>
+    <message>
+      <source>Split Features Editor</source>
+      <translation>Editor de características dividido</translation>
+    </message>
+    <message>
+      <source>Distinguishing feature</source>
+      <translation>Rasgo distintivo</translation>
+    </message>
+    <message>
+      <source>Feature value</source>
+      <translation>Valor del rasgo</translation>
+    </message>
+    <message>
+      <source>Language</source>
+      <translation>Idioma</translation>
+    </message>
+    <message>
+      <source>Name</source>
+      <translation>Nombre</translation>
+    </message>
+    <message>
+      <source>Number of subfeatures:</source>
+      <translation>Número de subrasgos:</translation>
+    </message>
+    <message>
+      <source>Subfeature</source>
+      <translation>Subrasgo</translation>
+    </message>
+  </context>
+</TS>

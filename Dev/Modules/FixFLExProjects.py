@@ -5,6 +5,12 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -33,7 +39,7 @@
 import os.path
 import clr
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import FWProjectsDir
 from flexlibs import AllProjectNames
 
@@ -65,7 +71,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -76,7 +82,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation for the user:
 docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,
@@ -261,7 +267,7 @@ def MainFunction(DB, report, modifyAllowed=True):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)

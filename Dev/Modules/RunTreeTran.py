@@ -5,6 +5,15 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -64,7 +73,7 @@ from subprocess import call
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
 
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import Utils
@@ -80,7 +89,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -91,7 +100,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RunTreeTran", "Run TreeTran"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunTreeTran", "Run the TreeTran Tool."),
         FTM_Help       : "",
@@ -177,7 +186,7 @@ def MainFunction(DB, report, modify=True):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -206,7 +215,7 @@ def MainFunction(DB, report, modify=True):
     
     # verify the filtered file exists
     if os.path.exists(filteredFile) == False:
-        report.Error(_translate("RunTreeTran", 'There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?').format(filteredFile=filteredFile))
+        report.Error(_translate("RunTreeTran", 'There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?').format(filteredFile=Utils.shortenPathForDisplay(filteredFile)))
         return
     
     # Get the TreeTran rules file path
@@ -221,7 +230,7 @@ def MainFunction(DB, report, modify=True):
 
     # verify the filtered file exists
     if os.path.exists(rulesFilePath) == False:
-        report.Error(_translate("RunTreeTran", 'Can\'t find the TreeTran rules file: {rulesFilePath}.').format(rulesFilePath=rulesFilePath))
+        report.Error(_translate("RunTreeTran", 'Can\'t find the TreeTran rules file: {rulesFilePath}.').format(rulesFilePath=Utils.shortenPathForDisplay(rulesFilePath)))
         return
     
     # run TreeTran

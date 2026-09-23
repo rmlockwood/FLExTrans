@@ -6,6 +6,18 @@
 #   7/24/23
 #
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.2 - 7/10/26 - Ron Lockwood
+#    Lint fixes.
+#
+#   Version 3.16.1 - 6/26/26 - Ron Lockwood
+#    Prevent the module from starting in one-project mode.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.2 - 3/10/26 - Ron Lockwood
 #    Regular expression syntax fixes that showed up with Python 3.13.
 #
@@ -53,7 +65,7 @@ from System import Guid # type: ignore
 from System import String # type: ignore
 
 from SIL.LCModel import ICmObjectRepository, ILexSense # type: ignore
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -67,7 +79,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -78,7 +90,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",
@@ -97,7 +109,7 @@ def MainFunction(DB, report, modify=False):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -108,6 +120,11 @@ def MainFunction(DB, report, modify=False):
     
     configMap = ReadConfig.readConfig(report)
     if not configMap:
+        return
+
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
+    if twoProjectMode == 'n':
+        report.Error(_translate("LinkAllSensesAsDup", "This module only works in Two Project mode."))
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
@@ -121,6 +138,11 @@ def MainFunction(DB, report, modify=False):
     sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
+    if not targetProj:
+        
+        report.Error(_translate("LinkAllSensesAsDup", 'No Target Project has been set. Please go to Settings and fix this.'))
+        haveConfigError = True
+        
     if not sourceTextName:
         
         report.Error(_translate("LinkAllSensesAsDup", 'No Source Text Name has been set. Please go to Settings and fix this.'))
@@ -143,10 +165,14 @@ def MainFunction(DB, report, modify=False):
         return 
     
     TargetDB = Utils.openTargetProject(configMap, report)
+    
+    if not TargetDB:
+        return
+    
     myStyle = Utils.getHyperLinkStyle(DB)
 
     preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub(r'\s','+', targetProj)
+    preGuidStr += re.sub(r'\s','+', targetProj) # type: ignore
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
 
     # Loop through all the source entries

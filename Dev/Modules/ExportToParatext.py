@@ -5,6 +5,27 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.3 - 7/11/26 - Ron Lockwood
+#    Lint fixes.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/24/26 - Ron Lockwood
+#    Fixes #1339. Load TextInOutUtils translations so the "rules applied" message is translated.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
+#   Version 3.15.3 -4/17/26 - Ron Lockwood
+#    Fixes #1312. Translate book names when checking for valid names.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -66,23 +87,48 @@
 #
 #   earlier version history removed on 1/14/25
 #
-#   Export chapters from FLExTrans to Paratext. The user is prompted which Paratext 
-#   project to use and the book, from and to chapter come from the current SourceName 
-#   in the config file. The text from the TargetOutputSynthesisFile is used to populate
-#   the Paratext book and chapter(s). 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is the last step of the FLExTrans pipeline: it takes the draft that Synthesize Text produced and puts those chapters back into Paratext. Nothing about which book or which chapters is
+#   asked for. The text the user has been translating is named in the Source Text Name setting, and a scripture text's name says what it is - GEN 01, or Genesis 23-38 - so the module parses the book
+#   and the chapter range straight out of that name and shows them in the window greyed out. All the user supplies is the Paratext project abbreviation to export to.
+#
+#   The draft itself is read from the file named by the Target Output Synthesis File setting, typically target_text-syn.txt in the Build folder. Before anything is written out, the Text Out rules are
+#   run over it (the same search and replace rules the Text Out Rules module edits), which is where the last cleanups of the synthesized text happen. The result is handed to
+#   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it.
+#
+#   HOW THE TEXT NAME IS PARSED
+#
+#   parseSourceTextName() does that work. A trailing " - Copy" or " - Copy (2)" is dropped first, so a text the user duplicated in FLEx is still usable. What's left is split on spaces: the last piece
+#   is the chapter or the chapter range and everything before it is the book, which lets book names with spaces like 1 Samuel through. The book can be either a Paratext abbreviation or a book name in
+#   the UI language; names are compared after normalizing to decomposed Unicode (NFD), because FLEx text names are NFD. A range has to be two numbers separated by a hyphen, both digits, neither zero,
+#   and the second not smaller than the first. Anything else is an error telling the user what a name should look like.
+#
+#   WHAT THE WINDOW SHOWS
+#
+#   The window is the shared Choose Chapters dialog, put up here in its smallest configuration. ChapterSelection.InitControls() with export=True hides all of the import-only checkboxes, and because
+#   this module doesn't support cluster projects it hides the cluster project rows as well. On top of that the module fills in the book abbreviation and the from and to chapter spin boxes from the
+#   parsed text name and disables all three, so what is left for the user is the Paratext project abbreviation and the OK and Cancel buttons.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom: the docs dictionary FlexTools displays, the Main window class, parseSourceTextName(), doExportToParatext(), MainFunction() and the FlexToolsModule declaration at the bottom that
+#   FlexTools looks for. Main is thin on purpose - InitControls() sets the window up and OKClicked() hands the validation to ChapterSelection.doOKbuttonValidation() - so the flow to read is
+#   doExportToParatext(): parse the text name, show the window, and if the user clicked OK read the synthesis file, apply the Text Out rules and call doExport(). Cancelling reports a warning and
+#   writes nothing.
 #
 #
 
 import os
 import re
-import xml.etree.ElementTree as ET
+import unicodedata
 
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6.QtCore import QCoreApplication
 
 from SIL.LCModel import * # type: ignore                                                  
-from flextoolslib import *                                                 
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -105,19 +151,19 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection', 'TextInOutUtils']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -159,7 +205,10 @@ class Main(QMainWindow):
         
         self.ui.bookAbbrevLineEdit.setText(bookAbbrev)
         self.ui.bookAbbrevLineEdit.setEnabled(False)
-        
+
+        # Annotate the type so the linter knows chapSel becomes a ChapterSelection object (it's set in doOKbuttonValidation). Otherwise it infers None-only and flags attribute accesses.
+        self.chapSel: ChapterSelection.ChapterSelection | None = None
+
     def CancelClicked(self):
         self.retVal = False
         self.close()
@@ -189,14 +238,19 @@ def parseSourceTextName(report, sourceText, infoMap):
         # If it is not an abbreviation, then we need to find the abbreviation
         for key, val in ChapterSelection.bookMap.items():
             
-            if book == val:
+            translatedStr = _translate("ChapterSelection", val)
+
+            # Normalize to NFD to match FLEx text names which are always NFD
+            translatedStr = unicodedata.normalize("NFD", translatedStr)
+
+            if book == translatedStr:
                 bookAbbrev = key
                 break
         
         # If we didn't find it (bookAbbrev didn't change), then the book is not valid
         if bookAbbrev == book:
-            
-            report.Error(_translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book))
+            nameStr = _translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book)
+            report.Error(nameStr)
             return False
         
     if re.search('-', chapters):
@@ -239,7 +293,7 @@ def doExportToParatext(DB, configMap, report):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -275,7 +329,7 @@ def doExportToParatext(DB, configMap, report):
         try:
             f = open(synFile, 'r', encoding='utf-8')
         except:
-            report.Error(_translate("ExportToParatext", 'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.').format(synFile=synFile))
+            report.Error(_translate("ExportToParatext", 'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.').format(synFile=Utils.shortenPathForDisplay(synFile)))
             return None
             
         synFileContents = f.read()

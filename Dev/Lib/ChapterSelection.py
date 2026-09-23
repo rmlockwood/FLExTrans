@@ -5,6 +5,43 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.4 - 9/8/26 - Ron Lockwood
+#    Allow for the bidi control marks that right-to-left text puts beside the punctuation of a verse reference, in every reference pattern in splitSFMs.
+#
+#   Version 3.17.3 - 9/8/26 - Ron Lockwood
+#    Fixes #1546. Handle comma-separated verse ranges after a verse reference with a dash, e.g. 17:26-30, 34-36, 41, 
+#    ranges that cross a chapter boundary, e.g. 1:2-3:4, and non-ASCII commas such as the Arabic one.
+#
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added a code description block at the top with an overview, key features and code structure.
+#
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Made the Paratext chapter selection window a fixed size so the user can't resize it to where controls get clipped.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.3 - 7/29/26 - Ron Lockwood
+#    Put the FLExTrans icon on the overwrite-chapters message box.
+#
+#   Version 3.16.2 - 7/22/26 - Ron Lockwood
+#    Fixes #1461. Make sure a blank writing system isn't used to create a text in FLEx.
+#
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16 - 6/24/26 - Ron Lockwood
+#    Added an optional vernWs parameter to insertParagraphs so One project mode can insert text into a chosen vernacular writing system.
+#
+#   Version 3.15.5 - 6/20/26 - Ron Lockwood
+#    Fixes #1353. On export, overwrite the Paratext book's \id line with the one carried in the text (if present).
+#
+#   Version 3.15.4 - 6/20/26 - Ron Lockwood
+#    Fixes #1353. Keep the whole \id book-identifier line in the Vernacular WS when inserting paragraphs.
+#
+#   Version 3.15.3 -4/17/26 - Ron Lockwood
+#    Fixes #1312. Translate book names when checking for valid names.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -72,18 +109,83 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   ChapterSelection Class which is for data associated with import and export
-#   from and to Paratext. 
+#   OVERVIEW (AI generated, then edited)
+#
+#   This library holds what the three Paratext chapter modules have in common: the ChapterSelection class that carries the user's choices around, the code behind the Choose Chapters window that all
+#   three of them put up, the map of Paratext book abbreviations to book names, the marker aware code that turns Paratext text into FLEx paragraphs, and doExport() which splices chapters back into a
+#   Paratext book file. The three modules are Import From Paratext, Export FLExTrans Draft to Paratext and Export Text from Target FLEx to Paratext. Each one builds the window from
+#   Lib/Windows/ParatextChapSelectionDlg.ui, hands it to InitControls() to be filled in and fitted to the job, and once the user clicks OK reads the ChapterSelection object back off the window.
+#
+#   Paratext itself is found through the registry. getParatextPath() reads the Settings_Directory value under SOFTWARE\Wow6432Node\Paratext\8, and getParatextProjects() lists the project folders
+#   under it, skipping cms, Temp Files and anything starting with an underscore or UserSettings. The Alternate Paratext Folder setting overrides that whole scheme when it is set, which is how a
+#   module can work against a folder of book files that isn't a Paratext installation. getBookPath() finds the book file itself, trying *<book><project>.SFM first and then *<book><project>.USFM.
+#
+#   THE WINDOW
+#
+#   One dialog serves all three modules and InitControls() is what makes it fit the module that opened it. It loads the settings from last time, then hides what doesn't apply. For either export the
+#   import-only checkboxes go away (footnotes, cross references, make active, full book name, one text per chapter, include introduction and overwrite existing text) and the window shrinks by
+#   EXP_SHRINK_WINDOW_PIXELS. Exporting from FLEx additionally hides the book abbreviation and the two chapter spin boxes, because that information comes from the text titles the user picks instead,
+#   and gives FROM_FLEX_EXP_PIXELS of that shrink back. Anything that isn't exporting from FLEx hides the scripture texts combo box and its label. Cluster project rows are only set up for importing
+#   and for exporting from FLEx; the other module hides them. Two of the combo boxes are swapped at runtime for a CheckableComboBox (here for scripture texts, in ClusterUtils for cluster projects)
+#   so the user can check several entries instead of picking one.
+#
+#   The controls in the .ui file are placed with absolute geometry rather than Qt layouts, so the window has no idea what size it needs and resizing it doesn't rearrange anything - it just clips
+#   controls out of view. That is why the size is pinned: lockWindowSize() fixes the window at whatever size was just laid out, unlockWindowSize() lifts the pin so code can resize the window again,
+#   and showClusterWidgets() wraps the ClusterUtils call in that unpin and repin because the window grows and shrinks by a row every time the user checks or unchecks a cluster project.
+#
+#   doOKbuttonValidation() is the OK handler for all three windows. It reads every control, then validates as much as it can: the book abbreviation has to be in bookMap, the Paratext path has to
+#   have come out of the registry and exist, the project folder under it has to exist and (when importing) the book file has to be there. With cluster projects selected, the project and book checks
+#   are skipped here, since each project has its own Paratext project and gets checked as it is processed. If everything passes it builds the ChapterSelection object, saves the settings and closes
+#   the window with retVal set to True. Every validation failure puts up a message box and leaves the window open.
+#
+#   THE SETTINGS FILE
+#
+#   The user's choices are remembered in ParatextImportSettings.json, in the same Config folder as flextools.ini. ChapterSelection.dump() defines what goes in it and doOKbuttonValidation() writes
+#   it. The one subtlety is that the file holds both an export project abbreviation and an import project abbreviation. Whichever one the running module isn't using is carried through untouched in
+#   the window's otherProj member, so that importing doesn't wipe out the project the user exports to, or the other way around.
+#
+#   BOOK NAMES AND TEXT TITLES
+#
+#   bookMap, at the bottom of the file, maps each three letter Paratext book abbreviation to its book name, and the names go through _translate() so they come out in the UI language. It covers the
+#   66 books plus the deuterocanonical and extra books that Paratext knows about. bookChapterPattern parses a FLEx text title into a book part and one or two two-digit chapter numbers, and tolerates
+#   a trailing " - Copy" or " - Copy (2)" that FLEx adds when a title is duplicated. getScriptureText() uses it to filter a project's text titles down to the ones that look like scripture: the book
+#   part has to be an abbreviation or a book name in either English or the UI language. Comparisons normalize to decomposed Unicode (NFD) because that is how FLEx stores text.
+#
+#   MARKERS AND WRITING SYSTEMS
+#
+#   insertParagraphs() is what actually puts Paratext text into a FLEx text, and the writing systems matter as much as the text does. splitSFMs() splits the string into markers and references on one
+#   side and text content on the other; the markers and references are put in the Analysis writing system so FLEx doesn't ask the user to interlinearize them, and the content goes in the Vernacular
+#   writing system (or, in One project mode, whichever vernacular writing system the caller passes in). Its regular expression is long because every marker shape has to be recognized - end markers,
+#   footnotes and their references, cross references, verses and verse ranges, chapters, attributes running from a vertical bar to a closing marker, and markers preceded by a plus. The \id book
+#   identifier is the deliberate exception: it stays in the Vernacular writing system so the book id survives translation and can be written back on export. A new FLEx paragraph is started at every
+#   line feed. convertFigSyntax() rewrites the old USFM 1.0 and 2.0 \fig syntax into the 3.0 form, and setTextMetaData() marks a created text with Source of FLExTrans and IsTranslated.
+#
+#   SPLICING CHAPTERS BACK INTO A PARATEXT BOOK
+#
+#   doExport() is the export half, shared by both export modules. It first asks the user to confirm overwriting the chapters it found in the text, offering a do-not-ask-again checkbox when cluster
+#   projects are in play so the question only has to be answered once. Then it backs the book file up to <book>.bak, and if the incoming text carries an \id line (import put it there) that line
+#   replaces the book's own \id line. The incoming text is split on \c markers and each chapter is dealt with on its own: if the book already has that chapter, the text from that \c marker up to the
+#   next one (or to the end of the file for the last chapter) is replaced; if it doesn't, the chapter is inserted ahead of the next higher chapter in the book; and if there is no higher chapter it is
+#   appended. Backslashes in the replacement text are doubled first, because re.sub() would otherwise read them as group references.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom the file goes: the constants and bookChapterPattern, the ChapterSelection class with its dump() and getBookPath(), the marker and paragraph functions (splitSFMs, convertFigSyntax,
+#   insertParagraphs, setTextMetaData), the window functions (lockWindowSize, unlockWindowSize, showClusterWidgets, InitControls), getParatextPath, doOKbuttonValidation, the project and title
+#   helpers (getFilteredSubdirectories, getParatextProjects, getScriptureText), doExport, and finally the module level QApplication and translator setup followed by bookMap. bookMap has to come
+#   after the translations are loaded, which is why the biggest thing in the file is also the last thing in it.
 #
 
 import os
 import regex as re
+import unicodedata
 from shutil import copyfile
 import winreg
 import glob
 import json
-from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication
+from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication, QWIDGETSIZE_MAX
 from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QIcon
 
 import ClusterUtils
 from ComboBox import CheckableComboBox
@@ -178,6 +280,22 @@ class ChapterSelection(object):
 
         return fileList[0] if fileList else ''
 
+# Commas that can separate the parts of a verse list, e.g. the one in 17:26-30, 34-36. Unicode has no comma property to match, so the commas are spelled out instead. 
+# The Arabic comma is the one that matters most for right-to-left scripts -- Arabic, Persian, Urdu, Pashto, Sindhi, Uyghur and Thaana all use it -- and the
+# N'Ko and reversed commas are right-to-left as well. The Arabic decimal separator U+066B is deliberately left out.
+ANY_COMMA = r'[,\u060C\u066C\u07F8\u2E41\u1363\u055D\u3001\uFF0C\uFE10\uFE11\uFE50\uFE51\u1802\u1808\uA4FE]'
+
+# Right-to-left Scripture text puts an invisible bidi control character next to the punctuation of a verse reference, so a Farsi or Urdu parallel reference reads 13<RLM>:32<RLM><EN DASH>37 rather than
+# 13:32-37. Those marks are real characters sitting between the digits and the separator, so without allowing for them here not one reference in such a line is recognised and the whole line, verse
+# numbers and all, is handed to the interlinearizer as vernacular text. \p{Bidi_Control} is the Unicode property for exactly these twelve: the marks (ALM, LRM, RLM), the embeddings and overrides
+# (U+202A-U+202E) and the isolates (U+2066-U+2069). They are allowed on both sides of every separator because which side they fall on is up to whoever typed the text.
+BIDI_MARKS = r'\p{Bidi_Control}*'
+
+# The separators of a verse reference, each able to carry bidi marks: the chapter/verse separator, the dash in a range, and the comma between the parts of a verse list.
+CV_SEP = BIDI_MARKS + r'[:.]' + BIDI_MARKS
+RANGE_DASH = BIDI_MARKS + r'[\p{Pd}]' + BIDI_MARKS
+LIST_COMMA = BIDI_MARKS + ANY_COMMA + r' ?' + BIDI_MARKS
+
 # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
 # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
 # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
@@ -190,21 +308,26 @@ def splitSFMs(inputStr):
                     r'\||'                  # verticle bar
                     r'\\\w+\*|'             # end marker
                     r'\\f \+ |'             # footnote with plus
-                    r'\\fr \d+[:.]\d+[\p{Pd}]\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
-                                            # the \p{Pd} is any unicode dash (property=Pd), so it will match the en-dash, em-dash, hyphen, etc.
-                    r'\\fr \d+[:.]\d+|'     # footnote reference
+                    r'\\fr \d+' + CV_SEP + r'\d+' + RANGE_DASH + r'\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
+                                            # RANGE_DASH is any unicode dash (property=Pd) and CV_SEP is the colon or dot, and each also allows the bidi control marks that right-to-left text puts beside them.
+                    r'\\fr \d+' + CV_SEP + r'\d+|'     # footnote reference
                     r'\\xt .+?\\xt\*|'      # target reference until target reference end marker
                     r'\\xt .+?\\x\*|'       # target reference until cross reference end marker
                     r'\\x \+ |'             # cross reference with plus
-                    r'\\xo \d+[:.]\d+[\p{Pd}]\d+|' # origin reference with dash
-                    r'\\xo \d+[:.]\d+|'     # origin reference normal
-                    r'\\v \d+[\p{Pd}]\d+ |' # verse with dash
+                    r'\\xo \d+' + CV_SEP + r'\d+' + RANGE_DASH + r'\d+|' # origin reference with dash
+                    r'\\xo \d+' + CV_SEP + r'\d+|'     # origin reference normal
+                    r'\\v \d+' + RANGE_DASH + r'\d+ |' # verse with dash
                     r'\\v \d+ |'            # verse
                     r'\\vp \S+ |'           # publication verse
                     r'\\c \d+|'             # chapter
                     r'\\rem.+?\n|'          # remark
-                    r'\d+[:.]\d+[\p{Pd}]\d+|' # verse reference with dash
-                    r'\d+[:.]\d+|'          # verse reference
+                    r'\\id.+?\n|'           # book identifier
+                                            # verse reference with dash, followed by any comma-separated verse ranges or lone verses, e.g. 17:26-30, 34-36, 39-40, 41
+                                            # The optional (?:[:.]\d+)? lets the range end at a full chapter:verse rather than a bare verse number, 
+                                            # so a range that crosses a chapter boundary like 1:2-3:4 is kept whole instead of breaking after 1:2-3 and leaving :4 to be treated as vernacular text.
+                                            # The possessive \d++ plus the (?![:.]) lookahead stop the comma list at something like ', 18:1' -- that's a new chap:ver ref. and gets split off on its own.
+                    r'\d+' + CV_SEP + r'\d+' + RANGE_DASH + r'\d+(?:' + CV_SEP + r'\d+)?(?:' + LIST_COMMA + r'\d++(?:' + RANGE_DASH + r'\d++)?(?!' + BIDI_MARKS + r'[:.]))*|' 
+                    r'\d+' + CV_SEP + r'\d+|'          # verse reference
                     r'\\\+\w+|'             # marker preceded by plus
                     r'\\\w+)',              # any other marker
                     inputStr) 
@@ -218,7 +341,14 @@ def convertFigSyntax(importText):
     return re.sub(r'\\fig ([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\\fig\*', 
                   r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
 
-def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
+def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText, vernWs=None):
+
+    # In One project mode the synthesized text is inserted into a chosen (secondary) vernacular writing system rather than the
+    # project's default vernacular WS. Callers pass that WS handle in vernWs; otherwise fall back to the default vernacular WS.
+    if vernWs is None:
+
+        vernWs = DB.project.DefaultVernWs
+        assert vernWs, "Default vernacular writing system is not set in the target project."
 
     # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
     # put the \ after the newline
@@ -240,16 +370,17 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
         
         if not (seg is None or len(seg) == 0 or seg == '\n'):
             
-            # Either an sfm marker or a verse ref should get marked as Analysis WS
-            if re.search(r'\\|\d+[.:]\d+', seg):
-                
+            # Either an sfm marker or a verse ref should get marked as Analysis WS. The exception is the \id book-identifier
+            # marker, whose whole line (marker included) must stay in the Vernacular WS so the book id travels through translation.
+            if re.search(r'\\|\d+[.:]\d+', seg) and seg != '\\id':
+
                 # make this in the Analysis WS
                 tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
                 
             else:
-                # make this in the Vernacular WS
-                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
+                # make this in the Vernacular WS (the chosen target WS in One project mode, otherwise the default vernacular WS)
+                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), vernWs)
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
         
         if seg and re.search(newPar, seg): # or first segment if not blank
@@ -275,6 +406,25 @@ def setTextMetaData(DB, text):
 
     # Set the IsTranslated field
     text.IsTranslated = True
+
+def lockWindowSize(self):
+
+    # All the controls in the chapter selection window are placed with absolute geometry (there are no layouts), so resizing the window doesn't rearrange anything. Shrinking it clips
+    # whatever is near the bottom and right edges out of view and enlarging it just adds empty space, so pin the window to the size we laid out for the controls that are showing.
+    self.setFixedSize(self.width(), self.height())
+
+def unlockWindowSize(self):
+
+    # Lift the pinning from lockWindowSize so the window can be resized in code again. Without this, a resize call would be clamped to the size that was pinned last.
+    self.setMinimumSize(0, 0)
+    self.setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX)
+
+def showClusterWidgets(self):
+
+    # ClusterUtils resizes the window to fit however many cluster project rows are showing, so the window has to be unpinned while it does that. Then pin the new size.
+    unlockWindowSize(self)
+    ClusterUtils.showClusterWidgets(self)
+    lockWindowSize(self)
 
 def InitControls(self, export=True, fromFLEx=False):
     
@@ -409,6 +559,9 @@ def InitControls(self, export=True, fromFLEx=False):
         # Connect a custom signal to a function
         self.ui.scriptureTextsComboBox.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
 
+    # Now that the controls have been shown/hidden and positioned for this module, keep the user from resizing the window to where they would be clipped
+    lockWindowSize(self)
+
 def getParatextPath():
 
     # Get the Paratext path from the registry
@@ -471,7 +624,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         # Check if Paratext path exists
         if not os.path.exists(paratextPath): 
 
-            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=paratextPath))
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=Utils.shortenPathForDisplay(paratextPath)))
             return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
@@ -486,7 +639,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
         if not os.path.exists(projPath): 
             
-            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=projPath))
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=Utils.shortenPathForDisplay(projPath)))
             return
 
         if not fromFLEx:
@@ -502,7 +655,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
                 fileList = glob.glob(bookPathPattern)
 
             if checkBookPath and not fileList:
-                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=bookPathPattern))
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file: {bookPath}.").format(bookPath=Utils.shortenPathForDisplay(bookPathPattern)))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():
@@ -581,10 +734,21 @@ def getScriptureText(report, textTitles):
             book = match.group('book')
             chap1 = match.group('chap1')
             chap2 = match.group('chap2')
+            normalizedBook = unicodedata.normalize("NFD", book)
 
             if book in bookMap or book in bookMap.values():
-                
+
                 filteredTitles.append(title)
+                continue
+
+            for val in bookMap.values():
+
+                translatedStr = _translate("ChapterSelection", val)
+
+                if normalizedBook == unicodedata.normalize("NFD", translatedStr):
+
+                    filteredTitles.append(title)
+                    break
 
     return sorted(filteredTitles)
 
@@ -612,6 +776,7 @@ def doExport(textContents, report, chapSelectObj, parent):
 
         # Create a QMessageBox instance
         msgBox = QMessageBox()
+        msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         msgBox.setIcon(QMessageBox.Icon.Question)
         msgBox.setText(_translate("ChapterSelection", "Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?").format(chapStr=chapStr, digitsStr=digitsStr, bookName=bookMap[chapSelectObj.bookAbbrev], projAbbrev=chapSelectObj.exportProjectAbbrev))
         msgBox.setWindowTitle(_translate("ChapterSelection", "Overwrite chapters"))
@@ -640,7 +805,7 @@ def doExport(textContents, report, chapSelectObj, parent):
 
     if not bookPath:
 
-        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=bookPath))
+        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=Utils.shortenPathForDisplay(bookPath)))
         return None
     
     # Create a backup of the paratext file
@@ -648,9 +813,26 @@ def doExport(textContents, report, chapSelectObj, parent):
     
     # Read the Paratext file
     with open(bookPath, encoding='utf-8') as f:
-    
+
         bookContents = f.read()
-    
+
+    # If the incoming text carries an \id book-identifier line (import prepends it and keeps it in the Vernacular WS so it travels
+    # through translation), use it to overwrite the \id line in the Paratext book. Both export modules funnel through here, so doing
+    # this once covers them both. Its presence in textContents is the trigger - it's only there when chapter 1 was imported.
+    synIdMatch = re.search(r'\\id .+', textContents)
+
+    if synIdMatch:
+
+        idLine = synIdMatch.group(0).rstrip()
+
+        # Use a function replacement so the backslash in the \id line isn't interpreted as a group reference. Replace the book's
+        # existing \id line, or prepend the line if the book somehow has none.
+        if re.search(r'\\id .+', bookContents):
+
+            bookContents = re.sub(r'\\id .+', lambda m: idLine, bookContents, count=1)
+        else:
+            bookContents = idLine + '\n' + bookContents
+
     # Find all the chapter #s
     ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
     
@@ -729,7 +911,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 Utils.loadTranslations(['ChapterSelection'], translators)
 

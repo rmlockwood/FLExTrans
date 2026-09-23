@@ -1,6 +1,12 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Show the FLExTrans icon in the About box by using a Qt message box and make the web address a clickable link.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -28,8 +34,9 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
 
-from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication, QMessageBox
+from PyQt6.QtCore import QCoreApplication, Qt
+from PyQt6.QtGui import QIcon, QPixmap
 from System.Windows.Forms import (  # type: ignore
     Keys,
     MessageBox,
@@ -40,7 +47,7 @@ import os
 import subprocess
 
 import SettingsGUI
-from FTPaths import HELP_DIR
+from FTPaths import HELP_DIR, TOOLS_DIR
 import Version
 import ReadConfig
 import Utils
@@ -48,18 +55,12 @@ import Utils
 import ctypes
 user32 = ctypes.windll.user32
 
+from flextoolslib import lockUI
+
 def RunSettings(sender, event):
-    form = sender.OwnerItem.Owner.Parent
-
-    form.Enabled = False
+    lockUI(True)
     SettingsGUI.MainFunction(None, None)
-    form.Enabled = True
-
-    # Bring the form back to the foreground after the settings dialog is closed
-    # Same code as in Flexlibs - UIMain.py
-    user32.keybd_event(0,0,0,0)
-    hwnd = form.Handle.ToInt32()
-    user32.SetForegroundWindow(hwnd)
+    lockUI(False)
     
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -69,7 +70,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -83,7 +84,7 @@ def RunEditTransferRules(sender, event):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
@@ -133,15 +134,30 @@ def RunAbout(sender, event):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
     
-    MessageBox.Show(
-        _translate("FLExTransMenu", "{name} version {version}\n\nBuild {build}, {build_date}\n\nsoftware.sil.org/flextrans").format(name=Version.Name, version=Version.Version, build=Version.Build, build_date=Version.BuildDate),
-        _translate("FLExTransMenu", "About FLExTrans"),
-        MessageBoxButtons.OK)
+    # Use a Qt message box rather than the plain Windows one so that we can show the FLExTrans logo. The small icon goes in the title bar and a 64x64 version of the logo goes in
+    # the body of the box, where a standard information/warning icon would normally go.
+    flexTransIcon = QIcon(os.path.join(TOOLS_DIR, 'FLExTransWindowIcon.ico'))
+    flexTransLogo = QPixmap(os.path.join(TOOLS_DIR, 'FLExTransIcon64.png'))
+
+    msgBox = QMessageBox()
+    msgBox.setWindowIcon(flexTransIcon)
+    msgBox.setIconPixmap(flexTransLogo)
+    msgBox.setWindowTitle(_translate("FLExTransMenu", "About FLExTrans"))
+
+    # Build the message as simple HTML so the web address can be a clickable link. The address is not part of the translatable string since it never changes from one language to the next.
+    aboutUrl = 'https://software.sil.org/flextrans'
+    aboutText = _translate("FLExTransMenu", "{name} version {version}\n\nBuild {build}, {build_date}").format(name=Version.Name, version=Version.Version, build=Version.Build, build_date=Version.BuildDate)
+
+    # A QMessageBox text label already follows links out to the browser, all we have to do is tell it that the text is HTML. Newlines mean nothing in HTML, so they become line breaks.
+    msgBox.setTextFormat(Qt.TextFormat.RichText)
+    msgBox.setText(aboutText.replace('\n', '<br>') + f'<br><br><a href="{aboutUrl}">{aboutUrl}</a>')
+    msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
+    msgBox.exec()
 
 
 

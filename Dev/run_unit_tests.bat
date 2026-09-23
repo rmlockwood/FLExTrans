@@ -1,2 +1,1 @@
-py -m unittest discover -s unit_tests
-pause
+py -3.13 -m unittest discover -s unit_tests

@@ -5,6 +5,18 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.2 - 7/14/26 - Ron Lockwood
+#    Fixes #1441. Verify the flex.exe path exists before use, reporting an error instead of failing later.
+#
+#   Version 3.16.1 - 7/10/26 - Ron Lockwood
+#    Locate flex.exe via the shared Utils.getFlexExePath helper, which guards against an unset FIELDWORKSDIR environment variable (reports an error and returns None) instead of crashing.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -38,7 +50,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListW
 from PyQt6.QtCore import QCoreApplication
 import pygetwindow as gw
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import AllProjectNames
 
 import Mixpanel
@@ -54,7 +66,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -65,7 +77,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",
@@ -137,7 +149,7 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -154,9 +166,17 @@ def MainFunction(DB, report, modifyAllowed):
     mainWindow.show()
     app.exec()
 
-    # Get the Fieldworks folder path
-    fieldworksDir = os.getenv('FIELDWORKSDIR')
-    flexExe = os.path.join(fieldworksDir, 'flex.exe')
+    # Get the path to flex.exe (via the shared Utils helper). It reports an error and returns None if FIELDWORKSDIR isn't set, in which case we stop.
+    flexExe = Utils.getFlexExePath(report)
+
+    if not flexExe:
+        return
+
+    # Make sure the flex.exe path actually points at an existing file before we try to launch it.
+
+    if not os.path.isfile(flexExe):
+        report.Error(_translate("OpenFLExProjects", "Could not find the FLEx executable: {flexExe}.").format(flexExe=Utils.shortenPathForDisplay(flexExe)))
+        return
 
     if mainWindow.returnVal:
 

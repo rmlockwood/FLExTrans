@@ -1,51 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
-<context>
+<TS version="2.1" language="de" sourcelanguage="en">
+  <context>
     <name>FLExTransMenu</name>
     <message>
-        <location filename="../FLExTransMenu.py" line="70"/>
-        <source>Transfer rule file: {xferRulesFile} does not exist.</source>
-        <translation>Die Übertragungsregeldatei: {xferRulesFile} existiert nicht.</translation>
+      <location filename="../FLExTransMenu.py" line="101"/>
+      <source>Transfer rule file: {xferRulesFile} does not exist.</source>
+      <translation>Die Übertragungsregeldatei: {xferRulesFile} existiert nicht.</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="70"/>
-        <source>Not Found Error</source>
-        <translation>Nicht gefunden Fehler</translation>
+      <location filename="../FLExTransMenu.py" line="111"/>
+      <source>Not Found Error</source>
+      <translation>Nicht gefunden Fehler</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="93"/>
-        <source>{name} version {version}
+      <location filename="../FLExTransMenu.py" line="141"/>
+      <source>{name} version {version}
 
-software.sil.org/flextrans</source>
-        <translation>{name} Version {version}
+Build {build}, {build_date}</source>
+      <translation>{name} Version {version}
 
-software.sil.org/flextrans</translation>
+Build {build}, {build_date}</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="100"/>
-        <source>About FLExTrans</source>
-        <translation>Über FLExTrans</translation>
+      <location filename="../FLExTransMenu.py" line="148"/>
+      <source>About FLExTrans</source>
+      <translation>Über FLExTrans</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="100"/>
-        <source>Help</source>
-        <translation>Hilfe</translation>
+      <location filename="../FLExTransMenu.py" line="148"/>
+      <source>Help</source>
+      <translation>Hilfe</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="100"/>
-        <source>Settings</source>
-        <translation>Einstellungen</translation>
+      <location filename="../FLExTransMenu.py" line="148"/>
+      <source>Settings</source>
+      <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="100"/>
-        <source>Edit Transfer Rules</source>
-        <translation>Übertragungsregeln bearbeiten</translation>
+      <location filename="../FLExTransMenu.py" line="148"/>
+      <source>Edit Transfer Rules</source>
+      <translation>Übertragungsregeln bearbeiten</translation>
     </message>
     <message>
-        <location filename="../FLExTransMenu.py" line="100"/>
-        <source>About</source>
-        <translation>Über</translation>
+      <location filename="../FLExTransMenu.py" line="148"/>
+      <source>About</source>
+      <translation>Über</translation>
     </message>
-</context>
+    <message>
+      <location filename="../FLExTransMenu.py" line="111"/>
+      <source>XMLmind XML Editor not found at expected location: {xxe}</source>
+      <translation>XMLmind XML Editor nicht an erwarteter Stelle gefunden: {xxe}</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="121"/>
+      <source>Error occurred while trying to open transfer rules file: {e}</source>
+      <translation>Fehler aufgetreten beim Versuch, die Übertragungsregeldatei zu öffnen: {e}</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="121"/>
+      <source>Error</source>
+      <translation>Fehler</translation>
+    </message>
+  </context>
 </TS>

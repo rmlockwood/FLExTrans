@@ -1,14 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Define language codes
-set lang_codes=de es fr
+REM Load the translation language codes (LANG_CODES) from the generated file - the authoritative list is Dev\Lib\UILanguages.py
+call "%~dp0lang_codes.bat"
 
 REM Define directories to process
 set directories=TopLevel Modules Lib Lib\Windows
 
 REM Define excluded files
-set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py
+set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py RuleFileHistory.py OldRuleHistoryConversion.py
 
 REM Define target folder
 set destination="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
@@ -37,6 +37,10 @@ for %%D in (%directories%) do (
 			
 				pylupdate5 -verbose -noobsolete %%F -ts translations\!filename!_%%L.ts
 				lrelease translations\!filename!_%%L.ts -qm %destination%\translations\!filename!_%%L.qm
+				
+				if "%%L"=="fr" (
+					copy translations\!filename!_%%L.ts translations\!filename!.ts
+				)
 			)
         )
 

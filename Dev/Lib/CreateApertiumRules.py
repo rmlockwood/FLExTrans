@@ -5,6 +5,37 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, what gets generated, overwriting and code structure.
+#
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    The Rule Assistant's backup of the prior transfer rules now goes in Output\rule-file-history through RuleFileHistory instead of a .bak file beside the rules file.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.6 - 7/25/26 - Ron Lockwood
+#    Fixed Pylance warnings: two .reomve() typos, a malformed dict type annotation, and None-safety for XML attribute and element lookups.
+#
+#   Version 3.16.5 - 7/25/26 - Ron Lockwood
+#    Fixes #1454. Write a comment in every generated rule warning that manual edits may be overwritten by the Rule Assistant and suggesting the user rename the rule to avoid this.
+#
+#   Version 3.16.4 - 7/25/26 - Ron Lockwood
+#    Fixes #1455. Refuse to overwrite a hand-written rule: on overwrite, abort with an error if an existing same-named rule lacks the 'Rule Assistant Description:' marker; always write that marker.
+#
+#   Version 3.16.3 - 7/24/26 - Ron Lockwood
+#    Fixes #1456. Rule names and XML ids that collide now get a 'Copy' suffix (rules via the shared Utils.makeUniqueName; ids via '_Copy', '_Copy_2', ...) instead of a bare number.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/17/26 - Ron Lockwood
+#    Fixes #1118. Rename user-facing "disjoint feature set" to "split feature set" in the unexpected-value warning.
+#
+#   Version 3.16 - 6/12/26 - Ron Lockwood
+#    Support an optional third disjoint feature bucket with co-feature value
+#    "many" for Bantu noun class processing, in addition to "sg" and "pl".
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -45,12 +76,52 @@
 #   Version 3.9 - 9/11/23 - Ron Lockwood
 #    Initial version
 #
-#   Given an xml file defining the rules, create Apertium-style rules
+#   OVERVIEW (AI generated, then edited)
+#
+#   This is the back end of the Rule Assistant. The Rule Assistant's window lets the user build a rule by picking source words with their categories and features and saying what the target words
+#   should be, and saves that as a Rule Assistant XML file; this module turns that file into real Apertium transfer rules in the project's transfer rules file. The user never sees the rules being
+#   written, which is the point of the Rule Assistant: they describe the change in linguistic terms and the Apertium XML - the pattern, the clips, the categories, the attributes, and whatever macros
+#   and variables are needed to carry a feature from a source word to a target word - is generated for them.
+#
+#   THE TWO FILES
+#
+#   The Rule Assistant file (a FLExTransRule element per rule, holding Source and Target words with their features and affixes) is read-only input. The transfer rules file is both input and output:
+#   an existing one is loaded first, so that generated names don't collide with what is already there and so that the user's own hand-written rules survive, and the result is written back over it.
+#   Only the main transfer rules file is involved - the Rule Assistant never writes the interchunk or postchunk file of an advanced project.
+#
+#   WHAT GETS GENERATED
+#
+#   Besides the rule itself, a rule usually needs supporting definitions, and this module creates whatever is missing and reuses whatever isn't: a def-cat per part of speech, a def-attr per feature
+#   whose values a rule tests or sets, and, when a target form depends on a source feature in a way a plain clip can't express, a def-macro and a def-var to work it out. Two of those cases are worth
+#   knowing about:
+#    - A one-to-one feature correspondence (source gender to target gender, say) becomes an attribute macro mapping each source value to its target value - or nothing at all, when the values line up
+#      and the source can simply be clipped across.
+#    - A target lemma or affix that depends on several features at once becomes a multi-feature macro that walks the combinations. Split ("Bantu") noun class agreement, where one FLEx feature is
+#      really singular and plural classes kept apart, gets a hand-crafted macro of its own (MakeBantuMacro) built around a co-feature named number with sg, pl and optionally many values.
+#
+#   Every generated rule is stamped with two XML comments: one warning that a hand edit may be overwritten the next time the Rule Assistant runs, and one carrying the rule's description prefixed with
+#   the 'Rule Assistant Description:' marker. That marker is not decoration - it is how a later run tells its own rules apart from the user's.
+#
+#   OVERWRITING AND NAME COLLISIONS
+#
+#   When the Rule Assistant file asks to overwrite rules, every existing rule whose name could have come from a rule about to be regenerated is checked for that marker BEFORE anything is changed. If
+#   even one of them was written by hand, the whole write is abandoned (abortWrite) and the transfer file is left untouched, rather than silently destroying the user's work. Rules that are the Rule
+#   Assistant's own are removed and regenerated, and any macros and variables left with nothing calling them are trimmed away. When a name is in use and is not being overwritten, the new one gets a
+#   'Copy' suffix instead: ' - Copy', then ' - Copy (2)' for rule names, matching how FLEx renames a text, and '_Copy', then '_Copy_2' for XML ids, which can't contain spaces.
+#
+#   Before any of this, the prior version of the transfer rules file is copied into Output\rule-file-history with the tag before_RA_changes - the same folder the Live Rule Tester, Start Testbed, AI
+#   Rule Studio and Set Up Transfer Rule Categories all save into, so the whole history of a project's rules is one sorted listing.
+#
+#   CODE STRUCTURE
+#
+#   Nearly everything is the RuleGenerator class, whose docstring carries a step-by-step outline of how one rule is built; read that before reading the methods. The state the class accumulates -
+#   which categories, attributes, variables, lists, macros, rule names and XML ids already exist - is what lets it reuse a definition rather than create a near-duplicate, and it is built up both from
+#   the existing transfer file (ProcessExistingTransferFile) and as new things are created. CreateRules() at the bottom is the entry point the callers use: it parses the Rule Assistant file, saves
+#   the history copy, loads the existing transfer file, calls ProcessAssistantFile() to do the work, and writes the result unless the run was aborted to protect a hand-written rule.
+#
 
 import re
 import os
-import shutil
-import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
@@ -60,6 +131,7 @@ import dataclasses
 from PyQt6.QtCore import QCoreApplication
 
 import Utils
+import RuleFileHistory
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -149,8 +221,8 @@ class RuleGenerator:
         self.root: Optional[ET.Element] = None
 
         # All current <def-cat>s
-        # {name: [(lemma, tags), ...]}
-        self.definedCategories: dict[str, list[tuple[str, str]]] = {}
+        # {name: [(lemma, tags), ...]} where lemma (and in principle tags) may be None
+        self.definedCategories: dict[str, list[tuple[Optional[str], Optional[str]]]] = {}
 
         # All current <def-attr>s
         # {name: [tags, ...]}
@@ -179,6 +251,9 @@ class RuleGenerator:
         # The names of all current rules
         self.ruleNames: set[str] = set()
 
+        # Set True when we refuse to overwrite a hand-written rule, so the caller knows to skip writing the file (see ProcessAssistantFile and CreateRules).
+        self.abortWrite = False
+
         self.attributeMacros = {} # {((cat, label, affix), (cat, label, affix)): (macro_name, var_name)}
         self.lemmaMacros = {} # {(pos, [(cat, label, affix), ...]): (macro_name, var_name, pos_sequence)}
 
@@ -187,14 +262,16 @@ class RuleGenerator:
         self.usedIDs = set()
 
         # The <section-*> elements of the XML tree
-        self.sections: dict[str: ET.Element] = {}
+        self.sections: dict[str, ET.Element] = {}
 
         # Attributes for tracking split gender agreement
         self.BantuMacro: Optional[str] = None
         self.BantuVariable: Optional[str] = None
         self.BantuFeature: Optional[str] = None
         self.BantuValues: Optional[set[str]] = None
-        self.BantuParts: Optional[tuple[str, str]] = None
+        # The FLEx feature names for each disjoint bucket:
+        # (singular, plural) or (singular, plural, many)
+        self.BantuParts: Optional[tuple[str, ...]] = None
 
     def GetCategory(self, category: str, source: bool = True,
                     target: bool = True) -> set[str]:
@@ -253,6 +330,8 @@ class RuleGenerator:
     def GetSection(self, sectionName: str) -> ET.Element:
         '''Retrieve a section of the rule file, creating it if necessary.'''
 
+        assert self.root is not None, 'GetSection requires the XML tree to have been created or loaded.'
+
         # Check if we've looked it up before
         if sectionName in self.sections:
             return self.sections[sectionName]
@@ -290,32 +369,60 @@ class RuleGenerator:
         self.root = tree.getroot()
 
         for cat in self.root.findall('.//def-cat'):
+
             name = cat.get('n')
+
+            # Skip any malformed <def-cat> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
             items = [(i.get('lemma'), i.get('tags')) for i in cat.findall('./cat-item')]
             self.usedIDs.add(name)
             self.definedCategories[name] = items
 
             if len(items) == 2:
                 if not items[0][0] and not items[1][0]: # no lemmas
-                    ls = sorted([items[0][1], items[1][1]])
+                    ls = sorted([items[0][1] or '', items[1][1] or ''])
                     if ls[1] == ls[0] + '.*':
                         self.tagToCategoryName[ls[0]] = name
 
         for attr in self.root.findall('.//def-attr'):
+
             name = attr.get('n')
-            values = set([i.get('tags') for i in attr.findall('./attr-item')])
+
+            # Skip any malformed <def-attr> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
+            values = set([tags for i in attr.findall('./attr-item') if (tags := i.get('tags')) is not None])
             self.usedIDs.add(name)
             self.definedAttributes[name] = values
 
         for var in self.root.findall('.//def-var'):
+
             name = var.get('n')
+
+            # Skip any malformed <def-var> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
             val = var.get('v')
             self.usedIDs.add(name)
             self.variables[name] = val
 
         for lst in self.root.findall('.//def-list'):
+
             name = lst.get('n')
-            values = set([i.get('v') for i in lst.findall('./list-item')])
+
+            # Skip any malformed <def-list> that is missing its required name attribute.
+            if name is None:
+
+                continue
+
+            values = set([v for i in lst.findall('./list-item') if (v := i.get('v')) is not None])
             self.usedIDs.add(name)
             self.lists[name] = values
 
@@ -334,7 +441,13 @@ class RuleGenerator:
             '''
 
         for rule in self.root.findall('.//rule'):
-            self.ruleNames.add(rule.get('comment'))
+
+            comment = rule.get('comment')
+
+            # Only rules with a comment attribute have a name to track.
+            if comment is not None:
+
+                self.ruleNames.add(comment)
 
     def CreateTree(self) -> None:
         '''Generate a blank Apertium transfer XML tree.'''
@@ -354,13 +467,15 @@ class RuleGenerator:
             self.usedIDs.add(clean)
             return clean
 
-        n = 1
-        while True:
-            s = f'{clean}{n}'
-            if s not in self.usedIDs:
-                self.usedIDs.add(s)
-                return s
+        # The id is already taken, so append a 'Copy' suffix the same way FLEx renames texts, but with underscores and no parentheses since XML ids can't contain spaces: '_Copy', then '_Copy_2', '_Copy_3', ...
+        candidate = f'{clean}_Copy'
+        n = 2
+        while candidate in self.usedIDs:
+            candidate = f'{clean}_Copy_{n}'
             n += 1
+
+        self.usedIDs.add(candidate)
+        return candidate
 
     def AddCategories(self, root):
         '''Ensure that a <def-cat> exists for every part of speech in the
@@ -381,12 +496,12 @@ class RuleGenerator:
 
     def AddSingleAttribute(self, suggested_name: str, items: set[str],
                            comment: Optional[str] = None,
-                           reject: Optional[set[str]] = None) -> str:
+                           reject: Optional[list[set[str]]] = None) -> str:
         '''Return the ID of a <def-attr> containing `items`, creating it
         if necessary.
 
         An existing <def-attr> will be returned if it contains all of `items`
-        and does not contain all of `reject`, it will be returned.
+        and does not contain all of any set in `reject`.
 
         If a new <def-attr> is created, the ID will be
         `GetAvailableID(suggested_name)`.
@@ -396,7 +511,7 @@ class RuleGenerator:
 
         for name, values in self.definedAttributes.items():
             if items <= values:
-                if reject and reject <= values:
+                if reject and any(r and r <= values for r in reject):
                     continue
                 return name
 
@@ -410,7 +525,7 @@ class RuleGenerator:
         self.definedAttributes[aid] = items
         return aid
 
-    def GetAttributeValues(self, spec: FeatureSpec) -> set[tuple[str, str]]:
+    def GetAttributeValues(self, spec: FeatureSpec) -> set[str]:
         '''Retrieve the set of tags corresponding to `spec`
 
         This function is intended for use in generating <def-attr>s and
@@ -487,10 +602,10 @@ class RuleGenerator:
         value so that we can match it up with the tags for other categories.'''
 
         if spec.label == self.BantuFeature:
-            sg, pl = self.BantuParts
-            sgTags = self.GetTags(dataclasses.replace(spec, label=sg), source)
-            plTags = self.GetTags(dataclasses.replace(spec, label=pl), source)
-            return sgTags | plTags
+            tags = set()
+            for label in self.BantuParts or ():
+                tags |= self.GetTags(dataclasses.replace(spec, label=label), source)
+            return tags
 
         if source or spec.isSource:
             if spec.isAffix:
@@ -548,6 +663,7 @@ class RuleGenerator:
         # Check if we're dealing with Bantu noun class
         if srcSpec.category == 'n' and srcSpec.label == self.BantuFeature:
             bantu = True
+            assert self.BantuValues is not None, 'MakeBantuMacro sets BantuValues whenever BantuFeature is set.'
             src = set([(x, x) for x in self.BantuValues])
         else:
             bantu = False
@@ -655,6 +771,7 @@ class RuleGenerator:
             return MacroSpec(macid, varid, [srcSpec.category])
 
         if bantu:
+            assert self.BantuMacro is not None, 'MakeBantuMacro sets BantuMacro whenever BantuFeature is set.'
             macro.append(ET.Comment(_translate('CreateApertiumRules', 'Determine the appropriate noun class')))
             callmac = ET.SubElement(macro, 'call-macro', n=self.BantuMacro)
             ET.SubElement(callmac, 'with-param', pos='1')
@@ -671,6 +788,7 @@ class RuleGenerator:
 
                 eq = MakeWhenClause(choose, varid, FindTag(srcFeat))
                 if bantu:
+                    assert self.BantuVariable is not None, 'MakeBantuMacro sets BantuVariable whenever BantuFeature is set.'
                     ET.SubElement(eq, 'var', n=self.BantuVariable)
                 else:
                     ET.SubElement(eq, 'clip', pos='1', side='tl',
@@ -701,7 +819,7 @@ class RuleGenerator:
 
             for node in section:
 
-                if node.tag == defTag and re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n')):
+                if node.tag == defTag and re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n', '')):
                     
                     drop.append(node)
 
@@ -715,9 +833,11 @@ class RuleGenerator:
 
                 section.remove(node)
 
-    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str, delete_old: bool) -> None:
+    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str, delete_old: bool,
+                       manyFeature: Optional[str] = None) -> None:
         '''Create the macro which extracts the Bantu noun class from an
-        input noun.'''
+        input noun. If `manyFeature` is given, also handle a third "many"
+        noun class bucket in addition to singular and plural.'''
 
         if delete_old:
             # Remove the old hand-crafted Bantu macros and associated variables
@@ -727,7 +847,7 @@ class RuleGenerator:
         self.BantuVariable = self.GetAvailableID('v_'+BANTU_NOUN_CLASS_FROM_N)
 
         # Manually create separate attributes so we don't accidentally reuse
-        # some existing attribute that contains both.
+        # some existing attribute that contains more than one bucket.
 
         sgAffixValues = self.GetAttributeValues(
             FeatureSpec('n', singularFeature, isAffix=True))
@@ -737,15 +857,28 @@ class RuleGenerator:
             FeatureSpec('n', singularFeature, isAffix=False))
         plStemValues = self.GetAttributeValues(
             FeatureSpec('n', pluralFeature, isAffix=False))
+        manyAffixValues = set()
+        manyStemValues = set()
+        if manyFeature:
+            manyAffixValues = self.GetAttributeValues(
+                FeatureSpec('n', manyFeature, isAffix=True))
+            manyStemValues = self.GetAttributeValues(
+                FeatureSpec('n', manyFeature, isAffix=False))
 
         sgAffix = self.AddSingleAttribute('a_n_singular_class_affixes',
-                                        sgAffixValues, reject=plAffixValues)
+                                        sgAffixValues, reject=[plAffixValues, manyAffixValues])
         plAffix = self.AddSingleAttribute('a_n_plural_class_affixes',
-                                        plAffixValues, reject=sgAffixValues)
+                                        plAffixValues, reject=[sgAffixValues, manyAffixValues])
         sgStem = self.AddSingleAttribute('a_n_singular_class_feature',
-                                        sgStemValues, reject=plStemValues)
+                                        sgStemValues, reject=[plStemValues, manyStemValues])
         plStem = self.AddSingleAttribute('a_n_plural_class_feature',
-                                        plStemValues, reject=sgStemValues)
+                                        plStemValues, reject=[sgStemValues, manyStemValues])
+        manyAffix, manyStem = '', ''
+        if manyFeature:
+            manyAffix = self.AddSingleAttribute('a_n_many_class_affixes',
+                                            manyAffixValues, reject=[sgAffixValues, plAffixValues])
+            manyStem = self.AddSingleAttribute('a_n_many_class_feature',
+                                            manyStemValues, reject=[sgStemValues, plStemValues])
 
         # Create the macro.
         self.AddVariable(self.BantuVariable)
@@ -758,6 +891,55 @@ class RuleGenerator:
         ET.SubElement(let, 'lit', v='')
 
         chooseNumber = ET.SubElement(macro, 'choose')
+
+        # If there's a "many" bucket, check for it first, since the singular
+        # check below relies on the absence of a plural affix, which would
+        # also be true for a noun with a many affix.
+        whenMany = None
+        if manyFeature:
+            whenMany = ET.SubElement(chooseNumber, 'when')
+            testMany = ET.SubElement(whenMany, 'test')
+            outerAndMany = ET.SubElement(testMany, 'and')
+            outerAndMany.append(ET.Comment(_translate('CreateApertiumRules', 'We should check for the appropriate many noun class if both of the following are true:')))
+
+            # First condition: the target noun has an actual many noun class
+            # value, i.e. one is present and it isn't the marker saying the
+            # noun takes no many agreement.
+            firstAndMany = ET.SubElement(outerAndMany, 'and')
+            firstAndMany.append(ET.Comment(_translate('CreateApertiumRules', 'The target noun has a many noun class feature.')))
+            notManyFeat = ET.SubElement(firstAndMany, 'not')
+            equalManyFeat = ET.SubElement(notManyFeat, 'equal')
+            ET.SubElement(equalManyFeat, 'clip', pos='1', part=manyStem, side='tl')
+            ET.SubElement(equalManyFeat, 'lit', v='')
+            firstAndMany.append(ET.Comment(_translate('CreateApertiumRules', "And the target noun takes many agreement (not marked as such).")))
+            notManyStem = ET.SubElement(firstAndMany, 'not')
+            equalManyStem = ET.SubElement(notManyStem, 'equal')
+            ET.SubElement(equalManyStem, 'clip', pos='1', part=manyStem, side='tl')
+            ET.SubElement(equalManyStem, 'lit-tag', v='NAmany')
+
+            # Second condition: one of the following two situations holds.
+            orMany = ET.SubElement(outerAndMany, 'or')
+            orMany.append(ET.Comment(_translate('CreateApertiumRules', 'And at least one of the following is true:')))
+
+            # Situation 1: the source noun has a many affix attached.
+            orMany.append(ET.Comment(_translate('CreateApertiumRules', 'The source noun has a many affix attached.')))
+            notManyAffix = ET.SubElement(orMany, 'not')
+            equalManyAffix = ET.SubElement(notManyAffix, 'equal')
+            ET.SubElement(equalManyAffix, 'clip', pos='1', part=manyAffix, side='tl')
+            ET.SubElement(equalManyAffix, 'lit', v='')
+
+            # Situation 2: the target noun takes neither singular nor plural
+            # agreement, so the many class is the only one left.
+            andManyNA = ET.SubElement(orMany, 'and')
+            andManyNA.append(ET.Comment(_translate('CreateApertiumRules', "The target noun doesn't take singular agreement (marked as such).")))
+            equalManyNAsg = ET.SubElement(andManyNA, 'equal')
+            ET.SubElement(equalManyNAsg, 'clip', pos='1', part=sgStem, side='tl')
+            ET.SubElement(equalManyNAsg, 'lit-tag', v='NAsg')
+            andManyNA.append(ET.Comment(_translate('CreateApertiumRules', "And the target noun doesn't take plural agreement (marked as such).")))
+            equalManyNApl = ET.SubElement(andManyNA, 'equal')
+            ET.SubElement(equalManyNApl, 'clip', pos='1', part=plStem, side='tl')
+            ET.SubElement(equalManyNApl, 'lit-tag', v='NApl')
+
         whenSg = ET.SubElement(chooseNumber, 'when')
         testSg = ET.SubElement(whenSg, 'test')
         andSg = ET.SubElement(testSg, 'and')
@@ -776,6 +958,14 @@ class RuleGenerator:
         equalSg3 = ET.SubElement(notSg, 'equal')
         ET.SubElement(equalSg3, 'clip', pos='1', part=sgStem, side='tl')
         ET.SubElement(equalSg3, 'lit-tag', v='NAsg')
+        if manyFeature:
+            # If the source noun has a many affix and we got past the when
+            # above, the target noun doesn't take many agreement, so we want
+            # the plural noun class rather than the singular one.
+            andSg.append(ET.Comment(_translate('CreateApertiumRules', "And the source noun doesn't have a many affix attached. (If it does, we'll use the plural noun class.)")))
+            equalSgMany = ET.SubElement(andSg, 'equal')
+            ET.SubElement(equalSgMany, 'clip', pos='1', part=manyAffix, side='tl')
+            ET.SubElement(equalSgMany, 'lit', v='')
 
         otherwisePl = ET.SubElement(chooseNumber, 'otherwise')
         otherwisePl.append(ET.Comment(_translate('CreateApertiumRules', 'Check for the appropriate plural noun class.')))
@@ -785,6 +975,10 @@ class RuleGenerator:
 
         trees = [(sgTags, sgStem, whenSg, 'sg'),
                 (plTags, plStem, otherwisePl, 'pl')]
+
+        if manyFeature and whenMany is not None:
+            manyTags = self.GetTags(FeatureSpec('n', manyFeature, isAffix=False))
+            trees.append((manyTags, manyStem, whenMany, 'many'))
 
         self.BantuValues = set()
 
@@ -856,7 +1050,7 @@ class RuleGenerator:
         sourceList = sources
         if all(s.ranking for s in sources):
             ranked = True
-            sourceList = sorted(sources, key=lambda s: s.ranking)
+            sourceList = sorted(sources, key=lambda s: s.ranking or 0)
 
         # Get a list of all possible output affixes or lemma for each value
         # of each feature.
@@ -1045,18 +1239,44 @@ class RuleGenerator:
 
         for i, rule in enumerate(self.GetSection('section-rules')):
             oldName = rule.get('comment')
+            # Skip anything that isn't a named <rule> (e.g. an XML comment node kept when the existing file was loaded), which has no 'comment' attribute.
+            if oldName is None:
+                continue
             if not oldName.startswith(name):
                 continue
             suffix = oldName[len(name):]
             if pattern.match(suffix):
                 yield i, rule
 
+    def IsRuleAssistantRule(self, ruleEl: ET.Element) -> bool:
+        '''Return True if `ruleEl` was generated by the Rule Assistant, i.e. one of its child XML comments carries the (localized) 'Rule Assistant Description:' marker.
+        Hand-written rules have no such marker, so this is what lets us overwrite our own rules while refusing to clobber a rule the user wrote by hand.'''
+
+        currentMarker = _translate('CreateApertiumRules', 'Rule Assistant Description: {desc}').format(desc='').strip()
+
+        for node in ruleEl:
+
+            # Comment nodes have ET.Comment as their tag rather than a tag-name string; regular child elements (pattern, action, ...) never carry the marker.
+            if node.tag is not ET.Comment:
+
+                continue
+
+            text = node.text or ''
+
+            if currentMarker in text:
+
+                return True
+            
+        return False
+
     def ProcessRule(self, rule: ET.Element, skip: Optional[set[str]] = None) -> bool:
         '''Convert a Rule Assistant <Rule> node `rule` to an Apertium <rule>
         node and append it to the current XML tree. Return whether a rule
         was created. Skip any words whose id field is in `skip`.'''
 
-        ruleName = rule.get('name')
+        assert self.categoryAttribute is not None, 'ProcessAssistantFile sets categoryAttribute before any rules are processed.'
+
+        ruleName = rule.get('name', '')
 
         # Collect and validate the source words along with any features
         # that will affect the pattern
@@ -1098,14 +1318,9 @@ class RuleGenerator:
             ruleIndex = i
             break
 
-        # Add numbers to this rule name, if needed
+        # If the rule name is already in use, give it a unique name by appending ' - Copy' (then ' - Copy (2)', ...) using the shared algorithm, matching how FLEx names inserted texts.
         if ruleName in self.ruleNames:
-            index = 1
-            while True:
-                altName = f'{ruleName} ({index})'
-                if altName not in self.ruleNames:
-                    break
-                index += 1
+            altName = Utils.makeUniqueName(ruleName, self.ruleNames)
             self.report.Info(_translate('CreateApertiumRules', 'Rule name "{ruleName}" already exists in the rule file. Renaming added rule to "{altName}".').format(ruleName=ruleName, altName=altName))
             ruleName = altName
 
@@ -1114,8 +1329,18 @@ class RuleGenerator:
         ruleSection.insert(ruleIndex, ruleEl)
         self.ruleNames.add(ruleName)
 
-        for desc in rule.findall('.//Description'):
-            ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'Rule Assistant Description: {desc}').format(desc=desc.text)))
+        # Warn anyone editing the rule file by hand that the Rule Assistant may overwrite this rule when it regenerates. Renaming the rule takes it out of the Rule Assistant's reach (issue #1454).
+        ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'If you manually edit this rule, the Rule Assistant may overwrite your changes. Please rename the rule to avoid this.')))
+
+        # Always write a 'Rule Assistant Description:' comment (even when the rule has no description text) so the rule is recognizable as Rule-Assistant-generated. This marker is what lets a
+        # later overwrite replace this rule while refusing to clobber a hand-written rule of the same name (see IsRuleAssistantRule). Emit one comment per Description, or a single bare marker if there are none.
+        descriptions = rule.findall('.//Description')
+
+        if descriptions:
+            for desc in descriptions:
+                ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'Rule Assistant Description: {desc}').format(desc=desc.text or '')))
+        else:
+            ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'Rule Assistant Description: {desc}').format(desc='')))
 
         # Create the <pattern>
         wordCats = {}
@@ -1223,19 +1448,17 @@ class RuleGenerator:
             lemmaTags = []
             lemmaLocs = {}
             for feature in word.findall('./Features/Feature'):
-                label = feature.get('label')
+                label = feature.get('label', '')
                 match = feature.get('match')
                 value = feature.get('value')
                 tgtDefault = feature.get('unmarked_default')
-                ranking = feature.get('ranking')
-                if ranking:
-                    ranking = int(ranking)
+                rankingStr = feature.get('ranking')
+                ranking = int(rankingStr) if rankingStr else None
                 if not value:
                     apos, isAffix, srcDefault, isSource = featureSources.get(
                         (label, match), (pos, False, None, False))
                 else:
                     apos, isAffix, srcDefault, isSource = pos, False, None, False
-                srcCat = wordCats.get(apos)
                 if apos is None:
                     if value:
                         srcCat = cat
@@ -1243,6 +1466,8 @@ class RuleGenerator:
                         self.report.Error(_translate('CreateApertiumRules', 'Missing source for feature {label} on inserted word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
                         self.GetSection('section-rules').remove(ruleEl)
                         return False
+                else:
+                    srcCat = wordCats[apos]
                 lemmaTags.append(FeatureSpec(srcCat, label, isAffix,
                                              value=value, ranking=ranking,
                                              default=(tgtDefault or srcDefault),
@@ -1253,7 +1478,7 @@ class RuleGenerator:
 
             if pos is None and not shouldUseLemmaMacro:
                 self.report.Error(_translate('CreateApertiumRules', 'Unable to generate lemma for inserted word {wid} in rule {ruleName}.').format(wid=wid, ruleName=ruleName))
-                self.GetSection('section-rules').reomve(ruleEl)
+                self.GetSection('section-rules').remove(ruleEl)
                 return False
 
             # Capitalize the word based on its position in the rule.
@@ -1279,6 +1504,7 @@ class RuleGenerator:
                                   pos=lemmaLocs[srcCat])
                 ET.SubElement(lemCase, 'var', n=spec.varid)
             else:
+                assert pos is not None, 'The check above guarantees pos is set when we are not using a lemma macro.'
                 ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
 
             # Insert the part-of-speech tag.
@@ -1297,13 +1523,12 @@ class RuleGenerator:
                 prefix = (affix.get('type', 'suffix') == 'prefix')
                 features = []
                 for feature in affix.findall('.//Feature'):
-                    label = feature.get('label')
+                    label = feature.get('label', '')
                     match = feature.get('match')
                     value = feature.get('value')
                     default = feature.get('unmarked_default')
-                    ranking = feature.get('ranking')
-                    if ranking:
-                        ranking = int(ranking)
+                    rankingStr = feature.get('ranking')
+                    ranking = int(rankingStr) if rankingStr else None
                     features.append((label, match, value, default, ranking))
                 if not features:
                     continue
@@ -1325,14 +1550,15 @@ class RuleGenerator:
                     for label, match, value, tgtDefault, ranking in affix:
                         apos, isAffix, srcDefault, isSource = featureSources.get(
                             (label, match), (pos, True, None, False))
-                        srcCat = wordCats.get(apos)
                         if apos is None:
                             if value:
                                 srcCat = cat
                             else:
                                 self.report.Error(_translate('CreateApertiumRules', 'Unable to find source for feature {label} on word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
-                                self.GetSection('section-rules').reomve(ruleEl)
+                                self.GetSection('section-rules').remove(ruleEl)
                                 return False
+                        else:
+                            srcCat = wordCats[apos]
                         default = tgtDefault or srcDefault
                         specList.append(FeatureSpec(srcCat, label,
                                                     isAffix, value=value,
@@ -1377,7 +1603,7 @@ class RuleGenerator:
                     (label, match), (pos, True, None, False))
                 if apos is None:
                     self.report.Error(_translate('CreateApertiumRules', 'Unable to find source for feature {label} on word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
-                    self.GetSection('section-rules').reomve(ruleEl)
+                    self.GetSection('section-rules').remove(ruleEl)
                     return False
                 default = tgtDefault or srcDefault
 
@@ -1416,6 +1642,8 @@ class RuleGenerator:
         '''Delete macros and variables which have become unused as a result of
         deleting old rules.'''
 
+        assert self.root is not None, 'TrimUnused requires the XML tree to have been created or loaded.'
+
         names = [('section-def-macros', 'def-macro', 'call-macro'),
                  ('section-def-vars', 'def-var', 'var')]
         for sectionName, defTag, callTag in names:
@@ -1428,7 +1656,7 @@ class RuleGenerator:
                     comments.append(node)
                     continue                                             
                 # We may have a Bantu macro or variable already added, leave it 
-                if node.tag != defTag or node.attrib.get('n') in used or re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n')):
+                if node.tag != defTag or node.attrib.get('n') in used or re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n', '')):
                     comments = []
                     continue
                 drop += comments
@@ -1442,7 +1670,7 @@ class RuleGenerator:
                 section.remove(node)
 
     def ProcessAssistantFile(self, fileName: str,
-                             ruleNumber: Optional[int] = None) -> None:
+                             ruleNumber: Optional[int] = None) -> int:
         '''Process the Rule Assistant file `fileName` and generate Apertium
         transfer rules. If `ruleNumber` is specified, only generate the rule
         at that index.'''
@@ -1455,6 +1683,8 @@ class RuleGenerator:
         if self.root is None:
             self.CreateTree()
 
+        assert self.root is not None, 'CreateTree just set self.root if it was not already loaded from an existing transfer file.'
+
         self.AddCategories(root)
 
         self.categoryAttribute = 'a_gram_cat'
@@ -1465,6 +1695,8 @@ class RuleGenerator:
                 'a_gram_cat', set(self.tagToCategoryName.keys()),
                 comment='Part-of-speech tags used in the rules')
         catElem = self.root.find(f".//def-attr[@n='{self.categoryAttribute}']")
+        assert catElem is not None, 'The category def-attr always exists: it was either loaded from the existing file or just created by AddSingleAttribute.'
+
         for tag in self.tagToCategoryName:
             if tag not in self.definedAttributes[self.categoryAttribute]:
                 ET.SubElement(catElem, 'attr-item', tags=tag)
@@ -1473,9 +1705,31 @@ class RuleGenerator:
         # See if we need to delete old stuff
         delete_old = (root.get('overwrite_rules', 'no') == 'yes')
 
+        # When overwriting, make sure we won't clobber a hand-written rule before we change anything. Every existing rule that shares a name with a rule we're about to (re)generate must
+        # itself be Rule-Assistant-generated (carry the marker comment). If any such rule was written by hand, report an error and abort the whole write so nothing is lost. Nothing has been
+        # written to disk yet, so setting abortWrite and returning here leaves the original transfer file untouched (the caller skips WriteTransferFile).
+        if delete_old:
+
+            for index, rule in enumerate(root.findall('.//FLExTransRule')):
+
+                # Respect a requested single-rule generation, matching the main loop below.
+                if ruleNumber is not None and index != ruleNumber:
+
+                    continue
+
+                name = rule.get('name', '')
+
+                for i, existing in self.FindOldRules(name, True):
+
+                    if not self.IsRuleAssistantRule(existing):
+                        
+                        self.report.Error(_translate('CreateApertiumRules', 'The transfer rule file already contains a rule named "{ruleName}" that was not created by the Rule Assistant. To avoid overwriting a hand-written rule, no rules were written. Please rename or remove that rule, or rename your Rule Assistant rule.').format(ruleName=existing.get('comment')))
+                        self.abortWrite = True
+                        return 0
+
         # Perhaps in future we can generalize this to work with whatever
-        # disjoint features the UI gives us, but for now we're hardcoding this to expect a co-feature named "number" 
-        # and we expect number to have values "sg" and "pl".
+        # disjoint features the UI gives us, but for now we're hardcoding this to expect a co-feature named "number"
+        # and we expect number to have values "sg" and "pl", plus an optional "many" value.
 
         # First check if we have a disjoint feature set. At least one DisjointFeatureSet under DisjointFeatureSets
         disjointFeatureSets = root.find('.//DisjointFeatureSet')
@@ -1491,7 +1745,7 @@ class RuleGenerator:
                 return 0
             else:
                 merged = bantuPair.get('disjoint_name')
-                sg, pl = None, None
+                sg, pl, many = None, None, None
 
                 for node in bantuPair.findall('.//DisjointFeatureValuePairing'):
 
@@ -1504,15 +1758,19 @@ class RuleGenerator:
                     elif val == 'pl':
 
                         pl = node.get('flex_feature_name')
+
+                    elif val == 'many':
+
+                        many = node.get('flex_feature_name')
                     else:
                         # Unexpected value found. Give a warning and ignore it.
-                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a disjoint feature set. Expected only "sg" or "pl". This value will be ignored.').format(val=val))
+                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a split feature set. Expected only "sg", "pl" or "many". This value will be ignored.').format(val=val))
 
                 if merged and sg and pl:
 
                     self.BantuFeature = merged
-                    self.BantuParts = (sg, pl)
-                    self.MakeBantuMacro(sg, pl, delete_old)
+                    self.BantuParts = (sg, pl, many) if many else (sg, pl)
+                    self.MakeBantuMacro(sg, pl, delete_old, manyFeature=many)
                 else:
                     self.report.Error(_translate('CreateApertiumRules', 'Please ensure that the co-feature "number" has both "sg" and "pl" values.'))
                     return 0
@@ -1525,12 +1783,19 @@ class RuleGenerator:
                 continue
 
             if delete_old:
-                name = rule.get('name')
+                name = rule.get('name', '')
                 remove = [r for i, r in self.FindOldRules(name, True)]
                 section = self.GetSection('section-rules')
+
                 for r in remove:
-                    self.ruleNames.remove(r.get('comment'))
+
+                    # FindOldRules only yields rules that have a comment attribute, but check anyway to keep the types straight.
+                    if (comment := r.get('comment')) is not None:
+
+                        self.ruleNames.remove(comment)
+
                     section.remove(r)
+
                 self.TrimUnused()
 
             perm = rule.get('create_permutations', 'no')
@@ -1557,12 +1822,14 @@ class RuleGenerator:
                 if self.ProcessRule(rule):
                     ruleCount += 1
 
-        self.report.Info(_translate('CreateApertiumRules', 'Added {ruleCount} rule(s) from {fileName}.').format(ruleCount=ruleCount, fileName=fileName))
+        self.report.Info(_translate('CreateApertiumRules', 'Added {ruleCount} rule(s) from {fileName}.').format(ruleCount=ruleCount, fileName=Utils.shortenPathForDisplay(fileName)))
 
         return ruleCount
 
     def WriteTransferFile(self, fileName: str) -> None:
         '''Write the generated transfer rules XML to `fileName`.'''
+
+        assert self.root is not None, 'WriteTransferFile requires the XML tree to have been created or loaded.'
 
         # The transfer DTD doesn't allow sections to be empty,
         # so simply don't include them in that case.
@@ -1592,13 +1859,26 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
 
     if os.path.exists(transferRulePath):
 
-        datetimeStr = re.sub(':', '-', datetime.datetime.now().isoformat(sep=' ', timespec='seconds'))
-        backupPath = f'{transferRulePath}.{datetimeStr}.bak'
-        report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=backupPath))
-        shutil.copy(transferRulePath, backupPath)
+        # Save the prior version of the rules in the one rule file history folder that the Live Rule Tester, Start Testbed and the other rule-changing tools all save into, rather than as a .bak
+        # file beside the rules file. Only the main rules file is saved: the Rule Assistant never writes the interchunk or postchunk file, so a copy of those would say nothing about this change.
+        backupPath, errorMsg = RuleFileHistory.saveHistoryCopy(transferRulePath, RuleFileHistory.TAG_BEFORE_RA_CHANGES)
+
+        if backupPath:
+
+            report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=Utils.shortenPathForDisplay(backupPath)))
+
+        elif errorMsg:
+
+            report.Warning(_translate('CreateApertiumRules', 'The prior version of the transfer rules could not be saved. The error was: {errorText}').format(errorText=errorMsg))
+
         generator.ProcessExistingTransferFile(transferRulePath)
 
     ruleCount = generator.ProcessAssistantFile(ruleAssistantFile, ruleNumber)
+
+    # Don't touch the transfer file if we aborted to protect a hand-written rule; the original file, and the copy just saved in the rule file history folder, stay exactly as they were.
+    if generator.abortWrite:
+
+        return ruleCount
 
     generator.WriteTransferFile(transferRulePath)
 

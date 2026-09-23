@@ -5,6 +5,18 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.2 - 7/10/26 - Ron Lockwood
+#    Check the TreeTran result file with os.path.isfile() instead of opening and immediately closing it in a bare try/except.
+#
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -65,12 +77,14 @@
 #   used by the Apertium transfer engine.
 #
 
+import os
+
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
 
 import InterlinData
 from SIL.LCModel import * # type: ignore
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import ReadConfig
@@ -85,7 +99,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['ExtractSourceText'], translators)
@@ -96,7 +110,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'Text
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractSourceText", "Extract Source Text"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB: False,
         FTM_Synopsis   : _translate("ExtractSourceText", "Exports an Analyzed FLEx text into Apertium format."),
         FTM_Help : '',
@@ -264,12 +278,12 @@ def doExtractSourceText(DB, configMap, report):
     if not fullPathTextOutputFile:
         return None
     
-    abbrPath = Utils.getPathRelativeToWorkProjectsDir(fullPathTextOutputFile)
+    abbrPath = Utils.shortenPathForDisplay(fullPathTextOutputFile)
 
     try:
         f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
-        report.Error(_translate("ExtractSourceText", "There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.").format(path=fullPathTextOutputFile))
+        report.Error(_translate("ExtractSourceText", "There is a problem with the Analyzed Text Output File path: {path}. Please check the configuration file setting.").format(path=Utils.shortenPathForDisplay(fullPathTextOutputFile)))
         return None
     
     # Find the desired text
@@ -314,11 +328,10 @@ def doExtractSourceText(DB, configMap, report):
         
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
-        try:
-            f_treeTranResultFile = open(treeTranResultFile)
-            f_treeTranResultFile.close()
-        except:
-            report.Error(_translate("ExtractSourceText", "There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.").format(path=treeTranResultFile))
+
+        if not treeTranResultFile or not os.path.isfile(treeTranResultFile):
+
+            report.Error(_translate("ExtractSourceText", "There is a problem with the Tree Tran Result File path: {path}. Please check the configuration file setting.").format(path=Utils.shortenPathForDisplay(treeTranResultFile)))
             return None
         
         # get the list of guids from the TreeTran results file
@@ -328,7 +341,7 @@ def doExtractSourceText(DB, configMap, report):
             return None # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
-        logInfo = Utils.importGoodParsesLog()
+        logInfo = InterlinData.importGoodParsesLog()
             
     # Process the text
 
@@ -483,7 +496,7 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + ['ExtractSourceText'], 
                            translators, loadBase=True)

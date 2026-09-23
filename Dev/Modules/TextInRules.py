@@ -5,6 +5,15 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.17.1 - 8/28/26 - Ron Lockwood
+#    Replaced the description at the top with a short code description block.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -35,11 +44,17 @@
 #   Version 3.10.5 - 7/6/24 - Ron Lockwood
 #    Initial version.
 #
-#   Define and test a set of search and replace operations to be used to fix up the text that comes out of 
-#   Paratext. Regular expression can be used if desired.
+#   OVERVIEW (AI generated)
+#
+#   This module lets the user define and test the search and replace rules that fix up the text coming out of Paratext. A rule is a search string paired with a replacement string, optionally
+#   treated as a regular expression. The rules are stored in the XML file named by the Text In Rules File setting, and ImportFromParatext is what actually applies them during an import.
+#
+#   This file is only the wrapper FlexTools sees. It reads the configuration file, logs the module start for analytics, and opens TextInOutUtils.TextInOutRulesWindow with textIn=True and the
+#   Text In Rules File setting - the same window Text Out Rules uses, with the other setting. The rules format, the search and replace logic, the window itself and cluster project support all live
+#   in Lib/TextInOutUtils.py, and the code description at the top of that file covers them.
 #
 
-from flextoolslib import *                                          
+from flextoolslib import * # type: ignore
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
@@ -57,7 +72,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -68,7 +83,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TextInRules", "Text In Rules"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextInRules", 'Define and test a set of Paratext-import search and replace operations.') ,
         FTM_Help       : "",
@@ -87,7 +102,7 @@ def MainFunction(DB, report, modify=True):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)

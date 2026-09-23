@@ -5,6 +5,27 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.4 - 8/20/26 - Ron Lockwood
+#    Fixes #1511. Correct fixes for lint that kept HC data from being written. Check for HCparses Str Map against None instead of just an if on it.
+#
+#   Version 3.16.3 - 7/2/26 - Ron Lockwood
+#    Guard against a None anaObj before setting after-punctuation on the previous word.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/28/26 - Ron Lockwood
+#    Handle one project (two writing systems) mode - use the source project as the target.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
+#   Version 3.15.4 - 4/15/26 - Ron Lockwood
+#    Fixes #1304. Set capitalization based on the original complex form.
+#
 #   Version 3.15.3 - 3/10/26 - Ron Lockwood
 #    Regular expression syntax fixes that showed up with Python 3.13.
 #
@@ -123,7 +144,7 @@ from SIL.LCModel import ( # type: ignore
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString          # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import *  # type: ignore                                             
 from flexlibs import FLExProject
 
 from PyQt6.QtWidgets import QApplication
@@ -143,7 +164,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -155,7 +176,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.15.3",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -234,16 +255,16 @@ class ANAInfo(object):
     def getAnalysis(self):
         return self.Analysis
     def getAnalysisPrefixes(self): # returns [] if no prefix
-        return re.search(r'(.*)\s*<',self.Analysis).group(1).split()
+        return re.search(r'(.*)\s*<',self.Analysis).group(1).split() # type: ignore
     def getAnalysisRoot(self):
-        return re.search(r'< .+ (.+) >',self.Analysis).group(1)
+        return re.search(r'< .+ (.+) >',self.Analysis).group(1) # type: ignore
     # Apply the capitalization code algoritm to possibly capitalize the root string.
     def getCapitalizedAnalysisRoot(self):
-        return self.capitalizeString(re.search(r'< .+ (.+) >',self.Analysis).group(1))
+        return self.capitalizeString(re.search(r'< .+ (.+) >',self.Analysis).group(1)) # type: ignore
     def getAnalysisRootPOS(self):
-        return re.search(r'< (.+) .+ >',self.Analysis).group(1)
+        return re.search(r'< (.+) .+ >',self.Analysis).group(1) # type: ignore
     def getAnalysisSuffixes(self):
-        return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
+        return re.search(r'>\s*(.*)',self.Analysis).group(1).split() # type: ignore
     def getBeforePunc(self):
         return self.BeforePunc
     def getCapitalization(self, foldForANA=False):
@@ -315,7 +336,7 @@ class ANAInfo(object):
     def getFirstCompForHCoutput(self):
         return self._firstComponentForHC
     def getSenseNum(self):
-        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
+        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match  # type: ignore
     def removeUnderscores(self, myStr):
         return re.sub(r'_', ' ', myStr)
     def removePeriods(self, myStr):
@@ -377,8 +398,8 @@ class ANAInfo(object):
         
 class ConversionData():
     
-    def __init__(self, errorList, configMap, report, complexFormTypeMap):
-        
+    def __init__(self, errorList, configMap, report, complexFormTypeMap, DB):
+
         self.errorList = errorList
         self.configMap = configMap
         self.report = report
@@ -389,11 +410,19 @@ class ConversionData():
         self.complexFormTypeMap = complexFormTypeMap
         self.haveError = False
 
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+        # In one project (two writing systems) mode the target data lives in the source project, so there is no separate target project to open.
+        oneProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) == 'n'
+
+        if oneProjectMode:
+
+            # Use the source project as the target. The cache file is named after the source project in this mode.
+            targetProj = DB.ProjectName()
+        else:
+            targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
         if not targetProj:
             return
-            
+
         self.targetProj = targetProj
         
         # Get lexicon files folder setting, we use this for the place to put the cache file.
@@ -434,27 +463,35 @@ class ConversionData():
                 else:
                     return
                 
-        TargetDB = FLExProject()
-    
-        try:
-            TargetDB.OpenProject(targetProj, True)
-        except: #FDA_DatabaseError, e:
-            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
-            raise
-    
+        if oneProjectMode:
+
+            # The target data is in the source project - reuse the already-open source DB.
+            TargetDB = DB
+        else:
+            TargetDB = FLExProject()
+
+            try:
+                TargetDB.OpenProject(targetProj, True)
+            except: #FDA_DatabaseError, e:
+                report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
+                raise
+
         self.project = TargetDB
-        
+
         # Read the db and initialize the complex map and inflect variant map
         self.readDatabaseValues()
-        
+
         # Convert these maps to Ana objects
         self.convertValuesToAnas()
-        
+
         if cacheData == 'y':
-            
+
             self.saveToCache()
-            
-        TargetDB.CloseProject()
+
+        # Only close the target project if we opened a separate one (not in one project mode).
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
             
     def cacheExists(self):
         
@@ -482,9 +519,7 @@ class ConversionData():
             
             self.rootVariantANAandFeatlistMap[root] = variantANAandFeatlist
     
-    # Output the components of a complex entry
-    # Assumptions: no sub-senses, clitics will be attached on the component that takes the inflection
-    # This is a recursive function
+    # Output the components of a complex entry. Assumptions: no sub-senses, clitics will be attached on the component that takes the inflection. This is a recursive function.
     def gatherComponents(self, root, complexFormTypeMap, complexMap, compList):
         
         # Get the entry that has components
@@ -537,14 +572,11 @@ class ConversionData():
                                     
                                     self.gatherComponents(headWord, complexFormTypeMap, complexMap, compList)
                                 else:
-                                    # See if we are at the beginning or the end, depending on where the
-                                    # inflection goes, write out all the stuff with inflection
+                                    # See if we are at the beginning or the end, depending on where the inflection goes, write out all the stuff with inflection
                                     if (inflectionOnFirst and firstRoot) or (inflectionOnLast and lexIndex==entryRef.ComponentLexemesRS.Count-1):
                                         
                                         # Build the an ANA Info object
-                                        currANAInfo = ANAInfo([proGloss], 
-                                                              [enclGloss], 
-                                                              gramCatAbbrev, headWord + '.' + senseNum)
+                                        currANAInfo = ANAInfo([proGloss], [enclGloss],  gramCatAbbrev, headWord + '.' + senseNum)
                                             
                                     # Write out the bare bones root in the analysis part
                                     else:
@@ -572,9 +604,7 @@ class ConversionData():
             # If there is not a homograph # at the end, make it 1
             headWord = Utils.add_one(headWord)
                 
-            # Create an ANA Info object with the POS being _variant_
-            # (We are intentionally not adding the sense number.)
-            # no prefixes or suffixes
+            # Create an ANA Info object with the POS being _variant_ (We are intentionally not adding the sense number.) No prefixes or suffixes.
             myAnaInfo = ANAInfo()
             myAnaInfo.setAnalysisByPart([], VARIANT_STR, headWord, [])
             
@@ -603,8 +633,7 @@ class ConversionData():
     # This function will handle when an entry points to a component that is a sense not a lexeme
     def getAnaDataFromEntry(self, compEntry):
         
-        # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned 
-        # somehow from the complex form.
+        # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned somehow from the complex form.
         senseNum = '1'
         
         # The thing the component lexeme points to could be a sense rather than an entry
@@ -691,28 +720,35 @@ class ConversionData():
     
     def isCacheOutOfDate(self):
         
-        # Build a DateTime object with the FLEx DB last modified date
-        #flexDate = self.project.GetDateLastModified()
-        #dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
-        
         # Get the date of target affixes file
         tgtAffixFile = ReadConfig.getConfigVal(self.configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, self.report, giveError=False) # don't give error yet
         
+        if not tgtAffixFile:
+            return True
+        
         try:
             affTime = os.path.getmtime(tgtAffixFile)
+
         except OSError:
+
             return True
+        
         affixFileDateTime = datetime.fromtimestamp(affTime)
         
         # Get the date of the cache file
         try:
             mtime = os.path.getmtime(self.getCacheFilePath())
+
         except OSError:
+
             mtime = 0
+
         cacheFileDateTime = datetime.fromtimestamp(mtime)
         
         if affixFileDateTime > cacheFileDateTime: # The affix file is newer
+
             return True 
+        
         else: # cache file is newer
             return False
 
@@ -811,8 +847,7 @@ class ConversionData():
             # Set the headword value and the homograph #
             headWord = ITsString(e.HeadWord).Text
             
-            # If there is not a homograph # at the end, make it 1
-            # Also make it lower case. All ANA "roots" are lower case so we need to match them that way
+            # If there is not a homograph # at the end, make it 1. Also make it lower case. All ANA "roots" are lower case so we need to match them that way
             headWord = Utils.add_one(headWord).lower()
                                     
             # Store all the complex entries by creating a map from headword to the complex entry
@@ -820,14 +855,11 @@ class ConversionData():
                 
                 for entryRef in e.EntryRefsOS:
                     
-                    if entryRef.ComponentLexemesRS and \
-                       entryRef.ComponentLexemesRS.Count > 1 and \
-                       entryRef.RefType == 1: # 1=complex form, 0=variant # At least 2 components
+                    if entryRef.ComponentLexemesRS and entryRef.ComponentLexemesRS.Count > 1 and  entryRef.RefType == 1: # 1=complex form, 0=variant # At least 2 components
                         
                         if entryRef.ComplexEntryTypesRS:
                             
-                            # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
-                            # just see if one of them is Phrasal Verb
+                            # There could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative). Just see if one of them is Phrasal Verb
                             for complexType in entryRef.ComplexEntryTypesRS:
                                 
                                 if Utils.as_string(complexType.Name) in self.complexFormTypeMap:
@@ -843,8 +875,7 @@ class ConversionData():
                     
                     if entryRef.RefType == 0: # we have a variant
                         
-                        # Collect any inflection features that are assigned to the special
-                        # variant types called Irregularly Inflected Form
+                        # Collect any inflection features that are assigned to the special variant types called Irregularly Inflected Form
                         for varType in entryRef.VariantEntryTypesRS:
                             
                             if varType.ClassName == "LexEntryInflType":
@@ -920,13 +951,9 @@ class ConversionData():
             f.write(featGrpName+'\n')
             f.write(abbValue+'\n')
             
-# Check if the tags (prefixes & suffixes) match the features of one of
-# the main entry's variants. If so replace the main entry headword with
-# the variant and remove the tags that matched.
-# E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a 
-# variant type called 1Sg which has features [per: 1ST, num: SG] and the
-# Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
-# this: '< _variant_ am1 >'
+# Check if the tags (prefixes & suffixes) match the features of one of the main entry's variants. If so replace the main entry headword with the variant and remove the tags that matched.
+# E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a variant type called 1Sg which has features [per: 1ST, num: SG] and the Ana entry is '< cop be1.1 >  1ST SG', 
+# we want a new Ana entry that looks like this: '< _variant_ am1 >'
 def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthesis):
 
     oldCap = myAnaInfo.getCapitalization()
@@ -934,6 +961,7 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
     numPfxs = len(pfxs)
     sfxs = myAnaInfo.getAnalysisSuffixes()
     tags = pfxs+sfxs
+    numFeatures = 0
     
     # loop through the irr. infl. form variant list for this main entry
     variantANAandFeatlist = rootVariantANAandFeatlistMap[myAnaInfo.getPreDotRoot()]
@@ -978,9 +1006,8 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
         # Reset the Ana info
         if doHermitCrabSynthesis:
 
-            # For HermitCrab we put out the sense # (TODO: we need to probably do this for STAMP as well)
-            # A variant can be a variant of an entry with multiple senses. The senses could have different categories
-            # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
+            # For HermitCrab we put out the sense # (TODO: we need to probably do this for STAMP as well). A variant can be a variant of an entry with multiple senses. The senses could have 
+            # different categories. How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
             myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         else:
             # Now we are adding the sense #
@@ -1003,7 +1030,7 @@ def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCr
         originalLexicalUnitStr = myAnaInfo.getOriginalLexicalUnitString()
 
         # see if the orignal LU string for is already in our map
-        if originalLexicalUnitStr not in HCparseStrMap:
+        if HCparseStrMap is not None and originalLexicalUnitStr not in HCparseStrMap:
 
             # Get the string that we would write to the parses file
             HCparseStr = myAnaInfo.getHCparseStr()
@@ -1022,7 +1049,7 @@ def writeComponents(componentList, fOutput, theAnaInfo, rootVariantANAandFeatlis
         originalLexicalUnitStr = theAnaInfo.getOriginalLexicalUnitString()
 
         # see if the orignal LU string for this complex form is already in our map
-        if originalLexicalUnitStr not in HCparseStrMap:
+        if HCparseStrMap is not None and originalLexicalUnitStr not in HCparseStrMap:
 
             for i, listAnaInfo in enumerate(componentList):
                 
@@ -1077,15 +1104,20 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
             newAna = ANAInfo()
             
             # add affixation to the ANA object. Affixes on the myAnaInfo are proclitics and enclitics if they exist. Put text prefixes after proclitics and suffixes before enclitics.
-            newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
-                                        myAnaInfo.getAnalysisRootPOS(), 
-                                        myAnaInfo.getCapitalizedAnalysisRoot(),
-                                        textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
-
+            newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(), myAnaInfo.getAnalysisRootPOS(),  myAnaInfo.getCapitalizedAnalysisRoot(),
+                                     textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
+            
             newCompANAlist.append(newAna)
+            currentAna = newAna
         else:
             newCompANAlist.append(myAnaInfo)
+            currentAna = myAnaInfo
             
+        # Set the capitalization of the first ANA object to be the same as the original complex form ANA object
+        # This is because a complex form that is normally lower case might be capitalized in the text.
+        if firstRoot:
+            currentAna.setCapitalization(textAnaInfo.getCapitalization())
+
         firstRoot = False
         
     return newCompANAlist
@@ -1102,17 +1134,21 @@ def getContextWords(wrdCnt, wordToks):
 
     # Determine the context words around the problem word
     if wrdCnt-2 >= 0:
+
         prev2words = wordToks[wrdCnt-2] + ' ' + wordToks[wrdCnt-1]
     else:
         if wrdCnt-1 >= 0:
+
             prev2words = wordToks[wrdCnt-1]
         else:
             prev2words = ''
 
     if wrdCnt+2 < len(wordToks):
+
         foll2words = wordToks[wrdCnt+1] + ' ' + wordToks[wrdCnt+2]
     else:
         if wrdCnt+1 < len(wordToks):
+
             foll2words = wordToks[wrdCnt+1]
         else:
             foll2words = ''
@@ -1143,7 +1179,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         fResults = open(outName, encoding='utf-8')
 
     except:
-        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the {runApert} module?').format(fileName=outName, runApert=RunApertDocs[FTM_Name]), 2))
+        errorList.append((_translate("ConvertTextToSTAMPformat", 'The file: {fileName} was not found. Did you run the {runApert} module?').format(fileName=Utils.shortenPathForDisplay(outName), runApert=RunApertDocs[FTM_Name]), 2))
         return errorList, wordAnaInfoList
     
     resultsFileStr = fResults.read()
@@ -1173,6 +1209,7 @@ def convertIt(pfxName, outName, report, sentPunct):
             
         # Special handling of first word (no post punctuation gets added)
         if cnt == 0:    
+
             # Process the lexical unit string and get an ANA object back
             anaObj, morphs = processLU(lu, affixMap)
 
@@ -1183,10 +1220,13 @@ def convertIt(pfxName, outName, report, sentPunct):
             anaObj.setBeforePunc(punc)
 
         else:
-            # Determine what part of the punctuation goes at the end of the last word 
-            # and which goes to the beginning of the current word.
+            # Determine what part of the punctuation goes at the end of the last word and which goes to the beginning of the current word.
             pre, post = calculatePrePostPunctuation(punc)
-            anaObj.setAfterPunc(post)
+
+            # 'post' belongs to the previous word (anaObj isn't reassigned to the current word until below). Guard in case the previous word never produced a valid ANA object.
+            if anaObj is not None:
+
+                anaObj.setAfterPunc(post)
 
             # Process the lexical unit string and get an ANA object back
             anaObj, morphs = processLU(lu, affixMap)
@@ -1216,11 +1256,7 @@ def calculatePrePostPunctuation(puncStr):
         post = puncList[0]
         pre = " ".join(puncList[1:])
 
-        # If post punctuation is non-empty add a trailing space. Otherwise we will get two words jammed together by STAMP
-        # It doesn't put a space between words when \n is used.
-        # DELETE We also don't want the space when there was a newline at the beg. we want it to butt against the word.
-        # Also we don't want a space after a newline, that would indent the next line by a space
-        # if post and post[0] != '\n' and post[-1] != '\n':
+        # If post punctuation is non-empty add a trailing space. Otherwise we will get two words jammed together by STAMP. It doesn't put a space between words when \n is used.
         if post and post[-1] != '\n':
             post += ' '
     
@@ -1268,11 +1304,8 @@ def processLU(lexUnitStr, affixMap):
         # circumfix
         elif affixMap[morphs[i]] == 'circumfix':
             
-            # Circumfixes are made of two parts, a prefix part and a suffix part
-            # when we encounter a new circumfix, give it a unique new gloss and
-            # add it to the prefix list. When we see one that we've seen before,
-            # it must be the suffix part. Give it a unique new gloss and add it to
-            # the suffix list.
+            # Circumfixes are made of two parts, a prefix part and a suffix part when we encounter a new circumfix, give it a unique new gloss and add it to the prefix list. When we see one that 
+            # we've seen before, it must be the suffix part. Give it a unique new gloss and add it to the suffix list.
             if morphs[i] not in circumfixList:
                 
                 prefixList.append(morphs[i]+Utils.CIRCUMFIX_TAG_A)
@@ -1280,8 +1313,7 @@ def processLU(lexUnitStr, affixMap):
             else:
                 suffixList.append(morphs[i]+Utils.CIRCUMFIX_TAG_B)
                 
-        # suffix. Treat everything else as a suffix (suffix, enclitic, suffixing interfix).
-        # The other types are not supported, but will end up here.
+        # suffix. Treat everything else as a suffix (suffix, enclitic, suffixing interfix). The other types are not supported, but will end up here.
         else:
             suffixList.append(morphs[i])
 
@@ -1289,8 +1321,7 @@ def processLU(lexUnitStr, affixMap):
         
         return wordAnaInfo, morphs
 
-    # Create an ANA Info object
-    # We have the root (morphs[0]) and the POS of the root (morphs[1])
+    # Create an ANA Info object. We have the root (morphs[0]) and the POS of the root (morphs[1])
     wordAnaInfo = ANAInfo(prefixList, suffixList, morphs[1], morphs[0], infixList)
     wordAnaInfo.setOriginalLexicalUnitString(lexUnitStr)
 
@@ -1324,13 +1355,17 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     complexFormTypeMap = {}
     
     # Create a map that tracks which complex form types are for first or for last 
-    for cmplxType in complexForms1st:
+    if complexForms1st:
+
+        for cmplxType in complexForms1st:
+            
+            complexFormTypeMap[cmplxType] = 0  # 0 - inflection on first root
         
-        complexFormTypeMap[cmplxType] = 0  # 0 - inflection on first root
-        
-    for cmplxType in complexForms2nd:
-        
-        complexFormTypeMap[cmplxType] = 1  # 1 - inflection on last root
+    if complexForms2nd:
+
+        for cmplxType in complexForms2nd:
+            
+            complexFormTypeMap[cmplxType] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA list
     errList, anaInfoList = convertIt(affixFile, transferResultsFile, report, sentPunct)
@@ -1340,9 +1375,8 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         errorList.extend(errList)
         return errorList
 
-    # Get the complex forms and inflectional variants
-    # This may be slow if the data is not in the cache
-    convData = ConversionData(errorList, configMap, report, complexFormTypeMap)
+    # Get the complex forms and inflectional variants This may be slow if the data is not in the cache.
+    convData = ConversionData(errorList, configMap, report, complexFormTypeMap, DB)
     
     if convData.haveError:
         
@@ -1351,10 +1385,8 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # retrieve the data that got initialized in the Conversion data class
     (rootComponANAlistMap, rootVariantANAandFeatlistMap) = convData.getData()
         
-    # Now we are going to process the ANA list, breaking down each complex form
-    # into separate ANA records if needed. This is needed for instance if a source word
-    # maps to multiple words in the target language. The multi-word ANA record needs to
-    # be broken down into multiple ANA records
+    # Now we are going to process the ANA list, breaking down each complex form into separate ANA records if needed. This is needed for instance if a source word
+    # maps to multiple words in the target language. The multi-word ANA record needs to be broken down into multiple ANA records.
          
     try:         
         # Open the output file
@@ -1364,7 +1396,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
             fOutput.write('\n') # always need a blank line at the top
 
         else:
-            fOutput = open(HCmasterFile, 'w', encoding='utf-8')
+            fOutput = open(HCmasterFile, 'w', encoding='utf-8')  # type: ignore
     except:
 
         errorList.append((_translate("ConvertTextToSTAMPformat", "Error writing the output file."), 2))
@@ -1376,8 +1408,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # Loop through all the ANA pieces
     for anaInfo in anaInfoList:
         
-        # If an ANA root matches a complex form, rewrite the ana file with complex forms 
-        # broken down into components
+        # If an ANA root matches a complex form, rewrite the ana file with complex forms broken down into components
         root = anaInfo.getPreDotRoot()
         
         if root in rootComponANAlistMap:
@@ -1394,10 +1425,10 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         count += 1
     
     if not doHermitCrabSynthesis:
-        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(targetANAFile)), 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(targetANAFile)), 0))
         errorList.append((_translate("ConvertTextToSTAMPformat", "{count} records exported in ANA format.").format(count=str(count)), 0))
     else:
-        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCmasterFile)), 0))
+        errorList.append((_translate("ConvertTextToSTAMPformat", "Converted target words put in the file: {filePath}").format(filePath=Utils.shortenPathForDisplay(HCmasterFile)), 0))
         errorList.append((_translate("ConvertTextToSTAMPformat", "{count} records exported in HermitCrab format.").format(count=str(count)), 0))
 
     fOutput.close()
@@ -1415,7 +1446,7 @@ def convertToSynthesizerFormat(DB, configMap, report):
         affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
         
     # Verify that the affix file exist.
-    if not os.path.exists(affixFile):
+    if affixFile and not os.path.exists(affixFile):
         
         report.Error(_translate("ConvertTextToSTAMPformat", "The {modname} module must be run before this module. The file: ...\\{filePath} does not exist.").format(
             modname=catalogDocs[FTM_Name], filePath=os.path.relpath(affixFile, FTPaths.WORK_PROJECTS_DIR)))
@@ -1449,13 +1480,14 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
+
     if not configMap:
         return
 
@@ -1463,8 +1495,6 @@ def MainFunction(DB, report, modifyAllowed):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     convertToSynthesizerFormat(DB, configMap, report)
-
-
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

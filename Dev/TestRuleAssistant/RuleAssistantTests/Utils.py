@@ -19,3 +19,21 @@ def getPossibleFeatureValues(DB, featureName):
 
 def getCategoryHierarchy(DB):
     return {}
+
+# Test stub: the real Utils.shortenPathForDisplay trims a path for user messages; the tests only need it to return the path unchanged.
+def shortenPathForDisplay(path):
+    return path
+
+# Test stub mirroring Utils.makeUniqueName: return title unchanged if it's free, otherwise append ' - Copy', then ' - Copy (2)', ' - Copy (3)', ... until unused. No translation in the stub.
+def makeUniqueName(title, existingNames):
+    if title in existingNames:
+        title += ' - Copy'
+        if title in existingNames:
+            i = 2
+            while True:
+                tryName = title + ' (' + str(i) + ')'
+                if tryName not in existingNames:
+                    title = tryName
+                    break
+                i += 1
+    return title

@@ -5,6 +5,15 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.2 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -57,7 +66,7 @@ import xml.etree.ElementTree as ET
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication
 
-from flextoolslib import *                                          
+from flextoolslib import * # type: ignore
 
 import TextInOutUtils
 import Mixpanel
@@ -72,7 +81,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -83,7 +92,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("FixUpSynthText", "Fix Up Synthesis Text"),
-        FTM_Version    : "3.15.2",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
@@ -103,7 +112,7 @@ def MainFunction(DB, report, modify=True):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -125,7 +134,7 @@ def MainFunction(DB, report, modify=True):
     # Check if the file exists.
     if os.path.exists(textOutRulesFile) == False:
 
-        report.Error(_translate("FixUpSynthText", "The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.").format(textOutRulesFile=textOutRulesFile))
+        report.Error(_translate("FixUpSynthText", "The rules file: {textOutRulesFile} could not be found. Use the Text Out Rules module to define the rules.").format(textOutRulesFile=Utils.shortenPathForDisplay(textOutRulesFile)))
         return
     
     # Get the path to the synthesis file.
@@ -138,7 +147,7 @@ def MainFunction(DB, report, modify=True):
     try:
         tree = ET.parse(textOutRulesFile)
     except:
-        report.Error(_translate("FixUpSynthText", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
+        report.Error(_translate("FixUpSynthText", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=Utils.shortenPathForDisplay(textOutRulesFile)))
         return 
 
     try:
@@ -146,7 +155,7 @@ def MainFunction(DB, report, modify=True):
         
             lines = f.readlines()
     except:
-        report.Error(_translate("FixUpSynthText", "The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.").format(synthFile=synthFile))
+        report.Error(_translate("FixUpSynthText", "The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.").format(synthFile=Utils.shortenPathForDisplay(synthFile)))
         return
     
     newLines = []

@@ -5,6 +5,21 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.3 - 7/14/26 - Ron Lockwood
+#    Fixes #1441. Verify the flex.exe path and each backup file exist before use, reporting an error instead of failing later.
+#
+#   Version 3.16.2 - 7/10/26 - Ron Lockwood
+#    Locate flex.exe via the shared Utils.getFlexExePath helper, which guards against an unset FIELDWORKSDIR environment variable (reports an error and returns None) instead of crashing.
+#
+#   Version 3.16.1 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -41,7 +56,7 @@ from PyQt6 import QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
 from PyQt6.QtCore import QCoreApplication
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 
 import Mixpanel
 import FTPaths
@@ -56,7 +71,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -67,7 +82,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
-        FTM_Version    : "3.15.1",
+        FTM_Version    : "3.17",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       : "",
@@ -202,7 +217,7 @@ def mainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
@@ -218,16 +233,23 @@ def mainFunction(DB, report, modifyAllowed):
     defaultFolder = FTPaths.SAMPLE_PROJECTS_DIR
 
     if not Path(defaultFolder).is_dir():
-        report.Error(_translate("RestoreFLExProjects", "Could not find the sample projects folder: {defaultFolder}.").format(defaultFolder=defaultFolder))
+        report.Error(_translate("RestoreFLExProjects", "Could not find the sample projects folder: {defaultFolder}.").format(defaultFolder=Utils.shortenPathForDisplay(defaultFolder)))
         return
 
     mainWindow = MainWindow(defaultFolder)
     mainWindow.show()
     app.exec()
 
-    # Get the Fieldworks folder path
-    fieldworksDir = os.getenv('FIELDWORKSDIR')
-    flexExe = os.path.join(fieldworksDir, 'flex.exe')
+    # Get the path to flex.exe (via the shared Utils helper). It reports an error and returns None if FIELDWORKSDIR isn't set, in which case we stop.
+    flexExe = Utils.getFlexExePath(report)
+
+    if not flexExe:
+        return
+
+    # Make sure the flex.exe path actually points at an existing file before we try to launch it.
+    if not os.path.isfile(flexExe):
+        report.Error(_translate("RestoreFLExProjects", "Could not find the FLEx executable: {flexExe}.").format(flexExe=Utils.shortenPathForDisplay(flexExe)))
+        return
 
     if mainWindow.returnVal:
 
@@ -244,6 +266,12 @@ def mainFunction(DB, report, modifyAllowed):
                 continue
 
             backupPath = os.path.join(mainWindow.selectedFolder, backupName)  # Append backupName to the selected folder path
+
+            # Make sure the backup file still exists before handing it to FLEx to restore.
+            if not os.path.isfile(backupPath):
+                report.Error(_translate("RestoreFLExProjects", "Could not find the backup file: {backupPath}. Skipping.").format(backupPath=Utils.shortenPathForDisplay(backupPath)))
+                continue
+
             process = Popen([flexExe, '-restore', backupPath], creationflags=DETACHED_PROCESS)
 
             secs = 0

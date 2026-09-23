@@ -5,6 +5,18 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.2 - 6/30/26 - Ron Lockwood
+#    Fixes #1397. Shortened file paths shown in user messages with Utils.shortenPathForDisplay().
+#
+#   Version 3.16.1 - 6/24/26 - Ron Lockwood
+#    One project mode: reuse the source project as the target instead of opening a separate target project.
+#
+#   Version 3.16 - 4/30/26 - Ron Lockwood
+#    Bump to version 3.16.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -70,7 +82,7 @@ from PyQt6.QtWidgets import QApplication
 
 from SIL.LCModel import * # type: ignore
 
-from flextoolslib import *
+from flextoolslib import * # type: ignore
 from flexlibs import FLExProject
 
 import Mixpanel
@@ -86,7 +98,7 @@ translators = []
 app = QApplication.instance()
 
 if app is None:
-    app = QApplication([])
+    app = QApplication(['FLExTrans'])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -97,7 +109,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
-        FTM_Version    : "3.15.1",        
+        FTM_Version    : "3.17",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",
@@ -150,18 +162,28 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         error_list.append((_translate("CatalogTargetAffixes", "Problem reading the configuration file for the property: {property}").format(property=ReadConfig.TARGET_MORPHNAMES), 2))
         return error_list
     
-    TargetDB = FLExProject()
+    # In One project mode there is no separate target project: the affixes to catalog are in the same project, so reuse the
+    # source DB. The data read here (affix glosses and morpheme types) is analysis-writing-system data, so the target vernacular
+    # writing system is not involved. In normal Two project mode, open the configured target project as usual.
+    twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
 
-    try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-        if not targetProj:
-            error_list.append((_translate("CatalogTargetAffixes", "Problem accessing the target project."), 2))
-            return error_list
-        TargetDB.OpenProject(targetProj, True)
-    except: 
-        error_list.append((_translate("CatalogTargetAffixes", "Problem opening the target project."), 2))
-        raise
+    if twoProjectMode == 'n':
+
+        TargetDB = DB
+    else:
+
+        TargetDB = FLExProject()
+
+        try:
+            # Open the target database
+            targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+            if not targetProj:
+                error_list.append((_translate("CatalogTargetAffixes", "Problem accessing the target project."), 2))
+                return error_list
+            TargetDB.OpenProject(targetProj, True)
+        except:
+            error_list.append((_translate("CatalogTargetAffixes", "Problem opening the target project."), 2))
+            raise
     
     # Allow the affix file to not be in the temp folder if a slash is present
     myPath = filePath
@@ -170,12 +192,20 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
         error_list.append((_translate("CatalogTargetAffixes", "Configuration file problem with {property}.").format(property=ReadConfig.CACHE_DATA), 2))
-        TargetDB.CloseProject()
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return error_list
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_affix_file_out_of_date(TargetDB, myPath) == False:
-        TargetDB.CloseProject()
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         error_list.append((_translate("CatalogTargetAffixes", "Affix list is up to date."), 0))
         return error_list
     
@@ -183,9 +213,12 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     try:
         f_out = open(myPath, 'w', encoding='utf-8') 
     except IOError as e:
-        TargetDB.CloseProject()
-        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=myPath), 2))# 0=info,1=warn.,2=error
-        TargetDB.CloseProject()
+        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=Utils.shortenPathForDisplay(myPath)), 2))# 0=info,1=warn.,2=error
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return error_list
     
     glossAndTypeList = []
@@ -262,9 +295,12 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                 glossAndTypeList.extend(myGlossAndTypes)
                     
     seen = set()
-    
-    TargetDB.CloseProject()
-    
+
+    # In One project mode TargetDB is the same object as the source DB, so don't close it here.
+    if TargetDB is not DB:
+
+        TargetDB.CloseProject()
+
     # Sort by type and then by gloss
     for tupType, tupGloss in sorted(glossAndTypeList):
 
@@ -277,7 +313,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         else:
             error_list.append((_translate("CatalogTargetAffixes", "Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.").format(gloss=re.sub("_", ".", tupGloss)), 1))
 
-    error_list.append((_translate("CatalogTargetAffixes", "Catalog created in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(filePath)), 0))
+    error_list.append((_translate("CatalogTargetAffixes", "Catalog created in the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(filePath)), 0))
     error_list.append((_translate("CatalogTargetAffixes", "{count} affixes/clitics exported to the catalog.").format(count=str(count)), 0))
 
     return error_list
@@ -288,7 +324,7 @@ def MainFunction(DB, report, modifyAllowed):
     app = QApplication.instance()
 
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
 
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)

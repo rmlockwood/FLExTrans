@@ -5,6 +5,31 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17.2 - 9/2/26 - Ron Lockwood
+#    Added the code description block at the top with an overview, how a value comes back and code structure.
+#
+#   Version 3.17.1 - 9/2/26 - Ron Lockwood
+#    Added getTransferRuleFiles(): the configured transfer rules files that exist, in phase order, so callers can handle advanced transfer without repeating the three setting reads.
+#
+#   Version 3.17 - 8/26/26 - Ron Lockwood
+#    Bumped version.
+#
+#   Version 3.16.4 - 7/8/26 - Ron Lockwood
+#    Fixes #1392. Added the ApplyTextOutRulesInTestbed setting that controls whether Text Out rules are applied to the synthesis before the testbed extracts results.
+#
+#   Version 3.16.3 - 7/3/26 - Ron Lockwood
+#    Settings for the Work on Rules with AI module: provider, model, consent, include-project-names, and prompt logging. Removed the unused AIRulesApiKey setting (keys live in the OS
+#    credential vault, never in a settings file).
+#
+#   Version 3.16.2 - 6/24/26 - Ron Lockwood
+#    Added TwoProjectMode and TargetWritingSystem settings for one-project, two-writing-system mode.
+#
+#   Version 3.16.1 - 6/22/26 - Ron Lockwood
+#    Use with statements for file handling in writeConfigValue.
+#
+#   Version 3.16 - 6/22/26 - Ron Lockwood
+#    Fixes #1376. Added the Lowercase/Uppercase pairs for special letters synthesis setting.
+#
 #   Version 3.15.1 - 3/6/26 - Ron Lockwood
 #    Upgraded to PyQt6 and Python 3.13.
 #
@@ -60,7 +85,41 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   Functions for reading a configuration file
+#   OVERVIEW (AI generated, then edited)
+#
+#   Every FLExTrans module gets its settings from here. The settings live in one plain text file, FlexTrans.config, which sits in the Config folder of the work project the user is currently on. That
+#   folder is found from FTPaths.CONFIG_PATH - the path of the flextools.ini file that lives beside it - so the settings always follow whichever work project FlexTools is pointed at. The file is a
+#   flat list of SettingName=value lines with no sections and no quoting, which is why this module is small: read the file into a dictionary, hand values out of that dictionary, and write one line
+#   back when a module changes a setting.
+#
+#   THE SETTING NAMES
+#
+#   The block of uppercase constants below is the list of every setting FLExTrans knows about, each one tying the name used in the code to the name written in the file. Nothing else in FLExTrans
+#   should spell a setting name out as a literal string - a module reads a setting by passing one of these constants to getConfigVal() - so a rename only has to happen in one place here. Keep the
+#   block in alphabetical order by variable name. Adding a setting here is only half the job: the Settings tool rewrites the whole config file from its own list of settings when the user saves, so
+#   a setting it doesn't know about is dropped from the file the next time they press OK there.
+#
+#   HOW A VALUE COMES BACK
+#
+#   getConfigVal() does two things beyond a plain dictionary lookup, and both are decided by the setting's name rather than by any declaration:
+#    - A setting whose name contains File or Folder is treated as a path, and a relative one is made absolute against the work project folder (WORK_DIR), or against basePath when the caller passes
+#      one. FLExTrans ships with relative paths so that a work project folder can be copied or renamed and still work.
+#    - A setting listed in PROPERTIES_THAT_ARE_LISTS comes back as a list of strings when its value has a comma in it, and as a plain string when it doesn't. That is why a one-item list has to be
+#      written with a trailing comma in the file, and why a new multi-valued setting must be added to that list or its commas will be read as part of one long value.
+#
+#   A missing setting is reported through report.Error() and comes back as None, so a caller checks for None rather than catching anything. giveError=False turns that message off for a setting that
+#   is genuinely optional - the two advanced transfer rules files, for instance, which an ordinary project leaves empty. Values are normalized to decomposed (NFD) characters as they are read,
+#   because that is how FLEx stores its strings, so a setting holding a vernacular word compares equal to what comes out of the database.
+#
+#   CODE STRUCTURE
+#
+#   openConfigFile() is the one place that knows where the file is. readConfig() opens it and hands it to getConfigMap(), which parses the lines into the dictionary that every module then passes
+#   around as configMap. getConfigVal() reads one setting out of that dictionary, configValIsList() checks that a setting the caller needs a list from really gave one, and getTransferRuleFiles()
+#   answers the common question of which transfer rules files this project actually has - the main one plus the interchunk and postchunk files that only an advanced (three phase) project sets.
+#   writeConfigValue() is the only writer: it rewrites the file line by line with the one setting changed, adding it at the end when createIfMissing is set.
+#
+#   This module is deliberately import-light - FTPaths and Qt's translate, nothing from FLEx or flextoolslib - because nearly everything in FLExTrans imports it.
+#
 
 import re
 import os
@@ -71,9 +130,16 @@ from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
+AI_RULES_CONSENT = 'AIRulesConsentToSendData'
+AI_RULES_CONSENT_ASKED = 'AIRulesConsentQuestionAsked'
+AI_RULES_INCLUDE_PROJECT_NAMES = 'AIRulesIncludeProjectNames'
+AI_RULES_LOG_PROMPTS = 'AIRulesLogPrompts'
+AI_RULES_MODEL = 'AIRulesModel'
+AI_RULES_PROVIDER = 'AIRulesProvider'
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
 ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
 ALT_PARATEXT_FOLDER = 'AlternateParatextFolder'
+APPLY_TEXT_OUT_RULES_IN_TESTBED = 'ApplyTextOutRulesInTestbed'
 BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
 BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
@@ -90,6 +156,7 @@ LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
 LOG_STATISTICS = 'LogStatistics'
 LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
 LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
+LOWERCASE_UPPERCASE_PAIRS = 'LowercaseUppercasePairsForSpecialLetters'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
@@ -118,6 +185,7 @@ TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TARGET_WRITING_SYSTEM = 'TargetWritingSystem'
 TARGET_XAMPLE_CUSTOM_ENTRY_FIELD = 'TargetXampleCustomEntryField'
 TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD = 'TargetXampleCustomAllomorphField'
 TESTBED_FILE = 'TestbedFile'
@@ -130,6 +198,7 @@ TRANSFER_RULES_FILE2 = 'TransferRulesFile2'
 TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
+TWO_PROJECT_MODE = 'TwoProjectMode'
 
 # DM: ADDING NEW CONFIGS FOR GENSTC
 GENSTC_ANALYZED_GLOSS_TEXT_FILE = 'AnalyzedTextOutputFileForGloss'
@@ -178,9 +247,6 @@ from PyQt6.QtCore import QCoreApplication
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
-def getInterfaceLangCode():
-    return 'de'
-
 def openConfigFile(report, info):
     
     try:
@@ -199,43 +265,57 @@ def openConfigFile(report, info):
 
 def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
     
-    f_handle = openConfigFile(report, 'r')
+    if settingName is None or settingValue is None:
+
+        if report is not None:
+            
+            report.Error(_translate("ReadConfig", 'Error writing to the file: "{file}". Setting name and value must not be empty.').format(file=CONFIG_FILE))
+        
+        return False
     
+    f_handle = openConfigFile(report, 'r')
+
     if f_handle is None:
         return False
 
-    myLines = f_handle.readlines()
-    f_handle.close()
-    
+    # Read in all the existing lines.
+    with f_handle:
+
+        myLines = f_handle.readlines()
+
     f_outHandle = openConfigFile(report, 'w')
-    
-    found = False
-    
-    for line in myLines:
 
-        # If we find a match at the beg. of the line, change the setting
-        if re.match(settingName+'=', line):
-            
-            f_outHandle.write(f'{settingName}={settingValue}\n')
-            found = True
-        else:
-            f_outHandle.write(line)
-    
-    if not found:
-        
-        if createIfMissing:
- 
-            f_outHandle.write(f'{settingName}={settingValue}\n') 
+    if f_outHandle is None:
+        return False
 
-        else:
-            if report is not None:
-                
-                report.Error(_translate("ReadConfig", 'Setting: "{setting}" not found in the configuration file.').format(setting=settingName))
-            
-            f_outHandle.close()
-            return False
-            
-    f_outHandle.close()
+    # Rewrite the file with the setting changed (or added).
+    with f_outHandle:
+
+        found = False
+
+        for line in myLines:
+
+            # If we find a match at the beg. of the line, change the setting
+            if re.match(settingName+'=', line):
+
+                f_outHandle.write(f'{settingName}={settingValue}\n')
+                found = True
+            else:
+                f_outHandle.write(line)
+
+        if not found:
+
+            if createIfMissing:
+
+                f_outHandle.write(f'{settingName}={settingValue}\n')
+
+            else:
+                if report is not None:
+
+                    report.Error(_translate("ReadConfig", 'Setting: "{setting}" not found in the configuration file.').format(setting=settingName))
+
+                return False
+
     return True
     
 def readConfig(report):
@@ -322,6 +402,24 @@ def getConfigVal(my_map, key, report, giveError=True, basePath=None):
                     return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
+
+def getTransferRuleFiles(configMap, report):
+    '''Return the transfer rules files this project actually has, in phase order - the main one first, then the interchunk and postchunk files that only an advanced (three phase) project sets.
+       Only files that are configured and really on disk come back, so a caller can loop over the result without knowing or caring whether this project uses advanced transfer.'''
+
+    ruleFiles = []
+
+    for settingName in (TRANSFER_RULES_FILE, TRANSFER_RULES_FILE2, TRANSFER_RULES_FILE3):
+
+        # giveError=False plus a truthiness test is what every other reader of the two advanced settings does. A project that isn't using advanced transfer has them present but empty, so a file
+        # that isn't there is the normal case rather than something to complain about.
+        rulesFile = getConfigVal(configMap, settingName, report, giveError=False)
+
+        if rulesFile and os.path.isfile(rulesFile):
+
+            ruleFiles.append(rulesFile)
+
+    return ruleFiles
 
 def configValIsList(my_map, key, report):
 
