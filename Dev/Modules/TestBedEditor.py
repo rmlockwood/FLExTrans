@@ -3,15 +3,40 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.1 - 9/23/26
+#    Connects Delete Test to remove the selected test after confirmation.
+#
+#   Version 1.1.1 - 9/23/26
+#    Collects all Add Test text fields in one dialog.
+#
+#   Version 1.1 - 9/23/26
+#    Connects Add Test to create a new test and canned lexical unit.
+#
 #   Version 1.0 - 6/27/26
 #    First version. Loads testbed tests into an editable tree view.
 #    Double-click any cell to edit. Save writes changes back to the XML file.
 #
 
+# OVERVIEW (AI generated, then edited)
+#
+# This module provides the editable tree view for the FLExTrans testbed. Each top-level row represents a test and its child rows represent the lexical units that make up the source input. The tree is loaded from the XML model, and Save writes edits back through the model before serializing the testbed file.
+#
+# ADDING TESTS
+#
+# Add Test collects the three text fields needed by a test, creates a model object with one canned lexical unit, and appends both the model object and its tree row. Keeping the model object attached to the row is important because Save uses that object to find the new XML node.
+#
+# CODE STRUCTURE
+#
+# Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits, save writes all rows, and closeEvent handles unsaved changes.
+#
+
+import html
 import os
 import xml.etree.ElementTree as ET
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QMessageBox
+from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
+                             QFormLayout, QLineEdit, QMainWindow,
+                             QTreeWidgetItem, QMessageBox)
 from PyQt6.QtCore import QCoreApplication, Qt
 from PyQt6.QtGui import QFont, QBrush, QColor, QIcon
 
@@ -28,7 +53,8 @@ import Utils
 from Testbed import (FlexTransTestbedFile, SENT,
                      HEAD_WORD, SENSE_NUM, GRAM_CAT, OTHER_TAGS, TAG,
                      SOURCE_INPUT, LEXICAL_UNITS, LEXICAL_UNIT,
-                     TARGET_OUTPUT, EXPECTED_RESULT)
+                     TARGET_OUTPUT, EXPECTED_RESULT, LexicalUnit,
+                     TestbedTestXMLObject)
 
 from TestBedEditorWindow import Ui_TestBedEditorWindow
 
@@ -37,7 +63,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "1.0",
+    FTM_Version:     "3.17.1",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -76,8 +102,12 @@ class Main(QMainWindow):
         self._loadTree()
 
         self.ui.treeWidget.itemChanged.connect(self._onItemChanged)
+        self.ui.treeWidget.currentItemChanged.connect(self._onCurrentItemChanged)
+        self.ui.addButton.clicked.connect(self._addTest)
+        self.ui.deleteButton.clicked.connect(self._deleteTest)
         self.ui.saveButton.clicked.connect(self.save)
         self.ui.closeButton.clicked.connect(self.close)
+        self.ui.deleteButton.setEnabled(False)
 
     # ------------------------------------------------------------------
     # Tree loading
@@ -133,6 +163,110 @@ class Main(QMainWindow):
             tree.resizeColumnToContents(col)
 
         tree.blockSignals(False)
+
+    def _addTest(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle('Add Test')
+        layout = QFormLayout(dialog)
+
+        sourceEdit = QLineEdit(dialog)
+        expectedEdit = QLineEdit(dialog)
+        commentEdit = QLineEdit(dialog)
+        layout.addRow('Source Text:', sourceEdit)
+        layout.addRow('Expected Result:', expectedEdit)
+        layout.addRow('Comment:', commentEdit)
+
+        buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok |
+            QDialogButtonBox.StandardButton.Cancel,
+            parent=dialog,
+        )
+        buttonBox.accepted.connect(dialog.accept)
+        buttonBox.rejected.connect(dialog.reject)
+        layout.addRow(buttonBox)
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        sourceText = sourceEdit.text()
+        expectedResult = expectedEdit.text()
+        comment = commentEdit.text()
+        newTestObj = TestbedTestXMLObject([LexicalUnit('word1.1 n')], sourceText, expectedResult, comment=comment)
+        self.testObjList.append(newTestObj)
+        self.testbedFileObj.getFLExTransTestbedXMLObject().addToTestbed(newTestObj)
+
+        tree = self.ui.treeWidget
+        testItem = QTreeWidgetItem(tree)
+        testItem.setFlags(EDITABLE)
+        testItem.setText(COL_SOURCE, sourceText)
+        testItem.setText(COL_EXPECTED, expectedResult)
+        testItem.setText(COL_COMMENT, comment)
+        testItem.setData(COL_SOURCE, Qt.ItemDataRole.UserRole, newTestObj)
+
+        boldFont = QFont()
+        boldFont.setBold(True)
+        testBg = QBrush(TEST_BG_COLOR)
+
+        for col in range(tree.columnCount()):
+            testItem.setFont(col, boldFont)
+            testItem.setBackground(col, testBg)
+
+        luItem = QTreeWidgetItem(testItem)
+        luItem.setFlags(EDITABLE)
+        luItem.setText(COL_SOURCE, 'word1.1')
+        luItem.setText(COL_GRAMCAT, 'n')
+        testItem.setExpanded(True)
+        tree.resizeColumnToContents(COL_SOURCE)
+        tree.resizeColumnToContents(COL_GRAMCAT)
+
+        self.unsaved = True
+        self.ui.saveLabel.setText('There are unsaved changes.')
+
+    def _onCurrentItemChanged(self, currentItem, previousItem):
+        self.ui.deleteButton.setEnabled(currentItem is not None)
+
+    def _getSelectedTestItem(self):
+        testItem = self.ui.treeWidget.currentItem()
+
+        if testItem is None:
+            return None
+
+        parentItem = testItem.parent()
+
+        while parentItem is not None:
+            testItem = parentItem
+            parentItem = testItem.parent()
+
+        return testItem
+
+    def _deleteTest(self):
+        testItem = self._getSelectedTestItem()
+
+        if testItem is None:
+            return
+
+        testObj = testItem.data(COL_SOURCE, Qt.ItemDataRole.UserRole)
+        lexicalUnits = testObj.getFormattedLUString()
+        expectedResult = html.escape(testItem.text(COL_EXPECTED))
+        message = ('Are you sure you want to delete this test?<br><br>'
+                   '<b>Lexical Units:</b> ' + lexicalUnits + '<br>'
+                   '<b>Expected Result:</b> ' + expectedResult)
+
+        confirm = QMessageBox(self)
+        confirm.setWindowTitle('Delete Test')
+        confirm.setIcon(QMessageBox.Icon.Question)
+        confirm.setTextFormat(Qt.TextFormat.RichText)
+        confirm.setText(message)
+        confirm.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        confirm.setDefaultButton(QMessageBox.StandardButton.No)
+
+        if confirm.exec() != QMessageBox.StandardButton.Yes:
+            return
+
+        self.testbedFileObj.getFLExTransTestbedXMLObject().removeFromTestbed(testObj)
+        self.ui.treeWidget.takeTopLevelItem(self.ui.treeWidget.indexOfTopLevelItem(testItem))
+        self.unsaved = True
+        self.ui.saveLabel.setText('Test deleted. There are unsaved changes.')
 
     # ------------------------------------------------------------------
     # Change tracking

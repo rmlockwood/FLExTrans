@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.6 - 9/23/26 - Ron Lockwood
+#    Added removal of a test from the testbed XML object and object list.
+#
 #   Version 3.17.5 - 9/1/26 - Ron Lockwood
 #    Noted in the APERTIUM_LOG_FILE comment that the Live Rule Tester shares this constant.
 #
@@ -99,7 +102,7 @@
 #
 #   The classes mirror those two shapes, one class per level of nesting, each holding the ElementTree element for its level and a list of the objects for the level below:
 #    - FlexTransTestbedFile - the testbed file. Reads it, or creates an empty structure when there isn't one yet (isNew/exists say which), and writes it back.
-#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), overwriteInTestbed() and validate() live.
+#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), removeFromTestbed(), overwriteInTestbed() and validate() live.
 #    - TestbedTestXMLObject - one test. Everything about a single test, described below.
 #    - LexicalUnit - one lexical unit of a test.
 #   and on the results side:
@@ -1032,6 +1035,11 @@ class FLExTransTestbedXMLObject():
     def addToTestbed(self, newTestObj):
         newNode = newTestObj.getTestNode()
         self.__testsNode.append(newNode)
+
+    def removeFromTestbed(self, testObj):
+        testNode = testObj.getTestNode()
+        self.__testsNode.remove(testNode)
+        self.__TestXMLObjectList.remove(testObj)
     
     def overwriteInTestbed(self, oldTestObj, newTestObj):
         # get the id for the old test
