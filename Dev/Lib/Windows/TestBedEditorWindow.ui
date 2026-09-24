@@ -115,6 +115,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="fontSizeLabel">
+          <property name="text">
+           <string>Font Size:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="fontSizeSpinBox"/>
+        </item>
+        <item>
          <widget class="QLabel" name="saveLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">

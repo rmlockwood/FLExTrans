@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.7 - 9/24/26 - Ron Lockwood
+#    Add a font-size control matching the testbed log viewer.
+#
 #   Version 3.17.6 - 9/23/26 - Ron Lockwood
 #    Remove the opaque tree selection highlight so selected text remains readable.
 #
@@ -81,7 +84,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.3",
+    FTM_Version:     "3.17.7",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -125,6 +128,9 @@ class Main(QMainWindow):
         treePalette.setColor(QPalette.ColorRole.HighlightedText,
                      treePalette.color(QPalette.ColorRole.Text))
         self.ui.treeWidget.setPalette(treePalette)
+        self.ui.fontSizeSpinBox.valueChanged.connect(self._fontSizeChanged)
+        self.ui.fontSizeSpinBox.setValue(12)
+        self._fontSizeChanged()
 
         self._loadTree()
 
@@ -145,6 +151,11 @@ class Main(QMainWindow):
         self.delegates = [CompleterDelegate(*args) for args in delegateData]
         for index, delegate in enumerate(self.delegates):
             self.ui.treeWidget.setItemDelegateForColumn(index, delegate)
+
+    def _fontSizeChanged(self):
+        treeFont = self.ui.treeWidget.font()
+        treeFont.setPointSize(self.ui.fontSizeSpinBox.value())
+        self.ui.treeWidget.setFont(treeFont)
 
     # ------------------------------------------------------------------
     # Tree loading
