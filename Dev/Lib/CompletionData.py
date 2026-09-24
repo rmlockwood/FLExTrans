@@ -10,6 +10,9 @@
 #   Version 3.17.2 - 9/25/26 - Ron Lockwood
 #    Add inflection classes to the completion data, not just features.
 #
+#   Version 3.17.3 - 9/23/26 - Ron Lockwood
+#    Added child-row filtering and styled item painting to completion delegates.
+#
 #   Version 3.17.1 - 9/23/26 - Ron Lockwood
 #    Added child-row filtering and styled item painting to completion delegates.
 #
@@ -83,13 +86,17 @@ class SegmentedCompleter(QCompleter):
 
 
 class CompleterDelegate(QStyledItemDelegate):
-    def __init__(self, values, useSegmented, onlyChildren=False):
+    def __init__(self, values, useSegmented, onlyChildren=False, editableOnlyChildren=False):
         super().__init__()
         self.values = values
         self.useSegmented = useSegmented
         self.onlyChildren = onlyChildren
+        self.editableOnlyChildren = editableOnlyChildren
 
     def createEditor(self, parent, option, index):
+        if self.editableOnlyChildren and not index.parent().isValid():
+            return None
+
         editor = super().createEditor(parent, option, index)
         assert isinstance(editor, QLineEdit)
 

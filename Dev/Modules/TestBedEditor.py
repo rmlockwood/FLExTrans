@@ -3,6 +3,12 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.11 - 9/24/26 - Ron Lockwood
+#    Prevent editing lexical-unit fields on test rows.
+#
+#   Version 3.17.10 - 9/24/26 - Ron Lockwood
+#    Prevent editing expected results and comments on lexical unit rows.
+#
 #   Version 3.17.9 - 9/25/26 - Ron Lockwood
 #    New context menu for adding and deleting lexical unit lines.
 #
@@ -60,7 +66,8 @@ import xml.etree.ElementTree as ET
 
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QLineEdit, QMainWindow, QMenu,
-                             QTreeWidgetItem, QMessageBox)
+                             QStyledItemDelegate, QTreeWidgetItem,
+                             QMessageBox)
 from PyQt6.QtCore import QCoreApplication, Qt
 from PyQt6.QtGui import QAction, QFont, QBrush, QColor, QIcon, QPalette
 
@@ -90,7 +97,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.8",
+    FTM_Version:     "3.17.11",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -110,6 +117,15 @@ TEST_BG_COLOR = QColor('#D6E4F0')
 EDITABLE   = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable |
               Qt.ItemFlag.ItemIsEditable)
 READ_ONLY  = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
+
+
+class ChildRowReadOnlyDelegate(QStyledItemDelegate):
+
+    def createEditor(self, parent, option, index):
+        if index.parent().isValid():
+            return None
+
+        return super().createEditor(parent, option, index)
 
 
 class Main(QMainWindow):
@@ -151,14 +167,18 @@ class Main(QMainWindow):
         self.ui.deleteButton.setEnabled(False)
 
         delegateData = [
-            (sorted(self.sourceLemmas.keys()), False, True),
-            (self.sourcePOS, False, True),
-            (sorted(self.sourceTags), True, True),
-            (sorted(self.sourceAffixes), True, True),
+            (sorted(self.sourceLemmas.keys()), False, True, False),
+            (self.sourcePOS, False, True, True),
+            (sorted(self.sourceTags), True, True, True),
+            (sorted(self.sourceAffixes), True, True, True),
         ]
         self.delegates = [CompleterDelegate(*args) for args in delegateData]
         for index, delegate in enumerate(self.delegates):
             self.ui.treeWidget.setItemDelegateForColumn(index, delegate)
+
+        childRowReadOnlyDelegate = ChildRowReadOnlyDelegate(self.ui.treeWidget)
+        self.ui.treeWidget.setItemDelegateForColumn(COL_EXPECTED, childRowReadOnlyDelegate)
+        self.ui.treeWidget.setItemDelegateForColumn(COL_COMMENT, childRowReadOnlyDelegate)
 
     def _fontSizeChanged(self):
         treeFont = self.ui.treeWidget.font()
