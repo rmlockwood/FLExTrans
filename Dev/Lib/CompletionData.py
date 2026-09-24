@@ -7,6 +7,9 @@
 #   Version 3.17.3 - 9/25/26 - Ron Lockwood
 #    Convert dots to underscores in inflection classes when gathering tags.
 #
+#   Version 3.17.4 - 9/24/26 - Ron Lockwood
+#    Match completion popup font size to the editing control.
+#
 #   Version 3.17.2 - 9/25/26 - Ron Lockwood
 #    Add inflection classes to the completion data, not just features.
 #
@@ -110,6 +113,9 @@ class CompleterDelegate(QStyledItemDelegate):
 
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         editor.setCompleter(completer)
+        popup = completer.popup()
+        if popup is not None:
+            popup.setFont(editor.font())
         return editor
 
 
