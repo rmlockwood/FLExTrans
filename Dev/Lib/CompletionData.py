@@ -4,6 +4,9 @@
 #   Shared completion delegates and FLEx project completion-data gathering for
 #   editors that offer lexical, category, feature, and affix suggestions.
 #
+#   Version 3.17.3 - 9/25/26 - Ron Lockwood
+#    Convert dots to underscores in inflection classes when gathering tags.
+#
 #   Version 3.17.2 - 9/25/26 - Ron Lockwood
 #    Add inflection classes to the completion data, not just features.
 #
@@ -104,32 +107,41 @@ class CompleterDelegate(QStyledItemDelegate):
 
 
 def gatherCompletionData(DB, report, composed, wsHandle=None):
+    
     lemmas = {}
     affixes = set()
     affixClasses = ['MoInflAffMsa', 'MoDerivAffMsa', 'MoUnclassifiedAffixMsa']
     report.ProgressStart(DB.LexiconNumberOfEntries())
 
     for index, entry in enumerate(DB.LexiconAllEntries()):
+
         report.ProgressUpdate(index)
 
         if wsHandle is not None:
+
             headWord = Utils.getHeadwordStr(entry, wsHandle)
         else:
             headWord = ITsString(entry.HeadWord).Text
 
         headWord = Utils.add_one(headWord)
+
         if composed:
+
             headWord = normalize('NFC', headWord)
+
         clitic = Utils.isClitic(entry)
 
         for senseNumber, sense in enumerate(entry.SensesOS, 1):
+
             if clitic:
+
                 affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
 
             if not sense.MorphoSyntaxAnalysisRA:
                 continue
 
             if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+
                 msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
 
                 if not msa.PartOfSpeechRA:
@@ -139,7 +151,9 @@ def gatherCompletionData(DB, report, composed, wsHandle=None):
                 pos = Utils.convertProblemChars(pos, Utils.catProbData)
                 tags = Utils.getInflectionTags(msa)
                 lemmas[f'{headWord}.{senseNumber}'] = (pos, '.'.join(tags))
+
             elif sense.MorphoSyntaxAnalysisRA.ClassName in affixClasses:
+
                 affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
 
     return lemmas, affixes
@@ -173,7 +187,7 @@ def gatherTags(DB, report, posTags):
     Utils.get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True)
     classTags = set(posMap.keys()) - set(posTags)
 
-    # Now add the classes to the tags set
-    tags.update(classTags)
+    # Now add the classes to the tags set after converting dots to underscores.
+    tags.update({Utils.underscores(tag) for tag in classTags})
 
     return tags
