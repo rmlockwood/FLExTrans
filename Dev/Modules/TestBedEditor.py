@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.9 - 9/25/26 - Ron Lockwood
+#    New context menu for adding and deleting lexical unit lines.
+#
 #   Version 3.17.8 - 9/25/26 - Ron Lockwood
 #    Add inflection classes to the completion data, not just features.
 #
@@ -56,10 +59,10 @@ import os
 import xml.etree.ElementTree as ET
 
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
-                             QFormLayout, QLineEdit, QMainWindow,
+                             QFormLayout, QLineEdit, QMainWindow, QMenu,
                              QTreeWidgetItem, QMessageBox)
 from PyQt6.QtCore import QCoreApplication, Qt
-from PyQt6.QtGui import QFont, QBrush, QColor, QIcon, QPalette
+from PyQt6.QtGui import QAction, QFont, QBrush, QColor, QIcon, QPalette
 
 from flextoolslib import (
     FlexToolsModuleClass,
@@ -137,6 +140,8 @@ class Main(QMainWindow):
 
         self._loadTree()
 
+        self.ui.treeWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.ui.treeWidget.customContextMenuRequested.connect(self._onTreeContextMenu)
         self.ui.treeWidget.itemChanged.connect(self._onItemChanged)
         self.ui.treeWidget.currentItemChanged.connect(self._onCurrentItemChanged)
         self.ui.addButton.clicked.connect(self._addTest)
@@ -159,6 +164,60 @@ class Main(QMainWindow):
         treeFont = self.ui.treeWidget.font()
         treeFont.setPointSize(self.ui.fontSizeSpinBox.value())
         self.ui.treeWidget.setFont(treeFont)
+
+    def _createDefaultLexicalUnitItem(self, parentItem, insertBefore=None):
+        luItem = QTreeWidgetItem(parentItem)
+        if insertBefore is not None:
+            parentItem.insertChild(parentItem.indexOfChild(insertBefore), luItem)
+        luItem.setFlags(EDITABLE)
+        luItem.setText(COL_SOURCE, 'word1.1')
+        luItem.setText(COL_GRAMCAT, 'n')
+        self._colorLexicalUnitItem(luItem)
+        return luItem
+
+    def _addLexicalUnitForItem(self, item):
+        if item is None:
+            return
+
+        if item.parent() is None:
+            parentItem = item
+            insertBefore = None
+        else:
+            parentItem = item.parent()
+            insertBefore = item
+
+        luItem = self._createDefaultLexicalUnitItem(parentItem, insertBefore)
+        self.ui.treeWidget.setCurrentItem(luItem)
+        self.unsaved = True
+        self.ui.saveLabel.setText('There are unsaved changes.')
+
+    def _deleteLexicalUnitForItem(self, item):
+        if item is None or item.parent() is None:
+            return
+
+        parentItem = item.parent()
+        parentItem.takeChild(parentItem.indexOfChild(item))
+        self.unsaved = True
+        self.ui.saveLabel.setText('There are unsaved changes.')
+
+    def _onTreeContextMenu(self, pos):
+        item = self.ui.treeWidget.itemAt(pos)
+        if item is None:
+            return
+
+        self.ui.treeWidget.setCurrentItem(item)
+        menu = QMenu(self)
+
+        addAction = QAction('Add Lexical Unit', self)
+        addAction.triggered.connect(lambda: self._addLexicalUnitForItem(item))
+        menu.addAction(addAction)
+
+        deleteAction = QAction('Delete this Lexical Unit', self)
+        deleteAction.setEnabled(item.parent() is not None)
+        deleteAction.triggered.connect(lambda: self._deleteLexicalUnitForItem(item))
+        menu.addAction(deleteAction)
+
+        menu.exec(self.ui.treeWidget.viewport().mapToGlobal(pos))
 
     # ------------------------------------------------------------------
     # Tree loading
@@ -290,11 +349,7 @@ class Main(QMainWindow):
             testItem.setFont(col, boldFont)
             testItem.setBackground(col, testBg)
 
-        luItem = QTreeWidgetItem(testItem)
-        luItem.setFlags(EDITABLE)
-        luItem.setText(COL_SOURCE, 'word1.1')
-        luItem.setText(COL_GRAMCAT, 'n')
-        self._colorLexicalUnitItem(luItem)
+        luItem = self._createDefaultLexicalUnitItem(testItem)
         testItem.setExpanded(True)
         tree.resizeColumnToContents(COL_SOURCE)
         tree.resizeColumnToContents(COL_GRAMCAT)

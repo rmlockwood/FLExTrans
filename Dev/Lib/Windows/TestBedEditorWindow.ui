@@ -30,12 +30,12 @@
         </property>
         <column>
          <property name="text">
-          <string>Source / Word</string>
+          <string>Source/Lexical Unit</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Gramm. Cat.</string>
+          <string>Gram. Cat.</string>
          </property>
         </column>
         <column>

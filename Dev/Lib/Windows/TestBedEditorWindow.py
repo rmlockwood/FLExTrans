@@ -88,8 +88,8 @@ class Ui_TestBedEditorWindow(object):
     def retranslateUi(self, TestBedEditorWindow):
         _translate = QtCore.QCoreApplication.translate
         TestBedEditorWindow.setWindowTitle(_translate("TestBedEditorWindow", "Testbed Editor"))
-        self.treeWidget.headerItem().setText(0, _translate("TestBedEditorWindow", "Source / Word"))
-        self.treeWidget.headerItem().setText(1, _translate("TestBedEditorWindow", "Gramm. Cat."))
+        self.treeWidget.headerItem().setText(0, _translate("TestBedEditorWindow", "Source/Lexical Unit"))
+        self.treeWidget.headerItem().setText(1, _translate("TestBedEditorWindow", "Gram. Cat."))
         self.treeWidget.headerItem().setText(2, _translate("TestBedEditorWindow", "Features/Classes"))
         self.treeWidget.headerItem().setText(3, _translate("TestBedEditorWindow", "Affixes"))
         self.treeWidget.headerItem().setText(4, _translate("TestBedEditorWindow", "Expected Result"))
