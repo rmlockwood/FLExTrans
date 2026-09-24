@@ -4,6 +4,9 @@
 #   Shared completion delegates and FLEx project completion-data gathering for
 #   editors that offer lexical, category, feature, and affix suggestions.
 #
+#   Version 3.17.2 - 9/25/26 - Ron Lockwood
+#    Add inflection classes to the completion data, not just features.
+#
 #   Version 3.17.1 - 9/23/26 - Ron Lockwood
 #    Added child-row filtering and styled item painting to completion delegates.
 #
@@ -143,21 +146,34 @@ def gatherCompletionData(DB, report, composed, wsHandle=None):
 
 
 def gatherPOSTags(DB, report, additionalCategories=None):
+
     posMap = {}
-    Utils.get_categories(DB, report, posMap, TargetDB=None,
-                         numCatErrorsToShow=1, addInflectionClasses=False)
+    Utils.get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
     posTags = set(posMap.keys())
 
     if additionalCategories:
+
         posTags.update(additionalCategories)
 
     return sorted(posTags)
 
 
-def gatherTags(DB):
+def gatherTags(DB, report, posTags):
+    '''Gather inflection features and classes.'''
+
+    posMap = {}
     tags = set()
 
+    # First features
     for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
+
         tags.update(Utils.as_tag(value) for value in feature.ValuesOC)
+
+    # Get classes which are a per POS thing. Get categories including inflection classes and the ones that are in this list but not the original POS list, are the classes.
+    Utils.get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True)
+    classTags = set(posMap.keys()) - set(posTags)
+
+    # Now add the classes to the tags set
+    tags.update(classTags)
 
     return tags

@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.17.3 - 9/25/26 - Ron Lockwood
+#    Add inflection classes to the completion data, not just features.
+#
 #   Version 3.17.2 - 9/23/26 - Ron Lockwood
 #    Use the shared styled completion delegate.
 #
@@ -100,7 +103,7 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
-        FTM_Version:     "3.17",
+        FTM_Version:     "3.17.3",
         FTM_ModifiesDB:  False,
         FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
         FTM_Help:        "",
@@ -345,8 +348,8 @@ class Main(QMainWindow):
         self.targetLemmas, self.targetAffixes = gatherCompletionData(targetDB, report, composed, self.targetWSHandle)
         self.sourcePOS = gatherPOSTags(sourceDB, report)
         self.targetPOS = gatherPOSTags(targetDB, report)
-        self.sourceTags = gatherTags(sourceDB)
-        self.targetTags = gatherTags(targetDB)
+        self.sourceTags = gatherTags(sourceDB, report, self.sourcePOS)
+        self.targetTags = gatherTags(targetDB, report, self.targetPOS)
 
         delegate_data = [
             (sorted(self.sourceLemmas.keys()), False),

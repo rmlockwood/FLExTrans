@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.8 - 9/25/26 - Ron Lockwood
+#    Add inflection classes to the completion data, not just features.
+#
 #   Version 3.17.7 - 9/24/26 - Ron Lockwood
 #    Add a font-size control matching the testbed log viewer.
 #
@@ -84,7 +87,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.7",
+    FTM_Version:     "3.17.8",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -116,7 +119,7 @@ class Main(QMainWindow):
         self.unsaved        = False
         self.sourceLemmas, self.sourceAffixes = gatherCompletionData(DB, report, testbedFileObj.composed)
         self.sourcePOS = gatherPOSTags(DB, report, [SENT])
-        self.sourceTags = gatherTags(DB)
+        self.sourceTags = gatherTags(DB, report, self.sourcePOS)
 
         self.ui = Ui_TestBedEditorWindow()
         self.ui.setupUi(self)
@@ -169,6 +172,7 @@ class Main(QMainWindow):
         boldFont = QFont()
         boldFont.setBold(True)
         testBg = QBrush(TEST_BG_COLOR)
+        myAffixes = myFeatures = ''
 
         for testObj in self.testObjList:
 
@@ -188,10 +192,12 @@ class Main(QMainWindow):
 
             # LU (child) rows — headword, gramm cat, features, affixes editable
             for lu in testObj.getLexicalUnitList():
+
                 luItem = QTreeWidgetItem(testItem)
                 luItem.setFlags(EDITABLE)
 
                 if lu.getGramCat() == SENT:
+
                     luItem.setText(COL_SOURCE, lu.getHeadWord())
                 else:
                     luItem.setText(COL_SOURCE,
@@ -199,11 +205,35 @@ class Main(QMainWindow):
 
                 luItem.setText(COL_GRAMCAT, lu.getGramCat() or '')
 
-                # All other tags go into Features/Classes for now;
-                # Affixes split comes when autocomplete is added
+
+                # All other tags go into either Features/Classes or affixes
                 otherTags = lu.getOtherTags()
-                luItem.setText(COL_FEATURES, '.'.join(otherTags) if otherTags else '')
-                luItem.setText(COL_AFFIXES,  '')
+
+                # Attempt to distinguish inflectional features from affixes
+
+                # if everything is a subset of the affix list, then everything is an affix
+                if set(otherTags) <= self.sourceAffixes:
+
+                    myAffixes = '.'.join(otherTags)
+
+                else:
+                    # default to making everything a feature
+                    split = len(otherTags)
+
+                    # iterate backwards
+                    for i in range(len(otherTags)-1, -1, -1):
+
+                        # find the rightmost tag that can't be an affix
+                        if otherTags[i] in self.sourceTags and otherTags[i] not in self.sourceAffixes:
+
+                            split = i + 1
+                            break
+
+                    myFeatures = '.'.join(otherTags[:split])
+                    myAffixes = '.'.join(otherTags[split:])
+
+                luItem.setText(COL_FEATURES, myFeatures)
+                luItem.setText(COL_AFFIXES,  myAffixes)
                 self._colorLexicalUnitItem(luItem)
 
             testItem.setExpanded(True)
