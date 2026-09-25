@@ -22,6 +22,7 @@ class Ui_TestbedLogWindow(object):
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.logTreeView.setFont(font)
+        self.logTreeView.setAlternatingRowColors(True)
         self.logTreeView.setObjectName("logTreeView")
         self.verticalLayout.addWidget(self.logTreeView)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
