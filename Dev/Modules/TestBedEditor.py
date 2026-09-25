@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.12 - 9/25/26 - Ron Lockwood
+#    Fix features and affixes not being reset for each lexical unit when loading the tree.
+#
 #   Version 3.17.11 - 9/24/26 - Ron Lockwood
 #    Prevent editing lexical-unit fields on test rows.
 #
@@ -97,7 +100,7 @@ TRANSL_TS_NAME = 'TestBedEditor'
 
 docs = {
     FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.11",
+    FTM_Version:     "3.17.12",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    "View and edit tests in the testbed.",
     FTM_Help:        "",
@@ -251,7 +254,6 @@ class Main(QMainWindow):
         boldFont = QFont()
         boldFont.setBold(True)
         testBg = QBrush(TEST_BG_COLOR)
-        myAffixes = myFeatures = ''
 
         for testObj in self.testObjList:
 
@@ -272,6 +274,8 @@ class Main(QMainWindow):
             # LU (child) rows — headword, gramm cat, features, affixes editable
             for lu in testObj.getLexicalUnitList():
 
+                myAffixes = myFeatures = ''
+
                 luItem = QTreeWidgetItem(testItem)
                 luItem.setFlags(EDITABLE)
 
@@ -283,7 +287,6 @@ class Main(QMainWindow):
                                    lu.getHeadWord() + '.' + (lu.getSenseNum() or ''))
 
                 luItem.setText(COL_GRAMCAT, lu.getGramCat() or '')
-
 
                 # All other tags go into either Features/Classes or affixes
                 otherTags = lu.getOtherTags()
