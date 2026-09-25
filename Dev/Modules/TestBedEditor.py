@@ -379,7 +379,7 @@ class Main(QMainWindow):
         testItem.setData(COL_SOURCE, Qt.ItemDataRole.UserRole, newTestObj)
 
         boldFont = QFont()
-        boldFont.setBold(True)
+        boldFont.setBold(False)
         testBg = QBrush(TEST_BG_COLOR)
 
         for col in range(tree.columnCount()):
