@@ -19,6 +19,9 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTreeWidget" name="treeWidget">
+        <property name="editTriggers">
+         <set>QAbstractItemView::EditTrigger::DoubleClicked|QAbstractItemView::EditTrigger::EditKeyPressed</set>
+        </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
         </property>
@@ -32,30 +35,60 @@
          <property name="text">
           <string>Source/Lexical Unit</string>
          </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
         </column>
         <column>
          <property name="text">
           <string>Gram. Cat.</string>
+         </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
          </property>
         </column>
         <column>
          <property name="text">
           <string>Features/Classes</string>
          </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
         </column>
         <column>
          <property name="text">
           <string>Affixes</string>
+         </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
          </property>
         </column>
         <column>
          <property name="text">
           <string>Expected Result</string>
          </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
         </column>
         <column>
          <property name="text">
           <string>Comment</string>
+         </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
          </property>
         </column>
        </widget>

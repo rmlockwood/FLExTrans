@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.13 - 9/25/26 - Ron Lockwood
+#    Use a light-grey background for the selected tree item.
+#
 #   Version 3.17.12 - 9/25/26 - Ron Lockwood
 #    Fix features and affixes not being reset for each lexical unit when loading the tree.
 #
@@ -116,6 +119,7 @@ COL_EXPECTED = 4  # test: expected result
 COL_COMMENT  = 5  # test: comment
 
 TEST_BG_COLOR = QColor('#D6E4F0')
+TEST_HIGHLIGHT_COLOR = QColor('#D3D3D3')
 
 EDITABLE   = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable |
               Qt.ItemFlag.ItemIsEditable)
@@ -145,13 +149,11 @@ class Main(QMainWindow):
 
         self.ui = Ui_TestBedEditorWindow()
         self.ui.setupUi(self)
-        self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR,
-                                              'FLExTransWindowIcon.ico')))
+        self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         treePalette = self.ui.treeWidget.palette()
-        treePalette.setColor(QPalette.ColorRole.Highlight, QColor(0, 0, 0, 0))
-        treePalette.setColor(QPalette.ColorRole.HighlightedText,
-                     treePalette.color(QPalette.ColorRole.Text))
+        treePalette.setColor(QPalette.ColorRole.Highlight, TEST_HIGHLIGHT_COLOR)
+        treePalette.setColor(QPalette.ColorRole.HighlightedText, treePalette.color(QPalette.ColorRole.Text))
         self.ui.treeWidget.setPalette(treePalette)
         self.ui.fontSizeSpinBox.valueChanged.connect(self._fontSizeChanged)
         self.ui.fontSizeSpinBox.setValue(12)
@@ -247,12 +249,13 @@ class Main(QMainWindow):
     # ------------------------------------------------------------------
 
     def _loadTree(self):
+
         tree = self.ui.treeWidget
         tree.blockSignals(True)
         tree.clear()
 
         boldFont = QFont()
-        boldFont.setBold(True)
+        boldFont.setBold(False)
         testBg = QBrush(TEST_BG_COLOR)
 
         for testObj in self.testObjList:
@@ -531,7 +534,6 @@ class Main(QMainWindow):
                 event.ignore()
                 return
         event.accept()
-
 
 def MainFunction(DB, report, modifyAllowed):
 
