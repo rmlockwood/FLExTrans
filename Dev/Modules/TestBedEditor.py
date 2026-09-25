@@ -191,9 +191,20 @@ class Main(QMainWindow):
         self.ui.treeWidget.setFont(treeFont)
 
     def _createDefaultLexicalUnitItem(self, parentItem, insertBefore=None):
-        luItem = QTreeWidgetItem(parentItem)
+
+        luItem = QTreeWidgetItem(parentItem) # At this point the item is added as the last child of parentItem
+
         if insertBefore is not None:
-            parentItem.insertChild(parentItem.indexOfChild(insertBefore), luItem)
+
+            oldIndex = parentItem.indexOfChild(luItem)
+            newIndex = parentItem.indexOfChild(insertBefore)
+
+            # Cut the item from where it is at the end.
+            parentItem.takeChild(oldIndex)
+
+            # Insert the item before the specified item that was right-clicked on.
+            parentItem.insertChild(newIndex, luItem)
+
         luItem.setFlags(EDITABLE)
         luItem.setText(COL_SOURCE, 'word1.1')
         luItem.setText(COL_GRAMCAT, 'n')
