@@ -193,7 +193,7 @@ Do you want to overwrite it?</source>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1741"/>
       <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
-      <translation>El proyecto podría estar bloqueado. Verifique si la opción de compartir está activada para el proyecto de destino. Si es así, ejecute el módulo Limpiar archivos y luego el módulo Catalogar afijos de destino, y reporte cualquier error a los desarrolladores.</translation>
+      <translation>El proyecto podría estar bloqueado. Verifica si la opción de compartir está activada para el proyecto de destino. Si es así, ejecuta el módulo "Limpiar archivos" y luego el módulo "Catalogar afijos de destino", y reporta cualquier error a los desarrolladores.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="1750"/>
@@ -256,22 +256,22 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
       <source>Invalid Interchunk Rules File</source>
-      <translation>Archivo de reglas interchunk inválido</translation>
+      <translation>Archivo de reglas entre bloques no válido</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
       <source>The interchunk transfer file has no transfer element or no section-rules element</source>
-      <translation>El archivo de transferencia interchunk no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
+      <translation>El archivo de transferencia entre fragmentos no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2556"/>
       <source>Invalid postchunk Rules File</source>
-      <translation>Archivo de reglas postchunk inválido</translation>
+      <translation>Archivo de reglas de fragmentos posteriores inválido</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2556"/>
       <source>The postchunk transfer file has no transfer element or no section-rules element</source>
-      <translation>El archivo de transferencia postchunk no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
+      <translation>El archivo de transferencia de fragmentos posterior no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2654"/>
@@ -306,7 +306,7 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3131"/>
       <source>There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con la ruta del archivo de resultados de Tree Tran: {file}. Por favor, verifique la configuración del archivo de configuración.</translation>
+      <translation>Hay un problema con la ruta del archivo de resultados de Tree Tran: {file}. Por favor, verifica la configuración del archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3179"/>
@@ -326,7 +326,7 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3219"/>
       <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
-      <translation>No se encontró la oración: {sentNum}. Verifique que los análisis correctos estén presentes.</translation>
+      <translation>No se encontró la oración: {sentNum}. Verifica que los análisis correctos estén presentes.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3226"/>
