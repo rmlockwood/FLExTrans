@@ -10,7 +10,7 @@ you have established and then executes structural transfer which
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 The results of this module are found in the file you specified in the Target Transfer Results File.
 This is typically called target_text-aper.txt and is usually in the Build folder.</source>
-      <translation>Este módulo ejecuta la transferencia léxica basada en los enlaces que ha establecido del sentido fuente al sentido objetivo y luego ejecuta la transferencia estructural, que aplica las reglas de transferencia que ha creado para transformar los morfemas fuente en morfemas objetivo. Los resultados de este módulo se encuentran en el archivo que especificó como Archivo de Resultados de Transferencia de Destino. Normalmente se llama target_text-aper.txt y suele estar en la carpeta Build.</translation>
+      <translation>Este módulo ejecuta la transferencia léxica basada en los enlaces que hayas establecido del sentido fuente al sentido objetivo y luego ejecuta la transferencia estructural, que aplica las reglas de transferencia que hayas creado para transformar los morfemas fuente en morfemas objetivo. Los resultados de este módulo se encuentran en el archivo que especificaste como "Archivo de resultados de transferencia de destino". Normalmente se llama target_text-aper.txt y suele estar en la carpeta "Build".</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="108"/>
