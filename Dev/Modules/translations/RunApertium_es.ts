@@ -25,7 +25,7 @@ This is typically called target_text-aper.txt and is usually in the Build folder
     <message>
       <location filename="../RunApertium.py" line="233"/>
       <source>Error in opening the file: &quot;{file}&quot;, check that it exists and that it is valid.</source>
-      <translation>Error al abrir el archivo: &quot;{file}&quot;. Verifique que exista y que sea válido.</translation>
+      <translation>Error al abrir el archivo: &quot;{file}&quot;. Verifica que exista y que sea válido.</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="272"/>
@@ -40,22 +40,22 @@ This is typically called target_text-aper.txt and is usually in the Build folder
     <message>
       <location filename="../RunApertium.py" line="322"/>
       <source>The attribute: &quot;{attribStr}&quot; in &quot;{attrName}&quot; is the same as a gramm. cat. Your rules may not work as expected.</source>
-      <translation>El atributo: &quot;{attribStr}&quot; en &quot;{attrName}&quot; es igual a una categoría gramatical. Sus reglas pueden no funcionar como se espera.</translation>
+      <translation>El atributo: &quot;{attribStr}&quot; en &quot;{attrName}&quot; es igual a una categoría gramatical. Es posible que sus reglas no funcionen como se espera.</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="327"/>
       <source>The attribute: &quot;{attribStr}&quot; in &quot;{attrName}&quot; has a period in it. It needs to be an underscore. Your rules may not work as expected.</source>
-      <translation>El atributo: &quot;{attribStr}&quot; en &quot;{attrName}&quot; tiene un punto. Debe ser un guion bajo. Sus reglas pueden no funcionar como se espera.</translation>
+      <translation>El atributo: &quot;{attribStr}&quot; en &quot;{attrName}&quot; tiene un punto. Debe ser un guion bajo. Es posible que sus reglas no funcionen como se espera.</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="435"/>
       <source>The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}</source>
-      <translation>El archivo del diccionario bilingüe no existe. Puede que necesite ejecutar el módulo {buildLex}. El archivo debería ser: {file}</translation>
+      <translation>El archivo del diccionario bilingüe no existe. Puede que necesites ejecutar el módulo {buildLex}. El archivo debería ser: {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="445"/>
       <source>The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}</source>
-      <translation>El archivo de texto analizado no existe. Puede que necesite ejecutar el módulo {extrSource}. El archivo debería ser: {file}</translation>
+      <translation>El archivo de texto analizado no existe. Es posible que tengas que ejecutar el módulo {extrSource}. El archivo debería ser: {file}</translation>
     </message>
     <message>
       <location filename="../RunApertium.py" line="460"/>
