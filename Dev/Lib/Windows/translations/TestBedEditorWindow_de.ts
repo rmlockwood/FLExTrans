@@ -11,7 +11,7 @@
     <message>
         <location filename="../TestBedEditorWindow.py" line="110"/>
         <source>Source/Lexical Unit</source>
-        <translation>Quelle/Lexikalische Einheit</translation>
+        <translation>Quelle/Lex. Einheit</translation>
     </message>
     <message>
         <location filename="../TestBedEditorWindow.py" line="111"/>

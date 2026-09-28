@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.16 - 9/28/26 - Ron Lockwood
+#    Size the header and columns to fit their bold header text, letting the comment column shrink to compensate.
+#
 #   Version 3.17.15 - 9/28/26 - Ron Lockwood
 #    Wrote a full module description, including how to separate multiple features, classes or affixes with a period.
 #
@@ -68,8 +71,8 @@
 #
 # CODE STRUCTURE
 #
-# Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged 
-# tracks edits, save writes all rows, and closeEvent handles unsaved changes.
+# Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _fitHeaderText makes the header tall enough, and each column wide enough, for its bold header text.
+# _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits, save writes all rows, and closeEvent handles unsaved changes.
 #
 # TRANSLATION
 #
@@ -83,10 +86,10 @@ import xml.etree.ElementTree as ET
 
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QLineEdit, QMainWindow, QMenu,
-                             QStyledItemDelegate, QTreeWidgetItem,
+                             QStyle, QStyledItemDelegate, QTreeWidgetItem,
                              QMessageBox)
 from PyQt6.QtCore import QCoreApplication, Qt
-from PyQt6.QtGui import QAction, QFont, QBrush, QColor, QIcon, QPalette
+from PyQt6.QtGui import QAction, QFont, QFontMetrics, QBrush, QColor, QIcon, QPalette
 
 from flextoolslib import (
     FlexToolsModuleClass,
@@ -126,7 +129,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.15",
+    FTM_Version:     "3.17.16",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -213,6 +216,9 @@ class Main(QMainWindow):
         treeFont = self.ui.treeWidget.font()
         treeFont.setPointSize(self.ui.fontSizeSpinBox.value())
         self.ui.treeWidget.setFont(treeFont)
+
+        # The header text grows with the font size, so resize the header and columns again to keep it from being clipped.
+        self._fitHeaderText()
 
     def _createDefaultLexicalUnitItem(self, parentItem, insertBefore=None):
 
@@ -361,7 +367,46 @@ class Main(QMainWindow):
         for col in range(tree.columnCount()):
             tree.resizeColumnToContents(col)
 
+        self._fitHeaderText()
         tree.blockSignals(False)
+
+    def _fitHeaderText(self):
+
+        tree = self.ui.treeWidget
+        header = tree.header()
+        headerItem = tree.headerItem()
+
+        # The stubs type these as Optional, but a QTreeWidget always has a header view and a header item.
+        assert header is not None and headerItem is not None
+        style = header.style()
+
+        # Allow for the header's left and right margins around the text, plus a little slack so the bold text never gets elided.
+        margin = style.pixelMetric(QStyle.PixelMetric.PM_HeaderMargin, None, header) if style is not None else 4
+        padding = 4 * margin
+        headerHeight = 0
+
+        for col in range(tree.columnCount()):
+
+            # Measure the header text in its bold form. The .ui font only sets bold, so the size comes from the header view, which inherits the tree's font size.
+            # Resolve against the header's font to get the size actually drawn; the .ui makes the headers bold, but force it here in case that changes.
+            boldFont = headerItem.font(col).resolve(header.font())
+            boldFont.setBold(True)
+            boldMetrics = QFontMetrics(boldFont)
+            headerWidth = boldMetrics.horizontalAdvance(headerItem.text(col)) + padding
+            headerHeight = max(headerHeight, boldMetrics.height() + padding)
+
+            # The comment column is last, so the header stretches it into whatever room the other columns leave. Setting it to just its header width
+            # lets it give up space to the other columns rather than pushing the table into a horizontal scroll.
+            if col == COL_COMMENT:
+
+                tree.setColumnWidth(col, headerWidth)
+
+            elif tree.columnWidth(col) < headerWidth:
+
+                tree.setColumnWidth(col, headerWidth)
+
+        # Qt sizes the header's height from the smaller unresolved font too, so make it at least tall enough for the tallest bold header text.
+        header.setMinimumHeight(headerHeight)
 
     def _addTest(self):
         dialog = QDialog(self)
@@ -414,6 +459,7 @@ class Main(QMainWindow):
         testItem.setExpanded(True)
         tree.resizeColumnToContents(COL_SOURCE)
         tree.resizeColumnToContents(COL_GRAMCAT)
+        self._fitHeaderText()
 
         self.unsaved = True
         self.ui.saveLabel.setText(_translate("TestBedEditor", 'There are unsaved changes.'))
