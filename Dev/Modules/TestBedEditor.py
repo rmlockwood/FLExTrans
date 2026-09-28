@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.18 - 9/28/26 - Ron Lockwood
+#    Start the Add Test dialog at twice its natural width.
+#
 #   Version 3.17.17 - 9/28/26 - Ron Lockwood
 #    Lint fixes.
 #
@@ -133,7 +136,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.17",
+    FTM_Version:     "3.17.18",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -439,6 +442,10 @@ class Main(QMainWindow):
         buttonBox.accepted.connect(dialog.accept)
         buttonBox.rejected.connect(dialog.reject)
         layout.addRow(buttonBox)
+
+        # Start the dialog at twice its natural width so longer source text and expected results fit without scrolling in the line edits.
+        startSize = dialog.sizeHint()
+        dialog.resize(startSize.width() * 2, startSize.height())
 
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return

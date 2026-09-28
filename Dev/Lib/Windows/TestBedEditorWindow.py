@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_TestBedEditorWindow(object):
     def setupUi(self, TestBedEditorWindow):
         TestBedEditorWindow.setObjectName("TestBedEditorWindow")
-        TestBedEditorWindow.resize(900, 500)
+        TestBedEditorWindow.resize(1097, 500)
         self.centralwidget = QtWidgets.QWidget(parent=TestBedEditorWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -97,7 +97,7 @@ class Ui_TestBedEditorWindow(object):
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         TestBedEditorWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=TestBedEditorWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 900, 33))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1097, 33))
         self.menubar.setObjectName("menubar")
         TestBedEditorWindow.setMenuBar(self.menubar)
 
