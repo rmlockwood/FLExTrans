@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.14 - 9/28/26 - Ron Lockwood
+#    Translate all UI strings and load the translations for this module, its window and the libraries it uses.
+#
 #   Version 3.17.13 - 9/25/26 - Ron Lockwood
 #    Use a light-grey background for the selected tree item.
 #
@@ -65,6 +68,11 @@
 # Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged 
 # tracks edits, save writes all rows, and closeEvent handles unsaved changes.
 #
+# TRANSLATION
+#
+# The docs dictionary is translated at import time, so the module-level code loads just this module's .qm before docs is built. MainFunction then loads the .qm files for the libraries and the window
+# (librariesToTranslate) plus Qt's base translations for the standard buttons in the message boxes. Strings in the window itself come from TestBedEditorWindow.ui and live in TestBedEditorWindow_xx.ts.
+#
 
 import html
 import os
@@ -101,13 +109,25 @@ from TestBedEditorWindow import Ui_TestBedEditorWindow
 _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TestBedEditor'
 
+translators = []
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication(['FLExTrans'])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# Libraries (and the window) whose translations we load in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEditorWindow']
+
 docs = {
-    FTM_Name:        "Testbed Editor",
-    FTM_Version:     "3.17.12",
+    FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
+    FTM_Version:     "3.17.14",
     FTM_ModifiesDB:  False,
-    FTM_Synopsis:    "View and edit tests in the testbed.",
+    FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
-    FTM_Description: "View and edit tests in the testbed.",
+    FTM_Description: _translate("TestBedEditor", "View and edit tests in the testbed."),
 }
 
 # Column indices
@@ -225,7 +245,7 @@ class Main(QMainWindow):
         luItem = self._createDefaultLexicalUnitItem(parentItem, insertBefore)
         self.ui.treeWidget.setCurrentItem(luItem)
         self.unsaved = True
-        self.ui.saveLabel.setText('There are unsaved changes.')
+        self.ui.saveLabel.setText(_translate("TestBedEditor", 'There are unsaved changes.'))
 
     def _deleteLexicalUnitForItem(self, item):
         if item is None or item.parent() is None:
@@ -234,7 +254,7 @@ class Main(QMainWindow):
         parentItem = item.parent()
         parentItem.takeChild(parentItem.indexOfChild(item))
         self.unsaved = True
-        self.ui.saveLabel.setText('There are unsaved changes.')
+        self.ui.saveLabel.setText(_translate("TestBedEditor", 'There are unsaved changes.'))
 
     def _onTreeContextMenu(self, pos):
         item = self.ui.treeWidget.itemAt(pos)
@@ -244,11 +264,11 @@ class Main(QMainWindow):
         self.ui.treeWidget.setCurrentItem(item)
         menu = QMenu(self)
 
-        addAction = QAction('Add Lexical Unit', self)
+        addAction = QAction(_translate("TestBedEditor", 'Add Lexical Unit'), self)
         addAction.triggered.connect(lambda: self._addLexicalUnitForItem(item))
         menu.addAction(addAction)
 
-        deleteAction = QAction('Delete this Lexical Unit', self)
+        deleteAction = QAction(_translate("TestBedEditor", 'Delete this Lexical Unit'), self)
         deleteAction.setEnabled(item.parent() is not None)
         deleteAction.triggered.connect(lambda: self._deleteLexicalUnitForItem(item))
         menu.addAction(deleteAction)
@@ -341,15 +361,15 @@ class Main(QMainWindow):
 
     def _addTest(self):
         dialog = QDialog(self)
-        dialog.setWindowTitle('Add Test')
+        dialog.setWindowTitle(_translate("TestBedEditor", 'Add Test'))
         layout = QFormLayout(dialog)
 
         sourceEdit = QLineEdit(dialog)
         expectedEdit = QLineEdit(dialog)
         commentEdit = QLineEdit(dialog)
-        layout.addRow('Source Text:', sourceEdit)
-        layout.addRow('Expected Result:', expectedEdit)
-        layout.addRow('Comment:', commentEdit)
+        layout.addRow(_translate("TestBedEditor", 'Source Text:'), sourceEdit)
+        layout.addRow(_translate("TestBedEditor", 'Expected Result:'), expectedEdit)
+        layout.addRow(_translate("TestBedEditor", 'Comment:'), commentEdit)
 
         buttonBox = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok |
@@ -392,7 +412,7 @@ class Main(QMainWindow):
         tree.resizeColumnToContents(COL_GRAMCAT)
 
         self.unsaved = True
-        self.ui.saveLabel.setText('There are unsaved changes.')
+        self.ui.saveLabel.setText(_translate("TestBedEditor", 'There are unsaved changes.'))
 
     def _colorLexicalUnitItem(self, luItem):
         luItem.setForeground(COL_SOURCE, QBrush(QColor('#' + LEMMA_COLOR)))
@@ -426,12 +446,12 @@ class Main(QMainWindow):
         testObj = testItem.data(COL_SOURCE, Qt.ItemDataRole.UserRole)
         lexicalUnits = testObj.getFormattedLUString()
         expectedResult = html.escape(testItem.text(COL_EXPECTED))
-        message = ('Are you sure you want to delete this test?<br><br>'
-                   '<b>Lexical Units:</b> ' + lexicalUnits + '<br>'
-                   '<b>Expected Result:</b> ' + expectedResult)
+
+        # The message is rich text; the lexical units string is already HTML (colored spans) and the expected result was escaped above.
+        message = _translate("TestBedEditor", 'Are you sure you want to delete this test?<br><br><b>Lexical Units:</b> {lexicalUnits}<br><b>Expected Result:</b> {expectedResult}').format(lexicalUnits=lexicalUnits, expectedResult=expectedResult)
 
         confirm = QMessageBox(self)
-        confirm.setWindowTitle('Delete Test')
+        confirm.setWindowTitle(_translate("TestBedEditor", 'Delete Test'))
         confirm.setIcon(QMessageBox.Icon.Question)
         confirm.setTextFormat(Qt.TextFormat.RichText)
         confirm.setText(message)
@@ -444,7 +464,7 @@ class Main(QMainWindow):
         self.testbedFileObj.getFLExTransTestbedXMLObject().removeFromTestbed(testObj)
         self.ui.treeWidget.takeTopLevelItem(self.ui.treeWidget.indexOfTopLevelItem(testItem))
         self.unsaved = True
-        self.ui.saveLabel.setText('Test deleted. There are unsaved changes.')
+        self.ui.saveLabel.setText(_translate("TestBedEditor", 'Test deleted. There are unsaved changes.'))
 
     # ------------------------------------------------------------------
     # Change tracking
@@ -461,7 +481,7 @@ class Main(QMainWindow):
                 item.setText(COL_FEATURES, features)
 
         self.unsaved = True
-        self.ui.saveLabel.setText('There are unsaved changes.')
+        self.ui.saveLabel.setText(_translate("TestBedEditor", 'There are unsaved changes.'))
 
     # ------------------------------------------------------------------
     # Save
@@ -525,7 +545,7 @@ class Main(QMainWindow):
 
         self.testbedFileObj.write()
         self.unsaved = False
-        self.ui.saveLabel.setText('Testbed file saved.')
+        self.ui.saveLabel.setText(_translate("TestBedEditor", 'Testbed file saved.'))
 
     # ------------------------------------------------------------------
     # Close
@@ -534,7 +554,7 @@ class Main(QMainWindow):
     def closeEvent(self, event):
         if self.unsaved:
             confirm = QMessageBox.question(
-                self, 'Unsaved Changes', 'Save changes before exiting?',
+                self, _translate("TestBedEditor", 'Unsaved Changes'), _translate("TestBedEditor", 'Save changes before exiting?'),
                 QMessageBox.StandardButton.Save |
                 QMessageBox.StandardButton.Discard |
                 QMessageBox.StandardButton.Cancel,
@@ -548,9 +568,13 @@ class Main(QMainWindow):
 
 def MainFunction(DB, report, modifyAllowed):
 
+    translators = []
     app = QApplication.instance()
+
     if app is None:
-        app = QApplication([])
+        app = QApplication(['FLExTrans'])
+
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], translators, loadBase=True)
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -564,7 +588,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     if not testbedFileObj.exists():
-        report.Error('Testbed file does not exist. Please add tests to the testbed first.')
+        report.Error(_translate("TestBedEditor", 'Testbed file does not exist. Please add tests to the testbed first.'))
         return
 
     testbedXMLObj = testbedFileObj.getFLExTransTestbedXMLObject()
