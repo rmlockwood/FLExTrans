@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.17.2 - 9/28/26 - Ron Lockwood
+#    Fixes #1570. Added an Open Target Project menu item that starts FLEx with the target project from the settings and reports to the FlexTools output area.
+#
 #   Version 3.17.1 - 8/28/26 - Ron Lockwood
 #    Show the FLExTrans icon in the About box by using a Qt message box and make the web address a clickable link.
 #
@@ -45,6 +48,7 @@ from System.Windows.Forms import (  # type: ignore
 
 import os
 import subprocess
+from subprocess import Popen, DETACHED_PROCESS
 
 import SettingsGUI
 from FTPaths import HELP_DIR, TOOLS_DIR
@@ -56,6 +60,7 @@ import ctypes
 user32 = ctypes.windll.user32
 
 from flextoolslib import lockUI
+from flextoolslib.code import FLExTools as FTMain
 
 def RunSettings(sender, event):
     lockUI(True)
@@ -123,6 +128,57 @@ def RunEditTransferRules(sender, event):
                         _translate("FLExTransMenu", "Error"),
                         MessageBoxButtons.OK)
 
+def RunOpenTargetProject(sender, event):
+
+    translators = []
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication(['FLExTrans'])
+
+    Utils.loadTranslations(librariesToTranslate + ['Utils', TRANSL_TS_NAME], translators, loadBase=False)
+
+    # Write to the FlexTools output area, the same place FlexTools' own "Open project in FieldWorks" menu item reports to. flextoolslib doesn't export its main form, but keeps
+    # it in the module global FLExTools.mainForm (that's what lockUI uses). A menu item can only be clicked once the main form exists, so it is never None here.
+    assert FTMain.mainForm is not None
+    reportWindow = FTMain.mainForm.UIPanel.reportWindow
+    report = reportWindow.Reporter
+
+    configMap = ReadConfig.readConfig(report)
+
+    if not configMap:
+        return
+
+    # Get the name of the target project from the settings
+    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report=None, giveError=False)
+
+    if not targetProj:
+
+        report.Error(_translate("FLExTransMenu", "No target project is set in the settings."))
+        return
+
+    # Get the path to the FLEx executable the same way the Open Multiple FLEx Projects module does. The helper reports an error and returns None if FIELDWORKSDIR isn't set.
+    flexExe = Utils.getFlexExePath(report)
+
+    if not flexExe:
+        return
+
+    if not os.path.isfile(flexExe):
+
+        report.Error(_translate("FLExTransMenu", "Could not find the FLEx executable: {flexExe}.").format(flexExe=Utils.shortenPathForDisplay(flexExe)))
+        return
+
+    # Plain text line, matching what FlexTools shows when it opens the current project
+    reportWindow.Report(_translate("FLExTransMenu", "Opening project '{proj}' in FieldWorks...").format(proj=targetProj))
+
+    # Start FLEx on the target project. Detach it so that FLEx keeps running independently of FlexTools. If the project is already open, FLEx just brings that window forward.
+    try:
+        Popen([flexExe, '-db', targetProj], creationflags=DETACHED_PROCESS)
+
+    except OSError as e:
+
+        report.Error(_translate("FLExTransMenu", "Error occurred while trying to open the {proj} project: {e}").format(proj=targetProj, e=e))
+
 def RunHelp(sender, event):
 
     HelpFile = os.path.join(HELP_DIR, "UserDoc.htm")
@@ -167,6 +223,7 @@ customMenu = (
         (RunHelp, _translate("FLExTransMenu", "Help"), Keys.Control | Keys.H, None),
         (RunSettings, _translate("FLExTransMenu", "Settings"), Keys.Control | Keys.S, None),
         (RunEditTransferRules, _translate("FLExTransMenu", "Edit Transfer Rules"), Keys.Control | Keys.T, None),
+        (RunOpenTargetProject, _translate("FLExTransMenu", "Open Target Project"), Keys.Control | Keys.Shift | Keys.T, _translate("FLExTransMenu", "Open the target project in FLEx")),
         (RunAbout, _translate("FLExTransMenu", "About"), None, _translate("FLExTransMenu", "About FLExTrans")),
     ],
 )

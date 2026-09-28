@@ -62,5 +62,35 @@ Compilación {build}, {build_date}</translation>
       <source>Error</source>
       <translation>Error</translation>
     </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="231"/>
+      <source>Open Target Project</source>
+      <translation>Abrir proyecto de destino</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="231"/>
+      <source>Open the target project in FLEx</source>
+      <translation>Abrir el proyecto de destino en FLEx</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="157"/>
+      <source>No target project is set in the settings.</source>
+      <translation>No se ha establecido ningún proyecto de destino en la configuración.</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="168"/>
+      <source>Could not find the FLEx executable: {flexExe}.</source>
+      <translation>No se pudo encontrar el ejecutable de FLEx: {flexExe}.</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="180"/>
+      <source>Error occurred while trying to open the {proj} project: {e}</source>
+      <translation>Error ocurrido al intentar abrir el proyecto {proj}: {e}</translation>
+    </message>
+    <message>
+      <location filename="../FLExTransMenu.py" line="172"/>
+      <source>Opening project '{proj}' in FieldWorks...</source>
+      <translation>Abriendo proyecto '{proj}' en FieldWorks...</translation>
+    </message>
   </context>
 </TS>
