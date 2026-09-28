@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.10 - 9/28/26 - Ron Lockwood
+#    Come back to the tester after the Testbed Log Viewer or the Replacement Dictionary Editor closes, as the other launched tools already do.
+#
+#   Version 3.17.9 - 9/28/26 - Ron Lockwood
+#    The Edit Testbed button now opens the Testbed Editor.
+#
 #   Version 3.17.8 - 9/8/26 - Ron Lockwood
 #    Test the section-def-cats element for None rather than for truth.
 #
@@ -390,8 +396,8 @@
 #   Several buttons can't do their work while this window is up, so they set a member, close the window, and let MainFunction() act on the return code RunModule() hands back:
 #    - Changing the source text combo box, or the Refresh Source Project button, returns RESTART_MODULE. MainFunction() then closes and reopens the FLEx project - which is the point, since that
 #      is what clears the cache so edits made in FLEx get picked up - and loops round to build the window again on the new text.
-#    - View Testbed Log returns START_LOG_VIEWER, Rule Assistant returns START_RULE_ASSISTANT (which runs it and then restarts the tester), and Edit Replacement File returns
-#      START_REPLACEMENT_EDITOR.
+#    - View Testbed Log returns START_LOG_VIEWER, Rule Assistant returns START_RULE_ASSISTANT, Edit Testbed returns START_TESTBED_EDITOR and Edit Replacement File returns
+#      START_REPLACEMENT_EDITOR. For each of these MainFunction() runs the other tool and, once its window closes, restarts the tester.
 #
 #   OTHER KEY FEATURES
 #
@@ -498,7 +504,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.8",
+        FTM_Version    : "3.17.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -931,6 +937,7 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = False
         self.startRuleAssistant = False
         self.startReplacementEditor = False
+        self.startTestbedEditor = False
         self.HCdllObj = None
         self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
@@ -1901,7 +1908,9 @@ class Main(QMainWindow):
 
     def EditTestbedButtonClicked(self):
 
-        self.launchInXXE(self.__testbedPath, _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
+        # Close the tool and MainFunction() will run the Testbed Editor and then restart the tester
+        self.startTestbedEditor = True
+        self.close()
 
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
@@ -3560,6 +3569,7 @@ NO_ERRORS = 2
 START_LOG_VIEWER = 3
 START_RULE_ASSISTANT = 4
 START_REPLACEMENT_EDITOR = 5
+START_TESTBED_EDITOR = 6
 
 def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
@@ -3764,6 +3774,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         restartTester         = window.restartTester
         startTestbedLogViewer = window.startTestbedLogViewer
         startRuleAssistant    = window.startRuleAssistant
+        startTestbedEditor    = window.startTestbedEditor
         startReplacementEditor= window.startReplacementEditor
         window.deleteLater()
         del window
@@ -3784,6 +3795,10 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         elif startReplacementEditor:
 
             return START_REPLACEMENT_EDITOR
+
+        elif startTestbedEditor:
+
+            return START_TESTBED_EDITOR
     else:
         report.Error(_translate('LiveRuleTesterTool', 'This text has no data.'))
         return ERROR_HAPPENED
@@ -3847,19 +3862,45 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
             # Show we are re-running the LRT
             report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
             retVal = RESTART_MODULE
-        else:
+
+        elif retVal == START_TESTBED_EDITOR:
+
+            from TestBedEditor import MainFunction as TE
+            from TestBedEditor import docs as TE_docs
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=TE_docs[FTM_Name], version=TE_docs[FTM_Version]))
+            TE(DB, report, modify)
+
+            # Show we are re-running the LRT
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
+            retVal = RESTART_MODULE
             ruleCount = None
 
-    # Start the log viewer
-    if retVal == START_LOG_VIEWER:
+        # Start the log viewer
+        elif retVal == START_LOG_VIEWER:
 
-        TestbedLogViewer.RunTestbedLogViewer(report)
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=TestbedLogViewer.docs[FTM_Name], version=TestbedLogViewer.docs[FTM_Version]))
+            TestbedLogViewer.RunTestbedLogViewer(DB, report, modify)
 
-    # Start the replacement dictionary editor
-    elif retVal == START_REPLACEMENT_EDITOR:
+            # Show we are re-running the LRT
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
+            retVal = RESTART_MODULE
+            ruleCount = None
 
-        from ReplacementEditor import MainFunction as RE
-        RE(DB, report, modify)
+        # Start the replacement dictionary editor
+        elif retVal == START_REPLACEMENT_EDITOR:
+
+            from ReplacementEditor import MainFunction as RE
+            from ReplacementEditor import docs as RE_docs
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RE_docs[FTM_Name], version=RE_docs[FTM_Version]))
+            RE(DB, report, modify)
+
+            # Show we are re-running the LRT
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
+            retVal = RESTART_MODULE
+            ruleCount = None
+
+        else:
+            ruleCount = None
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
