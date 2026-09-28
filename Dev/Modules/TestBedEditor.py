@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.15 - 9/28/26 - Ron Lockwood
+#    Wrote a full module description, including how to separate multiple features, classes or affixes with a period.
+#
 #   Version 3.17.14 - 9/28/26 - Ron Lockwood
 #    Translate all UI strings and load the translations for this module, its window and the libraries it uses.
 #
@@ -123,11 +126,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.14",
+    FTM_Version:     "3.17.15",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
-    FTM_Description: _translate("TestBedEditor", "View and edit tests in the testbed."),
+    FTM_Description: _translate("TestBedEditor",
+"""View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the headword with its homograph and sense numbers (e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered, and choosing a headword fills in its category and features. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file."""),
 }
 
 # Column indices
