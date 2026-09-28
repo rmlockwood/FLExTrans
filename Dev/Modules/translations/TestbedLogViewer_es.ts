@@ -16,7 +16,7 @@
     <message>
       <location filename="../TestbedLogViewer.py" line="99"/>
       <source>View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.</source>
-      <translation>Ver resultados de ejecución del banco de pruebas. El número de resultados a mostrar está establecido por defecto en 25. Cambie MAX_RESULTS_TO_DISPLAY a un valor diferente según sea necesario.</translation>
+      <translation>Ver resultados de ejecución del banco de pruebas. El número de resultados a mostrar está establecido por defecto en 25. Cambia MAX_RESULTS_TO_DISPLAY a un valor diferente según sea necesario.</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="139"/>
@@ -36,17 +36,17 @@
     <message>
       <location filename="../TestbedLogViewer.py" line="198"/>
       <source>Source Lexical Unit(s)</source>
-      <translation>Unidad(es) Léxica(s) de Origen</translation>
+      <translation>Unidades léxicas de origen</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="200"/>
       <source>Expected Result</source>
-      <translation>Resultado Esperado</translation>
+      <translation>Resultado esperado</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="202"/>
       <source>Actual Result</source>
-      <translation>Resultado Real</translation>
+      <translation>Resultado real</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="224"/>
@@ -66,7 +66,7 @@
     <message>
       <location filename="../TestbedLogViewer.py" line="342"/>
       <source>Source text: {origin}.</source>
-      <translation>Source text: {origin}.</translation>
+      <translation>Texto de origen: {origin}.</translation>
     </message>
     <message>
       <location filename="../TestbedLogViewer.py" line="396"/>
@@ -91,7 +91,7 @@
     <message>
       <location filename="../TestbedLogViewer.py" line="647"/>
       <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
-      <translation>Archivo del banco de pruebas: {testbedPath} no existe. Por favor, agregue pruebas al banco de pruebas.</translation>
+      <translation>Archivo del banco de pruebas: {testbedPath} no existe. Añade pruebas al banco de pruebas.</translation>
     </message>
   </context>
 </TS>

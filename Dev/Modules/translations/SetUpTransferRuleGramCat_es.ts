@@ -26,12 +26,12 @@ attributes in the transfer rule file from FLEx inflection features, inflection c
 and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.</source>
       <translation>Este módulo primero recorre tanto el proyecto FLEx de origen como el de destino y extrae las listas de categorías gramaticales. Sustituirá lo que actualmente está listado en las etiquetas del atributo a_gram_cat con las listas extraídas. Las categorías duplicadas serán descartadas. Además, se seguirán las convenciones de nomenclatura como en el léxico bilingüe. Es decir, los espacios se convertirán en guiones bajos, y se eliminarán los puntos y las barras.
-Este módulo también rellenará la sección de categorías del archivo de reglas de transferencia con las categorías gramaticales del proyecto FLEx de origen. Asimismo, creará atributos en dicho archivo a partir de características de inflexión de FLEx, clases de inflexión y espacios de plantillas. Puedes decidir cuáles de estos elementos se utilizarán y si se deben sobrescribir los atributos existentes.</translation>
+Este módulo también rellenará la sección de categorías del archivo de reglas de transferencia con las categorías gramaticales del proyecto FLEx de origen. Asimismo, creará atributos en dicho archivo a partir de rasgos de flexión de FLEx, clases de flexión y espacios de plantillas. Puedes decidir cuáles de estos elementos se utilizarán y si se deben sobrescribir los atributos existentes.</translation>
     </message>
     <message>
       <location filename="../SetUpTransferRuleGramCat.py" line="536"/>
       <source>There was a problem finding the transfer rules file. Check your configuration.</source>
-      <translation>Hubo un problema encontrando el archivo de reglas de transferencia. Verifique su configuración.</translation>
+      <translation>Hubo un problema encontrando el archivo de reglas de transferencia. Verifica su configuración.</translation>
     </message>
     <message>
       <location filename="../SetUpTransferRuleGramCat.py" line="548"/>
