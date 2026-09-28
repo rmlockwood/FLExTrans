@@ -25,7 +25,7 @@ must run the modules up to and including {runApert} before running this module.<
     <message>
       <location filename="../ViewSrcTgt.py" line="235"/>
       <source>File Error</source>
-      <translation>Error de Archivo</translation>
+      <translation>Error de archivo</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="232"/>
