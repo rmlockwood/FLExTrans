@@ -3597,7 +3597,13 @@ type="tFlexx"
 ></object
 > project, including your source project.</p
 ><p
->The tool shows a list of all the texts in the chosen project. Hold down Ctrl or Shift to select more than one, then click <object
+>The tool shows a list of all the texts in the chosen project. Each text is listed by its analysis title, which is where <object
+type="tFlextrans"
+></object
+> writes names like Matthew 01. If the text also has a vernacular title, the title <object
+type="tFlexx"
+></object
+> shows by default, it follows in parentheses. A text that only has a vernacular title is listed by that title. Hold down Ctrl or Shift to select more than one, then click <object
 type="tBold"
 >OK</object
 >. Before anything is deleted, you are shown the names of the texts you selected, in alphabetical order, and asked to confirm. The confirmation lists every text you selected, so scroll through it to check the list before answering Yes.</p
@@ -3665,7 +3671,10 @@ type="tFlexx"
 >At the top of the window, choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. If your texts are named in some other way, choose <object
 type="tBold"
 >(choose the texts myself)</object
-> instead and build the list by hand. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. <exampleRef
+> instead and build the list by hand. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. As in the <object
+type="tTool"
+>Delete Texts</object
+> tool, a text that also has a vernacular title shows it in parentheses after its name. <exampleRef
 letter="xMergeTexts"
 num="xMergeTexts"
 ></exampleRef

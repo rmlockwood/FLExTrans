@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.1 - 9/28/26 - Ron Lockwood
+#    Fixes #1567. Show vernacular titles in parens (vernacular-only texts by that title, not "***"); docs say the list starts with the target project.
+#
 #   Version 3.17 - 9/9/26 - Ron Lockwood
 #    Initial version.
 #
@@ -25,16 +28,19 @@
 #
 #   WHAT THE LIST SHOWS
 #
-#   Every IText in the project, sorted case-insensitively by name. This is deliberately not the same set that FLEx's own Interlinear Texts list shows: FLEx filters that list by per-user settings
-#   (excluded texts, genre checkboxes) that live in the user's FLEx configuration rather than in the project data, so FLExTrans cannot see them. The list here can therefore legitimately show more
-#   texts than FLEx does. Scripture books do not appear at all - those are IScrBook objects living in FLEx's Scripture area, not ITexts.
+#   Every IText in the project, sorted case-insensitively by name. The name is the analysis title (where FLExTrans writes names like "Matthew 01"); if the text also has a vernacular title, that
+#   follows in parens, since FLEx shows the vernacular title by default and the user may be comparing the two lists. A text with only a vernacular title is named by it rather than shown as "***".
+#
+#   The set of texts is deliberately not the same set that FLEx's own Interlinear Texts list shows: FLEx filters that list by per-user settings (excluded texts, genre checkboxes) that live in the
+#   user's FLEx configuration rather than in the project data, so FLExTrans cannot see them. The list here can therefore legitimately show more texts than FLEx does. Scripture books do not appear
+#   at all - those are IScrBook objects living in FLEx's Scripture area, not ITexts.
 #
 #   The row for the text that FLExTrans is currently configured to translate (the SourceTextName setting) is marked so the user doesn't delete it by accident. It is not blocked, though - if it does
 #   get deleted, the setting is blanked out afterwards and the FlexTools status bar is refreshed, so nothing downstream is left pointing at a text that no longer exists. That marking and clearing
 #   only apply while the source project is the one on show: SourceTextName names a text in the source project, so a same-named text in some other project is unrelated to it.
 #
-#   Each row carries the IText object itself, not just its name. That matters because the marked row's displayed text is not the text's real name, and because the whole repository is pulled into a
-#   list up front: walking the repository iterator while deleting out of it would invalidate the iterator part way through.
+#   Each row carries the IText object itself, not just its name. That matters because a row's displayed text (the marker, the vernacular title) is not the text's real name, and because the whole
+#   repository is pulled into a list up front: walking the repository iterator while deleting out of it would invalidate the iterator part way through.
 #
 #   One more ordering trap: Qt's selectedItems() hands back the rows in the order the user Ctrl-clicked them, not in row order, so the selection is re-sorted by name on the way out of the window.
 #   Without that, the confirmation box and the report pane would both list the texts in click order, which reads as random.
@@ -85,14 +91,14 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DeleteTexts", "Delete Texts"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("DeleteTexts", "Delete one or more texts from a FLEx project."),
+        FTM_Synopsis   : _translate("DeleteTexts", "Delete one or more texts from a FLEx project. It starts by listing the texts in your target project."),
         FTM_Help       : "",
         FTM_Description: _translate("DeleteTexts",
-"""Choose a FLEx project, then select one or more of its texts and delete them. Hold Ctrl or Shift to select more than one text.
-The project list starts on your target project, since the texts you usually want to clear out are the ones FLExTrans inserted
-there, but you can pick any FLEx project, including your source project. 
+"""Select one or more texts and delete them. The list starts with the texts in your target project, since the texts you usually
+want to clear out are the ones FLExTrans inserted there. You can choose another FLEx project, including your source project,
+to list its texts instead. Hold Ctrl or Shift to select more than one text.
 Deleting a text this way CANNOT be undone, in FLExTrans or in FLEx, so the module asks you to confirm and
 lists what it is about to delete. Before running it, make sure you are not in the Texts & Words section of FLEx, otherwise FLEx
 may be left holding on to a text that no longer exists. If you delete the text that FLExTrans is currently set up to translate, 
@@ -220,7 +226,7 @@ class MainWindow(QMainWindow):
 
         # Pull the whole repository into a list now, before anything is deleted - walking the repository iterator while deleting out of it would invalidate the iterator part way through.
         textObjList = []
-        textNameList = Utils.getSourceTextList(projectDB, textObjList=textObjList)
+        textNameList = Utils.getSourceTextList(projectDB, textObjList=textObjList, vernacularFallback=True)
 
         if not textNameList:
 
@@ -235,15 +241,15 @@ class MainWindow(QMainWindow):
         # Sort by name, case-insensitively, the way source text lists are sorted elsewhere in FLExTrans.
         textPairList = sorted(zip(textNameList, textObjList), key=lambda textPair: textPair[0].casefold())
 
-        # Each row displays the text name but carries the (name, IText object) pair under UserRole. The delete loop uses that pair, not the
-        # row's text, because the marked row's text isn't the real name.
+        # Each row displays the text name (plus any vernacular title) but carries the (name, IText object) pair under UserRole. The delete loop uses that pair, not the row's text, because the
+        # displayed text isn't the real name.
         for textName, textObj in textPairList:
+
+            displayName = Utils.getTextDisplayName(textObj, textName)
 
             if markActiveText and textName == self.activeTextName:
 
-                displayName = _translate("DeleteTexts", "{textName}  [current FLExTrans source text]").format(textName=textName)
-            else:
-                displayName = textName
+                displayName = _translate("DeleteTexts", "{textName}  [current FLExTrans source text]").format(textName=displayName)
 
             item = QListWidgetItem(displayName)
             item.setData(Qt.ItemDataRole.UserRole, (textName, textObj))
@@ -428,7 +434,8 @@ def deleteSelectedTexts(window, DB, report, activeTextName):
     projectName = window.selectedProjectName
     selectedNameList = [textName for textName, _ in window.selectedTextPairs]
 
-    if not confirmDeletion(selectedNameList):
+    # Confirm with the same display names the list showed, vernacular titles included, so the user recognises what they picked.
+    if not confirmDeletion([Utils.getTextDisplayName(textObj, textName) for textName, textObj in window.selectedTextPairs]):
 
         report.Info(_translate("DeleteTexts", "No texts were deleted."))
         return

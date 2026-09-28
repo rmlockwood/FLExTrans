@@ -75,8 +75,8 @@
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="90" />
-        <source>Delete one or more texts from a FLEx project.</source>
-        <translation>Eliminar uno o más textos de un proyecto FLEx.</translation>
+        <source>Delete one or more texts from a FLEx project. It starts by listing the texts in your target project.</source>
+        <translation>Eliminar uno o más textos de un proyecto FLEx. Al comenzar, muestra los textos de su proyecto de destino.</translation>
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="136" />
@@ -110,17 +110,17 @@
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="92" />
-        <source>Choose a FLEx project, then select one or more of its texts and delete them. Hold Ctrl or Shift to select more than one text.
-The project list starts on your target project, since the texts you usually want to clear out are the ones FLExTrans inserted
-there, but you can pick any FLEx project, including your source project. 
+        <source>Select one or more texts and delete them. The list starts with the texts in your target project, since the texts you usually
+want to clear out are the ones FLExTrans inserted there. You can choose another FLEx project, including your source project,
+to list its texts instead. Hold Ctrl or Shift to select more than one text.
 Deleting a text this way CANNOT be undone, in FLExTrans or in FLEx, so the module asks you to confirm and
 lists what it is about to delete. Before running it, make sure you are not in the Texts &amp; Words section of FLEx, otherwise FLEx
 may be left holding on to a text that no longer exists. If you delete the text that FLExTrans is currently set up to translate, 
 the source text setting is cleared and you will need
 to choose a new source text in the FLExTrans Settings.</source>
-        <translation>Elija un proyecto FLEx, luego seleccione uno o más de sus textos y elimínelos. Mantenga pulsada la tecla Ctrl o Mayús para
-seleccionar más de un texto. La lista de proyectos comienza con su proyecto de destino, ya que los textos que normalmente desea
-eliminar son los que FLExTrans insertó allí, pero puede elegir cualquier proyecto FLEx, incluido su proyecto de origen.
+        <translation>Seleccione uno o más textos y elimínelos. La lista comienza con los textos de su proyecto de destino, ya que los textos que
+normalmente desea eliminar son los que FLExTrans insertó allí. Puede elegir otro proyecto FLEx, incluido su proyecto de origen,
+para ver sus textos en su lugar. Mantenga pulsada la tecla Ctrl o Mayús para seleccionar más de un texto.
 La eliminación de un texto de esta manera NO se puede deshacer, ni en FLExTrans ni en FLEx, por lo que el módulo le pide
 confirmación y enumera lo que va a eliminar. Antes de ejecutarlo, asegúrese de no estar en la sección Textos y palabras de FLEx;
 de lo contrario, FLEx podría quedarse apuntando a un texto que ya no existe. Si elimina el texto que FLExTrans está configurado

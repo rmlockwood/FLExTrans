@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.2 - 9/28/26 - Ron Lockwood
+#    Fixes #1563. In the report, name a text that has only a vernacular title by that title, as the window does, instead of "***".
+#
 #   Version 3.17.1 - 9/11/26 - Ron Lockwood
 #    Fixes #1560. Say 'multiple texts' instead of 'several texts' in the module synopsis, description and the window's intro label, since a merge can be of just two texts.
 #
@@ -101,7 +104,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'MergeTextsDlg', 'Mer
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("MergeTexts", "Merge Texts"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("MergeTexts", "Combine multiple texts into one, keeping all of the interlinear analyses."),
         FTM_Help       : "",
@@ -239,7 +242,7 @@ def doMerge(DB, report, configMap, mergeInfo):
     """Create the merged text and move every selected text's paragraphs into it, in the order the user approved."""
 
     # Snapshot everything needed BEFORE the first move. Once paragraphs start moving, the source ParagraphsOS sequences shrink underneath us, so nothing may be recomputed from them mid-loop.
-    sourceTripleList = [(Utils.as_string(sourceText.Name).strip(), sourceText, sourceText.ContentsOA) for sourceText in mergeInfo.sourceTextList]
+    sourceTripleList = [(Utils.getTextName(sourceText), sourceText, sourceText.ContentsOA) for sourceText in mergeInfo.sourceTextList]
     paraCountList = [contentsObj.ParagraphsOS.Count if contentsObj is not None else 0 for _sourceName, _sourceText, contentsObj in sourceTripleList]
 
     report.ProgressStart(len(sourceTripleList) + 2, _translate("MergeTexts", "Counting the interlinear analyses..."))
