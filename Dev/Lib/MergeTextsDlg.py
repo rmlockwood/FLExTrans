@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.2 - 9/28/26 - Ron Lockwood
+#    Fixes #1563. Show a text's vernacular title in parens after its name, and name a vernacular-only text by its title instead of "***".
+#
 #   Version 3.17.1 - 9/11/26 - Ron Lockwood
 #    Fixes #1561. Word the coverage sentence in the singular for one chapter.
 #
@@ -35,7 +38,8 @@
 #   WHY EACH ROW CARRIES ITS OBJECT
 #
 #   Each row holds the (name, IText, IStText) triple under UserRole rather than being looked up later by its display string. Two reasons, both real: the row for the configured source text has a
-#   marker appended to it so its display string is not the text's name, and FLEx allows two texts to have the same name, so a name is not an identifier. The same reasoning is in DeleteTexts.py.
+#   marker appended to it and any row may have the text's vernacular title in parens after it (see Utils.getTextDisplayName), so the display string is not the text's name; and FLEx allows two
+#   texts to have the same name, so a name is not an identifier. The same reasoning is in DeleteTexts.py.
 #
 #   THE HAZARDS
 #
@@ -248,7 +252,8 @@ class MergeTextsDlg(QDialog):
 
         contentsObjList = []
         textObjList = []
-        nameList = Utils.getSourceTextList(self.DB, matchingContentsObjList=contentsObjList, textObjList=textObjList)
+        # A text with only a vernacular title is named by it rather than "***", so it sorts, groups and reads sensibly.
+        nameList = Utils.getSourceTextList(self.DB, matchingContentsObjList=contentsObjList, textObjList=textObjList, vernacularFallback=True)
 
         tripleList = list(zip(nameList, textObjList, contentsObjList))
 
@@ -297,13 +302,13 @@ class MergeTextsDlg(QDialog):
 
         textName = textTriple[0]
 
+        # Show the vernacular title in parens after the name, since that is what FLEx shows by default and the user may be comparing the two.
+        displayName = Utils.getTextDisplayName(textTriple[1], textName)
+
         # Mark the text FLExTrans is currently set up to translate, so the user can see which one it is before merging it away.
         if self.activeTextName and textName == self.activeTextName:
 
-            displayName = _translate("MergeTextsDlg", "{textName}  [current FLExTrans source text]").format(textName=textName)
-
-        else:
-            displayName = textName
+            displayName = _translate("MergeTextsDlg", "{textName}  [current FLExTrans source text]").format(textName=displayName)
 
         item = QListWidgetItem(displayName)
         item.setData(Qt.ItemDataRole.UserRole, textTriple)
@@ -848,9 +853,10 @@ class MergeTextsDlg(QDialog):
 
             return
 
-        nameList = [textName for textName, _textObj, _contentsObj in tripleList]
+        # Confirm with the same display names the lists showed, vernacular titles included, so the user recognises what they picked.
+        displayNameList = [Utils.getTextDisplayName(textObj, textName) for textName, textObj, _contentsObj in tripleList]
 
-        if not confirmMerge(nameList, targetName, self):
+        if not confirmMerge(displayNameList, targetName, self):
 
             return
 

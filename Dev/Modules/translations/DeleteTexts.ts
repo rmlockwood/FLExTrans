@@ -75,8 +75,8 @@
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="90" />
-        <source>Delete one or more texts from a FLEx project.</source>
-        <translation>Supprimer un ou plusieurs textes d'un projet FLEx.</translation>
+        <source>Delete one or more texts from a FLEx project. It starts by listing the texts in your target project.</source>
+        <translation>Supprimer un ou plusieurs textes d'un projet FLEx. Le module commence par afficher les textes de votre projet cible.</translation>
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="136" />
@@ -110,18 +110,18 @@
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="92" />
-        <source>Choose a FLEx project, then select one or more of its texts and delete them. Hold Ctrl or Shift to select more than one text.
-The project list starts on your target project, since the texts you usually want to clear out are the ones FLExTrans inserted
-there, but you can pick any FLEx project, including your source project. 
+        <source>Select one or more texts and delete them. The list starts with the texts in your target project, since the texts you usually
+want to clear out are the ones FLExTrans inserted there. You can choose another FLEx project, including your source project,
+to list its texts instead. Hold Ctrl or Shift to select more than one text.
 Deleting a text this way CANNOT be undone, in FLExTrans or in FLEx, so the module asks you to confirm and
 lists what it is about to delete. Before running it, make sure you are not in the Texts &amp; Words section of FLEx, otherwise FLEx
 may be left holding on to a text that no longer exists. If you delete the text that FLExTrans is currently set up to translate, 
 the source text setting is cleared and you will need
 to choose a new source text in the FLExTrans Settings.</source>
-        <translation>Choisissez un projet FLEx, puis sélectionnez un ou plusieurs de ses textes et supprimez-les. Maintenez la touche Ctrl ou Maj
-enfoncée pour sélectionner plusieurs textes. La liste des projets commence par votre projet cible, car les textes que vous
-souhaitez habituellement supprimer sont ceux que FLExTrans y a insérés, mais vous pouvez choisir n'importe quel projet FLEx, y
-compris votre projet source.
+        <translation>Sélectionnez un ou plusieurs textes et supprimez-les. La liste commence par les textes de votre projet cible, car les textes
+que vous souhaitez habituellement supprimer sont ceux que FLExTrans y a insérés. Vous pouvez choisir un autre projet FLEx, y
+compris votre projet source, pour afficher ses textes à la place. Maintenez la touche Ctrl ou Maj enfoncée pour sélectionner
+plusieurs textes.
 La suppression d'un texte de cette manière est IRRÉVERSIBLE, dans FLExTrans comme dans FLEx : le module demande donc une
 confirmation et énumère ce qu'il va supprimer. Avant de l'exécuter, assurez-vous de ne pas être dans la section Textes et mots de
 FLEx, sinon FLEx risque de conserver une référence à un texte qui n'existe plus. Si vous supprimez le texte que FLExTrans est

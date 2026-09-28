@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.17.1 - 9/28/26 - Ron Lockwood
+#    Fixes #1563, #1567. Added getTextName, getTextVernacularTitle, getTextDisplayName and a vernacularFallback option on getSourceTextList, so text lists can show vernacular titles.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -229,7 +232,37 @@
 #
 #   earlier version history removed on 1/15/25
 #
-#   Shared functions
+#   OVERVIEW (AI generated, then edited)
+#
+#   The grab bag of helpers shared by the FLExTrans modules and libraries. There is no single theme: anything two or more files needed ended up here, so the file is best read as a set of loosely
+#   related groups rather than one design. Most of it works against the LCM object model of an open FLEx project (entries, senses, categories, features, texts); the rest is string handling for
+#   Apertium's reserved characters, file-path helpers and translation loading.
+#
+#   STRINGS FROM FLEX
+#
+#   FLEx multistrings are read through as_string (best analysis alternative) and as_vern_string (best vernacular alternative). Their fallbacks are neither symmetrical nor safe to test against:
+#   BestAnalysisAlternative gives "***" when there is no analysis alternative, while BestVernacularAlternative sometimes falls back to the analysis title and sometimes gives "***". That is why
+#   getTextVernacularTitle walks the project's current vernacular writing systems itself: it needs to know whether a vernacular title really exists, not get a fallback.
+#
+#   TEXT NAMES
+#
+#   Text names are taken from the analysis writing system because that is where FLExTrans writes names like "Matthew 01" and what the SourceTextName setting stores. FLEx itself shows the vernacular
+#   title by default, so lists that let the user pick texts use getTextDisplayName to put the vernacular title in parens after the name, making the rows recognisable to someone comparing with FLEx.
+#   The display string is only for show - callers keep the real name alongside it for matching and messages.
+#
+#   A text with no analysis title at all would otherwise be named "***". getTextName (and getSourceTextList with vernacularFallback=True) names it by its vernacular title instead. That option is
+#   off by default because the Settings source text list and the modules that look up the SourceTextName setting compare against plain as_string names, and renaming texts under them would break
+#   the match. Delete Texts and Merge Texts turn it on, since they only use the name within one run.
+#
+#   CODE STRUCTURE
+#
+#   Constants for circumfix tags, Apertium reserved characters, LCM class names, cache and output file names come first. Then, roughly in order: clitic and unique-name helpers (createUniqueTitle,
+#   makeUniqueName); multistring readers (as_string, as_vern_string, as_tag); lexicon lookups (getHeadwordStr, GetEntryWithSense, split_compounds); project opening (getFlexExePath, openProject,
+#   openTargetProject); category and inflection-class checks (get_categories, check_for_cat_errors); text lists (getSourceTextList, getTextVernacularTitle, getTextName, getTextDisplayName,
+#   loadSourceTextList); error-list handling (processErrorList, checkForFatalError); sense-link helpers (getTargetSenseInfo, writeSenseHyperLink); feature and affix queries used by the Rule
+#   Assistant (getLemmasForFeature, getAffixTemplates, getStemFeatures, getInflectionTags); Apertium escaping; and finally path, translation and date-formatting helpers (shortenPathForDisplay,
+#   loadTranslations, LocalizedDateTimeFormatter, get_short_path).
+#
 
 import re
 import tempfile
@@ -286,6 +319,7 @@ APERT_RESERVED_NOT_ANGLE_BRACKETS = r'\[\]@/^${}*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
+NO_ANALYSIS_TITLE = '***'
 MO_STEM_MSA = 'MoStemMsa'
 MO_STEM_ALLOMORPH = 'MoStemAllomorph'
 MO_INFL_AFF_MSA = 'MoInflAffMsa'
@@ -873,12 +907,17 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
     return countList, posAbbrStr
 
-def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None):
+def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None, vernacularFallback=False):
 
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
 
-        sourceList.append(as_string(interlinText.Name).strip())
+        # With vernacularFallback, a text that has only a vernacular title is named by it rather than "***". See TEXT NAMES above for why that isn't the default.
+        if vernacularFallback:
+
+            sourceList.append(getTextName(interlinText))
+        else:
+            sourceList.append(as_string(interlinText.Name).strip())
 
         # if the caller wants to get a list of contents objects, add to the provided list
         if matchingContentsObjList != None:
@@ -891,6 +930,52 @@ def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None):
             textObjList.append(interlinText)
 
     return sourceList
+
+def getTextVernacularTitle(textObj):
+
+    """The text's title in the first of the project's current vernacular writing systems that has one, or None when there is no vernacular title."""
+
+    # Walk the writing systems ourselves rather than using BestVernacularAlternative - that sometimes falls back to the analysis title, which would make a text look like it had a vernacular title.
+    # Every current vernacular writing system is checked, not just the default one, because projects often have the title only in a second vernacular writing system (e.g. another script).
+    for vernWs in textObj.Cache.LanguageProject.CurrentVernacularWritingSystems:
+
+        vernTitle = ITsString(textObj.Name.get_String(vernWs.Handle)).Text
+
+        if vernTitle and vernTitle.strip():
+
+            return vernTitle.strip()
+
+    return None
+
+def getTextName(textObj):
+
+    """The text's analysis title, or its vernacular title when it has no analysis title. NO_ANALYSIS_TITLE ("***") only when it has neither."""
+
+    textName = as_string(textObj.Name).strip()
+
+    # BestAnalysisAlternative gives "***" when the text has no analysis title at all.
+    if textName == NO_ANALYSIS_TITLE:
+
+        vernTitle = getTextVernacularTitle(textObj)
+
+        if vernTitle:
+
+            return vernTitle
+
+    return textName
+
+def getTextDisplayName(textObj, textName):
+
+    """The string to show for a text in a pick list: textName followed by the text's vernacular title in parens, when it has one that differs from textName."""
+
+    vernTitle = getTextVernacularTitle(textObj)
+
+    # When a text only has a vernacular title, textName (from getTextName) already is that title, so don't show it twice.
+    if not vernTitle or vernTitle == textName:
+
+        return textName
+
+    return f'{textName} ({vernTitle})'
 
 def loadSourceTextList(widget, sourceText, sourceTextList):
 
