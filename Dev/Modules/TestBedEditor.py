@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.17 - 9/28/26 - Ron Lockwood
+#    Lint fixes.
+#
 #   Version 3.17.16 - 9/28/26 - Ron Lockwood
 #    Size the header and columns to fit their bold header text, letting the comment column shrink to compensate.
 #
@@ -82,6 +85,7 @@
 
 import html
 import os
+from typing import Optional
 import xml.etree.ElementTree as ET
 
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
@@ -89,7 +93,7 @@ from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QStyle, QStyledItemDelegate, QTreeWidgetItem,
                              QMessageBox)
 from PyQt6.QtCore import QCoreApplication, Qt
-from PyQt6.QtGui import QAction, QFont, QFontMetrics, QBrush, QColor, QIcon, QPalette
+from PyQt6.QtGui import QAction, QCloseEvent, QFont, QFontMetrics, QBrush, QColor, QIcon, QPalette
 
 from flextoolslib import (
     FlexToolsModuleClass,
@@ -129,7 +133,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.16",
+    FTM_Version:     "3.17.17",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -283,7 +287,14 @@ class Main(QMainWindow):
         deleteAction.triggered.connect(lambda: self._deleteLexicalUnitForItem(item))
         menu.addAction(deleteAction)
 
-        menu.exec(self.ui.treeWidget.viewport().mapToGlobal(pos))
+        # The stubs type viewport() as Optional, but a QTreeWidget always has a viewport; guard anyway so the menu is simply skipped rather than crashing.
+        viewport = self.ui.treeWidget.viewport()
+
+        if viewport is None:
+
+            return
+
+        menu.exec(viewport.mapToGlobal(pos))
 
     # ------------------------------------------------------------------
     # Tree loading
@@ -542,6 +553,12 @@ class Main(QMainWindow):
 
         for i in range(tree.topLevelItemCount()):
             testItem = tree.topLevelItem(i)
+
+            # The stubs type topLevelItem() as Optional; it can't be None for an index within topLevelItemCount(), but skip it if it ever is.
+            if testItem is None:
+
+                continue
+
             testObj  = testItem.data(COL_SOURCE, Qt.ItemDataRole.UserRole)
             testNode = testObj.getTestNode()
 
@@ -555,13 +572,30 @@ class Main(QMainWindow):
 
             # Rebuild lexical units from child rows
             sourceInputNode = testNode.find(SOURCE_INPUT)
-            lexUnitsNode    = sourceInputNode.find(LEXICAL_UNITS)
+
+            # A well-formed test always has these nodes (the tree was loaded from them). If one is missing, leave that test's lexical units untouched rather than crash.
+            if sourceInputNode is None:
+
+                continue
+
+            lexUnitsNode = sourceInputNode.find(LEXICAL_UNITS)
+
+            if lexUnitsNode is None:
+
+                continue
+
 
             for child in list(lexUnitsNode):
                 lexUnitsNode.remove(child)
 
             for j in range(testItem.childCount()):
                 luItem  = testItem.child(j)
+
+                # The stubs type child() as Optional; it can't be None for an index within childCount(), but skip it if it ever is.
+                if luItem is None:
+
+                    continue
+
                 hwSense = luItem.text(COL_SOURCE).strip()
                 gramCat = luItem.text(COL_GRAMCAT).strip()
                 features = luItem.text(COL_FEATURES).strip()
@@ -601,7 +635,16 @@ class Main(QMainWindow):
     # Close
     # ------------------------------------------------------------------
 
-    def closeEvent(self, event):
+    def closeEvent(self, a0: Optional[QCloseEvent]) -> None:
+        """Handle window close event. The parameter name/type match QWidget.closeEvent."""
+
+        # Qt always passes an event here; the stubs just type it as Optional.
+        if a0 is None:
+
+            return
+
+        event = a0
+
         if self.unsaved:
             confirm = QMessageBox.question(
                 self, _translate("TestBedEditor", 'Unsaved Changes'), _translate("TestBedEditor", 'Save changes before exiting?'),
