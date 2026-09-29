@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->10 September 2026</date
+>29 September 2026</date
 ><version
 >3.17</version
 ><contents
@@ -2073,6 +2073,14 @@ type="tBoldItalic"
 type="tBoldItalic"
 >Include introduction (for chapter 1)</object
 > - bring in introductory information that is above chapter 1. This only applies to chapter 1.</li
+><li
+><object
+type="tBoldItalic"
+>Import numbers in the analysis writing system</object
+> - numbers such as 7 or 144,000 are put in the analysis writing system, just like verse numbers and references, so they don't have to be interlinearized. In the <object
+type="tItalic"
+>Number separator(s)</object
+> box, give the character(s) that separate groups of digits in a number, e.g. the comma in 144,000 (the default), a period, or a space. You can give more than one character. Leave the box blank if numbers have no separator. Digits that are part of a word, e.g. 7th, are left in the vernacular writing system.</li
 ></ul
 ><example
 num="xParatextImport"

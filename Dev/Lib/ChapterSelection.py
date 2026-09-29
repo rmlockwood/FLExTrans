@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.5 - 9/29/26 - Ron Lockwood
+#    Fixes #1235. Import option to put numbers in the analysis WS, with a box for the number separator character(s).
+#
 #   Version 3.17.4 - 9/8/26 - Ron Lockwood
 #    Allow for the bidi control marks that right-to-left text puts beside the punctuation of a verse reference, in every reference pattern in splitSFMs.
 #
@@ -123,11 +126,12 @@
 #   THE WINDOW
 #
 #   One dialog serves all three modules and InitControls() is what makes it fit the module that opened it. It loads the settings from last time, then hides what doesn't apply. For either export the
-#   import-only checkboxes go away (footnotes, cross references, make active, full book name, one text per chapter, include introduction and overwrite existing text) and the window shrinks by
-#   EXP_SHRINK_WINDOW_PIXELS. Exporting from FLEx additionally hides the book abbreviation and the two chapter spin boxes, because that information comes from the text titles the user picks instead,
-#   and gives FROM_FLEX_EXP_PIXELS of that shrink back. Anything that isn't exporting from FLEx hides the scripture texts combo box and its label. Cluster project rows are only set up for importing
-#   and for exporting from FLEx; the other module hides them. Two of the combo boxes are swapped at runtime for a CheckableComboBox (here for scripture texts, in ClusterUtils for cluster projects)
-#   so the user can check several entries instead of picking one.
+#   import-only checkboxes go away (footnotes, cross references, make active, full book name, one text per chapter, include introduction, overwrite existing text, and numbers in the analysis
+#   writing system with its number separator box) and the window shrinks by EXP_SHRINK_WINDOW_PIXELS. Exporting from FLEx additionally hides the book abbreviation and the two chapter spin
+#   boxes, because that information comes from the text titles the user picks instead, and gives FROM_FLEX_EXP_PIXELS of that shrink back. Anything that isn't exporting from FLEx hides the
+#   scripture texts combo box and its label. Cluster project rows are only set up for importing and for exporting from FLEx; the other module hides them. Two of the combo boxes are swapped at
+#   runtime for a CheckableComboBox (here for scripture texts, in ClusterUtils for cluster projects) so the user can check several entries instead of picking one. The number separator box
+#   is only enabled while its checkbox is checked (enableNumberSeparator()).
 #
 #   The controls in the .ui file are placed with absolute geometry rather than Qt layouts, so the window has no idea what size it needs and resizing it doesn't rearrange anything - it just clips
 #   controls out of view. That is why the size is pinned: lockWindowSize() fixes the window at whatever size was just laid out, unlockWindowSize() lifts the pin so code can resize the window again,
@@ -158,7 +162,10 @@
 #   writing system (or, in One project mode, whichever vernacular writing system the caller passes in). Its regular expression is long because every marker shape has to be recognized - end markers,
 #   footnotes and their references, cross references, verses and verse ranges, chapters, attributes running from a vertical bar to a closing marker, and markers preceded by a plus. The \id book
 #   identifier is the deliberate exception: it stays in the Vernacular writing system so the book id survives translation and can be written back on export. A new FLEx paragraph is started at every
-#   line feed. convertFigSyntax() rewrites the old USFM 1.0 and 2.0 \fig syntax into the 3.0 form, and setTextMetaData() marks a created text with Source of FLExTrans and IsTranslated.
+#   line feed. When the user checks "Import numbers in the analysis writing system", splitNumbers() goes over each piece of text content and pulls out free-standing numbers - digits optionally
+#   grouped by the characters in the Number separator(s) box, like 144,000 - so they go in the Analysis writing system too. A separator only counts when a digit follows it, so the comma after a
+#   number at the end of a clause stays vernacular punctuation, and digits touching letters (e.g. 7th) are left alone as part of a word. convertFigSyntax() rewrites the old USFM 1.0 and 2.0 \fig
+#   syntax into the 3.0 form, and setTextMetaData() marks a created text with Source of FLExTrans and IsTranslated.
 #
 #   SPLICING CHAPTERS BACK INTO A PARATEXT BOOK
 #
@@ -170,10 +177,10 @@
 #
 #   CODE STRUCTURE
 #
-#   Top to bottom the file goes: the constants and bookChapterPattern, the ChapterSelection class with its dump() and getBookPath(), the marker and paragraph functions (splitSFMs, convertFigSyntax,
-#   insertParagraphs, setTextMetaData), the window functions (lockWindowSize, unlockWindowSize, showClusterWidgets, InitControls), getParatextPath, doOKbuttonValidation, the project and title
-#   helpers (getFilteredSubdirectories, getParatextProjects, getScriptureText), doExport, and finally the module level QApplication and translator setup followed by bookMap. bookMap has to come
-#   after the translations are loaded, which is why the biggest thing in the file is also the last thing in it.
+#   Top to bottom the file goes: the constants and bookChapterPattern, the ChapterSelection class with its dump() and getBookPath(), the marker and paragraph functions (splitSFMs, splitNumbers,
+#   convertFigSyntax, insertParagraphs, setTextMetaData), the window functions (lockWindowSize, unlockWindowSize, showClusterWidgets, enableNumberSeparator, InitControls), getParatextPath,
+#   doOKbuttonValidation, the project and title helpers (getFilteredSubdirectories, getParatextProjects, getScriptureText), doExport, and finally the module level QApplication and translator
+#   setup followed by bookMap. bookMap has to come after the translations are loaded, which is why the biggest thing in the file is also the last thing in it.
 #
 
 import os
@@ -183,6 +190,8 @@ from shutil import copyfile
 import winreg
 import glob
 import json
+from typing import cast
+
 from PyQt6.QtWidgets import QMessageBox, QCheckBox, QApplication, QWIDGETSIZE_MAX
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtGui import QIcon
@@ -197,7 +206,8 @@ from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 _translate = QCoreApplication.translate
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
-EXP_SHRINK_WINDOW_PIXELS = 120
+EXP_SHRINK_WINDOW_PIXELS = 142
+DEFAULT_NUMBER_SEPARATORS = ','
 FROM_FLEX_EXP_PIXELS = 33
 
 bookChapterPattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\d{2}))?(?: - Copy(?: \(\d{1,2}\))?)?$')
@@ -205,7 +215,8 @@ bookChapterPattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\
 class ChapterSelection(object):
         
     def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                 makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False, altParatextFolder=None):
+                 makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False, altParatextFolder=None, \
+                 numbersAsAnalysis=False, numberSeparators=DEFAULT_NUMBER_SEPARATORS):
     
         self.export = export
         self.dontShowWarning = False
@@ -233,7 +244,9 @@ class ChapterSelection(object):
         self.ptxProjList        = ptxProjList
         self.oneTextPerChapter  = oneTextPerChapter
         self.includeIntro       = includeIntro
-        
+        self.numbersAsAnalysis  = numbersAsAnalysis
+        self.numberSeparators   = numberSeparators
+
     def dump(self):
         
         ret = {\
@@ -249,6 +262,8 @@ class ChapterSelection(object):
             'oneTextPerChapter'      : self.oneTextPerChapter,
             'includeIntro'           : self.includeIntro,
             'overwriteText'          : self.overwriteText,
+            'numbersAsAnalysis'      : self.numbersAsAnalysis,
+            'numberSeparators'       : self.numberSeparators,
             'clusterProjects'        : self.clusterProjects,
             'ptxProjList'            : self.ptxProjList,
             }
@@ -333,6 +348,23 @@ def splitSFMs(inputStr):
                     inputStr) 
     return segs
 
+# Split a piece of text content (no markers or references in it) into text and numbers, so numbers can be put in the analysis WS. Like re.split with a capturing group, the result alternates
+# text, number, text, ..., so the odd-numbered items are the numbers. A number is a run of digits optionally grouped by any of the characters in numberSeparators, e.g. 7, 144,000 or 1.000.000.
+# A separator only counts when a digit follows it, so the comma in "7, and" stays with the text. The lookarounds keep digits that touch letters (e.g. 7th or 144,000th) as part of the word.
+def splitNumbers(inputStr, numberSeparators):
+
+    # Build a character class out of the separators the user gave. Escape each one so that characters like - or ] can't change the meaning of the class. The quantifiers are possessive
+    # (++ and *+) so that when a whole number is followed by letters the engine can't back off to a shorter match: without that, 144,000th would give up ",000th" and match 144 on its own.
+    if numberSeparators:
+
+        # The regex stubs type escape() as returning bytes | str even for a str argument. numberSeparators always comes from the window's line edit, so it's a str and so is the result.
+        separatorClass = '[' + ''.join(cast(str, re.escape(sepChar)) for sepChar in numberSeparators) + ']'
+        numberPattern = r'(?<!\w)(\d++(?:' + separatorClass + r'\d++)*+)(?!\w)'
+    else:
+        numberPattern = r'(?<!\w)(\d++)(?!\w)'
+
+    return re.split(numberPattern, inputStr)
+
 # Convert old USFM 1.0 or 2.0 \fig syntax to 3.0. 
 # old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
 # new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
@@ -341,7 +373,7 @@ def convertFigSyntax(importText):
     return re.sub(r'\\fig ([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\|([^\\|]*)\\fig\*', 
                   r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
 
-def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText, vernWs=None):
+def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText, vernWs=None, numbersAsAnalysis=False, numberSeparators=DEFAULT_NUMBER_SEPARATORS):
 
     # In One project mode the synthesized text is inserted into a chosen (secondary) vernacular writing system rather than the
     # project's default vernacular WS. Callers pass that WS handle in vernWs; otherwise fall back to the default vernacular WS.
@@ -378,6 +410,18 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText, vernWs=None):
                 tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
                 
+            # If the user wants numbers in the Analysis WS, split them out of the text content. splitNumbers alternates text and number, so odd-numbered pieces are numbers.
+            elif numbersAsAnalysis:
+
+                for i, piece in enumerate(splitNumbers(re.sub(r'\n','', seg), numberSeparators)):
+
+                    if not piece:
+
+                        continue
+
+                    pieceWs = DB.project.DefaultAnalWs if i % 2 == 1 else vernWs
+                    tss = TsStringUtils.MakeString(piece, pieceWs)
+                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
             else:
                 # make this in the Vernacular WS (the chosen target WS in One project mode, otherwise the default vernacular WS)
                 tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), vernWs)
@@ -426,6 +470,11 @@ def showClusterWidgets(self):
     ClusterUtils.showClusterWidgets(self)
     lockWindowSize(self)
 
+def enableNumberSeparator(self, enable):
+
+    self.ui.numberSeparatorLabel.setEnabled(enable)
+    self.ui.numberSeparatorLineEdit.setEnabled(enable)
+
 def InitControls(self, export=True, fromFLEx=False):
     
     self.chapSel = None
@@ -468,7 +517,13 @@ def InitControls(self, export=True, fromFLEx=False):
     self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',True))
     self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
     self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
-    self.ui.overwriteExistingTextCheckBox.setChecked(myMap.get('overwriteText',False)) 
+    self.ui.overwriteExistingTextCheckBox.setChecked(myMap.get('overwriteText',False))
+    self.ui.numberSeparatorLineEdit.setText(myMap.get('numberSeparators', DEFAULT_NUMBER_SEPARATORS))
+
+    # The number separator box only means something when numbers are going into the analysis WS, so keep it (and its label) enabled only while that checkbox is checked.
+    self.ui.numbersAsAnalysisCheckBox.toggled.connect(lambda checked: enableNumberSeparator(self, checked))
+    self.ui.numbersAsAnalysisCheckBox.setChecked(myMap.get('numbersAsAnalysis',False))
+    enableNumberSeparator(self, self.ui.numbersAsAnalysisCheckBox.isChecked())
 
     # Change widgets if we are doing export
     if export:
@@ -481,7 +536,10 @@ def InitControls(self, export=True, fromFLEx=False):
         self.ui.oneTextPerChapterCheckBox.setVisible(False)
         self.ui.includeIntroCheckBox.setVisible(False)
         self.ui.overwriteExistingTextCheckBox.setVisible(False)
-        
+        self.ui.numbersAsAnalysisCheckBox.setVisible(False)
+        self.ui.numberSeparatorLabel.setVisible(False)
+        self.ui.numberSeparatorLineEdit.setVisible(False)
+
         pixels = EXP_SHRINK_WINDOW_PIXELS
 
         if fromFLEx:
@@ -589,7 +647,9 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
     includeIntro = self.ui.includeIntroCheckBox.isChecked()
     overwriteText = self.ui.overwriteExistingTextCheckBox.isChecked()
-   
+    numbersAsAnalysis = self.ui.numbersAsAnalysisCheckBox.isChecked()
+    numberSeparators = self.ui.numberSeparatorLineEdit.text()
+
     ptxProjList = []
 
     if export == False or (export == True and fromFLEx == True):
@@ -664,7 +724,8 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         clustProjs = self.ui.clusterProjectsComboBox.currentData()
 
     self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                                    makeActive, useFullBookName, overwriteText, clustProjs, ptxProjList, oneTextPerChapter, includeIntro, altParatextFolder)
+                                    makeActive, useFullBookName, overwriteText, clustProjs, ptxProjList, oneTextPerChapter, includeIntro, altParatextFolder, \
+                                    numbersAsAnalysis, numberSeparators)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')

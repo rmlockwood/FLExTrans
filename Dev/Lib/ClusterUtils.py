@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1235. Made the chapter selection window taller for the new numbers-as-analysis-WS row, and added a code description block at the top.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -31,11 +34,39 @@
 #   Version 3.12 - 12/30/2024 - Ron Lockwood
 #    Initial version.
 #
+#   OVERVIEW (AI generated, then edited)
+#
+#   A FLExTrans work project can have cluster projects: several related FLEx projects that the user wants to treat together. This library holds the window code that lets a dialog act on more
+#   than one of them at once. The dialog gets a checkable combo box listing the cluster projects, and for each one the user checks, a row appears with the project's name on the left and a
+#   per-project widget on the right - a Paratext project combo box for Import From Paratext and Export FLEx Text to Paratext, a lexeme line edit for the New Entry dialog, a work project combo box
+#   for Text In/Out. While any cluster project is checked the two widgets at the top of the dialog that name the single project (topWidget1 and topWidget2) are disabled, since each row now says
+#   which project to use. The caller reads the chosen values back out of keyWidgetList, which holds the right-hand widgets of the visible rows in order.
+#
+#   THE TWO PLACEMENT MODES
+#
+#   Older dialogs place their controls with absolute geometry; newer, resizable ones (Text In/Out, see #1157) use Qt layouts. The functions tell them apart by whether the parentWin passed in is a
+#   QLayout. In layout mode the header and row widgets go into a grid inside a container widget and showing or hiding a row is all it takes; the layout does the sizing. In absolute mode every
+#   widget is created up front at a placeholder position, and showClusterWidgets() positions the visible rows below the cluster projects combo box, moves the OK and Cancel buttons (or the
+#   container widget given as containerWidgetToMove) down past them, and grows the window by the same amount. That growth is measured from originalOKyPos and originalMainWinHeight, which are
+#   recorded once when the widgets are created, so calling showClusterWidgets() again and again never makes the window creep.
+#
+#   IMP_EXP_WINDOW_HEIGHT and IMP_EXP_WINDOW_WIDTH are the size of the Paratext chapter selection window (Lib/Windows/ParatextChapSelectionDlg.ui) before any cluster rows are added.
+#   ChapterSelection.InitControls() sizes the window with them, and they are the default originalMainWinHeight. If rows are added to or removed from that .ui, this height has to change with it,
+#   along with ChapterSelection.EXP_SHRINK_WINDOW_PIXELS, which is how much the export modules take off the window when they hide the import-only rows.
+#
+#   CODE STRUCTURE
+#
+#   initClusterWidgets() creates the two underlined header labels and a hidden label/widget row for every cluster project, calling specialProcessFunc on each new right-hand widget so the dialog
+#   can fill it (e.g. load the Paratext project list). initClusterProjects() swaps the designer's plain clusterProjectsComboBox for a CheckableComboBox, checks the projects saved from last time,
+#   and wires the check-state signal to the dialog's clusterSelectionChanged() method. That method (in the dialog) calls showClusterWidgets(), which shows the rows for the checked projects,
+#   rebuilds keyWidgetList and, in absolute mode, repositions the rows and buttons and resizes the window.
+#
+
 from ComboBox import CheckableComboBox
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QLabel, QLayout, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QSizePolicy
 
-IMP_EXP_WINDOW_HEIGHT = 260
+IMP_EXP_WINDOW_HEIGHT = 282
 IMP_EXP_WINDOW_WIDTH = 626
 
 def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, comboWidth, specialProcessFunc=None, 

@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.17.3 - 9/29/26 - Ron Lockwood
+#    Fixes #1235. Option to import numbers in the analysis WS, with a box for the number separator character(s).
+#
 #   Version 3.17.2 - 9/2/26 - Ron Lockwood
 #    Added a code description block at the top with an overview, key features and code structure.
 #
@@ -156,7 +159,8 @@
 #
 #   The chapters are read straight out of the project's .SFM or .USFM file. Before they are put into FLEx the Text In rules are applied (the search and replace rules the Text In Rules module edits,
 #   read here from the file named by the Text In Rules File setting), which is where Paratext text gets cleaned up for translation. ChapterSelection.insertParagraphs() then does the insertion,
-#   putting markers and references in the Analysis writing system and the text content in the Vernacular writing system so the user only has to interlinearize the actual text.
+#   putting markers and references in the Analysis writing system and the text content in the Vernacular writing system so the user only has to interlinearize the actual text. Numbers can
+#   optionally go in the Analysis writing system too (see below).
 #
 #   THE WINDOW AND ITS OPTIONS
 #
@@ -164,6 +168,10 @@
 #   they make sense, and the spin box handlers keep that up to date as the user changes chapters: include introduction is only available when the from chapter is 1, since the introduction sits ahead
 #   of chapter 1, and one text per chapter is only available when the range covers more than one chapter. The from and to spin boxes also keep themselves in order, dragging the other one along rather
 #   than letting the range invert.
+#
+#   The "Import numbers in the analysis writing system" checkbox is for projects where numerals like 7 or 144,000 shouldn't be interlinearized as vernacular words. The Number separator(s) box
+#   below it, enabled only while the checkbox is checked, holds the character(s) that group digits within a number (a comma by default; a period or space in some languages). Both are passed
+#   to ChapterSelection.insertParagraphs(), which does the splitting.
 #
 #   WHAT GETS PULLED OUT OF THE BOOK FILE
 #
@@ -244,7 +252,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -563,7 +571,7 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set StText object as the Text contents
         text.ContentsOA = stText  
     
-        ChapterSelection.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText)
+        ChapterSelection.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText, numbersAsAnalysis=chapSelectObj.numbersAsAnalysis, numberSeparators=chapSelectObj.numberSeparators)
 
         # Build the title string from book abbreviation and chapter.
         title = "{bibleBook} {chapter}".format(bibleBook=bibleBook, chapter=str(titleChapNum).zfill(2))
