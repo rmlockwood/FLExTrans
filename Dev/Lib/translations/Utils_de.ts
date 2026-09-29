@@ -93,5 +93,10 @@
       <source>The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found.</source>
       <translation>Die Umgebungsvariable FIELDWORKSDIR ist nicht gesetzt, daher konnte FLEx (flex.exe) nicht gefunden werden.</translation>
     </message>
+    <message>
+      <location filename="../Utils.py" line="1"/>
+      <source>No target project has been set. Please go to Settings and choose one.</source>
+      <translation>Es wurde kein Zielprojekt festgelegt. Bitte wählen Sie eines in den Einstellungen aus.</translation>
+    </message>
   </context>
 </TS>

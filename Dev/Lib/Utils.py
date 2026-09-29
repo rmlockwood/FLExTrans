@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.17.2 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Added helpers so the target project can be a full .fwdata path; openTargetProject is now the one routine all modules use to open the target.
+#
 #   Version 3.17.1 - 9/28/26 - Ron Lockwood
 #    Fixes #1563, #1567. Added getTextName, getTextVernacularTitle, getTextDisplayName and a vernacularFallback option on getSourceTextList, so text lists can show vernacular titles.
 #
@@ -254,11 +257,19 @@
 #   off by default because the Settings source text list and the modules that look up the SourceTextName setting compare against plain as_string names, and renaming texts under them would break
 #   the match. Delete Texts and Merge Texts turn it on, since they only use the name within one run.
 #
+#   PROJECT NAMES VERSUS PROJECT PATHS
+#
+#   A FLEx project is normally referred to by its bare name, which LCM resolves against the standard FLEx Projects folder. Both FlexTools (for the source project) and the TargetProject setting may
+#   instead hold the full path of a .fwdata file stored somewhere else. OpenProject accepts either form, but DB.ProjectName() always returns the bare name, so it must never be used to re-open a
+#   project or to rebuild its path - use projectOpenName for that. Anywhere the configured target value becomes part of a file name or message, run it through targetProjectDisplayName first;
+#   otherwise an absolute path makes os.path.join throw away the folder it was joined to. Sense links use projectLinkName (LCM's project handle), which is the bare name for standard projects, so
+#   links made before paths were allowed are unchanged.
+#
 #   CODE STRUCTURE
 #
 #   Constants for circumfix tags, Apertium reserved characters, LCM class names, cache and output file names come first. Then, roughly in order: clitic and unique-name helpers (createUniqueTitle,
 #   makeUniqueName); multistring readers (as_string, as_vern_string, as_tag); lexicon lookups (getHeadwordStr, GetEntryWithSense, split_compounds); project opening (getFlexExePath, openProject,
-#   openTargetProject); category and inflection-class checks (get_categories, check_for_cat_errors); text lists (getSourceTextList, getTextVernacularTitle, getTextName, getTextDisplayName,
+#   isProjectPath, targetProjectExists, targetProjectDisplayName, getFlexProjectsDir, normalizeProjectPath, projectOpenName, projectLinkName, openTargetProject); category and inflection-class checks (get_categories, check_for_cat_errors); text lists (getSourceTextList, getTextVernacularTitle, getTextName, getTextDisplayName,
 #   loadSourceTextList); error-list handling (processErrorList, checkForFatalError); sense-link helpers (getTargetSenseInfo, writeSenseHyperLink); feature and affix queries used by the Rule
 #   Assistant (getLemmasForFeature, getAffixTemplates, getStemFeatures, getInflectionTags); Apertium escaping; and finally path, translation and date-formatting helpers (shortenPathForDisplay,
 #   loadTranslations, LocalizedDateTimeFormatter, get_short_path).
@@ -295,6 +306,7 @@ from SIL.LCModel import ( # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.DomainServices import StringServices   # type: ignore
+from SIL.FieldWorks.Common.FwUtils import FwDirectoryFinder # type: ignore
 
 from flexlibs import FLExProject, AllProjectNames
 from flextoolslib import FTConfig
@@ -738,27 +750,107 @@ def openProject(report, DBname):
 
     return myDB
 
-def openTargetProject(configMap, report):
+# True if a project setting holds the full path of a .fwdata file (e.g. a target project browsed to in the settings) rather than the bare name of a project in the standard FLEx Projects folder.
+def isProjectPath(projectVal):
+
+    return bool(projectVal) and projectVal.lower().endswith('.fwdata')
+
+# True if the target project setting names a project that can be opened: either a project in the standard FLEx Projects folder, or a .fwdata file that exists.
+def targetProjectExists(targetProj):
+
+    if isProjectPath(targetProj):
+
+        return os.path.isfile(targetProj)
+
+    return targetProj in AllProjectNames()
+
+# The bare project name for a project setting. A full .fwdata path is reduced to its file name without the extension (this is what FLEx shows as the project name); a bare name is returned as is.
+# Use this wherever the setting becomes part of a file name or a message.
+def targetProjectDisplayName(projectVal):
+
+    if isProjectPath(projectVal):
+
+        return os.path.splitext(os.path.basename(projectVal))[0]
+
+    return projectVal
+
+# The standard FLEx Projects folder, where projects that are referred to by bare name live.
+def getFlexProjectsDir():
+
+    return str(FwDirectoryFinder.ProjectsDirectory)
+
+# Reduce a browsed .fwdata path to the bare project name when the file is the standard <Projects folder>\<name>\<name>.fwdata of a project that FLEx lists. That keeps the setting in the
+# familiar form for ordinary projects; a path anywhere else is returned normalized but otherwise unchanged.
+def normalizeProjectPath(fwdataPath):
+
+    fwdataPath = os.path.normpath(fwdataPath)
+    projName = targetProjectDisplayName(fwdataPath)
+    standardPath = os.path.normpath(os.path.join(getFlexProjectsDir(), projName, projName + '.fwdata'))
+
+    # Windows paths are case-insensitive, so compare that way and return the name as FLEx lists it.
+    if os.path.normcase(fwdataPath) == os.path.normcase(standardPath):
+
+        for listedName in AllProjectNames():
+
+            if listedName.lower() == projName.lower():
+
+                return listedName
+
+    return fwdataPath
+
+# The value to pass to OpenProject to open this same project again. DB.ProjectName() only gives the bare name, which fails for a project outside the standard FLEx Projects folder, so use
+# the full path of the project's .fwdata file that LCM holds.
+def projectOpenName(DB):
+
+    try:
+        return str(DB.project.ProjectId.Path)
+    except:
+        return DB.ProjectName()
+
+# The project identifier to put in a silfw:// link. LCM's handle is the bare name for a project in the standard FLEx Projects folder and the full path otherwise, which is what FLEx
+# expects when it follows the link (flexlibs BuildGotoURL uses it too).
+def projectLinkName(DB):
+
+    try:
+        return str(DB.project.ProjectId.Handle)
+    except:
+        return DB.ProjectName()
+
+# The one routine for opening the target project named in the TargetProject setting (a bare project name or the full path of a .fwdata file). It is for Two project mode only - in One
+# project mode there is no separate target, and each caller decides for itself what to use instead (usually the source DB). Returns the open project, write-enabled unless writeEnabled is False,
+# or None after giving an error. Modules that collect their errors in a list of (message, level) tuples pass it as errorList and get the message appended there instead of reported.
+def openTargetProject(configMap, report, errorList=None, writeEnabled=True):
+
+    def giveError(msg):
+
+        if errorList is not None:
+
+            errorList.append((msg, 2))
+
+        elif report:
+
+            report.Error(msg)
+
+    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report=None, giveError=False)
+
+    if not targetProj:
+
+        giveError(_translate("Utils", "No target project has been set. Please go to Settings and choose one."))
+        return None
+
+    # See if the target project is a valid database name or an existing .fwdata file.
+    if not targetProjectExists(targetProj):
+
+        giveError(_translate("Utils", "The target project does not exist. Please check the configuration file."))
+        return None
 
     TargetDB = FLExProject()
 
-    # Open the target database
-    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report)
-    if not targetProj:
-        return
-
-    # See if the target project is a valid database name.
-    if targetProj not in AllProjectNames():
-        if report:
-            report.Error(_translate("Utils", "The target project does not exist. Please check the configuration file."))
-        return
-    
     try:
-        TargetDB.OpenProject(targetProj, True)
+        TargetDB.OpenProject(targetProj, writeEnabled)
     except:
-        if report:
-            report.Error(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
-        raise
+        giveError(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProjectDisplayName(targetProj)))
+        return None
 
     return TargetDB
 

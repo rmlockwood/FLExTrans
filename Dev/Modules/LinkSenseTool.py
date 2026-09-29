@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.17.5 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. The target can be a .fwdata path (opened with Utils.openTargetProject); sense links use the project handle and the restart reopens the source by its path.
+#
 #   Version 3.17.4 - 9/8/26 - Ron Lockwood
 #    Undo the Apertium escaping of punctuation in the exported unlinked senses sentences and escape the cells for XML.
 #
@@ -283,7 +286,6 @@ from SIL.LCModel import ( # type: ignore
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore     
 from flextoolslib import * # type: ignore
-from flexlibs import FLExProject, AllProjectNames
 
 import InterlinData
 import FTPaths
@@ -315,7 +317,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-    FTM_Version    : "3.17.4",
+    FTM_Version    : "3.17.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -2121,35 +2123,22 @@ def RunModule(DB, report, configMap, app):
             targetWSHandle = DB.WSHandle(targetWSTag)
     else:
 
-        TargetDB = FLExProject()
+        # Open the target database. openTargetProject reports the problem if it can't.
+        TargetDB = Utils.openTargetProject(configMap, report)
 
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+        if TargetDB is None:
 
-        if not targetProj:
             return ERROR_HAPPENED
 
-        # See if the target project is a valid database name.
-        if targetProj not in AllProjectNames():
-
-            report.Error(_translate("LinkSenseTool", 'The target project does not exist. Please check the configuration file.'))
-            return ERROR_HAPPENED
-
+        targetProj = TargetDB.ProjectName()
         report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target project.').format(targetProj=targetProj))
-
-        try:
-            TargetDB.OpenProject(targetProj, True)
-
-        except: #FDA_DatabaseError, err:
-
-            report.Error(_translate("LinkSenseTool", 'Failed to open the target project.'))
-            raise
 
     report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName),
                 DB.BuildGotoURL(textObj))
 
+    # The project handle is the bare name for a project in the standard FLEx Projects folder (so links are the same as they always were) and the full .fwdata path for one stored elsewhere.
     preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub(r'\s','+', targetProj)
+    preGuidStr += re.sub(r'\s','+', Utils.projectLinkName(TargetDB))
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
      
     glossMap = {}
@@ -2299,7 +2288,8 @@ def MainFunction(DB, report, modify=False):
         # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
         if retVal == RESTART_MODULE:
 
-            savedDBName = DB.ProjectName()
+            # Reopen by the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
+            savedDBName = Utils.projectOpenName(DB)
             DB.CloseProject()
             DB = Utils.openProject(report, savedDBName)
 

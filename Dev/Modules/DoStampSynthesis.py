@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17.2 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. The target can be a .fwdata path (opened with Utils.openTargetProject): STAMP files use the bare name, XAmpleAddonData.xml is found beside the .fwdata. Added the code description block.
+#
 #   Version 3.17.1 - 9/8/26 - Ron Lockwood
 #    Copy the XAMPLE synthesis tests to the STAMP changes file again - the element holding them has no children, so truth-testing it always failed.
 #
@@ -103,48 +106,90 @@
 #
 #   earlier version history removed on 3/1/25
 #
-#   Create the target dictionaries that STAMP needs. These are in the 
-#   AMPLE-style sfm format. Also at the end of the module, create the files that 
-#   STAMP needs (such as config files) and then run STAMP to create the
-#   Synthesis file and fix it up by removing underscores. (Underscores were used
-#   in the dictionaries instead of spaces so that STAMP could handle them.)
+#   OVERVIEW (AI generated, then edited)
 #
-#   As we write out entries in the dictionaries, some entries or allomorphs have
-#   environment constraints. We have to order these properly and negate the environments
-#   of the previous allomorph(s).
+#   This module is the STAMP half of FLExTrans synthesis: it turns the ANA file written by the Convert Text to Synthesizer Format module (ConvertTextToSTAMPformat.py) into the synthesized target
+#   text. It works in two phases. First it exports the target project's lexicon into the AMPLE-style standard format dictionaries that STAMP reads - one each for roots, prefixes, infixes and
+#   suffixes - plus a declarations (.dec) file holding the categories, natural classes and morpheme properties. Then it writes the control files STAMP needs, runs the STAMP executable on the ANA
+#   file and fixes up the output, turning the underscores back into spaces. (Underscores are used in the dictionaries instead of spaces so that STAMP can handle multi-word forms.)
 #
-#   User-defined STAMP tests and morpheme properties:
-#   FLEx as of version 9.3 or so supports morpheme properties for XAMPLE. These properties
-#   are tagged on either an entry or an allomorph via a custom field at that level.
-#   A new xml file called XAmpleAddonData.xml is placed in the SupportingFiles folder of the project.
-#   This file defines the names of the custom fields and the custom list contents. It also contains
-#   both user tests and synthesis test that XAMPLE and STAMP respectively will use. For this module we
-#   are only interested in the STAMP tests. The format of these tests are documented in the AMPLE and STAMP
-#   documentation. Three things have to be implemented to make STAMP use the new
-#   capabilities. 1) Morpheme properties and allomorph properties tagged on entries and allomorphs
-#   2) Definition of the morpheme properties in the declarations file (.dec) 3) Copying the Synthesis Test
-#   from the XAmpleAddonData.xml file into the Synthesis changes file used by STAMP.
+#   The two phases are separate functions so other code can reuse them. Synthesize Text (DoSynthesis.py) and Translate Text call doStamp(), which does both; DoSynthesis.py only comes here when
+#   the HermitCrab synthesis setting is off, otherwise DoHermitCrabSynthesis.py is used instead. The Live Rule Tester calls extract_target_lex() and synthesize() separately, so it can extract the
+#   lexicon once and then synthesize over and over as the user tries out rules.
 #
-#   Here's the logic for each of these:
-#   1) Tagging in the lexicons:
-#   If an entry has an XAMPLE property set in the pertinent custom field,
-#     If it's a stem,
-#       add an \mp field after the \m field for each property turned on
-#     If it's an affix,
-#       add an \mp field after the \g field for each property turned on
-#   If an allomorph has an XAMPLE property set in the pertinent custom field,
-#     add the property name after the \a <allomorph> for each property turned on. E.g.: \a form property1 property2 any_environments
-#   2) Definition in the .dec file:
-#   During 1) above, each unique morpheme property that was added to a dictionary gets added to a list and that list
-#   is used to generate the .dec file entries for those properties. \ap is used for each one.
-#   3) Copying synthesis tests:
-#   When no custom tests or morpheme properties are used, the Synthesis changes file for STAMP is blank.
-#   But when XAmpleAddonData.xml is found in the supporting files folder, the synthesis tests defined in that file are copied over
-#   to the changes file (<proj>_synt.chg)
+#   WHAT IT WRITES
 #
-#   Supporting code:
-#   Two new settings for FLExTrans are now available: TargetXampleCustomEntryField & TargetXampleCustomAllomorphField
-#   The user should select the custom field for each of these that is defined in the target FLEx project.
+#   Every file goes in the Target Lexicon Files Folder (usually Build) and starts with the target project name - partPath is that folder joined with the name:
+#    - <proj>_rt.dic, <proj>_pf.dic, <proj>_if.dic, <proj>_sf.dic - the root, prefix, infix and suffix dictionaries. Roots are keyed by \m (lowercased headword, homograph number with 1 added when
+#      missing, spaces turned to underscores, then .N for the sense number); affixes are keyed by their \g gloss. Each record carries its \a allomorph lines and any \mp morpheme properties.
+#    - <proj>_stamp.dec - categories (\ca, plus the special _variant_ category), natural classes (\scl) with their graphemes, and the stem name, inflection class, required feature (\mp) and XAMPLE
+#      allomorph property (\ap) declarations.
+#    - <proj>_ctrl_files.txt - the command file STAMP is started with; it just lists the other files in the order STAMP expects, with blank lines where STAMP wants them.
+#    - <proj>_sycd.chg (synthesis codes, which field is which), <proj>_synt.chg (synthesis tests, see below), <proj>_XXXtr.chg (transfer changes, always blank) and <proj>_outtx.ctl (output text
+#      control, holding the \luwfcs lines for the Lowercase/Uppercase pairs setting).
+#   The \m keys in the root dictionary must match the target lemmas in the ANA file exactly, which in turn come from the bilingual lexicon. That's why getVernacularHeadword() delegates to the same
+#   Utils.getHeadwordStr() that ExtractBilingualLexicon uses - build the keys differently here and every root silently fails to synthesize.
+#
+#   THE PROJECT NAME AND FILE NAMES
+#
+#   getTargetProjectName() decides which name the files carry, and both phases call it so they agree. In Two project mode it's the TargetProject setting. That setting may be a bare project name
+#   or, since issue #1334, the full path of a .fwdata file outside the standard FLEx Projects folder. Utils.openTargetProject opens the setting as-is, but the file names go through
+#   Utils.targetProjectDisplayName() to get the bare project name first: an absolute path passed to os.path.join would throw the lexicon folder away and write the files next to the .fwdata file.
+#   In One project mode there is no separate target project, so the source project's name is used, the already open source DB is reused (and must not be closed), and target forms are read in
+#   the chosen Target Writing System via targetVernWSHandle instead of the default vernacular writing system.
+#
+#   ALLOMORPHS AND ENVIRONMENTS
+#
+#   As we write out entries in the dictionaries, some entries or allomorphs have environment constraints - phonological environments, stem names, inflection classes or required features. These
+#   have to be ordered properly, with the environments of the previous allomorph(s) negated. gather_allomorph_data() collects all of an entry's allomorphs (the alternate forms first, the lexeme
+#   form last as the default) and output_all_allomorphs() writes them, adding the earlier allomorphs' environments negated (~env) to each later one - for inflection classes and stem names only
+#   when an earlier allomorph shares one - so a more general allomorph isn't chosen where a more specific one applies.
+#   Stem names and required features become affix morpheme properties (<name>Affix); a circumfix is split into a prefix part and a suffix part whose glosses get Utils.CIRCUMFIX_TAG_A and
+#   CIRCUMFIX_TAG_B, matching what ConvertTextToSTAMPformat writes in the ANA file. Inflectional (irregularly inflected) variants go in the root dictionary under the _variant_ category, once per
+#   sense of the main entry.
+#
+#   CACHING AND GLOBAL STATE
+#
+#   With useCacheIfAvailable (doStamp passes it; the Live Rule Tester doesn't) and the Cache data setting on, the export is skipped when <proj>_rt.dic is newer than the target project's last
+#   modified date. stemNameList, reqFeaturesMap, globalXAmplePropMap and targetVernWSHandle are module globals filled during the export. The first two are reset at the top of synthesize(), not
+#   of extract_target_lex(), which works because every caller runs synthesize() after each export; globalXAmplePropMap is never reset, but it is only a set of names so repeats do no harm.
+#   The traps in create_synthesis_files(): <proj>_outtx.ctl is only rewritten when Lowercase/Uppercase pairs are defined, and the blank files are only created when missing, so clearing that
+#   setting leaves the old \luwfcs lines in place.
+#
+#   USER-DEFINED STAMP TESTS AND MORPHEME PROPERTIES
+#
+#   (Code comments elsewhere in this file point back to this section.) FLEx as of version 9.3 or so supports morpheme properties for XAMPLE. These properties are tagged on either an entry or an
+#   allomorph via a custom list field at that level. A file called XAmpleAddonData.xml in the SupportingFiles folder of the project defines the names of the custom fields and the custom list
+#   contents. It also contains both the user tests and the synthesis tests that XAMPLE and STAMP respectively will use; this module only cares about the STAMP (synthesis) tests. The format of
+#   these tests is documented in the AMPLE and STAMP documentation. Three things make STAMP use them:
+#    1) Tagging in the lexicons. If an entry has an XAMPLE property set in its custom field, an \mp field is added for each property turned on - after the \m field for a stem, after the \g field for
+#       an affix. If an allomorph has an XAMPLE property set in its custom field, the property name is added after the allomorph form for each property turned on,
+#       e.g. \a form property1 property2 any_environments
+#    2) Definition in the .dec file. During 1) each unique property is saved in globalXAmplePropMap, and output_custom_xample_properties() writes an \ap line for each one.
+#    3) Copying the synthesis tests. When no custom tests or morpheme properties are used, the STAMP synthesis changes file (<proj>_synt.chg) is blank. When XAmpleAddonData.xml is found, the text of
+#       its SynthesisTests element is copied into that file.
+#   The custom fields are chosen with two settings, TargetXampleCustomEntryField and TargetXampleCustomAllomorphField, which should name custom fields defined in the target FLEx project. Note the
+#   entry-level field ID is looked up on DB while the allomorph-level one is looked up on TargetDB (via tempLexiconGetAllomorphCustomFieldNamed, a stopgap until FlexTools provides this).
+#   Trap: for a project in the standard Projects folder, write_synt_file() finds XAmpleAddonData.xml by taking the project name from the part of the file name before the first underscore and
+#   looking under the FieldWorks ProjectsDir from the registry, so the tests are not found for a project whose name contains an underscore. A .fwdata target path is looked up in its own folder.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom: the docs dictionary FlexTools displays, the constants and module globals, getVernacularText() and getVernacularHeadword() for reading target forms in the right writing system,
+#   then the dictionary writing helpers - saveInflClass(), is_root_file_out_of_date(), isFeatureSetASubsetofB(), output_final_allomorph_info(), processVariantForAllSenses(), writeSpecialProperties(),
+#   gather_allomorph_data(), output_all_allomorphs(), writeNegEnvironments(), process_circumfix(), write_field_level_xAmple_values() and process_allomorphs(). After those come the file creators
+#   define_some_names(), create_dictionary_files(), create_synthesis_files(), write_synt_file() and get_registry_value(); the .dec writers output_cat_info(), output_req_feature_info() and
+#   output_nat_class_info(); and write_xample_properties().
+#
+#   create_stamp_dictionaries() is the main export loop. It walks every target entry, writes roots, inflectional variants and clitics straight away, and saves the affixes in a list so that
+#   getRequiredFeaturesInfo() can collect the required feature bundles first; outputAllAffixes() then writes the affixes to the prefix, suffix and infix dictionaries (process_allomorphs() or
+#   process_circumfix() for each). extract_target_lex() drives phase one: it resolves the project name with getTargetProjectName(), opens or reuses the target project, checks the cache, creates
+#   the files and calls output_cat_info(), output_nat_class_info(), create_stamp_dictionaries(), output_req_feature_info() and output_custom_xample_properties().
+#
+#   synthesize() drives phase two: create_synthesis_files() (which calls write_synt_file()), then STAMP via subprocess using Windows short paths so non-ASCII paths survive, then fix_up_text(),
+#   which turns underscores into spaces and, when Cleanup unknown words is on, strips the N.N sense numbers and the @ that marks words not found. doStamp() checks the ANA file exists and runs
+#   extract_target_lex() then synthesize(); FlexTools calls MainFunction(), which reads the settings and calls doStamp().
+#
 
 import os
 import re 
@@ -172,7 +217,6 @@ from SIL.LCModel.Core.Cellar import (# type: ignore
     )
 
 from flextoolslib import *                                                  # type: ignore
-from flexlibs import FLExProject, AllProjectNames
 
 import Mixpanel
 import ReadConfig
@@ -210,7 +254,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -831,7 +875,7 @@ def create_synthesis_files(partPath, configMap, report):
                 f_outctl.write(f'\\luwfcs {lower} {upper}\n')
         
     # Write the Synthesis changes file.
-    write_synt_file(syntFileName)
+    write_synt_file(syntFileName, configMap, report)
 
     # Create the blank files we need
     for b in blankFileNameList:
@@ -841,21 +885,38 @@ def create_synthesis_files(partPath, configMap, report):
     
     return cmdFileName
 
-def write_synt_file(syntFileName):
+def write_synt_file(syntFileName, configMap, report):
 
     # See code comments at the beginning of this file that describe XAMPLE users tests and morpheme properties
 
-    # The project name will be the part of the file name before the _
-    projectName = os.path.basename(syntFileName).split('_')[0]
+    projectFolder = None
 
-    # Get the Registry entry for FieldWorks\9 ProjectsDir which under on hkey local machine software SIL
-    FWProjectsDir = get_registry_value(winreg.HKEY_LOCAL_MACHINE, FW_REGISTRY_PATH, FW_REGISTRY_PROJECTS_DIR)
+    # In Two project mode the target project may be set as the full path of a .fwdata file outside the standard FLEx Projects folder. Its data folder is then the folder holding that file.
+    if ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False) != 'n':
 
-    if not FWProjectsDir:
-        return
-    
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
+
+        # Test targetProj itself as well so the type checker knows it isn't None (isProjectPath already returns False for None).
+        if targetProj and Utils.isProjectPath(targetProj):
+
+            projectFolder = os.path.dirname(targetProj)
+
+    # Otherwise the project is in the standard FLEx Projects folder.
+    if projectFolder is None:
+
+        # The project name will be the part of the file name before the _
+        projectName = os.path.basename(syntFileName).split('_')[0]
+
+        # Get the Registry entry for FieldWorks\9 ProjectsDir which under on hkey local machine software SIL
+        FWProjectsDir = get_registry_value(winreg.HKEY_LOCAL_MACHINE, FW_REGISTRY_PATH, FW_REGISTRY_PROJECTS_DIR)
+
+        if not FWProjectsDir:
+            return
+
+        projectFolder = os.path.join(FWProjectsDir, projectName)
+
     # Build the path to the XAmpleAddonData.xml file. It's located in the SupportingFiles folder of the project's data folder.
-    xampleAddonDataPath = os.path.join(FWProjectsDir, projectName, SUPPORTING_FILES_DIR, XAMPLE_ADD_ON_FILE)
+    xampleAddonDataPath = os.path.join(projectFolder, SUPPORTING_FILES_DIR, XAMPLE_ADD_ON_FILE)
 
     # Check if the path exists. If not, we don't have an XAMPLE file to worry about, so create a blank file.
     if not os.path.isfile(xampleAddonDataPath):
@@ -1264,6 +1325,7 @@ def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cn
 
 # Return the project name used for the target lexicon (STAMP dictionary) files. In One project mode there is no separate target
 # project, so the files are based on the source project's name; in Two project mode it is the configured TargetProject setting.
+# That setting may be the full path of a .fwdata file, so pass the result through Utils.targetProjectDisplayName before using it in a file name.
 def getTargetProjectName(DB, configMap, report):
 
     twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
@@ -1301,8 +1363,8 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
         error_list.append((_translate("DoStampSynthesis", "Lexicon files folder: {folder} does not exist.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
 
-    # Have all files start with targetProject
-    partPath = os.path.join(lexFolder, targetProj)
+    # Have all files start with the target project name. Use the bare name: if the setting is a .fwdata path, joining it would throw lexFolder away.
+    partPath = os.path.join(lexFolder, Utils.targetProjectDisplayName(targetProj))
     
     # Get cache data setting
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
@@ -1316,19 +1378,11 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
         TargetDB = DB
     else:
 
-        TargetDB = FLExProject()
+        # openTargetProject adds the problem to error_list if it can't open the project.
+        TargetDB = Utils.openTargetProject(configMap, report, error_list)
 
-        # See if the target project is a valid database name.
-        if targetProj not in AllProjectNames():
-            error_list.append((_translate("DoStampSynthesis", "The target project does not exist. Please check the configuration file."), 2))
+        if TargetDB is None:
             return error_list
-        try:
-            # Open the target project
-            TargetDB.OpenProject(targetProj, True)
-        except: #FDA_DatabaseError, e:
-            if report:
-                report.Error(_translate("DoStampSynthesis", 'Failed to open the target project.'))
-            raise
 
     # In One project mode, target forms are read in the chosen Target Writing System (a secondary vernacular WS in the same
     # project) rather than the default vernacular WS. Resolve its handle once here; leave it None for normal Two project mode.
@@ -1493,7 +1547,7 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False, DB
 
     # Have all files start with targetProject.
     # Use the short path for the lexicon files folder in case we have a path with non-ASCII characters that will cause problems for STAMP.
-    partPath = os.path.join(Utils.get_short_path(lexFolder), targetProject)
+    partPath = os.path.join(Utils.get_short_path(lexFolder), Utils.targetProjectDisplayName(targetProject))
     
     # Create other files we need for STAMP
     cmdFileName = create_synthesis_files(partPath, configMap, report)

@@ -474,7 +474,16 @@ type="tItalic"
 > project (from the list of <object
 type="tFlexx"
 ></object
-> projects).</object
+> projects). If your target project is not in the standard <object
+type="tFlexx"
+></object
+> projects folder, choose </object
+><object
+type="tButton"
+>Browse...</object
+><object
+type="tItalic"
+> at the bottom of the list and select the project's .fwdata file.</object
 ></td
 ></tr
 ></table

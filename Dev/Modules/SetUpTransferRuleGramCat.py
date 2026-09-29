@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.17.4 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Stop if the target project can't be opened.
+#
 #   Version 3.17.3 - 9/8/26 - Ron Lockwood
 #    Test def-attr for None rather than for truth, so that one left with no attr-items is not read as missing and duplicated.
 #
@@ -145,7 +148,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("SetUpTransferRuleGramCat", "Set Up Transfer Rule Categories and Attributes"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
@@ -551,8 +554,12 @@ def MainFunction(DB, report, modify=True):
         TargetDB = None
     else:
 
-        # Open the target database
+        # Open the target database. openTargetProject reports the problem if it can't.
         TargetDB = Utils.openTargetProject(configMap, report)
+
+        if TargetDB is None:
+
+            return
 
     # Close the target project if we opened one (nothing to close in One project mode).
     def closeTarget():

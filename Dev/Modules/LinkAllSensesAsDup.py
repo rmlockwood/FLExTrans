@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Sense links use the target project handle so a .fwdata path target works. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -55,6 +58,28 @@
 #   Version 1.0 - 7/24/23 - Ron Lockwood
 #    Initial version
 #
+#   OVERVIEW (AI generated, then edited)
+#
+#   A one-shot utility for the case where the target project was made by copying the source project. A copied project keeps every object's guid, so each source sense has a target sense with
+#   the identical guid. This module links every root sense in the source to its twin in the target by writing a sense link into the source's sense-level link custom field, the same kind of
+#   link the Sense Linker tool writes one at a time. It overwrites any existing links, which is why it only runs in modify mode and only in Two project mode (in One project mode there's no
+#   separate target to link to).
+#
+#   WHICH SENSES
+#
+#   Only entries whose lexeme form is a stem allomorph with one of the morpheme types in the "Source Morpheme Types Counted As Roots" setting are processed, so affixes and clitics are skipped.
+#   Senses with no MSA are skipped too. A guid that isn't found in the target (e.g. a sense added after the copy was made) gets a warning and is skipped.
+#
+#   THE LINK
+#
+#   Each link is a silfw:// URL: the database=<project> part names the target project, followed by the sense's guid. The project part is LCM's project handle, which is the bare name for a
+#   project in the standard FLEx Projects folder and the full .fwdata path for one stored elsewhere. Utils.writeSenseHyperLink writes the URL and the visible link text into the custom field.
+#
+#   CODE STRUCTURE
+#
+#   Everything happens in MainFunction: check modify mode and project mode, read and check the settings, open the target with Utils.openTargetProject, build the URL prefix, then loop over the
+#   source entries and senses, look up each guid in the target's object repository and call Utils.writeSenseHyperLink. The target project is closed at the end.
+#
 
 import re
 
@@ -90,7 +115,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",
@@ -171,8 +196,9 @@ def MainFunction(DB, report, modify=False):
     
     myStyle = Utils.getHyperLinkStyle(DB)
 
+    # The project handle is the bare name for a project in the standard FLEx Projects folder (so links are the same as they always were) and the full .fwdata path for one stored elsewhere.
     preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub(r'\s','+', targetProj) # type: ignore
+    preGuidStr += re.sub(r'\s','+', Utils.projectLinkName(TargetDB))
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
 
     # Loop through all the source entries

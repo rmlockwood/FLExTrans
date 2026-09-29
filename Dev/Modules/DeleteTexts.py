@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.2 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. A target project stored as a .fwdata path outside the standard FLEx Projects folder is added to the project list and started on.
+#
 #   Version 3.17.1 - 9/28/26 - Ron Lockwood
 #    Fixes #1567. Show vernacular titles in parens (vernacular-only texts by that title, not "***"); docs say the list starts with the target project.
 #
@@ -21,6 +24,7 @@
 #
 #   The picker offers every FLEx project on the machine and starts on the configured target project, not on the source project FlexTools has open. That default is deliberate: the texts people want
 #   to clear out are usually the ones FLExTrans inserted into the target project, not the source texts they are translating from. It falls back to the source project when no target is configured.
+#   The list is the projects in the standard FLEx Projects folder; a target project set in the settings as the full path of a .fwdata file stored elsewhere is added to it under that path.
 #
 #   Only one project is ever open per name. The source project is already open by FlexTools and is reused through the DB handle we were given - reopening it would fail on its own lock file. Any
 #   other project the user visits is opened write-enabled on first selection, cached, and closed at the end, which is both what saves the deletions and what releases the lock for FLEx. Because
@@ -91,7 +95,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DeleteTexts", "Delete Texts"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("DeleteTexts", "Delete one or more texts from a FLEx project. It starts by listing the texts in your target project."),
         FTM_Help       : "",
@@ -404,6 +408,11 @@ def MainFunction(DB, report, modifyAllowed):
     # Start on the target project: the texts people want to delete are usually the ones FLExTrans inserted into the target, not the source texts they translate from. Fall back to the source
     # project if no target is configured or the configured one no longer exists.
     targetProjectName = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
+
+    # A target project outside the standard FLEx Projects folder is set as the full path of its .fwdata file. It isn't among the listed projects, so add it; opening by that path works the same.
+    if Utils.isProjectPath(targetProjectName) and Utils.targetProjectExists(targetProjectName):
+
+        projectNameList.append(targetProjectName)
 
     if targetProjectName and targetProjectName in projectNameList:
 
