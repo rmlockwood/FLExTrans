@@ -20,7 +20,7 @@ file. The lexical units are color coded as follows: black-lemma, blue-grammatica
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.</source>
-      <translation>Este módulo mostrará una vista más legible del archivo fuente o de destino de Apertium. Las unidades léxicas están codificadas por colores de la siguiente manera: negro: lema; azul: categoría gramatical; verde: afijo, rasgo o clase; amarillo: puntuación no oracional; rosa oscuro: lema desconocido; rosa: categoría desconocida; rojo: lema no encontrado. ¡Importante! Debe ejecutar los módulos hasta {runApert} (inclusive) antes de ejecutar este módulo.</translation>
+      <translation>Este módulo mostrará una vista más legible del archivo fuente o de destino de Apertium. Las unidades léxicas están codificadas por colores de la siguiente manera: negro: lema; azul: categoría gramatical; verde: afijo, rasgo o clase; amarillo: puntuación no oracional; rosa oscuro: lema desconocido; rosa: categoría desconocida; rojo: lema no encontrado. ¡Importante! Debes ejecutar los módulos hasta {runApert} incluido este, antes de ejecutar este módulo.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="235"/>
@@ -35,7 +35,7 @@ must run the modules up to and including {runApert} before running this module.<
     <message>
       <location filename="../ViewSrcTgt.py" line="232"/>
       <source>Make sure you have run the {moduleName} module first.</source>
-      <translation>Asegúrese de haber ejecutado primero el módulo {moduleName}.</translation>
+      <translation>Asegúrate de haber ejecutado primero el módulo {moduleName}.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="235"/>
@@ -45,12 +45,12 @@ must run the modules up to and including {runApert} before running this module.<
     <message>
       <location filename="../ViewSrcTgt.py" line="235"/>
       <source>Make sure you have run the modules up through {moduleName} first.</source>
-      <translation>Asegúrese de haber ejecutado primero los módulos hasta {moduleName}.</translation>
+      <translation>Asegúrate de haber ejecutado primero los módulos hasta {moduleName}.</translation>
     </message>
     <message>
       <location filename="../ViewSrcTgt.py" line="327"/>
       <source>Open in Browser</source>
-      <translation>Abrir en Navegador</translation>
+      <translation>Abrir en navegador</translation>
     </message>
   </context>
 </TS>
