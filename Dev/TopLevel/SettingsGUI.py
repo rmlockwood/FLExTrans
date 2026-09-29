@@ -4,7 +4,7 @@
 #   3/28/22
 #
 #   Version 3.17.2 - 9/29/26 - Ron Lockwood
-#    Switching to Mini after opening in Full now shrinks the window to fit (clear QScrollArea's cached size hint).
+#    Switching to Mini after opening in Full now shrinks the window to fit, and the settings area now widens with the window.
 #
 #   Version 3.17.1 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. The Target Project list has a Browse... item for choosing a .fwdata file outside the standard FLEx Projects folder; its full path is saved. Added the code description block.
@@ -1111,14 +1111,15 @@ class Ui_MainWindow(object):
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        # Horizontally the scroll area expands with no maximum width so it widens along with the main window. Vertically it stays Fixed so the Mini view can shrink the window to fit its few rows.
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
 
         self.scrollArea.setSizePolicy(sizePolicy)
         self.scrollArea.setMinimumSize(QtCore.QSize(750, 200))
-        self.scrollArea.setMaximumSize(QtCore.QSize(900, 1000))
+        self.scrollArea.setMaximumSize(QtCore.QSize(QtWidgets.QWIDGETSIZE_MAX, 1000))
 
         font = QtGui.QFont()
         font.setPointSize(9)
