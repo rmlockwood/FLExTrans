@@ -513,6 +513,7 @@ class Ui_LRTWindow(object):
         self.label.setObjectName("label")
         self.horizontalLayout_5.addWidget(self.label)
         self.commentTestField = QtWidgets.QLineEdit(parent=self.centralwidget)
+        self.commentTestField.setMaximumSize(QtCore.QSize(16777215, 23))
         self.commentTestField.setObjectName("commentTestField")
         self.horizontalLayout_5.addWidget(self.commentTestField)
         self.addToTestbedButton = QtWidgets.QPushButton(parent=self.centralwidget)
