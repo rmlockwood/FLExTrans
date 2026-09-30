@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.7 - 9/30/26 - Ron Lockwood
+#    Read empty lexical unit elements from the testbed XML as '' instead of None so the Live Rule Tester's add-test check no longer asserts on a unit with no category.
+#
 #   Version 3.17.6 - 9/23/26 - Ron Lockwood
 #    Added removal of a test from the testbed XML object and object list.
 #
@@ -446,12 +449,32 @@ class LexicalUnit():
             self.__parsePlainText()
             
     def __unpackXML(self):
-        self.__headWord = self.__luNode.find(HEAD_WORD).text
-        self.__senseNum = self.__luNode.find(SENSE_NUM).text
-        self.__gramCat = self.__luNode.find(GRAM_CAT).text
-        for tagNode in list(self.__luNode.find(OTHER_TAGS)):
-            self.__otherTags.append(tagNode.text)
-        
+
+        # ElementTree reads an empty element such as <grammaticalCategoryTag /> as text None, not ''. That happens when a lexical unit with an empty value (e.g. a word with no
+        # category) is saved to the testbed and read back, so turn None into '' here; otherwise toString() and friends fail on the round-tripped lexical unit.
+        self.__headWord = self.__getChildText(HEAD_WORD)
+        self.__senseNum = self.__getChildText(SENSE_NUM)
+        self.__gramCat = self.__getChildText(GRAM_CAT)
+
+        otherTagsNode = self.__luNode.find(OTHER_TAGS)
+
+        if otherTagsNode is not None:
+
+            for tagNode in list(otherTagsNode):
+
+                self.__otherTags.append(tagNode.text or '')
+
+    # Return the text of the named child of the lexical unit node, or '' if the child is missing or empty
+    def __getChildText(self, childName):
+
+        childNode = self.__luNode.find(childName)
+
+        if childNode is None:
+
+            return ''
+
+        return childNode.text or ''
+
     def __parseApertiumStyle(self):
         
         # Split off the symbols from the lemma in the lexical unit
