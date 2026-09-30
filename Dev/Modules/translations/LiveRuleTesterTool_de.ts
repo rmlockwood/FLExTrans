@@ -4,6 +4,11 @@
   <context>
     <name>LiveRuleTesterTool</name>
     <message>
+      <location filename="../LiveRuleTesterTool.py" line="3858"/>
+      <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
+      <translation>Beim Öffnen des Projekts ist ein Fehler aufgetreten: {DBname}. Möglicherweise ist das Projekt geöffnet und die Freigabeoption in den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
+    </message>
+    <message>
       <location filename="../LiveRuleTesterTool.py" line="281"/>
       <source>Live Rule Tester Tool</source>
       <translation>Live-Regel-Testwerkzeug</translation>
