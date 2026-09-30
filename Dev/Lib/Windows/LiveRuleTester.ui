@@ -1342,7 +1342,14 @@ background-color: rgb(254, 194,194);</string>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="commentTestField"/>
+       <widget class="QLineEdit" name="commentTestField">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>23</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="addToTestbedButton">
