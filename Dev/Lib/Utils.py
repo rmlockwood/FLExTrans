@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.17.3 - 9/30/26 - Ron Lockwood
+#    Fixes #1584. Convert dots to underscores in inflection class abbreviations added to the category map so they match entry tags.
+#
 #   Version 3.17.2 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. Added helpers so the target project can be a full .fwdata path; openTargetProject is now the one routine all modules use to open the target.
 #
@@ -942,9 +945,10 @@ def process_inflection_classes(posMap, pos):
         # Get a list of abbreviation and name tuples
         AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
 
+        # Convert dots to underscores so the symbol definition matches the tag written on entries (see as_tag). E.g. irr.v.cls becomes irr_v_cls.
         for icAbbr, icName in AN_list:
 
-            posMap[icAbbr] = icName
+            posMap[underscores(icAbbr)] = icName
 
 def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow, myType=_translate("Utils", 'category')):
 
