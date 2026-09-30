@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.17.2 - 9/29/26 - Ron Lockwood
+#    Switching to Mini after opening in Full now shrinks the window to fit, and the settings area now widens with the window.
+#
 #   Version 3.17.1 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. The Target Project list has a Browse... item for choosing a .fwdata file outside the standard FLEx Projects folder; its full path is saved. Added the code description block.
 #
@@ -269,7 +272,7 @@
 #
 #   Ui_MainWindow.setupUi builds the fixed parts of the window (view-mode radios, scroll area, Apply / Apply and Close / Close buttons) and then one grid row per widgetList entry, storing the created
 #   widgets back into the entry; retranslateUi sets labels, button captions and tooltips. Main (the QMainWindow) calls setupUi, initLoad, connects the signals, and holds the view-mode methods
-#   (loadViewSetting, saveViewSetting, hideUnhide), the enable/disable methods (setTargetWidgetsEnabled, updateModeUI, disableModeIfOneWritingSystem), onTargetProjectChanged, read, the change
+#   (loadViewSetting, saveViewSetting, hideUnhide, shrinkToFit), the enable/disable methods (setTargetWidgetsEnabled, updateModeUI, disableModeIfOneWritingSystem), onTargetProjectChanged, read, the change
 #   reporting (reportChangedSettings), onAiProviderChanged, the validate* methods, save and saveAndClose.
 #
 #   MainFunction reads the config, opens the source and target projects (giveDBErrorMessageBox reports a failed open), creates Main and runs a loop: show the window and run the event loop; on close,
@@ -1108,14 +1111,15 @@ class Ui_MainWindow(object):
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        # Horizontally the scroll area expands with no maximum width so it widens along with the main window. Vertically it stays Fixed so the Mini view can shrink the window to fit its few rows.
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
 
         self.scrollArea.setSizePolicy(sizePolicy)
         self.scrollArea.setMinimumSize(QtCore.QSize(750, 200))
-        self.scrollArea.setMaximumSize(QtCore.QSize(900, 1000))
+        self.scrollArea.setMaximumSize(QtCore.QSize(QtWidgets.QWIDGETSIZE_MAX, 1000))
 
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -1610,14 +1614,33 @@ class Main(QMainWindow):
                     widgInfo[WIDGET2_OBJ].show()
         
         if self.viewSetting == MINI_VIEW:
-        
+
             # Adjust the size of the main window to fit the reduced amount of content
-            self.ui.centralwidget.adjustSize()
-            self.adjustSize()
+            self.shrinkToFit()
         else:
             self.resize(800, 630)
 
         # self.centerWindow()
+
+    def shrinkToFit(self):
+
+        # Recompute the scroll contents' layout now so its size hint reflects only the rows still visible (otherwise it waits for the event loop).
+        self.ui.gridLayout_2.invalidate()
+        self.ui.gridLayout_2.activate()
+
+        # QScrollArea caches its contents' size hint the first time it's asked and never recomputes it, so after opening in Full view the scroll area would stay Full-view tall even with the rows
+        # hidden. Re-setting the contents widget is the only public way to clear that cache. Then updateGeometry tells the main layout to fetch the scroll area's new, smaller hint.
+        contents = self.ui.scrollArea.takeWidget()
+
+        if contents:
+
+            self.ui.scrollArea.setWidget(contents)
+
+        self.ui.scrollArea.updateGeometry()
+
+        # Now shrink the central widget and the window to fit
+        self.ui.centralwidget.adjustSize()
+        self.adjustSize()
 
     # Enable or disable the settings that depend on a separate target FLEx project. They are disabled when the target
     # project is invalid (None) and when One project mode is on, because in those cases there is no separate target project.
