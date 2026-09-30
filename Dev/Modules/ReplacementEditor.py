@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.17.4 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Stop if the target project can't be opened. Added the code description block.
+#
 #   Version 3.17.3 - 9/25/26 - Ron Lockwood
 #    Add inflection classes to the completion data, not just features.
 #
@@ -61,6 +64,55 @@
 #
 #   Version 3.11 - 8/7/24 - Daniel Swanson
 #    First version
+#
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is an editor for the bilingual dictionary replacement file. The Sense Linker links a source sense to a target sense once, and that link holds for every inflected form of the word.
+#   Sometimes a word needs a different translation only in the presence of particular affixes - a noun that is translated one way in general but another way in the vocative singular, say. The
+#   replacement file is where those overrides live, and this window lets the user edit it as a table instead of as raw Apertium .dix XML.
+#
+#   Each table row is one override: source lemma, category, inflection features and affixes, an arrow, the same four target columns, and a comment. Typing in a cell offers completions gathered from
+#   the FLEx projects - lemmas (headword.sense number), categories, features and inflection classes, and affix and clitic glosses - and picking a known lemma autofills its category and inflection class.
+#
+#   THE REPLACEMENT FILE
+#
+#   The file is named by the Bilingual Dictionary Replacement File setting. It is an Apertium .dix dictionary with one <section id="append">, one <e> per row, and the comment stored in the c
+#   attribute. ExtractBilingualLexicon appends its sections after the generated entries when it builds the bilingual dictionary, so they land later and win, and saving here makes the bilingual
+#   dictionary out of date so the next build picks the change up. A multi-word lemma is written with <b/> elements between the words. Reading also accepts the older layout that wrapped word text
+#   in <leftdata>/<rightdata>.
+#
+#   Traps worth knowing about. Loading is forgiving: a file that won't parse loads as an empty table without an error, and an <e> that fails to load is dropped. Saving writes the whole table back
+#   as one fresh section, so anything in the file that isn't a row - XML comments, other sections, entries that failed to load - is lost the first time the user saves. Before saving, checkTable()
+#   warns about rows that are identical on the source side (only the first has any effect) and rows with no affixes on either side (redundant with the Sense Linker's links), but saves anyway.
+#
+#   FEATURESCLASSES VERSUS AFFIXES
+#
+#   In the .dix the tags after the category are one flat list, but the table shows inflection features/classes and affixes in separate columns. splitTagList() guesses the split on load: if every tag is
+#   a known affix they are all affixes, otherwise everything up to and including the rightmost tag that is a known feature or class but not a known affix counts as feature/classes and the rest as affixes. On save
+#   the columns are simply joined back together, so the split only matters for display.
+#
+#   TARGET PROJECT AND ONE PROJECT MODE
+#
+#   In two project mode the target project is opened with Utils.openTargetProject(), the single shared routine that accepts either a bare project name or the full path of a .fwdata file (issue
+#   #1334). It reports its own error and returns None when the project can't be opened, in which case the module stops. In One project mode (Two Project Mode setting 'n') there is no separate
+#   target project: the source DB is reused as the target and the target completion lemmas are read in the Target Writing System instead. The target project is closed at the end only when it is
+#   a separate project, never when it is the source DB.
+#
+#   CODE STRUCTURE
+#
+#   At load time the module creates the QApplication if needed and loads translations just so the docs dictionary can be translated. Then come the two classes and MainFunction().
+#
+#   TableRow is one row of the table. Its constructor inserts the row and its ten cells; loadData() fills them from an <e> element (recursing with its inner read() function and using splitTagList()),
+#   toXML() builds the <e> back from the cells with the help of getSource(), getTarget() and tagList(), and checkCellUpdate() autofills the category and inflection class when a lemma cell changes.
+#
+#   Main is the QMainWindow, built from Ui_ReplacementEditorWindow (Lib/Windows). Its constructor gathers the completion data for both sides through CompletionData (gatherCompletionData(),
+#   gatherPOSTags(), gatherTags()), gives each column a CompleterDelegate and calls loadEntries() to fill the table. addRow() and deleteSelectedRows() back the Add and Delete buttons, cellChanged()
+#   marks the table unsaved and calls checkCellUpdate(), save() runs checkTable() and writes the file, and closeEvent() offers to save unsaved changes. resizeEvent() stretches the table and sizes
+#   the columns from their header text.
+#
+#   Control flow: FlexTools calls MainFunction(), which loads translations, reads the settings, gets the replacement file name, picks the target DB (opened, or the source DB in One project mode),
+#   shows Main and runs the event loop until the window closes, then closes a separately opened target project.
+#
 
 import xml.etree.ElementTree as ET
 import os
@@ -103,7 +155,7 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
-        FTM_Version:     "3.17.3",
+        FTM_Version:     "3.17.4",
         FTM_ModifiesDB:  False,
         FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
         FTM_Help:        "",
@@ -533,7 +585,12 @@ def MainFunction(DB, report, modifyAllowed):
 
             targetWSHandle = DB.WSHandle(targetWSTag)
     else:
+        # openTargetProject reports the problem if it can't open the target project.
         targetDB = Utils.openTargetProject(configMap, report)
+
+        if targetDB is None:
+
+            return
 
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS,
                                        report)

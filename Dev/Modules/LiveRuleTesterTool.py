@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.11 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Reopen the source project by its path so a project outside the standard FLEx Projects folder can be reopened.
+#
 #   Version 3.17.10 - 9/28/26 - Ron Lockwood
 #    Come back to the tester after the Testbed Log Viewer or the Replacement Dictionary Editor closes, as the other launched tools already do.
 #
@@ -504,7 +507,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.10",
+        FTM_Version    : "3.17.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1853,8 +1856,8 @@ class Main(QMainWindow):
 
             self.lastSentNum = self.ui.listSentences.currentIndex().row()
 
-        # Open the project fresh
-        projname = self.__DB.ProjectName()
+        # Open the project fresh. Use the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
+        projname = Utils.projectOpenName(self.__DB)
 
         try:
             # Delete the old project (i.e. close it)
@@ -3840,7 +3843,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
         # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
         if retVal == RESTART_MODULE:
 
-            savedDBName = DB.ProjectName()
+            # Reopen by the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
+            savedDBName = Utils.projectOpenName(DB)
             DB.CloseProject()
             DB = Utils.openProject(report, savedDBName)
 

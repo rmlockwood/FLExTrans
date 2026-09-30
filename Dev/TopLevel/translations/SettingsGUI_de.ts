@@ -143,8 +143,8 @@ im Quell-FLEx-Projekt, der übersetzt werden soll.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1619"/>
-      <source>The name of the target FLEx project.</source>
-      <translation>Der Name des Ziel-FLEx-Projekts.</translation>
+      <source>The target FLEx project. Choose Browse... to pick a project file (.fwdata) outside the standard FLEx Projects folder.</source>
+      <translation>Das Ziel-FLEx-Projekt. Wählen Sie Durchsuchen..., um eine Projektdatei (.fwdata) außerhalb des Standardordners für FLEx-Projekte auszuwählen.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1621"/>
@@ -1086,6 +1086,26 @@ Wählen Sie „Zwei Projekte“ (der normale Modus), um von einem Quell-FLEx-Pro
       <location filename="../SettingsGUI.py" line="1635"/>
       <source>In One project mode you must choose a Target Writing System.</source>
       <translation>Im Ein-Projekt-Modus müssen Sie ein Ziel-Schriftsystem auswählen.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>Browse...</source>
+      <translation>Durchsuchen...</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>Choose a FLEx project file (.fwdata) in a location other than the standard FLEx Projects folder.</source>
+      <translation>Wählen Sie eine FLEx-Projektdatei (.fwdata) an einem anderen Ort als dem Standardordner für FLEx-Projekte.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>Choose the Target Project</source>
+      <translation>Zielprojekt auswählen</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>FLEx projects (*.fwdata)</source>
+      <translation>FLEx-Projekte (*.fwdata)</translation>
     </message>
   </context>
 </TS>

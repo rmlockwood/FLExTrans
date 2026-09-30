@@ -1,6 +1,9 @@
 #
 #   GenerateParses
 #
+#   Version 3.17.3 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Stop if the target project can't be opened.
+#
 #   Version 3.17.2 - 9/22/26 - Ron Lockwood
 #    Add derivational affixes to the Apertium stem as well as the human-readable parse.
 #
@@ -155,7 +158,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("GenerateParses", "Generate All Parses"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
         FTM_Help       : "",
@@ -378,8 +381,12 @@ def MainFunction(DB, report, modifyAllowed):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Open the target project
+    # Open the target project. openTargetProject reports the problem if it can't.
     DB = Utils.openTargetProject(configMap, report)
+
+    if DB is None:
+
+        return
 
     # initialize a logfile, for debugging
     targetLOG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOG_FILE, report)
