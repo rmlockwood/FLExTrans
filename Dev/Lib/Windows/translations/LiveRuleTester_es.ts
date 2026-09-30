@@ -141,6 +141,11 @@ esto evita la limpieza para que puedas ver los errores más fácilmente.</transl
       <translation>No limpiar palabras desconocidas</translation>
     </message>
     <message>
+      <location filename="../LiveRuleTester.py" line="640"/>
+      <source>Test Comment:</source>
+      <translation>Comentario de prueba:</translation>
+    </message>
+    <message>
       <location filename="../LiveRuleTester.py" line="634"/>
       <source>&amp;Add to Testbed</source>
       <translation>Agregar al banco de pruebas</translation>
