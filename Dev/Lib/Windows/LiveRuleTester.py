@@ -193,7 +193,7 @@ class Ui_LRTWindow(object):
         self.tabSource.addTab(self.tab_manual_entry, "")
         self.verticalLayout.addWidget(self.tabSource)
         self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_9.setContentsMargins(7, -1, 3, -1)
+        self.horizontalLayout_9.setContentsMargins(3, -1, 3, -1)
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.selectAllCheckBox = QtWidgets.QCheckBox(parent=self.centralwidget)
         self.selectAllCheckBox.setText("")
