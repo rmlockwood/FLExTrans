@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.12 - 9/30/26 - Ron Lockwood
+#    Rebuild Bilingual Lexicon and changing the source text reopen the project in place (same FLExProject object) instead of creating a new one, so no one is left holding a closed project.
+#
 #   Version 3.17.11 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. Reopen the source project by its path so a project outside the standard FLEx Projects folder can be reopened.
 #
@@ -398,13 +401,15 @@
 #
 #   Several buttons can't do their work while this window is up, so they set a member, close the window, and let MainFunction() act on the return code RunModule() hands back:
 #    - Changing the source text combo box, or the Refresh Source Project button, returns RESTART_MODULE. MainFunction() then closes and reopens the FLEx project - which is the point, since that
-#      is what clears the cache so edits made in FLEx get picked up - and loops round to build the window again on the new text.
+#      is what clears the cache so edits made in FLEx get picked up - and loops round to build the window again on the new text. It reopens the same FLExProject object in place, since FlexTools
+#      holds a reference to it and closes it when the module finishes.
 #    - View Testbed Log returns START_LOG_VIEWER, Rule Assistant returns START_RULE_ASSISTANT, Edit Testbed returns START_TESTBED_EDITOR and Edit Replacement File returns
 #      START_REPLACEMENT_EDITOR. For each of these MainFunction() runs the other tool and, once its window closes, restarts the tester.
 #
 #   OTHER KEY FEATURES
 #
-#   Rebuild Bilingual Lexicon re-extracts the bilingual lexicon, which means closing and reopening the project, so it also saves and restores the sentence and word selection around it. The up
+#   Rebuild Bilingual Lexicon re-extracts the bilingual lexicon, which means closing and reopening the project, so it also saves and restores the sentence and word selection around it. It
+#   reopens the same FLExProject object in place, because MainFunction() and FlexTools hold references to it - swapping in a new object would leave them with a closed project. The up
 #   and down arrows reorder the rule in the highlighted row; that reorder only affects the copy written to the tester folder, so it is a way to try a different rule order without touching the
 #   real rule file. The select-all check box above the rule list is tri-state and reflects the rules below it. Add to Testbed pairs the source lexical units with the synthesis result and writes
 #   them into the testbed file, prompting before overwriting a test that has the same lexical units, and cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
@@ -461,7 +466,6 @@ from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
 from flextoolslib import * # type: ignore
-from flexlibs import FLExProject
 
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
@@ -507,7 +511,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.11",
+        FTM_Version    : "3.17.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1859,15 +1863,13 @@ class Main(QMainWindow):
         # Open the project fresh. Use the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
         projname = Utils.projectOpenName(self.__DB)
 
-        try:
-            # Delete the old project (i.e. close it)
-            self.__DB.CloseProject()
+        # Keep the same write mode the project was opened with, since the tools launched from here after this (e.g. the Testbed Editor) use this same project.
+        writeEnabled = getattr(self.__DB, 'writeEnabled', False)
 
-            # Open the database
-            self.__DB = FLExProject()
-            self.__DB.OpenProject(projname, writeEnabled=False)
-        except:
-            raise
+        # Close and reopen the same FLExProject object rather than making a new one. MainFunction (and FlexTools) hold a reference to this object, so a new object would leave
+        # them holding a closed project, and launching the Testbed Editor or Rule Assistant afterwards would crash with "'FLExProject' object has no attribute 'project'".
+        self.__DB.CloseProject()
+        self.__DB.OpenProject(projname, writeEnabled=writeEnabled)
 
         # Try and build the bilingual lexicon
         if self.ExtractBilingLex() == False:
@@ -3840,17 +3842,22 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         retVal = RunModule(DB, report, configMap, ruleCount, app)
 
-        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
+        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected.
         if retVal == RESTART_MODULE:
 
             # Reopen by the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
             savedDBName = Utils.projectOpenName(DB)
+
+            # Close and reopen the same FLExProject object rather than making a new one. FlexTools holds a reference to this object and closes it when the module finishes, so a new object
+            # would never get closed (leaving its lock and any pending saves) while FlexTools closed one that was already closed. Closing disposes of the LCM cache and reopening builds a new one.
             DB.CloseProject()
-            DB = Utils.openProject(report, savedDBName)
 
-            # If the reopen failed, bail out rather than looping with a closed project.
-            if not DB:
+            try:
+                DB.OpenProject(savedDBName, writeEnabled=True)
+            except:
+                report.Error(_translate('LiveRuleTesterTool', 'There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.').format(DBname=savedDBName))
 
+                # Bail out rather than looping with a closed project.
                 retVal = ERROR_HAPPENED
                 break
 
