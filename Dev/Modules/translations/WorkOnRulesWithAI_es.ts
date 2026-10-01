@@ -35,9 +35,9 @@ Hay un ajuste aparte para enviar los nombres de los proyectos FLEx.</translation
       <source>Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.
 
 Do you want to open the Settings tool now?</source>
-      <translation>Antes de poder usar este módulo, elija el Proveedor de IA y el Modelo de IA en la herramienta de Configuración de FLExTrans, en la sección Asistente de IA (visible en la vista Completo). Luego vuelva a este módulo; le pedirá su clave API.
+      <translation>Antes de poder usar este módulo, selecciona el Proveedor de IA y el Modelo de IA en la herramienta de Configuración de FLExTrans, en la sección Asistente de IA (visible en la vista Completo). Luego vuelve a este módulo; te pedirá tu clave API.
 
-¿Desea abrir la herramienta de Configuración ahora?</translation>
+¿Deseas abrir la herramienta de configuración ahora?</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="161"/>
@@ -52,7 +52,7 @@ Do you want to open the Settings tool now?</source>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="182"/>
       <source>Missing WorkOnRulesWithAI-Conventions.md in the Lib/AI subfolder under {libDir}. Reinstall FLExTrans or copy that file there.</source>
-      <translation>Falta WorkOnRulesWithAI-Conventions.md en la subcarpeta Lib/AI en {libDir}. Reinstale FLExTrans o copie ese archivo allí.</translation>
+      <translation>Falta el archivo "WorkOnRulesWithAI-Conventions.md" en la subcarpeta Lib/AI en {libDir}. Vuelve a instalar FLExTrans o copia ese archivo allí.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="194"/>
