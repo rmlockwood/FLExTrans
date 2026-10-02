@@ -6,7 +6,7 @@
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="85"/>
       <source>This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.</source>
-      <translation>Este módulo usa IA para crear, modificar o explicar sus reglas de transferencia y macros. Para crear o modificar, usted describe lo que desea; la IA la redacta y la valida, y usted la revisa y la aprueba antes de que se guarde. También puede pedirle a la IA que explique una regla o macro existente. Puede escribir su descripción — y recibir la explicación — en el idioma que elija.</translation>
+      <translation>Este módulo usa IA para crear, modificar o explicar tus reglas de transferencia y macros. Para crear o modificar, describe lo que deseas; la IA la redacta y la valida, y tú la revisas y la apruebas antes de que se guarde. También puedes pedirle a la IA que explique una regla o macro existente. Puedes escribir tu descripción — y recibir la explicación — en el idioma que elijas.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="88"/>
@@ -22,7 +22,7 @@
       <location filename="../WorkOnRulesWithAI.py" line="101"/>
       <source>This module sends your rule description, the transfer file's categories, attributes, and the project's grammatical categories, features, and affixes to your configured AI provider ({provider}) to generate transfer rules. Also, if you chose to include example language data, that will be sent as well. Your lexicon entries and texts are not sent (except for what is in the example data). Do you want to allow this?
 There is a separate setting for sending FLEx project names.</source>
-      <translation>Este módulo envía su descripción de la regla, las categorías y los atributos del archivo de transferencia, y las categorías gramaticales, los rasgos y los afijos del proyecto a su proveedor de IA configurado ({provider}) para generar reglas de transferencia. Además, si eligió incluir datos lingüísticos de ejemplo, estos también se enviarán. Sus entradas del lexicón y sus textos no se envían (excepto lo que esté en los datos de ejemplo). ¿Desea permitirlo?
+      <translation>Este módulo envía la descripción de tu regla, las categorías y los atributos del archivo de transferencia, y las categorías gramaticales, los rasgos y los afijos del proyecto a tu proveedor de IA configurado ({provider}) para generar reglas de transferencia. Además, si has elegido incluir datos lingüísticos de ejemplo, estos también se enviarán. Las entradas de tu léxico y los textos no se envían (excepto lo que figure en los datos de ejemplo). ¿Deseas permitirlo?
 Hay un ajuste aparte para enviar los nombres de los proyectos FLEx.</translation>
     </message>
     <message>
@@ -35,9 +35,9 @@ Hay un ajuste aparte para enviar los nombres de los proyectos FLEx.</translation
       <source>Before you can use this module, choose the AI Provider and AI Model in the FLExTrans Settings tool, in the AI Assistant section (shown in the Full view). Then come back to this module; it will ask for your API key.
 
 Do you want to open the Settings tool now?</source>
-      <translation>Antes de poder usar este módulo, elija el Proveedor de IA y el Modelo de IA en la herramienta de Configuración de FLExTrans, en la sección Asistente de IA (visible en la vista Completo). Luego vuelva a este módulo; le pedirá su clave API.
+      <translation>Antes de poder usar este módulo, selecciona el Proveedor de IA y el Modelo de IA en la herramienta de Configuración de FLExTrans, en la sección Asistente de IA (visible en la vista Completo). Luego vuelve a este módulo; te pedirá tu clave API.
 
-¿Desea abrir la herramienta de Configuración ahora?</translation>
+¿Deseas abrir la herramienta de configuración ahora?</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="161"/>
@@ -52,7 +52,7 @@ Do you want to open the Settings tool now?</source>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="182"/>
       <source>Missing WorkOnRulesWithAI-Conventions.md in the Lib/AI subfolder under {libDir}. Reinstall FLExTrans or copy that file there.</source>
-      <translation>Falta WorkOnRulesWithAI-Conventions.md en la subcarpeta Lib/AI en {libDir}. Reinstale FLExTrans o copie ese archivo allí.</translation>
+      <translation>Falta el archivo "WorkOnRulesWithAI-Conventions.md" en la subcarpeta Lib/AI en {libDir}. Vuelve a instalar FLExTrans o copia ese archivo allí.</translation>
     </message>
     <message>
       <location filename="../WorkOnRulesWithAI.py" line="194"/>
