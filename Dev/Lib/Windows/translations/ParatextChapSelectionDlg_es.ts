@@ -127,7 +127,7 @@ para que no tengan que interlinealizarse.</translation>
       <source>The character(s) that separate groups of digits in a number, e.g. the comma in 144,000. 
 Enter more than one character if more than one is used. Leave it blank if numbers have no separator.</source>
       <translation>El carácter o los caracteres que separan grupos de dígitos en un número, p. ej. la coma en 144,000. 
-Ingrese más de un carácter si se usa más de uno. Déjelo en blanco si los números no tienen separador.</translation>
+Ingresa más de un carácter si se usa más de uno. Déjalo en blanco si los números no tienen separador.</translation>
     </message>
   </context>
 </TS>

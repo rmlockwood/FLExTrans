@@ -160,7 +160,7 @@
     </message>
     <message>
       <source>Open the transfer rules file in the XML editor. After saving there, use Refresh Rules so this window picks up your changes.</source>
-      <translation>Abre el archivo de reglas de transferencia en el editor XML. Después de guardar allí, use Actualizar reglas para que esta ventana recoja sus cambios.</translation>
+      <translation>Abre el archivo de reglas de transferencia en el editor XML. Después de guardar allí, usa Actualizar reglas para que esta ventana recoja tus cambios.</translation>
     </message>
     <message>
       <source>Model:</source>
@@ -168,15 +168,15 @@
     </message>
     <message>
       <source>The model used for this run. Whichever model last worked becomes the default for the next run. The provider comes from the AI Provider setting in the FLExTrans Settings tool and cannot be changed here.</source>
-      <translation>El modelo que se usa en esta ejecución. El último modelo que funcionó se convierte en el predeterminado para la próxima vez. El proveedor procede del ajuste Proveedor de IA en la herramienta de Configuración de FLExTrans y no se puede cambiar aquí.</translation>
+      <translation>El modelo que se usa en esta ejecución. El último modelo que funcionó se convierte en el predeterminado para la próxima vez. El proveedor se toma de la opción Proveedor de IA de la Configuración de FLExTrans y no se puede cambiar aquí.</translation>
     </message>
     <message>
       <source>Open a temporary copy of the transfer rules file, with the rule just generated spliced into it, in the XML editor. Your real rule file is not touched - use Approve to write the rule into it. Available once a rule has been generated.</source>
-      <translation>Abre en el editor XML una copia temporal del archivo de reglas de transferencia con la regla recién generada insertada en ella. Su archivo de reglas real no se modifica: use Aprobar para escribir la regla en él. Disponible una vez que se ha generado una regla.</translation>
+      <translation>Abre en el editor XML una copia temporal del archivo de reglas de transferencia con la regla recién generada insertada en ella. Tu archivo de reglas real no se modifica: usa Aprobar para escribir la regla en él. Disponible una vez que se ha generado una regla.</translation>
     </message>
     <message>
       <source>Write the rule shown in the preview into your transfer rules file. A copy of the file as it is now is saved in the Output\rule-file-history folder first, so nothing you already had is lost. Available once a valid rule has been generated, and disabled again after the write so the same rule cannot be written twice.</source>
-      <translation>Escribe en su archivo de reglas de transferencia la regla que se muestra en la vista previa. Antes se guarda una copia del archivo tal como está ahora en la carpeta Output\rule-file-history, para que no se pierda nada de lo que ya tenía. Disponible una vez que se ha generado una regla válida, y desactivado de nuevo después de la escritura para que la misma regla no se pueda escribir dos veces.</translation>
+      <translation>Escribe en tu archivo de reglas de transferencia la regla que se muestra en la vista previa. Antes se guarda una copia del archivo tal como está ahora en la carpeta Output\rule-file-history, para que no se pierda nada de lo que ya tenías. Disponible una vez que se ha generado una regla válida, y desactivado de nuevo después de la escritura para que la misma regla no se pueda escribir dos veces.</translation>
     </message>
 </context>
 </TS>

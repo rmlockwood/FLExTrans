@@ -6,7 +6,7 @@
     <message>
       <location filename="../LiveRuleTesterTool.py" line="3858"/>
       <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-      <translation>Une erreur s'est produite lors de l'ouverture du projet : {DBname}. Peut-être que le projet est ouvert et que l'option de partage dans les Propriétés du projet Fieldworks n'a pas été activée.</translation>
+      <translation>Une erreur s'est produite lors de l'ouverture du projet : {DBname}. Peut-être que le projet est ouvert et que l'option de partage dans les Propriétés du projet FieldWorks n'a pas été activée.</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="281"/>
@@ -367,7 +367,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
   <message>
     <location filename="../LiveRuleTesterTool.py" line="3356"/>
     <source>(no contents could be read from {file})</source>
-    <translation>(aucun contenu n’a pu être lu dans {file})</translation>
+    <translation>(aucun contenu n'a pu être lu dans {file})</translation>
   </message>
   </context>
   <context>

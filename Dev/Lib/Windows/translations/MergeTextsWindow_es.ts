@@ -11,7 +11,7 @@
     <message>
         <location filename="../MergeTextsWindow.py" line="155" />
         <source>&lt;b&gt;This CANNOT be undone&lt;/b&gt;, in FLExTrans or in FLEx. Back up your FLEx project first, and make sure you are NOT in the Texts &amp;amp; Words section of FLEx.</source>
-        <translation>&lt;b&gt;Esto NO se puede deshacer&lt;/b&gt;, ni en FLExTrans ni en FLEx. Haga primero una copia de seguridad de su proyecto de FLEx y asegúrese de NO estar en la sección Textos y palabras de FLEx.</translation>
+        <translation>&lt;b&gt;Esto NO se puede deshacer&lt;/b&gt;, ni en FLExTrans ni en FLEx. Primero haz un respaldo de tu proyecto de FLEx y asegúrate de NO estar en la sección Textos &amp; Palabras de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTextsWindow.py" line="156" />
@@ -26,7 +26,7 @@
     <message>
         <location filename="../MergeTextsWindow.py" line="158" />
         <source>Add &gt;&gt;</source>
-        <translation>Añadir &gt;&gt;</translation>
+        <translation>Agregar &gt;&gt;</translation>
     </message>
     <message>
         <location filename="../MergeTextsWindow.py" line="159" />
@@ -81,7 +81,7 @@
     <message>
         <location filename="../MergeTextsWindow.py" line="154" />
         <source>Combine multiple texts into one new text. Every word keeps its interlinear analysis, gloss, free translation and notes.</source>
-        <translation>Combine varios textos en un texto nuevo. Cada palabra conserva su análisis interlineal, su glosa, su traducción libre y sus notas.</translation>
+        <translation>Combina varios textos en un texto nuevo. Cada palabra conserva su análisis interlineal, su glosa, su traducción libre y sus notas.</translation>
     </message>
 </context>
 </TS>

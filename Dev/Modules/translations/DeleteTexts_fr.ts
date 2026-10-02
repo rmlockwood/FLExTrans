@@ -51,17 +51,17 @@
     <message>
         <location filename="../DeleteTexts.py" line="447" />
         <source>The text "{textName}" no longer exists in the project. Skipping.</source>
-        <translation>Le texte « {textName} » n'existe plus dans le projet. Ignoré.</translation>
+        <translation>Le texte "{textName}" n'existe plus dans le projet. Ignoré.</translation>
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="452" />
         <source>The text "{textName}" cannot be deleted. Skipping.</source>
-        <translation>Le texte « {textName} » ne peut pas être supprimé. Ignoré.</translation>
+        <translation>Le texte "{textName}" ne peut pas être supprimé. Ignoré.</translation>
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="459" />
         <source>Deleted the text "{textName}".</source>
-        <translation>Le texte « {textName} » a été supprimé.</translation>
+        <translation>Le texte "{textName}" a été supprimé.</translation>
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="471" />
@@ -101,7 +101,7 @@
     <message>
         <location filename="../DeleteTexts.py" line="328" />
         <source>This CANNOT be undone. If FLEx is open, make sure you are NOT in the Texts &amp; Words section of FLEx.</source>
-        <translation>Cette action est IRRÉVERSIBLE. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Textes et mots de FLEx.</translation>
+        <translation>Cette action est IRRÉVERSIBLE. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Textes et Mots de FLEx.</translation>
     </message>
     <message>
         <location filename="../DeleteTexts.py" line="395" />
@@ -123,7 +123,7 @@ que vous souhaitez habituellement supprimer sont ceux que FLExTrans y a inséré
 compris votre projet source, pour afficher ses textes à la place. Maintenez la touche Ctrl ou Maj enfoncée pour sélectionner
 plusieurs textes.
 La suppression d'un texte de cette manière est IRRÉVERSIBLE, dans FLExTrans comme dans FLEx : le module demande donc une
-confirmation et énumère ce qu'il va supprimer. Avant de l'exécuter, assurez-vous de ne pas être dans la section Textes et mots de
+confirmation et énumère ce qu'il va supprimer. Avant de l'exécuter, assurez-vous de ne pas être dans la section Textes et Mots de
 FLEx, sinon FLEx risque de conserver une référence à un texte qui n'existe plus. Si vous supprimez le texte que FLExTrans est
 actuellement configuré pour traduire, le paramètre de texte source est effacé et vous devrez choisir un nouveau texte source dans
 les Paramètres FLExTrans.</translation>

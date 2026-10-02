@@ -18,7 +18,9 @@ Where two renderings compete, the **first one listed is the majority / preferred
   Usted forms (*seleccione, verifique*) essentially never appear (1 hit). No *vosotros*. Latin-American vocabulary: *archivo* (never *fichero*), *carpeta* (never *directorio*), *agregar* (26) over
   *añadir* (7), *respaldo* over *copia de seguridad*, *clúster*, *ingresar*. "Please" → *Por favor, …* (often dropped).
 - **French = formal vous.** "Please …" → *Veuillez …* (40/40). Imperatives in vous form (*vérifiez, sélectionnez, exécutez le module*). French typographic space before `:` `?` `!` (*Texte source :*).
-  Skipped-item log lines use a past participle: "Skipping." → *Ignoré.*
+  Skipped-item log lines use a past participle: "Skipping." → *Ignoré.* Tooltips and module descriptions use the infinitive (*Ouvrir le fichier…*, *Lier les sens…*), not 3rd person (*Ouvre…*).
+  Straight apostrophes and straight double quotes (`'`, `"`), not `’` or « ». Abbreviation "e.g." → *p. ex.*
+- Spanish "Skipping." → *Omitiendo.*; "e.g." → *p. ej.*; straight double quotes.
 - Product / module names stay in English in both: FLEx, FLExTrans, HermitCrab, STAMP, Apertium, TreeTran, Paratext, XAMPLE, MSA, GUID, API, the Build folder. Spanish sometimes leaves a tool name in
   English in running text (*la herramienta Sense Linker*, *Live Rule Tester*); French always translates it.
 
@@ -143,6 +145,14 @@ Where two renderings compete, the **first one listed is the majority / preferred
 | cluster (projects) | clúster (10); grupo (2) | groupe / projets groupés |
 | ad hoc (rules/constraint) | ad hoc | ad hoc |
 | Build folder | carpeta Build | dossier Build |
+| Texts & Words (FLEx area) | Textos & Palabras | Textes et Mots |
+| discourse chart | tabla de discurso | tableau de discours |
+| media files | archivos multimedia | fichiers médias |
+| merge (texts) | combinar | fusionner |
+| Browse... | Explorar... | Parcourir... |
+| Bible verse | versículo | verset |
+
+FLEx area names above follow FieldWorks' own `strings-es.xml` / `strings-fr.xml` (in `C:\Program Files\SIL\FieldWorks 9\Language Explorer\Configuration`) — check there first for any FLEx UI term.
 
 ## Known inconsistencies worth flagging to translators
 

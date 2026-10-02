@@ -74,7 +74,7 @@ doivent être écrasés.</translation>
     <message>
       <location filename="../SetUpTransferRuleGramCat.py" line="577"/>
       <source>The transfer rules file could not be saved to the rule file history folder, so it was left unchanged. The error was: {errorText}</source>
-      <translation>Le fichier de règles de transfert n’a pas pu être enregistré dans le dossier de l’historique des fichiers de règles ; il n’a donc pas été modifié. L’erreur était : {errorText}</translation>
+      <translation>Le fichier de règles de transfert n'a pas pu être enregistré dans le dossier de l'historique des fichiers de règles ; il n'a donc pas été modifié. L'erreur était : {errorText}</translation>
     </message>
   </context>
 </TS>

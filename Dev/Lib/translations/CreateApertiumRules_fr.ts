@@ -239,7 +239,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1827"/>
       <source>The prior version of the transfer rules could not be saved. The error was: {errorText}</source>
-      <translation>La version antérieure des règles de transfert n’a pas pu être enregistrée. L’erreur était : {errorText}</translation>
+      <translation>La version antérieure des règles de transfert n'a pas pu être enregistrée. L'erreur était : {errorText}</translation>
     </message>
   </context>
 </TS>

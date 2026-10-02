@@ -20,7 +20,7 @@
 Build {build}, {build_date}</source>
       <translation>{name} version {version}
 
-Compiler {build}, {build_date}</translation>
+Compilation {build}, {build_date}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="148"/>
@@ -80,7 +80,7 @@ Compiler {build}, {build_date}</translation>
     <message>
       <location filename="../FLExTransMenu.py" line="168"/>
       <source>Could not find the FLEx executable: {flexExe}.</source>
-      <translation>Impossible de trouver l'exécutable de FLEx : {flexExe}.</translation>
+      <translation>Impossible de trouver l'exécutable FLEx : {flexExe}.</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="180"/>

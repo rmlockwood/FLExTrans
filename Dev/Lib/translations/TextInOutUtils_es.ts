@@ -91,7 +91,7 @@
     <message>
       <location filename="../TextInOutUtils.py" line="1858"/>
       <source>Warning: {charList} inside [ ] will never match. Characters are decomposed before rules run. Use {suggestion} instead.</source>
-      <translation>Advertencia: {charList} dentro de [ ] nunca coincidirá. Los caracteres se descomponen antes de que se ejecuten las reglas. Use {suggestion} en su lugar.</translation>
+      <translation>Advertencia: {charList} dentro de [ ] nunca coincidirá. Los caracteres se descomponen antes de que se ejecuten las reglas. Usa {suggestion} en su lugar.</translation>
     </message>
     <message>
       <location filename="../TextInOutUtils.py" line="1893"/>
