@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.17.6 - 10/2/26 - Ron Lockwood
+#    Fixes #1597. Rebuild the bilingual lexicon with the still-open target project so new entries from Add new entry aren't reported as an invalid url link.
+#
 #   Version 3.17.5 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. The target can be a .fwdata path (opened with Utils.openTargetProject); sense links use the project handle and the restart reopens the source by its path.
 #
@@ -257,12 +260,16 @@
 #   The module level functions come in roughly the order the work happens. getGlossMapAndTgtLexList() builds the map of target glosses and the combo box list, getHPGfromGuid() resolves a link that
 #   already exists in the custom field, getMatchesOnGloss() does the exact and then fuzzy gloss matching, getInterlinearText() pulls in the text, and processInterlinear() walks that text and builds
 #   the row list, with createMatchLinkList() and addLinkerRowsFromMatchLinkList() as its helpers. updateSourceDb() is the whole save side, and the outputHtml* helpers, buildHtmlDocument() and
-#   dumpVocab() write the unlinked senses HTML report.
+#   dumpVocab() write the unlinked senses HTML report. rebuildBilingualLexicon() runs the bilingual lexicon extraction after OK when the rebuild checkbox is on.
 #
 #   Control flow: FlexTools calls MainFunction(), which loops calling RunModule() for as long as it returns RESTART_MODULE. That is what happens when the user picks a different source text, and the
 #   project gets closed and reopened each time around the loop so the cache is cleared and source changes get picked up. RunModule() reads the settings, opens the target project (or reuses the
 #   source project in One project mode), builds the gloss map, calls processInterlinear() to build the rows, shows the Main window, and once that window closes calls updateSourceDb() and optionally
-#   dumpVocab(). It returns one of RESTART_MODULE, ERROR_HAPPENED, NO_ERRORS or REBUILD_BILING, and on REBUILD_BILING MainFunction() rebuilds the bilingual lexicon before returning.
+#   dumpVocab(), and if the rebuild checkbox is on, rebuildBilingualLexicon(). It returns one of RESTART_MODULE, ERROR_HAPPENED or NO_ERRORS.
+#
+#   The rebuild must happen inside RunModule(), before the target project is closed, and must be handed that open target. Add new entry creates entries in this open copy of the target; if it
+#   were closed and the extraction opened a fresh copy, that copy could load before the new entry's save had landed (seen with FLEx open on a shared target), and the link to the new sense
+#   would fail with "Invalid url link or url not found" (#1597).
 #
 
 import re
@@ -317,7 +324,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-    FTM_Version    : "3.17.5",
+    FTM_Version    : "3.17.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -2043,6 +2050,25 @@ def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report
     else:
         report.Info(_translate("LinkSenseTool", "No unlinked words. Nothing exported."))
 
+# Rebuild the bilingual lexicon using the target project the Sense Linker already has open, so entries created with Add new entry are found. The caller still owns TargetDB and closes it.
+def rebuildBilingualLexicon(DB, TargetDB, configMap, report):
+
+    # Force a complete rebuild instead of using the cache.
+    errorList = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=False, openTargetDB=TargetDB)
+
+    # Output info, warnings, errors. Each msg is a pair -- string & code.
+    for msg in errorList:
+
+        if msg[1] == 0:
+
+            report.Info(msg[0])
+
+        elif msg[1] == 1:
+
+            report.Warning(msg[0])
+        else: # error=2
+            report.Error(msg[0])
+
 def RunModule(DB, report, configMap, app):
         
     haveConfigError = False
@@ -2229,17 +2255,12 @@ def RunModule(DB, report, configMap, app):
 
             return RESTART_MODULE
         
-        elif window.rebuildBiling:
-            
-            # Only rebuild the bilingual lexicon if the user clicked OK
-            if window.retVal:
+        # Only rebuild the bilingual lexicon if the user clicked OK. Do it before closing the target project and hand the extraction our open copy of it, because entries the user created
+        # with Add new entry may not be visible yet to a freshly opened copy, which then reports "Invalid url link or url not found".
+        elif window.rebuildBiling and window.retVal:
 
-                if TargetDB is not DB:
+            rebuildBilingualLexicon(DB, TargetDB, configMap, report)
 
-                    TargetDB.CloseProject()
-
-                return REBUILD_BILING
-    
     # In One project mode TargetDB is the same object as the source DB, so don't close it here.
     if TargetDB is not DB:
 
@@ -2250,7 +2271,6 @@ def RunModule(DB, report, configMap, app):
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
-REBUILD_BILING = 3
 
 def MainFunction(DB, report, modify=False):
 
@@ -2297,22 +2317,6 @@ def MainFunction(DB, report, modify=False):
             if not DB:
 
                 return
-
-    if retVal == REBUILD_BILING:
-        
-        # Extract the bilingual lexicon. Force a complete rebuild instead of using the cache.        
-        errorList = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=False)
-        
-        # output info, warnings, errors
-        for msg in errorList:
-            
-            # msg is a pair -- string & code
-            if msg[1] == 0:
-                report.Info(msg[0])
-            elif msg[1] == 1:
-                report.Warning(msg[0])
-            else: # error=2
-                report.Error(msg[0])
         
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

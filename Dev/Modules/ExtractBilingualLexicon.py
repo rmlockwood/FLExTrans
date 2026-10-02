@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17.3 - 10/2/26 - Ron Lockwood
+#    Fixes #1597. extract_bilingual_lex() can take an already-open target project from the caller and then leaves it open, so the caller's unsaved new entries are seen.
+#
 #   Version 3.17.2 - 9/8/26 - Ron Lockwood
 #    Replaced the old description at the top with a code description block: overview, the lemma naming scheme, what each sense produces, the symbol definitions, the replacement file, whitespace, One project mode, caching and code structure.
 #
@@ -151,9 +154,15 @@
 #   ONE PROJECT MODE
 #
 #   When the Project Mode setting is One project there is no second FLEx project: the target is the same project read in a different writing system. TargetDB is then the very same object as DB, and
-#   a target writing-system handle is resolved from the Target Writing System setting and passed down to the lemma lookups. Every place that would close the target project therefore tests
-#   TargetDB is not DB first - closing it in One project mode would close the source project out from under the caller, which still needs it. There are three such places: two error exits and the
-#   end of the run.
+#   a target writing-system handle is resolved from the Target Writing System setting and passed down to the lemma lookups. Closing the target in One project mode would close the source project
+#   out from under the caller, which still needs it, so the target is only closed when this function opened it itself (closeTargetDB). There are three such places: two error exits and the end
+#   of the run.
+#
+#   A TARGET THE CALLER ALREADY HAS OPEN
+#
+#   A caller that already has the target project open can pass it in as openTargetDB, and then it is used as is and left open for the caller to close. The Sense Linker depends on this. Its
+#   Add new entry button creates entries in its own open copy of the target, and if it closed that copy and this function opened a fresh one, the fresh copy could load before the save of the
+#   new entry had landed (seen with FLEx open on a shared target project). The new sense's GUID would then not be found and the user would get "Invalid url link or url not found". (#1597)
 #
 #   CACHING
 #
@@ -169,7 +178,7 @@
 #
 #   extract_bilingual_lex() sets the order of the work: read and check the settings, resolve the target project (or the target writing system in One project mode), take the cache shortcut if it
 #   can, build the output tree, loop over every entry and sense writing the entries described above, add the punctuation entry, merge the replacement file, write out the <sdefs> it accumulated
-#   along the way, write the file, and close the target project if it opened one. It collects messages into a list of tuples as it goes rather than reporting them itself, and
+#   along the way, write the file, and close the target project if it opened it itself. It collects messages into a list of tuples as it goes rather than reporting them itself, and
 #   Utils.processErrorList() turns that list into what the user sees.
 #
 
@@ -221,7 +230,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExtractBilingualLexicon", "Build Bilingual Lexicon"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -342,7 +351,7 @@ def addFeatureStringsToMap(myDB, myMap):
                 featName = Utils.as_string(val.Name)
                 myMap[Utils.underscores(featAbbr)] = featName
 
-def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
+def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False, openTargetDB=None):
 
     errorList = []
     catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
@@ -394,10 +403,13 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         return errorList
 
     # In One project mode there is no separate target project: the "target" is the same project read in the target writing
-    # system. So reuse the source DB and resolve the target WS handle; otherwise open the configured target project as usual.
+    # system. So reuse the source DB and resolve the target WS handle; otherwise use the target project the caller passed in, or open the configured one.
     twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report, giveError=False)
     oneProjectMode = twoProjectMode == 'n'
     targetWSHandle = None
+
+    # Only close the target at the end if we opened it here. The source DB (One project mode) and a target passed in by the caller both stay open for the caller.
+    closeTargetDB = False
 
     if oneProjectMode:
 
@@ -407,8 +419,13 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         if targetWSTag:
 
             targetWSHandle = DB.WSHandle(targetWSTag)
+
+    elif openTargetDB:
+
+        TargetDB = openTargetDB
     else:
         TargetDB = Utils.openTargetProject(configMap, report)
+        closeTargetDB = True
 
     if not TargetDB:
         return
@@ -448,7 +465,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
             errorList.append((_translate("ExtractBilingualLexicon", "Error retrieving categories."), 2))
 
-            if TargetDB is not DB:
+            if closeTargetDB:
 
                 TargetDB.CloseProject()
 
@@ -686,7 +703,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         except IOError as err:
             errorList.append((_translate("ExtractBilingualLexicon", "There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.").format(fullPathBilingFile=Utils.shortenPathForDisplay(fullPathBilingFile)), 2))
 
-            if TargetDB is not DB:
+            if closeTargetDB:
 
                 TargetDB.CloseProject()
 
@@ -695,8 +712,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         errorList.append((_translate("ExtractBilingualLexicon", "Creation complete to the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(fullPathBilingFile)), 0))
         errorList.append((_translate("ExtractBilingualLexicon", "{recordsDumpedCount} records created.").format(recordsDumpedCount=recordsDumpedCount), 0))
 
-    # In One project mode TargetDB is the same object as DB, so don't close it here (the caller still needs the source project).
-    if TargetDB is not DB:
+    # Close the target only if we opened it. In One project mode it is the source DB, and a target passed in by the caller is the caller's to close.
+    if closeTargetDB:
 
         TargetDB.CloseProject()
 
