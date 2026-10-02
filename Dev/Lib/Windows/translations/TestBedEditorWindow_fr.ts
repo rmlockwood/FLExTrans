@@ -6,7 +6,7 @@
     <message>
         <location filename="../TestBedEditorWindow.py" line="109"/>
         <source>Testbed Editor</source>
-        <translation>Éditeur du banc d'essai</translation>
+        <translation>Éditeur du fichier test</translation>
     </message>
     <message>
         <location filename="../TestBedEditorWindow.py" line="110"/>

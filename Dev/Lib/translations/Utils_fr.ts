@@ -81,7 +81,7 @@
     <message>
       <location filename="../Utils.py" line="921"/>
       <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
-      <translation>Lien URL invalide ou URL introuvable dans le projet cible lors du traitement de l'entrée principale source : {headWord}.</translation>
+      <translation>Lien URL invalide ou URL introuvable dans le projet cible lors du traitement de l'entrée de dictionnaire source : {headWord}.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="1035"/>

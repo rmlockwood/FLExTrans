@@ -32,7 +32,7 @@ seront supprimées. De plus, les conventions de nommage seront suivies comme dan
 bilingue. C'est-à-dire que les espaces sont convertis en traits de soulignement, les points et barres obliques sont supprimés.
 Ce module remplira également la section des catégories du fichier de règles de transfert avec
 les catégories grammaticales du projet FLEx source. Ce module créera également des
-attributs dans le fichier de règles de transfert à partir des caractéristiques d'inflexion FLEx, des classes d'inflexion
+attributs dans le fichier de règles de transfert à partir des traits de flexion FLEx, des classes d'inflexion
 et des emplacements de modèle. Vous pouvez décider lesquels sont utilisés et si les attributs existants
 doivent être écrasés.</translation>
     </message>

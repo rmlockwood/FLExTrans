@@ -17,7 +17,7 @@
     </message>
     <message>
       <source>No word or affix in the target has a feature.  Please insert at least one feature.</source>
-      <translation>Ninguna palabra o afijo en el destino tiene una característica. Por favor, inserta al menos una característica.</translation>
+      <translation>Ninguna palabra o afijo en el destino tiene un rasgo. Por favor, inserta al menos un rasgo.</translation>
     </message>
     <message>
       <source>One or more source words do not have a category.  Please insert a category for every source word.</source>
