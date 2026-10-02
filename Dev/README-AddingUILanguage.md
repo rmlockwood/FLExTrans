@@ -57,6 +57,14 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
    `Dev/Modules`, `Dev/TopLevel`), translate them (Crowdin picks the new language up from the regenerated `crowdin.yml`), and compile them to `.qm` with the `compile_transl*.bat` /
    `process*.bat` scripts — those already loop over the generated `LANG_CODES`, so they include the new language automatically.
 
+7. **Add the language to the key-terms and style list.** [`memory/ui-key-terms-glossary.md`](../memory/ui-key-terms-glossary.md) records how recurring UI terms (file, target, rule, feature,
+   headword, testbed, …) are rendered in each language, plus each language's register and style conventions (formal or informal address, how "Skipping." and "Please …" are phrased, quote and
+   apostrophe style, regional vocabulary). Every new or changed translation is checked against it, so the new language needs its own column in the tables and its own bullet under **Register and
+   regional conventions**. For FLEx-specific terms (feature, headword, Texts & Words, discourse chart, …) use FieldWorks' own translation from
+   `C:\Program Files\SIL\FieldWorks 9\Language Explorer\Configuration\strings-XX.xml`, so FLExTrans and FLEx use the same words. If the first translations are AI-generated, fill in the list
+   from them for now. Once a human translator has reviewed the `.ts` files in Crowdin, rebuild the list from the reviewed `crowdin-ft` branch, then bring any unreviewed strings into line
+   with it.
+
 ## Maintaining the XXE rule-preview stylesheet (`transfer.css`)
 
 The in-app rule preview (the "AI Rule Studio" module and anywhere `TransferPreview` renders a rule) does **not** read the XXE `transfer.css` at runtime. Instead a build tool,

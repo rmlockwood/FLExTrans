@@ -160,7 +160,7 @@
     </message>
     <message>
       <source>Open the transfer rules file in the XML editor. After saving there, use Refresh Rules so this window picks up your changes.</source>
-      <translation>Ouvre le fichier de règles de transfert dans l’éditeur XML. Après y avoir enregistré, utilisez Actualiser les règles pour que cette fenêtre prenne en compte vos modifications.</translation>
+      <translation>Ouvrir le fichier de règles de transfert dans l'éditeur XML. Après y avoir enregistré, utilisez Actualiser les règles pour que cette fenêtre prenne en compte vos modifications.</translation>
     </message>
     <message>
       <source>Model:</source>
@@ -172,11 +172,11 @@
     </message>
     <message>
       <source>Open a temporary copy of the transfer rules file, with the rule just generated spliced into it, in the XML editor. Your real rule file is not touched - use Approve to write the rule into it. Available once a rule has been generated.</source>
-      <translation>Ouvre dans l’éditeur XML une copie temporaire du fichier de règles de transfert, avec la règle qui vient d’être générée insérée dedans. Votre véritable fichier de règles n’est pas modifié : utilisez Approuver pour y écrire la règle. Disponible dès qu’une règle a été générée.</translation>
+      <translation>Ouvrir dans l'éditeur XML une copie temporaire du fichier de règles de transfert, avec la règle qui vient d'être générée insérée dedans. Votre véritable fichier de règles n'est pas modifié : utilisez Approuver pour y écrire la règle. Disponible dès qu'une règle a été générée.</translation>
     </message>
     <message>
       <source>Write the rule shown in the preview into your transfer rules file. A copy of the file as it is now is saved in the Output\rule-file-history folder first, so nothing you already had is lost. Available once a valid rule has been generated, and disabled again after the write so the same rule cannot be written twice.</source>
-      <translation>Écrit la règle affichée dans l’aperçu dans votre fichier de règles de transfert. Une copie du fichier dans son état actuel est d’abord enregistrée dans le dossier Output\rule-file-history, afin que rien de ce que vous aviez déjà ne soit perdu. Disponible dès qu’une règle valide a été générée, puis désactivé après l’écriture pour que la même règle ne puisse pas être écrite deux fois.</translation>
+      <translation>Écrire la règle affichée dans l'aperçu dans votre fichier de règles de transfert. Une copie du fichier dans son état actuel est d'abord enregistrée dans le dossier Output\rule-file-history, afin que rien de ce que vous aviez déjà ne soit perdu. Disponible dès qu'une règle valide a été générée, puis désactivé après l'écriture pour que la même règle ne puisse pas être écrite deux fois.</translation>
     </message>
 </context>
 </TS>

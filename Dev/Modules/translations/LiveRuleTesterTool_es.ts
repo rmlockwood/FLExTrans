@@ -261,22 +261,22 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
       <source>Invalid Interchunk Rules File</source>
-      <translation>Archivo de reglas entre bloques no válido</translation>
+      <translation>Archivo de reglas interchunk no válido</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2530"/>
       <source>The interchunk transfer file has no transfer element or no section-rules element</source>
-      <translation>El archivo de transferencia entre fragmentos no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
+      <translation>El archivo de transferencia interchunk no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2556"/>
       <source>Invalid postchunk Rules File</source>
-      <translation>Archivo de reglas de fragmentos posteriores inválido</translation>
+      <translation>Archivo de reglas postchunk inválido</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2556"/>
       <source>The postchunk transfer file has no transfer element or no section-rules element</source>
-      <translation>El archivo de transferencia de fragmentos posterior no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
+      <translation>El archivo de transferencia postchunk no tiene un elemento de transferencia o un elemento de reglas de sección</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="2654"/>

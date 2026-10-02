@@ -298,7 +298,7 @@ No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.<
     </message>
     <message>
       <source>{provider} has no model named {model}. It may have been retired, or your API key may not have access to it.</source>
-      <translation>{provider} no tiene ningún modelo llamado {model}. Puede que se haya retirado o que su clave de API no tenga acceso a él.</translation>
+      <translation>{provider} no tiene ningún modelo llamado {model}. Puede que se haya retirado o que tu clave API no tenga acceso a él.</translation>
     </message>
     <message>
       <source>Model not available</source>
@@ -314,7 +314,7 @@ No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.<
     </message>
     <message>
       <source>Choose or type the model to use in the Model box.</source>
-      <translation>Elija o escriba el modelo que se usará en el cuadro Modelo.</translation>
+      <translation>Elige o escribe el modelo que se usará en el cuadro Modelo.</translation>
     </message>
     <message>
       <source>Wrong provider for this model</source>
@@ -322,11 +322,11 @@ No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.<
     </message>
     <message>
       <source>{model} is a {owner} model, so {provider} cannot run it. Choose one of the {provider} models in the Model box.</source>
-      <translation>{model} es un modelo de {owner}, por lo que {provider} no puede ejecutarlo. Elija uno de los modelos de {provider} en el cuadro Modelo.</translation>
+      <translation>{model} es un modelo de {owner}, por lo que {provider} no puede ejecutarlo. Elige uno de los modelos de {provider} en el cuadro Modelo.</translation>
     </message>
     <message>
       <source>Choose a different model in the Model box at the bottom of this window, then try again.</source>
-      <translation>Elija otro modelo en el cuadro Modelo en la parte inferior de esta ventana y vuelva a intentarlo.</translation>
+      <translation>Elige otro modelo en el cuadro Modelo, en la parte inferior de esta ventana, e inténtalo de nuevo.</translation>
     </message>
     <message>
       <source>Not found</source>
@@ -342,11 +342,11 @@ No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.<
     </message>
     <message>
       <source>The transfer rules file could not be opened for editing ({err}). Open it yourself from: {path}</source>
-      <translation>No se pudo abrir el archivo de reglas de transferencia para editarlo ({err}). Ábralo usted mismo desde: {path}</translation>
+      <translation>No se pudo abrir el archivo de reglas de transferencia para editarlo ({err}). Ábrelo tú mismo desde: {path}</translation>
     </message>
     <message>
       <source>Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.</source>
-      <translation>Se abrió el archivo de reglas de transferencia en el editor XML. Después de guardar allí, haga clic en Actualizar reglas para que esta ventana recoja sus cambios.</translation>
+      <translation>Se abrió el archivo de reglas de transferencia en el editor XML. Después de guardar allí, haz clic en Actualizar reglas para que esta ventana recoja tus cambios.</translation>
     </message>
 </context>
 </TS>

@@ -85,12 +85,12 @@ Compilación {build}, {build_date}</translation>
     <message>
       <location filename="../FLExTransMenu.py" line="180"/>
       <source>Error occurred while trying to open the {proj} project: {e}</source>
-      <translation>Error ocurrido al intentar abrir el proyecto {proj}: {e}</translation>
+      <translation>Ocurrió un error al intentar abrir el proyecto {proj}: {e}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="172"/>
       <source>Opening project '{proj}' in FieldWorks...</source>
-      <translation>Abriendo proyecto '{proj}' en FieldWorks...</translation>
+      <translation>Abriendo el proyecto '{proj}' en FieldWorks...</translation>
     </message>
   </context>
 </TS>

@@ -11,7 +11,7 @@
     <message>
         <location filename="../MergeTextsWindow.py" line="155" />
         <source>&lt;b&gt;This CANNOT be undone&lt;/b&gt;, in FLExTrans or in FLEx. Back up your FLEx project first, and make sure you are NOT in the Texts &amp;amp; Words section of FLEx.</source>
-        <translation>&lt;b&gt;Cette action est IRRÉVERSIBLE&lt;/b&gt;, dans FLExTrans comme dans FLEx. Sauvegardez d'abord votre projet FLEx et assurez-vous de ne PAS être dans la section Textes et mots de FLEx.</translation>
+        <translation>&lt;b&gt;Cette action est IRRÉVERSIBLE&lt;/b&gt;, dans FLExTrans comme dans FLEx. Sauvegardez d'abord votre projet FLEx et assurez-vous de ne PAS être dans la section Textes et Mots de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTextsWindow.py" line="156" />
