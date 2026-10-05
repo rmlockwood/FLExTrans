@@ -55,8 +55,8 @@
     </message>
     <message>
         <location filename="../TestBedEditor.py" line="455"/>
-        <source>Are you sure you want to delete this test?&lt;br&gt;&lt;br&gt;&lt;b&gt;Lexical Units:&lt;/b&gt; {lexicalUnits}&lt;br&gt;&lt;b&gt;Expected Result:&lt;/b&gt; {expectedResult}</source>
-        <translation>Möchten Sie diesen Test wirklich löschen?&lt;br&gt;&lt;br&gt;&lt;b&gt;Lexikalische Einheiten:&lt;/b&gt; {lexicalUnits}&lt;br&gt;&lt;b&gt;Erwartetes Ergebnis:&lt;/b&gt; {expectedResult}</translation>
+        <source>Are you sure you want to delete this test?&lt;br&gt;&lt;br&gt;&lt;b&gt;Source Text:&lt;/b&gt; {sourceText}&lt;br&gt;&lt;b&gt;Lexical Units:&lt;/b&gt; {lexicalUnits}&lt;br&gt;&lt;b&gt;Expected Result:&lt;/b&gt; {expectedResult}&lt;br&gt;&lt;b&gt;Comment:&lt;/b&gt; {comment}</source>
+        <translation>Möchten Sie diesen Test wirklich löschen?&lt;br&gt;&lt;br&gt;&lt;b&gt;Quelltext:&lt;/b&gt; {sourceText}&lt;br&gt;&lt;b&gt;Lexikalische Einheiten:&lt;/b&gt; {lexicalUnits}&lt;br&gt;&lt;b&gt;Erwartetes Ergebnis:&lt;/b&gt; {expectedResult}&lt;br&gt;&lt;b&gt;Kommentar:&lt;/b&gt; {comment}</translation>
     </message>
     <message>
         <location filename="../TestBedEditor.py" line="458"/>
