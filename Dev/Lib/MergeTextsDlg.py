@@ -5,6 +5,9 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.3 - 10/5/26 - Ron Lockwood
+#    Fixes #1559. Rename the manual combo entry to "(choose texts)" and make it first, so the window opens with nothing selected.
+#
 #   Version 3.17.2 - 9/28/26 - Ron Lockwood
 #    Fixes #1563. Show a text's vernacular title in parens after its name, and name a vernacular-only text by its title instead of "***".
 #
@@ -22,11 +25,11 @@
 #
 #   THE TWO LISTS
 #
-#   The group combo offers the books MergeTextsUtils.groupTextNames found by looking at the text names, plus a "(manual selection)" entry for everything its name heuristic cannot see. Picking a
-#   group fills the right hand list with that book's chapters in reading order and leaves every other text on the left. From there the two lists are just moved between, so a user whose texts are
+#   The group combo offers a "(choose texts)" manual entry, then the books MergeTextsUtils.groupTextNames found by looking at the text names. The manual entry is first and is where the window
+#   opens, with the merge list empty, so nothing is pre-selected and the user sees they can pick either a book or individual texts. Picking a group fills the right hand list with that book's chapters in reading order and leaves every other text on the left. From there the two lists are just moved between, so a user whose texts are
 #   named in some way the heuristic misses can still build any selection by hand - which is what the manual entry exists for.
 #
-#   Any hand edit flips the combo to "(manual selection)", because a combo still naming a book after the user has removed half its chapters would be lying about what is going to happen. The
+#   Any hand edit flips the combo to "(choose texts)", because a combo still naming a book after the user has removed half its chapters would be lying about what is going to happen. The
 #   loadingLists flag is what stops that flip from firing while the code is itself repopulating the lists.
 #
 #   THE SUGGESTED NAME
@@ -221,7 +224,7 @@ class MergeTextsDlg(QDialog):
         # Latches once the user types in the name box, after which the suggested name never overwrites what they typed. See THE SUGGESTED NAME above.
         self.nameEditedByUser = False
 
-        # Set while the code itself is repopulating the lists, so the handlers that would flip the combo to "(manual selection)" stay quiet.
+        # Set while the code itself is repopulating the lists, so the handlers that would flip the combo to "(choose texts)" stay quiet.
         self.loadingLists = False
 
         self.ui = Ui_MergeTextsWindow()
@@ -240,7 +243,7 @@ class MergeTextsDlg(QDialog):
         self.loadGroups()
         self.connectSignals()
 
-        # Fill the lists from whichever group the combo landed on, then bring the name box, the summary and the buttons into line with it.
+        # Fill the lists from whichever entry the combo landed on (the manual entry, so an empty merge list), then bring the name box, the summary and the buttons into line with it.
         self.onGroupChanged(self.ui.groupCombo.currentIndex())
 
     def loadTexts(self):
@@ -268,11 +271,13 @@ class MergeTextsDlg(QDialog):
 
         self.loadingLists = True
 
+        # The manual entry goes first so the window opens on it, with nothing selected. Opening on the first book instead pre-loaded a group the user may not want (they then had to remove
+        # every chapter by hand or find the manual entry), and it hid the fact that either a book or individual texts can be chosen.
+        self.ui.groupCombo.addItem(_translate("MergeTextsDlg", "(choose texts)"), MANUAL_SELECTION_KEY)
+
         for displayBase, memberList in self.groupList:
 
             self.ui.groupCombo.addItem(_translate("MergeTextsDlg", "{displayBase}  ({count} texts)").format(displayBase=displayBase, count=len(memberList)), displayBase)
-
-        self.ui.groupCombo.addItem(_translate("MergeTextsDlg", "(choose the texts myself)"), MANUAL_SELECTION_KEY)
 
         self.loadingLists = False
 

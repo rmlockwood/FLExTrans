@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->29 September 2026</date
+>5 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -3685,10 +3685,10 @@ type="tFlexx"
 ></object
 > parse them afresh and every word would come back unanalyzed, which is exactly what this tool avoids.</p
 ><p
->At the top of the window, choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. If your texts are named in some other way, choose <object
+>The window opens with <object
 type="tBold"
->(choose the texts myself)</object
-> instead and build the list by hand. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. As in the <object
+>(choose texts)</object
+> showing at the top and nothing chosen yet. You can build the list by hand from the texts on the left, or open that list at the top and choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. As in the <object
 type="tTool"
 >Delete Texts</object
 > tool, a text that also has a vernacular title shows it in parentheses after its name. <exampleRef
