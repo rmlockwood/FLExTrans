@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.17.4 - 10/5/26 - Ron Lockwood
+#    Made the selected-row highlight light gray, the same as in the Testbed Editor, instead of dark blue.
+#
 #   Version 3.17.3 - 9/28/26 - Ron Lockwood
 #    The Edit Testbed button now opens the Testbed Editor instead of XMLmind, and the log viewer comes back up once the editor closes.
 #
@@ -174,7 +177,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -188,6 +191,9 @@ GREEN_CHECK =     'Light_green_check.png'
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
 MAX_RESULTS_TO_DISPLAY = 25
+
+# The selected-row highlight. Matches TEST_HIGHLIGHT_COLOR in TestBedEditor.py so both windows look alike; the default dark blue makes the colored html in the cells hard to read.
+TEST_HIGHLIGHT_COLOR = QtGui.QColor('#D3D3D3')
 
 color_re = re.compile('color:#......')
 colorNumPunc = 'color:#'+PUNC_COLOR
@@ -804,6 +810,12 @@ class LogViewerMain(QMainWindow):
         self.__model = TestbedLogModel(resultsXMLObj)
         self.ui.logTreeView.setModel(self.__model)
         self.__model.setView(self.ui.logTreeView)
+
+        # Use a light gray selection highlight instead of the default dark blue, the same as the Testbed Editor.
+        treePalette = self.ui.logTreeView.palette()
+        treePalette.setColor(QtGui.QPalette.ColorRole.Highlight, TEST_HIGHLIGHT_COLOR)
+        treePalette.setColor(QtGui.QPalette.ColorRole.HighlightedText, treePalette.color(QtGui.QPalette.ColorRole.Text))
+        self.ui.logTreeView.setPalette(treePalette)
 
         # check the text direction of the test language
         if self.__model.getRTL():
