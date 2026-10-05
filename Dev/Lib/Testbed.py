@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.8 - 10/5/26 - Ron Lockwood
+#    Fixes #1604. Don't crash formatting a lexical unit whose headword has no homograph number; split off only the trailing digits as the homograph number.
+#
 #   Version 3.17.7 - 9/30/26 - Ron Lockwood
 #    Read empty lexical unit elements from the testbed XML as '' instead of None so the Live Rule Tester's add-test check no longer asserts on a unit with no category.
 #
@@ -376,18 +379,24 @@ class LexicalUnit():
             # Create an element
             p = ET.Element('span')
 
-            # Split off the homograph_num (if present; sent punctuation won't have it)
-            lemma_parts = re.split(r'(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
+            # Split off the homograph number - the run of digits at the end of the headword. It may be missing: sent punctuation has none, and neither does a headword in an invalid test
+            # (e.g. one typed or edited by hand as "Computer"). Only trailing digits count, so a headword with digits inside it, like "B2B1", splits into "B2B" and "1". re.RegexFlag.A = ASCII-only digits.
+            lemmaMatch = re.fullmatch(r'(.*?)(\d*)', self.__headWord, flags=re.RegexFlag.A)
+
+            # fullmatch can't fail here since both groups may be empty
+            assert lemmaMatch is not None
+
+            lexeme, homographNum = lemmaMatch.groups()
 
             # Output the lexeme
-            span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
+            span = outputLUSpan(p, LEMMA_COLOR, lexeme, rtl)
 
             # Output the subscript homograph # and sense # (if they exist)
             if self.__gramCat != SENT:
 
                 assert self.__senseNum is not None
 
-                addSubscript(span, lemma_parts[1]+'.'+self.__senseNum)
+                addSubscript(span, homographNum+'.'+self.__senseNum)
             
             # Check for RTL
             if rtl == True:
