@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.19 - 10/5/26 - Ron Lockwood
+#    Fixes #1601. Show the source text and comment in the delete test confirmation.
+#
 #   Version 3.17.18 - 9/28/26 - Ron Lockwood
 #    Start the Add Test dialog at twice its natural width.
 #
@@ -136,7 +139,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.18",
+    FTM_Version:     "3.17.19",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -512,11 +515,16 @@ class Main(QMainWindow):
             return
 
         testObj = testItem.data(COL_SOURCE, Qt.ItemDataRole.UserRole)
+        sourceText = html.escape(testItem.text(COL_SOURCE))
         lexicalUnits = testObj.getFormattedLUString()
         expectedResult = html.escape(testItem.text(COL_EXPECTED))
+        comment = html.escape(testItem.text(COL_COMMENT))
 
-        # The message is rich text; the lexical units string is already HTML (colored spans) and the expected result was escaped above.
-        message = _translate("TestBedEditor", 'Are you sure you want to delete this test?<br><br><b>Lexical Units:</b> {lexicalUnits}<br><b>Expected Result:</b> {expectedResult}').format(lexicalUnits=lexicalUnits, expectedResult=expectedResult)
+        # Show everything that identifies the test (source text, lexical units, expected result and comment), since two tests can share the same lexical units or expected result.
+        # The message is rich text; the lexical units string is already HTML (colored spans) and the other values were escaped above.
+        message = _translate("TestBedEditor", 
+         'Are you sure you want to delete this test?<br><br><b>Source Text:</b> {sourceText}<br><b>Lexical Units:</b> {lexicalUnits}<br><b>Expected Result:</b> {expectedResult}<br><b>Comment:</b> {comment}').format(
+             sourceText=sourceText, lexicalUnits=lexicalUnits, expectedResult=expectedResult, comment=comment)
 
         confirm = QMessageBox(self)
         confirm.setWindowTitle(_translate("TestBedEditor", 'Delete Test'))
