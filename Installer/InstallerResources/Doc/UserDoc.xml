@@ -2632,7 +2632,13 @@ type="tTool"
 >The <object
 type="tTool"
 >Rule Assistant</object
-> helps you write Apertium transfer rules for common situations such as agreement in a phrase. It can help for the following situations:</p
+> helps you write Apertium transfer rules for common situations such as agreement in a phrase. For enforcing agreement between phrase constituents you must assign the appropriate feature in <object
+type="tFlexx"
+></object
+> to the affixes or stems involved. The <object
+type="tTool"
+>Rule Assistant</object
+> can help for the following situations:</p
 ><ol
 ><li
 >Agreement in the phrase such as gender and number agreement between adjective and noun.</li
@@ -2647,11 +2653,6 @@ type="tTool"
 ><li
 >Rearranging affix order – including deleting affixes or adding affixes.</li
 ></ol
-><p
->For enforcing agreement between phrase constituents you must assign the appropriate feature in <object
-type="tFlexx"
-></object
-> to the affixes or stems involved.</p
 ><p
 >Whenever the Rule Assistant writes rules, it first saves a copy of the previous version of your transfer rule file, so nothing you had before is lost. Look for it in the <object
 type="tFoldername"
@@ -6943,6 +6944,111 @@ type="tRuleElemInXXE"
 type="tRuleElemInXXE"
 >literal tag</object
 > element and write the gloss there. Remember the period-underscore substitution above.</p
+></section3
+><section3
+id="sDerivAffixClitic"
+><secTitle
+>How do I deal with derivational affixes and clitics in transfer rules?</secTitle
+><p
+>In transfer rules, derivational affixes, proclitics and enclitics are treated just like all other affixes. When <object
+type="tFlextrans"
+></object
+> extracts the source text, the gloss of every affix and clitic in a word becomes a tag after the grammatical category, in the order the morphemes occur in the word. That includes inflectional and derivational affixes, prefixes and suffixes, and proclitics and enclitics. For example, if <langData
+lang="lVernacular"
+>teach</langData
+> takes a derivational suffix glossed <object
+type="tluAffix"
+>nmlz</object
+>, an inflectional suffix glossed <object
+type="tluAffix"
+>pl</object
+> and an enclitic glossed <object
+type="tluAffix"
+>foc</object
+>, the lexical unit would be <langData
+lang="lVernacular"
+>teach</langData
+><object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>nmlz pl foc</object
+>. You refer to these tags the same way you refer to any other affix (see <sectionRef
+sec="sAffixRef"
+showTitle="full"
+></sectionRef
+>), and you can delete or insert them the same way too (see <sectionRef
+sec="sDeleteAffix"
+showTitle="full"
+></sectionRef
+> and <sectionRef
+sec="sInsertWord"
+showTitle="full"
+></sectionRef
+>).</p
+><p
+>Note that the grammatical category tag is always the category of the root, even when a derivational affix changes the category of the word. In the example above the word is a noun, but its category tag is still <object
+type="tluGrammCat"
+>v</object
+>. If a rule needs to treat derived words differently, match or test the derivational affix tag as well as the category. For example, a category containing <object
+type="tCourier"
+>v.nmlz</object
+> and <object
+type="tCourier"
+>v.nmlz.*</object
+> would match nominalized verbs (see <sectionRef
+sec="sCategory"
+showTitle="full"
+></sectionRef
+>).</p
+><p
+>The main difference is that if it is required to get or set the value of an affix in a rule, using an attribute (see <sectionRef
+sec="sAttribute"
+showTitle="full"
+></sectionRef
+>), then the attribute will need to be created manually. The <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> creates attributes for inflection features, inflection classes and template slots (see <sectionRef
+sec="sSetupGramCat"
+showTitle="full"
+></sectionRef
+>), but not for derivational affixes or pro/enclitics. If your rules need to work with them, define custom attributes under the <object
+type="tRuleElemInXXE"
+>Attributes</object
+> element, in the same way as in <sectionRef
+sec="step2"
+showTitle="full"
+textBefore="useDefault"
+></sectionRef
+> of the tutorial. Put the glosses of the affixes or pro/enclitics that belong together in the same attribute. For example, you might define an attribute <object
+type="tCourier"
+>a_nominalizer</object
+> with the gloss <object
+type="tluAffix"
+>nmlz</object
+>, or an attribute <object
+type="tCourier"
+>a_focus_clitic</object
+> with the glosses of your focus pro/enclitics. Remember to replace any period in a gloss with an underscore.</p
+><p
+>Give your custom attributes names that are different from the ones the <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> creates (which end in <object
+type="tCourier"
+>_feature</object
+>, <object
+type="tCourier"
+>_class</object
+> or <object
+type="tCourier"
+>_slot</object
+>). This will ensure that the attributes are not removed if the tool is run again.</p
 ></section3
 ><section3
 id="sCategory"
