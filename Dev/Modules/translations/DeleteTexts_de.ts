@@ -76,7 +76,7 @@
     <message>
       <location filename="../DeleteTexts.py" line="90"/>
       <source>Delete one or more texts from a FLEx project. It starts by listing the texts in your target project.</source>
-      <translation type="unfinished">Delete one or more texts from a FLEx project. It starts by listing the texts in your target project.</translation>
+      <translation>Einen oder mehrere Texte aus einem FLEx-Projekt löschen. Zu Beginn werden die Texte Ihres Zielprojekts aufgelistet.</translation>
     </message>
     <message>
       <location filename="../DeleteTexts.py" line="136"/>
@@ -118,14 +118,15 @@ lists what it is about to delete. Before running it, make sure you are not in th
 may be left holding on to a text that no longer exists. If you delete the text that FLExTrans is currently set up to translate, 
 the source text setting is cleared and you will need
 to choose a new source text in the FLExTrans Settings.</source>
-      <translation type="unfinished">Select one or more texts and delete them. The list starts with the texts in your target project, since the texts you usually
-want to clear out are the ones FLExTrans inserted there. You can choose another FLEx project, including your source project,
-to list its texts instead. Hold Ctrl or Shift to select more than one text.
-Deleting a text this way CANNOT be undone, in FLExTrans or in FLEx, so the module asks you to confirm and
-lists what it is about to delete. Before running it, make sure you are not in the Texts &amp; Words section of FLEx, otherwise FLEx
-may be left holding on to a text that no longer exists. If you delete the text that FLExTrans is currently set up to translate, 
-the source text setting is cleared and you will need
-to choose a new source text in the FLExTrans Settings.</translation>
+      <translation>Wählen Sie einen oder mehrere Texte aus und löschen Sie sie. Die Liste zeigt zu Beginn die Texte Ihres Zielprojekts, da die
+Texte, die Sie normalerweise entfernen möchten, die von FLExTrans dort eingefügten sind. Sie können ein anderes FLEx-Projekt
+wählen, auch Ihr Quellprojekt, um stattdessen dessen Texte aufzulisten. Halten Sie Strg oder Umschalt gedrückt, um mehrere
+Texte auszuwählen.
+Das Löschen eines Textes auf diese Weise kann NICHT rückgängig gemacht werden, weder in FLExTrans noch in FLEx. Deshalb fragt das
+Modul nach einer Bestätigung und listet auf, was gelöscht werden soll. Stellen Sie vor dem Ausführen sicher, dass Sie sich nicht
+im Bereich Texte &amp; Wörter von FLEx befinden, da FLEx sonst auf einen Text verweisen könnte, den es nicht mehr gibt. Wenn Sie den
+Text löschen, den FLExTrans derzeit übersetzen soll, wird die Quelltext-Einstellung gelöscht und Sie müssen in den
+FLExTrans-Einstellungen einen neuen Quelltext wählen.</translation>
     </message>
   </context>
 </TS>
