@@ -143,7 +143,7 @@ esto evita la limpieza para que puedas ver los errores más fácilmente.</transl
     <message>
       <location filename="../LiveRuleTester.py" line="640"/>
       <source>Test Comment:</source>
-      <translation>Comentario de prueba:</translation>
+      <translation type="unfinished">Test Comment:</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="634"/>
