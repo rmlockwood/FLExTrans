@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.17.6 - 10/6/26 - Ron Lockwood
+#    Added an Edit Transfer Rules button that opens the transfer rules file in XMLmind, the same as the Live Rule Tester's button.
+#
 #   Version 3.17.5 - 10/6/26 - Ron Lockwood
 #    Use the shared Utils.reportTestbedFileMissing message when the testbed file does not exist.
 #
@@ -88,7 +91,8 @@
 #   This module shows the results of testbed runs. Each run is one line of a tree - when it started and how it came out - and opening it up shows the individual tests, each with the source lexical
 #   units that went in, the target text that was expected and the target text that actually came out. Opening a test up further shows the comment the user wrote for it and the transfer rules that
 #   fired while it was being translated. Nothing here is edited: the module only reads the testbed results file (Testbed Results File setting) that Start Testbed and End Testbed write between them.
-#   The Edit Testbed button is for editing: it closes the viewer, runs the Testbed Editor module on the testbed file, and brings the viewer back up once the editor is closed. See the design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
+#   The Edit Testbed button is for editing: it closes the viewer, runs the Testbed Editor module on the testbed file, and brings the viewer back up once the editor is closed. The Edit Transfer Rules
+#   button opens the transfer rules file in XMLmind XML Editor, the same as the Live Rule Tester's button does. See the design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
 #
 #   Only the most recent MAX_RESULTS_TO_DISPLAY runs are shown - results are kept newest first in the file, so that is simply the top of the list - and a run with no end date-time is skipped
 #   altogether, since that is an unfinished run whose tests have no actual results yet.
@@ -142,10 +146,11 @@
 import os
 import re
 import xml.etree.ElementTree as ET
+from subprocess import call
 
 from PyQt6 import QtGui, QtCore
 from PyQt6 import QtWidgets
-from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
+from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication, QMessageBox
 from PyQt6.QtCore import QCoreApplication, QDateTime
 
 from SIL.LCModel import *   # type: ignore
@@ -177,7 +182,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.17.5",
+        FTM_Version    : "3.17.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
@@ -792,7 +797,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                 
 class LogViewerMain(QMainWindow):
 
-    def __init__(self, resultsXMLObj, testbedPath):
+    def __init__(self, resultsXMLObj, testbedPath, transferRulesFile):
         QMainWindow.__init__(self)
         self.ui = Ui_TestbedLogWindow()
         self.ui.setupUi(self)
@@ -800,6 +805,7 @@ class LogViewerMain(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         self.testbedPath = testbedPath
+        self.transferRulesFile = transferRulesFile
 
         # Set by the Edit Testbed button. RunTestbedLogViewer() reads it after the window closes to decide whether to run the Testbed Editor.
         self.startTestbedEditor = False
@@ -820,6 +826,7 @@ class LogViewerMain(QMainWindow):
         
         self.ui.OKButton.clicked.connect(self.okClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
+        self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesClicked)
         self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
         # Start the font size at 12. Call the handler outright rather than leaving it to the signal, which doesn't fire if the spin control already stands at 12.
@@ -856,6 +863,18 @@ class LogViewerMain(QMainWindow):
         # Close the viewer and RunTestbedLogViewer() will run the Testbed Editor and then reopen the viewer.
         self.startTestbedEditor = True
         self.close()
+
+    def EditTransferRulesClicked(self):
+
+        # Warn and bail if the transfer rules file isn't there.
+        if not self.transferRulesFile or not os.path.exists(self.transferRulesFile):
+
+            QMessageBox.warning(self, _translate("TestbedLogViewer", 'Not Found Error'), _translate("TestbedLogViewer", 'Transfer rule file: {transferRulesFile} does not exist.').format(transferRulesFile=Utils.shortenPathForDisplay(self.transferRulesFile or '')))
+            return
+
+        # Launch the XMLmind XML Editor (xxe) on the file, the same way the Live Rule Tester's Edit Transfer Rules button does.
+        xxe = os.path.join(os.environ['ProgramFiles(x86)'], 'XMLmind_XML_Editor', 'bin', 'xxe.exe')
+        call([xxe, self.transferRulesFile])
 
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
@@ -899,7 +918,10 @@ def RunTestbedLogViewer(DB, report, modify):
     if os.path.exists(testbedPath) == False:
         Utils.reportTestbedFileMissing(report)
         return None
-    
+
+    # Get the path to the transfer rules file for the Edit Transfer Rules button. Don't give an error here; the button reports a missing file when it's clicked.
+    transferRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
     # Keep showing the viewer until the user closes it some way other than the Edit Testbed button. That button closes the viewer so the Testbed Editor can run, and then we come back round.
     startTestbedEditor = True
 
@@ -913,7 +935,7 @@ def RunTestbedLogViewer(DB, report, modify):
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
-        window = LogViewerMain(resultsXMLObj, testbedPath)
+        window = LogViewerMain(resultsXMLObj, testbedPath, transferRulesFile)
 
         window.show()
         window.myResize()

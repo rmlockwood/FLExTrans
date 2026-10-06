@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.21 - 10/6/26 - Ron Lockwood
+#    Added an Edit Transfer Rules button that opens the transfer rules file in XMLmind, the same as the Live Rule Tester's button.
+#
 #   Version 3.17.20 - 10/6/26 - Ron Lockwood
 #    Use the shared Utils.reportTestbedFileMissing message when the testbed file does not exist.
 #
@@ -85,6 +88,7 @@
 #
 # Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _fitHeaderText makes the header tall enough, and each column wide enough, for its bold header text.
 # _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits, save writes all rows, and closeEvent handles unsaved changes.
+# _editTransferRules opens the transfer rules file (Transfer Rules File setting, read in MainFunction) in XMLmind XML Editor, just as the Live Rule Tester's Edit Transfer Rules button does.
 #
 # TRANSLATION
 #
@@ -94,6 +98,7 @@
 
 import html
 import os
+from subprocess import call
 from typing import Optional
 import xml.etree.ElementTree as ET
 
@@ -142,7 +147,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.20",
+    FTM_Version:     "3.17.21",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -177,10 +182,11 @@ class ChildRowReadOnlyDelegate(QStyledItemDelegate):
 
 class Main(QMainWindow):
 
-    def __init__(self, testObjList, testbedFileObj, report, DB):
+    def __init__(self, testObjList, testbedFileObj, report, DB, transferRulesFile):
         super().__init__()
         self.testObjList    = testObjList
         self.testbedFileObj = testbedFileObj
+        self.transferRulesFile = transferRulesFile
         self.report         = report
         self.unsaved        = False
         self.sourceLemmas, self.sourceAffixes = gatherCompletionData(DB, report, testbedFileObj.composed)
@@ -209,6 +215,7 @@ class Main(QMainWindow):
         self.ui.deleteButton.clicked.connect(self._deleteTest)
         self.ui.saveButton.clicked.connect(self.save)
         self.ui.closeButton.clicked.connect(self.close)
+        self.ui.editTransferRulesButton.clicked.connect(self._editTransferRules)
         self.ui.deleteButton.setEnabled(False)
 
         delegateData = [
@@ -545,6 +552,18 @@ class Main(QMainWindow):
         self.unsaved = True
         self.ui.saveLabel.setText(_translate("TestBedEditor", 'Test deleted. There are unsaved changes.'))
 
+    def _editTransferRules(self):
+
+        # Warn and bail if the transfer rules file isn't there.
+        if not self.transferRulesFile or not os.path.exists(self.transferRulesFile):
+
+            QMessageBox.warning(self, _translate("TestBedEditor", 'Not Found Error'), _translate("TestBedEditor", 'Transfer rule file: {transferRulesFile} does not exist.').format(transferRulesFile=Utils.shortenPathForDisplay(self.transferRulesFile or '')))
+            return
+
+        # Launch the XMLmind XML Editor (xxe) on the file, the same way the Live Rule Tester's Edit Transfer Rules button does.
+        xxe = os.path.join(os.environ['ProgramFiles(x86)'], 'XMLmind_XML_Editor', 'bin', 'xxe.exe')
+        call([xxe, self.transferRulesFile])
+
     # ------------------------------------------------------------------
     # Change tracking
     # ------------------------------------------------------------------
@@ -705,7 +724,10 @@ def MainFunction(DB, report, modifyAllowed):
     testbedXMLObj = testbedFileObj.getFLExTransTestbedXMLObject()
     testObjList   = testbedXMLObj.getTestXMLObjectList()
 
-    window = Main(testObjList, testbedFileObj, report, DB)
+    # Get the path to the transfer rules file for the Edit Transfer Rules button. Don't give an error here; the button reports a missing file when it's clicked.
+    transferRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    window = Main(testObjList, testbedFileObj, report, DB, transferRulesFile)
     window.show()
     app.exec()
 

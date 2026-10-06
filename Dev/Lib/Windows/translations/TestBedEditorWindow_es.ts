@@ -63,5 +63,10 @@
         <source>Font Size:</source>
         <translation>Tamaño de fuente:</translation>
     </message>
+    <message>
+        <location filename="../TestBedEditorWindow.py" line="128"/>
+        <source>Edit Transfer Rules</source>
+        <translation>Editar reglas de transferencia</translation>
+    </message>
 </context>
 </TS>

@@ -88,5 +88,15 @@
       <source>Rule {number}</source>
       <translation>Règle {number}</translation>
     </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="872"/>
+      <source>Not Found Error</source>
+      <translation>Erreur introuvable</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="872"/>
+      <source>Transfer rule file: {transferRulesFile} does not exist.</source>
+      <translation>Fichier de règles de transfert : {transferRulesFile} n'existe pas.</translation>
+    </message>
   </context>
 </TS>

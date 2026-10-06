@@ -83,5 +83,15 @@
         <source>Unsaved Changes</source>
         <translation>Modifications non enregistrées</translation>
     </message>
+    <message>
+        <location filename="../TestBedEditor.py" line="560"/>
+        <source>Not Found Error</source>
+        <translation>Erreur introuvable</translation>
+    </message>
+    <message>
+        <location filename="../TestBedEditor.py" line="560"/>
+        <source>Transfer rule file: {transferRulesFile} does not exist.</source>
+        <translation>Fichier de règles de transfert : {transferRulesFile} n'existe pas.</translation>
+    </message>
 </context>
 </TS>
