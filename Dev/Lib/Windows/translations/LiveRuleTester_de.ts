@@ -143,7 +143,7 @@ verhindert dies die Bereinigung, sodass Sie Fehler leichter erkennen können.</t
     <message>
       <location filename="../LiveRuleTester.py" line="640"/>
       <source>Test Comment:</source>
-      <translation>Testkommentar:</translation>
+      <translation type="unfinished">Test Comment:</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="634"/>
