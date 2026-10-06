@@ -96,12 +96,12 @@
     <message>
       <location filename="../Utils.py" line="1"/>
       <source>No target project has been set. Please go to Settings and choose one.</source>
-      <translation>No se ha establecido ningún proyecto de destino. Por favor, ve a la Configuración y elige uno.</translation>
+      <translation type="unfinished">No target project has been set. Please go to Settings and choose one.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="1"/>
       <source>The testbed file does not exist yet. You need to first add tests to the testbed and the best place to do this is in the Live Rule Tester tool.</source>
-      <translation>El archivo del banco de pruebas aún no existe. Primero debes agregar pruebas al banco de pruebas, y el mejor lugar para hacerlo es la herramienta Live Rule Tester.</translation>
+      <translation type="unfinished">The testbed file does not exist yet. You need to first add tests to the testbed and the best place to do this is in the Live Rule Tester tool.</translation>
     </message>
   </context>
 </TS>
