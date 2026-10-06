@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>5 October 2026</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>6 October 2026</small></center>
       <center><small>Version: 3.17</small></center>
       <hr>
       <div>
@@ -418,6 +418,8 @@
                         </tr>
                      </table>
                   </div>
+                  <p>Note: if the custom field created in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> has a name other than <span style="font-style:italic; ">Target Equivalent</span>, this must be set in the setting <span style="font-weight:bold; color:#964B00; ">Source Custom Field for Sense Link</span>. This setting is visible in the <span style="font-style:italic; ">Basic</span> or <span style="font-style:italic; ">Full</span> View Modes.
+                  </p>
                </li>
                <li>Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button.
                </li>
@@ -1140,9 +1142,9 @@
       </h2>
       <h3 style=""><a name="sPtxImport"></a>4.4.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import
       </h3>
-      <p>To import <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> chapters into the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. Fill out the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation in the first box. Note: this must be a project that you are at least an <span style="font-style:italic; ">Observer</span> on in <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>.
+      <p>To import <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> chapters into the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. Fill out the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation in the first box. Note: this must be a project that you are at least an <span style="font-style:italic; ">Observer</span> on in <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>. Also, you cannot import from <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> resources. 
       </p>
-      <p>Also, you cannot import from <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> resources. Put the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book abbreviation in the second box. Select from and to chapters.
+      <p>Put the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book abbreviation in the second box. Select from and to chapters.
       </p>
       <p>After importing, you will have a new text in the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will
          get a text with the same name with '- Copy' appended, unless you have checked the <span style="font-style:italic; ">Overwrite existing text</span> box.
@@ -1185,6 +1187,21 @@
          </table>
       </div>
       <p>This module supports cluster projects. See <a href="#xClusterImportParatext">(49)</a>.
+      </p>
+      <p>By default, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module looks for the book files in the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> projects folder on your computer. If the files you want to import are somewhere else, for example a copy of a project's files
+         that someone sent you, or a <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project folder that is not in the standard location, you can tell <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> where to find them:
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> and click on <span style="font-style:italic; ">Full</span> under <span style="font-weight:bold; color:#964B00; ">View Mode</span>.
+         </li>
+         <li>In the <span style="font-weight:bold; color:#964B00; ">Import Settings</span> section, for the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Files</span> setting, click the <span style="font-style:normal; font-weight:bold; ">Browse folder...</span> button and choose the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project folder, i.e. the folder containing the .sfm files.
+         </li>
+         <li>Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button.
+         </li>
+         <li>Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module as usual. In the first box, type the project abbreviation that is part of the book file names.
+         </li>
+      </ol>
+      <p>To go back to importing from the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> folder, clear the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Files</span> setting.
       </p>
       <h3 style=""><a name="sPtxExport"></a>4.4.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export
       </h3>
@@ -1422,8 +1439,8 @@
          provides a really good start for synthesis. See <a href="#rBlack">Black, (2014)</a> for more details about setting up parsing effectively for either parser.
       </p>
       <h2 style=""><a name="sRuleAssist"></a>4.7&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> helps you write Apertium transfer rules for common situations such as agreement in a phrase. For enforcing agreement between
-         phrase constituents you must assign the appropriate feature in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> to the affixes or stems involved. The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> can help for the following situations:
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> helps you write Apertium transfer rules for common situations such as agreement in a phrase. It can help for the following
+         situations:
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Agreement in the phrase such as gender and number agreement between adjective and noun.</li>
@@ -1433,6 +1450,8 @@
          <li>Turning a source affix into a target word.</li>
          <li>Rearranging affix order &#8211; including deleting affixes or adding affixes.</li>
       </ol>
+      <p>For enforcing agreement between phrase constituents you must assign the appropriate feature in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> to the affixes or stems involved.
+      </p>
       <p>Whenever the Rule Assistant writes rules, it first saves a copy of the previous version of your transfer rule file, so nothing
          you had before is lost. Look for it in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\rule-file-history</span> folder, under a name like <span style="font-style:italic; ">transfer_rules_2026-09-02_15-20-05_before_RA_changes.t1x</span> - your rule file&#8217;s name with the date, the time and a tag saying what saved it. The same folder holds the copies saved by
          the other tools that change or record your rules.
@@ -3518,7 +3537,7 @@
       </p>
       <h3 style=""><a name="sDerivAffixClitic"></a>8.3.2&nbsp;How do I deal with derivational affixes and clitics in transfer rules?
       </h3>
-      <p>In transfer rules, derivational affixes, proclitics and enclitics are treated just like all other affixes. When <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> extracts the source text, the gloss of every affix and clitic in a word becomes a tag after the grammatical category, in
+      <p>In transfer rules, derivational affixes and clitics are treated just like all other affixes. When <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> extracts the source text, the gloss of every affix and clitic in a word becomes a tag after the grammatical category, in
          the order the morphemes occur in the word. That includes inflectional and derivational affixes, prefixes and suffixes, and
          proclitics and enclitics. For example, if <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">teach</span> takes a derivational suffix glossed <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nmlz</span>, an inflectional suffix glossed <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span> and an enclitic glossed <span style="font-family:Courier New; font-size:90%; color:#00B050; ">foc</span>, the lexical unit would be <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">teach</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nmlz pl foc</span>. You refer to these tags the same way you refer to any other affix (see &#8220;<a href="#sAffixRef">How do I refer to affix glosses in transfer rules?</a>&#8221;), and you can delete or insert them the same way too (see &#8220;<a href="#sDeleteAffix">How do I delete an affix?</a>&#8221; and &#8220;<a href="#sInsertWord">How do I insert a word into the target output?</a>&#8221;).
       </p>
@@ -3526,11 +3545,12 @@
          of the word. In the example above the word is a noun, but its category tag is still <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span>. If a rule needs to treat derived words differently, match or test the derivational affix tag as well as the category. For
          example, a category containing <span style="font-family:Courier New; font-size:100%; ">v.nmlz</span> and <span style="font-family:Courier New; font-size:100%; ">v.nmlz.*</span> would match nominalized verbs (see &#8220;<a href="#sCategory">How do I use the category element in the transfer rules?</a>&#8221;).
       </p>
-      <p>The main difference is that if it is required to get or set the value of an affix in a rule, using an attribute (see &#8220;<a href="#sAttribute">How do I use the attribute element in the transfer rules?</a>&#8221;), then the attribute will need to be created manually. The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> creates attributes for inflection features, inflection classes and template slots (see &#8220;<a href="#sSetupGramCat">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></a>&#8221;), but not for derivational affixes or pro/enclitics. If your rules need to work with them, define custom attributes under
-         the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Attributes</span> element, in the same way as in &#8220;<a href="#step2">Step 2</a>&#8221; of the tutorial. Put the glosses of the affixes or pro/enclitics that belong together in the same attribute. For example,
-         you might define an attribute <span style="font-family:Courier New; font-size:100%; ">a_nominalizer</span> with the gloss <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nmlz</span>, or an attribute <span style="font-family:Courier New; font-size:100%; ">a_focus_clitic</span> with the glosses of your focus pro/enclitics. Remember to replace any period in a gloss with an underscore.
+      <p>The main difference is in the attributes. To get or set the value of an affix in a rule, you use an attribute that lists the
+         glosses it can have (see &#8220;<a href="#sAttribute">How do I use the attribute element in the transfer rules?</a>&#8221;). The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> creates attributes for inflection features, inflection classes and template slots (see &#8220;<a href="#sSetupGramCat">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></a>&#8221;). Derivational affixes and clitics do not belong to template slots, so the tool does not create attributes for them. If your
+         rules need to work with them, define custom attributes yourself under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Attributes</span> element, the same way as in &#8220;<a href="#step2">Step 2</a>&#8221; of the tutorial. Put the glosses of the affixes or clitics that belong together in the same attribute. For example, you might
+         define an attribute <span style="font-family:Courier New; font-size:100%; ">a_nominalizer</span> with the gloss <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nmlz</span>, or an attribute <span style="font-family:Courier New; font-size:100%; ">a_focus_clitic</span> with the glosses of your focus clitics. Remember to replace any period in a gloss with an underscore.
       </p>
-      <p>Give your custom attributes names that are different from the ones the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> creates (which end in <span style="font-family:Courier New; font-size:100%; ">_feature</span>, <span style="font-family:Courier New; font-size:100%; ">_class</span> or <span style="font-family:Courier New; font-size:100%; ">_slot</span>). This will ensure that the attributes are not removed if the tool is run again.
+      <p>Give your custom attributes names that are different from the ones the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> creates (which end in <span style="font-family:Courier New; font-size:100%; ">_feature</span>, <span style="font-family:Courier New; font-size:100%; ">_class</span> or <span style="font-family:Courier New; font-size:100%; ">_slot</span>). That way the tool will leave them alone when you run it again.
       </p>
       <h3 style=""><a name="sCategory"></a>8.3.3&nbsp;How do I use the category element in the transfer rules?
       </h3>
