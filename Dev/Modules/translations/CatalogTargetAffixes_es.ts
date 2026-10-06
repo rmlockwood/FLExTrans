@@ -31,7 +31,7 @@
     <message>
       <location filename="../CatalogTargetAffixes.py" line="187"/>
       <source>There was a problem creating the Target Affix Gloss List File: {filePath}. Please check the configuration file setting.</source>
-      <translation>Hubo un problema al crear el archivo de lista de glosas de afijos de destino: {filePath}. Por favor, revisa la configuración del archivo de configuración.</translation>
+      <translation type="unfinished">There was a problem creating the Target Affix Gloss List File: {filePath}. Please check the configuration file setting.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="252"/>
