@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.17.5 - 10/6/26 - Ron Lockwood
+#    Use the shared Utils.reportTestbedFileMissing message when the testbed file does not exist.
+#
 #   Version 3.17.4 - 10/5/26 - Ron Lockwood
 #    Made the selected-row highlight light gray, the same as in the Testbed Editor, instead of dark blue.
 #
@@ -138,10 +141,7 @@
 
 import os
 import re
-import sys
-import unicodedata
 import xml.etree.ElementTree as ET
-from datetime import datetime
 
 from PyQt6 import QtGui, QtCore
 from PyQt6 import QtWidgets
@@ -177,16 +177,13 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.17.4",
+        FTM_Version    : "3.17.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
         FTM_Description: _translate("TestbedLogViewer", 
 """View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.""")}
                  
-#app.quit()
-#del app
-
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
@@ -900,7 +897,7 @@ def RunTestbedLogViewer(DB, report, modify):
     
     # We can't do anything if there is no testbed
     if os.path.exists(testbedPath) == False:
-        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=Utils.shortenPathForDisplay(testbedPath)))
+        Utils.reportTestbedFileMissing(report)
         return None
     
     # Keep showing the viewer until the user closes it some way other than the Edit Testbed button. That button closes the viewer so the Testbed Editor can run, and then we come back round.

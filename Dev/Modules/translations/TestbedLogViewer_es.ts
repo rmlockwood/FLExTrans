@@ -88,10 +88,5 @@
       <source>Rule {number}</source>
       <translation>Regla {number}</translation>
     </message>
-    <message>
-      <location filename="../TestbedLogViewer.py" line="647"/>
-      <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
-      <translation>Archivo del banco de pruebas: {testbedPath} no existe. Añade pruebas al banco de pruebas.</translation>
-    </message>
   </context>
 </TS>

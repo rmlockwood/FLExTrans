@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.17.4 - 10/6/26 - Ron Lockwood
+#    Added reportTestbedFileMissing so the testbed modules share one testbed-file-does-not-exist message that points users to the Live Rule Tester.
+#
 #   Version 3.17.3 - 9/30/26 - Ron Lockwood
 #    Fixes #1584. Convert dots to underscores in inflection class abbreviations added to the category map so they match entry tags.
 #
@@ -273,7 +276,7 @@
 #   Constants for circumfix tags, Apertium reserved characters, LCM class names, cache and output file names come first. Then, roughly in order: clitic and unique-name helpers (createUniqueTitle,
 #   makeUniqueName); multistring readers (as_string, as_vern_string, as_tag); lexicon lookups (getHeadwordStr, GetEntryWithSense, split_compounds); project opening (getFlexExePath, openProject,
 #   isProjectPath, targetProjectExists, targetProjectDisplayName, getFlexProjectsDir, normalizeProjectPath, projectOpenName, projectLinkName, openTargetProject); category and inflection-class checks (get_categories, check_for_cat_errors); text lists (getSourceTextList, getTextVernacularTitle, getTextName, getTextDisplayName,
-#   loadSourceTextList); error-list handling (processErrorList, checkForFatalError); sense-link helpers (getTargetSenseInfo, writeSenseHyperLink); feature and affix queries used by the Rule
+#   loadSourceTextList); error-list handling (processErrorList, reportTestbedFileMissing, checkForFatalError); sense-link helpers (getTargetSenseInfo, writeSenseHyperLink); feature and affix queries used by the Rule
 #   Assistant (getLemmasForFeature, getAffixTemplates, getStemFeatures, getInflectionTags); Apertium escaping; and finally path, translation and date-formatting helpers (shortenPathForDisplay,
 #   loadTranslations, LocalizedDateTimeFormatter, get_short_path).
 #
@@ -1133,6 +1136,12 @@ def processErrorList(error_list, report):
             fatal = True
 
     return None if fatal else 1
+
+def reportTestbedFileMissing(report):
+    '''Report the error shown when the testbed file hasn't been created yet. The Start Testbed, Testbed Editor and Testbed Log Viewer modules all need it, so the wording (and its
+    translations) live here in one place. The file only comes into being when the first test is added, and the Live Rule Tester is the natural place to do that.'''
+
+    report.Error(_translate("Utils", "The testbed file does not exist yet. You need to first add tests to the testbed and the best place to do this is in the Live Rule Tester tool."))
 
 def checkForFatalError(errorList, report):
 

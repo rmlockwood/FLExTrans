@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.20 - 10/6/26 - Ron Lockwood
+#    Use the shared Utils.reportTestbedFileMissing message when the testbed file does not exist.
+#
 #   Version 3.17.19 - 10/5/26 - Ron Lockwood
 #    Fixes #1601. Show the source text and comment in the delete test confirmation.
 #
@@ -139,7 +142,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.19",
+    FTM_Version:     "3.17.20",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -696,7 +699,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     if not testbedFileObj.exists():
-        report.Error(_translate("TestBedEditor", 'Testbed file does not exist. Please add tests to the testbed first.'))
+        Utils.reportTestbedFileMissing(report)
         return
 
     testbedXMLObj = testbedFileObj.getFLExTransTestbedXMLObject()

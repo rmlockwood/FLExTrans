@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.17.3 - 10/6/26 - Ron Lockwood
+#    Use the shared Utils.reportTestbedFileMissing message when the testbed file does not exist.
+#
 #   Version 3.17.2 - 9/2/26 - Ron Lockwood
 #    Save a copy of every phase's transfer rules in Output\rule-file-history through RuleFileHistory, and convert a leftover rule-history folder from an earlier version.
 #
@@ -110,7 +113,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
-        FTM_Version: "3.17.2",
+        FTM_Version: "3.17.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
         FTM_Help: "",
@@ -122,9 +125,6 @@ docs = {FTM_Name: _translate("StartTestbed", "Start Testbed"),
     ),
 }
 
-#app.quit()
-#del app
-
 def init_new_result(DB, report):
     # should this clean up result nodes that have no data?
 
@@ -133,7 +133,7 @@ def init_new_result(DB, report):
 
     # We can't do anything if there is no testbed
     if testbedFileObj.exists() == False:
-        report.Error(_translate("StartTestbed", "Testbed does not exist. Please add tests to the testbed."))
+        Utils.reportTestbedFileMissing(report)
         return None
 
     # Validate the source lexical units in the testbed XML file and write the changes if needed
