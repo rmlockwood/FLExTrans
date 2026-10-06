@@ -83,10 +83,5 @@
         <source>Unsaved Changes</source>
         <translation>Modifications non enregistrées</translation>
     </message>
-    <message>
-        <location filename="../TestBedEditor.py" line="595"/>
-        <source>Testbed file does not exist. Please add tests to the testbed first.</source>
-        <translation>Le fichier du banc d'essai n'existe pas. Veuillez d'abord ajouter des tests au banc d'essai.</translation>
-    </message>
 </context>
 </TS>

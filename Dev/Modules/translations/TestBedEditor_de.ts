@@ -83,10 +83,5 @@
         <source>Unsaved Changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
-    <message>
-        <location filename="../TestBedEditor.py" line="595"/>
-        <source>Testbed file does not exist. Please add tests to the testbed first.</source>
-        <translation>Die Testbed-Datei existiert nicht. Bitte fügen Sie dem Testbed zuerst Tests hinzu.</translation>
-    </message>
 </context>
 </TS>

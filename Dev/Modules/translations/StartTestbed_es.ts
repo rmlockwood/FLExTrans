@@ -23,11 +23,6 @@
         </translation>
     </message>
     <message>
-      <location filename="../StartTestbed.py" line="81"/>
-      <source>Testbed does not exist. Please add tests to the testbed.</source>
-      <translation>El banco de pruebas no existe. Por favor, agrega pruebas al banco de pruebas.</translation>
-    </message>
-    <message>
       <location filename="../StartTestbed.py" line="131"/>
       <source>There is a problem with the Analyzed Text Output File path: {outFileVal}. Please check the configuration file setting.</source>
       <translation>Hay un problema con la ruta del archivo de salida del texto analizado: {outFileVal}. Revisa la configuración del archivo de configuración.</translation>
