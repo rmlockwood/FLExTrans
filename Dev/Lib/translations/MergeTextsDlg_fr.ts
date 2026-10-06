@@ -21,7 +21,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="148" />
         <source>This CANNOT be undone. If FLEx is open, make sure you are NOT in the Texts &amp; Words section of FLEx.</source>
-        <translation>Cette action est IRRÉVERSIBLE. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Textes et mots de FLEx.</translation>
+        <translation>Cette action est IRRÉVERSIBLE. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Textes et Mots de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="268" />
@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="270" />
-        <source>(choose the texts myself)</source>
-        <translation>(choisir les textes moi-même)</translation>
+        <source>(choose texts)</source>
+        <translation>(choisir des textes)</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="303" />
@@ -56,12 +56,12 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="730" />
         <source>A discourse chart is based on these texts and will be left pointing at nothing: {nameList}. Delete those charts in the FLEx Discourse area first, then merge, then chart the merged text.</source>
-        <translation>Un graphique de discours est basé sur ces textes et ne pointera plus vers rien : {nameList}. Supprimez d'abord ces graphiques dans la section Discours de FLEx, puis fusionnez, puis créez le graphique du texte fusionné.</translation>
+        <translation>Un tableau de discours est basé sur ces textes et ne pointera plus vers rien : {nameList}. Supprimez d'abord ces tableaux dans la section Discours de FLEx, puis fusionnez les textes, puis créez le tableau du texte fusionné.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="734" />
         <source>These texts have media files, which belong to the text and not to its paragraphs. They will not be deleted, so their media survives: {nameList}.</source>
-        <translation>Ces textes contiennent des fichiers multimédias, qui appartiennent au texte et non à ses paragraphes. Ils ne seront pas supprimés, afin que leurs médias soient conservés : {nameList}.</translation>
+        <translation>Ces textes contiennent des fichiers médias, qui appartiennent au texte et non à ses paragraphes. Ils ne seront pas supprimés, afin que leurs médias soient conservés : {nameList}.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="742" />
@@ -71,7 +71,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="760" />
         <source>Please read:</source>
-        <translation>À lire :</translation>
+        <translation>Veuillez lire :</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="816" />
@@ -126,7 +126,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="583" />
         <source>Covered twice: {chapterList}.</source>
-        <translation>Comptés deux fois : {chapterList}.</translation>
+        <translation>En double : {chapterList}.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="588" />

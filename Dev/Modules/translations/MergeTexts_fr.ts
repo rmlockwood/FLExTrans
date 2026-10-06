@@ -11,7 +11,7 @@
     <message>
         <location filename="../MergeTexts.py" line="149" />
         <source>The text "{sourceName}" has no paragraphs. Skipping it.</source>
-        <translation>Le texte "{sourceName}" n'a aucun paragraphe. Il est ignoré.</translation>
+        <translation>Le texte "{sourceName}" n'a aucun paragraphe. Ignoré.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="183" />
@@ -46,7 +46,7 @@
     <message>
         <location filename="../MergeTexts.py" line="310" />
         <source>These texts were not deleted because they have media files, which belong to the text rather than to its paragraphs: {nameList}.</source>
-        <translation>Ces textes n'ont pas été supprimés car ils contiennent des fichiers multimédias, qui appartiennent au texte et non à ses paragraphes : {nameList}.</translation>
+        <translation>Ces textes n'ont pas été supprimés car ils contiennent des fichiers médias, qui appartiennent au texte et non à ses paragraphes : {nameList}.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="314" />
@@ -93,19 +93,19 @@ translation and notes.
 The texts you merge are deleted, so the module asks you
 to confirm. Merging this way CANNOT be undone, in FLExTrans or in FLEx, so back up your FLEx project first. Before running it, make
 sure you are not in the Texts &amp; Words section of FLEx.</source>
-        <translation>Combine plusieurs textes en un nouveau texte. Cette fonction est destinée aux livres bibliques importés chapitre par chapitre : les textes nommés
-Matthieu 01, Matthieu 02, Matthieu 03-04, etc., sont fusionnés en un seul texte nommé d'après la plage de chapitres, par ex. Matthieu 01-28.
+        <translation>Combine plusieurs textes en un nouveau texte. Ce module est destiné aux livres bibliques importés chapitre par chapitre : les textes nommés
+Matthieu 01, Matthieu 02, Matthieu 03-04, etc., sont fusionnés en un seul texte nommé d'après la plage de chapitres, p. ex. Matthieu 01-28.
 Le module propose ces groupes en examinant les noms des textes, et vous pouvez aussi choisir les textes vous-même et les mettre dans n'importe quel ordre.
 Aucun travail interlinéaire n'est perdu. Chaque mot conserve l'analyse et la glose qui ont été approuvées pour lui, et chaque phrase conserve sa traduction
 libre et ses notes.
 Les textes que vous fusionnez sont supprimés, c'est pourquoi le module vous demande
 de confirmer. Une telle fusion est IRRÉVERSIBLE, dans FLExTrans comme dans FLEx : sauvegardez donc d'abord votre projet FLEx. Avant de l'exécuter,
-assurez-vous de ne pas être dans la section Textes et mots de FLEx.</translation>
+assurez-vous de ne pas être dans la section Textes et Mots de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="211" />
         <source>An empty discourse chart could not be deleted. Delete it in the FLEx Discourse area.</source>
-        <translation>Un graphique de discours vide n'a pas pu être supprimé. Supprimez-le dans la section Discours de FLEx.</translation>
+        <translation>Un tableau de discours vide n'a pas pu être supprimé. Supprimez-le dans la section Discours de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="322" />
@@ -115,7 +115,7 @@ assurez-vous de ne pas être dans la section Textes et mots de FLEx.</translatio
     <message>
         <location filename="../MergeTexts.py" line="329" />
         <source>{count} empty discourse chart(s) were deleted along with their texts.</source>
-        <translation>{count} graphique(s) de discours vide(s) ont été supprimés avec leurs textes.</translation>
+        <translation>{count} tableau(x) de discours vide(s) ont été supprimés avec leurs textes.</translation>
     </message>
 </context>
 </TS>

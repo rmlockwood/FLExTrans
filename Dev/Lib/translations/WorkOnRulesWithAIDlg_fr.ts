@@ -346,7 +346,7 @@ Rien n'a été envoyé à l'IA. Corrigez le nom de la macro et réessayez.</tran
     </message>
     <message>
       <source>Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.</source>
-      <translation>Le fichier de règles de transfert a été ouvert dans l’éditeur XML. Après y avoir enregistré, cliquez sur Actualiser les règles pour que cette fenêtre prenne en compte vos modifications.</translation>
+      <translation>Le fichier de règles de transfert a été ouvert dans l'éditeur XML. Après y avoir enregistré, cliquez sur Actualiser les règles pour que cette fenêtre prenne en compte vos modifications.</translation>
     </message>
 </context>
 </TS>

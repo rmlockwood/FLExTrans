@@ -5,6 +5,12 @@
 #   SIL International
 #   9/9/26
 #
+#   Version 3.17.3 - 10/5/26 - Ron Lockwood
+#    Fixes #1559. Rename the manual combo entry to "(choose texts)" and make it first, so the window opens with nothing selected.
+#
+#   Version 3.17.2 - 9/28/26 - Ron Lockwood
+#    Fixes #1563. Show a text's vernacular title in parens after its name, and name a vernacular-only text by its title instead of "***".
+#
 #   Version 3.17.1 - 9/11/26 - Ron Lockwood
 #    Fixes #1561. Word the coverage sentence in the singular for one chapter.
 #
@@ -19,11 +25,11 @@
 #
 #   THE TWO LISTS
 #
-#   The group combo offers the books MergeTextsUtils.groupTextNames found by looking at the text names, plus a "(manual selection)" entry for everything its name heuristic cannot see. Picking a
-#   group fills the right hand list with that book's chapters in reading order and leaves every other text on the left. From there the two lists are just moved between, so a user whose texts are
+#   The group combo offers a "(choose texts)" manual entry, then the books MergeTextsUtils.groupTextNames found by looking at the text names. The manual entry is first and is where the window
+#   opens, with the merge list empty, so nothing is pre-selected and the user sees they can pick either a book or individual texts. Picking a group fills the right hand list with that book's chapters in reading order and leaves every other text on the left. From there the two lists are just moved between, so a user whose texts are
 #   named in some way the heuristic misses can still build any selection by hand - which is what the manual entry exists for.
 #
-#   Any hand edit flips the combo to "(manual selection)", because a combo still naming a book after the user has removed half its chapters would be lying about what is going to happen. The
+#   Any hand edit flips the combo to "(choose texts)", because a combo still naming a book after the user has removed half its chapters would be lying about what is going to happen. The
 #   loadingLists flag is what stops that flip from firing while the code is itself repopulating the lists.
 #
 #   THE SUGGESTED NAME
@@ -35,7 +41,8 @@
 #   WHY EACH ROW CARRIES ITS OBJECT
 #
 #   Each row holds the (name, IText, IStText) triple under UserRole rather than being looked up later by its display string. Two reasons, both real: the row for the configured source text has a
-#   marker appended to it so its display string is not the text's name, and FLEx allows two texts to have the same name, so a name is not an identifier. The same reasoning is in DeleteTexts.py.
+#   marker appended to it and any row may have the text's vernacular title in parens after it (see Utils.getTextDisplayName), so the display string is not the text's name; and FLEx allows two
+#   texts to have the same name, so a name is not an identifier. The same reasoning is in DeleteTexts.py.
 #
 #   THE HAZARDS
 #
@@ -217,7 +224,7 @@ class MergeTextsDlg(QDialog):
         # Latches once the user types in the name box, after which the suggested name never overwrites what they typed. See THE SUGGESTED NAME above.
         self.nameEditedByUser = False
 
-        # Set while the code itself is repopulating the lists, so the handlers that would flip the combo to "(manual selection)" stay quiet.
+        # Set while the code itself is repopulating the lists, so the handlers that would flip the combo to "(choose texts)" stay quiet.
         self.loadingLists = False
 
         self.ui = Ui_MergeTextsWindow()
@@ -236,7 +243,7 @@ class MergeTextsDlg(QDialog):
         self.loadGroups()
         self.connectSignals()
 
-        # Fill the lists from whichever group the combo landed on, then bring the name box, the summary and the buttons into line with it.
+        # Fill the lists from whichever entry the combo landed on (the manual entry, so an empty merge list), then bring the name box, the summary and the buttons into line with it.
         self.onGroupChanged(self.ui.groupCombo.currentIndex())
 
     def loadTexts(self):
@@ -248,7 +255,8 @@ class MergeTextsDlg(QDialog):
 
         contentsObjList = []
         textObjList = []
-        nameList = Utils.getSourceTextList(self.DB, matchingContentsObjList=contentsObjList, textObjList=textObjList)
+        # A text with only a vernacular title is named by it rather than "***", so it sorts, groups and reads sensibly.
+        nameList = Utils.getSourceTextList(self.DB, matchingContentsObjList=contentsObjList, textObjList=textObjList, vernacularFallback=True)
 
         tripleList = list(zip(nameList, textObjList, contentsObjList))
 
@@ -263,11 +271,13 @@ class MergeTextsDlg(QDialog):
 
         self.loadingLists = True
 
+        # The manual entry goes first so the window opens on it, with nothing selected. Opening on the first book instead pre-loaded a group the user may not want (they then had to remove
+        # every chapter by hand or find the manual entry), and it hid the fact that either a book or individual texts can be chosen.
+        self.ui.groupCombo.addItem(_translate("MergeTextsDlg", "(choose texts)"), MANUAL_SELECTION_KEY)
+
         for displayBase, memberList in self.groupList:
 
             self.ui.groupCombo.addItem(_translate("MergeTextsDlg", "{displayBase}  ({count} texts)").format(displayBase=displayBase, count=len(memberList)), displayBase)
-
-        self.ui.groupCombo.addItem(_translate("MergeTextsDlg", "(choose the texts myself)"), MANUAL_SELECTION_KEY)
 
         self.loadingLists = False
 
@@ -297,13 +307,13 @@ class MergeTextsDlg(QDialog):
 
         textName = textTriple[0]
 
+        # Show the vernacular title in parens after the name, since that is what FLEx shows by default and the user may be comparing the two.
+        displayName = Utils.getTextDisplayName(textTriple[1], textName)
+
         # Mark the text FLExTrans is currently set up to translate, so the user can see which one it is before merging it away.
         if self.activeTextName and textName == self.activeTextName:
 
-            displayName = _translate("MergeTextsDlg", "{textName}  [current FLExTrans source text]").format(textName=textName)
-
-        else:
-            displayName = textName
+            displayName = _translate("MergeTextsDlg", "{textName}  [current FLExTrans source text]").format(textName=displayName)
 
         item = QListWidgetItem(displayName)
         item.setData(Qt.ItemDataRole.UserRole, textTriple)
@@ -848,9 +858,10 @@ class MergeTextsDlg(QDialog):
 
             return
 
-        nameList = [textName for textName, _textObj, _contentsObj in tripleList]
+        # Confirm with the same display names the lists showed, vernacular titles included, so the user recognises what they picked.
+        displayNameList = [Utils.getTextDisplayName(textObj, textName) for textName, textObj, _contentsObj in tripleList]
 
-        if not confirmMerge(nameList, targetName, self):
+        if not confirmMerge(displayNameList, targetName, self):
 
             return
 

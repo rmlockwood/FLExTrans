@@ -3,6 +3,12 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.17.2 - 9/29/26 - Ron Lockwood
+#    Switching to Mini after opening in Full now shrinks the window to fit, and the settings area now widens with the window.
+#
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. The Target Project list has a Browse... item for choosing a .fwdata file outside the standard FLEx Projects folder; its full path is saved. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -177,7 +183,101 @@
 #
 #   earlier version history removed on 1/31/25
 #
-#   To make it easier to change the configfile
+#   OVERVIEW (AI generated, then edited)
+#
+#   This is the FLExTrans Settings window, launched from the FlexTools menu rather than run as an ordinary module (its docs dictionary is deliberately blank). It gives the user a form over the
+#   FlexTrans.config file in the work project's Config folder so they don't have to edit that key=value file by hand. Every setting row in the window, what kind of widget it uses, how it gets
+#   filled and which config key it writes is described by one entry in widgetList at the bottom of the file; the rest of the file is generic code that walks that list to build, load and save.
+#
+#   Because many settings are chosen from lists that come out of FLEx (source texts, grammatical categories, complex form types, morpheme types, custom fields, writing systems), MainFunction
+#   opens the source FLEx project and, in Two project mode, the target FLEx project before the window is built, and the load functions read from them.
+#
+#   THE WIDGETLIST TABLE
+#
+#   Each widgetList entry is a Python list indexed by the constants near the top of the file:
+#    - LABEL_TEXT - the translated label shown at the left of the row (for a SECTION_TITLE row, the bold section heading; for a LINK row, the link text).
+#    - WIDGET1_OBJ_NAME / WIDGET2_OBJ_NAME - Qt object names for the row's one or two widgets. A few names are special-cased by code elsewhere in the file ('choose_target_project',
+#      'choose_ai_provider', 'two_project_radio', 'prod_mode_output_flex_yes', 'choose_target_ws', the target-dependent names in setTargetWidgetsEnabled), so renaming one breaks that code.
+#      For a LINK row the WIDGET2 slot instead holds the UserDoc.htm anchor to open.
+#    - WIDGET_TYPE - one of COMBO_BOX, SIDE_BY_SIDE_COMBO_BOX (two combos, e.g. a source/target category pair), CHECK_COMBO_BOX (multi-select, from ComboBox.CheckableComboBox), YES_NO (two
+#      radio buttons, the left one meaning 'y'), TEXT_BOX, FILE and FOLDER (a line edit plus a browse button), SECTION_TITLE (a heading plus a horizontal line) and LINK (a clickable label).
+#    - LABEL_OBJ / WIDGET1_OBJ / WIDGET2_OBJ - start out as the placeholder `object` and are filled in with the real Qt widgets by Ui_MainWindow.setupUi. A row with only one widget keeps
+#      `object` in WIDGET2_OBJ, which is why hideUnhide tests `type(...) != type` before touching it. Note that widgetList is a module global, so these slots are overwritten each time Settings opens.
+#    - LOAD_FUNC - the load* function that fills the widget(s) from the config value. SIDE_BY_SIDE_COMBO_BOX and YES_NO load functions take two widgets; all others take one.
+#    - CONFIG_NAME - the config key from ReadConfig.py (None for SECTION_TITLE and LINK rows, which carry no value).
+#    - WIDGET_TOOLTIP - the translated tooltip.
+#    - GIVE_ERROR_IF_NOT_PRESENT - GIVE_ERROR or DONT_GIVE_ERROR; passed to ReadConfig.getConfigVal by Main.read so a missing required key is reported.
+#    - HIDE_SETTING - which view the row first appears in: MINI_VIEW, BASIC_VIEW, FULL_VIEW or HIDE_FROM_USER (see VIEW MODES).
+#
+#   To add a setting, copy an existing row of the same type, give it new label, object names and tooltip, point it at a ReadConfig key, and write a new load function near the top only if no
+#   existing one fits (the instructions just above widgetList say the same). A brand new widget type is more work: every loop over widgetList (setupUi, retranslateUi, Main.__init__ signal
+#   connections, initLoad, hideUnhide and save) needs a branch for it. New user-facing strings also need to go into the SettingsGUI .ts files.
+#
+#   VIEW MODES
+#
+#   The Mini/Basic/Full radio buttons at the bottom control how many rows are shown. The view values are numbers (MINI_VIEW=15, BASIC_VIEW=10, FULL_VIEW=5, HIDE_FROM_USER=0) and a row is shown
+#   when its HIDE_SETTING is >= the current view value, so Mini shows only MINI_VIEW rows, Basic adds BASIC_VIEW rows, and Full shows everything except HIDE_FROM_USER rows, which are never shown
+#   (and retranslateUi doesn't even set their labels). The chosen view is remembered in SettingsViewMode.json in the current working directory, written when the window closes. Another module
+#   (AI Rule Studio) can call MainFunction with forceFullView and scrollToBottom to land the user on the AI Assistant section, which only exists in the Full view.
+#
+#   LOADING
+#
+#   Main.__init__ builds the UI, maps each CONFIG_NAME to its widgetList entry (nameToWidgetMap) and calls initLoad, which clears the combos and then calls each row's LOAD_FUNC with the widget(s),
+#   the Main window and the config key. A load function reads the current value with wind.read(key), fills the widget's choices (often from wind.DB or wind.targetDB) and selects or checks what
+#   the config file says. Target-side load functions must cope with wind.targetDB being None. Traps: the source/target category and complex-type lists are cached in module-level lists
+#   (categoryList, targetComplexTypes, etc.) that are only filled when empty, so they persist for the life of the FlexTools session; and morpheme-type loaders fall back to defaultMorphNames when the
+#   config value is empty or matches nothing, which is a change the user didn't make - reportChangedSettings lists such values under "FLExTrans made these changes for you".
+#
+#   SAVING
+#
+#   save() first runs the validations (AI model belongs to the AI provider, lowercase/uppercase pairs are single letters in pairs, One project mode has a target writing system); any failure shows
+#   a message and returns False without writing. Otherwise it rewrites the WHOLE config file from widgetList, one key=value line per row in list order: combo text (or item data for the target
+#   writing system), with "(none)" saved as blank; checkable combos as a comma list with a trailing comma; side-by-side combos as "a,b", or blank if either is "..."; text/file/folder values
+#   stripped; yes/no as y or n. It then reports what changed and replaces self.configMap with what it wrote.
+#
+#   The big trap: because the file is regenerated from widgetList, any key in FlexTrans.config that has no widgetList row is silently dropped on the first save. A setting that other modules
+#   read or write but the user shouldn't see still needs a row - that is what HIDE_FROM_USER (or a row with a blank tooltip tucked into the Full view, like the AI consent-asked flag) is for.
+#
+#   SOURCE AND TARGET PROJECTS, ONE AND TWO PROJECT MODE
+#
+#   MainFunction opens the source project (FTConfig.currentProject) and, unless TwoProjectMode is 'n', the target project named by the TargetProject setting (read-only, through
+#   Utils.openTargetProject). If the target fails to open, a message box is shown and targetDB is None; a blank setting also leaves it None, without a message. Main then disables the
+#   target-dependent widgets listed in setTargetWidgetsEnabled, since they couldn't be loaded. The same widgets are disabled whenever the user picks a different target project, because their contents came from the previously opened target; the user must save and reopen Settings to reload them.
+#
+#   In One project mode (Project Mode radio = One project, TwoProjectMode=n) the source project doubles as the target and text is translated from its default vernacular writing system into the
+#   Target Writing System. updateModeUI disables the target-dependent widgets and the Target Project combo and enables the writing-system combo, or the reverse in Two project mode (re-enabling
+#   target widgets only if a target project is actually open). disableModeIfOneWritingSystem locks the mode to Two projects when the project has only one vernacular writing system.
+#
+#   THE TARGET PROJECT COMBO
+#
+#   loadTargetProjects fills this combo with the projects in the standard FLEx Projects folder (flexlibs AllProjectNames). If the TargetProject setting is instead a full .fwdata path
+#   (Utils.isProjectPath), addTargetPathItem adds that path as an item, with the path as its item data, and selects it; there is only ever one such path item. Last comes a "Browse..." item.
+#   Its text is translated, so it is recognized by its item data BROWSE_TARGET_ITEM_DATA, never by its text. lastTargetProjectIndex remembers the current selection.
+#
+#   Main.onTargetProjectChanged (connected instead of the usual reportChange) handles picking Browse...: it opens a QFileDialog for *.fwdata, starting in the current path's folder or the FLEx
+#   Projects folder. Cancelling restores lastTargetProjectIndex without marking anything modified (signals are blocked while the combo is adjusted so the handler isn't re-entered). A chosen file
+#   that is really <Projects folder>\<name>\<name>.fwdata of a listed project is reduced by Utils.normalizeProjectPath to the bare name and that item is selected; any other file goes through
+#   addTargetPathItem, which inserts it just before Browse... or replaces the existing path item. Re-choosing the current project is not a change. Target paths are kept absolute - unlike FILE
+#   settings, which setPaths stores relative to FTPaths.WORK_DIR - and save() never writes the Browse... item as a value.
+#
+#   CODE STRUCTURE
+#
+#   Top to bottom: imports, the blank docs dictionary, the widgetList index constants, widget-type and view constants, BROWSE_TARGET_ITEM_DATA, the module-level caches and defaultMorphNames.
+#
+#   Then the module-level load functions that widgetList points at: the get*CategoryList/get*ComplexTypes cache helpers, loadSourceTextListForSettings, the custom-field loaders (with
+#   tempLexiconGetAllomorphCustomFields standing in for a missing flexlibs call), loadTargetSenseCustomList, loadAllProjects, loadTargetProjects and its helper addTargetPathItem, the complex-form,
+#   morpheme-type and category loaders, loadCategorySubLists, loadTargetWritingSystems, loadYesNo, loadAiProviders/populateAiModelCombo/loadAiModels, loadLink, loadTwoProjectMode, loadTextBox and
+#   loadFile. After them come the closure factories used as signal slots: reportChange and reportChangeAndUpdateMode (record the changed label via doReport and set the modified flag),
+#   makeOpenFile and makeOpenFolder (wrap doBrowse/doFolderBrowse), and setPaths, which writes a browsed path into a FILE/FOLDER line edit.
+#
+#   Ui_MainWindow.setupUi builds the fixed parts of the window (view-mode radios, scroll area, Apply / Apply and Close / Close buttons) and then one grid row per widgetList entry, storing the created
+#   widgets back into the entry; retranslateUi sets labels, button captions and tooltips. Main (the QMainWindow) calls setupUi, initLoad, connects the signals, and holds the view-mode methods
+#   (loadViewSetting, saveViewSetting, hideUnhide, shrinkToFit), the enable/disable methods (setTargetWidgetsEnabled, updateModeUI, disableModeIfOneWritingSystem), onTargetProjectChanged, read, the change
+#   reporting (reportChangedSettings), onAiProviderChanged, the validate* methods, save and saveAndClose.
+#
+#   MainFunction reads the config, opens the source and target projects (giveDBErrorMessageBox reports a failed open), creates Main and runs a loop: show the window and run the event loop; on close,
+#   if there are unsaved changes ask whether to save, and if the save fails validation reopen the same window with the user's edits intact so they can fix the problem. Finally it closes the projects.
+#   The FlexToolsModule declaration follows, and widgetList itself is defined last, grouped under its SECTION_TITLE rows.
 #
 
 import os
@@ -260,6 +360,9 @@ MINI_VIEW = 15
 BASIC_VIEW = 10
 FULL_VIEW = 5
 HIDE_FROM_USER = 0
+
+# Item data that marks the Browse... item at the end of the Target Project combo. The item's text is translated, so it's recognized by this data rather than by its text.
+BROWSE_TARGET_ITEM_DATA = "<<browse for target project>>"
 
 targetComplexTypes = []
 sourceComplexTypes = []
@@ -504,6 +607,8 @@ def loadAllProjects(widget, wind, settingName):
 
             widget.check(proj)
 
+# The Target Project combo lists the projects in the standard FLEx Projects folder. If the setting holds the full path of a .fwdata file stored elsewhere, that path is added as an item too
+# (and selected). A Browse... item goes at the end so the user can pick such a file; see Main.onTargetProjectChanged.
 def loadTargetProjects(widget, wind, settingName):
 
     targetProject = wind.read(settingName)
@@ -515,7 +620,39 @@ def loadTargetProjects(widget, wind, settingName):
         if targetProject and item == targetProject:
             
             widget.setCurrentIndex(i)
-            
+
+    if Utils.isProjectPath(targetProject):
+
+        addTargetPathItem(widget, targetProject)
+
+    widget.addItem(_translate("SettingsGUI", "Browse..."), BROWSE_TARGET_ITEM_DATA)
+    widget.setItemData(widget.count()-1, _translate("SettingsGUI", "Choose a FLEx project file (.fwdata) in a location other than the standard FLEx Projects folder."), QtCore.Qt.ItemDataRole.ToolTipRole)
+
+    # Remember the selection so it can be restored if the user picks Browse... and then cancels.
+    wind.lastTargetProjectIndex = widget.currentIndex()
+
+# Add a .fwdata path to the Target Project combo just before the Browse... item and select it. There is only ever one path item, so any earlier one is removed first.
+def addTargetPathItem(widget, fwdataPath):
+
+    # Path items are the only ones whose item data is a .fwdata path.
+    for i in range(widget.count()):
+
+        if Utils.isProjectPath(widget.itemData(i)):
+
+            widget.removeItem(i)
+            break
+
+    browseIndex = widget.findData(BROWSE_TARGET_ITEM_DATA)
+
+    # While the combo is being loaded the Browse... item isn't there yet, so append.
+    if browseIndex < 0:
+
+        browseIndex = widget.count()
+
+    widget.insertItem(browseIndex, fwdataPath, fwdataPath)
+    widget.setItemData(browseIndex, fwdataPath, QtCore.Qt.ItemDataRole.ToolTipRole)
+    widget.setCurrentIndex(browseIndex)
+
 def loadSourceComplexFormTypes(widget, wind, settingName):
 
     typesList = getSourceComplexTypes(wind)
@@ -843,17 +980,6 @@ def reportChange(wind, mySet, myWidgInfo):
         
     return report_it
 
-def reportChangeAndDisable(wind, mySet, myWidgInfo):
-    
-    # create a new function that will call doReport with the given parameters
-    def report_it():
-        
-        doReport(mySet, myWidgInfo)
-        wind.setModifiedFlag()
-        wind.disableTargetWidgets()
-
-    return report_it
-
 def reportChangeAndUpdateMode(wind, mySet, myWidgInfo):
 
     # create a new function that will call doReport then refresh which settings are enabled for the chosen project mode
@@ -985,14 +1111,15 @@ class Ui_MainWindow(object):
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        # Horizontally the scroll area expands with no maximum width so it widens along with the main window. Vertically it stays Fixed so the Mini view can shrink the window to fit its few rows.
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
 
         self.scrollArea.setSizePolicy(sizePolicy)
         self.scrollArea.setMinimumSize(QtCore.QSize(750, 200))
-        self.scrollArea.setMaximumSize(QtCore.QSize(900, 1000))
+        self.scrollArea.setMaximumSize(QtCore.QSize(QtWidgets.QWIDGETSIZE_MAX, 1000))
 
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -1339,7 +1466,7 @@ class Main(QMainWindow):
 
                 if widgInfo[WIDGET1_OBJ_NAME] == 'choose_target_project':
 
-                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChangeAndDisable(self, self.changedSettingsSet, widgInfo))
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.onTargetProjectChanged)
 
                 else:
                     widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
@@ -1487,14 +1614,33 @@ class Main(QMainWindow):
                     widgInfo[WIDGET2_OBJ].show()
         
         if self.viewSetting == MINI_VIEW:
-        
+
             # Adjust the size of the main window to fit the reduced amount of content
-            self.ui.centralwidget.adjustSize()
-            self.adjustSize()
+            self.shrinkToFit()
         else:
             self.resize(800, 630)
 
         # self.centerWindow()
+
+    def shrinkToFit(self):
+
+        # Recompute the scroll contents' layout now so its size hint reflects only the rows still visible (otherwise it waits for the event loop).
+        self.ui.gridLayout_2.invalidate()
+        self.ui.gridLayout_2.activate()
+
+        # QScrollArea caches its contents' size hint the first time it's asked and never recomputes it, so after opening in Full view the scroll area would stay Full-view tall even with the rows
+        # hidden. Re-setting the contents widget is the only public way to clear that cache. Then updateGeometry tells the main layout to fetch the scroll area's new, smaller hint.
+        contents = self.ui.scrollArea.takeWidget()
+
+        if contents:
+
+            self.ui.scrollArea.setWidget(contents)
+
+        self.ui.scrollArea.updateGeometry()
+
+        # Now shrink the central widget and the window to fit
+        self.ui.centralwidget.adjustSize()
+        self.adjustSize()
 
     # Enable or disable the settings that depend on a separate target FLEx project. They are disabled when the target
     # project is invalid (None) and when One project mode is on, because in those cases there is no separate target project.
@@ -1583,6 +1729,57 @@ class Main(QMainWindow):
             modeWidgInfo[WIDGET1_OBJ].setEnabled(False)
             modeWidgInfo[WIDGET2_OBJ].setEnabled(False)
             self.setWritingSystemWidgetsEnabled(False)
+
+    # Handle a change of the Target Project combo. Picking Browse... lets the user choose a .fwdata file anywhere; cancelling puts the previous selection back without marking anything changed.
+    # A real change marks the setting modified and disables the target-dependent settings, since they were loaded from the previously opened target project.
+    def onTargetProjectChanged(self):
+
+        widgInfo = self.nameToWidgetMap[ReadConfig.TARGET_PROJECT]
+        combo = widgInfo[WIDGET1_OBJ]
+
+        if combo.currentData() == BROWSE_TARGET_ITEM_DATA:
+
+            # Start in the folder of the current target if it's a path, otherwise in the standard FLEx Projects folder.
+            currentVal = combo.itemText(self.lastTargetProjectIndex) if self.lastTargetProjectIndex >= 0 else ''
+
+            if Utils.isProjectPath(currentVal):
+
+                startDir = os.path.dirname(currentVal)
+            else:
+                startDir = Utils.getFlexProjectsDir()
+
+            # As for the other browse buttons, this brings up the native Windows file dialog.
+            filename, _ = QFileDialog.getOpenFileName(self, _translate("SettingsGUI", "Choose the Target Project"), startDir, _translate("SettingsGUI", "FLEx projects (*.fwdata)"))
+
+            # Block signals while adjusting the combo so this handler isn't re-entered.
+            combo.blockSignals(True)
+
+            if not filename:
+
+                combo.setCurrentIndex(self.lastTargetProjectIndex)
+                combo.blockSignals(False)
+                return
+
+            # A file that is really an ordinary project in the standard folder is stored by its bare name, like any other listed project.
+            projectVal = Utils.normalizeProjectPath(filename)
+
+            if Utils.isProjectPath(projectVal):
+
+                addTargetPathItem(combo, projectVal)
+            else:
+                combo.setCurrentIndex(combo.findText(projectVal))
+
+            combo.blockSignals(False)
+
+            # Choosing the project that was already selected is not a change.
+            if combo.currentIndex() == self.lastTargetProjectIndex:
+
+                return
+
+        self.lastTargetProjectIndex = combo.currentIndex()
+        doReport(self.changedSettingsSet, widgInfo)
+        self.setModifiedFlag()
+        self.disableTargetWidgets()
 
     def setModifiedFlag(self):
         
@@ -1833,6 +2030,10 @@ class Main(QMainWindow):
                 if mySettingVal == _translate("SettingsGUI", "(none)"):
                     mySettingVal = ''
 
+                # The Browse... item of the Target Project combo is never a value (onTargetProjectChanged always moves off it), but guard against saving it anyway.
+                if widgInfo[WIDGET1_OBJ].currentData() == BROWSE_TARGET_ITEM_DATA:
+                    mySettingVal = ''
+
                 outStr = widgInfo[CONFIG_NAME]+'='+mySettingVal
                 updatedConfigMap[widgInfo[CONFIG_NAME]] = mySettingVal
                 
@@ -1926,30 +2127,22 @@ def MainFunction(DB, report, modify=True, forceFullView=False, scrollToBottom=Fa
         sourceDB = None
         return
 
-    # Open the target database
-    TargetDB = FLExProject()
-
-    # In One project mode there is no separate target project, so skip opening one. This avoids the cost of opening a
-    # second FLEx project. A null TargetDB is already handled below (the target-dependent settings get disabled).
+    # Open the target database. In One project mode there is no separate target project, so skip opening one. This avoids the cost of opening a second FLEx project. A null TargetDB is
+    # already handled below (the target-dependent settings get disabled).
+    TargetDB = None
     twoProjectMode = ReadConfig.getConfigVal(configMap, ReadConfig.TWO_PROJECT_MODE, report=None)
+    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report=None)
 
-    if twoProjectMode == 'n':
+    # No target chosen yet is not an error here - the user may be about to choose one.
+    if twoProjectMode != 'n' and targetProj:
 
-        TargetDB = None
-    else:
+        # Open read-only. There is no report pane here, so collect the error quietly and show the message box instead.
+        TargetDB = Utils.openTargetProject(configMap, None, errorList=[], writeEnabled=False)
 
-        try:
-            targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report=None)
+        if TargetDB is None:
 
-            if not targetProj:
-
-                TargetDB = None
-            else:
-                TargetDB.OpenProject(targetProj, False)
-        except:
             giveDBErrorMessageBox(targetProj)
-            TargetDB = None
-    
+
     window = Main(configMap, TargetDB, sourceDB, forceFullView=forceFullView, scrollToBottom=scrollToBottom)
 
     # Show the settings window. If, on the way out, the user chooses to save but the save fails validation (e.g. One
@@ -2014,7 +2207,7 @@ widgetList = [
     _translate("SettingsGUI", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
 
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
-    _translate("SettingsGUI", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
+    _translate("SettingsGUI", "The target FLEx project. Choose Browse... to pick a project file (.fwdata) outside the standard FLEx Projects folder."), GIVE_ERROR, MINI_VIEW],\
 
    [_translate("SettingsGUI", "Source Custom Field for Sense Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to senses in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\

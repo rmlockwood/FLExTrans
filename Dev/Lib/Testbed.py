@@ -5,6 +5,18 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.9 - 10/5/26 - Ron Lockwood
+#    Write an ATTENTION comment before the tests element of the testbed file pointing the user to the Testbed Editor instead of hand editing the XML in XMLmind.
+#
+#   Version 3.17.8 - 10/5/26 - Ron Lockwood
+#    Fixes #1604. Don't crash formatting a lexical unit whose headword has no homograph number; split off only the trailing digits as the homograph number.
+#
+#   Version 3.17.7 - 9/30/26 - Ron Lockwood
+#    Read empty lexical unit elements from the testbed XML as '' instead of None so the Live Rule Tester's add-test check no longer asserts on a unit with no category.
+#
+#   Version 3.17.6 - 9/23/26 - Ron Lockwood
+#    Added removal of a test from the testbed XML object and object list.
+#
 #   Version 3.17.5 - 9/1/26 - Ron Lockwood
 #    Noted in the APERTIUM_LOG_FILE comment that the Live Rule Tester shares this constant.
 #
@@ -79,8 +91,8 @@
 #
 #   A test is a handful of source lexical units - normally one word or a short phrase - paired with the target text they are expected to produce. It is created in the Live Rule Tester, where the
 #   user transfers and synthesizes those words, likes the result, and presses Add to Testbed. Running the testbed then feeds every test through the ordinary FLExTrans machinery and records what
-#   each one actually produced this time, so that a rule change which quietly breaks something that was already working shows up as a failed test. Later we will have a Testbed Editor tool, but
-#   for now the user can edit the testbed file by hand in XMLmind XML Editor if they want to change a test or add one that was missed.
+#   each one actually produced this time, so that a rule change which quietly breaks something that was already working shows up as a failed test. Tests are changed or removed with the Testbed
+#   Editor tool. The file can still be edited by hand in XMLmind XML Editor, but that is no longer the preferred way, so the file carries an ATTENTION comment saying so.
 #
 #   Besides its lexical units and its expected result, a test carries a uuid, the name of the source text the words came from, an is_valid flag with the reason when it is not valid, optionally a
 #   comment the user wrote about it, and - filled in after a run - the actual result and the transfer rules that fired for it.
@@ -99,7 +111,7 @@
 #
 #   The classes mirror those two shapes, one class per level of nesting, each holding the ElementTree element for its level and a list of the objects for the level below:
 #    - FlexTransTestbedFile - the testbed file. Reads it, or creates an empty structure when there isn't one yet (isNew/exists say which), and writes it back.
-#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), overwriteInTestbed() and validate() live.
+#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), removeFromTestbed(), overwriteInTestbed() and validate() live.
 #    - TestbedTestXMLObject - one test. Everything about a single test, described below.
 #    - LexicalUnit - one lexical unit of a test.
 #   and on the results side:
@@ -171,7 +183,8 @@
 #   Both files are indented one element per line before being written, with a tab per level, which is what XMLmind XML Editor produces when the user edits the testbed there - writing it the same way
 #   keeps the file from being reformatted end to end each time it passes between the two. The testbed file additionally gets the XMLmind DOCTYPE line put back after the XML declaration, and gets
 #   normalized on the way through: decomposed when it is read, since that is the form all the FLEx values are in, and composed or decomposed on the way out according to the Composed Characters
-#   setting.
+#   setting. It also gets an ATTENTION XML comment just before the tests element (where XMLmind displays it) pointing the user to the Testbed Editor. The comment is only in the tree while write()
+#   runs, because the root element is what gets copied into the results file for each run, and ET.parse() drops comments on reading, so it never accumulates in the file.
 #
 #   CODE STRUCTURE
 #
@@ -228,6 +241,9 @@ APPLIED_RULES = 'appliedRules'
 APPLIED_RULE = 'appliedRule'
 RULE_NUMBER = 'num'
 RULE_COMMENT = 'comment'
+
+# The text of the XML comment written just before the tests element of the testbed file, where XMLmind displays it
+ATTENTION_TEXT = 'ATTENTION: The best way to edit this testbed is with the FLExTrans Testbed Editor tool, not by editing this file directly. '
 SOURCE_DIRECTION = 'source_direction' 
 TARGET_DIRECTION = 'target_direction' 
 N_ATTRIB = 'n' 
@@ -370,18 +386,24 @@ class LexicalUnit():
             # Create an element
             p = ET.Element('span')
 
-            # Split off the homograph_num (if present; sent punctuation won't have it)
-            lemma_parts = re.split(r'(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
+            # Split off the homograph number - the run of digits at the end of the headword. It may be missing: sent punctuation has none, and neither does a headword in an invalid test
+            # (e.g. one typed or edited by hand as "Computer"). Only trailing digits count, so a headword with digits inside it, like "B2B1", splits into "B2B" and "1". re.RegexFlag.A = ASCII-only digits.
+            lemmaMatch = re.fullmatch(r'(.*?)(\d*)', self.__headWord, flags=re.RegexFlag.A)
+
+            # fullmatch can't fail here since both groups may be empty
+            assert lemmaMatch is not None
+
+            lexeme, homographNum = lemmaMatch.groups()
 
             # Output the lexeme
-            span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
+            span = outputLUSpan(p, LEMMA_COLOR, lexeme, rtl)
 
             # Output the subscript homograph # and sense # (if they exist)
             if self.__gramCat != SENT:
 
                 assert self.__senseNum is not None
 
-                addSubscript(span, lemma_parts[1]+'.'+self.__senseNum)
+                addSubscript(span, homographNum+'.'+self.__senseNum)
             
             # Check for RTL
             if rtl == True:
@@ -443,12 +465,32 @@ class LexicalUnit():
             self.__parsePlainText()
             
     def __unpackXML(self):
-        self.__headWord = self.__luNode.find(HEAD_WORD).text
-        self.__senseNum = self.__luNode.find(SENSE_NUM).text
-        self.__gramCat = self.__luNode.find(GRAM_CAT).text
-        for tagNode in list(self.__luNode.find(OTHER_TAGS)):
-            self.__otherTags.append(tagNode.text)
-        
+
+        # ElementTree reads an empty element such as <grammaticalCategoryTag /> as text None, not ''. That happens when a lexical unit with an empty value (e.g. a word with no
+        # category) is saved to the testbed and read back, so turn None into '' here; otherwise toString() and friends fail on the round-tripped lexical unit.
+        self.__headWord = self.__getChildText(HEAD_WORD)
+        self.__senseNum = self.__getChildText(SENSE_NUM)
+        self.__gramCat = self.__getChildText(GRAM_CAT)
+
+        otherTagsNode = self.__luNode.find(OTHER_TAGS)
+
+        if otherTagsNode is not None:
+
+            for tagNode in list(otherTagsNode):
+
+                self.__otherTags.append(tagNode.text or '')
+
+    # Return the text of the named child of the lexical unit node, or '' if the child is missing or empty
+    def __getChildText(self, childName):
+
+        childNode = self.__luNode.find(childName)
+
+        if childNode is None:
+
+            return ''
+
+        return childNode.text or ''
+
     def __parseApertiumStyle(self):
         
         # Split off the symbols from the lemma in the lexical unit
@@ -1032,6 +1074,11 @@ class FLExTransTestbedXMLObject():
     def addToTestbed(self, newTestObj):
         newNode = newTestObj.getTestNode()
         self.__testsNode.append(newNode)
+
+    def removeFromTestbed(self, testObj):
+        testNode = testObj.getTestNode()
+        self.__testsNode.remove(testNode)
+        self.__TestXMLObjectList.remove(testObj)
     
     def overwriteInTestbed(self, oldTestObj, newTestObj):
         # get the id for the old test
@@ -1184,7 +1231,7 @@ class FlexTransTestbedFile():
                 raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
-    
+
     def getFLExTransTestbedXMLObject(self):
         return self.__XMLObject
     
@@ -1208,12 +1255,26 @@ class FlexTransTestbedFile():
         # __init__ raises a ValueError if the testbed path setting is missing, so by the time write() can be called the path is always set
         assert self.__testbedPath is not None
 
+        # Put an XML comment just before the tests element steering anyone who opens the file in XMLmind toward the Testbed Editor. That's the spot where XMLmind displays it. ET.parse() drops
+        # comments when the file is read back in, so it never accumulates. It's only in the tree for the duration of the write, since the root is also what gets copied into the results file.
+        testbedNode = self.__testbedTree.find(TESTBEDS + '/' + TESTBED)
+        attentionNode = ET.Comment(ATTENTION_TEXT)
+
+        if testbedNode is not None:
+
+            testbedNode.insert(0, attentionNode)
+
         # Indent the tree before writing so the testbed comes out one element per line instead of as a single enormous line. A tab per level is what XMLmind uses when the user edits the testbed
         # there, so writing it the same way here keeps the file from being reformatted end to end every time it passes between the two.
         ET.indent(self.__testbedTree, space='\t')
 
         self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
-        
+
+        # Take the ATTENTION comment back out now that it's written
+        if testbedNode is not None:
+
+            testbedNode.remove(attentionNode)
+
         # Re-open the testbed file
         f = open(self.__testbedPath, encoding='utf-8')
         lines = f.readlines()

@@ -28,7 +28,7 @@ todos los análisis que se pueden generar a partir del proyecto FLEx objetivo, b
 (No genera basándose en información de derivación en el proyecto y aún no maneja
 clíticos o variantes.)
 En FLExTrans &gt; Configuración, en la configuración de Prueba de Síntesis, es posible limitar la salida a
-un solo POS o Forma de Citación, o a un número especificado de raíces (las raíces se elegirán
+una sola Categoría gramatical o Forma de Citación, o a un número especificado de temas (los temas se elegirán
 aleatoriamente). Este módulo también genera una versión legible por humanos de los análisis (con glosas de raíces
 y afijos) en el archivo de salida de análisis especificado en la configuración.</translation>
     </message>

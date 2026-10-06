@@ -5,8 +5,8 @@
 #   SIL International
 #   11/25/2021
 #
-#   Remove generated files to force each FLExTrans module to regenerate everything.
-#
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Glob on the bare target project name so dictionary files are cleaned when the target is a .fwdata path. Added the code description block.
 #
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
@@ -67,6 +67,43 @@
 #
 #   earlier version history removed on 3/10/25
 #
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module deletes the files that the other FLExTrans modules generate, so that the next run of each module has to regenerate everything from scratch. Many steps in FLExTrans skip work when
+#   their output looks current: the Apertium makefile rebuilds only targets older than their inputs, the STAMP and HermitCrab lexicon extraction reuse cached files when the FLEx project hasn't
+#   changed, and the testbed and STAMP conversion keep cache files. When a setting changes, a project is swapped, or a project folder is copied, those timestamps can lie and stale output gets used.
+#   Clean Files is the "start over" button for that. It never touches the FLEx projects and it doesn't delete anything the user authors (transfer rules, testbed, replacement dictionary, etc.).
+#
+#   WHAT IT DELETES
+#
+#    - Files whose paths come from settings: the synthesis output, target .ana file, transfer results, analyzed text, bilingual dictionary and its .dix.old backup, target affix gloss list, the four
+#      HermitCrab files (config, parses, master, surface forms) and the three synthesis test (Generate) output files.
+#    - Files with hard-coded names in the Build folder that the makefile or other modules use: bilingual.bin, tr.t1x-t3x, transfer_rules.t1x-t3x.bin, target_text1/2.txt, the Apertium log and error
+#      files (plus the names used by older versions), the do-make script and the Rule Assistant GUI input and test/display data files.
+#    - The target dictionary files in the Target Lexicon Files Folder: everything starting with the target project name, plus any file ending in one of the STAMP dictionary/control suffixes whatever
+#      its prefix (these turn up when a project folder has been copied and pasted), plus the STAMP conversion cache.
+#    - The testbed cache file in the system temp folder, and every file in Build/LiveRuleTester except the Makefile.
+#
+#   WHICH PROJECT NAME THE DICTIONARY FILES USE
+#
+#   The target dictionary files are named after a bare project name, so that is what gets globbed. In Two project mode the TargetProject setting may be a bare name or the full path of a .fwdata
+#   file outside the standard FLEx Projects folder (#1334); Utils.targetProjectDisplayName() reduces a path to the bare name, since globbing on the path would match nothing. In One project mode
+#   there is no target project and the dictionary files are named after the source project, so DB.ProjectName() is used instead.
+#
+#   TRAPS
+#
+#    - Every removal is wrapped in a try with a bare except that ignores the error, because a missing file is the normal case (a module that hasn't been run yet, a setting that isn't set).
+#      That also means nothing is reported when a delete genuinely fails, e.g. because a file is open in another program.
+#    - A few try blocks remove several files in a row (tr.t1x-t3x, and the transfer_rules.t?x.bin / target_text1/2.txt group). If an early file in the group is missing the rest of that group
+#      is skipped too, so a project with no tr.t1x keeps its tr.t2x. Give each file its own try if this ever matters.
+#    - A setting that isn't present comes back as None; os.remove(None) or None + "*.*" raises inside the try and is silently skipped, which is the intended behavior.
+#
+#   CODE STRUCTURE
+#
+#   After the docs dictionary there is only MainFunction(), which FlexTools calls. It reads the settings, logs to Mixpanel, and then deletes the files in this order: the setting-based and
+#   makefile files, the target dictionary files, the cache files, the LiveRuleTester folder, the HermitCrab files, the Generate files and finally the Rule Assistant files. The FlexToolsModule
+#   declaration is at the bottom.
+#
 
 import os
 from pathlib import Path
@@ -102,7 +139,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  
@@ -248,7 +285,8 @@ def MainFunction(DB, report, modify=True):
 
         targetProject = DB.ProjectName()
     else:
-        targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
+        # The setting may be the full path of a .fwdata file; the dictionary files are named after the bare project name.
+        targetProject = Utils.targetProjectDisplayName(ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False))
     try:
 
         for p in Path(stampFiles).glob(targetProject+"*.*"):  # type: ignore

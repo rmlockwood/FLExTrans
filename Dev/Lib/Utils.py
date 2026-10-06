@@ -5,6 +5,18 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.17.4 - 10/6/26 - Ron Lockwood
+#    Added reportTestbedFileMissing so the testbed modules share one testbed-file-does-not-exist message that points users to the Live Rule Tester.
+#
+#   Version 3.17.3 - 9/30/26 - Ron Lockwood
+#    Fixes #1584. Convert dots to underscores in inflection class abbreviations added to the category map so they match entry tags.
+#
+#   Version 3.17.2 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Added helpers so the target project can be a full .fwdata path; openTargetProject is now the one routine all modules use to open the target.
+#
+#   Version 3.17.1 - 9/28/26 - Ron Lockwood
+#    Fixes #1563, #1567. Added getTextName, getTextVernacularTitle, getTextDisplayName and a vernacularFallback option on getSourceTextList, so text lists can show vernacular titles.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -229,7 +241,45 @@
 #
 #   earlier version history removed on 1/15/25
 #
-#   Shared functions
+#   OVERVIEW (AI generated, then edited)
+#
+#   The grab bag of helpers shared by the FLExTrans modules and libraries. There is no single theme: anything two or more files needed ended up here, so the file is best read as a set of loosely
+#   related groups rather than one design. Most of it works against the LCM object model of an open FLEx project (entries, senses, categories, features, texts); the rest is string handling for
+#   Apertium's reserved characters, file-path helpers and translation loading.
+#
+#   STRINGS FROM FLEX
+#
+#   FLEx multistrings are read through as_string (best analysis alternative) and as_vern_string (best vernacular alternative). Their fallbacks are neither symmetrical nor safe to test against:
+#   BestAnalysisAlternative gives "***" when there is no analysis alternative, while BestVernacularAlternative sometimes falls back to the analysis title and sometimes gives "***". That is why
+#   getTextVernacularTitle walks the project's current vernacular writing systems itself: it needs to know whether a vernacular title really exists, not get a fallback.
+#
+#   TEXT NAMES
+#
+#   Text names are taken from the analysis writing system because that is where FLExTrans writes names like "Matthew 01" and what the SourceTextName setting stores. FLEx itself shows the vernacular
+#   title by default, so lists that let the user pick texts use getTextDisplayName to put the vernacular title in parens after the name, making the rows recognisable to someone comparing with FLEx.
+#   The display string is only for show - callers keep the real name alongside it for matching and messages.
+#
+#   A text with no analysis title at all would otherwise be named "***". getTextName (and getSourceTextList with vernacularFallback=True) names it by its vernacular title instead. That option is
+#   off by default because the Settings source text list and the modules that look up the SourceTextName setting compare against plain as_string names, and renaming texts under them would break
+#   the match. Delete Texts and Merge Texts turn it on, since they only use the name within one run.
+#
+#   PROJECT NAMES VERSUS PROJECT PATHS
+#
+#   A FLEx project is normally referred to by its bare name, which LCM resolves against the standard FLEx Projects folder. Both FlexTools (for the source project) and the TargetProject setting may
+#   instead hold the full path of a .fwdata file stored somewhere else. OpenProject accepts either form, but DB.ProjectName() always returns the bare name, so it must never be used to re-open a
+#   project or to rebuild its path - use projectOpenName for that. Anywhere the configured target value becomes part of a file name or message, run it through targetProjectDisplayName first;
+#   otherwise an absolute path makes os.path.join throw away the folder it was joined to. Sense links use projectLinkName (LCM's project handle), which is the bare name for standard projects, so
+#   links made before paths were allowed are unchanged.
+#
+#   CODE STRUCTURE
+#
+#   Constants for circumfix tags, Apertium reserved characters, LCM class names, cache and output file names come first. Then, roughly in order: clitic and unique-name helpers (createUniqueTitle,
+#   makeUniqueName); multistring readers (as_string, as_vern_string, as_tag); lexicon lookups (getHeadwordStr, GetEntryWithSense, split_compounds); project opening (getFlexExePath, openProject,
+#   isProjectPath, targetProjectExists, targetProjectDisplayName, getFlexProjectsDir, normalizeProjectPath, projectOpenName, projectLinkName, openTargetProject); category and inflection-class checks (get_categories, check_for_cat_errors); text lists (getSourceTextList, getTextVernacularTitle, getTextName, getTextDisplayName,
+#   loadSourceTextList); error-list handling (processErrorList, reportTestbedFileMissing, checkForFatalError); sense-link helpers (getTargetSenseInfo, writeSenseHyperLink); feature and affix queries used by the Rule
+#   Assistant (getLemmasForFeature, getAffixTemplates, getStemFeatures, getInflectionTags); Apertium escaping; and finally path, translation and date-formatting helpers (shortenPathForDisplay,
+#   loadTranslations, LocalizedDateTimeFormatter, get_short_path).
+#
 
 import re
 import tempfile
@@ -262,6 +312,7 @@ from SIL.LCModel import ( # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.DomainServices import StringServices   # type: ignore
+from SIL.FieldWorks.Common.FwUtils import FwDirectoryFinder # type: ignore
 
 from flexlibs import FLExProject, AllProjectNames
 from flextoolslib import FTConfig
@@ -286,6 +337,7 @@ APERT_RESERVED_NOT_ANGLE_BRACKETS = r'\[\]@/^${}*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
+NO_ANALYSIS_TITLE = '***'
 MO_STEM_MSA = 'MoStemMsa'
 MO_STEM_ALLOMORPH = 'MoStemAllomorph'
 MO_INFL_AFF_MSA = 'MoInflAffMsa'
@@ -704,27 +756,107 @@ def openProject(report, DBname):
 
     return myDB
 
-def openTargetProject(configMap, report):
+# True if a project setting holds the full path of a .fwdata file (e.g. a target project browsed to in the settings) rather than the bare name of a project in the standard FLEx Projects folder.
+def isProjectPath(projectVal):
+
+    return bool(projectVal) and projectVal.lower().endswith('.fwdata')
+
+# True if the target project setting names a project that can be opened: either a project in the standard FLEx Projects folder, or a .fwdata file that exists.
+def targetProjectExists(targetProj):
+
+    if isProjectPath(targetProj):
+
+        return os.path.isfile(targetProj)
+
+    return targetProj in AllProjectNames()
+
+# The bare project name for a project setting. A full .fwdata path is reduced to its file name without the extension (this is what FLEx shows as the project name); a bare name is returned as is.
+# Use this wherever the setting becomes part of a file name or a message.
+def targetProjectDisplayName(projectVal):
+
+    if isProjectPath(projectVal):
+
+        return os.path.splitext(os.path.basename(projectVal))[0]
+
+    return projectVal
+
+# The standard FLEx Projects folder, where projects that are referred to by bare name live.
+def getFlexProjectsDir():
+
+    return str(FwDirectoryFinder.ProjectsDirectory)
+
+# Reduce a browsed .fwdata path to the bare project name when the file is the standard <Projects folder>\<name>\<name>.fwdata of a project that FLEx lists. That keeps the setting in the
+# familiar form for ordinary projects; a path anywhere else is returned normalized but otherwise unchanged.
+def normalizeProjectPath(fwdataPath):
+
+    fwdataPath = os.path.normpath(fwdataPath)
+    projName = targetProjectDisplayName(fwdataPath)
+    standardPath = os.path.normpath(os.path.join(getFlexProjectsDir(), projName, projName + '.fwdata'))
+
+    # Windows paths are case-insensitive, so compare that way and return the name as FLEx lists it.
+    if os.path.normcase(fwdataPath) == os.path.normcase(standardPath):
+
+        for listedName in AllProjectNames():
+
+            if listedName.lower() == projName.lower():
+
+                return listedName
+
+    return fwdataPath
+
+# The value to pass to OpenProject to open this same project again. DB.ProjectName() only gives the bare name, which fails for a project outside the standard FLEx Projects folder, so use
+# the full path of the project's .fwdata file that LCM holds.
+def projectOpenName(DB):
+
+    try:
+        return str(DB.project.ProjectId.Path)
+    except:
+        return DB.ProjectName()
+
+# The project identifier to put in a silfw:// link. LCM's handle is the bare name for a project in the standard FLEx Projects folder and the full path otherwise, which is what FLEx
+# expects when it follows the link (flexlibs BuildGotoURL uses it too).
+def projectLinkName(DB):
+
+    try:
+        return str(DB.project.ProjectId.Handle)
+    except:
+        return DB.ProjectName()
+
+# The one routine for opening the target project named in the TargetProject setting (a bare project name or the full path of a .fwdata file). It is for Two project mode only - in One
+# project mode there is no separate target, and each caller decides for itself what to use instead (usually the source DB). Returns the open project, write-enabled unless writeEnabled is False,
+# or None after giving an error. Modules that collect their errors in a list of (message, level) tuples pass it as errorList and get the message appended there instead of reported.
+def openTargetProject(configMap, report, errorList=None, writeEnabled=True):
+
+    def giveError(msg):
+
+        if errorList is not None:
+
+            errorList.append((msg, 2))
+
+        elif report:
+
+            report.Error(msg)
+
+    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report=None, giveError=False)
+
+    if not targetProj:
+
+        giveError(_translate("Utils", "No target project has been set. Please go to Settings and choose one."))
+        return None
+
+    # See if the target project is a valid database name or an existing .fwdata file.
+    if not targetProjectExists(targetProj):
+
+        giveError(_translate("Utils", "The target project does not exist. Please check the configuration file."))
+        return None
 
     TargetDB = FLExProject()
 
-    # Open the target database
-    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report)
-    if not targetProj:
-        return
-
-    # See if the target project is a valid database name.
-    if targetProj not in AllProjectNames():
-        if report:
-            report.Error(_translate("Utils", "The target project does not exist. Please check the configuration file."))
-        return
-    
     try:
-        TargetDB.OpenProject(targetProj, True)
+        TargetDB.OpenProject(targetProj, writeEnabled)
     except:
-        if report:
-            report.Error(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
-        raise
+        giveError(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProjectDisplayName(targetProj)))
+        return None
 
     return TargetDB
 
@@ -816,9 +948,10 @@ def process_inflection_classes(posMap, pos):
         # Get a list of abbreviation and name tuples
         AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
 
+        # Convert dots to underscores so the symbol definition matches the tag written on entries (see as_tag). E.g. irr.v.cls becomes irr_v_cls.
         for icAbbr, icName in AN_list:
 
-            posMap[icAbbr] = icName
+            posMap[underscores(icAbbr)] = icName
 
 def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow, myType=_translate("Utils", 'category')):
 
@@ -873,12 +1006,17 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
     return countList, posAbbrStr
 
-def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None):
+def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None, vernacularFallback=False):
 
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
 
-        sourceList.append(as_string(interlinText.Name).strip())
+        # With vernacularFallback, a text that has only a vernacular title is named by it rather than "***". See TEXT NAMES above for why that isn't the default.
+        if vernacularFallback:
+
+            sourceList.append(getTextName(interlinText))
+        else:
+            sourceList.append(as_string(interlinText.Name).strip())
 
         # if the caller wants to get a list of contents objects, add to the provided list
         if matchingContentsObjList != None:
@@ -891,6 +1029,52 @@ def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None):
             textObjList.append(interlinText)
 
     return sourceList
+
+def getTextVernacularTitle(textObj):
+
+    """The text's title in the first of the project's current vernacular writing systems that has one, or None when there is no vernacular title."""
+
+    # Walk the writing systems ourselves rather than using BestVernacularAlternative - that sometimes falls back to the analysis title, which would make a text look like it had a vernacular title.
+    # Every current vernacular writing system is checked, not just the default one, because projects often have the title only in a second vernacular writing system (e.g. another script).
+    for vernWs in textObj.Cache.LanguageProject.CurrentVernacularWritingSystems:
+
+        vernTitle = ITsString(textObj.Name.get_String(vernWs.Handle)).Text
+
+        if vernTitle and vernTitle.strip():
+
+            return vernTitle.strip()
+
+    return None
+
+def getTextName(textObj):
+
+    """The text's analysis title, or its vernacular title when it has no analysis title. NO_ANALYSIS_TITLE ("***") only when it has neither."""
+
+    textName = as_string(textObj.Name).strip()
+
+    # BestAnalysisAlternative gives "***" when the text has no analysis title at all.
+    if textName == NO_ANALYSIS_TITLE:
+
+        vernTitle = getTextVernacularTitle(textObj)
+
+        if vernTitle:
+
+            return vernTitle
+
+    return textName
+
+def getTextDisplayName(textObj, textName):
+
+    """The string to show for a text in a pick list: textName followed by the text's vernacular title in parens, when it has one that differs from textName."""
+
+    vernTitle = getTextVernacularTitle(textObj)
+
+    # When a text only has a vernacular title, textName (from getTextName) already is that title, so don't show it twice.
+    if not vernTitle or vernTitle == textName:
+
+        return textName
+
+    return f'{textName} ({vernTitle})'
 
 def loadSourceTextList(widget, sourceText, sourceTextList):
 
@@ -952,6 +1136,12 @@ def processErrorList(error_list, report):
             fatal = True
 
     return None if fatal else 1
+
+def reportTestbedFileMissing(report):
+    '''Report the error shown when the testbed file hasn't been created yet. The Start Testbed, Testbed Editor and Testbed Log Viewer modules all need it, so the wording (and its
+    translations) live here in one place. The file only comes into being when the first test is added, and the Live Rule Tester is the natural place to do that.'''
+
+    report.Error(_translate("Utils", "The testbed file does not exist yet. You need to first add tests to the testbed and the best place to do this is in the Live Rule Tester tool."))
 
 def checkForFatalError(errorList, report):
 

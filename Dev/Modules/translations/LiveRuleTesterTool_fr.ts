@@ -4,6 +4,11 @@
   <context>
     <name>LiveRuleTesterTool</name>
     <message>
+      <location filename="../LiveRuleTesterTool.py" line="3858"/>
+      <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
+      <translation>Une erreur s'est produite lors de l'ouverture du projet : {DBname}. Peut-être que le projet est ouvert et que l'option de partage dans les Propriétés du projet FieldWorks n'a pas été activée.</translation>
+    </message>
+    <message>
       <location filename="../LiveRuleTesterTool.py" line="281"/>
       <source>Live Rule Tester Tool</source>
       <translation>Outil de test de règles en direct</translation>
@@ -24,7 +29,7 @@ against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.</source>
-      <translation>L'outil de test de règles en direct est un outil qui vous permet de tester des mots ou des phrases sources en temps réel par rapport aux règles de transfert. Cet outil est particulièrement utile pour comprendre pourquoi les règles de transfert ne produisent pas les résultats attendus. Vous pouvez cibler le problème en sélectionnant un seul mot source et en appliquant la règle de transfert pertinente. Ainsi, vous n'avez pas besoin d'exécuter l'ensemble du système sur la totalité du fichier texte et de toutes les règles de transfert. Vous pouvez également vérifier que les résultats du transfert sont correctement synthétisés en mots cibles. Si vous le souhaitez, vous pouvez ajouter les éléments lexicaux sources associés aux résultats de synthèse à un banc d'essai. Vous pouvez exécuter le banc d'essai pour vérifier que vous obtenez les résultats escomptés</translation>
+      <translation>L'outil de test de règles en direct est un outil qui vous permet de tester des mots ou des phrases sources en temps réel par rapport aux règles de transfert. Cet outil est particulièrement utile pour comprendre pourquoi les règles de transfert ne produisent pas les résultats attendus. Vous pouvez cibler le problème en sélectionnant un seul mot source et en appliquant la règle de transfert pertinente. Ainsi, vous n'avez pas besoin d'exécuter l'ensemble du système sur la totalité du fichier texte et de toutes les règles de transfert. Vous pouvez également vérifier que les résultats du transfert sont correctement synthétisés en mots cibles. Si vous le souhaitez, vous pouvez ajouter les éléments lexicaux sources associés aux résultats de synthèse à un fichier test. Vous pouvez exécuter le fichier test pour vérifier que vous obtenez les résultats escomptés</translation>
     </message>
     <message>
       <location filename="../LiveRuleTesterTool.py" line="638"/>
@@ -362,7 +367,7 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
   <message>
     <location filename="../LiveRuleTesterTool.py" line="3356"/>
     <source>(no contents could be read from {file})</source>
-    <translation>(aucun contenu n’a pu être lu dans {file})</translation>
+    <translation>(aucun contenu n'a pu être lu dans {file})</translation>
   </message>
   </context>
   <context>

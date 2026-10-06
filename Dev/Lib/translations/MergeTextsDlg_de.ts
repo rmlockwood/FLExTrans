@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="270" />
-        <source>(choose the texts myself)</source>
-        <translation>(Texte selbst auswählen)</translation>
+        <source>(choose texts)</source>
+        <translation>(Texte auswählen)</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="303" />

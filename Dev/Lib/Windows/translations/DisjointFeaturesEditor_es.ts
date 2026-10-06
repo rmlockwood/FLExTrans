@@ -17,11 +17,11 @@
     </message>
     <message>
       <source>Split feature set</source>
-      <translation>Conjunto de característica dividida</translation>
+      <translation>Conjunto de rasgos divididos</translation>
     </message>
     <message>
       <source>Split Features Editor</source>
-      <translation>Editor de características dividido</translation>
+      <translation>Editor de rasgos divididos</translation>
     </message>
     <message>
       <source>Distinguishing feature</source>

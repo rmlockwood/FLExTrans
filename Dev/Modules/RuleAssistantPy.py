@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Stop if the target project can't be opened, and always close it before returning. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -39,14 +42,69 @@
 #    Python/PyQt6 port of Rule Assistant from Java/JavaFX
 #    Calls Python version instead of Java EXE
 #
-#   Based on RuleAssistant.py v3.15.1
-#   Maintains same interface and structure as RuleAssistant.py
+#   OVERVIEW (AI generated, then edited)
 #
-#   Python/PyQt6 version of Rule Assistant
-#   Replaces Java EXE with in-process Qt application
+#   This is the FlexTools module that runs the Rule Assistant, a window in which the user describes transfer rules at a linguistic level (categories, features, affixes, agreement) instead of
+#   writing Apertium XML by hand. When the user saves, the described rules are turned into real Apertium transfer rules and written into the transfer rules file. The Rule Assistant started life as
+#   a Java/JavaFX program (github.com/AndyBlack/ftrulegen) that the old RuleAssistant.py module launched as an external EXE. In version 3.16 it was ported to Python/PyQt6 and now runs in-process;
+#   this module replaced RuleAssistant.py (v3.15.1) and kept its shape. The window itself lives in Lib (RuleAssistantMainWindow plus its controller files), and the port uses snake_case heavily
+#   to mirror the Java names - that is expected, leave it alone.
 #
-#   Runs the Python version of the Rule Assistant to create Apertium transfer rules.
+#   This file is the glue around that window. It gathers what the window needs to know about the two FLEx projects, writes that into files in the build folder, starts the window, and when the
+#   window closes with a save, hands the Rule Assistant rules file to CreateApertiumRules.CreateRules(), which does the actual rule generation.
 #
+#   THE FILES INVOLVED
+#
+#   The window never reads FLEx directly - everything it knows comes in through files. That is a leftover of the Java design where the tool was a separate program, and it is still handy.
+#    - The GUI input file (Utils.RA_GUI_INPUT_FILE in the build folder). A <FLExData> document with a <SourceData> and a <TargetData> section, each listing the project's categories, its closed
+#      features with their values, and for each category the features valid for it tagged stem, prefix or suffix. It is rewritten from scratch on every run by StartData.write().
+#    - The Rule Assistant rules file (the Rule Assistant File setting, defaulting to RuleAssistantRules.xml in the build folder). This holds the user's rule descriptions; the module reads and
+#      saves it, and this module only passes the path along and later hands it to CreateRules().
+#    - The transfer rules file (the Transfer Rules File setting). CreateRules() writes the generated Apertium rules into it, saving a history copy of the prior version first. If this setting is
+#      empty the module returns without doing anything.
+#    - The test data HTML (Utils.RULE_ASSISTANT_DISPLAY_DATA_FILE). A preview of the source text shown in the window; see TEST DATA below.
+#
+#   CATEGORY NAMES AND FEATURE ORIGINS
+#
+#   Category abbreviations go through Utils.get_categories(), which replaces characters Apertium can't handle, so the names in the input file match what the bilingual lexicon and the rules use.
+#   GetStartData() then deliberately walks DB.lp.AllPartsOfSpeech again for the per-category features rather than reusing that category list: it needs the raw FLEx abbreviation to look up stem
+#   features and affix templates, and only converts the name (Utils.convertProblemChars) for the dictionary key. Features found in affix templates carry the side they were found on, while the
+#   inflectable features of a category get both prefix and suffix since the side isn't known. WorkOnRulesWithAI imports GetRuleAssistantStartData() to ground its AI prompts in this same project
+#   data, so a change to that output affects both tools.
+#
+#   TEST DATA
+#
+#   To give the user something concrete to look at, GetTestDataFile() takes the source text named in the settings, writes its interlinear data out in Apertium stream format, compiles the bilingual
+#   dictionary with lt-comp and runs the text through it with lt-proc, then writes the first 30 non-blank lines as colored source → target lexical units in HTML. This is best effort only: if the
+#   source text or bilingual dictionary setting is missing, the dictionary hasn't been built, the text isn't found, or anything fails while writing, a "No test data available." page is written
+#   instead and the Rule Assistant still runs. ProcessLine() is a small hand-written parser of the lt-proc output that yields each lexical unit's source reading paired with its first target reading.
+#
+#   TARGET PROJECT AND ONE PROJECT MODE
+#
+#   The target project is opened with Utils.openTargetProject(), the single shared routine that accepts either a bare project name or the full path of a .fwdata file (issue #1334). It reports its
+#   own error and returns None when the project can't be opened, in which case this module simply stops. Otherwise it is closed in a finally clause before MainFunction returns or launches the
+#   Live Rule Tester, so it is never left locked. The module does not handle One project mode at all: when the Two Project Mode setting is 'n' it reports that it only works in Two Project mode
+#   and returns before logging or opening anything. Unlike the Replacement Editor or the Sense Linker, it never reuses the source project as the target. A missing Two Project Mode setting is
+#   treated as two project mode.
+#
+#   RUNNING WITH THE LIVE RULE TESTER
+#
+#   The window's Test in LRT button asks for the Live Rule Tester to be run after the save. When the Rule Assistant was started from FlexTools, MainFunction() launches the tester itself at the end.
+#   When the tester started us (it calls MainFunction() with fromLRT=True and uses the returned rule count), StartRuleAssistant() drops that flag, because the tester restarts itself as soon as we
+#   return and launching another would nest a second tester on top of it (issue #1449).
+#
+#   CODE STRUCTURE
+#
+#   After the docs dictionary and the element and attribute name constants for the input file come the two dataclasses: DBStartData (one project's categories, features and per-category features,
+#   with toXml()) and StartData (the source/target pair, with write()). Then the data gathering functions: getFeatureData() lists the closed features, GetStartData() builds one DBStartData, and
+#   GetRuleAssistantStartData() calls it for both projects. The test data side follows: ProcessLine() and ReadingToHTML() are helpers for GenerateTestDataFile(), which GetTestDataFile() wraps with
+#   the fallback page. StartRuleAssistant() makes sure a QApplication exists, shows RuleAssistantWindow, runs the event loop and returns a (saved, rule index, launch LRT) tuple.
+#
+#   Control flow: FlexTools calls MainFunction(), which loads translations, reads the settings, refuses One project mode, works out the rules file and transfer rules paths, opens the target
+#   project, writes the GUI input file and the test data, and runs StartRuleAssistant(). If the user saved, it calls CreateApertiumRules.CreateRules() for just the rule the window returned (Save
+#   Current) or for all rules when that index is None (Save/Create All), then optionally runs the Live Rule Tester, and returns the number of rules created (None if nothing was saved).
+#
+
 from RuleAssistantMainWindow import RuleAssistantWindow
 
 import os
@@ -91,7 +149,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
@@ -542,27 +600,37 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
 
         return
 
+    # openTargetProject reports the problem if it can't open the target project.
     TargetDB = Utils.openTargetProject(configMap, report)
 
-    # Get the FLEx info. for source & target projects that the Rule Assistant font-end needs
-    startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
+    if TargetDB is None:
 
-    # Write the data to an XML file
-    ruleAssistGUIinputfile = os.path.join(FTPaths.BUILD_DIR, Utils.RA_GUI_INPUT_FILE)
-    startData.write(ruleAssistGUIinputfile)
+        return
 
-    testData = GetTestDataFile(report, DB, configMap)
+    # Close the target project however we leave this block, so it isn't left locked. The Live Rule Tester can run the Rule Assistant many times in a row, and it is launched below only after
+    # the target is closed.
+    try:
+        # Get the FLEx info. for source & target projects that the Rule Assistant font-end needs
+        startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
-    # Start the Rule Assistant GUI
-    saved, rule, lrt = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testData, fromLRT=fromLRT)
+        # Write the data to an XML file
+        ruleAssistGUIinputfile = os.path.join(FTPaths.BUILD_DIR, Utils.RA_GUI_INPUT_FILE)
+        startData.write(ruleAssistGUIinputfile)
 
-    ruleCount = None
+        testData = GetTestDataFile(report, DB, configMap)
 
-    if saved:
+        # Start the Rule Assistant GUI
+        saved, rule, lrt = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testData, fromLRT=fromLRT)
 
-        ruleCount = CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
-    else:
-        report.Info(_translate('RuleAssistant', 'No rules created.'))
+        ruleCount = None
+
+        if saved:
+
+            ruleCount = CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
+        else:
+            report.Info(_translate('RuleAssistant', 'No rules created.'))
+    finally:
+        TargetDB.CloseProject()
 
     if lrt:
 

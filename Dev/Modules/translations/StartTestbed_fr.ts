@@ -23,11 +23,6 @@
         </translation>
     </message>
     <message>
-      <location filename="../StartTestbed.py" line="81"/>
-      <source>Testbed does not exist. Please add tests to the testbed.</source>
-      <translation>Le fichier test n'existe pas. Veuillez ajouter des tests au fichier test.</translation>
-    </message>
-    <message>
       <location filename="../StartTestbed.py" line="131"/>
       <source>There is a problem with the Analyzed Text Output File path: {outFileVal}. Please check the configuration file setting.</source>
       <translation>Il y a un problème avec le chemin du fichier de sortie du texte analysé : {outFileVal}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
@@ -40,7 +35,7 @@
     <message>
       <location filename="../StartTestbed.py" line="211"/>
       <source>The rule file history folder could not be updated. The error was: {errorText}</source>
-      <translation>Le dossier de l’historique des fichiers de règles n’a pas pu être mis à jour. L’erreur était : {errorText}</translation>
+      <translation>Le dossier de l'historique des fichiers de règles n'a pas pu être mis à jour. L'erreur était : {errorText}</translation>
     </message>
   </context>
 </TS>

@@ -6,7 +6,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
-      <translation>Aucune étiquette disponible pour cette fonctionnalité {label} de catégorie grammaticale {category}.</translation>
+      <translation>Aucune étiquette disponible pour le trait {label} de catégorie grammaticale {category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="582"/>
@@ -31,7 +31,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
-      <translation>Aucun affixe cible trouvé pour la fonctionnalité '{trgSpec.label}' sur la catégorie grammaticale {trgSpec.category}.</translation>
+      <translation>Aucun affixe cible trouvé pour le trait '{trgSpec.label}' sur la catégorie grammaticale {trgSpec.category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="652"/>
@@ -170,7 +170,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1240"/>
       <source>Missing source for feature {label} on inserted word {wid} in rule {ruleName}.</source>
-      <translation>Source manquante pour la fonctionnalité {label} du mot inséré {wid} dans la règle {ruleName}.</translation>
+      <translation>Source manquante pour le trait {label} du mot inséré {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1252"/>
@@ -185,7 +185,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
       <source>Unable to find source for feature {label} on word {wid} in rule {ruleName}.</source>
-      <translation>Impossible de trouver la source pour la fonctionnalité {label} du mot {wid} dans la règle {ruleName}.</translation>
+      <translation>Impossible de trouver la source pour le trait {label} du mot {wid} dans la règle {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
@@ -195,7 +195,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1367"/>
       <source>No tag found for value {value} of feature {label} in rule &quot;{ruleName}&quot;.</source>
-      <translation>Balise introuvable pour la valeur {value} de la fonctionnalité {label} dans la règle &quot;{ruleName}&quot;.</translation>
+      <translation>Balise introuvable pour la valeur {value} du trait {label} dans la règle &quot;{ruleName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1393"/>
@@ -210,12 +210,12 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
       <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
-      <translation>Une valeur de caractéristique liée inattendue "{val}" a été trouvée dans un ensemble de caractéristiques divisé. Seules les valeurs "sg" (singulier), "pl" (pluriel) ou "many" (plusieurs) étaient attendues. Cette valeur sera ignorée.</translation>
+      <translation>Une valeur de trait associé inattendue "{val}" a été trouvée dans un ensemble de traits divisés. Seules les valeurs "sg" (singulier), "pl" (pluriel) ou "many" (plusieurs) étaient attendues. Cette valeur sera ignorée.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Veuillez vous assurer que la caractéristique associée &quot;nombre&quot; a les deux valeurs &quot;sg&quot; et &quot;pl&quot;.</translation>
+      <translation>Veuillez vous assurer que le trait associé &quot;nombre&quot; a les deux valeurs &quot;sg&quot; et &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>
@@ -239,7 +239,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1827"/>
       <source>The prior version of the transfer rules could not be saved. The error was: {errorText}</source>
-      <translation>La version antérieure des règles de transfert n’a pas pu être enregistrée. L’erreur était : {errorText}</translation>
+      <translation>La version antérieure des règles de transfert n'a pas pu être enregistrée. L'erreur était : {errorText}</translation>
     </message>
   </context>
 </TS>

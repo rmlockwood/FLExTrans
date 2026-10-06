@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Open the target read-only with Utils.openTargetProject. Fixed: output file never closed; crash on alternate form with no morph type; KeyError on unknown morph-type GUID; 
+#    error link pointed at source not target; "Prefix" -> "Affix" in error message. Added description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -68,8 +72,53 @@
 #
 #   earlier version history removed on 3/1/25
 #
-#   Go through the database and extract the gloss field and morpheme type
-#   for each affix. Do this per sense. Write one gloss and morphtype per line.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module walks every entry in the target lexicon and writes a catalog of the target affixes (and clitics): one line per sense giving the affix gloss and its
+#   morpheme type. Transfer produces target words as a root plus a string of affix glosses. Both Convert Text to STAMP format (which turns those into synthesizer input) and the Live Rule Tester need to know,
+#   for each gloss, whether it is a prefix, suffix, infix, clitic and so on. Reading that from FLEx every time would be slow, so it is done once here and saved to the file named by the
+#   Target Affix Gloss List File setting (usually target_affix_glosses.txt in the Build folder).
+#
+#   HOW THE TARGET PROJECT IS OBTAINED
+#
+#   In One project mode (the Project Mode setting; TwoProjectMode = n in the config file) there is no separate target project, so the source DB is simply reused as TargetDB. Only
+#   analysis-writing-system data (glosses and morph type names) is read, so the target vernacular writing system doesn't come into it. In Two project mode the target project is opened read-only with
+#   Utils.openTargetProject, the single shared routine that accepts either a bare project name or the full path of a .fwdata file (issue #1334). It returns None after giving an error; this module
+#   passes its error_list so the message lands there rather than going straight to the report. Every exit path after that point closes TargetDB only when it is not the same object as DB - closing the
+#   source project in One project mode would pull the rug out from under FlexTools, which is why every CloseProject() call is guarded by "TargetDB is not DB".
+#
+#   WHAT COUNTS AS AN AFFIX
+#
+#   An entry is cataloged if its lexeme form is an affix allomorph (MoAffixAllomorph), or a stem allomorph whose morph type is NOT one of the root types listed in the Target Morpheme Types Counted As
+#   Roots setting (so clitics, enclitics, proclitics, particles etc. get included unless the user lists them as roots). If the lexeme form doesn't qualify, the alternate forms are checked too, because
+#   a stem can have e.g. a clitic allomorph. Every sense of a qualifying entry contributes one gloss. Entries with no lexeme form or no morph type are skipped entirely, as are alternate forms
+#   with no morph type.
+#
+#   WHAT IT WRITES
+#
+#   Each line is gloss|morphtype, e.g. 3SG_PST|suffix, sorted by morph type and then by gloss. Dots in glosses are converted to underscores (Utils.underscores) to match how glosses come out
+#   of transfer. The morph type written is always the English name looked up by GUID in Utils.morphTypeMap, not the name in the analysis writing system, so the file is language-neutral
+#   even though the settings may use non-English morph type names (issue #914). Note that the name comparison against the root list uses the analysis-WS name while the output uses the English
+#   name - the two variables (morphType and engMorphType) look redundant but are not.
+#
+#   WARNINGS
+#
+#   Glosses with characters that aren't allowed in lemmas produce an error in the report, with a link to the entry in the target project. The same gloss appearing twice in the catalog gives a
+#   duplicate warning, since synthesis can't tell which affix is meant. Identical gloss+type pairs from different senses of the same entry are collapsed first, so they don't trigger that warning.
+#
+#   CACHING
+#
+#   When called with useCacheIfAvailable=True and the Cache data setting is y, nothing is written if the catalog file is newer than the target project's last-modified date; the module just
+#   reports that the affix list is up to date. The Cache data setting must exist even when caching isn't requested, otherwise the function stops with a configuration error.
+#
+#   CODE STRUCTURE
+#
+#   The docs dictionary FlexTools displays comes first. getEnglishMorphType() gives the English name of a morph type from Utils.morphTypeMap (falling back to the analysis name for an unknown
+#   GUID). is_affix_file_out_of_date() compares the FLEx modified date with the catalog file's time stamp. catalog_affixes() does all the real work - obtain TargetDB, check the cache, loop
+#   through the entries, close the target project, then sort, write (in a with-block, so the file is always closed) and check for duplicates - and returns a list of (message, severity) tuples
+#   rather than reporting directly, so it can be called from other modules: TranslateText calls it as one step of its pipeline and the Live Rule Tester calls it (without a report) to refresh the
+#   catalog. MainFunction() reads the settings, falls back to the old TargetPrefixGlossListFile setting name if the new one is missing, calls catalog_affixes() and hands the result to
+#   Utils.processErrorList(). The FlexToolsModule declaration FlexTools looks for is at the bottom.
 #
 
 import os
@@ -83,7 +132,6 @@ from PyQt6.QtWidgets import QApplication
 from SIL.LCModel import * # type: ignore
 
 from flextoolslib import * # type: ignore
-from flexlibs import FLExProject
 
 import Mixpanel
 import ReadConfig
@@ -109,7 +157,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
-        FTM_Version    : "3.17",        
+        FTM_Version    : "3.17.1",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",
@@ -124,15 +172,13 @@ This is typically called target_affix_glosses.txt and is usually in the Build fo
 #app.quit()
 #del app
 
-
 #----------------------------------------------------------------
 
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
+# The English name of a morph type, which is what the catalog file stores so it is the same whatever the analysis language. Morph types are looked up by GUID in Utils.morphTypeMap;
+# fall back to the name in the analysis writing system for a GUID that isn't in the map rather than crashing on it.
+def getEnglishMorphType(morphTypeObj):
+
+    return Utils.morphTypeMap.get(morphTypeObj.Guid.ToString(), Utils.as_string(morphTypeObj.Name))
 
 def is_affix_file_out_of_date(DB, affixFile):
     
@@ -172,22 +218,13 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         TargetDB = DB
     else:
 
-        TargetDB = FLExProject()
+        # Open the target database read-only, since this module only reads from it. openTargetProject adds the problem to error_list if it can't.
+        TargetDB = Utils.openTargetProject(configMap, report, error_list, writeEnabled=False)
 
-        try:
-            # Open the target database
-            targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-            if not targetProj:
-                error_list.append((_translate("CatalogTargetAffixes", "Problem accessing the target project."), 2))
-                return error_list
-            TargetDB.OpenProject(targetProj, True)
-        except:
-            error_list.append((_translate("CatalogTargetAffixes", "Problem opening the target project."), 2))
-            raise
+        if TargetDB is None:
+
+            return error_list
     
-    # Allow the affix file to not be in the temp folder if a slash is present
-    myPath = filePath
-
     # Get cache data setting
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
@@ -200,25 +237,13 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         return error_list
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if useCacheIfAvailable and cacheData == 'y' and is_affix_file_out_of_date(TargetDB, myPath) == False:
+    if useCacheIfAvailable and cacheData == 'y' and is_affix_file_out_of_date(TargetDB, filePath) == False:
 
         if TargetDB is not DB:
 
             TargetDB.CloseProject()
 
         error_list.append((_translate("CatalogTargetAffixes", "Affix list is up to date."), 0))
-        return error_list
-    
-    # Open the file for writing.
-    try:
-        f_out = open(myPath, 'w', encoding='utf-8') 
-    except IOError as e:
-        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=Utils.shortenPathForDisplay(myPath)), 2))# 0=info,1=warn.,2=error
-
-        if TargetDB is not DB:
-
-            TargetDB.CloseProject()
-
         return error_list
     
     glossAndTypeList = []
@@ -239,7 +264,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
           
             # Use the English morphtype as a standard when we write it out.
-            engMorphType = Utils.morphTypeMap[entry.LexemeFormOA.MorphTypeRA.Guid.ToString()]
+            engMorphType = getEnglishMorphType(entry.LexemeFormOA.MorphTypeRA)
             morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
@@ -256,9 +281,14 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             if processIt == False:
 
                 for allomorph in entry.AlternateFormsOS:
-                    
+
+                    # An alternate form with no morph type can't be classified, so skip it.
+                    if not allomorph or not allomorph.MorphTypeRA:
+
+                        continue
+
                     # Use the English morphtype as a standard when we write it out.
-                    engMorphType = Utils.morphTypeMap[allomorph.MorphTypeRA.Guid.ToString()]
+                    engMorphType = getEnglishMorphType(allomorph.MorphTypeRA)
                     morphType = Utils.as_string(allomorph.MorphTypeRA.Name)
 
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
@@ -282,7 +312,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                     if Utils.containsInvalidLemmaChars(myGloss):
 
                         if report:
-                            report.Error(_translate("CatalogTargetAffixes", "Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}").format(gloss=myGloss, invalidChars=Utils.RAW_INVALID_LEMMA_CHARS), DB.BuildGotoURL(entry))
+                            report.Error(_translate("CatalogTargetAffixes", "Invalid characters in the affix: {gloss}. The following characters are not allowed: {invalidChars}").format(gloss=myGloss, invalidChars=Utils.RAW_INVALID_LEMMA_CHARS), TargetDB.BuildGotoURL(entry))
 
                     # Convert dots to underscores in the affix gloss
                     myGloss = Utils.underscores(myGloss)
@@ -301,17 +331,25 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 
         TargetDB.CloseProject()
 
-    # Sort by type and then by gloss
-    for tupType, tupGloss in sorted(glossAndTypeList):
+    # Write the catalog sorted by type and then by gloss. The with-block makes sure the file is closed (and so fully written) before the later modules read it.
+    try:
+        with open(filePath, 'w', encoding='utf-8') as f_out:
 
-        f_out.write(tupGloss +'|'+ tupType + '\n')
-        
-        # Check for duplicates and give a warning.
-        if tupGloss not in seen:
+            for tupType, tupGloss in sorted(glossAndTypeList):
 
-            seen.add(tupGloss)
-        else:
-            error_list.append((_translate("CatalogTargetAffixes", "Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.").format(gloss=re.sub("_", ".", tupGloss)), 1))
+                f_out.write(tupGloss +'|'+ tupType + '\n')
+
+                # Check for duplicates and give a warning.
+                if tupGloss not in seen:
+
+                    seen.add(tupGloss)
+                else:
+                    error_list.append((_translate("CatalogTargetAffixes", "Found duplicate affix/clitic with gloss: {gloss}. Use of this affix/clitic could produce unexpected results.").format(gloss=re.sub("_", ".", tupGloss)), 1))
+
+    except IOError:
+
+        error_list.append((_translate("CatalogTargetAffixes", "There was a problem creating the Target Affix Gloss List File: {filePath}. Please check the configuration file setting.").format(filePath=Utils.shortenPathForDisplay(filePath)), 2))# 0=info,1=warn.,2=error
+        return error_list
 
     error_list.append((_translate("CatalogTargetAffixes", "Catalog created in the file: {filePath}.").format(filePath=Utils.shortenPathForDisplay(filePath)), 0))
     error_list.append((_translate("CatalogTargetAffixes", "{count} affixes/clitics exported to the catalog.").format(count=str(count)), 0))
@@ -353,8 +391,6 @@ def MainFunction(DB, report, modifyAllowed):
     # output info, warnings, errors and url links
     Utils.processErrorList(error_list, report)
 
-
-                 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 

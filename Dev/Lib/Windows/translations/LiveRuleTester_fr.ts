@@ -141,6 +141,11 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
       <translation>Ne pas nettoyer les mots inconnus</translation>
     </message>
     <message>
+      <location filename="../LiveRuleTester.py" line="640"/>
+      <source>Test Comment:</source>
+      <translation>Commentaire du test :</translation>
+    </message>
+    <message>
       <location filename="../LiveRuleTester.py" line="634"/>
       <source>&amp;Add to Testbed</source>
       <translation>&amp;Ajouter au fichier test</translation>

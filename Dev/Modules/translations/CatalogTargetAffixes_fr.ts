@@ -19,16 +19,6 @@
       <translation>Problème de lecture du fichier de configuration pour la propriété : {property}</translation>
     </message>
     <message>
-      <location filename="../CatalogTargetAffixes.py" line="159"/>
-      <source>Problem accessing the target project.</source>
-      <translation>Problème d'accès au projet cible.</translation>
-    </message>
-    <message>
-      <location filename="../CatalogTargetAffixes.py" line="163"/>
-      <source>Problem opening the target project.</source>
-      <translation>Problème d'ouverture du projet cible.</translation>
-    </message>
-    <message>
       <location filename="../CatalogTargetAffixes.py" line="172"/>
       <source>Configuration file problem with {property}.</source>
       <translation>Problème du fichier de configuration avec {property}.</translation>
@@ -40,8 +30,8 @@
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="187"/>
-      <source>There was a problem creating the Target Prefix Gloss List File: {filePath}. Please check the configuration file setting.</source>
-      <translation>Un problème est survenu lors de la création du fichier de liste des gloses de préfixe cibles : {filePath}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
+      <source>There was a problem creating the Target Affix Gloss List File: {filePath}. Please check the configuration file setting.</source>
+      <translation>Un problème est survenu lors de la création du fichier de liste des gloses d'affixes cibles : {filePath}. Veuillez vérifier le paramètre du fichier de configuration.</translation>
     </message>
     <message>
       <location filename="../CatalogTargetAffixes.py" line="252"/>

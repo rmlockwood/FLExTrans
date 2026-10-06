@@ -11,14 +11,14 @@
     <message>
       <location filename="../RestoreFLExProjects.py" line="72"/>
       <source>Select one or more FLEx backup files and automatically restore them one by one.</source>
-      <translation>Seleccione uno o más archivos de respaldo de FLEx y restáurelos automáticamente uno por uno.</translation>
+      <translation>Selecciona uno o más archivos de respaldo de FLEx y restáuralos automáticamente uno por uno.</translation>
     </message>
     <message>
       <location filename="../RestoreFLExProjects.py" line="74"/>
       <source>Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
 window that comes up to complete the restore. 
 The tool waits until one project is open before restoring the next.</source>
-      <translation>Seleccione uno o más archivos de respaldo de FLEx y restáurelos automáticamente uno por uno. Debe hacer clic en OK en la ventana que aparece para completar la restauración. La herramienta espera hasta que un proyecto esté abierto antes de restaurar el siguiente.</translation>
+      <translation>Selecciona uno o más archivos de respaldo de FLEx y restáuralos automáticamente uno por uno. Debes hacer clic en OK en la ventana que aparece para completar la restauración. La herramienta espera hasta que un proyecto esté abierto antes de restaurar el siguiente.</translation>
     </message>
     <message>
       <location filename="../RestoreFLExProjects.py" line="105"/>
@@ -78,7 +78,7 @@ The tool waits until one project is open before restoring the next.</source>
     <message>
       <location filename="../RestoreFLExProjects.py" line="243"/>
       <source>The {proj} project is already open. Skipping. Close the project and try again.</source>
-      <translation>El proyecto {proj} ya está abierto. Omitiendo. Cierre el proyecto e intente nuevamente.</translation>
+      <translation>El proyecto {proj} ya está abierto. Omitiendo. Cierra el proyecto e intenta nuevamente.</translation>
     </message>
     <message>
       <location filename="../RestoreFLExProjects.py" line="255"/>

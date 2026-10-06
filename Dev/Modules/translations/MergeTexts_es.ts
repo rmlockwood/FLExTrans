@@ -11,7 +11,7 @@
     <message>
         <location filename="../MergeTexts.py" line="149" />
         <source>The text "{sourceName}" has no paragraphs. Skipping it.</source>
-        <translation>El texto "{sourceName}" no tiene párrafos. Se omite.</translation>
+        <translation>El texto "{sourceName}" no tiene párrafos. Omitiendo.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="183" />
@@ -21,7 +21,7 @@
     <message>
         <location filename="../MergeTexts.py" line="188" />
         <source>The text "{sourceName}" is now empty but could not be deleted. Delete it in FLEx.</source>
-        <translation>El texto "{sourceName}" ahora está vacío pero no se pudo eliminar. Elimínelo en FLEx.</translation>
+        <translation>El texto "{sourceName}" ahora está vacío pero no se pudo eliminar. Elimínalo en FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="235" />
@@ -56,7 +56,7 @@
     <message>
         <location filename="../MergeTexts.py" line="319" />
         <source>Something went wrong: the source texts had {wordsBefore} analyzed word(s) but the merged text has {wordsAfter}. Restore your backup of the FLEx project and report this.</source>
-        <translation>Algo salió mal: los textos de origen tenían {wordsBefore} palabra(s) analizada(s), pero el texto combinado tiene {wordsAfter}. Restaure su copia de seguridad del proyecto de FLEx e informe de esto.</translation>
+        <translation>Algo salió mal: los textos de origen tenían {wordsBefore} palabra(s) analizada(s), pero el texto combinado tiene {wordsAfter}. Restaura tu respaldo del proyecto de FLEx y reporta este problema.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="325" />
@@ -66,7 +66,7 @@
     <message>
         <location filename="../MergeTexts.py" line="349" />
         <source>You need to run this module in "modify mode."</source>
-        <translation>Debe ejecutar este módulo en "modo de modificación".</translation>
+        <translation>Debes ejecutar este módulo en "modo de modificación".</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="364" />
@@ -95,17 +95,17 @@ to confirm. Merging this way CANNOT be undone, in FLExTrans or in FLEx, so back 
 sure you are not in the Texts &amp; Words section of FLEx.</source>
         <translation>Combina varios textos en un texto nuevo. Está pensado para libros de la Biblia que se importaron capítulo por capítulo: los textos llamados
 Mateo 01, Mateo 02, Mateo 03-04, etc., se combinan en un único texto que recibe el nombre del intervalo de capítulos, p. ej. Mateo 01-28.
-El módulo sugiere estos grupos a partir de los nombres de los textos, y también puede elegir los textos usted mismo y ponerlos en cualquier orden.
+El módulo sugiere estos grupos a partir de los nombres de los textos, y también puedes elegir los textos tú mismo y ponerlos en cualquier orden.
 No se pierde nada del trabajo interlineal. Cada palabra conserva el análisis y la glosa que se aprobaron para ella, y cada oración conserva su traducción
 libre y sus notas.
-Los textos que combine se eliminan, por lo que el módulo le pide
-confirmación. Combinar de esta manera NO se puede deshacer, ni en FLExTrans ni en FLEx, así que haga primero una copia de seguridad de su proyecto de FLEx. Antes de ejecutarlo,
-asegúrese de no estar en la sección Textos y palabras de FLEx.</translation>
+Los textos que combines se eliminan, por lo que el módulo te pide
+confirmación. Combinar de esta manera NO se puede deshacer, ni en FLExTrans ni en FLEx, así que primero haz un respaldo de tu proyecto de FLEx. Antes de ejecutarlo,
+asegúrate de no estar en la sección Textos &amp; Palabras de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="211" />
         <source>An empty discourse chart could not be deleted. Delete it in the FLEx Discourse area.</source>
-        <translation>No se pudo eliminar un gráfico de discurso vacío. Elimínelo en el área Discurso de FLEx.</translation>
+        <translation>No se pudo eliminar una tabla de discurso vacía. Elimínala en el área Discurso de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTexts.py" line="322" />
@@ -115,7 +115,7 @@ asegúrese de no estar en la sección Textos y palabras de FLEx.</translation>
     <message>
         <location filename="../MergeTexts.py" line="329" />
         <source>{count} empty discourse chart(s) were deleted along with their texts.</source>
-        <translation>Se eliminaron {count} gráfico(s) de discurso vacío(s) junto con sus textos.</translation>
+        <translation>Se eliminaron {count} tabla(s) de discurso vacía(s) junto con sus textos.</translation>
     </message>
 </context>
 </TS>

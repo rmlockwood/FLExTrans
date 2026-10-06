@@ -11,7 +11,7 @@
     <message>
       <location filename="../StartTestbed.py" line="60"/>
       <source>Initialize the testbed log and create source text from the testbed.</source>
-      <translation>Inicialice el registro del testbed y cree texto fuente desde el testbed.</translation>
+      <translation>Inicializar el registro del banco de pruebas y crear el texto de origen a partir del banco de pruebas.</translation>
     </message>
     <message>
       <location filename="../StartTestbed.py" line="62"/>
@@ -19,18 +19,13 @@
         Initialize the testbed log and create source text from the testbed.
         </source>
       <translation>
-        Inicialice el registro del testbed y cree texto fuente desde el testbed.
+        Inicializar el registro del banco de pruebas y crear el texto de origen a partir del entorno de pruebas.
         </translation>
-    </message>
-    <message>
-      <location filename="../StartTestbed.py" line="81"/>
-      <source>Testbed does not exist. Please add tests to the testbed.</source>
-      <translation>El testbed no existe. Por favor, agregue pruebas al testbed.</translation>
     </message>
     <message>
       <location filename="../StartTestbed.py" line="131"/>
       <source>There is a problem with the Analyzed Text Output File path: {outFileVal}. Please check the configuration file setting.</source>
-      <translation>Hay un problema con la ruta del archivo de salida del texto analizado: {outFileVal}. Por favor, revise la configuración del archivo de configuración.</translation>
+      <translation>Hay un problema con la ruta del archivo de salida del texto analizado: {outFileVal}. Revisa la configuración del archivo de configuración.</translation>
     </message>
     <message>
       <location filename="../StartTestbed.py" line="149"/>

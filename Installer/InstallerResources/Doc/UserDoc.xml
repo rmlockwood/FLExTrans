@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->10 September 2026</date
+>6 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -474,10 +474,36 @@ type="tItalic"
 > project (from the list of <object
 type="tFlexx"
 ></object
-> projects).</object
+> projects). If your target project is not in the standard <object
+type="tFlexx"
+></object
+> projects folder, choose </object
+><object
+type="tButton"
+>Browse...</object
+><object
+type="tItalic"
+> at the bottom of the list and select the project's .fwdata file.</object
 ></td
 ></tr
 ></table
+><p
+>Note: if the custom field created in <object
+type="tFlexx"
+></object
+> has a name other than <object
+type="tSettingsValue"
+>Target Equivalent</object
+>, this must be set in the setting <object
+type="tSettingsProperty"
+>Source Custom Field for Sense Link</object
+>. This setting is visible in the <object
+type="tSettingsValue"
+>Basic</object
+> or <object
+type="tSettingsValue"
+>Full</object
+> View Modes.</p
 ></li
 ><li
 >Click the <object
@@ -2009,12 +2035,12 @@ type="tItalic"
 > on in <object
 type="tTool"
 >Paratext</object
->.</p
-><p
->Also, you cannot import from <object
+>. Also, you cannot import from <object
 type="tTool"
 >Paratext</object
-> resources. Put the <object
+> resources. </p
+><p
+>Put the <object
 type="tTool"
 >Paratext</object
 > book abbreviation in the second box. Select from and to chapters.</p
@@ -2073,6 +2099,14 @@ type="tBoldItalic"
 type="tBoldItalic"
 >Include introduction (for chapter 1)</object
 > - bring in introductory information that is above chapter 1. This only applies to chapter 1.</li
+><li
+><object
+type="tBoldItalic"
+>Import numbers in the analysis writing system</object
+> - numbers such as 7 or 144,000 are put in the analysis writing system, just like verse numbers and references, so they don't have to be interlinearized. In the <object
+type="tItalic"
+>Number separator(s)</object
+> box, give the character(s) that separate groups of digits in a number, e.g. the comma in 144,000 (the default), a period, or a space. You can give more than one character. Leave the box blank if numbers have no separator. Digits that are part of a word, e.g. 7th, are left in the vernacular writing system.</li
 ></ul
 ><example
 num="xParatextImport"
@@ -2089,6 +2123,65 @@ letter="xClusterImportParatext"
 num="xClusterImportParatext"
 ></exampleRef
 >.</p
+><p
+>By default, the <object
+type="tTool"
+>Import Text From Paratext</object
+> module looks for the book files in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder on your computer. If the files you want to import are somewhere else, for example a copy of a project's files that someone sent you, or a <object
+type="tTool"
+>Paratext</object
+> project folder that is not in the standard location, you can tell <object
+type="tFlextrans"
+></object
+> where to find them:</p
+><ol
+><li
+>Open the <object
+type="tSettingsTool"
+></object
+> and click on <object
+type="tSettingsValue"
+>Full</object
+> under <object
+type="tSettingsProperty"
+>View Mode</object
+>.</li
+><li
+>In the <object
+type="tSettingsProperty"
+>Import Settings</object
+> section, for the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Files</object
+> setting, click the <object
+type="tButton"
+>Browse folder...</object
+> button and choose the <object
+type="tTool"
+>Paratext</object
+> project folder, i.e. the folder containing the .sfm files.</li
+><li
+>Click the <object
+type="tButton"
+>Apply and Close</object
+> button.</li
+><li
+>Run the <object
+type="tTool"
+>Import Text From Paratext</object
+> module as usual. In the first box, type the project abbreviation that is part of the book file names.</li
+></ol
+><p
+>To go back to importing from the standard <object
+type="tTool"
+>Paratext</object
+> folder, clear the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Files</object
+> setting.</p
 ></section3
 ><section3
 id="sPtxExport"
@@ -3597,7 +3690,13 @@ type="tFlexx"
 ></object
 > project, including your source project.</p
 ><p
->The tool shows a list of all the texts in the chosen project. Hold down Ctrl or Shift to select more than one, then click <object
+>The tool shows a list of all the texts in the chosen project. Each text is listed by its analysis title, which is where <object
+type="tFlextrans"
+></object
+> writes names like Matthew 01. If the text also has a vernacular title, the title <object
+type="tFlexx"
+></object
+> shows by default, it follows in parentheses. A text that only has a vernacular title is listed by that title. Hold down Ctrl or Shift to select more than one, then click <object
 type="tBold"
 >OK</object
 >. Before anything is deleted, you are shown the names of the texts you selected, in alphabetical order, and asked to confirm. The confirmation lists every text you selected, so scroll through it to check the list before answering Yes.</p
@@ -3662,10 +3761,13 @@ type="tFlexx"
 ></object
 > parse them afresh and every word would come back unanalyzed, which is exactly what this tool avoids.</p
 ><p
->At the top of the window, choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. If your texts are named in some other way, choose <object
+>The window opens with <object
 type="tBold"
->(choose the texts myself)</object
-> instead and build the list by hand. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. <exampleRef
+>(choose texts)</object
+> showing at the top and nothing chosen yet. You can build the list by hand from the texts on the left, or open that list at the top and choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. As in the <object
+type="tTool"
+>Delete Texts</object
+> tool, a text that also has a vernacular title shows it in parentheses after its name. <exampleRef
 letter="xMergeTexts"
 num="xMergeTexts"
 ></exampleRef
@@ -6917,6 +7019,111 @@ type="tRuleElemInXXE"
 type="tRuleElemInXXE"
 >literal tag</object
 > element and write the gloss there. Remember the period-underscore substitution above.</p
+></section3
+><section3
+id="sDerivAffixClitic"
+><secTitle
+>How do I deal with derivational affixes and clitics in transfer rules?</secTitle
+><p
+>In transfer rules, derivational affixes and clitics are treated just like all other affixes. When <object
+type="tFlextrans"
+></object
+> extracts the source text, the gloss of every affix and clitic in a word becomes a tag after the grammatical category, in the order the morphemes occur in the word. That includes inflectional and derivational affixes, prefixes and suffixes, and proclitics and enclitics. For example, if <langData
+lang="lVernacular"
+>teach</langData
+> takes a derivational suffix glossed <object
+type="tluAffix"
+>nmlz</object
+>, an inflectional suffix glossed <object
+type="tluAffix"
+>pl</object
+> and an enclitic glossed <object
+type="tluAffix"
+>foc</object
+>, the lexical unit would be <langData
+lang="lVernacular"
+>teach</langData
+><object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>nmlz pl foc</object
+>. You refer to these tags the same way you refer to any other affix (see <sectionRef
+sec="sAffixRef"
+showTitle="full"
+></sectionRef
+>), and you can delete or insert them the same way too (see <sectionRef
+sec="sDeleteAffix"
+showTitle="full"
+></sectionRef
+> and <sectionRef
+sec="sInsertWord"
+showTitle="full"
+></sectionRef
+>).</p
+><p
+>Note that the grammatical category tag is always the category of the root, even when a derivational affix changes the category of the word. In the example above the word is a noun, but its category tag is still <object
+type="tluGrammCat"
+>v</object
+>. If a rule needs to treat derived words differently, match or test the derivational affix tag as well as the category. For example, a category containing <object
+type="tCourier"
+>v.nmlz</object
+> and <object
+type="tCourier"
+>v.nmlz.*</object
+> would match nominalized verbs (see <sectionRef
+sec="sCategory"
+showTitle="full"
+></sectionRef
+>).</p
+><p
+>The main difference is in the attributes. To get or set the value of an affix in a rule, you use an attribute that lists the glosses it can have (see <sectionRef
+sec="sAttribute"
+showTitle="full"
+></sectionRef
+>). The <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> creates attributes for inflection features, inflection classes and template slots (see <sectionRef
+sec="sSetupGramCat"
+showTitle="full"
+></sectionRef
+>). Derivational affixes and clitics do not belong to template slots, so the tool does not create attributes for them. If your rules need to work with them, define custom attributes yourself under the <object
+type="tRuleElemInXXE"
+>Attributes</object
+> element, the same way as in <sectionRef
+sec="step2"
+showTitle="full"
+textBefore="useDefault"
+></sectionRef
+> of the tutorial. Put the glosses of the affixes or clitics that belong together in the same attribute. For example, you might define an attribute <object
+type="tCourier"
+>a_nominalizer</object
+> with the gloss <object
+type="tluAffix"
+>nmlz</object
+>, or an attribute <object
+type="tCourier"
+>a_focus_clitic</object
+> with the glosses of your focus clitics. Remember to replace any period in a gloss with an underscore.</p
+><p
+>Give your custom attributes names that are different from the ones the <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> creates (which end in <object
+type="tCourier"
+>_feature</object
+>, <object
+type="tCourier"
+>_class</object
+> or <object
+type="tCourier"
+>_slot</object
+>). That way the tool will leave them alone when you run it again.</p
 ></section3
 ><section3
 id="sCategory"

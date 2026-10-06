@@ -142,8 +142,8 @@ dans le projet FLEx source à traduire.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1619"/>
-      <source>The name of the target FLEx project.</source>
-      <translation>Le nom du projet FLEx cible.</translation>
+      <source>The target FLEx project. Choose Browse... to pick a project file (.fwdata) outside the standard FLEx Projects folder.</source>
+      <translation>Le projet FLEx cible. Choisissez Parcourir... pour sélectionner un fichier de projet (.fwdata) en dehors du dossier standard des projets FLEx.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1621"/>
@@ -727,14 +727,14 @@ du test de synthèse.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="2167"/>
       <source>Apply Text Out Rules in the Testbed?</source>
-      <translation>Appliquer les règles de sortie de texte dans le banc d'essai ?</translation>
+      <translation>Appliquer les règles de sortie de texte dans le fichier test ?</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="2168"/>
       <source>When the End Testbed module extracts results from the synthesized text, apply the Text Out search/replace rules first,
 so testbed tests match the final output produced by Insert Target Text and Export to Paratext.</source>
-      <translation>Lorsque le module Terminer le banc d'essai extrait les résultats du texte synthétisé, appliquer d'abord les règles de recherche/remplacement de sortie de texte,
-afin que les tests du banc d'essai correspondent au résultat final produit par Insérer le texte cible et Exporter vers Paratext.</translation>
+      <translation>Lorsque le module Terminer le fichier test extrait les résultats du texte synthétisé, appliquer d'abord les règles de recherche/remplacement de sortie de texte,
+afin que les tests du fichier test correspondent au résultat final produit par Insérer le texte cible et Exporter vers Paratext.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1795"/>
@@ -1080,6 +1080,26 @@ Choisissez Deux projets (le mode normal) pour traduire d'un projet FLEx source v
       <location filename="../SettingsGUI.py" line="1635"/>
       <source>In One project mode you must choose a Target Writing System.</source>
       <translation>En mode Un projet, vous devez choisir un système d'écriture cible.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>Browse...</source>
+      <translation>Parcourir...</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>Choose a FLEx project file (.fwdata) in a location other than the standard FLEx Projects folder.</source>
+      <translation>Choisissez un fichier de projet FLEx (.fwdata) situé ailleurs que dans le dossier standard des projets FLEx.</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>Choose the Target Project</source>
+      <translation>Choisir le projet cible</translation>
+    </message>
+    <message>
+      <location filename="../SettingsGUI.py" line="1"/>
+      <source>FLEx projects (*.fwdata)</source>
+      <translation>Projets FLEx (*.fwdata)</translation>
     </message>
   </context>
 </TS>

@@ -21,7 +21,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="148" />
         <source>This CANNOT be undone. If FLEx is open, make sure you are NOT in the Texts &amp; Words section of FLEx.</source>
-        <translation>Esto NO se puede deshacer. Si FLEx está abierto, asegúrese de NO estar en la sección Textos y palabras de FLEx.</translation>
+        <translation>Esto NO se puede deshacer. Si FLEx está abierto, asegúrate de NO estar en la sección Textos &amp; Palabras de FLEx.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="268" />
@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="270" />
-        <source>(choose the texts myself)</source>
-        <translation>(elegir los textos yo mismo)</translation>
+        <source>(choose texts)</source>
+        <translation>(elegir textos)</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="303" />
@@ -41,7 +41,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="699" />
         <source>The text "{textName}" has no contents and cannot be merged. Remove it from the list.</source>
-        <translation>El texto "{textName}" no tiene contenido y no se puede combinar. Quítelo de la lista.</translation>
+        <translation>El texto "{textName}" no tiene contenido y no se puede combinar. Quítalo de la lista.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="719" />
@@ -56,7 +56,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="730" />
         <source>A discourse chart is based on these texts and will be left pointing at nothing: {nameList}. Delete those charts in the FLEx Discourse area first, then merge, then chart the merged text.</source>
-        <translation>Un gráfico de discurso se basa en estos textos y quedará apuntando a nada: {nameList}. Elimine primero esos gráficos en el área Discurso de FLEx, luego combine y después haga el gráfico del texto combinado.</translation>
+        <translation>Hay una tabla de discurso basada en estos textos que quedará sin apuntar a nada: {nameList}. Primero elimina esas tablas en el área Discurso de FLEx, luego combina los textos y después crea la tabla del texto combinado.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="734" />
@@ -71,7 +71,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="760" />
         <source>Please read:</source>
-        <translation>Lea esto:</translation>
+        <translation>Por favor, lee lo siguiente:</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="816" />
@@ -81,7 +81,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="803" />
         <source>The name "{targetName}" belongs to one of the texts you are merging. Choose a different name for the merged text, or take that text out of the list.</source>
-        <translation>El nombre "{targetName}" pertenece a uno de los textos que está combinando. Elija otro nombre para el texto combinado o quite ese texto de la lista.</translation>
+        <translation>El nombre "{targetName}" pertenece a uno de los textos que estás combinando. Elige otro nombre para el texto combinado o quita ese texto de la lista.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="816" />
@@ -96,7 +96,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="835" />
         <source>Choose at least two texts to merge.</source>
-        <translation>Elija al menos dos textos para combinar.</translation>
+        <translation>Elige al menos dos textos para combinar.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="842" />
@@ -106,7 +106,7 @@
     <message>
         <location filename="../MergeTextsDlg.py" line="842" />
         <source>Type a name for the merged text.</source>
-        <translation>Escriba un nombre para el texto combinado.</translation>
+        <translation>Escribe un nombre para el texto combinado.</translation>
     </message>
     <message>
         <location filename="../MergeTextsDlg.py" line="572" />

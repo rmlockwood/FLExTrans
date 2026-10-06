@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Open the target with Utils.openTargetProject and take its .fwdata path from the opened project, so a target stored elsewhere works. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -96,38 +99,75 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   Synthesize using Hermit Crab.
+#   OVERVIEW (AI generated, then edited)
 #
-# Basic Design:
+#   This module is the HermitCrab alternative to STAMP for the last step of FLExTrans: turning the target parses that come out of the Apertium transfer rules into real target words. HermitCrab (HC)
+#   is one of the morphological engines built into FLEx. FLExTrans drives it through two external tools: one exports the whole target project (lexicon, rules and settings) as an XML HermitCrab.config file,
+#   and the other synthesizes surface forms from gloss-style parses using that CML HermitCrab.config. This module prepares the inputs for those tools, runs them, and stitches the surface forms back into the
+#   transfer results to produce the file named by the Target Output Synthesis File setting.
 #
-# (target_words-HC.txt or in LRT: HermitCrabMaster.txt) file - this file holds each word parse on a line. The parse is in a couple different formats in the form X,Y. 
-#  This file is created in the Convert Text to Synthesizer Format module. It is a file that contains only unique parses. 
-#  X is the Apertium representation of the parse ^...$
-#  Y holds one or more parses in the form that HC needs. Y is in the form A|B...|G
-#  A is in the form Q;N where Q is the parse and N is the capitalization code N can be null
-#  B...|G are in the same format as A and represent components of the phrase.
-#  Q is in the form <pfx1>...<pfxN>root<cat><sfx1>...<sfxN> the code goes from X form to Q form by consulting the affix list file
+#   The module can be run on its own from FlexTools, but most of its use is from other code. DoSynthesis (when Use HermitCrab Synthesis is on) and TranslateText call doHermitCrab(). The Live Rule
+#   Tester calls extractHermitCrabConfig() and synthesizeWithHermitCrab() directly, with its own file names (HermitCrabMaster.txt, HermitCrabParses.txt, etc.) and a loaded HC DLL object for speed.
+#   Keep those callers in mind when changing a function signature or the (message, level) error-list convention every function here returns.
 #
-# The rest happens in the this module:
-# Extract the HermitCrab config file [extractHermitCrabConfig()]- this config file is actually a full target lexicon in an XML format 
-#  along with all rules and settings needed for HC. This takes a bit of time.
-# Create an internal map of the lowercase version of all lemmas in the HC config file + POS to the original cased version. [getCapitalLemmas()]
-# Create the HC parses file [createHermitCrabParsesFile()]- this is the file (target_words-parses.txt or in LRT: HermitCrabParses.txt) that we will send to HC for 
-# synthesizing.
-#  The parses are in HC order, and formatted as Q above.
-#  The file is created by iterating through the Master file. Lemmas are restored to their
-#   cased forms as in the HC config file using the internal map from above. [capitalize()]
-#  Phrases of the form A|B in the master file come out as consecutive LUs, e.g. ^...$^...$
-#  The list of LUs gets saved for use below.
-# Now HC is called to convert the parses file (target_words-parses.txt or in LRT: HermitCrabParses.txt) into a 
-# surface forms file (target_words-surface.txt or in LRT: HermitCrabSurfaceForms.txt) using the HC config file info.
-#  In this surface forms file, multiple words are separated by commas (R,T)
-# Next we produce the synthesized text (target_text-syn.txt or in LRT: myText.txt) using the previously generated Apertium results 
-# file (target_text-aper.txt or in LRT: target_text.txt)  [produceSynthesisFile()].
-#  The Apertium results file was the output from applying Apertium rules to the source file. We also use the surface forms and the saved LU list.
-#  The code iterates through the surface forms and using the original LU, substitutes every LU in the Apertium results file with the matched surface form. 
-#   In the loop, the code applies the needed capitalization for the word before substitution.
-#  Then we fix up the text if desired so there are no % @ signs.
+#   THE FILES, IN THE ORDER THEY ARE USED
+#
+#    - Master file (target_words-HC.txt, or HermitCrabMaster.txt in the LRT). Written earlier by the Convert Text to Synthesizer Format module, not by this one. One line per UNIQUE parse, in the
+#      form X,Y. X is the Apertium lexical unit ^...$. Y is A|B|...|G, where A is Q;N - Q is the parse in HC order (<pfx1>...<pfxN>root<cat><sfx1>...<sfxN>, built by consulting the affix list
+#      file) and N is the capitalization code, which may be empty. B through G have the same form as A and are the further words of a phrase.
+#    - HermitCrab.config (in the Build folder). Generated here from the target project by the Generate HC Config tool. It is a full target lexicon plus all the rules, and it takes a while to build.
+#    - Parses file (target_words-parses.txt, or HermitCrabParses.txt in the LRT). Written here from the master file: one line per master line holding the Q parses as consecutive ^...$ units, with
+#      lemmas restored to their case in the config. This is what HC synthesizes.
+#    - Surface forms file (target_words-surface.txt, or HermitCrabSurfaceForms.txt in the LRT). Written by HC, one line per parses line; the words of a phrase are separated by commas.
+#    - Transfer results file (target_text-aper.txt). This is the input file, and the synthesis file (target_text-syn.txt, or myText.txt in the LRT) is the output. Every lexical unit in the transfer results 
+#      is replaced by its surface form.
+#
+#   WHERE THE TARGET PROJECT COMES FROM
+#
+#   In Two project mode Utils.openTargetProject opens the TargetProject setting, which may be a bare project name or the full path of a .fwdata file outside the standard FLEx Projects folder
+#   (#1334). The Generate HC Config tool needs the path of the .fwdata file, so it is taken from the opened project with Utils.projectOpenName() rather than rebuilt from the Projects folder plus the
+#   name, which would point at a file that doesn't exist for a project kept elsewhere. (projectOpenName() falls back to the bare name if LCM won't give the path, so a failure there shows up as a
+#   Generate HC Config error, not here.) If the target can't be opened, openTargetProject adds the reason to the error list and doHermitCrab() returns it.
+#
+#   In One project mode there is no target project; the source project holds the target writing system. This module always synthesizes in the project's default vernacular writing system, so
+#   buildTempProjectInTargetWS() copies the project folder (minus LinkedFiles and lock files) to a temp folder, moves the target WS to the front of the <CurVernWss> element in the copy's .fwdata, and the config
+#   is generated from the copy. The live project is never modified, and the copy is deleted in a finally block whether generation worked or not.
+#
+#   CACHING
+#
+#   Regenerating the XML config file is slow, so it is skipped when the following is true: 1) the CacheData FLExTrans setting is set to 'y', 2) the caller asked for the cache (doHermitCrab always does; 
+#   the LRT does unless the user forces a refresh), and 3) the config file is newer than the target project's last-modified date (configFileOutOfDate()). 
+#   When a DLL object is in use it must still be pointed at the config file even on a cache hit, because a freshly created DLL object has no config loaded yet.
+#
+#   THINGS THAT LOOK ODD BUT MATTER
+#
+#    - This module's FlexTools messages say the source project is being used. It is really the target project; FlexTools doesn't know about the target project.
+#    - Capitalization: for a word with a capitalization code, the lemma in the master file may not have the case the target lexicon uses (a proper noun, say), and HC would not find the entry.
+#      getCapitalLemmas() reads every capitalized lemma from the XML config (the entry's Gloss element) keyed on lowercase lemma + category name (#1040), and capitalize() restores it before synthesis.
+#      Without the category in the key, a word could be capitalized just because a proper noun shares its spelling. The capitalization code itself (sentence-initial, all caps, ...) is applied
+#      separately, to the surface form, in produceSynthesisFile().
+#    - @ words (unknown to the target lexicon) are written to the parses file as blank lines and are not added to luInfoList. produceSynthesisFile() drops blank surface form lines before it checks
+#      that the surface form count equals the lexical unit count, and it is that pairing that keeps line i of the surface forms matched to entry i of luInfoList. Change one side and not the other
+#      and every word after the first @ word gets the wrong surface form.
+#    - Each lexical unit is substituted into the transfer results with a global re.sub, which is why the master file holds only unique parses: one surface form replaces every occurrence.
+#    - A failed word comes back as %0%^parse$% plus an error. The sentence punctuation regex in produceSynthesisFile() is careful not to treat the ^ inside such a string as the start of a <sent>
+#      unit. fixUpText() later strips these markers, sense numbers, @ signs and tags only when the Cleanup Unknown Words setting is on (or the LRT's "do not clean up" box isn't checked).
+#    - With a DLL object, synthesizeWithHermitCrab() never passes the surface forms file name to HC (only the exe gets it on the command line),
+#      so the caller must already have set the DLL's output to that file before calling.
+#
+#   CODE STRUCTURE
+#
+#   After the docs dictionary: configFileOutOfDate() is the cache test, buildTempProjectInTargetWS() makes the One project mode copy, and generateHCConfigFile() runs the Generate HC Config tool and
+#   (re)loads the result into the DLL object. extractHermitCrabConfig() is the lexicon step and ties those three together: it opens the target project (or reuses the source DB), gets the .fwdata
+#   path, and either uses the cached config or generates a new one. gatherWarnings() turns the generator's stdout into warnings.
+#
+#   The synthesis side follows. produceSynthesisFile() does the substitution into the transfer results, createHermitCrabParsesFile() writes the parses file and fills luInfoList, capitalize() and
+#   extractRootAndFirstTag() restore lemma case, fixUpText() does the optional clean up, and getCapitalLemmas() builds the capitalization map from the config. synthesizeWithHermitCrab() is the
+#   synthesis step and calls them in the order getCapitalLemmas(), createHermitCrabParsesFile(), HC (DLL or exe), produceSynthesisFile(), fixUpText().
+#
+#   Control flow: FlexTools calls MainFunction(), which loads translations, reads the settings, logs to Mixpanel and calls doHermitCrab(). doHermitCrab() calls extractHermitCrabConfig() and then
+#   synthesizeWithHermitCrab() and reports the collected error list. The FlexToolsModule declaration is at the very bottom.
+#
 
 import os
 import re
@@ -140,7 +180,6 @@ import xml.etree.ElementTree as ET
 from SIL.LCModel import *                                                    # type: ignore
 
 from flextoolslib import * # type: ignore
-from flexlibs import FLExProject, FWProjectsDir
 
 from PyQt6.QtCore import QCoreApplication, QTranslator
 from PyQt6.QtWidgets import QApplication
@@ -170,7 +209,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -328,30 +367,18 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     if oneProjectMode:
 
         TargetDB = DB
-        targetProj = DB.ProjectName()
         targetWSTag = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_WRITING_SYSTEM, report, giveError=False)
     else:
 
-        # Get the target project name
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+        # Open the target database. openTargetProject adds the problem to errorList if it can't.
+        TargetDB = Utils.openTargetProject(configMap, report, errorList)
 
-        if not targetProj:
-            errorList.append((_translate("DoHermitCrabSynthesis", "Configuration file problem with TargetProject."), 2))
+        if TargetDB is None:
+
             return errorList
 
-        TargetDB = FLExProject()
-
-        try:
-            # Open the target database
-            TargetDB.OpenProject(targetProj, True)
-
-        except: #FDA_DatabaseError, e:
-
-            errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target project: {targetProj}.").format(targetProj=targetProj), 2))
-            return errorList
-
-    # Get fwdata file path
-    fwdataPath = os.path.join(FWProjectsDir, TargetDB.ProjectName(), TargetDB.ProjectName() + '.fwdata')
+    # Get fwdata file path from the opened project rather than building it from the name, since the project may be outside the standard FLEx Projects folder.
+    fwdataPath = Utils.projectOpenName(TargetDB)
         
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
 
