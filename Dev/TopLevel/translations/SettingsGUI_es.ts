@@ -144,7 +144,7 @@ del proyecto FLEx fuente que se traducirá.</translation>
     <message>
       <location filename="../SettingsGUI.py" line="1619"/>
       <source>The target FLEx project. Choose Browse... to pick a project file (.fwdata) outside the standard FLEx Projects folder.</source>
-      <translation>El proyecto FLEx de destino. Elige Explorar... para seleccionar un archivo de proyecto (.fwdata) fuera de la carpeta estándar de proyectos FLEx.</translation>
+      <translation type="unfinished">The target FLEx project. Choose Browse... to pick a project file (.fwdata) outside the standard FLEx Projects folder.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1621"/>
@@ -1086,22 +1086,22 @@ Elige dos proyectos (el modo normal) para traducir de un proyecto FLEx de origen
     <message>
       <location filename="../SettingsGUI.py" line="1"/>
       <source>Browse...</source>
-      <translation>Explorar...</translation>
+      <translation type="unfinished">Browse...</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1"/>
       <source>Choose a FLEx project file (.fwdata) in a location other than the standard FLEx Projects folder.</source>
-      <translation>Elige un archivo de proyecto FLEx (.fwdata) en una ubicación distinta de la carpeta estándar de proyectos FLEx.</translation>
+      <translation type="unfinished">Choose a FLEx project file (.fwdata) in a location other than the standard FLEx Projects folder.</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1"/>
       <source>Choose the Target Project</source>
-      <translation>Elegir el proyecto de destino</translation>
+      <translation type="unfinished">Choose the Target Project</translation>
     </message>
     <message>
       <location filename="../SettingsGUI.py" line="1"/>
       <source>FLEx projects (*.fwdata)</source>
-      <translation>Proyectos FLEx (*.fwdata)</translation>
+      <translation type="unfinished">FLEx projects (*.fwdata)</translation>
     </message>
   </context>
 </TS>
