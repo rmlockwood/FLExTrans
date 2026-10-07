@@ -170,7 +170,8 @@
                   <li><a href="#sStartTestbed">7.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></a></li>
                   <li><a href="#sEndTestbed">7.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></a></li>
                   <li><a href="#sTestbedLRT">7.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
-                  <li><a href="#sTestbedEditor">7.2.5&nbsp;Testbed Editing</a></li>
+                  <li><a href="#sTestbedEditorTool">7.2.5&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span></a></li>
+                  <li><a href="#sTestbedEditor">7.2.6&nbsp;Testbed Editing</a></li>
                </ul>
             </ul>
             <li><a href="#sHowTo">8&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s</a></li>
@@ -3446,7 +3447,8 @@
                </li>
             </ol>
          </li>
-         <li>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <span style="font-style:italic; ">testbed.xml</span> which is in the project folder in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         <li>Make any adjustments as needed. Repeat. If you need to change or delete a test, or fix one the testbed found invalid, use
+            the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span>. See &#8220;<a href="#sTestbedEditorTool"><span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span></a>&#8221;.
          </li>
       </ol>
       <h2 style=""><a name="sTestbedTools"></a>7.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools
@@ -3489,9 +3491,64 @@
       <h3 style=""><a name="sTestbedLRT"></a>7.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h3>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a good place to add new tests to the testbed. See &#8220;<a href="#sRuleTester">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a>&#8221; for more details.
       </p>
-      <h3 style=""><a name="sTestbedEditor"></a>7.2.5&nbsp;Testbed Editing
+      <h3 style=""><a name="sTestbedEditorTool"></a>7.2.5&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span></h3>
+      <p>This module you will find in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection. It shows every test in your testbed and lets you change them, delete them or add new ones, without having to
+         edit the testbed file by hand.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xTestbedEditorImage">(105)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:70%" src="Images/TestbedEditor.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>Each test is a shaded row showing where the test came from in the <span style="font-weight:bold; ">Source/Lemma</span> column (usually the name of the source text), the <span style="font-weight:bold; ">Expected Result</span> and the <span style="font-weight:bold; ">Comment</span>. Under it there is a row for each lexical unit of the test, in the order the words come in the source, with the <span style="font-weight:bold; ">Source/Lemma</span>, <span style="font-weight:bold; ">Gram. Cat.</span>, <span style="font-weight:bold; ">Features/Classes</span> and <span style="font-weight:bold; ">Affixes</span> filled in. The lemma is the headword with its homograph and sense numbers, e.g. <span style="font-style:italic; ">house1.1</span>. The lexical units are colored the same way as in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span>: black lemmas, blue grammatical categories and green features, classes and affixes. Click the arrow at the start of a test
+         row to collapse or expand it.
+      </p>
+      <p>To change something, double-click the cell and type. On a test row you can change the source, the expected result and the
+         comment; on a lexical unit row you can change the lemma, grammatical category, features or classes, and affixes. As you type
+         in a lexical unit cell, suggestions from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project are offered. After you choose a lemma, its grammatical category and features or classes are filled in automatically
+         once you leave the cell, by pressing Tab or Enter or clicking another cell. If a lexical unit has more than one feature, class
+         or affix, separate them with a period, e.g. <span style="font-style:italic; ">sg.pst</span>.
+      </p>
+      <p>Right-click a row to add or delete a lexical unit. <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Add Lexical Unit</span> on a lexical unit row puts the new one just before that row; on a test row it adds it at the end of the test. <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Delete this Lexical Unit</span> removes the lexical unit you right-clicked. A new lexical unit starts out as <span style="font-style:italic; ">word1.1</span> with the category <span style="font-style:italic; ">n</span>, ready for you to replace.
+      </p>
+      <p>The buttons along the bottom do the following:</p>
+      <ul>
+         <li><span style="font-style:normal; font-weight:bold; ">Add Test</span> asks for the source text, the expected result and a comment, then adds the test at the end of the list with one placeholder
+            lexical unit. Change it to the first word of the test and add more lexical units as needed.
+         </li>
+         <li><span style="font-style:normal; font-weight:bold; ">Delete Test</span> deletes the selected test, after showing you the test and asking you to confirm. You can select either the test row or one
+            of its lexical units.
+         </li>
+         <li><span style="font-style:normal; font-weight:bold; ">Save</span> writes your changes to the testbed file. A lemma or grammatical category can&#8217;t be left blank, so if one is, the editor selects
+            that row and tells you which test it is in, and nothing is saved until you fill it in.
+         </li>
+         <li><span style="font-style:normal; font-weight:bold; ">Close</span> closes the editor. If there are unsaved changes, you are asked whether to save them, discard them, or cancel and stay in
+            the editor.
+         </li>
+         <li><span style="font-style:normal; font-weight:bold; ">Edit Transfer Rules</span> opens your transfer rules file in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>, the same as the button of that name in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
+         </li>
+         <li>The <span style="font-weight:bold; ">Font Size</span> box makes the text in the list bigger or smaller.
+         </li>
+      </ul>
+      <p>When the testbed is run, a test whose lemma, category or tag no longer exists in the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project is marked invalid. In the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span> such a test and its lexical units are shown in orange, with the reason it is invalid written in red across the <span style="font-weight:bold; ">Gram. Cat.</span>, <span style="font-weight:bold; ">Features/Classes</span> and <span style="font-weight:bold; ">Affixes</span> columns of the test row. Fixing the test here doesn&#8217;t clear the reason straight away; it goes away the next time you run
+         the testbed.
+      </p>
+      <h3 style=""><a name="sTestbedEditor"></a>7.2.6&nbsp;Testbed Editing
       </h3>
-      <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. If you need to edit or delete a test, edit the file <span style="font-style:italic; ">testbed.xml</span> in the project folder with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+      <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. To change or delete a test, or to add one by hand, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span>. See &#8220;<a href="#sTestbedEditorTool"><span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span></a>&#8221;. It is best not to edit the file <span style="font-style:italic; ">testbed.xml</span> directly.
+      </p>
+      <p>Whenever <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> is about to change your testbed file &#8212; when you save in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span>, add a test in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, or run the testbed &#8212; it first saves a copy of the file as it was. Look for it in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output\testbed-file-history</span> folder, under a name like <span style="font-style:italic; ">testbed_2026-10-07_14-40-23_before_editor_save.xml</span> - your testbed file&#8217;s name with the date, the time and a tag saying what was about to change it. These copies are never deleted,
+         so you can always go back to an earlier version of your testbed. To restore one, copy it into the project folder and rename
+         it to <span style="font-style:italic; ">testbed.xml</span>, replacing the file that is there. You can delete old copies from the folder whenever you like.
       </p>
       <h1 style=""><a name="sHowTo"></a>8&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s
       </h1>
@@ -3580,7 +3637,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCat">(105)</a></td>
+               <td valign="top"><a name="xCat">(106)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3591,18 +3648,18 @@
             </tr>
          </table>
       </div>
-      <p><a href="#xCat">(105)</a> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is
+      <p><a href="#xCat">(106)</a> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is
          a wildcard indicator. It means that anything can fill that position. An asterisk at the end of the item matches one or more
-         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(105)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes.
+         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(106)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes.
       </p>
       <p>If you use <span style="font-family:Courier New; font-size:100%; ">*</span> in the middle of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> definition, it means one or more tags occur in that position. For example, <span style="font-family:Courier New; font-size:100%; ">n.*.pl</span> would match both <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f pl</span> and <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind f pl</span>. Important: unlike the meaning of <span style="font-family:Courier New; font-size:100%; ">*</span> in regular expressions, it never means zero occurrences. So, <span style="font-family:Courier New; font-size:100%; ">n.*.pl</span> would not match <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span>. To match this you would need an additional <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element <span style="font-family:Courier New; font-size:100%; ">n.pl</span> to cover this case.
       </p>
-      <p>You can use the lemma element to identify a specific word-sense. <a href="#xCatLem">(106)</a> shows how the category <span style="font-family:Courier New; font-size:100%; ">dem_this</span> can be defined as a word that has a grammatical category of <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">dem</span> and lemma <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1.1</span> (in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>: headword <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1</span> , sense 1). This might be useful when you want to match phrases containing the word <span style="font-family:Courier New; font-size:100%; ">this</span>.
+      <p>You can use the lemma element to identify a specific word-sense. <a href="#xCatLem">(107)</a> shows how the category <span style="font-family:Courier New; font-size:100%; ">dem_this</span> can be defined as a word that has a grammatical category of <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">dem</span> and lemma <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1.1</span> (in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>: headword <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1</span> , sense 1). This might be useful when you want to match phrases containing the word <span style="font-family:Courier New; font-size:100%; ">this</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCatLem">(106)</a></td>
+               <td valign="top"><a name="xCatLem">(107)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3616,12 +3673,12 @@
       <h3 style=""><a name="sAttribute"></a>8.3.4&nbsp;How do I use the attribute element in the transfer rules?
       </h3>
       <p>Attributes are defined in the rule file in order to identify possible values for word characteristics. An example is shown
-         in <a href="#xAttrib">(107)</a>.
+         in <a href="#xAttrib">(108)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xAttrib">(107)</a></td>
+               <td valign="top"><a name="xAttrib">(108)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3632,7 +3689,7 @@
             </tr>
          </table>
       </div>
-      <p>Certain words may have affixes that indicate grammatical number. <a href="#xAttrib">(107)</a> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these
+      <p>Certain words may have affixes that indicate grammatical number. <a href="#xAttrib">(108)</a> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these
          refer to tags in the data stream. Attributes are used within rules to get or set values.
       </p>
       <h3 style=""><a name="sPatternMatch"></a>8.3.5&nbsp;How does pattern matching work?
@@ -3661,12 +3718,12 @@
       </p>
       <h3 style=""><a name="sInsertWord"></a>8.3.7&nbsp;How do I insert a word into the target output?
       </h3>
-      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. <span style="text-decoration:underline; ">The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</span> If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, use 1) and 2 would be the sense number - in this case the second sense of the word. <a href="#xInsertWord">(108)</a> shows how it might look.
+      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. <span style="text-decoration:underline; ">The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</span> If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, use 1) and 2 would be the sense number - in this case the second sense of the word. <a href="#xInsertWord">(109)</a> shows how it might look.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xInsertWord">(108)</a></td>
+               <td valign="top"><a name="xInsertWord">(109)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3688,11 +3745,11 @@
          declare that the affix (attribute) gets outputted.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Method 1. Use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element to set an attribute&#8217;s value to blank. See <a href="#xLetBlank">(109)</a>.
+         <li>Method 1. Use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element to set an attribute&#8217;s value to blank. See <a href="#xLetBlank">(110)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLetBlank">(109)</a></td>
+                     <td valign="top"><a name="xLetBlank">(110)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -3703,11 +3760,11 @@
                   </tr>
                </table>
             </div>Here we are overriding whatever is in the tense attribute (a_tense) with a blank string. Whenever the tense affix gets outputted,
-            it will be outputted as nothing. As an example, in <a href="#xOutputWhole">(110)</a> the whole word is outputted with all its attributes.
+            it will be outputted as nothing. As an example, in <a href="#xOutputWhole">(111)</a> the whole word is outputted with all its attributes.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputWhole">(110)</a></td>
+                     <td valign="top"><a name="xOutputWhole">(111)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -3724,7 +3781,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutMultAffixes">(111)</a></td>
+                     <td valign="top"><a name="xOutMultAffixes">(112)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -3734,8 +3791,8 @@
                      </td>
                   </tr>
                </table>
-            </div>In <a href="#xOutMultAffixes">(111)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
-            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(110)</a> in Method 1, you just have to output the whole word.
+            </div>In <a href="#xOutMultAffixes">(112)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
+            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(111)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
       <h3 style=""><a name="sCondLogic"></a>8.3.9&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img src="Images/VideoIcon.PNG"></h3>
@@ -3769,7 +3826,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xAnd">(112)</a></td>
+               <td valign="top"><a name="xAnd">(113)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3790,7 +3847,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xAppend">(113)</a></td>
+               <td valign="top"><a name="xAppend">(114)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3809,7 +3866,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBeginsWith">(114)</a></td>
+               <td valign="top"><a name="xBeginsWith">(115)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3830,7 +3887,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBeginsWithList">(115)</a></td>
+               <td valign="top"><a name="xBeginsWithList">(116)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3849,7 +3906,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xConcat">(116)</a></td>
+               <td valign="top"><a name="xConcat">(117)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3868,7 +3925,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xContainsSub">(117)</a></td>
+               <td valign="top"><a name="xContainsSub">(118)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3890,7 +3947,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xEndsWith">(118)</a></td>
+               <td valign="top"><a name="xEndsWith">(119)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3911,7 +3968,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xEndsWithList">(119)</a></td>
+               <td valign="top"><a name="xEndsWithList">(120)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3924,14 +3981,14 @@
       </div>
       <h4 style=""><a name="sGetCaseFrom"></a>8.3.13.10&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from item</span></h4>
       <p>This element lets you change the case of something. It as the same function as the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span> element. But it helps you save the step of having to call <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span> as a separate step. As you are using some piece of data, you can wrap this element around it to on-the-fly change its case.
-         So instead of <a href="#xModifyCase2">(123)</a> as a separate step, could you use this element as in <a href="#xGetCaseFrom">(120)</a> to output the lemma for item 1, making it's case the same as item 2.
+         So instead of <a href="#xModifyCase2">(124)</a> as a separate step, could you use this element as in <a href="#xGetCaseFrom">(121)</a> to output the lemma for item 1, making it's case the same as item 2.
       </p>
       <p>The easiest way to produce this element is to highlight an element such as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> or <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">variable</span> and then use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Wrap</span> command to wrap an element around it and choose <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get-case-from</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xGetCaseFrom">(120)</a></td>
+               <td valign="top"><a name="xGetCaseFrom">(121)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3952,7 +4009,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xIn">(121)</a></td>
+               <td valign="top"><a name="xIn">(122)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3965,14 +4022,14 @@
       </div>
       <h4 style=""><a name="sModifyCase"></a>8.3.13.12&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span></h4>
       <p>This element lets you change the case of something. Under <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span> you have two elements. The first element is the thing that you want to change. The second element instructs the rule engine
-         what kind of case to give it. You can use a literal string to intentionally change it to a certain case. See <a href="#xModifyCase">(122)</a>. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Aa</span> will change it to have the first letter capitalized. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">aa</span> will change it to lower case. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">AA</span> will change it to upper case. Or you can have it copy the case of a value that already exists. In <a href="#xModifyCase2">(123)</a> the case of the lemma of item 1 will be set to be the same case as the lemma of item 2.
+         what kind of case to give it. You can use a literal string to intentionally change it to a certain case. See <a href="#xModifyCase">(123)</a>. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Aa</span> will change it to have the first letter capitalized. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">aa</span> will change it to lower case. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">AA</span> will change it to upper case. Or you can have it copy the case of a value that already exists. In <a href="#xModifyCase2">(124)</a> the case of the lemma of item 1 will be set to be the same case as the lemma of item 2.
       </p>
       <p>The easiest way to produce this element is to simply use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Insert</span> command, to put it into your rule.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xModifyCase">(122)</a></td>
+               <td valign="top"><a name="xModifyCase">(123)</a></td>
                <td>
                   <table>
                      <tr>
@@ -3986,7 +4043,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in; margin-top:.2in">
          <table>
             <tr>
-               <td valign="top"><a name="xModifyCase2">(123)</a></td>
+               <td valign="top"><a name="xModifyCase2">(124)</a></td>
                <td>
                   <table>
                      <tr>
@@ -4004,7 +4061,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xNot">(124)</a></td>
+               <td valign="top"><a name="xNot">(125)</a></td>
                <td>
                   <table>
                      <tr>
@@ -4022,7 +4079,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xOr">(125)</a></td>
+               <td valign="top"><a name="xOr">(126)</a></td>
                <td>
                   <table>
                      <tr>
@@ -4038,12 +4095,12 @@
       <p></p>
       <h3 style=""><a name="sViewBiling"></a>8.4.1&nbsp;How do I view the bilingual lexicon?
       </h3>
-      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(126)</a>.
+      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(127)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries0">(126)</a></td>
+               <td valign="top"><a name="xBilingEntries0">(127)</a></td>
                <td>
                   <table>
                      <tr>
@@ -4093,12 +4150,12 @@
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
          in the bilingual lexicon. That's the way <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual
-         lexicon is shown in <a href="#xBilingEntries">(127)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
+         lexicon is shown in <a href="#xBilingEntries">(128)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries">(127)</a></td>
+               <td valign="top"><a name="xBilingEntries">(128)</a></td>
                <td>
                   <table>
                      <tr>
@@ -4229,7 +4286,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xErrorCond">(128)</a></td>
+               <td valign="top"><a name="xErrorCond">(129)</a></td>
                <td>
                   <td style="padding-left: .25em">
                      <table style="" border="1">

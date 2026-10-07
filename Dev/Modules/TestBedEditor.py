@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.28 - 10/7/26 - Ron Lockwood
+#    Say in the module description that the category and features or classes are filled in when you leave the lemma cell.
+#
 #   Version 3.17.27 - 10/7/26 - Ron Lockwood
 #    Save a backup copy of the testbed file to Output\testbed-file-history before the first save.
 #
@@ -192,12 +195,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.27",
+    FTM_Version:     "3.17.28",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
     FTM_Description: _translate("TestBedEditor",
-"""View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the lemma (the headword with its homograph and sense numbers, e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered, and choosing a lemma fills in its category and features. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file."""),
+"""View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the lemma (the headword with its homograph and sense numbers, e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered. After you choose a lemma, its category and features or classes are filled in when you leave the cell. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file."""),
 }
 
 # Column indices
