@@ -154,7 +154,7 @@
       <source>When checked, the AI creates a reusable macro instead of a rule. Macros hold logic that several rules can call.</source>
       <translation>Wenn dies angekreuzt ist, erstellt die KI ein wiederverwendbares Makro statt einer Regel. Makros enthalten Logik, die mehrere Regeln aufrufen können.</translation>
     </message>
-      <message>
+    <message>
       <source>Open Rule File</source>
       <translation>Regeldatei öffnen</translation>
     </message>
@@ -178,5 +178,5 @@
       <source>Write the rule shown in the preview into your transfer rules file. A copy of the file as it is now is saved in the Output\rule-file-history folder first, so nothing you already had is lost. Available once a valid rule has been generated, and disabled again after the write so the same rule cannot be written twice.</source>
       <translation>Schreibt die in der Vorschau gezeigte Regel in Ihre Übertragungsregeldatei. Eine Kopie der Datei in ihrem jetzigen Zustand wird zuvor im Ordner Output\rule-file-history gesichert, sodass nichts von dem verloren geht, was Sie bereits hatten. Verfügbar, sobald eine gültige Regel erzeugt wurde, und danach wieder deaktiviert, damit dieselbe Regel nicht zweimal geschrieben werden kann.</translation>
     </message>
-</context>
+  </context>
 </TS>
