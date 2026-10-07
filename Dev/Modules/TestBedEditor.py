@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.27 - 10/7/26 - Ron Lockwood
+#    Save a backup copy of the testbed file to Output\testbed-file-history before the first save.
+#
 #   Version 3.17.26 - 10/7/26 - Ron Lockwood
 #    Align the Gram. Cat., Features and Affixes cells by their own text direction too, e.g. Latin-script tags left-aligned in a right-to-left tree.
 #
@@ -167,7 +170,8 @@ from Testbed import (FlexTransTestbedFile, SENT,
                      SOURCE_INPUT, LEXICAL_UNITS, LEXICAL_UNIT,
                      TARGET_OUTPUT, EXPECTED_RESULT, LexicalUnit,
                      TestbedTestXMLObject, LEMMA_COLOR, GRAM_CAT_COLOR,
-                     AFFIX_COLOR, PUNC_COLOR, NOT_FOUND_COLOR)
+                     AFFIX_COLOR, PUNC_COLOR, NOT_FOUND_COLOR,
+                     TAG_BEFORE_EDITOR_SAVE)
 
 from TestBedEditorWindow import Ui_TestBedEditorWindow
 
@@ -188,7 +192,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.26",
+    FTM_Version:     "3.17.27",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -1049,7 +1053,8 @@ class Main(QMainWindow):
                     if tag:
                         ET.SubElement(otherTagsElem, TAG).text = tag
 
-        self.testbedFileObj.write()
+        # The first save of the session saves a copy of the file as it was to Output\testbed-file-history before overwriting it
+        self.testbedFileObj.write(TAG_BEFORE_EDITOR_SAVE)
         self.unsaved = False
         self.ui.saveLabel.setText(_translate("TestBedEditor", 'Testbed file saved.'))
         return True
