@@ -18,9 +18,9 @@
       <source>{name} version {version}
 
 Build {build}, {build_date}</source>
-      <translation>{name} versión {version}
+      <translation>{name} version {version}
 
-Compilación {build}, {build_date}</translation>
+Compilation {build}, {build_date}</translation>
     </message>
     <message>
       <location filename="../FLExTransMenu.py" line="148"/>
