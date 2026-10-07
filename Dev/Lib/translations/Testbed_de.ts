@@ -23,5 +23,10 @@
       <source>The testbed results file: {resultsPath} is invalid.</source>
       <translation>Die Testbed-Ergebnisdatei: {resultsPath} ist ungültig.</translation>
     </message>
+    <message>
+      <location filename="../Testbed.py" line="1314"/>
+      <source>A backup copy of the testbed file could not be saved. The error was: {errorText}</source>
+      <translation>Eine Sicherungskopie der Testbed-Datei konnte nicht gespeichert werden. Der Fehler war: {errorText}</translation>
+    </message>
   </context>
 </TS>

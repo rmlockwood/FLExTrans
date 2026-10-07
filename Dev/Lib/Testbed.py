@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.10 - 10/7/26 - Ron Lockwood
+#    Save a backup copy of the testbed file to Output\testbed-file-history before the first write, and stop rewriting the file just to read it.
+#
 #   Version 3.17.9 - 10/5/26 - Ron Lockwood
 #    Write an ATTENTION comment before the tests element of the testbed file pointing the user to the Testbed Editor instead of hand editing the XML in XMLmind.
 #
@@ -186,6 +189,12 @@
 #   setting. It also gets an ATTENTION XML comment just before the tests element (where XMLmind displays it) pointing the user to the Testbed Editor. The comment is only in the tree while write()
 #   runs, because the root element is what gets copied into the results file for each run, and ET.parse() drops comments on reading, so it never accumulates in the file.
 #
+#   BACKUP COPIES
+#
+#   The first time a FlexTransTestbedFile object writes the file, it saves a copy of the file as it was to Output\testbed-file-history first. The copy is named <stem>_<YYYY-MM-DD_HH-MM-SS>_<tag>.xml,
+#   just like the copies RuleFileHistory keeps of the transfer rules, and the tag says what was about to overwrite it (editor save, test added, testbed run). Nothing deletes these copies. Reading the
+#   file normalizes it to NFD in memory, not on disk, so only write() ever changes the file and every change is preceded by a copy. It used to rewrite the file on every read.
+#
 #   CODE STRUCTURE
 #
 #   Top to bottom the file goes: the XML element and attribute name constants, then the viewer color constants, then LexicalUnit and LexicalUnitParser, then the four testbed classes working upward
@@ -199,13 +208,17 @@
 
 import re
 import os
+import shutil
 import xml.etree.ElementTree as ET
 import uuid
 import unicodedata
+from datetime import datetime
 
 import TestbedValidator
-import ReadConfig 
+import ReadConfig
 import Utils
+import FTPaths
+import RuleFileHistory
 
 from PyQt6.QtCore import QCoreApplication, QDateTime
 
@@ -244,6 +257,15 @@ RULE_COMMENT = 'comment'
 
 # The text of the XML comment written just before the tests element of the testbed file, where XMLmind displays it
 ATTENTION_TEXT = 'ATTENTION: The best way to edit this testbed is with the FLExTrans Testbed Editor tool, not by editing this file directly. '
+
+# The folder under Output that a copy of the testbed file is saved in before FLExTrans overwrites it, and the tags saying what was about to overwrite it. Keep the tags short, lower case and free
+# of spaces - they end up in a file name.
+TESTBED_HISTORY_DIR_NAME = 'testbed-file-history'
+TAG_BEFORE_WRITE        = 'before_write'
+TAG_BEFORE_EDITOR_SAVE  = 'before_editor_save'
+TAG_BEFORE_TEST_ADDED   = 'before_test_added'
+TAG_BEFORE_TESTBED_RUN  = 'before_testbed_run'
+
 SOURCE_DIRECTION = 'source_direction' 
 TARGET_DIRECTION = 'target_direction' 
 N_ATTRIB = 'n' 
@@ -1172,13 +1194,44 @@ class FLExTransTestbedXMLObject():
             return True
         return False
 
+def getTestbedHistoryDir():
+    '''Return the folder that saved copies of the testbed file go in. A function rather than a constant so that FTPaths.OUTPUT_DIR is read when a copy is saved, not when this module is imported.'''
+
+    return os.path.join(FTPaths.OUTPUT_DIR, TESTBED_HISTORY_DIR_NAME)
+
+def saveTestbedHistoryCopy(testbedPath, tag):
+    '''Save a copy of the testbed file in the testbed file history folder, named <stem>_<date>_<time>_<tag><extension> just like the copies RuleFileHistory makes of the transfer rules file. Returns
+       (path of the copy, error message). The path is None and the message empty when there is no file to copy yet. This never raises, so the caller can treat the copy as best effort.'''
+
+    if not testbedPath or not os.path.isfile(testbedPath):
+
+        return None, ''
+
+    stem, extension = os.path.splitext(os.path.basename(testbedPath))
+    destPath = os.path.join(getTestbedHistoryDir(), f'{stem}_{datetime.now().strftime(RuleFileHistory.STAMP_FORMAT)}_{tag}{extension}')
+
+    # A full disk or a locked folder gives the caller a message to report instead of stopping the write the user actually asked for
+    try:
+        os.makedirs(getTestbedHistoryDir(), exist_ok=True)
+        shutil.copy2(testbedPath, destPath)
+
+    except OSError as err:
+
+        return None, str(err)
+
+    return destPath, ''
+
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
     def __init__(self, direction, report):
-        
+
         self.__isNew = False
-        
+        self.__report = report
+
+        # Set once a copy of the testbed file has been saved, so that an object written several times (e.g. Save clicked repeatedly in the Testbed Editor) only saves a copy before the first write
+        self.__historyCopySaved = False
+
         configMap = ReadConfig.readConfig(report)
         if not configMap:
             raise ValueError()
@@ -1208,25 +1261,20 @@ class FlexTransTestbedFile():
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
-                # Open the testbed file
-                f = open(self.__testbedPath, encoding='utf-8')
-                lines = f.readlines()
+                # Open the testbed file. utf-8-sig drops a byte order mark if there is one, which ET.fromstring() would otherwise reject as text before the XML declaration.
+                f = open(self.__testbedPath, encoding='utf-8-sig')
+                fileText = f.read()
                 f.close()
-                
-                # Convert the file to decomposed form. All the FLEx values are decomposed so standardize on NFD when we read it in.
-                for i in range(0, len(lines)):
-                    
-                    lines[i] = unicodedata.normalize('NFD', lines[i])
-                        
-                f = open(self.__testbedPath, 'w', encoding='utf-8')
-                f.writelines(lines)
-                f.close()
-                
+
             except:
                 raise ValueError(_translate("Testbed", "The testbed file: {filePath} could not be read or written.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
-            
+
+            # Convert the text to decomposed form. All the FLEx values are decomposed so standardize on NFD when we read it in. This is done in memory rather than by rewriting the file, so just
+            # opening the testbed never changes it on disk - only write() does, and that saves a copy of the file first.
+            fileText = unicodedata.normalize('NFD', fileText)
+
             try:
-                self.__testbedTree = ET.parse(self.__testbedPath)
+                self.__testbedTree = ET.ElementTree(ET.fromstring(fileText))
             except:
                 raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
 
@@ -1247,13 +1295,24 @@ class FlexTransTestbedFile():
         
         # Only rewrite the testbed XML file if there was a change
         if self.__XMLObject.didTestbedChange() == True:
-            
-            self.write()
 
-    def write(self):
+            self.write(TAG_BEFORE_TESTBED_RUN)
+
+    def write(self, historyTag=TAG_BEFORE_WRITE):
 
         # __init__ raises a ValueError if the testbed path setting is missing, so by the time write() can be called the path is always set
         assert self.__testbedPath is not None
+
+        # Before the first write, save a copy of the file as it stands in Output\testbed-file-history. historyTag says what is about to overwrite it. Nothing deletes these copies; the user can
+        # prune the folder by hand. A copy that can't be saved is only a warning - it mustn't throw away the changes the user is saving.
+        if not self.__historyCopySaved:
+
+            self.__historyCopySaved = True
+            copyPath, errorMsg = saveTestbedHistoryCopy(self.__testbedPath, historyTag)
+
+            if not copyPath and errorMsg and self.__report:
+
+                self.__report.Warning(_translate("Testbed", "A backup copy of the testbed file could not be saved. The error was: {errorText}").format(errorText=errorMsg))
 
         # Put an XML comment just before the tests element steering anyone who opens the file in XMLmind toward the Testbed Editor. That's the spot where XMLmind displays it. ET.parse() drops
         # comments when the file is read back in, so it never accumulates. It's only in the tree for the duration of the write, since the root is also what gets copied into the results file.

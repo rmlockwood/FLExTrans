@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.13 - 10/7/26 - Ron Lockwood
+#    Tag the testbed file's backup copy as made before a test was added.
+#
 #   Version 3.17.12 - 9/30/26 - Ron Lockwood
 #    Rebuild Bilingual Lexicon and changing the source text reopen the project in place (same FLExProject object) instead of creating a new one, so no one is left holding a closed project.
 #
@@ -511,7 +514,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.12",
+        FTM_Version    : "3.17.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -2082,7 +2085,7 @@ class Main(QMainWindow):
         # Write the XML file
         if cnt > 0:
 
-            fileObj.write()
+            fileObj.write(TAG_BEFORE_TEST_ADDED)
 
             # Save a copy of every transfer rules file this project has, so there is a record of the rules that produced the result this test now expects. An advanced project's interchunk and
             # postchunk files go too, since the test went through all of those phases. The result is ignored on purpose: failing to save a copy must not undo a test the user has just added, and a

@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../TestBedEditorWindow.py" line="110"/>
-        <source>Source/Lexical Unit</source>
-        <translation>Quelle/Lex. Einheit</translation>
+        <source>Source/Lemma</source>
+        <translation>Quelle/Lemma</translation>
     </message>
     <message>
         <location filename="../TestBedEditorWindow.py" line="111"/>

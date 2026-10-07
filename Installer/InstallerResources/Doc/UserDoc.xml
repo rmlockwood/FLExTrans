@@ -6768,12 +6768,13 @@ type="tTool"
 ></ol
 ></li
 ><li
->Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <object
-type="tFilename"
->testbed.xml</object
-> which is in the project folder in the <object
-type="tXMLmindXMLEditor"
-></object
+>Make any adjustments as needed. Repeat. If you need to change or delete a test, or fix one the testbed found invalid, use the <object
+type="tTool"
+>Testbed Editor</object
+>. See <sectionRef
+sec="sTestbedEditorTool"
+showTitle="full"
+></sectionRef
 >.</li
 ></ol
 ></section2
@@ -6888,6 +6889,137 @@ showTitle="full"
 > for more details.</p
 ></section3
 ><section3
+id="sTestbedEditorTool"
+><secTitle
+><object
+type="tTool"
+>Testbed Editor</object
+></secTitle
+><p
+>This module you will find in the <object
+type="tCollection"
+>Tools</object
+> collection. It shows every test in your testbed and lets you change them, delete them or add new ones, without having to edit the testbed file by hand.</p
+><example
+num="xTestbedEditorImage"
+><chart
+><img
+XeLaTeXSpecial="scaled='700'"
+cssSpecial=" height:70%"
+src="Images/TestbedEditor.png"
+></img
+></chart
+></example
+><p
+>Each test is a shaded row showing where the test came from in the <object
+type="tBold"
+>Source/Lemma</object
+> column (usually the name of the source text), the <object
+type="tBold"
+>Expected Result</object
+> and the <object
+type="tBold"
+>Comment</object
+>. Under it there is a row for each lexical unit of the test, in the order the words come in the source, with the <object
+type="tBold"
+>Source/Lemma</object
+>, <object
+type="tBold"
+>Gram. Cat.</object
+>, <object
+type="tBold"
+>Features/Classes</object
+> and <object
+type="tBold"
+>Affixes</object
+> filled in. The lemma is the headword with its homograph and sense numbers, e.g. <object
+type="tItalic"
+>house1.1</object
+>. The lexical units are colored the same way as in the <object
+type="tTool"
+>Testbed Log Viewer</object
+>: black lemmas, blue grammatical categories and green features, classes and affixes. Click the arrow at the start of a test row to collapse or expand it.</p
+><p
+>To change something, double-click the cell and type. On a test row you can change the source, the expected result and the comment; on a lexical unit row you can change the lemma, grammatical category, features or classes, and affixes. As you type in a lexical unit cell, suggestions from the source <object
+type="tFlexx"
+></object
+> project are offered. After you choose a lemma, its grammatical category and features or classes are filled in automatically once you leave the cell, by pressing Tab or Enter or clicking another cell. If a lexical unit has more than one feature, class or affix, separate them with a period, e.g. <object
+type="tItalic"
+>sg.pst</object
+>.</p
+><p
+>Right-click a row to add or delete a lexical unit. <object
+type="tMenu"
+>Add Lexical Unit</object
+> on a lexical unit row puts the new one just before that row; on a test row it adds it at the end of the test. <object
+type="tMenu"
+>Delete this Lexical Unit</object
+> removes the lexical unit you right-clicked. A new lexical unit starts out as <object
+type="tItalic"
+>word1.1</object
+> with the category <object
+type="tItalic"
+>n</object
+>, ready for you to replace.</p
+><p
+>The buttons along the bottom do the following:</p
+><ul
+><li
+><object
+type="tButton"
+>Add Test</object
+> asks for the source text, the expected result and a comment, then adds the test at the end of the list with one placeholder lexical unit. Change it to the first word of the test and add more lexical units as needed.</li
+><li
+><object
+type="tButton"
+>Delete Test</object
+> deletes the selected test, after showing you the test and asking you to confirm. You can select either the test row or one of its lexical units.</li
+><li
+><object
+type="tButton"
+>Save</object
+> writes your changes to the testbed file. A lemma or grammatical category can’t be left blank, so if one is, the editor selects that row and tells you which test it is in, and nothing is saved until you fill it in.</li
+><li
+><object
+type="tButton"
+>Close</object
+> closes the editor. If there are unsaved changes, you are asked whether to save them, discard them, or cancel and stay in the editor.</li
+><li
+><object
+type="tButton"
+>Edit Transfer Rules</object
+> opens your transfer rules file in the <object
+type="tXMLmindXMLEditor"
+></object
+>, the same as the button of that name in the <object
+type="tLiveRuleTester"
+></object
+>.</li
+><li
+>The <object
+type="tBold"
+>Font Size</object
+> box makes the text in the list bigger or smaller.</li
+></ul
+><p
+>When the testbed is run, a test whose lemma, category or tag no longer exists in the source <object
+type="tFlexx"
+></object
+> project is marked invalid. In the <object
+type="tTool"
+>Testbed Editor</object
+> such a test and its lexical units are shown in orange, with the reason it is invalid written in red across the <object
+type="tBold"
+>Gram. Cat.</object
+>, <object
+type="tBold"
+>Features/Classes</object
+> and <object
+type="tBold"
+>Affixes</object
+> columns of the test row. Fixing the test here doesn’t clear the reason straight away; it goes away the next time you run the testbed.</p
+></section3
+><section3
 id="sTestbedEditor"
 ><secTitle
 >Testbed Editing</secTitle
@@ -6895,13 +7027,37 @@ id="sTestbedEditor"
 >It’s easiest to add new tests to the testbed while in the <object
 type="tLiveRuleTester"
 ></object
->. If you need to edit or delete a test, edit the file <object
+>. To change or delete a test, or to add one by hand, use the <object
+type="tTool"
+>Testbed Editor</object
+>. See <sectionRef
+sec="sTestbedEditorTool"
+showTitle="full"
+></sectionRef
+>. It is best not to edit the file <object
 type="tFilename"
 >testbed.xml</object
-> in the project folder with the <object
-type="tXMLmindXMLEditor"
+> directly.</p
+><p
+>Whenever <object
+type="tFlextrans"
 ></object
->.</p
+> is about to change your testbed file — when you save in the <object
+type="tTool"
+>Testbed Editor</object
+>, add a test in the <object
+type="tLiveRuleTester"
+></object
+>, or run the testbed — it first saves a copy of the file as it was. Look for it in the <object
+type="tFoldername"
+>Output\testbed-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>testbed_2026-10-07_14-40-23_before_editor_save.xml</object
+> - your testbed file’s name with the date, the time and a tag saying what was about to change it. These copies are never deleted, so you can always go back to an earlier version of your testbed. To restore one, copy it into the project folder and rename it to <object
+type="tFilename"
+>testbed.xml</object
+>, replacing the file that is there. You can delete old copies from the folder whenever you like.</p
 ></section3
 ></section2
 ></section1
