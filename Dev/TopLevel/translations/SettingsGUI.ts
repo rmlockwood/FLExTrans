@@ -738,21 +738,33 @@ so testbed tests match the final output produced by Insert Target Text and Expor
 afin que les tests du banc d'essai correspondent au résultat final produit par Insérer le texte cible et Exporter vers Paratext.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1795"/>
-        <source>Import Settings</source>
-        <translation>Paramètres d'importation</translation>
+        <location filename="../SettingsGUI.py" line="2403"/>
+        <source>Paratext Settings</source>
+        <translation>Paramètres Paratext</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1798"/>
-        <source>Alternate Location for Paratext Files</source>
-        <translation>Emplacement alternatif pour les fichiers Paratext</translation>
+        <location filename="../SettingsGUI.py" line="2406"/>
+        <source>Alternate Location for Paratext Import Files</source>
+        <translation>Emplacement alternatif des fichiers Paratext pour l'importation</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1799"/>
-        <source>The path to the folder where Paratext files are located.
-The .sfm or .usfm files should be found here.</source>
-        <translation>Le chemin vers le dossier où se trouvent les fichiers Paratext.
-Les fichiers .sfm ou .usfm doivent se trouver ici.</translation>
+        <location filename="../SettingsGUI.py" line="2407"/>
+        <source>The path to the folder where the Paratext files to import are located.
+The .sfm or .usfm files should be found here. Leave blank to use the standard Paratext projects folder.</source>
+        <translation>Le chemin vers le dossier où se trouvent les fichiers Paratext à importer.
+Les fichiers .sfm ou .usfm doivent se trouver ici. Laisser vide pour utiliser le dossier standard des projets Paratext.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2409"/>
+        <source>Alternate Location for Paratext Export Files</source>
+        <translation>Emplacement alternatif des fichiers Paratext pour l'exportation</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2410"/>
+        <source>The path to the folder where the Paratext files to export into are located.
+The .sfm or .usfm files should be found here. Leave blank to use the standard Paratext projects folder.</source>
+        <translation>Le chemin vers le dossier où se trouvent les fichiers Paratext dans lesquels exporter.
+Les fichiers .sfm ou .usfm doivent se trouver ici. Laisser vide pour utiliser le dossier standard des projets Paratext.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1803"/>

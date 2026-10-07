@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.17.3 - 10/7/26 - Ron Lockwood
+#    Added the Alternate Paratext Export Folder setting.
+#
 #   Version 3.17.2 - 9/2/26 - Ron Lockwood
 #    Added the code description block at the top with an overview, how a value comes back and code structure.
 #
@@ -138,6 +141,7 @@ AI_RULES_MODEL = 'AIRulesModel'
 AI_RULES_PROVIDER = 'AIRulesProvider'
 ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
 ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
+ALT_PARATEXT_EXPORT_FOLDER = 'AlternateParatextExportFolder'
 ALT_PARATEXT_FOLDER = 'AlternateParatextFolder'
 APPLY_TEXT_OUT_RULES_IN_TESTBED = 'ApplyTextOutRulesInTestbed'
 BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'

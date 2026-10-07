@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.2 - 10/7/26 - Ron Lockwood
+#    Support the Alternate Location for Paratext Export Files setting.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    Added a code description block at the top with an overview, key features and code structure.
 #
@@ -95,7 +98,8 @@
 #
 #   The draft itself is read from the file named by the Target Output Synthesis File setting, typically target_text-syn.txt in the Build folder. Before anything is written out, the Text Out rules are
 #   run over it (the same search and replace rules the Text Out Rules module edits), which is where the last cleanups of the synthesized text happen. The result is handed to
-#   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it.
+#   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it. The book file is looked for in the Paratext project's folder, unless the Alternate Location
+#   for Paratext Export Files setting names a folder, in which case it is looked for there instead (the project abbreviation is still needed because it is part of the book file name).
 #
 #   HOW THE TEXT NAME IS PARSED
 #
@@ -163,7 +167,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -181,11 +185,12 @@ takes the draft in this file and copies the chapters into Paratext to the projec
 
 class Main(QMainWindow):
 
-    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
+    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects, altParatextFolder):
         QMainWindow.__init__(self)
 
         self.ui = Ui_ParatextChapSelectionWindow()
         self.clusterProjects = clusterProjects
+        self.altParatextFolder = altParatextFolder
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -215,7 +220,7 @@ class Main(QMainWindow):
         
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self, export=True)
+        ChapterSelection.doOKbuttonValidation(self, export=True, altParatextFolder=self.altParatextFolder)
 
 def parseSourceTextName(report, sourceText, infoMap): 
     
@@ -312,8 +317,11 @@ def doExportToParatext(DB, configMap, report):
     clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
     if not clusterProjects:
         clusterProjects = []
-               
-    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
+
+    # Get the path to the alternate Paratext export folder (blank means use the standard Paratext projects folder)
+    altParatextFolder = ReadConfig.getConfigVal(configMap, ReadConfig.ALT_PARATEXT_EXPORT_FOLDER, report, giveError=False)
+
+    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects, altParatextFolder)
     
     window.show()
     app.exec()

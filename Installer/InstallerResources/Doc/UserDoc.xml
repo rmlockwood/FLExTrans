@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->6 October 2026</date
+>7 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -2038,7 +2038,7 @@ type="tTool"
 >. Also, you cannot import from <object
 type="tTool"
 >Paratext</object
-> resources. </p
+> resources.</p
 ><p
 >Put the <object
 type="tTool"
@@ -2152,10 +2152,10 @@ type="tSettingsProperty"
 ><li
 >In the <object
 type="tSettingsProperty"
->Import Settings</object
+>Paratext Settings</object
 > section, for the <object
 type="tSettingsProperty"
->Alternate Location for Paratext Files</object
+>Alternate Location for Paratext Import Files</object
 > setting, click the <object
 type="tButton"
 >Browse folder...</object
@@ -2180,8 +2180,19 @@ type="tTool"
 >Paratext</object
 > folder, clear the <object
 type="tSettingsProperty"
->Alternate Location for Paratext Files</object
+>Alternate Location for Paratext Import Files</object
 > setting.</p
+><p
+>If you use cluster projects, the alternate folder can hold the book files of several <object
+type="tTool"
+>Paratext</object
+> projects. They can sit side by side in the folder (the project abbreviation in each file name tells them apart), or each project can have its own subfolder named with its abbreviation, as in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder. The <object
+type="tTool"
+>Paratext</object
+> project lists for the cluster projects then show the projects found in the alternate folder.</p
 ></section3
 ><section3
 id="sPtxExport"
@@ -2243,6 +2254,61 @@ type="tTool"
 ></ol
 ></li
 ></ol
+><p
+>By default, both export modules look for the book files in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder on your computer. If the book files you want to export into are somewhere else, you can tell <object
+type="tFlextrans"
+></object
+> where to find them:</p
+><ol
+><li
+>Open the <object
+type="tSettingsTool"
+></object
+> and click on <object
+type="tSettingsValue"
+>Full</object
+> under <object
+type="tSettingsProperty"
+>View Mode</object
+>.</li
+><li
+>In the <object
+type="tSettingsProperty"
+>Paratext Settings</object
+> section, for the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Export Files</object
+> setting, click the <object
+type="tButton"
+>Browse folder...</object
+> button and choose the folder containing the .sfm files.</li
+><li
+>Click the <object
+type="tButton"
+>Apply and Close</object
+> button.</li
+><li
+>Run the export module as usual. For the <object
+type="tTool"
+>Paratext</object
+> project abbreviation, type the abbreviation that is part of the book file names.</li
+></ol
+><p
+>The book file must already exist in that folder. To go back to exporting to the standard <object
+type="tTool"
+>Paratext</object
+> folder, clear the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Export Files</object
+> setting.</p
+><p
+>Cluster projects work with the alternate export folder the same way as with the alternate import folder: the book files can sit side by side in it or in a subfolder per project, and the <object
+type="tTool"
+>Paratext</object
+> project lists show the projects found there.</p
 ><section4
 id="sPtxExportFromSynth"
 ><secTitle
