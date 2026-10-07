@@ -143,7 +143,7 @@ cela empêche le nettoyage de se produire afin que vous puissiez voir plus facil
     <message>
       <location filename="../LiveRuleTester.py" line="640"/>
       <source>Test Comment:</source>
-      <translation>Commentaire du test :</translation>
+      <translation>Commentaire du test:</translation>
     </message>
     <message>
       <location filename="../LiveRuleTester.py" line="634"/>

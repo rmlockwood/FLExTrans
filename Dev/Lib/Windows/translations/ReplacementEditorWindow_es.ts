@@ -21,7 +21,7 @@
     <message>
       <location filename="../ReplacementEditorWindow.py" line="120"/>
       <source>Features/Classes</source>
-      <translation>Rasgos/Clases</translation>
+      <translation>Características/Clases</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="122"/>
@@ -41,7 +41,7 @@
     <message>
       <location filename="../ReplacementEditorWindow.py" line="125"/>
       <source>Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</source>
-      <translation>Separa múltiples rasgos/clases y/o afijos con un punto. Por ejemplo, f.sg para femenino singular.</translation>
+      <translation>Separa múltiples características/clases y/o afijos con un punto. Por ejemplo, f.sg para femenino singular.</translation>
     </message>
     <message>
       <location filename="../ReplacementEditorWindow.py" line="126"/>
