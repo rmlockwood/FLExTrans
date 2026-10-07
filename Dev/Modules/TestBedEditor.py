@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.23 - 10/7/26 - Ron Lockwood
+#    Show invalid tests in the log viewer's invalid color with the reason in red across the lexical unit columns of the test row.
+#
 #   Version 3.17.22 - 10/7/26 - Ron Lockwood
 #    Sort completion lists case-insensitively, refuse to save a blank lemma or grammatical category, and call the X1.1 value a lemma in the UI.
 #
@@ -87,9 +90,17 @@
 # Add Test collects the three text fields needed by a test, creates a model object with one canned lexical unit, and appends both the model object and its tree row. Keeping the model object attached to the row 
 # is important because Save uses that object to find the new XML node.
 #
+# INVALID TESTS
+#
+# When the testbed is run, each test is validated against the source FLEx project, and a test with a lemma, category or tag that no longer exists is marked is_valid="no" with an invalidReason
+# attribute. _loadTree shows such a test, and its lexical units, in the log viewer's invalid color (PUNC_COLOR) and puts the reason on the test row's Gram. Cat. cell under INVALID_REASON_ROLE.
+# A QTreeWidget can't span just some columns, so LexicalUnitColumnDelegate paints the reason, in red, across the Gram. Cat., Features and Affixes cells. It draws it while painting the rightmost
+# of them, because the view paints cells left to right and the later cells' backgrounds would otherwise cover it. The reason is never item text, so Save ignores it and resizing the columns to
+# their contents doesn't widen them to fit it. The editor doesn't revalidate: the reason stays until the testbed is next run, even if the user fixes the test here.
+#
 # CODE STRUCTURE
 #
-# Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _fitHeaderText makes the header tall enough, and each column wide enough, for its bold header text.
+# LexicalUnitColumnDelegate is the completion delegate for the lexical unit columns, plus the invalid reason painting. Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _fitHeaderText makes the header tall enough, and each column wide enough, for its bold header text.
 # _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits. save first calls _findBlankLexicalUnit and refuses to write if any
 # lexical unit row has a blank lemma or grammatical category; otherwise it writes all rows. closeEvent handles unsaved changes and keeps the window open if that save is refused.
 # _editTransferRules opens the transfer rules file (Transfer Rules File setting, read in MainFunction) in XMLmind XML Editor, just as the Live Rule Tester's Edit Transfer Rules button does.
@@ -110,7 +121,7 @@ from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QLineEdit, QMainWindow, QMenu,
                              QStyle, QStyledItemDelegate, QTreeWidgetItem,
                              QMessageBox)
-from PyQt6.QtCore import QCoreApplication, Qt
+from PyQt6.QtCore import QCoreApplication, QRect, Qt
 from PyQt6.QtGui import QAction, QCloseEvent, QFont, QFontMetrics, QBrush, QColor, QIcon, QPalette
 
 from flextoolslib import (
@@ -130,7 +141,7 @@ from Testbed import (FlexTransTestbedFile, SENT,
                      SOURCE_INPUT, LEXICAL_UNITS, LEXICAL_UNIT,
                      TARGET_OUTPUT, EXPECTED_RESULT, LexicalUnit,
                      TestbedTestXMLObject, LEMMA_COLOR, GRAM_CAT_COLOR,
-                     AFFIX_COLOR)
+                     AFFIX_COLOR, PUNC_COLOR, NOT_FOUND_COLOR)
 
 from TestBedEditorWindow import Ui_TestBedEditorWindow
 
@@ -151,7 +162,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.22",
+    FTM_Version:     "3.17.23",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -170,9 +181,81 @@ COL_COMMENT  = 5  # test: comment
 TEST_BG_COLOR = QColor('#D6E4F0')
 TEST_HIGHLIGHT_COLOR = QColor('#D3D3D3')
 
+# Text color for a test the testbed marked invalid - the same color the testbed log viewer recolors an invalid test's lexical units to. Its reason is red so it stands out.
+INVALID_TEXT_COLOR = QColor('#' + PUNC_COLOR)
+INVALID_REASON_COLOR = QColor('#' + NOT_FOUND_COLOR)
+
+# The columns of a test row that the invalid reason is drawn across.
+REASON_SPAN_COLUMNS = (COL_GRAMCAT, COL_FEATURES, COL_AFFIXES)
+
+# Item data role holding an invalid test's reason, stored on the test row's grammatical category cell.
+INVALID_REASON_ROLE = Qt.ItemDataRole.UserRole + 1
+
 EDITABLE   = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable |
               Qt.ItemFlag.ItemIsEditable)
 READ_ONLY  = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
+
+class LexicalUnitColumnDelegate(CompleterDelegate):
+
+    # A CompleterDelegate for the lexical unit columns that also draws an invalid test's reason across the Gram. Cat., Features and Affixes cells of the test row. A QTreeWidget can only span
+    # a whole row, so the reason isn't item text: it is painted here, which also keeps it from widening the columns when they are resized to their contents.
+    def __init__(self, tree, *args):
+
+        super().__init__(*args)
+        self.tree = tree
+
+    def paint(self, painter, option, index):
+
+        super().paint(painter, option, index)
+
+        # Only test (top-level) rows carry a reason.
+        if painter is None or index.parent().isValid():
+
+            return
+
+        reason = index.siblingAtColumn(COL_GRAMCAT).data(INVALID_REASON_ROLE)
+
+        if not reason:
+
+            return
+
+        header = self.tree.header()
+
+        # The stubs type header() as Optional, but a QTreeWidget always has a header view.
+        assert header is not None
+        visualIndexes = sorted(header.visualIndex(col) for col in REASON_SPAN_COLUMNS)
+
+        # The view paints a row's cells left to right, so draw the reason when painting the rightmost of the spanned cells; drawn any earlier, the next cell's background would paint over it.
+        # The user can drag the columns around, so if they are no longer side by side just draw the reason in the Gram. Cat. cell.
+        if visualIndexes[-1] - visualIndexes[0] == len(REASON_SPAN_COLUMNS) - 1:
+
+            if header.visualIndex(index.column()) != visualIndexes[-1]:
+
+                return
+
+            left = header.sectionViewportPosition(header.logicalIndex(visualIndexes[0]))
+            textRect = QRect(left, option.rect.top(), option.rect.right() - left + 1, option.rect.height())
+
+        elif index.column() == COL_GRAMCAT:
+
+            textRect = QRect(option.rect)
+        else:
+            return
+
+        # Inset the text the way the style insets ordinary cell text, and elide a reason too long for the space (the full reason is in the tooltip).
+        style = self.tree.style()
+        margin = style.pixelMetric(QStyle.PixelMetric.PM_FocusFrameHMargin, None, self.tree) + 1 if style is not None else 4
+        textRect.adjust(margin, 0, -margin, 0)
+
+        reasonFont = QFont(option.font)
+        reasonFont.setItalic(True)
+        elidedReason = QFontMetrics(reasonFont).elidedText(reason, Qt.TextElideMode.ElideRight, textRect.width())
+
+        painter.save()
+        painter.setFont(reasonFont)
+        painter.setPen(INVALID_REASON_COLOR)
+        painter.drawText(textRect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, elidedReason)
+        painter.restore()
 
 
 class ChildRowReadOnlyDelegate(QStyledItemDelegate):
@@ -232,7 +315,7 @@ class Main(QMainWindow):
             (sorted(self.sourceTags, key=caseInsensitiveKey), True, True, True),
             (sorted(self.sourceAffixes, key=caseInsensitiveKey), True, True, True),
         ]
-        self.delegates = [CompleterDelegate(*args) for args in delegateData]
+        self.delegates = [LexicalUnitColumnDelegate(self.ui.treeWidget, *args) for args in delegateData]
         for index, delegate in enumerate(self.delegates):
             self.ui.treeWidget.setItemDelegateForColumn(index, delegate)
 
@@ -350,6 +433,22 @@ class Main(QMainWindow):
             # Store the test object for Save
             testItem.setData(COL_SOURCE, Qt.ItemDataRole.UserRole, testObj)
 
+            # A test the testbed marked invalid (e.g. a lemma or tag no longer in the source project) is shown in the log viewer's invalid color, with the reason drawn in red across the lexical unit columns by
+            # LexicalUnitColumnDelegate. The reason is also the tooltip, in case it's too long to show in full.
+            if not testObj.isValid():
+
+                invalidReason = testObj.getInvalidReason()
+
+                for col in range(tree.columnCount()):
+
+                    testItem.setForeground(col, QBrush(INVALID_TEXT_COLOR))
+
+                testItem.setData(COL_GRAMCAT, INVALID_REASON_ROLE, invalidReason)
+
+                for col in REASON_SPAN_COLUMNS:
+
+                    testItem.setToolTip(col, invalidReason)
+
             # LU (child) rows — headword, gramm cat, features, affixes editable
             for lu in testObj.getLexicalUnitList():
 
@@ -396,6 +495,13 @@ class Main(QMainWindow):
                 luItem.setText(COL_FEATURES, myFeatures)
                 luItem.setText(COL_AFFIXES,  myAffixes)
                 self._colorLexicalUnitItem(luItem)
+
+                # The lexical units of an invalid test get the invalid color too, overriding the usual lemma, category and affix colors.
+                if not testObj.isValid():
+
+                    for col in range(tree.columnCount()):
+
+                        luItem.setForeground(col, QBrush(INVALID_TEXT_COLOR))
 
             testItem.setExpanded(True)
 
