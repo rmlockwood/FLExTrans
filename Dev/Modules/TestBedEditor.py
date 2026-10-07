@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.22 - 10/7/26 - Ron Lockwood
+#    Sort completion lists case-insensitively, refuse to save a blank lemma or grammatical category, and call the X1.1 value a lemma in the UI.
+#
 #   Version 3.17.21 - 10/6/26 - Ron Lockwood
 #    Added an Edit Transfer Rules button that opens the transfer rules file in XMLmind, the same as the Live Rule Tester's button.
 #
@@ -87,7 +90,8 @@
 # CODE STRUCTURE
 #
 # Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _fitHeaderText makes the header tall enough, and each column wide enough, for its bold header text.
-# _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits, save writes all rows, and closeEvent handles unsaved changes.
+# _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits. save first calls _findBlankLexicalUnit and refuses to write if any
+# lexical unit row has a blank lemma or grammatical category; otherwise it writes all rows. closeEvent handles unsaved changes and keeps the window open if that save is refused.
 # _editTransferRules opens the transfer rules file (Transfer Rules File setting, read in MainFunction) in XMLmind XML Editor, just as the Live Rule Tester's Edit Transfer Rules button does.
 #
 # TRANSLATION
@@ -147,12 +151,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.21",
+    FTM_Version:     "3.17.22",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
     FTM_Description: _translate("TestBedEditor",
-"""View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the headword with its homograph and sense numbers (e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered, and choosing a headword fills in its category and features. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file."""),
+"""View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the lemma (the headword with its homograph and sense numbers, e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered, and choosing a lemma fills in its category and features. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file."""),
 }
 
 # Column indices
@@ -218,11 +222,15 @@ class Main(QMainWindow):
         self.ui.editTransferRulesButton.clicked.connect(self._editTransferRules)
         self.ui.deleteButton.setEnabled(False)
 
+        # Sort the completion lists case-insensitively so e.g. zu1.1 sits right after Zu1.1 instead of after every capitalized word. The second key element breaks ties so the
+        # capitalized form consistently comes first.
+        caseInsensitiveKey = lambda value: (value.casefold(), value)
+
         delegateData = [
-            (sorted(self.sourceLemmas.keys()), False, True, False),
-            (self.sourcePOS, False, True, True),
-            (sorted(self.sourceTags), True, True, True),
-            (sorted(self.sourceAffixes), True, True, True),
+            (sorted(self.sourceLemmas.keys(), key=caseInsensitiveKey), False, True, False),
+            (sorted(self.sourcePOS, key=caseInsensitiveKey), False, True, True),
+            (sorted(self.sourceTags, key=caseInsensitiveKey), True, True, True),
+            (sorted(self.sourceAffixes, key=caseInsensitiveKey), True, True, True),
         ]
         self.delegates = [CompleterDelegate(*args) for args in delegateData]
         for index, delegate in enumerate(self.delegates):
@@ -585,8 +593,68 @@ class Main(QMainWindow):
     # Save
     # ------------------------------------------------------------------
 
-    def save(self):
+    def _findBlankLexicalUnit(self):
+
         tree = self.ui.treeWidget
+
+        # Return the first lexical unit row whose headword or grammatical category is blank, or None if all are filled in.
+        for i in range(tree.topLevelItemCount()):
+
+            testItem = tree.topLevelItem(i)
+
+            # The stubs type topLevelItem() as Optional; it can't be None for an index within topLevelItemCount(), but skip it if it ever is.
+            if testItem is None:
+
+                continue
+
+            for j in range(testItem.childCount()):
+
+                luItem = testItem.child(j)
+
+                # The stubs type child() as Optional; it can't be None for an index within childCount(), but skip it if it ever is.
+                if luItem is None:
+
+                    continue
+
+                if not luItem.text(COL_SOURCE).strip() or not luItem.text(COL_GRAMCAT).strip():
+
+                    return luItem
+
+        return None
+
+    def save(self):
+
+        tree = self.ui.treeWidget
+
+        # A lexical unit with no headword or no grammatical category would be written as an invalid testbed entry, so refuse to save and take the user to the row to fix it.
+        blankLuItem = self._findBlankLexicalUnit()
+
+        if blankLuItem is not None:
+
+            tree.setCurrentItem(blankLuItem)
+            tree.scrollToItem(blankLuItem)
+            # A test's source text isn't unique (it's often just where the test came from), so identify the test by its source text, expected result and comment together, as the
+            # delete confirmation does. The message is rich text, so escape the values.
+            parentItem = blankLuItem.parent()
+            sourceText = expectedResult = comment = ''
+
+            if parentItem is not None:
+
+                sourceText = html.escape(parentItem.text(COL_SOURCE))
+                expectedResult = html.escape(parentItem.text(COL_EXPECTED))
+                comment = html.escape(parentItem.text(COL_COMMENT))
+
+            message = _translate("TestBedEditor",
+             'A lemma or its grammatical category is blank in this test. Fill it in before saving.<br><br><b>Source Text:</b> {sourceText}<br><b>Expected Result:</b> {expectedResult}<br><b>Comment:</b> {comment}').format(
+                 sourceText=sourceText, expectedResult=expectedResult, comment=comment)
+
+            errorBox = QMessageBox(self)
+            errorBox.setWindowTitle(_translate("TestBedEditor", 'Save Error'))
+            errorBox.setIcon(QMessageBox.Icon.Critical)
+            errorBox.setTextFormat(Qt.TextFormat.RichText)
+            errorBox.setText(message)
+            errorBox.exec()
+            return False
 
         for i in range(tree.topLevelItemCount()):
             testItem = tree.topLevelItem(i)
@@ -667,6 +735,7 @@ class Main(QMainWindow):
         self.testbedFileObj.write()
         self.unsaved = False
         self.ui.saveLabel.setText(_translate("TestBedEditor", 'Testbed file saved.'))
+        return True
 
     # ------------------------------------------------------------------
     # Close
@@ -690,7 +759,13 @@ class Main(QMainWindow):
                 QMessageBox.StandardButton.Cancel,
             )
             if confirm == QMessageBox.StandardButton.Save:
-                self.save()
+
+                # Keep the window open if the save was refused (e.g. a blank lexical unit) so the user can fix it rather than lose their changes.
+                if not self.save():
+
+                    event.ignore()
+                    return
+
             elif confirm == QMessageBox.StandardButton.Cancel:
                 event.ignore()
                 return

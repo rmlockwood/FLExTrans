@@ -33,7 +33,7 @@
         </property>
         <column>
          <property name="text">
-          <string>Source/Lexical Unit</string>
+          <string>Source/Lemma</string>
          </property>
          <property name="font">
           <font>
