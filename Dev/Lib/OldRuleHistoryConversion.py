@@ -5,6 +5,9 @@
 #   SIL International
 #   9/2/26
 #
+#   Version 3.17.2 - 10/7/26 - Ron Lockwood
+#    Updated the removal steps in the description block now that the translation batch file has no exclude list.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    Initial version. Brings a leftover rule-history folder from version 3.17 or earlier into the rule file history folder.
 #
@@ -17,7 +20,7 @@
 #   TO REMOVE IT, delete this file and the two calls to it - one line each, both marked with the comment 'TEMPORARY (old rule history conversion)':
 #    - Modules/StartTestbed.py     - the call in MainFunction, its import, and the marked paragraph in the comment block at the top of the file.
 #    - Modules/LiveRuleTesterTool.py - the call in MainFunction and its import.
-#   Also delete unit_tests/test_OldRuleHistoryConversion.py, and drop this file from the exclude_files list in Dev\\compile_transl.bat and the other four translation batch files.
+#   Also delete unit_tests/test_OldRuleHistoryConversion.py.
 #   Nothing in Lib/RuleFileHistory.py has to change - it knows nothing about the old layout.
 #
 #   WHAT IT DOES

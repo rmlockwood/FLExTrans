@@ -1,0 +1,4 @@
+# Developer-only tools. Users don't need these, so they stay out of Installer\InstallerResources\requirements.txt. Install with: python -m pip install -r Dev\requirements-dev.txt
+# PySide6-Essentials supplies pyside6-lrelease (compiles .ts -> .qm in the translation batch files) and pyside6-designer (edits the .ui files).
+# Keep its version in step with PyQt6 in requirements.txt so the Qt tools match the Qt runtime. The .qm files it writes load fine in PyQt6.
+PySide6-Essentials==6.10.2
