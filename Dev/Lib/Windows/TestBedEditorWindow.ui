@@ -148,6 +148,19 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="editTransferRulesButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Edit Transfer Rules</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="fontSizeLabel">
           <property name="text">
            <string>Font Size:</string>

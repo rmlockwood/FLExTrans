@@ -83,5 +83,15 @@
         <source>Unsaved Changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
+    <message>
+        <location filename="../TestBedEditor.py" line="560"/>
+        <source>Not Found Error</source>
+        <translation>Nicht gefunden Fehler</translation>
+    </message>
+    <message>
+        <location filename="../TestBedEditor.py" line="560"/>
+        <source>Transfer rule file: {transferRulesFile} does not exist.</source>
+        <translation>Übertragungsregeldatei: {transferRulesFile} existiert nicht.</translation>
+    </message>
 </context>
 </TS>
