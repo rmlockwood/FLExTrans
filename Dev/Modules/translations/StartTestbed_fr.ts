@@ -35,7 +35,7 @@
     <message>
       <location filename="../StartTestbed.py" line="211"/>
       <source>The rule file history folder could not be updated. The error was: {errorText}</source>
-      <translation>Le dossier de l'historique des fichiers de règles n'a pas pu être mis à jour. L'erreur était : {errorText}</translation>
+      <translation>Le dossier de l’historique des fichiers de règles n’a pas pu être mis à jour. L’erreur était : {errorText}</translation>
     </message>
   </context>
 </TS>
