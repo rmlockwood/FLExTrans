@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>6 October 2026</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>7 October 2026</small></center>
       <center><small>Version: 3.17</small></center>
       <hr>
       <div>
@@ -1142,7 +1142,7 @@
       </h2>
       <h3 style=""><a name="sPtxImport"></a>4.4.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import
       </h3>
-      <p>To import <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> chapters into the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. Fill out the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation in the first box. Note: this must be a project that you are at least an <span style="font-style:italic; ">Observer</span> on in <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>. Also, you cannot import from <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> resources. 
+      <p>To import <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> chapters into the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. Fill out the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation in the first box. Note: this must be a project that you are at least an <span style="font-style:italic; ">Observer</span> on in <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>. Also, you cannot import from <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> resources.
       </p>
       <p>Put the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book abbreviation in the second box. Select from and to chapters.
       </p>
@@ -1194,14 +1194,17 @@
       <ol style="list-style-type:decimal; ">
          <li>Open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> and click on <span style="font-style:italic; ">Full</span> under <span style="font-weight:bold; color:#964B00; ">View Mode</span>.
          </li>
-         <li>In the <span style="font-weight:bold; color:#964B00; ">Import Settings</span> section, for the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Files</span> setting, click the <span style="font-style:normal; font-weight:bold; ">Browse folder...</span> button and choose the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project folder, i.e. the folder containing the .sfm files.
+         <li>In the <span style="font-weight:bold; color:#964B00; ">Paratext Settings</span> section, for the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Import Files</span> setting, click the <span style="font-style:normal; font-weight:bold; ">Browse folder...</span> button and choose the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project folder, i.e. the folder containing the .sfm files.
          </li>
          <li>Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button.
          </li>
          <li>Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module as usual. In the first box, type the project abbreviation that is part of the book file names.
          </li>
       </ol>
-      <p>To go back to importing from the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> folder, clear the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Files</span> setting.
+      <p>To go back to importing from the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> folder, clear the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Import Files</span> setting.
+      </p>
+      <p>If you use cluster projects, the alternate folder can hold the book files of several <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> projects. They can sit side by side in the folder (the project abbreviation in each file name tells them apart), or each
+         project can have its own subfolder named with its abbreviation, as in the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> projects folder. The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project lists for the cluster projects then show the projects found in the alternate folder.
       </p>
       <h3 style=""><a name="sPtxExport"></a>4.4.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export
       </h3>
@@ -1224,6 +1227,23 @@
             </ol>
          </li>
       </ol>
+      <p>By default, both export modules look for the book files in the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> projects folder on your computer. If the book files you want to export into are somewhere else, you can tell <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> where to find them:
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span> and click on <span style="font-style:italic; ">Full</span> under <span style="font-weight:bold; color:#964B00; ">View Mode</span>.
+         </li>
+         <li>In the <span style="font-weight:bold; color:#964B00; ">Paratext Settings</span> section, for the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Export Files</span> setting, click the <span style="font-style:normal; font-weight:bold; ">Browse folder...</span> button and choose the folder containing the .sfm files.
+         </li>
+         <li>Click the <span style="font-style:normal; font-weight:bold; ">Apply and Close</span> button.
+         </li>
+         <li>Run the export module as usual. For the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation, type the abbreviation that is part of the book file names.
+         </li>
+      </ol>
+      <p>The book file must already exist in that folder. To go back to exporting to the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> folder, clear the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Export Files</span> setting.
+      </p>
+      <p>Cluster projects work with the alternate export folder the same way as with the alternate import folder: the book files can
+         sit side by side in it or in a subfolder per project, and the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project lists show the projects found there.
+      </p>
       <h4 style=""><a name="sPtxExportFromSynth"></a>4.4.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Export FLExTrans Draft to Paratext</span></h4>
       <p>To export chapters to <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> from the newly synthesized text, use this tool. It is designed to work well with a text that you have previously imported
          with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module and translated. The export tool expects the name of the active source text to be in the form John 03-04 or JHN 03-04.

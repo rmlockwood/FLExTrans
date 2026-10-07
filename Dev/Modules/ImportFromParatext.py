@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.17.4 - 10/7/26 - Ron Lockwood
+#    Cluster project combo boxes list the projects in the alternate Paratext folder when it is set.
+#
 #   Version 3.17.3 - 9/29/26 - Ron Lockwood
 #    Fixes #1235. Option to import numbers in the analysis WS, with a box for the number separator character(s).
 #
@@ -193,7 +196,8 @@
 #
 #   With cluster projects configured, one run can import into several FLEx projects at once, each from its own Paratext project. ClusterUtils.initClusterWidgets() creates a label and a Paratext
 #   project combo box for every possible cluster project up front and clusterSelectionChanged() shows the rows for the ones the user checked, resizing the window to fit them. A row left on '...' is
-#   skipped. Each project is opened, imported into and closed in turn, except the project FlexTools handed the module, which is already open.
+#   skipped. Each project is opened, imported into and closed in turn, except the project FlexTools handed the module, which is already open. When the Alternate Location for Paratext Import
+#   Files setting is set, the combo boxes list the projects found in that folder and each project's book file is looked for there (see ChapterSelection.getProjectFolder()).
 #
 #   CODE STRUCTURE
 #
@@ -252,7 +256,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -298,7 +302,9 @@ class Main(QMainWindow):
 
         header1TextStr = _translate("ImportFromParatext", "FLEx project name")
         header2TextStr = _translate("ImportFromParatext", "Paratext project abbrev.")
-        self.ptxProjs = ChapterSelection.getParatextProjects()
+
+        # List the Paratext projects for the cluster project combo boxes, from the alternate folder if one is set
+        self.ptxProjs = ChapterSelection.getParatextProjects(self.altParatextFolder)
 
         # Set the top two widgets that need to be disabled
         self.topWidget1 = self.ui.ptxProjAbbrevLineEdit

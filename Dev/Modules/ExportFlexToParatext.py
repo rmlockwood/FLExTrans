@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.17.3 - 10/7/26 - Ron Lockwood
+#    Support the Alternate Location for Paratext Export Files setting, including for cluster projects.
+#
 #   Version 3.17.2 - 9/2/26 - Ron Lockwood
 #    Added a code description block at the top with an overview, key features and code structure.
 #
@@ -65,7 +68,9 @@
 #
 #   The list is built by ChapterSelection.getScriptureText(), which keeps only the titles whose book part matches a Paratext abbreviation or a book name and which carry a chapter number or a range of
 #   chapter numbers. For each checked title the module pulls the text's paragraphs out of FLEx, works the book abbreviation out of the title, and calls ChapterSelection.doExport() to splice the
-#   chapters into that book's Paratext file.
+#   chapters into that book's Paratext file. That file is looked for in the Paratext project's folder, unless the Alternate Location for Paratext Export Files setting names a folder, in which
+#   case every export (cluster projects included) looks for its book file there instead - in the project's own subfolder if it has one, otherwise directly in the folder - and the cluster
+#   project combo boxes list the projects found in that folder. The Paratext project abbreviation is still used, since it is part of the book file name (see ChapterSelection.getProjectFolder()).
 #
 #   PICKING THE TEXTS
 #
@@ -137,7 +142,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
@@ -154,12 +159,13 @@ a chapter number or a range of chapter numbers.""")}
 
 class Main(QMainWindow):
 
-    def __init__(self, targetDB, clusterProjects, scriptureTitles):
+    def __init__(self, targetDB, clusterProjects, scriptureTitles, altParatextFolder):
         QMainWindow.__init__(self)
 
         self.ui = Ui_ParatextChapSelectionWindow()
         self.targetDB = targetDB
         self.clusterProjects = clusterProjects
+        self.altParatextFolder = altParatextFolder
         self.scriptureTitles = scriptureTitles
         self.selectedTitles = []
         self.ui.setupUi(self)
@@ -169,7 +175,9 @@ class Main(QMainWindow):
 
         header1TextStr = _translate("ExportFlexToParatext", "FLEx project name")
         header2TextStr = _translate("ExportFlexToParatext", "Paratext project abbrev.")
-        self.ptxProjs = ChapterSelection.getParatextProjects()
+
+        # List the Paratext projects for the cluster project combo boxes, from the alternate folder if one is set
+        self.ptxProjs = ChapterSelection.getParatextProjects(self.altParatextFolder)
 
         # Set the top two widgets that need to be disabled
         self.topWidget1 = self.ui.ptxProjAbbrevLineEdit
@@ -216,7 +224,7 @@ class Main(QMainWindow):
         
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self, export=True, checkBookAbbrev=False, checkBookPath=True, fromFLEx=True)
+        ChapterSelection.doOKbuttonValidation(self, export=True, checkBookAbbrev=False, checkBookPath=True, fromFLEx=True, altParatextFolder=self.altParatextFolder)
 
         self.selectedTitles = self.ui.scriptureTextsComboBox.currentData()
 
@@ -370,7 +378,10 @@ def MainFunction(DB, report, modify):
     # Filter these down to the ones that match a scripture book name or abbreviation and a chapter number
     scriptureTitles = ChapterSelection.getScriptureText(report, textTitles)
     
-    window = Main(targetDB, clusterProjects, scriptureTitles)
+    # Get the path to the alternate Paratext export folder (blank means use the standard Paratext projects folder)
+    altParatextFolder = ReadConfig.getConfigVal(configMap, ReadConfig.ALT_PARATEXT_EXPORT_FOLDER, report, giveError=False)
+
+    window = Main(targetDB, clusterProjects, scriptureTitles, altParatextFolder)
     window.show()
     app.exec()
     

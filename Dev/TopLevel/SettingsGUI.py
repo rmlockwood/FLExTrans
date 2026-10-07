@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.17.3 - 10/7/26 - Ron Lockwood
+#    Added the Alternate Location for Paratext Export Files setting in a renamed Paratext Settings section.
+#
 #   Version 3.17.2 - 9/29/26 - Ron Lockwood
 #    Switching to Mini after opening in Full now shrinks the window to fit, and the settings area now widens with the window.
 #
@@ -1054,7 +1057,7 @@ def doFolderBrowse(wind, myWidgInfo):
 def setPaths(widget, myPath):
     
     # For certain settings, don't use a relative path
-    if widget.objectName() in ["ptx_alt_path"]:
+    if widget.objectName() in ["ptx_alt_path", "ptx_alt_export_path"]:
         
         myPath = os.path.normpath(myPath)
         widget.setText(myPath)
@@ -2397,11 +2400,14 @@ widgetList = [
 
 
 
-   [_translate("SettingsGUI", "Import Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [_translate("SettingsGUI", "Paratext Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Alternate Location for Paratext Files"), "ptx_alt_path", "", FOLDER, object, object, object, loadFile, ReadConfig.ALT_PARATEXT_FOLDER, \
-    _translate("SettingsGUI", "The path to the folder where Paratext files are located.\nThe .sfm or .usfm files should be found here."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Alternate Location for Paratext Import Files"), "ptx_alt_path", "", FOLDER, object, object, object, loadFile, ReadConfig.ALT_PARATEXT_FOLDER, \
+    _translate("SettingsGUI", "The path to the folder where the Paratext files to import are located.\nThe .sfm or .usfm files should be found here. Leave blank to use the standard Paratext projects folder."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Alternate Location for Paratext Export Files"), "ptx_alt_export_path", "", FOLDER, object, object, object, loadFile, ReadConfig.ALT_PARATEXT_EXPORT_FOLDER, \
+    _translate("SettingsGUI", "The path to the folder where the Paratext files to export into are located.\nThe .sfm or .usfm files should be found here. Leave blank to use the standard Paratext projects folder."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 

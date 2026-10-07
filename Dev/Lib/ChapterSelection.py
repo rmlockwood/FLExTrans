@@ -5,6 +5,10 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.6 - 10/7/26 - Ron Lockwood
+#    Cluster projects use the alternate Paratext folder: added getProjectFolder() (book files directly in the folder or in a per-project subfolder)
+#    and getParatextProjects() lists the alternate folder's projects. Updated the code description block for the separate import and export settings.
+#
 #   Version 3.17.5 - 9/29/26 - Ron Lockwood
 #    Fixes #1235. Import option to put numbers in the analysis WS, with a box for the number separator character(s).
 #
@@ -120,8 +124,15 @@
 #   Lib/Windows/ParatextChapSelectionDlg.ui, hands it to InitControls() to be filled in and fitted to the job, and once the user clicks OK reads the ChapterSelection object back off the window.
 #
 #   Paratext itself is found through the registry. getParatextPath() reads the Settings_Directory value under SOFTWARE\Wow6432Node\Paratext\8, and getParatextProjects() lists the project folders
-#   under it, skipping cms, Temp Files and anything starting with an underscore or UserSettings. The Alternate Paratext Folder setting overrides that whole scheme when it is set, which is how a
-#   module can work against a folder of book files that isn't a Paratext installation. getBookPath() finds the book file itself, trying *<book><project>.SFM first and then *<book><project>.USFM.
+#   under it, skipping cms, Temp Files and anything starting with an underscore or UserSettings. An alternate folder overrides that whole scheme when it is set, which is how a module can work
+#   against a folder of book files that isn't a Paratext installation. There are two such settings, one for importing (AlternateParatextFolder) and one for exporting (AlternateParatextExportFolder);
+#   each module reads the one it needs and passes it to getParatextProjects() and doOKbuttonValidation() as altParatextFolder, so nothing in this file knows which direction it is.
+#
+#   getProjectFolder() decides where a project's book files live. Without an alternate folder that is <Paratext data folder>\<project>. With one, it is <alternate folder>\<project> if that
+#   subfolder exists, otherwise the alternate folder itself. Supporting both layouts is what lets cluster projects work from an alternate folder: either it is a copy of a whole Paratext projects
+#   folder with one subfolder per project, or every project's book files sit side by side in it and the project abbreviation in each file name tells them apart. getParatextProjects() lists the
+#   alternate folder's projects for the cluster combo boxes the same two ways - subfolders holding book files, plus the project abbreviations read out of the book file names (getBookFileProjects).
+#   getBookPath() finds the book file itself in the project folder, trying *<book><project>.SFM first and then *<book><project>.USFM.
 #
 #   THE WINDOW
 #
@@ -179,7 +190,7 @@
 #
 #   Top to bottom the file goes: the constants and bookChapterPattern, the ChapterSelection class with its dump() and getBookPath(), the marker and paragraph functions (splitSFMs, splitNumbers,
 #   convertFigSyntax, insertParagraphs, setTextMetaData), the window functions (lockWindowSize, unlockWindowSize, showClusterWidgets, enableNumberSeparator, InitControls), getParatextPath,
-#   doOKbuttonValidation, the project and title helpers (getFilteredSubdirectories, getParatextProjects, getScriptureText), doExport, and finally the module level QApplication and translator
+#   doOKbuttonValidation, the project and title helpers (getFilteredSubdirectories, getProjectFolder, getBookFileProjects, getParatextProjects, getScriptureText), doExport, and finally the module level QApplication and translator
 #   setup followed by bookMap. bookMap has to come after the translations are loaded, which is why the biggest thing in the file is also the last thing in it.
 #
 
@@ -276,11 +287,7 @@ class ChapterSelection(object):
         else:
             projectAbbrev = self.importProjectAbbrev  
 
-        if self.altParatextFolder:
-
-            ptxFolder = self.altParatextFolder
-        else:
-            ptxFolder = os.path.join(self.paratextPath, projectAbbrev)
+        ptxFolder = getProjectFolder(self.paratextPath, self.altParatextFolder, projectAbbrev)
 
         # First try .SFM
         pattern = '*' + self.bookAbbrev + projectAbbrev + '.SFM'
@@ -690,14 +697,10 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
     if export or self.ui.clusterProjectsComboBox.isHidden() or len(self.ui.clusterProjectsComboBox.currentData()) == 0:
 
-        # Check if project path exists under Paratext
-        if not altParatextFolder:
+        # Check if project path exists under Paratext (or the alternate folder)
+        projPath = getProjectFolder(paratextPath, altParatextFolder, projectAbbrev)
 
-            projPath = os.path.join(paratextPath, projectAbbrev)
-        else:
-            projPath = altParatextFolder
-
-        if not os.path.exists(projPath): 
+        if not os.path.exists(projPath):
             
             QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=Utils.shortenPathForDisplay(projPath)))
             return
@@ -761,15 +764,65 @@ def getFilteredSubdirectories(rootDir, excludeList):
 
     return subdirectories
 
-def getParatextProjects():
+def getProjectFolder(paratextPath, altParatextFolder, projectAbbrev):
+
+    # Without an alternate folder, the project is a subfolder of the Paratext data folder
+    if not altParatextFolder:
+
+        return os.path.join(paratextPath, projectAbbrev)
+
+    # With an alternate folder, the project can have its own subfolder in it (e.g. a copy of a whole Paratext projects folder, which is what cluster projects usually need),
+    # or its book files can sit directly in the alternate folder. Prefer the subfolder when there is one.
+    subFolder = os.path.join(altParatextFolder, projectAbbrev)
+
+    if projectAbbrev and os.path.isdir(subFolder):
+
+        return subFolder
+
+    return altParatextFolder
+
+def getBookFileProjects(folder):
+
+    # Work out the project abbreviations from the names of the book files sitting directly in the folder. Paratext names them <optional digits><book abbrev><project abbrev>.SFM,
+    # e.g. 41MATABC.SFM, which is the same shape getBookPath() looks for. Only names whose three-letter book part is a real book count, so stray .sfm files don't make up projects.
+    projSet = set()
+
+    for fileName in os.listdir(folder):
+
+        matchObj = re.match(r'^\d*(?P<book>[A-Z0-9]{3})(?P<proj>.+)\.u?sfm$', fileName, re.IGNORECASE)
+
+        if matchObj and matchObj.group('book').upper() in bookMap:
+
+            projSet.add(matchObj.group('proj'))
+
+    return projSet
+
+def getParatextProjects(altParatextFolder=None):
 
     excludeList = [
         'cms',
         'Temp Files',
     ]
-    ptxProjs = getFilteredSubdirectories(getParatextPath(), excludeList)
 
-    return ptxProjs
+    # Without an alternate folder, list the projects in the Paratext data folder
+    if not altParatextFolder:
+
+        return getFilteredSubdirectories(getParatextPath(), excludeList)
+
+    if not os.path.isdir(altParatextFolder):
+
+        return []
+
+    # With an alternate folder, the projects are its subfolders that hold book files, plus any projects whose book files sit directly in it (see getProjectFolder())
+    projSet = getBookFileProjects(altParatextFolder)
+
+    for dirName in getFilteredSubdirectories(altParatextFolder, excludeList):
+
+        if getBookFileProjects(os.path.join(altParatextFolder, dirName)):
+
+            projSet.add(dirName)
+
+    return sorted(projSet, key=str.lower)
 
 def getScriptureText(report, textTitles):
     """
