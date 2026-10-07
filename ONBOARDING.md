@@ -149,15 +149,15 @@ tool here and is not part of the FLExTrans runtime dependencies.
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
-python -m pip install PySide6-Essentials      # or full: pip install PySide6
-pyside6-designer                               # launches Qt Designer
+python -m pip install -r Dev\requirements-dev.txt   # installs PySide6-Essentials
+pyside6-designer                                     # launches Qt Designer
 ```
 
 As an example, try opening `Dev\Lib\Windows\RuleAssistantWindow.ui`.
 
-> Tip: if you'd rather keep PySide6 out of your runtime venv, install it in a separate
-> venv and launch `pyside6-designer` from there. Installing PySide6 also gives you
-> `pyside6-lupdate`/`pyside6-lrelease`, handy for translations (§10).
+> `Dev\requirements-dev.txt` lists developer-only tools that users never need. The same
+> PySide6 install also gives you `pyside6-lrelease`, which the translation batch files use
+> to compile `.ts → .qm` (§10).
 
 ---
 
@@ -305,31 +305,24 @@ window opens; breakpoints in `Dev\` will hit.
 
 All user-facing text is localized through Qt's translation system into German (`de`),
 Spanish (`es`), and French (`fr`). The authoritative list of UI languages lives in
-`Dev\Lib\UILanguages.py` — the batch scripts, installer script, and `crowdin.yml` draw their
+`Dev\Lib\UILanguages.py` — the batch script, installer script, and `crowdin.yml` draw their
 language lists from files generated from it by `Dev\updateLanguageFiles.py` (to add a whole
 new UI language, see `Dev\README-AddingUILanguage.md`). The per-string workflow is:
-**mark strings → extract to `.ts` → translate → compile to `.qm`**.
+**mark strings → add them to the `.ts` files → translate → compile to `.qm`**.
 
 ### 10a. Tools you need
 
-The translation batch files call **`pylupdate5`** (extract) and **`lrelease`** (compile):
+Compiling uses **`pyside6-lrelease`** from **PySide6-Essentials**, installed by
+`Dev\requirements-dev.txt` (§6). The `.qm` files it writes load fine in PyQt6. pip puts it in
+your Python `Scripts` folder, which must be on your **PATH**. (Don't use the old
+`Dev\lrelease.exe`; it's a Qt 5 build.)
 
-- `pylupdate5` ships with **PyQt5**: `pip install PyQt5` puts `pylupdate5.exe` in your
-  Python `Scripts` folder.
-- `lrelease` comes from the Qt Linguist tooling: `pip install pyqt5-tools`, **or** use the
-  `pyside6-lrelease` you already have from PySide6 (§6).
-- Make sure the chosen tools are on your **PATH**.
-
-> **Why not the PyQt6/PySide6 tools?** `pylupdate6` (PyQt6) and `pyside6-lupdate`
-> (PySide6) exist, but **do not migrate the extract step to them.** Our code writes
+> **Don't regenerate `.ts` files with `pylupdate6` or `pyside6-lupdate`.** Our code writes
 > nearly every string as `_translate("Context", "…")` (with
-> `_translate = QCoreApplication.translate`). Only **`pylupdate5` follows that alias** —
-> `pylupdate6` and `pyside6-lupdate` only recognize a fully-qualified
+> `_translate = QCoreApplication.translate`). Those tools only recognize a fully-qualified
 > `QCoreApplication.translate(...)` call, so they **silently drop the `_translate(...)`
-> strings** (and would delete them from the `.ts` with `--no-obsolete`). They also differ
-> in CLI and `.ts` formatting. So use **`pylupdate5`** to extract. (The compile step is
-> safe either way — `lrelease`/`pyside6-lrelease` only read the `.ts` and write the
-> `.qm`; they never modify the `.ts`.)
+> strings** (and would delete them from the `.ts` with `--no-obsolete`). Only the old PyQt5
+> `pylupdate5` follows the alias.
 
 ### 10b. Mark strings in code with `_translate()`
 
@@ -346,20 +339,14 @@ with the same name merge across loaded `.qm` files at runtime). The second is th
 **source** string — that's what the translation is keyed on. To show a literal `&` use
 `&&` (a single `&` is a Qt mnemonic).
 
-### 10c. Extract strings into `.ts` — `local_pylup.bat`
+### 10c. Add the strings to the `.ts` files
 
-From `Dev\Modules\`, run the extractor on a file (name without extension):
-
-```powershell
-cd Dev\Modules
-.\local_pylup.bat RuleAssistantPy
-```
-
-This runs `pylupdate5` to pull the marked strings out of `RuleAssistantPy.py` into
-`translations\RuleAssistantPy_de.ts`, `_es.ts`, `_fr.ts`, and copies the `_fr.ts` to a
-base `RuleAssistantPy.ts`. (`local_pylup_drop_obsolete.bat` does the same but also drops
-strings that no longer appear in the code.) A `.ts` lives in a `translations\` folder
-beside the `.py` whose strings it holds, named after that `.py`.
+As you add or change `_translate(...)` strings, add matching `<message>` entries to the
+file's `.ts` files, by hand or with AI help. A `.ts` lives in a `translations\` folder
+beside the `.py` whose strings it holds, named after that `.py`: `<name>_de.ts`,
+`<name>_es.ts`, `<name>_fr.ts`, plus a base `<name>.ts` with the untranslated source
+strings. The entry's `<name>` (context) and `<source>` must match the `_translate` call
+exactly.
 
 ### 10d. Translate
 
@@ -367,18 +354,16 @@ Edit the new/changed `<translation>` entries in each `_de/_es/_fr.ts` (by hand o
 Linguist). Aim for **0 unfinished**. For Rule Assistant UI, English source strings
 originate from `Dev\RuleGen_{en,de,es,fr}.properties` — pull wording from there.
 
-### 10e. Compile to `.qm` — `local_lreal.bat`
+### 10e. Compile to `.qm` — `compile_transl_local.bat`
 
 ```powershell
-cd Dev\Modules
-.\local_lreal.bat RuleAssistantPy
+Dev\compile_transl_local.bat
 ```
 
-This runs `lrelease` to compile each `_de/_es/_fr.ts` into a `.qm`. **Edit the output
-path inside `local_lreal.bat` to point at *your* deployment's translations folder**, e.g.
-`...\FlexTools\Modules\FLExTrans\translations\` — out of the box it points at one
-developer's deployment. (If you used symlinks in §7, you can instead compile into
-`Dev\CompiledTranslations\` and let the link carry it into the deployment.)
+This runs `pyside6-lrelease` on every `<name>_<lang>.ts` under `Dev\TopLevel`, `Dev\Modules`,
+`Dev\Lib` and `Dev\Lib\Windows`, writing the `.qm` files to `Dev\CompiledTranslations\`. It
+works from any folder and needs no editing. The symlinks from §7a carry the `.qm` files into
+your deployment, or the copy task in §8 Option 2 does.
 
 ---
 

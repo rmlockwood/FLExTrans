@@ -26,7 +26,7 @@ orphan existing translations. Instead:
 2. Run `python Dev/Modules/RuleGenPropsToTS.py` → regenerates
    `Dev/Modules/translations/RuleAssistantLib_{de,es,fr}.ts` (+ base `.ts`), keyed by
    property name, deduped by English source, with `\n` converted to real newlines.
-3. Compile to `.qm` (`lrelease`, e.g. `Dev/Modules/local_lreal.bat RuleAssistantLib`)
-   and deploy to the runtime `FTPaths.TRANSL_DIR`
-   (`<ROOT>/FlexTools/Modules/FLExTrans/translations`). `compile_transl.bat` will NOT
-   auto-build it because there is no `RuleAssistantLib.py`.
+3. Compile to `.qm` with `Dev/compile_transl_local.bat` (writes `Dev/CompiledTranslations`,
+   which is linked or copied to the runtime `FTPaths.TRANSL_DIR`). It loops over the `.ts`
+   files rather than the `.py` files, so it builds `.ts` files like this one that have no
+   matching `.py`.

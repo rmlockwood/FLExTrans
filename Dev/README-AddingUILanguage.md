@@ -54,8 +54,8 @@ The generated files are committed to the repo, and `CreateInstaller.bat` reruns 
    install time — no script changes needed.
 
 6. **Create the UI translations.** Add `<module>_XX.ts` files for every module/library that has translations (see the `translations/` folders under `Dev/Lib`, `Dev/Lib/Windows`,
-   `Dev/Modules`, `Dev/TopLevel`), translate them (Crowdin picks the new language up from the regenerated `crowdin.yml`), and compile them to `.qm` with the `compile_transl*.bat` /
-   `process*.bat` scripts — those already loop over the generated `LANG_CODES`, so they include the new language automatically.
+   `Dev/Modules`, `Dev/TopLevel`), translate them (Crowdin picks the new language up from the regenerated `crowdin.yml`), and compile them to `.qm` with `Dev/compile_transl_local.bat`. It already loops
+   over the generated `LANG_CODES`, so it includes the new language automatically.
 
 7. **Add the language to the key-terms and style list.** [`memory/ui-key-terms-glossary.md`](../memory/ui-key-terms-glossary.md) records how recurring UI terms (file, target, rule, feature,
    headword, testbed, …) are rendered in each language, plus each language's register and style conventions (formal or informal address, how "Skipping." and "Please …" are phrased, quote and

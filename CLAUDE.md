@@ -136,7 +136,7 @@ Group imports into these blocks, in this order, separated by a single blank line
   across loaded `.qm` files at runtime.
 - English source strings for Rule Assistant UI originate from
   `Dev/RuleGen_{en,de,es,fr}.properties`. Pull translations from there.
-- Compile with `lrelease <file>.ts -qm CompiledTranslations/<file>_<lang>.qm`.
+- Compile everything with `Dev/compile_transl_local.bat` (all `.ts` → `Dev/CompiledTranslations`), or one file with `pyside6-lrelease <file>.ts -qm CompiledTranslations/<file>_<lang>.qm` (from `PySide6-Essentials` in `Dev/requirements-dev.txt`). Don't use the old `Dev/lrelease.exe`; it's a Qt 5 build.
 - Add new strings to all of `_de`, `_es`, `_fr`; aim for 0 unfinished.
 - The authoritative UI-language list is `Dev/Lib/UILanguages.py`. `Dev/lang_codes.bat`,
   `LangForInstallerScript/languages.nsh`, and `crowdin.yml` are GENERATED from it by
