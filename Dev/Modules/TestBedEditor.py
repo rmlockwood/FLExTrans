@@ -3,6 +3,15 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.26 - 10/7/26 - Ron Lockwood
+#    Align the Gram. Cat., Features and Affixes cells by their own text direction too, e.g. Latin-script tags left-aligned in a right-to-left tree.
+#
+#   Version 3.17.25 - 10/7/26 - Ron Lockwood
+#    Fit the Expected Result column to the window so the Comment column keeps at least its header width, and show cut-off cell text in a tooltip.
+#
+#   Version 3.17.24 - 10/7/26 - Ron Lockwood
+#    Mirror the tree for a right-to-left source, and lay out each expected result and comment by its own text direction.
+#
 #   Version 3.17.23 - 10/7/26 - Ron Lockwood
 #    Show invalid tests in the log viewer's invalid color with the reason in red across the lexical unit columns of the test row.
 #
@@ -94,16 +103,33 @@
 #
 # When the testbed is run, each test is validated against the source FLEx project, and a test with a lemma, category or tag that no longer exists is marked is_valid="no" with an invalidReason
 # attribute. _loadTree shows such a test, and its lexical units, in the log viewer's invalid color (PUNC_COLOR) and puts the reason on the test row's Gram. Cat. cell under INVALID_REASON_ROLE.
-# A QTreeWidget can't span just some columns, so LexicalUnitColumnDelegate paints the reason, in red, across the Gram. Cat., Features and Affixes cells. It draws it while painting the rightmost
-# of them, because the view paints cells left to right and the later cells' backgrounds would otherwise cover it. The reason is never item text, so Save ignores it and resizing the columns to
-# their contents doesn't widen them to fit it. The editor doesn't revalidate: the reason stays until the testbed is next run, even if the user fixes the test here.
+# A QTreeWidget can't span just some columns, so LexicalUnitColumnDelegate paints the reason, in red, across the Gram. Cat., Features and Affixes cells. It draws it while painting the last of
+# them in visual order, because the view paints cells in that order and the later cells' backgrounds would otherwise cover it. The reason is never item text, so Save ignores it and resizing the
+# columns to their contents doesn't widen them to fit it. The editor doesn't revalidate: the reason stays until the testbed is next run, even if the user fixes the test here.
+#
+# TEXT DIRECTION
+#
+# The testbed's source_direction attribute says whether the source language is right to left. If it is, the whole tree is mirrored, as in the testbed log viewer: the Source column is on the right
+# and text is right-aligned. But not every cell runs the same way as the source: the expected result is in the target language, a comment can be in any language, and categories, features and
+# affixes are often Latin script. So both delegates call setDirectionFromText, which lays out each of those cells by its own text (Utils.hasRtl), using AlignAbsolute so a mirrored tree doesn't
+# flip the alignment back. The Source/Lemma column alone follows the tree, keeping its text next to the expand arrows. The invalid reason is in the UI language and is aligned the same way.
+#
+# COLUMN WIDTHS
+#
+# Columns are fitted to their contents when the tree loads, except Expected Result. A testbed with sentence-length tests would make that column as wide as its longest sentence, even one far
+# down the list, and push the Comment column off the edge. So _fitExpectedColumn gives it its content width but no more than leaves Comment the width of its header text, and runs again whenever
+# the tree's viewport changes width (an event filter on the viewport, not the tree: the viewport is resized after the tree's own resize event). Once the user drags the column themselves it is left
+# alone; autoSizingColumns is what lets _onSectionResized tell their drag from our own resizes. Any cell too narrow for its text shows the full text as a tooltip (showToolTipIfCutOff).
 #
 # CODE STRUCTURE
 #
-# LexicalUnitColumnDelegate is the completion delegate for the lexical unit columns, plus the invalid reason painting. Main.__init__ loads the tree and connects controls. _loadTree creates rows from the model. _fitHeaderText makes the header tall enough, and each column wide enough, for its bold header text.
-# _addTest creates and appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits. save first calls _findBlankLexicalUnit and refuses to write if any
-# lexical unit row has a blank lemma or grammatical category; otherwise it writes all rows. closeEvent handles unsaved changes and keeps the window open if that save is refused.
-# _editTransferRules opens the transfer rules file (Transfer Rules File setting, read in MainFunction) in XMLmind XML Editor, just as the Live Rule Tester's Edit Transfer Rules button does.
+# setDirectionFromText and showToolTipIfCutOff are helpers both delegates call, from initStyleOption and helpEvent respectively. LexicalUnitColumnDelegate is the completion delegate for
+# the lexical unit columns, plus per-cell text direction (except Source/Lemma) and the invalid reason painting. ChildRowReadOnlyDelegate keeps the Expected Result and Comment columns
+# read-only on lexical unit rows and sets each cell's text direction. Main.__init__ mirrors the tree for a right-to-left source, loads the tree and connects controls. _loadTree creates rows from the model and fits the columns to their contents. _fitHeaderText makes the header tall enough, and each column wide
+# enough, for its bold header text, then re-fits Expected Result. _fitExpectedColumn, _onSectionResized and eventFilter handle the Expected Result width (see COLUMN WIDTHS). _addTest creates and
+# appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits and re-fits Expected Result when one changes. save first calls _findBlankLexicalUnit
+# and refuses to write if any lexical unit row has a blank lemma or grammatical category; otherwise it writes all rows. closeEvent handles unsaved changes and keeps the window open if that save
+# is refused. _editTransferRules opens the transfer rules file (Transfer Rules File setting, read in MainFunction) in XMLmind XML Editor, just as the Live Rule Tester's Edit Transfer Rules button does.
 #
 # TRANSLATION
 #
@@ -119,9 +145,9 @@ import xml.etree.ElementTree as ET
 
 from PyQt6.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QLineEdit, QMainWindow, QMenu,
-                             QStyle, QStyledItemDelegate, QTreeWidgetItem,
+                             QStyle, QStyledItemDelegate, QToolTip, QTreeWidgetItem,
                              QMessageBox)
-from PyQt6.QtCore import QCoreApplication, QRect, Qt
+from PyQt6.QtCore import QCoreApplication, QEvent, QRect, Qt
 from PyQt6.QtGui import QAction, QCloseEvent, QFont, QFontMetrics, QBrush, QColor, QIcon, QPalette
 
 from flextoolslib import (
@@ -162,7 +188,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEd
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.23",
+    FTM_Version:     "3.17.26",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -195,6 +221,52 @@ EDITABLE   = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable |
               Qt.ItemFlag.ItemIsEditable)
 READ_ONLY  = (Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
 
+def setDirectionFromText(option, index):
+
+    # Lay out and align a cell by the direction of its own text rather than the tree's. The tree follows the source direction, but a cell can hold text that runs the other way: a target-language
+    # expected result, a comment in any language, or Latin-script categories and tags in a right-to-left tree. AlignAbsolute keeps left meaning left in a right-to-left tree, where Qt would otherwise
+    # flip it. The stubs type option as Optional, but Qt always passes one.
+    if option is None:
+
+        return
+
+    text = index.data(Qt.ItemDataRole.DisplayRole)
+
+    if not text:
+
+        return
+
+    if Utils.hasRtl(text):
+
+        option.direction = Qt.LayoutDirection.RightToLeft
+        option.displayAlignment = Qt.AlignmentFlag.AlignAbsolute | Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+    else:
+        option.direction = Qt.LayoutDirection.LeftToRight
+        option.displayAlignment = Qt.AlignmentFlag.AlignAbsolute | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
+def showToolTipIfCutOff(delegate, event, view, option, index):
+
+    # Show a cell's full text as its tooltip when the cell is too narrow to show all of it, and no tooltip when it all fits. Returns False when the cell should get the normal tooltip handling instead:
+    # it isn't a tooltip event, the cell is empty, or the item has a tooltip of its own (e.g. an invalid test's reason).
+    if event is None or view is None or event.type() != QEvent.Type.ToolTip or index.data(Qt.ItemDataRole.ToolTipRole):
+
+        return False
+
+    text = index.data(Qt.ItemDataRole.DisplayRole)
+
+    if not text:
+
+        return False
+
+    # The delegate's size hint is the width the whole text needs, margins included; option.rect is the width the cell actually has.
+    if delegate.sizeHint(option, index).width() > option.rect.width():
+
+        QToolTip.showText(event.globalPos(), text, view)
+    else:
+        QToolTip.hideText()
+
+    return True
+
 class LexicalUnitColumnDelegate(CompleterDelegate):
 
     # A CompleterDelegate for the lexical unit columns that also draws an invalid test's reason across the Gram. Cat., Features and Affixes cells of the test row. A QTreeWidget can only span
@@ -203,6 +275,24 @@ class LexicalUnitColumnDelegate(CompleterDelegate):
 
         super().__init__(*args)
         self.tree = tree
+
+    def helpEvent(self, event, view, option, index):
+
+        if showToolTipIfCutOff(self, event, view, option, index):
+
+            return True
+
+        return super().helpEvent(event, view, option, index)
+
+    def initStyleOption(self, option, index):
+
+        super().initStyleOption(option, index)
+
+        # Categories, features and affixes are often Latin script even when the source language is right to left, so align those cells by their own text. The Source/Lemma column keeps
+        # following the tree: in a mirrored tree its expand arrows are on the right, and left-aligned text there would sit far from its arrow.
+        if index.column() != COL_SOURCE:
+
+            setDirectionFromText(option, index)
 
     def paint(self, painter, option, index):
 
@@ -225,7 +315,7 @@ class LexicalUnitColumnDelegate(CompleterDelegate):
         assert header is not None
         visualIndexes = sorted(header.visualIndex(col) for col in REASON_SPAN_COLUMNS)
 
-        # The view paints a row's cells left to right, so draw the reason when painting the rightmost of the spanned cells; drawn any earlier, the next cell's background would paint over it.
+        # The view paints a row's cells in visual order, so draw the reason when painting the last of the spanned cells; drawn any earlier, the next cell's background would paint over it.
         # The user can drag the columns around, so if they are no longer side by side just draw the reason in the Gram. Cat. cell.
         if visualIndexes[-1] - visualIndexes[0] == len(REASON_SPAN_COLUMNS) - 1:
 
@@ -233,8 +323,10 @@ class LexicalUnitColumnDelegate(CompleterDelegate):
 
                 return
 
-            left = header.sectionViewportPosition(header.logicalIndex(visualIndexes[0]))
-            textRect = QRect(left, option.rect.top(), option.rect.right() - left + 1, option.rect.height())
+            # Span the union of the three sections. In a right-to-left tree the visual order runs right to left on screen, so take the outer edges rather than assuming which cell is leftmost.
+            sectionLefts = [header.sectionViewportPosition(col) for col in REASON_SPAN_COLUMNS]
+            sectionRights = [header.sectionViewportPosition(col) + header.sectionSize(col) for col in REASON_SPAN_COLUMNS]
+            textRect = QRect(min(sectionLefts), option.rect.top(), max(sectionRights) - min(sectionLefts), option.rect.height())
 
         elif index.column() == COL_GRAMCAT:
 
@@ -251,20 +343,43 @@ class LexicalUnitColumnDelegate(CompleterDelegate):
         reasonFont.setItalic(True)
         elidedReason = QFontMetrics(reasonFont).elidedText(reason, Qt.TextElideMode.ElideRight, textRect.width())
 
+        # The reason is in the UI language, not the source language, so align it by its own direction. AlignAbsolute keeps a right-to-left tree from flipping the alignment.
+        if Utils.hasRtl(reason):
+
+            reasonAlignment = Qt.AlignmentFlag.AlignAbsolute | Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        else:
+            reasonAlignment = Qt.AlignmentFlag.AlignAbsolute | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
         painter.save()
         painter.setFont(reasonFont)
         painter.setPen(INVALID_REASON_COLOR)
-        painter.drawText(textRect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, elidedReason)
+        painter.drawText(textRect, reasonAlignment, elidedReason)
         painter.restore()
 
 
 class ChildRowReadOnlyDelegate(QStyledItemDelegate):
 
+    # The delegate for the Expected Result and Comment columns. It stops these cells being edited on lexical unit rows, and lays out each cell's text in its own direction.
     def createEditor(self, parent, option, index):
         if index.parent().isValid():
             return None
 
         return super().createEditor(parent, option, index)
+
+    def helpEvent(self, event, view, option, index):
+
+        if showToolTipIfCutOff(self, event, view, option, index):
+
+            return True
+
+        return super().helpEvent(event, view, option, index)
+
+    def initStyleOption(self, option, index):
+
+        super().initStyleOption(option, index)
+
+        # The expected result is in the target language and the comment can be in any language, so like the log viewer's labels, lay out and align each cell by its own text.
+        setDirectionFromText(option, index)
 
 
 class Main(QMainWindow):
@@ -280,14 +395,36 @@ class Main(QMainWindow):
         self.sourcePOS = gatherPOSTags(DB, report, [SENT])
         self.sourceTags = gatherTags(DB, report, self.sourcePOS)
 
+        # State for fitting the Expected Result column (see _fitExpectedColumn). These must exist before _fontSizeChanged below first calls _fitHeaderText.
+        self.headerWidths = {}               # column -> width of its bold header text, filled in by _fitHeaderText
+        self.expectedContentWidth = None     # width the Expected Result contents need; None until measured or after they change
+        self.autoSizingColumns = False       # True while we're resizing columns ourselves, so _onSectionResized can tell our resizes from the user's
+        self.userSizedExpected = False       # set once the user drags the Expected Result column; we stop fitting it then
+
         self.ui = Ui_TestBedEditorWindow()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+
+        # When the source language is right to left, mirror the whole tree (columns and text) the way the testbed log viewer does. The expected result and comment cells still follow
+        # their own text's direction (see ChildRowReadOnlyDelegate).
+        if testbedFileObj.getFLExTransTestbedXMLObject().isRTL():
+
+            self.ui.treeWidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
         treePalette = self.ui.treeWidget.palette()
         treePalette.setColor(QPalette.ColorRole.Highlight, TEST_HIGHLIGHT_COLOR)
         treePalette.setColor(QPalette.ColorRole.HighlightedText, treePalette.color(QPalette.ColorRole.Text))
         self.ui.treeWidget.setPalette(treePalette)
+
+        # Watch for the user resizing the Expected Result column, and for the visible part of the tree changing width, so that column can be re-fitted (see _fitExpectedColumn).
+        treeHeader = self.ui.treeWidget.header()
+        treeViewport = self.ui.treeWidget.viewport()
+
+        # The stubs type these as Optional, but a QTreeWidget always has a header view and a viewport.
+        assert treeHeader is not None and treeViewport is not None
+        treeHeader.sectionResized.connect(self._onSectionResized)
+        treeViewport.installEventFilter(self)
+
         self.ui.fontSizeSpinBox.valueChanged.connect(self._fontSizeChanged)
         self.ui.fontSizeSpinBox.setValue(12)
         self._fontSizeChanged()
@@ -328,7 +465,8 @@ class Main(QMainWindow):
         treeFont.setPointSize(self.ui.fontSizeSpinBox.value())
         self.ui.treeWidget.setFont(treeFont)
 
-        # The header text grows with the font size, so resize the header and columns again to keep it from being clipped.
+        # The header text grows with the font size, so resize the header and columns again to keep it from being clipped. The Expected Result contents grow too, so measure them again.
+        self.expectedContentWidth = None
         self._fitHeaderText()
 
     def _createDefaultLexicalUnitItem(self, parentItem, insertBefore=None):
@@ -505,11 +643,66 @@ class Main(QMainWindow):
 
             testItem.setExpanded(True)
 
+        # Fit each column to its contents. The Expected Result column is then trimmed by _fitExpectedColumn (called from _fitHeaderText) so it doesn't push the Comment column off the edge.
+        self.autoSizingColumns = True
+
         for col in range(tree.columnCount()):
+
             tree.resizeColumnToContents(col)
 
+        self.autoSizingColumns = False
+        self.expectedContentWidth = None
         self._fitHeaderText()
         tree.blockSignals(False)
+
+    def _fitExpectedColumn(self):
+
+        # A testbed with sentence-length tests would make the Expected Result column as wide as its longest sentence, even one far down the list, and squeeze the Comment column off the edge.
+        # So give it the width its contents need, but no more than leaves the Comment column the width of its header text. Cut-off text shows in a tooltip (see showToolTipIfCutOff).
+        # Once the user has dragged the column to a width of their own, leave it alone.
+        if self.userSizedExpected or not self.headerWidths:
+
+            return
+
+        tree = self.ui.treeWidget
+        viewport = tree.viewport()
+
+        # The stubs type viewport() as Optional, but a QTreeWidget always has a viewport.
+        if viewport is None:
+
+            return
+
+        # Measuring every row is the slow part, so remember the result until the contents or font change.
+        if self.expectedContentWidth is None:
+
+            self.expectedContentWidth = tree.sizeHintForColumn(COL_EXPECTED)
+
+        otherColumnsWidth = sum(tree.columnWidth(col) for col in range(tree.columnCount()) if col not in (COL_EXPECTED, COL_COMMENT))
+        availableWidth = viewport.width() - otherColumnsWidth - self.headerWidths[COL_COMMENT]
+
+        # Never go narrower than the column's own header text, even if that means the window needs a horizontal scroll.
+        newWidth = max(self.headerWidths[COL_EXPECTED], min(self.expectedContentWidth, availableWidth))
+
+        self.autoSizingColumns = True
+        tree.setColumnWidth(COL_EXPECTED, newWidth)
+        self.autoSizingColumns = False
+
+    def _onSectionResized(self, logicalIndex, oldSize, newSize):
+
+        # A resize we didn't make ourselves is the user dragging the column border, so stop fitting the Expected Result column automatically.
+        if logicalIndex == COL_EXPECTED and not self.autoSizingColumns:
+
+            self.userSizedExpected = True
+
+    def eventFilter(self, a0, a1):
+
+        # Re-fit the Expected Result column whenever the visible part of the tree changes width: when the window is first shown, resized or maximized, or a scroll bar comes or goes. This watches
+        # the viewport rather than the tree itself because the viewport is resized after the tree's own resize event, so only then is its new width known.
+        if a0 is self.ui.treeWidget.viewport() and a1 is not None and a1.type() == QEvent.Type.Resize:
+
+            self._fitExpectedColumn()
+
+        return super().eventFilter(a0, a1)
 
     def _fitHeaderText(self):
 
@@ -525,6 +718,7 @@ class Main(QMainWindow):
         margin = style.pixelMetric(QStyle.PixelMetric.PM_HeaderMargin, None, header) if style is not None else 4
         padding = 4 * margin
         headerHeight = 0
+        self.autoSizingColumns = True
 
         for col in range(tree.columnCount()):
 
@@ -536,6 +730,9 @@ class Main(QMainWindow):
             headerWidth = boldMetrics.horizontalAdvance(headerItem.text(col)) + padding
             headerHeight = max(headerHeight, boldMetrics.height() + padding)
 
+            # Remember it for _fitExpectedColumn, which keeps the Comment column at least this wide.
+            self.headerWidths[col] = headerWidth
+
             # The comment column is last, so the header stretches it into whatever room the other columns leave. Setting it to just its header width
             # lets it give up space to the other columns rather than pushing the table into a horizontal scroll.
             if col == COL_COMMENT:
@@ -546,8 +743,13 @@ class Main(QMainWindow):
 
                 tree.setColumnWidth(col, headerWidth)
 
+        self.autoSizingColumns = False
+
         # Qt sizes the header's height from the smaller unresolved font too, so make it at least tall enough for the tallest bold header text.
         header.setMinimumHeight(headerHeight)
+
+        # Setting the Comment column to its header width above may have left room for the Expected Result column, or the header widths may have changed with the font size.
+        self._fitExpectedColumn()
 
     def _addTest(self):
         dialog = QDialog(self)
@@ -604,6 +806,9 @@ class Main(QMainWindow):
         testItem.setExpanded(True)
         tree.resizeColumnToContents(COL_SOURCE)
         tree.resizeColumnToContents(COL_GRAMCAT)
+
+        # The new test's expected result may be the longest yet, so have _fitHeaderText's re-fit measure the Expected Result column again.
+        self.expectedContentWidth = None
         self._fitHeaderText()
 
         self.unsaved = True
@@ -691,6 +896,12 @@ class Main(QMainWindow):
 
             if features is not None:
                 item.setText(COL_FEATURES, features)
+
+        # An edited expected result may be longer or shorter than before, so measure the column's contents again and re-fit it.
+        if column == COL_EXPECTED:
+
+            self.expectedContentWidth = None
+            self._fitExpectedColumn()
 
         self.unsaved = True
         self.ui.saveLabel.setText(_translate("TestBedEditor", 'There are unsaved changes.'))
