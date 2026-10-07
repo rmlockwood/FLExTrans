@@ -348,5 +348,5 @@ Es wurde nichts an die KI gesendet. Korrigieren Sie den Makronamen und versuchen
       <source>Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.</source>
       <translation>Die Übertragungsregeldatei wurde im XML-Editor geöffnet. Klicken Sie nach dem Speichern dort auf Regeln aktualisieren, damit dieses Fenster Ihre Änderungen übernimmt.</translation>
     </message>
-</context>
+  </context>
 </TS>
