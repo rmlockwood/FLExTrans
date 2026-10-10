@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.3 - 10/10/26 - Ron Lockwood
+#    The comparison matches children on tag + attributes before tag alone, so deleting one of two literal tags marks just that one removed instead of pairing the wrong two as "changed".
+#
 #   Version 3.17.2 - 10/10/26 - Ron Lockwood
 #    The comparison legend, Before/After headings, "New definitions" heading, and side values (source/target lang.) are now translated into the UI language.
 #
@@ -86,8 +89,9 @@
 #
 #   DIFF HIGHLIGHTING
 #
-#   Only the comparison view highlights (the compare flag on elementToHtml); the single-rule views render plain. Children are aligned with difflib on childKey (tag, or one shared key for comments)
-#   so an inserted node marks only itself instead of shifting every later row. Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose
+#   Only the comparison view highlights (the compare flag on elementToHtml); the single-rule views render plain. Children are aligned with difflib in two passes (alignChildren): first on the full
+#   tag + attributes so identical rows pair exactly, then on the tag alone within whatever is left, so an attribute edit pairs as one "changed" row. That way an inserted or deleted node marks
+#   only itself instead of shifting every later row, and deleting one of several like elements (one literal tag of two) doesn't pair the wrong two. Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose
 #   tag/attributes/comment text differ are "changed" (orange). Only the row's own header line is coloured, never its children. The comparison is wrapped in a "diffview" class that turns the normal
 #   chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre side text black, so the XXE palette doesn't compete with the diff colours.
 #
@@ -99,7 +103,7 @@
 #   CODE STRUCTURE
 #
 #   loadSpec / loadCss read the display spec and the stylesheet. renderChip and renderRowLine build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree,
-#   doing the difflib alignment in compare mode. parseFragment parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render
+#   calling alignChildren (with childSignature, then alignByKind/childKey) in compare mode. parseFragment parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render
 #   the explanation. wrapDocument wraps a body into the final document, and the four render*Html functions at the end are the public entry points.
 #
 
@@ -243,6 +247,58 @@ def childKey(elem):
 
     return '#comment' if isComment(elem) else elem.tag
 
+def childSignature(elem):
+    '''A stricter key than childKey: the tag plus all its attributes (or the text, for a comment), but not the element's children. Two children with the same signature are the same row, so
+    the comparison pairs them first; differences further down still show, because a matched element recurses into its own children.'''
+
+    if isComment(elem):
+        return ('#comment', (elem.text or '').strip())
+
+    return (elem.tag, tuple(sorted(elem.attrib.items())))
+
+def alignChildren(children: list, otherChildren: list) -> list:
+    '''Pair each child on this side with its counterpart on the other side, or None when it has none. Returns (child, counterpart) in this side's order.
+
+    Two passes. First, difflib aligns on childSignature, so identical rows pair up exactly. Matching on tag alone here would go wrong when one of several like elements is deleted: with
+    literal tags INF, IND before and IND after, a tag-only match pairs INF with IND (flagged "changed") and leaves the real IND looking removed. Then, within each stretch the first pass
+    couldn't match, a second difflib pass on childKey (tag only) pairs like with like, so an attribute-only edit still shows as one "changed" row rather than a removed row plus an added one.
+    Any surplus in a stretch has no counterpart.'''
+
+    pairs = []
+    opcodes = difflib.SequenceMatcher(None, [childSignature(c) for c in children], [childSignature(c) for c in otherChildren], autojunk=False).get_opcodes()
+
+    for op, i1, i2, j1, j2 in opcodes:
+
+        if op == 'equal':
+            pairs.extend(zip(children[i1:i2], otherChildren[j1:j2]))
+
+        elif op in ('replace', 'delete'):
+            pairs.extend(alignByKind(children[i1:i2], otherChildren[j1:j2]))
+
+        # 'insert' means children only on the other side; they render in that pane, not this one.
+
+    return pairs
+
+def alignByKind(children: list, otherChildren: list) -> list:
+    '''The second pass of alignChildren: align a stretch of unmatched children by childKey (tag, or "a comment"), pairing the overlap of each like-for-like run positionally so diffClass
+    flags it "changed"; anything left over has no counterpart (None).'''
+
+    pairs = []
+    opcodes = difflib.SequenceMatcher(None, [childKey(c) for c in children], [childKey(c) for c in otherChildren], autojunk=False).get_opcodes()
+
+    for op, i1, i2, j1, j2 in opcodes:
+
+        if op in ('equal', 'replace'):
+
+            paired = min(i2 - i1, j2 - j1)
+            pairs.extend(zip(children[i1:i1 + paired], otherChildren[j1:j1 + paired]))
+            pairs.extend((child, None) for child in children[i1 + paired:i2])
+
+        elif op == 'delete':
+            pairs.extend((child, None) for child in children[i1:i2])
+
+    return pairs
+
 def renderChip(value: str, colorClass: str) -> str:
     '''Render one attribute value. Most values are coloured chips (a bordered box); the "plain" classes (c-plain and the c-side-* side colours) are shown as plain coloured text with no box.'''
 
@@ -363,38 +419,17 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
 
         else:
 
-            # Align this element's children with the counterpart's, matching by kind/tag (difflib) so an inserted or deleted child - e.g. the authorship/description comments prepended
-            # to a modified rule, or an added clip - marks only itself, instead of shifting every following row and lighting up the whole rule. Matched children recurse (so an attribute
-            # change is caught by diffClass); a child with no counterpart is "added" on the after pane and "removed" on the before pane.
+            # Line this element's children up with the counterpart's (see alignChildren). A matched child recurses, so an attribute change is caught by diffClass; a child with no counterpart
+            # is "added" on the after pane and "removed" on the before pane.
             otherChildren = [c for c in other] if other is not None else []
             unmatched = 'added' if side == 'after' else 'removed'
-            opcodes = difflib.SequenceMatcher(None, [childKey(c) for c in children], [childKey(c) for c in otherChildren]).get_opcodes()
 
-            for op, i1, i2, j1, j2 in opcodes:
+            for child, counterpart in alignChildren(children, otherChildren):
 
-                if op == 'equal':
-
-                    for k in range(i2 - i1):
-                        out.append(elementToHtml(children[i1 + k], otherChildren[j1 + k], side, '', spec, compare))
-
-                elif op == 'replace':
-
-                    # Pair the overlap positionally so a like-for-like change recurses and diffClass flags it; any surplus on this side has no counterpart.
-                    paired = min(i2 - i1, j2 - j1)
-
-                    for k in range(paired):
-                        out.append(elementToHtml(children[i1 + k], otherChildren[j1 + k], side, '', spec, compare))
-
-                    for k in range(i1 + paired, i2):
-                        out.append(elementToHtml(children[k], forced=unmatched, side=side, spec=spec, compare=compare))
-
-                elif op == 'delete':
-
-                    # Children present on this side but not the counterpart.
-                    for k in range(i1, i2):
-                        out.append(elementToHtml(children[k], forced=unmatched, side=side, spec=spec, compare=compare))
-
-                # 'insert' means children only in the counterpart; they render in that pane, not this one.
+                if counterpart is None:
+                    out.append(elementToHtml(child, forced=unmatched, side=side, spec=spec, compare=compare))
+                else:
+                    out.append(elementToHtml(child, counterpart, side, '', spec, compare))
 
         out.append('</div>')
 

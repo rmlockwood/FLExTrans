@@ -4,42 +4,42 @@
 <context>
     <name>TransferPreview</name>
     <message>
-        <location filename="../TransferPreview.py" line="130"/>
+        <location filename="../TransferPreview.py" line="134"/>
         <source>source lang.</source>
         <translation>Quellsprache</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="133"/>
+        <location filename="../TransferPreview.py" line="137"/>
         <source>target lang.</source>
         <translation>Zielsprache</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="505"/>
+        <location filename="../TransferPreview.py" line="540"/>
         <source>New definitions to be added:</source>
         <translation>Neue Definitionen, die hinzugefügt werden:</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="546"/>
+        <location filename="../TransferPreview.py" line="581"/>
         <source>removed</source>
         <translation>entfernt</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="547"/>
+        <location filename="../TransferPreview.py" line="582"/>
         <source>added</source>
         <translation>hinzugefügt</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="548"/>
+        <location filename="../TransferPreview.py" line="583"/>
         <source>changed</source>
         <translation>geändert</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="551"/>
+        <location filename="../TransferPreview.py" line="586"/>
         <source>Before</source>
         <translation>Vorher</translation>
     </message>
     <message>
-        <location filename="../TransferPreview.py" line="552"/>
+        <location filename="../TransferPreview.py" line="587"/>
         <source>After</source>
         <translation>Nachher</translation>
     </message>
