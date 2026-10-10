@@ -56,6 +56,26 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="collapseAllButton">
+       <property name="toolTip">
+        <string>Fold every block, down to one line per section of the rules file. Click a plus box to open one.</string>
+       </property>
+       <property name="text">
+        <string>Collapse All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="expandAllButton">
+       <property name="toolTip">
+        <string>Open every folded block.</string>
+       </property>
+       <property name="text">
+        <string>Expand All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="zoomLabel">
        <property name="text">
         <string>Zoom:</string>
@@ -174,6 +194,16 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="buttonLayout">
+     <item>
+      <widget class="QPushButton" name="openRulesFileButton">
+       <property name="toolTip">
+        <string>Open the current transfer rules file in the XML editor.</string>
+       </property>
+       <property name="text">
+        <string>Open Rules File</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="buttonSpacer">
        <property name="orientation">

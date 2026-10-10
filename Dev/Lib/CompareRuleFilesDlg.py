@@ -5,6 +5,9 @@
 #   SIL International
 #   10/10/26
 #
+#   Version 3.17.2 - 10/10/26 - Ron Lockwood
+#    Added Collapse All / Expand All and Open Rules File buttons; the arrows now open a folded block to reach a change inside it. The change count has no direction text after it.
+#
 #   Version 3.17.1 - 10/10/26 - Ron Lockwood
 #    Current rules file now on the right and the newest saved copy on the left, with Browse... in the left-hand list; "Change n of m" has no direction text after it.
 #
@@ -35,8 +38,8 @@
 #
 #   The colours describe the change from the older version to the newer one, whichever side each is on, because that is the question the user is asking: a rule added since a backup has to
 #   come out green, not red, even if the user has put the backup on the right. isOlder decides by each file's modified time, which a saved copy carries over from the rules file it was copied
-#   from, and TransferPreview is told to put the older version (its "before") in the right pane when that's where it is. The change-count line says which side is the older one; the
-#   "Change n of m" line the arrows show is left bare.
+#   from, and TransferPreview is told to put the older version (its "before") in the right pane when that's where it is. The summary line at the top only
+#   counts the changes ("3 changes.", "Change 2 of 3.") - no explanatory text alongside.
 #
 #   THE PAGE
 #
@@ -45,11 +48,16 @@
 #   Once a page has loaded, diffSummary (in the page) is asked how many changes there are: none says so at the top and greys the arrow buttons; otherwise the arrows call diffNav and the
 #   label says which change is showing. The zoom factor is kept on the dialog and re-applied after every load, since each new page would otherwise come up at the default size.
 #
+#   A change inside a folded block is still a stop for the arrows: the page counts it at the folded block's row and opens the block when the arrows reach it. Collapse All folds every block, the
+#   sections included, so a rules file comes down to its six section lines; Expand All opens everything. Both ask the page for the new change count, because folding regroups the changes. Open Rules File opens
+#   the current rules file in XXE; the comparison doesn't follow edits made there until the user picks the version again.
+#
 #   CODE STRUCTURE
 #
 #   tagDescription turns a history tag into words. CompareRuleFilesDlg builds the window from CompareRuleFilesWindow.ui (__init__), fills the lists (populateVersionLists, addVersionItem,
 #   selectVersion, versionLabel), reacts to a pick (onLeftVersionChanged, onRightVersionChanged, browseForLeftVersion), renders (showComparison -> onLoadFinished -> onSummary), steps through
-#   the changes (onPreviousChange, onNextChange -> onNavigated), zooms, and cleans up its temporary folder in done. showRuleFileComparison is the entry point for other modules.
+#   the changes (onPreviousChange, onNextChange -> onNavigated), folds (onCollapseAll, onExpandAll -> foldAll), opens the rules file in XXE (onOpenRulesFile), zooms, and cleans up its
+#   temporary folder in done. showRuleFileComparison is the entry point for other modules.
 #
 
 import os
@@ -59,7 +67,7 @@ import xml.etree.ElementTree as ET
 
 from PyQt6.QtCore import Qt, QCoreApplication, QDate, QTime, QLocale, QUrl
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QDialog, QFileDialog
+from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 import FTPaths
 import RuleFileHistory
@@ -138,6 +146,9 @@ class CompareRuleFilesDlg(QDialog):
         self.ui.nextChangeButton.clicked.connect(self.onNextChange)
         self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
         self.ui.zoomDecreaseButton.clicked.connect(self.onZoomDecrease)
+        self.ui.collapseAllButton.clicked.connect(self.onCollapseAll)
+        self.ui.expandAllButton.clicked.connect(self.onExpandAll)
+        self.ui.openRulesFileButton.clicked.connect(self.onOpenRulesFile)
         self.ui.closeButton.clicked.connect(self.reject)
         self.ui.comparisonView.loadFinished.connect(self.onLoadFinished)
         self.ui.comparisonView.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
@@ -314,15 +325,6 @@ class CompareRuleFilesDlg(QDialog):
 
             return False
 
-    def directionText(self) -> str:
-        '''Which way the colours read, for the summary line.'''
-
-        if self.olderOnRight:
-
-            return _translate('CompareRuleFiles', 'Colors show what changed from the older version on the right to the newer one on the left.')
-
-        return _translate('CompareRuleFiles', 'Colors show what changed from the older version on the left to the newer one on the right.')
-
     def onLoadFinished(self, ok):
         '''The page is in: restore the zoom and ask the page how many changes it found.'''
 
@@ -357,9 +359,9 @@ class CompareRuleFilesDlg(QDialog):
 
         if count == 1:
 
-            return _translate('CompareRuleFiles', '1 change.') + ' ' + self.directionText()
+            return _translate('CompareRuleFiles', '1 change.')
 
-        return _translate('CompareRuleFiles', '{count} changes.').format(count=count) + ' ' + self.directionText()
+        return _translate('CompareRuleFiles', '{count} changes.').format(count=count)
 
     # --- stepping through the changes ------------------------------------
 
@@ -392,6 +394,40 @@ class CompareRuleFilesDlg(QDialog):
         if number > 0:
 
             self.ui.summaryLabel.setText(_translate('CompareRuleFiles', 'Change {number} of {count}.').format(number=number, count=count))
+
+    # --- folding -------------------------------------------------------------
+
+    def onCollapseAll(self):
+
+        self.foldAll(True)
+
+    def onExpandAll(self):
+
+        self.foldAll(False)
+
+    def foldAll(self, folded: bool):
+        '''Fold every block, sections included (Collapse All), or open everything (Expand All) - see foldAll in TransferPreview's page script. Folding regroups the changes (all the changes
+        inside a folded block count as one stop), so the summary is refreshed from the count the page returns.'''
+
+        page = self.ui.comparisonView.page()
+
+        if page is not None:
+
+            page.runJavaScript('foldAll({f})'.format(f='true' if folded else 'false'), self.onSummary)
+
+    # --- opening the rules file --------------------------------------------
+
+    def onOpenRulesFile(self):
+        '''Open the current transfer rules file in the XML editor. os.startfile hands it to whatever is registered for .t1x (XXE), like AI Rule Studio's Open Rule File, and keeps this window
+        responsive while the editor is open.'''
+
+        try:
+            os.startfile(self.rulesFile)
+
+        except OSError as err:
+
+            QMessageBox.warning(self, _translate('CompareRuleFiles', 'Could not open the editor'),
+                                _translate('CompareRuleFiles', 'The transfer rules file could not be opened ({err}). Open it yourself from: {path}').format(err=err, path=self.rulesFile))
 
     # --- zoom ---------------------------------------------------------------
 

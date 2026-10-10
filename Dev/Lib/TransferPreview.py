@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.8 - 10/10/26 - Ron Lockwood
+#    The change arrows open folded blocks to reach a change; added foldAll for the Compare Rule Files tool's Collapse All / Expand All buttons. Changes are grouped once, on the open page, so
+#    folding doesn't change the count.
+#
 #   Version 3.17.7 - 10/10/26 - Ron Lockwood
 #    Rules and macros can be folded and get indent guides (as do action and let); rule and macro names keep their colour in comparisons; folding a block no longer jumps the scroll position.
 #
@@ -656,15 +660,22 @@ document.addEventListener("click", function(e) {
 # inside the row instead of adding to it, which would throw the running total off. A twin hidden inside a folded block (offsetParent is null) is skipped. Both panes then get the same minimum
 # height so their borders end together.
 #
-# findHunks groups the highlighted rows into the changes the next/previous buttons step through. A row inside an added or removed block belongs to that block's change; a changed row counts
+# groupChanges groups the highlighted rows into the changes the next/previous buttons step through. A row inside an added or removed block belongs to that block's change; a changed row counts
 # only its own line, an added or removed one its whole block; and rows that touch or overlap (a run of consecutive changes, or a removed block facing the added block that replaced it) are one
-# change. diffNav(direction) scrolls to the next (1) or previous (-1) change, outlines it, and returns [its number, how many there are] - [0, n] when there is none that way. Pressed again
-# without the user scrolling in between, it steps from the change it last showed; after a manual scroll it steps from where the user scrolled to. diffSummary re-aligns and returns the count.
+# change. The grouping is done once, on the fully open page when it first loads, and then kept: it depends on where rows sit, and folding stacks rows that are far apart onto one line, so
+# regrouping after a fold would make the count jump (11 changes open, 1 change after Collapse All). Folding only moves where a change is - groupTop measures a change hidden in a folded block
+# at the row of the block that hides it.
+#
+# diffNav(direction) scrolls to the next (1) or previous (-1) change, outlines it, and returns [its number, how many there are] - [0, n] when there is none that way. Pressed again without the
+# user scrolling in between, it steps from the change it last showed; after a manual scroll it steps from where the user scrolled to. A change that is folded away - inside a folded block, or
+# itself a folded added/removed block - is opened first, in both panes (openChange), so the arrows always show the change rather than a folded row. diffSummary re-aligns and returns the count.
+# foldAll is the Collapse All / Expand All buttons: collapsing folds every block that can fold, the sections included, so a whole rules file comes down to its six section lines (Categories,
+# Attributes, Variables, Lists, Macros, Rules); expanding opens everything.
 #
 # Everything re-runs whenever the layout can change: on load, on resize (which also covers the dialog's zoom) and on a fold (COLLAPSER_SCRIPT calls alignPanes). alignPanes puts the scroll
 # position back afterwards, because stripping the old padding can briefly shrink the page and make the browser pull the scroll position up.
 ALIGN_SCRIPT = '''<script>
-var diffHunks = [];
+var diffGroups = null;
 var currentHunk = -1;
 var lastScrollSet = null;
 var NAV_MARGIN = 40;
@@ -702,14 +713,24 @@ function alignPanes() {
     left.style.minHeight = height + "px";
     right.style.minHeight = height + "px";
     container.scrollTop = scrollTop;
-    findHunks();
+    if (diffGroups === null) { diffGroups = groupChanges(); }
 }
 
-function findHunks() {
+function contentBase() {
     var container = document.querySelector(".compare.diffview");
-    diffHunks = [];
-    if (!container) { return; }
-    var base = container.getBoundingClientRect().top - container.scrollTop;
+    return container.getBoundingClientRect().top - container.scrollTop;
+}
+
+function shownRowOf(row) {
+    var shown = row;
+    while (shown && !shown.offsetParent) { shown = shown.parentElement.closest(".el"); }
+    return shown;
+}
+
+function groupChanges() {
+    var container = document.querySelector(".compare.diffview");
+    if (!container) { return []; }
+    var base = contentBase();
 
     var spans = [];
     container.querySelectorAll(".el.changed, .el.added, .el.removed").forEach(function(row) {
@@ -720,41 +741,87 @@ function findHunks() {
     });
     spans.sort(function(a, b) { return a.top - b.top; });
 
+    var groups = [];
     spans.forEach(function(span) {
-        var last = diffHunks[diffHunks.length - 1];
+        var last = groups[groups.length - 1];
         if (last && span.top <= last.bottom + 2) { last.bottom = Math.max(last.bottom, span.bottom); last.rows = last.rows.concat(span.rows); }
-        else { diffHunks.push(span); }
+        else { groups.push(span); }
     });
+    return groups.map(function(group) { return group.rows; });
+}
+
+function groupTop(group) {
+    var base = contentBase();
+    var top = Infinity;
+    group.forEach(function(row) {
+        var shown = shownRowOf(row);
+        if (shown) { top = Math.min(top, shown.firstElementChild.getBoundingClientRect().top - base); }
+    });
+    return top;
 }
 
 function diffNav(direction) {
     var container = document.querySelector(".compare.diffview");
-    if (!container || !diffHunks.length) { return [0, 0]; }
+    if (!container || !diffGroups || !diffGroups.length) { return [0, 0]; }
+    var count = diffGroups.length;
     var target = -1;
 
     if (currentHunk >= 0 && container.scrollTop === lastScrollSet) {
         target = currentHunk + direction;
     } else {
         var reference = container.scrollTop + NAV_MARGIN;
-        for (var i = 0; i < diffHunks.length; i++) {
-            if (direction > 0 && diffHunks[i].top > reference + 2) { target = i; break; }
-            if (direction < 0 && diffHunks[i].top < reference - 2) { target = i; }
+        for (var i = 0; i < count; i++) {
+            var top = groupTop(diffGroups[i]);
+            if (direction > 0 && top > reference + 2) { target = i; break; }
+            if (direction < 0 && top < reference - 2) { target = i; }
         }
     }
 
-    if (target < 0 || target >= diffHunks.length) { return [currentHunk >= 0 && container.scrollTop === lastScrollSet ? currentHunk + 1 : 0, diffHunks.length]; }
+    if (target < 0 || target >= count) { return [currentHunk >= 0 && container.scrollTop === lastScrollSet ? currentHunk + 1 : 0, count]; }
+
+    var group = diffGroups[target];
+    var folded = group.filter(function(row) { return !row.offsetParent || row.querySelector(".el.collapsed") || row.classList.contains("collapsed"); });
+    if (folded.length) {
+        folded.forEach(openChange);
+        alignPanes();
+    }
 
     document.querySelectorAll(".current-change").forEach(function(row) { row.classList.remove("current-change"); });
-    diffHunks[target].rows.forEach(function(row) { row.classList.add("current-change"); });
-    container.scrollTop = Math.max(0, diffHunks[target].top - NAV_MARGIN);
+    group.forEach(function(row) { row.classList.add("current-change"); });
+    container.scrollTop = Math.max(0, groupTop(group) - NAV_MARGIN);
     lastScrollSet = container.scrollTop;
     currentHunk = target;
-    return [target + 1, diffHunks.length];
+    return [target + 1, count];
 }
 
 function diffSummary() {
     alignPanes();
-    return diffHunks.length;
+    return diffGroups ? diffGroups.length : 0;
+}
+
+function unfold(block) {
+    block.classList.remove("collapsed");
+    var pair = block.getAttribute("data-pair");
+    if (pair) { document.querySelectorAll('.el[data-pair="' + pair + '"]').forEach(function(twin) { twin.classList.remove("collapsed"); }); }
+}
+
+function openChange(row) {
+    for (var block = row; block; block = block.parentElement.closest(".el")) {
+        if (block.classList.contains("collapsed")) { unfold(block); }
+    }
+    if (!row.classList.contains("changed")) { row.querySelectorAll(".el.collapsed").forEach(unfold); }
+}
+
+function foldAll(folded) {
+    document.querySelectorAll(".el").forEach(function(block) {
+        if (!block.querySelector(":scope > .rowline > .collapser")) { return; }
+        block.classList.toggle("collapsed", folded);
+    });
+    document.querySelectorAll(".current-change").forEach(function(row) { row.classList.remove("current-change"); });
+    currentHunk = -1;
+    alignPanes();
+    document.querySelector(".compare.diffview").scrollTop = 0;
+    return diffGroups ? diffGroups.length : 0;
 }
 
 window.alignPanes = alignPanes;
