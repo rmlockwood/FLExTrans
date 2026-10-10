@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.5 - 10/10/26 - Ron Lockwood
+#    The comparison panes scroll together with one scrollbar and matched rows lined up; folding a block folds its twin. Elements of different kinds are no longer paired as "changed".
+#
 #   Version 3.17.4 - 10/10/26 - Ron Lockwood
 #    On a changed row in the comparison, the parts that differ within a value or comment (e.g. the 1s of kira1.1 vs kira2.2) are highlighted in a darker orange.
 #
@@ -92,13 +95,23 @@
 #
 #   DIFF HIGHLIGHTING
 #
-#   Only the comparison view highlights (the compare flag on elementToHtml); the single-rule views render plain. Children are aligned with difflib in two passes (alignChildren): first on the full
-#   tag + attributes so identical rows pair exactly, then on the tag alone within whatever is left, so an attribute edit pairs as one "changed" row. That way an inserted or deleted node marks
-#   only itself instead of shifting every later row, and deleting one of several like elements (one literal tag of two) doesn't pair the wrong two. On a changed row, each value is also
-#   compared piece by piece (letter runs, digit runs, punctuation) with the other pane's (highlightDifferences) and the differing pieces are shown darker orange. Values always are (a changed side value is highlighted whole);
-#   a comment only when the two are alike enough (COMMENT_DIFF_MIN_RATIO) for the marks not to be noise. Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose
-#   tag/attributes/comment text differ are "changed" (orange). Only the row's own header line is coloured, never its children. The comparison is wrapped in a "diffview" class that turns the normal
-#   chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre side text black, so the XXE palette doesn't compete with the diff colours.
+#   Only the comparison view highlights (the compare flag on elementToHtml); the single-rule views render plain. Children are aligned with difflib in two passes (alignChildren): first on the
+#   full tag + attributes so identical rows pair exactly, then on the tag alone within whatever is left, so an attribute edit pairs as one "changed" row. That way an inserted or deleted node
+#   marks only itself instead of shifting every later row, and deleting one of several like elements (one literal tag of two) doesn't pair the wrong two. Elements of different kinds are never
+#   paired - a choose replaced by a let shows as a red block and a green one, not as an orange pair whose children get matched against unrelated rows.
+#
+#   Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose attributes or comment text differ are "changed" (orange). Only the row's own
+#   header line is coloured, never its children. On a changed row, each value is also compared piece by piece (letter runs, digit runs, punctuation) with the other pane's (highlightDifferences),
+#   and the differing pieces are shown darker orange: values always (a changed side value is highlighted whole), a comment only when the two are alike enough (COMMENT_DIFF_MIN_RATIO) for the
+#   marks not to be noise. The comparison is wrapped in a "diffview" class that turns the normal chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre
+#   side text black, so the XXE palette doesn't compete with the diff colours.
+#
+#   LINED-UP SCROLLING
+#
+#   The two comparison panes scroll as one, with their rows level, like a side-by-side diff tool. The trap is that the panes are rendered separately, so they must agree exactly on which rows
+#   pair up: alignChildrenForSide has the after pane invert the before pane's alignment rather than run its own (difflib isn't symmetric). Each matched pair gets the same data-pair id in both
+#   panes ("0" for the top element, then "<parent id>.<before position>-<after position>"), and ALIGN_SCRIPT, run in the browser after layout, pads the higher twin of each pair down to its
+#   partner. It re-runs on resize/zoom and on a fold; folding a block folds its twin too (COLLAPSER_SCRIPT). A pair it can't find simply isn't padded - the panes stay readable either way.
 #
 #   EXPLANATION TEXT
 #
@@ -107,9 +120,10 @@
 #
 #   CODE STRUCTURE
 #
-#   loadSpec / loadCss read the display spec and the stylesheet. highlightDifferences, renderChip and renderRowLine build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree,
-#   calling alignChildren (with childSignature, then alignByKind/childKey) in compare mode. parseFragment parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render
-#   the explanation. wrapDocument wraps a body into the final document, and the four render*Html functions at the end are the public entry points.
+#   loadSpec / loadCss read the display spec and the stylesheet. childKey/childSignature, alignByKind and alignChildren do the matching. highlightDifferences, renderChip and renderRowLine
+#   build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree, calling alignChildrenForSide in compare mode and handing out the pair ids. parseFragment
+#   parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render the explanation. COLLAPSER_SCRIPT and ALIGN_SCRIPT are
+#   the browser-side scripts; wrapDocument wraps a body into the final document, and the four render*Html functions at the end are the public entry points.
 #
 
 import os
@@ -285,21 +299,20 @@ def alignChildren(children: list, otherChildren: list) -> list:
     return pairs
 
 def alignByKind(children: list, otherChildren: list) -> list:
-    '''The second pass of alignChildren: align a stretch of unmatched children by childKey (tag, or "a comment"), pairing the overlap of each like-for-like run positionally so diffClass
-    flags it "changed"; anything left over has no counterpart (None).'''
+    '''The second pass of alignChildren: align a stretch of unmatched children by childKey (tag, or "a comment") and pair the like-for-like ones, which diffClass then flags "changed" (same
+    tag, different attributes or comment text). A child with no like counterpart - including one facing a different kind of element - has none (None).'''
 
     pairs = []
     opcodes = difflib.SequenceMatcher(None, [childKey(c) for c in children], [childKey(c) for c in otherChildren], autojunk=False).get_opcodes()
 
     for op, i1, i2, j1, j2 in opcodes:
 
-        if op in ('equal', 'replace'):
+        if op == 'equal':
+            pairs.extend(zip(children[i1:i2], otherChildren[j1:j2]))
 
-            paired = min(i2 - i1, j2 - j1)
-            pairs.extend(zip(children[i1:i1 + paired], otherChildren[j1:j1 + paired]))
-            pairs.extend((child, None) for child in children[i1 + paired:i2])
-
-        elif op == 'delete':
+        # A 'replace' here means different kinds of element (e.g. a choose where the other side has a let). One isn't an edit of the other, so they aren't paired: each is shown as
+        # removed or added in its own pane rather than as a "changed" pair whose children would then be matched up against unrelated rows.
+        elif op in ('replace', 'delete'):
             pairs.extend((child, None) for child in children[i1:i2])
 
     return pairs
@@ -426,15 +439,28 @@ def diffClass(elem: ET.Element, other) -> str:
 
     return ''
 
-def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=None, compare: bool = False) -> str:
+def alignChildrenForSide(children: list, otherChildren: list, side: str) -> list:
+    '''alignChildren from the point of view of the pane being rendered, always worked out in the before -> after direction. The after pane inverts the before pane's answer instead of running
+    its own alignment, because difflib isn't guaranteed to pair the same rows when its two inputs are swapped - and the two panes must agree on every pair for the rows to line up across them.'''
+
+    if side == 'before':
+        return alignChildren(children, otherChildren)
+
+    counterpartOf = {id(afterChild): beforeChild for beforeChild, afterChild in alignChildren(otherChildren, children) if afterChild is not None}
+    return [(child, counterpartOf.get(id(child))) for child in children]
+
+def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=None, compare: bool = False, pairId: str = '') -> str:
     '''Recursively render an element to HTML.
 
     Diff highlighting only happens when `compare` is True (the side-by-side modify view). In the single-rule create/explain views `compare` is False and no added/changed/removed classes
     are emitted, so the rule renders plain (like XXE) rather than being flagged wholesale as "added". `other` is the positional counterpart in the compared tree; `side` is which pane we
-    are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.'''
+    are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.
+    `pairId` names a matched pair of rows: the element is rendered with it as data-pair, and its twin in the other pane carries the same id, so ALIGN_SCRIPT can line the two up.'''
 
     if spec is None:
         spec = SPEC
+
+    pairAttr = ' data-pair="' + pairId + '"' if pairId else ''
 
     if isComment(elem):
         text = (elem.text or '').strip()
@@ -444,7 +470,7 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
         # On a changed comment, pick out the parts that differ from the counterpart comment's text.
         otherText = (other.text or '').strip() if cls == 'changed' and other is not None and isComment(other) else None
 
-        return '<div class="' + classAttr + '"><span class="rowline">' + highlightDifferences(text, otherText, COMMENT_DIFF_MIN_RATIO) + '</span></div>'
+        return '<div class="' + classAttr + '"' + pairAttr + '><span class="rowline">' + highlightDifferences(text, otherText, COMMENT_DIFF_MIN_RATIO) + '</span></div>'
 
     # Two independent, children-gated decisions (see the constants above): a collapser fold control goes on the elements transfer.css marks collapsible (minus the top-level rule/macro),
     # and a vertical indent guide - the "guide" class the CSS keys off - goes on the lengthy logic blocks. The two sets overlap (e.g. out, when) but are not the same.
@@ -458,7 +484,7 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
     # A changed row whose counterpart has the same tag differs only in its attributes, so hand the counterpart over so the parts of each value that changed can be highlighted.
     changedFrom = other if cls == 'changed' and other is not None and not isComment(other) and other.tag == elem.tag else None
 
-    out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec, collapsible, changedFrom)]
+    out = ['<div class="' + classAttr + '"' + pairAttr + '>', renderRowLine(elem, spec, collapsible, changedFrom)]
 
     if children:
 
@@ -483,12 +509,20 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
             otherChildren = [c for c in other] if other is not None else []
             unmatched = 'added' if side == 'after' else 'removed'
 
-            for child, counterpart in alignChildren(children, otherChildren):
+            # Positions of each child among its siblings, for the pair ids. An id is always "<before position>-<after position>" under the parent's id, whichever pane is rendering, so
+            # the two twins of a pair get the same id.
+            positionOf = {id(c): i for i, c in enumerate(children)}
+            otherPositionOf = {id(c): i for i, c in enumerate(otherChildren)}
+
+            for child, counterpart in alignChildrenForSide(children, otherChildren, side):
 
                 if counterpart is None:
                     out.append(elementToHtml(child, forced=unmatched, side=side, spec=spec, compare=compare))
+
                 else:
-                    out.append(elementToHtml(child, counterpart, side, '', spec, compare))
+                    mine, theirs = positionOf[id(child)], otherPositionOf[id(counterpart)]
+                    childPairId = '{p}.{b}-{a}'.format(p=pairId, b=mine if side == 'before' else theirs, a=theirs if side == 'before' else mine)
+                    out.append(elementToHtml(child, counterpart, side, '', spec, compare, childPairId))
 
         out.append('</div>')
 
@@ -576,9 +610,43 @@ def colorLexicalUnitsInMarkdown(mdText: str) -> str:
     return rendered
 
 # Clicking a collapser box folds/unfolds its block: toggle the "collapsed" class on the enclosing .el, which hides the children and swaps the minus icon for the plus (both in the CSS).
-# One delegated listener on the document covers every collapser without per-element handlers.
+# One delegated listener on the document covers every collapser without per-element handlers. In the comparison a block's twin in the other pane (same data-pair) is folded to match, and
+# the panes are re-aligned (alignPanes, from ALIGN_SCRIPT, exists only in the comparison document).
 COLLAPSER_SCRIPT = ('<script>document.addEventListener("click", function(e) {'
-                    ' if (e.target.classList && e.target.classList.contains("collapser")) { e.target.closest(".el").classList.toggle("collapsed"); } });</script>')
+                    ' if (!(e.target.classList && e.target.classList.contains("collapser"))) { return; }'
+                    ' var block = e.target.closest(".el");'
+                    ' block.classList.toggle("collapsed");'
+                    ' var pair = block.getAttribute("data-pair");'
+                    ' if (pair) { document.querySelectorAll(\'.el[data-pair="\' + pair + \'"]\').forEach(function(twin) { twin.classList.toggle("collapsed", block.classList.contains("collapsed")); }); }'
+                    ' if (window.alignPanes) { window.alignPanes(); } });</script>')
+
+# Lines up the Before and After panes of the comparison, which scroll together as one (see .diffview in transfer_preview.css). Every matched pair of rows carries the same data-pair id in
+# both panes. Walking the pairs top to bottom, whichever twin sits higher gets a top margin that brings it level with the other; a removed or added block thereby leaves a matching gap in the
+# opposite pane, like a side-by-side diff tool. Pairs are visited in document order, which is the same order in both panes (alignChildren keeps order), so each margin only pushes later rows
+# down and never undoes an earlier alignment. A twin hidden inside a folded block (offsetParent is null) is skipped. Finally both panes get the same minimum height so their borders end
+# together. It runs on load and again whenever the layout can change: a resize (which also covers the dialog's zoom) and a fold (COLLAPSER_SCRIPT calls it).
+ALIGN_SCRIPT = ('<script>'
+                'function alignPanes() {'
+                ' var panes = document.querySelectorAll(".diffview > .pane");'
+                ' if (panes.length < 2) { return; }'
+                ' var left = panes[0], right = panes[1];'
+                ' document.querySelectorAll(".diffview .el[data-pair]").forEach(function(row) { row.style.marginTop = ""; });'
+                ' left.style.minHeight = ""; right.style.minHeight = "";'
+                ' var twinOf = {};'
+                ' right.querySelectorAll(".el[data-pair]").forEach(function(row) { twinOf[row.getAttribute("data-pair")] = row; });'
+                ' left.querySelectorAll(".el[data-pair]").forEach(function(leftRow) {'
+                '  var rightRow = twinOf[leftRow.getAttribute("data-pair")];'
+                '  if (!rightRow || !leftRow.offsetParent || !rightRow.offsetParent) { return; }'
+                '  var gap = leftRow.getBoundingClientRect().top - rightRow.getBoundingClientRect().top;'
+                '  if (Math.abs(gap) < 0.5) { return; }'
+                '  var higher = gap > 0 ? rightRow : leftRow;'
+                '  higher.style.marginTop = Math.abs(gap) + "px"; });'
+                ' var height = Math.max(left.offsetHeight, right.offsetHeight);'
+                ' left.style.minHeight = height + "px"; right.style.minHeight = height + "px"; }'
+                'window.alignPanes = alignPanes;'
+                'window.addEventListener("load", alignPanes);'
+                'window.addEventListener("resize", alignPanes);'
+                '</script>')
 
 def wrapDocument(bodyHtml: str, colors=None, split: bool = False) -> str:
     '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides) and the collapser click handler. With `split` the body gets the "split"
@@ -645,8 +713,10 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
     beforeHeading = html.escape(_translate('TransferPreview', 'Before'))
     afterHeading = html.escape(_translate('TransferPreview', 'After'))
 
-    left = '<div class="pane"><h3>' + beforeHeading + '</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True) + '</div>'
-    right = '<div class="pane"><h3>' + afterHeading + '</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True) + '</div>'
+    # The two top-level elements are the first matched pair ("0"); every matched descendant's pair id builds on it, so ALIGN_SCRIPT can line the panes up row for row.
+    left = '<div class="pane"><h3>' + beforeHeading + '</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True, pairId='0') + '</div>'
+    right = '<div class="pane"><h3>' + afterHeading + '</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True, pairId='0') + '</div>'
 
-    # The diffview class turns the normal chip and comment-box fills white (or the row's diff colour on a highlighted row) and the side text black, so only the diff colours stand out - see transfer_preview.css.
-    return wrapDocument(legend + '<div class="compare diffview">' + left + right + '</div>', spec.get('_colors'), split=True)
+    # The diffview class turns the normal chip and comment-box fills white (or the row's diff colour on a highlighted row) and the side text black, so only the diff colours stand out, and
+    # makes the two panes scroll as one - see transfer_preview.css.
+    return wrapDocument(legend + '<div class="compare diffview">' + left + right + '</div>' + ALIGN_SCRIPT, spec.get('_colors'), split=True)

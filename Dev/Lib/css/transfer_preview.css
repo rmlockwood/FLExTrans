@@ -208,6 +208,19 @@ body.split .pane {
     overflow-y: auto;
 }
 
+/* The before/after comparison is the exception: its panes scroll together as one, so its rows stay lined up (ALIGN_SCRIPT in TransferPreview.py pads them level). The container scrolls and
+   each pane grows to its full content height instead of being stretched to the window - a stretched pane would scroll on its own. min-height keeps a short rule's pane borders running to the
+   bottom; border-box makes the equal min-height the script sets give equal outer heights. */
+body.split .compare.diffview {
+    overflow-y: auto;
+    align-items: flex-start;
+}
+
+body.split .compare.diffview .pane {
+    box-sizing: border-box;
+    min-height: 100%;
+}
+
 .pane {
     flex: 1 1 0;
     min-width: 0;
