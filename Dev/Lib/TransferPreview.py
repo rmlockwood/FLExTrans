@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.4 - 10/10/26 - Ron Lockwood
+#    On a changed row in the comparison, the parts that differ within a value or comment (e.g. the 1s of kira1.1 vs kira2.2) are highlighted in a darker orange.
+#
 #   Version 3.17.3 - 10/10/26 - Ron Lockwood
 #    The comparison matches children on tag + attributes before tag alone, so deleting one of two literal tags marks just that one removed instead of pairing the wrong two as "changed".
 #
@@ -91,7 +94,9 @@
 #
 #   Only the comparison view highlights (the compare flag on elementToHtml); the single-rule views render plain. Children are aligned with difflib in two passes (alignChildren): first on the full
 #   tag + attributes so identical rows pair exactly, then on the tag alone within whatever is left, so an attribute edit pairs as one "changed" row. That way an inserted or deleted node marks
-#   only itself instead of shifting every later row, and deleting one of several like elements (one literal tag of two) doesn't pair the wrong two. Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose
+#   only itself instead of shifting every later row, and deleting one of several like elements (one literal tag of two) doesn't pair the wrong two. On a changed row, each value is also
+#   compared piece by piece (letter runs, digit runs, punctuation) with the other pane's (highlightDifferences) and the differing pieces are shown darker orange. Values always are (a changed side value is highlighted whole);
+#   a comment only when the two are alike enough (COMMENT_DIFF_MIN_RATIO) for the marks not to be noise. Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose
 #   tag/attributes/comment text differ are "changed" (orange). Only the row's own header line is coloured, never its children. The comparison is wrapped in a "diffview" class that turns the normal
 #   chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre side text black, so the XXE palette doesn't compete with the diff colours.
 #
@@ -102,7 +107,7 @@
 #
 #   CODE STRUCTURE
 #
-#   loadSpec / loadCss read the display spec and the stylesheet. renderChip and renderRowLine build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree,
+#   loadSpec / loadCss read the display spec and the stylesheet. highlightDifferences, renderChip and renderRowLine build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree,
 #   calling alignChildren (with childSignature, then alignByKind/childKey) in compare mode. parseFragment parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render
 #   the explanation. wrapDocument wraps a body into the final document, and the four render*Html functions at the end are the public entry points.
 #
@@ -299,10 +304,49 @@ def alignByKind(children: list, otherChildren: list) -> list:
 
     return pairs
 
-def renderChip(value: str, colorClass: str) -> str:
-    '''Render one attribute value. Most values are coloured chips (a bordered box); the "plain" classes (c-plain and the c-side-* side colours) are shown as plain coloured text with no box.'''
+# How alike two changed comments must be (difflib ratio, 0-1) before the parts that differ are picked out. A comment is prose: below this the two share little more than a few common words,
+# so marking pieces would be noise and the orange row says enough. Attribute values have no threshold - they're short, and every differing piece is worth seeing.
+COMMENT_DIFF_MIN_RATIO = 0.5
 
-    shown = html.escape(value)
+# The pieces highlightDifferences compares: a run of letters, a run of digits, a run of whitespace, or any other single character (punctuation such as _ . < >). Diffing whole pieces rather than
+# single characters is what keeps the highlight meaningful: character by character, a_gram_cat vs a_number would pair up stray shared letters (the m, an a) and mark scattered fragments, while
+# piece by piece it marks gram_cat vs number. Separating digits from letters still lets kira1.1 vs kira2.2 mark just the 1s and 2s.
+_DIFF_PIECE_PATTERN = re.compile(r'[^\W\d_]+|\d+|\s+|.', re.DOTALL)
+
+def highlightDifferences(text: str, otherText=None, minRatio: float = 0.0) -> str:
+    '''Return the HTML-escaped text, with the pieces (see _DIFF_PIECE_PATTERN) that differ from otherText - the same value in the other pane - wrapped in a "diffchar" span, shown darker orange in
+    the comparison. Only this side's text is marked, so pieces that exist only on the other side show up in that pane. With no otherText, an identical one, or one less alike than minRatio, the
+    text is returned plain. The default minRatio of 0 always highlights (two values with nothing in common are highlighted whole).'''
+
+    if otherText is None or text == otherText:
+        return html.escape(text)
+
+    pieces = _DIFF_PIECE_PATTERN.findall(text)
+    otherPieces = _DIFF_PIECE_PATTERN.findall(otherText)
+    matcher = difflib.SequenceMatcher(None, pieces, otherPieces, autojunk=False)
+
+    if matcher.ratio() < minRatio:
+        return html.escape(text)
+
+    out = []
+
+    for op, i1, i2, _j1, _j2 in matcher.get_opcodes():
+
+        segment = html.escape(''.join(pieces[i1:i2]))
+
+        # An 'insert' has nothing on this side (segment is empty), so there is nothing to mark here.
+        if not segment:
+            continue
+
+        out.append(segment if op == 'equal' else '<span class="diffchar">' + segment + '</span>')
+
+    return ''.join(out)
+
+def renderChip(value: str, colorClass: str, otherValue=None) -> str:
+    '''Render one attribute value. Most values are coloured chips (a bordered box); the "plain" classes (c-plain and the c-side-* side colours) are shown as plain coloured text with no box.
+    `otherValue` is the same attribute's value in the other pane of a comparison, on a changed row; the parts that differ from it are highlighted (see highlightDifferences).'''
+
+    shown = highlightDifferences(value, otherValue)
 
     if colorClass == 'c-plain' or colorClass.startswith('c-side'):
         return '<span class="{cls}">{val}</span>'.format(cls=colorClass, val=shown)
@@ -311,18 +355,23 @@ def renderChip(value: str, colorClass: str) -> str:
     # keeps it from collapsing, so an empty literal reads as an (empty-valued) box rather than nothing.
     return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown or '&nbsp;')
 
-def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False) -> str:
+def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False, changedFrom=None) -> str:
     '''Render an element's header row: its label plus its displayed attributes, using the given per-language display spec. With `collapsible` a plus/minus collapser box is placed in
-    front of the label (the block's children fold when it is clicked - see wrapDocument's script).'''
+    front of the label (the block's children fold when it is clicked - see wrapDocument's script). `changedFrom` is the counterpart element when this is a changed row in a comparison
+    (same tag, different attributes); each attribute value then has the parts that differ from the counterpart's value highlighted.'''
 
     collapser = '<span class="collapser"></span>' if collapsible else ''
     entry = spec.get(elem.tag)
+    otherAttrib = changedFrom.attrib if changedFrom is not None else {}
 
     if entry is None:
+
         # Fallback: show the tag name and every attribute generically.
         pieces = ['<span class="label">' + html.escape(elem.tag) + ': </span>']
+
         for name, value in elem.attrib.items():
-            pieces.append('<span class="attrlabel">' + html.escape(name) + ': </span>' + renderChip(value, 'c-chunk'))
+            pieces.append('<span class="attrlabel">' + html.escape(name) + ': </span>' + renderChip(value, 'c-chunk', otherAttrib.get(name)))
+
         return '<span class="rowline">' + collapser + ''.join(pieces) + '</span>'
 
     label, attrSpecs = entry
@@ -346,17 +395,20 @@ def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False) -> st
             continue
 
         value = elem.attrib[name]
+        otherValue = otherAttrib.get(name)
 
         if name == 'side':
 
-            # Colour the side value the way the master XXE stylesheet does: red for source language (sl), ochre for target language (tl).
+            # Colour the side value the way the master XXE stylesheet does: red for source language (sl), ochre for target language (tl). A changed side is a whole-value swap, so it is
+            # highlighted whole rather than letter by letter: comparing against an empty string makes highlightDifferences mark every character.
             colorClass = 'c-side-sl' if value == 'sl' else 'c-side-tl'
+            otherValue = '' if otherValue is not None and otherValue != value else None
             value = sideLabel(value)
 
         if attrLabel:
             pieces.append('<span class="attrlabel">' + html.escape(attrLabel) + '</span>')
 
-        pieces.append(renderChip(value, colorClass))
+        pieces.append(renderChip(value, colorClass, otherValue))
 
     return '<span class="rowline">' + collapser + ''.join(pieces) + '</span>'
 
@@ -388,7 +440,11 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
         text = (elem.text or '').strip()
         cls = (forced or diffClass(elem, other)) if compare else ''
         classAttr = 'el comment' + ((' ' + cls) if cls else '')
-        return '<div class="' + classAttr + '"><span class="rowline">' + html.escape(text) + '</span></div>'
+
+        # On a changed comment, pick out the parts that differ from the counterpart comment's text.
+        otherText = (other.text or '').strip() if cls == 'changed' and other is not None and isComment(other) else None
+
+        return '<div class="' + classAttr + '"><span class="rowline">' + highlightDifferences(text, otherText, COMMENT_DIFF_MIN_RATIO) + '</span></div>'
 
     # Two independent, children-gated decisions (see the constants above): a collapser fold control goes on the elements transfer.css marks collapsible (minus the top-level rule/macro),
     # and a vertical indent guide - the "guide" class the CSS keys off - goes on the lengthy logic blocks. The two sets overlap (e.g. out, when) but are not the same.
@@ -399,7 +455,10 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
     cls = (forced or diffClass(elem, other)) if compare else ''
     classAttr = 'el ' + elem.tag + (' guide' if guided else '') + ((' ' + cls) if cls else '')
 
-    out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec, collapsible)]
+    # A changed row whose counterpart has the same tag differs only in its attributes, so hand the counterpart over so the parts of each value that changed can be highlighted.
+    changedFrom = other if cls == 'changed' and other is not None and not isComment(other) and other.tag == elem.tag else None
+
+    out = ['<div class="' + classAttr + '">', renderRowLine(elem, spec, collapsible, changedFrom)]
 
     if children:
 

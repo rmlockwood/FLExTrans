@@ -175,6 +175,9 @@ body {
 .diffview .removed > .rowline .chip,
 .diffview .comment.removed > .rowline { background: #F7CAC9; }
 
+/* Within a changed row, the parts that actually differ from the other pane's value (e.g. the 1s of kira1.1 against kira2.2) get a darker orange (see highlightDifferences). */
+.diffview .diffchar { background: #F5A65B; }
+
 /* Attribute values shown as coloured text rather than a filled box (the red/ochre side value) are black in the comparison too, for the same reason. */
 .diffview .c-side-sl,
 .diffview .c-side-tl { color: #000000; }
