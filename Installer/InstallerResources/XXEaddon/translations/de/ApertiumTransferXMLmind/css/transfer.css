@@ -114,7 +114,7 @@ case-of[side=sl]
     content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
      "  seite: "  combo-box(attribute, side, 
                            color, #ff0000,
-                           labels, "source lang.\A target lang.", 
+                           labels, "Quellsprache\A Zielsprache", 
                            values, "sl\A tl")
      "  teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
     padding-left:.125in;
@@ -125,7 +125,7 @@ case-of
     content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
      "  seite: "  combo-box(attribute, side, 
                            color, #ce901b,
-                           labels, "source lang.\A target lang.", 
+                           labels, "Quellsprache\A Zielsprache", 
                            values, "sl\A tl")
      "  teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
     padding-left:.125in;
@@ -181,7 +181,7 @@ clip[side=sl]
     content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
      " seite: "  combo-box(attribute, side, 
                            color, #ff0000,
-                           labels, "source lang.\A target lang.", 
+                           labels, "Quellsprache\A Zielsprache", 
                            values, "sl\A tl")
      " teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
      label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
@@ -194,7 +194,7 @@ clip
     content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
      " seite: "  combo-box(attribute, side, 
                            color, #ce901b,
-                           labels, "source lang.\A target lang.", 
+                           labels, "Quellsprache\A Zielsprache", 
                            values, "sl\A tl")
      " teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
      label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");

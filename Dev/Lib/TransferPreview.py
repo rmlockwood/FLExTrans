@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.2 - 10/10/26 - Ron Lockwood
+#    The comparison legend, Before/After headings, "New definitions" heading, and side values (source/target lang.) are now translated into the UI language.
+#
 #   Version 3.17.1 - 10/9/26 - Ron Lockwood
 #    In the before/after comparison, chip and comment fills are white (or the row's red/green/orange diff colour on a highlighted row) and the side value is black. Added the code description block.
 #
@@ -79,6 +82,7 @@
 #
 #   Labels and chip colours come from a per-language spec (Lib/AI/preview_spec_<lang>.json) that derive_preview_specs.py generates from the XXE stylesheet transfer.css, so editing XXE's CSS
 #   flows into the preview. The built-in SPEC is only a fallback when no JSON exists. transfer_preview.css holds the layout plus fallback colours; colorsToCss appends the derived colours after it.
+#   The preview's own UI text (legend, Before/After headings, side values) isn't in the XXE stylesheet, so it goes through the Qt translator instead (context TransferPreview, translations/TransferPreview_*.ts).
 #
 #   DIFF HIGHLIGHTING
 #
@@ -107,6 +111,8 @@ import difflib
 import unicodedata
 import xml.etree.ElementTree as ET
 
+from PyQt6.QtCore import QCoreApplication
+
 import Utils
 import Testbed
 import markdown
@@ -114,8 +120,19 @@ import markdown
 # realpath so this resolves through a per-file symlink (dev deploy) to the real Lib folder; the stylesheets live in its css subfolder (Lib/css).
 CSS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'css', 'transfer_preview.css')
 
-# Human-friendly value for the side attribute, matching the XXE combo-box labels.
-SIDE_LABELS = {'sl': 'source lang.', 'tl': 'target lang.'}
+_translate = QCoreApplication.translate
+
+def sideLabel(value: str) -> str:
+    '''Human-friendly value for the side attribute, matching the XXE combo-box labels. Translated at render time (not in a module-level dict) so the UI language's translator is already
+    loaded when the string is looked up; an unexpected value is shown as is.'''
+
+    if value == 'sl':
+        return _translate('TransferPreview', 'source lang.')
+
+    if value == 'tl':
+        return _translate('TransferPreview', 'target lang.')
+
+    return value
 
 # Per-element display spec: (labelText, [(attrName, attrLabel, colorClass), ...]). labelText is the element's ":before" text; each attribute is rendered as a labelled coloured chip.
 # Colours/labels are lifted from transfer.css. An element not listed falls back to showing its tag name and all its attributes generically.
@@ -278,7 +295,7 @@ def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False) -> st
 
             # Colour the side value the way the master XXE stylesheet does: red for source language (sl), ochre for target language (tl).
             colorClass = 'c-side-sl' if value == 'sl' else 'c-side-tl'
-            value = SIDE_LABELS.get(value, value)
+            value = sideLabel(value)
 
         if attrLabel:
             pieces.append('<span class="attrlabel">' + html.escape(attrLabel) + '</span>')
@@ -485,7 +502,7 @@ def renderRuleHtml(ruleXml: str, newDefs=None, lang: str = 'en') -> str:
 
     if newDefs:
 
-        body.append('<div class="legend">New definitions to be added:</div>')
+        body.append('<div class="legend">' + html.escape(_translate('TransferPreview', 'New definitions to be added:')) + '</div>')
 
         for defText in newDefs:
             body.append(elementToHtml(parseFragment(defText), spec=spec))
@@ -524,14 +541,18 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
     before = parseFragment(beforeXml)
     after = parseFragment(afterXml)
 
+    # The legend and pane headings are UI text, so they go through the Qt translator like the dialog's own strings (escaped, since a translation lands in the HTML).
     legend = ('<div class="legend">'
-              '<span class="sw" style="background:#F7CAC9"></span>removed / changed on the left'
-              '<span class="sw" style="background:#CFF5D1"></span>added on the right'
-              '<span class="sw" style="background:#FFD8A8"></span>changed'
+              '<span class="sw" style="background:#F7CAC9"></span>' + html.escape(_translate('TransferPreview', 'removed')) +
+              '<span class="sw" style="background:#CFF5D1"></span>' + html.escape(_translate('TransferPreview', 'added')) +
+              '<span class="sw" style="background:#FFD8A8"></span>' + html.escape(_translate('TransferPreview', 'changed')) +
               '</div>')
 
-    left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True) + '</div>'
-    right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True) + '</div>'
+    beforeHeading = html.escape(_translate('TransferPreview', 'Before'))
+    afterHeading = html.escape(_translate('TransferPreview', 'After'))
+
+    left = '<div class="pane"><h3>' + beforeHeading + '</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True) + '</div>'
+    right = '<div class="pane"><h3>' + afterHeading + '</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True) + '</div>'
 
     # The diffview class turns the normal chip and comment-box fills white (or the row's diff colour on a highlighted row) and the side text black, so only the diff colours stand out - see transfer_preview.css.
     return wrapDocument(legend + '<div class="compare diffview">' + left + right + '</div>', spec.get('_colors'), split=True)

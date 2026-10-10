@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.2 - 10/10/26 - Ron Lockwood
+#    Load the TransferPreview translations so the rule preview's legend and headings show in the UI language. Added the code description block.
+#
 #   Version 3.17.1 - 8/28/26 - Ron Lockwood
 #    Get the project grounding data from RuleAssistantPy now that the obsolete RuleAssistant module is gone.
 #
@@ -55,6 +58,34 @@
 #    the transfer rules file. Gathers the project's real categories/features/affixes from FLEx, grounds the model with the house conventions + example rules, validates every generated
 #    rule (well-formedness + apertium-preprocess-transfer), and previews it before the user approves. See WorkOnRulesWithAI-Plan.md.
 #
+#   OVERVIEW (AI generated, then edited)
+#
+#   The FlexTools entry point for AI Rule Studio ("Work on Rules with AI" in file and code names). It does the checks and data gathering that must happen before the AI can be used, then hands
+#   everything to WorkOnRulesWithAIDlg, which holds the actual create/modify/explain UI. This file never talks to the AI provider itself - AIRules does that, driven by the dialog.
+#
+#   STARTUP CHECKS (in order)
+#
+#   1. A provider and model are set in the Settings tool. There are no silent defaults, so the user always knows where their data goes; if they're missing, offer to open Settings (Full view,
+#      scrolled to the AI Assistant section) and re-read the config afterward, so the user doesn't have to re-launch the module. 2. The model belongs to the chosen provider (a hand-edited config
+#      could pair them wrongly). 3. One-time consent to send data to the provider. 4. An API key, from the OS credential vault or an env var, else prompted for and saved to the vault (never a
+#      project file). 5. The transfer rules file and the conventions doc (Lib/AI) exist.
+#
+#   WHAT IS SENT TO THE AI
+#
+#   The system instruction is the conventions doc plus the transfer file's longest rules and macros as house-style examples. The project grounding (buildProjectDataText) is the real categories,
+#   features, and affixes of both FLEx projects; the project names go in only if the user opted in, since a name can itself be sensitive. Lexicon entries and texts are not sent.
+#
+#   TRANSLATIONS
+#
+#   Strings in the dialog and the libraries it uses live in their own .ts/.qm files, so every one of them must be listed in librariesToTranslate or it shows in English (TransferPreview, which
+#   renders the rule preview, is one that's easy to forget). The module-level loadTranslations call only covers the docs dictionary.
+#
+#   CODE STRUCTURE
+#
+#   buildProjectDataText formats the FLEx grounding data; checkConsent runs the one-time opt-in; getProviderAndModel reads and resolves the configured provider (shared by the first check and the
+#   re-check after Settings). MainFunction runs the checks above, opens the target project (closed in a finally so it isn't left locked), gathers the grounding, builds the AIRules engine, and
+#   shows WorkOnRulesWithAIDlg under the Qt event loop.
+#
 
 import os
 
@@ -84,13 +115,13 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # Libraries whose strings we load when the module runs. The dialog logic and its pyuic-generated window file each have their own .ts/.qm.
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'CreateApertiumRules', 'WorkOnRulesWithAIDlg', 'WorkOnRulesWithAIWindow', 'PasteDataWindow']
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleAssistant', 'CreateApertiumRules', 'WorkOnRulesWithAIDlg', 'WorkOnRulesWithAIWindow', 'PasteDataWindow', 'TransferPreview']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("WorkOnRulesWithAI", """This module uses AI to create, modify, or explain your transfer rules and macros. To create or modify, you describe what you want; the AI drafts and validates it, and you review and approve it before it is saved. You can also ask the AI to explain an existing rule or macro. You can write your description — and receive the explanation — in any language you choose.""")
 docs = {FTM_Name       : _translate("WorkOnRulesWithAI", "AI Rule Studio"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("WorkOnRulesWithAI", "Use AI to create, modify, or explain your transfer rules and macros."),
         FTM_Help       : "",
