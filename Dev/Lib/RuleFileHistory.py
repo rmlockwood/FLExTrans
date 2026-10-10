@@ -5,6 +5,9 @@
 #   SIL International
 #   9/2/26
 #
+#   Version 3.17.2 - 10/10/26 - Ron Lockwood
+#    Added listHistoryCopies, which reads the saved copies of a rules file back (newest first, with the date and tag parsed from each name) for the Compare Rule Files tool.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    Initial version. The one place that knows where saved copies of the transfer rules file go and what they are named.
 #
@@ -21,9 +24,13 @@
 #   FLExTrans 3.17 used a different layout - Output\rule-history, with a subfolder per producer instead of a tag in each file name. Bringing one of those folders forward is the whole job of
 #   Lib/OldRuleHistoryConversion.py, which is meant to be deleted once nobody is upgrading from that version any more. Nothing here knows about it.
 #
+#   Reading the history back is here too (listHistoryCopies), so the name format is parsed in the same file that writes it. The Compare Rule Files tool uses it to offer the saved copies of the
+#   rules file for comparison.
+#
 #   This module is deliberately free of Qt, FLEx and flextoolslib imports so that AIRules.py - which is Qt-free by design so that it can be used and tested standalone - can call it.
 
 import os
+import re
 import shutil
 from datetime import datetime
 
@@ -92,3 +99,50 @@ def saveHistoryCopies(rulesFiles, tag):
             firstError = errorMsg
 
     return destPaths, firstError
+
+def listHistoryCopies(rulesFile):
+    '''Return the saved copies of the transfer rules file at rulesFile, newest first, as a list of (path, datetime saved, tag). Only copies of this file are returned - its stem and extension must
+       match, so the interchunk and postchunk copies of an advanced project, which share the folder, are left out. A file whose name doesn't parse as <stem>_<date>_<time>_<tag><extension> is
+       skipped rather than guessed at. An empty list comes back when there is no history folder yet.'''
+
+    if not rulesFile:
+
+        return []
+
+    stem, extension = os.path.splitext(os.path.basename(rulesFile))
+
+    # The stem may itself contain underscores and dashes (transfer_rules), so it is matched literally; the stamp is the fixed-width STAMP_FORMAT pattern and the tag is everything after it.
+    namePattern = re.compile(re.escape(stem) + r'_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})_(.+)' + re.escape(extension) + '$', re.IGNORECASE)
+    copies = []
+
+    try:
+        fileNames = os.listdir(getHistoryDir())
+
+    except OSError:
+
+        return []
+
+    for fileName in fileNames:
+
+        match = namePattern.match(fileName)
+
+        if not match:
+
+            continue
+
+        try:
+            savedAt = datetime.strptime(match.group(1), STAMP_FORMAT)
+
+        except ValueError:
+
+            continue
+
+        path = os.path.join(getHistoryDir(), fileName)
+
+        if os.path.isfile(path):
+
+            copies.append((path, savedAt, match.group(2)))
+
+    # Newest first; the file name breaks a tie between two copies saved in the same second so the order is stable.
+    copies.sort(key=lambda copy: (copy[1], os.path.basename(copy[0])), reverse=True)
+    return copies

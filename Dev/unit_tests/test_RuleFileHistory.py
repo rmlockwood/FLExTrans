@@ -155,5 +155,61 @@ class TestSaveHistoryCopies(RuleFileHistoryTestCase):
         self.assertEqual(destPaths, [])
         self.assertTrue(errorMsg)
 
+# ---------------------------------------------------------------------------
+# listHistoryCopies
+# ---------------------------------------------------------------------------
+
+class TestListHistoryCopies(RuleFileHistoryTestCase):
+
+    def historyFile(self, name):
+        '''Put a file with the given name in the history folder and return its path.'''
+
+        path = os.path.join(RuleFileHistory.getHistoryDir(), name)
+        self.writeFile(path, '<transfer/>')
+        return path
+
+    def test_newest_first_with_date_and_tag(self):
+
+        older = self.historyFile('transfer_rules_2026-09-02_14-35-01_testbed_run.t1x')
+        newer = self.historyFile('transfer_rules_2026-10-10_09-11-00_before_AI_changes.t1x')
+
+        copies = RuleFileHistory.listHistoryCopies(self.rulesPath)
+
+        self.assertEqual([path for path, _, _ in copies], [newer, older])
+        self.assertEqual(copies[0][1], RuleFileHistory.datetime(2026, 10, 10, 9, 11, 0))
+        self.assertEqual(copies[0][2], RuleFileHistory.TAG_BEFORE_AI_CHANGES)
+        self.assertEqual(copies[1][2], RuleFileHistory.TAG_TESTBED_RUN)
+
+    def test_only_copies_of_this_file(self):
+        '''The interchunk and postchunk copies of an advanced project, and copies of a differently named rules file, share the folder but aren't copies of this file.'''
+
+        mine = self.historyFile('transfer_rules_2026-09-02_14-35-01_testbed_run.t1x')
+        self.historyFile('transfer_rules_2026-09-02_14-35-01_testbed_run.t2x')
+        self.historyFile('other_rules_2026-09-02_14-35-01_testbed_run.t1x')
+
+        self.assertEqual([path for path, _, _ in RuleFileHistory.listHistoryCopies(self.rulesPath)], [mine])
+
+    def test_round_trip_with_saveHistoryCopy(self):
+        '''Whatever saveHistoryCopy writes, listHistoryCopies has to be able to read back - the two halves of the name format live in this one module.'''
+
+        destPath, _ = RuleFileHistory.saveHistoryCopy(self.rulesPath, RuleFileHistory.TAG_BEFORE_CAT_SETUP)
+        copies = RuleFileHistory.listHistoryCopies(self.rulesPath)
+
+        self.assertEqual(len(copies), 1)
+        self.assertEqual(copies[0][0], destPath)
+        self.assertEqual(copies[0][2], RuleFileHistory.TAG_BEFORE_CAT_SETUP)
+
+    def test_unparseable_names_are_skipped(self):
+
+        self.historyFile('transfer_rules_notes.t1x')
+        self.historyFile('transfer_rules_2026-13-45_99-99-99_testbed_run.t1x')
+
+        self.assertEqual(RuleFileHistory.listHistoryCopies(self.rulesPath), [])
+
+    def test_no_history_folder(self):
+
+        self.assertEqual(RuleFileHistory.listHistoryCopies(self.rulesPath), [])
+        self.assertEqual(RuleFileHistory.listHistoryCopies(''), [])
+
 if __name__ == '__main__':
     unittest.main()
