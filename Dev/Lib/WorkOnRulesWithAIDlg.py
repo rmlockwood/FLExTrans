@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.11 - 10/10/26 - Ron Lockwood
+#    After a modification is approved and written, the preview returns to the single-pane view of the rule as now in the file, which also becomes the current rule for a further modify.
+#
 #   Version 3.17.10 - 9/3/26 - Ron Lockwood
 #    A rule the model cut off part-way through no longer takes the window down. onGenerateFinished handed the candidate straight to the preview renderer, which parses it, so the
 #    ParseError escaped the finished-signal handler; it now asks AIRules.isWellFormed first, leaves the preview blank when the answer is incomplete, disables Open-in-XXE (which splices
@@ -201,10 +204,10 @@
 #
 #   THE PREVIEW
 #
-#   The preview is a QWebEngineView rendering HTML from TransferPreview - one rule for a create, a side-by-side before/after for a modify, the rule beside its prose for an explain. Two
-#   things about it are not obvious. It is constructed lazily and kept out of the window until a preview is actually shown, because an embedded Chromium view installs input hooks that steal
-#   arrow keys from the description boxes; and because constructing it is slow, showEvent warms it up on the next idle moment so the first preview isn't held up by Chromium starting. The
-#   zoom factor is remembered on the dialog, not just on the view, so it survives re-rendering and view rebuilds.
+#   The preview is a QWebEngineView rendering HTML from TransferPreview - one rule for a create, a side-by-side before/after for a modify (back to the single rule once it's written), the rule
+#   beside its prose for an explain. Two things about it are not obvious. It is constructed lazily and kept out of the window until a preview is actually shown, because an embedded Chromium
+#   view installs input hooks that steal arrow keys from the description boxes; and because constructing it is slow, showEvent warms it up on the next idle moment so the first preview isn't
+#   held up by Chromium starting. The zoom factor is remembered on the dialog, not just on the view, so it survives re-rendering and view rebuilds.
 #
 #   CODE STRUCTURE
 #
@@ -226,13 +229,14 @@
 #   prompt helpers (cleanDescription, gatherMacrosForPrompt, warnMissingMacros), the three action handlers (onCreate, onModify, onExplain) which all funnel into startRuleGeneration ->
 #   startWorker, then the result handlers (onGenerateFinished, showValidationFailed, onGenerateFailed, onRateLimited, onUnknownModel), the model-picker trio (populateModelCombo,
 #   applyModelChoice, rememberWorkingModel), onChangeApiKey, and finally approveDraft (the only thing here that causes the real transfer file to be written - through AIRules.applyRule, which
-#   backs it up first), onOpenRuleFile and onOpenInXxe.
+#   backs it up first) with showWrittenModification, onOpenRuleFile and onOpenInXxe.
 #
 
 import os
 import shutil
 import tempfile
 import unicodedata
+import xml.etree.ElementTree as ET
 
 from PyQt6.QtCore import Qt, QThread, QObject, pyqtSignal, QCoreApplication, QTimer
 from PyQt6.QtGui import QIcon
@@ -1486,6 +1490,10 @@ class WorkOnRulesWithAIDlg(QDialog):
         try:
             self.reloadRules()
 
+            # After a modify, go back to the single-pane view of the rule/macro as it now is in the file. Done inside the guard so selecting it in its list doesn't fire the selection handler.
+            if mode == 'modify':
+                self.showWrittenModification(targetComment, wroteMacro)
+
         finally:
             self.switchingTabs = prior
 
@@ -1499,6 +1507,37 @@ class WorkOnRulesWithAIDlg(QDialog):
             self.ui.statusLabel.setText(_translate('WorkOnRulesWithAI', 'Rule written to the transfer file (backup: {backup}). Generate or select another rule to continue.').format(backup=os.path.basename(backupPath)))
 
         return True
+
+    def showWrittenModification(self, targetComment, isMacro: bool):
+        '''After a modified rule or macro is written and the lists re-read, replace the before/after comparison with the single-pane preview of the rule as it now stands in the file, select it in
+        its list, and make it the current rule - so a further Modify or Explain starts from the written version, not the pre-modification XML held from when it was first selected.
+
+        It is looked up by the name in the XML that was written (a rule's comment, a macro's n) because the AI may have renamed it; the name it was selected under is the fallback. The caller
+        holds switchingTabs, so the list selection made here doesn't re-run onRuleSelected/onMacroSelected.'''
+
+        matchAttr = 'n' if isMacro else 'comment'
+        writtenName = targetComment
+
+        # The draft passed validation before it could be approved, so it parses; the guard only covers a draft with no name attribute, where the selected name is kept.
+        if self.ruleResult and self.ruleResult.ruleXml:
+            writtenName = ET.fromstring(self.ruleResult.ruleXml).get(matchAttr) or targetComment
+
+        xmlByName = self.macroXmlByName if isMacro else self.ruleXmlByComment
+        listWidget = self.ui.macroList if isMacro else self.ui.ruleList
+        writtenXml = xmlByName.get(writtenName)
+
+        if not writtenXml:
+            return
+
+        self.currentTargetComment = writtenName
+        self.currentRuleXml = writtenXml
+
+        matches = listWidget.findItems(writtenName, Qt.MatchFlag.MatchExactly)
+
+        if matches:
+            listWidget.setCurrentItem(matches[0])
+
+        self.ensurePreview().setHtml(TransferPreview.renderRulePreviewHtml(writtenXml, lang=self.interfaceLangCode()))
 
     def onOpenRuleFile(self):
         '''Open the real transfer rules file in the XML editor so the user can make a change by hand. Two things are done first. A pending draft is offered for writing, because this window holds
