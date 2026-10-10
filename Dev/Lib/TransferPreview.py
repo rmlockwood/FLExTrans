@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.1 - 10/9/26 - Ron Lockwood
+#    In the before/after comparison, chip and comment fills are white (or the row's red/green/orange diff colour on a highlighted row) and the side value is black. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -60,6 +63,41 @@
 #    Prototype. Render an Apertium transfer <rule> (and supporting definitions) as read-only styled HTML for the "Work on Rules with AI" preview. Mirrors the XXE stylesheet's palette
 #    and labels via transfer_preview.css. Produces a single render (for creating a rule) or a side-by-side before/after comparison (for modifying one) with best-effort diff highlighting.
 #    No raw markup is ever shown to the user - only the rendered result goes into a QWebEngineView.
+#
+#   OVERVIEW (AI generated, then edited)
+#
+#   Renders Apertium transfer XML (a rule, a macro, or new definitions) as read-only styled HTML for the "Work on Rules with AI" preview, so the linguist sees a rule the way XXE shows it
+#   (labels, coloured attribute chips, comment boxes, plus/minus collapsers) without ever seeing raw markup. The HTML is a complete self-contained document (CSS inlined, collapser script
+#   embedded) that the dialog loads into a QWebEngineView.
+#
+#   THE FOUR VIEWS
+#
+#   renderRuleHtml - a single rule plus any new definitions (Create). renderRulePreviewHtml - the clicked rule alone in the left pane, right pane left free (Modify/Explain, before the AI answers).
+#   renderExplanationHtml - the rule on the left, the AI's Markdown explanation on the right (Explain). renderComparisonHtml - before and after side by side with diff highlighting (Modify).
+#
+#   LABELS AND COLOURS
+#
+#   Labels and chip colours come from a per-language spec (Lib/AI/preview_spec_<lang>.json) that derive_preview_specs.py generates from the XXE stylesheet transfer.css, so editing XXE's CSS
+#   flows into the preview. The built-in SPEC is only a fallback when no JSON exists. transfer_preview.css holds the layout plus fallback colours; colorsToCss appends the derived colours after it.
+#
+#   DIFF HIGHLIGHTING
+#
+#   Only the comparison view highlights (the compare flag on elementToHtml); the single-rule views render plain. Children are aligned with difflib on childKey (tag, or one shared key for comments)
+#   so an inserted node marks only itself instead of shifting every later row. Unmatched nodes are "removed" (red) on the before pane and "added" (green) on the after pane; matched nodes whose
+#   tag/attributes/comment text differ are "changed" (orange). Only the row's own header line is coloured, never its children. The comparison is wrapped in a "diffview" class that turns the normal
+#   chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre side text black, so the XXE palette doesn't compete with the diff colours.
+#
+#   EXPLANATION TEXT
+#
+#   The model's Markdown is rendered by Python-Markdown with &, <, > swapped for private-use sentinels first (see _MD_SENTINELS for why plain escaping doesn't work), so no markup from the model
+#   can become live HTML. Apertium lexical units in the text (^lemma<tags>$) are stashed as placeholders and swapped back as colour-coded HTML from Testbed.lexicalUnitToHtml.
+#
+#   CODE STRUCTURE
+#
+#   loadSpec / loadCss read the display spec and the stylesheet. renderChip and renderRowLine build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree,
+#   doing the difflib alignment in compare mode. parseFragment parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render
+#   the explanation. wrapDocument wraps a body into the final document, and the four render*Html functions at the end are the public entry points.
+#
 
 import os
 import re
@@ -495,4 +533,5 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
     left = '<div class="pane"><h3>Before</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True) + '</div>'
     right = '<div class="pane"><h3>After</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True) + '</div>'
 
-    return wrapDocument(legend + '<div class="compare">' + left + right + '</div>', spec.get('_colors'), split=True)
+    # The diffview class turns the normal chip and comment-box fills white (or the row's diff colour on a highlighted row) and the side text black, so only the diff colours stand out - see transfer_preview.css.
+    return wrapDocument(legend + '<div class="compare diffview">' + left + right + '</div>', spec.get('_colors'), split=True)

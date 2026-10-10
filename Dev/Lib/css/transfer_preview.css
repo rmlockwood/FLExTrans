@@ -160,6 +160,25 @@ body {
 .added   > .rowline { background: #CFF5D1; }
 .removed > .rowline { background: #F7CAC9; }
 
+/* In the before/after comparison (the .diffview wrapper renderComparisonHtml puts around the panes) the usual chip and comment-box fills are dropped so they don't compete with the diff colours:
+   every fill is white, except on a highlighted row, where the chips and comment box take the row's red/green/orange so the whole row reads as one solid band. The selectors here are more specific
+   than the .c-* classes (including the derived overrides colorsToCss appends after this file), so they win without needing !important. */
+.diffview .chip,
+.diffview .comment .rowline { background: #FFFFFF; }
+
+.diffview .changed > .rowline .chip,
+.diffview .comment.changed > .rowline { background: #FFD8A8; }
+
+.diffview .added > .rowline .chip,
+.diffview .comment.added > .rowline { background: #CFF5D1; }
+
+.diffview .removed > .rowline .chip,
+.diffview .comment.removed > .rowline { background: #F7CAC9; }
+
+/* Attribute values shown as coloured text rather than a filled box (the red/ochre side value) are black in the comparison too, for the same reason. */
+.diffview .c-side-sl,
+.diffview .c-side-tl { color: #000000; }
+
 /* Side-by-side comparison layout for the "modify" preview. */
 .compare {
     display: flex;
