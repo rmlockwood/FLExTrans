@@ -15,8 +15,8 @@
     </message>
     <message>
         <location filename="../TestBedEditor.py" line="133"/>
-        <source>View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the headword with its homograph and sense numbers (e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered, and choosing a headword fills in its category and features. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file.</source>
-        <translation>Afficher et modifier les tests du banc d'essai. Chaque test est une ligne qui présente son texte source, son résultat attendu et son commentaire, avec en dessous une ligne pour chaque unité lexicale de l'entrée source du test. Double-cliquez sur une cellule pour la modifier. Pour une unité lexicale, saisissez le mot-vedette avec ses numéros d'homographe et de sens (p. ex. house1.1), la catégorie grammaticale, les éventuels traits ou classes et les éventuels affixes. Pendant la saisie, des suggestions tirées du projet FLEx source sont proposées, et le choix d'un mot-vedette remplit sa catégorie et ses traits. Séparez plusieurs traits, classes ou affixes par un point, p. ex. sg.pst. Cliquez avec le bouton droit sur une ligne pour ajouter ou supprimer une unité lexicale. Utilisez Ajouter un test et Supprimer le test pour ajouter ou retirer des tests entiers, puis cliquez sur Enregistrer pour écrire vos modifications dans le fichier du banc d'essai.</translation>
+        <source>View and edit the tests in the testbed. Each test is a row showing its source text, expected result and comment, with a row under it for each lexical unit in the test's source input. Double-click a cell to edit it. For a lexical unit, enter the lemma (the headword with its homograph and sense numbers, e.g. house1.1), the grammatical category, any features or classes, and any affixes. As you type, suggestions from the source FLEx project are offered. After you choose a lemma, its category and features or classes are filled in when you leave the cell. Separate multiple features, classes or affixes with a period, e.g. sg.pst. Right-click a row to add or delete a lexical unit. Use Add Test and Delete Test to add or remove whole tests, and click Save to write your changes to the testbed file.</source>
+        <translation>Afficher et modifier les tests du banc d'essai. Chaque test est une ligne qui présente son texte source, son résultat attendu et son commentaire, avec en dessous une ligne pour chaque unité lexicale de l'entrée source du test. Double-cliquez sur une cellule pour la modifier. Pour une unité lexicale, saisissez le lemme (le mot-vedette avec ses numéros d'homographe et de sens, p. ex. house1.1), la catégorie grammaticale, les éventuels traits ou classes et les éventuels affixes. Pendant la saisie, des suggestions tirées du projet FLEx source sont proposées. Une fois un lemme choisi, sa catégorie et ses traits ou classes sont remplis lorsque vous quittez la cellule. Séparez plusieurs traits, classes ou affixes par un point, p. ex. sg.pst. Cliquez avec le bouton droit sur une ligne pour ajouter ou supprimer une unité lexicale. Utilisez Ajouter un test et Supprimer le test pour ajouter ou retirer des tests entiers, puis cliquez sur Enregistrer pour écrire vos modifications dans le fichier du banc d'essai.</translation>
     </message>
     <message>
         <location filename="../TestBedEditor.py" line="252"/>
@@ -92,6 +92,16 @@
         <location filename="../TestBedEditor.py" line="560"/>
         <source>Transfer rule file: {transferRulesFile} does not exist.</source>
         <translation>Fichier de règles de transfert : {transferRulesFile} n'existe pas.</translation>
+    </message>
+    <message>
+        <location filename="../TestBedEditor.py" line="634"/>
+        <source>Save Error</source>
+        <translation>Erreur d'enregistrement</translation>
+    </message>
+    <message>
+        <location filename="../TestBedEditor.py" line="634"/>
+        <source>A lemma or its grammatical category is blank in this test. Fill it in before saving.&lt;br&gt;&lt;br&gt;&lt;b&gt;Source Text:&lt;/b&gt; {sourceText}&lt;br&gt;&lt;b&gt;Expected Result:&lt;/b&gt; {expectedResult}&lt;br&gt;&lt;b&gt;Comment:&lt;/b&gt; {comment}</source>
+        <translation>Un lemme ou sa catégorie grammaticale est vide dans ce test. Remplissez-le avant d'enregistrer.&lt;br&gt;&lt;br&gt;&lt;b&gt;Texte source :&lt;/b&gt; {sourceText}&lt;br&gt;&lt;b&gt;Résultat attendu :&lt;/b&gt; {expectedResult}&lt;br&gt;&lt;b&gt;Commentaire :&lt;/b&gt; {comment}</translation>
     </message>
 </context>
 </TS>

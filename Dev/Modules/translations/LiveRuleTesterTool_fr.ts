@@ -364,11 +364,21 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
       <source>Problem opening file: {tgt_file}.</source>
       <translation>Problème lors de l'ouverture du fichier: {tgt_file}.</translation>
     </message>
-    <message>
-      <location filename="../LiveRuleTesterTool.py" line="3356"/>
-      <source>(no contents could be read from {file})</source>
-      <translation>(aucun contenu n'a pu être lu dans {file})</translation>
-    </message>
+  <message>
+    <location filename="../LiveRuleTesterTool.py" line="3356"/>
+    <source>(no contents could be read from {file})</source>
+    <translation>(aucun contenu n'a pu être lu dans {file})</translation>
+  </message>
+  <message>
+    <location filename="../LiveRuleTesterTool.py" line="2003"/>
+    <source>Add to Testbed</source>
+    <translation>Ajouter au fichier test</translation>
+  </message>
+  <message>
+    <location filename="../LiveRuleTesterTool.py" line="2003"/>
+    <source>It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</source>
+    <translation>Il semble que vous n'ayez pas synthétisé après votre dernier transfert. Le test que vous ajoutez pourrait donc avoir des données attendues incorrectes. Voulez-vous vraiment ajouter le test ?</translation>
+  </message>
   </context>
   <context>
     <name>RunApertium</name>

@@ -5,6 +5,13 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.14 - 10/12/26 - Ron Lockwood
+#    Fixes #1626. Ask the user to confirm adding a test when a transfer has been done since the last synthesis, since the expected result would then be stale. Also clear the results and disable
+#    Add to Testbed whenever the selected sentence, words or manual entry change.
+#
+#   Version 3.17.13 - 10/7/26 - Ron Lockwood
+#    Tag the testbed file's backup copy as made before a test was added.
+#
 #   Version 3.17.12 - 9/30/26 - Ron Lockwood
 #    Rebuild Bilingual Lexicon and changing the source text reopen the project in place (same FLExProject object) instead of creating a new one, so no one is left holding a closed project.
 #
@@ -412,7 +419,10 @@
 #   reopens the same FLExProject object in place, because MainFunction() and FlexTools hold references to it - swapping in a new object would leave them with a closed project. The up
 #   and down arrows reorder the rule in the highlighted row; that reorder only affects the copy written to the tester folder, so it is a way to try a different rule order without touching the
 #   real rule file. The select-all check box above the rule list is tri-state and reflects the rules below it. Add to Testbed pairs the source lexical units with the synthesis result and writes
-#   them into the testbed file, prompting before overwriting a test that has the same lexical units, and cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
+#   them into the testbed file, prompting before overwriting a test that has the same lexical units. It also asks for confirmation when a target_text*.txt file is newer than myText.txt, i.e.
+#   the user transferred (perhaps for a different sentence) without synthesizing again, because the Synthesized Text box would then hold a stale result that would become the test's expected
+#   result. The comparison is done in nanoseconds because users often click Transfer and Synthesize within the same second. Changing the selected sentence, words or manual entry clears
+#   the result boxes and disables the button for the same reason (__ClearStuff), so a result can't be paired with a selection it didn't come from. It cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
 #   punctuation that isn't sentence punctuation is dropped (running the Text Out rules over the sentence punctuation first, if that box is checked, so the comparison is fair). Once a test really
 #   has been added it also saves a copy of every phase's transfer rules in Output\rule-file-history, tagged test_added, so there is a record of the rules that produced the result the new test
 #   now expects; see Lib/RuleFileHistory.py for the naming. Cancelling the overwrite prompt adds no test and so saves no copy. The zoom buttons
@@ -511,7 +521,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.12",
+        FTM_Version    : "3.17.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1018,6 +1028,7 @@ class Main(QMainWindow):
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
+        self.ui.ManualEdit.textChanged.connect(self.ManualEditChanged)
         self.ui.ZoomIncreaseSource.clicked.connect(self.ZoomIncreaseSourceClicked)
         self.ui.ZoomDecreaseSource.clicked.connect(self.ZoomDecreaseSourceClicked)
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
@@ -1985,8 +1996,28 @@ class Main(QMainWindow):
             # If no non-sentence-ending punctuation was found, return the original string
             return inputStr, errMsg
 
+    def transferIsNewerThanSynthesis(self):
+
+        # Return True if any transfer output file in the tester folder was written after the synthesis output file. In advanced mode a transfer from the first or second rules tab writes
+        # target_text1.txt or target_text2.txt rather than target_text.txt, so all three are checked. Use nanosecond times, because Transfer and Synthesize are often clicked within the same second.
+        if not os.path.exists(self.synthesisFilePath):
+
+            return False
+
+        synthesisTime = os.stat(self.synthesisFilePath).st_mtime_ns
+
+        for targetName in [TARGET_FILE, TARGET_FILE1, TARGET_FILE2]:
+
+            targetPath = os.path.join(self.testerFolder, targetName)
+
+            if os.path.exists(targetPath) and os.stat(targetPath).st_mtime_ns > synthesisTime:
+
+                return True
+
+        return False
+
     def AddTestbedButtonClicked(self):
-        
+
         self.ui.TestsAddedLabel.setText('')
         activeLexicalUnitsStr = self.getActiveLexicalUnits()
 
@@ -1995,6 +2026,16 @@ class Main(QMainWindow):
 
             self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
             return
+
+        # If the user transferred again after the last synthesis, the Synthesized Text box holds the result for the earlier transfer, which may not even be the same sentence.
+        # Make sure they really want that result to become the test's expected result.
+        if self.transferIsNewerThanSynthesis():
+
+            retVal = QMessageBox.question(self, _translate('LiveRuleTesterTool', 'Add to Testbed'), _translate('LiveRuleTesterTool', "It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+
+            if retVal != QMessageBox.StandardButton.Yes:
+
+                return
 
         # Set the direction attribute
         if self.__sentModel.getRTL():
@@ -2082,7 +2123,7 @@ class Main(QMainWindow):
         # Write the XML file
         if cnt > 0:
 
-            fileObj.write()
+            fileObj.write(TAG_BEFORE_TEST_ADDED)
 
             # Save a copy of every transfer rules file this project has, so there is a record of the rules that produced the result this test now expects. An advanced project's interchunk and
             # postchunk files go too, since the test went through all of those phases. The result is ignored on purpose: failing to save a copy must not undo a test the user has just added, and a
@@ -2593,7 +2634,9 @@ class Main(QMainWindow):
         self.__lexicalUnits += ' '
 
     def SourceCheckBoxClicked(self):
-        self.ui.TestsAddedLabel.setText('')
+
+        # The selected words changed, so any transfer and synthesis results showing are for the old selection.
+        self.__ClearStuff()
 
         mySent = self.__sentModel.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
@@ -2621,6 +2664,9 @@ class Main(QMainWindow):
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
 
     def listSentClicked(self):
+
+        # The selected sentence changed, so any results showing are for the old sentence. Left there, Add to Testbed could pair this sentence with the old sentence's synthesis result.
+        self.__ClearStuff()
 
         self.lastSentNum = self.ui.listSentences.currentIndex().row()
         mySent = self.__sentModel.getSent(self.lastSentNum)
@@ -2675,6 +2721,7 @@ class Main(QMainWindow):
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
 
+    # Clear the result areas. Called whenever the results showing no longer belong to what is selected - a different sentence or words, reloaded rules, a different rules tab, etc.
     def __ClearStuff(self):
 
         self.ui.TestsAddedLabel.setText('')
@@ -2682,6 +2729,17 @@ class Main(QMainWindow):
         self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
         self.ui.warningTextEdit.setPlainText('')
+
+        # There's no synthesis result now, so there is nothing to add to the testbed until the user synthesizes again. Otherwise a stale result could be paired with the new selection.
+        self.ui.addToTestbedButton.setEnabled(False)
+
+    # The user typed in the manual entry box, so the lexical units changed and the results showing are for the old ones. The other selection functions also set this box's text, but they
+    # clear the results themselves, so only react when the manual entry tab is the one showing.
+    def ManualEditChanged(self):
+
+        if self.ui.tabSource.currentIndex() == 2: # manual entry
+
+            self.__ClearStuff()
 
     # Move keyboard focus to the active source-selection widget. Called when the tool opens (including when it restarts after the user picks a different source text) so the arrow keys work right away.
     # Without this the source text combo box keeps the focus, so an arrow key press changes the source text again instead of navigating the selection. See issue #1134.
@@ -2790,7 +2848,8 @@ class Main(QMainWindow):
         self.lastSentNum = self.ui.SentCombo.currentIndex()
         mySent = self.__sentModel.getSent(self.lastSentNum)
 
-        # Clear stuff
+        # Clear stuff, including the results, which are for the old sentence.
+        self.__ClearStuff()
         self.ui.SelectedWordsEdit.setPlainText('')
         self.__ClearAllChecks()
         self.__lexicalUnits = ''
