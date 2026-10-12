@@ -74,17 +74,18 @@ body {
 }
 
 /* A few leaf items carry extra indentation in the XXE stylesheet, via their own margin-left on top of the parent's .125in padding: pattern-item by .4in, attr-item and list-item by
-   .2in. Match those so, e.g., "item:" under "pattern:" sits as far right as it does in XXE (the standard .125in elements like clip under a lexical unit already lined up). */
-.el.pattern-item {
-    margin-left: .4in;
+   .2in. Match those so, e.g., "item:" under "pattern:" sits as far right as it does in XXE (the standard .125in elements like clip under a lexical unit already lined up). The indent is
+   padding on the row line rather than a margin on the element, so a diff colour fills the whole row instead of leaving a white notch where the indent is. */
+.el.pattern-item > .rowline {
+    padding-left: .4in;
 }
 
-.el.attr-item {
-    margin-left: .2in;
+.el.attr-item > .rowline {
+    padding-left: .2in;
 }
 
-.el.list-item {
-    margin-left: .2in;
+.el.list-item > .rowline {
+    padding-left: .2in;
 }
 
 /* The header row = the element's label plus its displayed attribute chips.
@@ -163,8 +164,11 @@ body {
 /* In the before/after comparison (the .diffview wrapper renderComparisonHtml puts around the panes) the usual chip and comment-box fills are dropped so they don't compete with the diff colours:
    every fill is white, except on a highlighted row, where the chips and comment box take the row's red/green/orange so the whole row reads as one solid band. The selectors here are more specific
    than the .c-* classes (including the derived overrides colorsToCss appends after this file), so they win without needing !important. */
-.diffview .chip,
+.diffview .chip:not(.keep-color),
 .diffview .comment .rowline { background: #FFFFFF; }
+
+/* The exception: a rule's name and a macro's name in its definition (keep-color, see NAME_CHIPS in TransferPreview.py) keep their XXE colour, as landmarks for finding your place in a long
+   rules file. They still take the diff colour below when their row is highlighted. */
 
 .diffview .changed > .rowline .chip,
 .diffview .comment.changed > .rowline { background: #FFD8A8; }
@@ -174,6 +178,14 @@ body {
 
 .diffview .removed > .rowline .chip,
 .diffview .comment.removed > .rowline { background: #F7CAC9; }
+
+/* The change the next/previous buttons last stepped to (diffNav in TransferPreview's ALIGN_SCRIPT): an outline round a changed row's line, or round the whole of an added or removed block. */
+.diffview .el.changed.current-change > .rowline,
+.diffview .el.added.current-change,
+.diffview .el.removed.current-change {
+    outline: 2px solid #A0522D;
+    outline-offset: -1px;
+}
 
 /* Within a changed row, the parts that actually differ from the other pane's value (e.g. the 1s of kira1.1 against kira2.2) get a darker orange (see highlightDifferences). */
 .diffview .diffchar { background: #F5A65B; }

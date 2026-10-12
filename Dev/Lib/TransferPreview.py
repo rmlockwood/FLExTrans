@@ -5,6 +5,19 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.9 - 10/12/26 - Ron Lockwood
+#    Corrected docstrings that called the comparison positional or said rules are matched by name; rows are lined up in order with difflib.
+#
+#   Version 3.17.8 - 10/10/26 - Ron Lockwood
+#    The change arrows open folded blocks to reach a change; added foldAll for the Compare Rule Files tool's Collapse All / Expand All buttons. Changes are grouped once, on the open page, so
+#    folding doesn't change the count.
+#
+#   Version 3.17.7 - 10/10/26 - Ron Lockwood
+#    Rules and macros can be folded and get indent guides (as do action and let); rule and macro names keep their colour in comparisons; folding a block no longer jumps the scroll position.
+#
+#   Version 3.17.6 - 10/10/26 - Ron Lockwood
+#    Added renderFileComparisonHtml (two whole rules files, for the new Compare Rule Files tool) and change navigation; pane alignment now measures once, so it stays fast on a whole file.
+#
 #   Version 3.17.5 - 10/10/26 - Ron Lockwood
 #    The comparison panes scroll together with one scrollbar and matched rows lined up; folding a block folds its twin. Elements of different kinds are no longer paired as "changed".
 #
@@ -78,14 +91,16 @@
 #
 #   OVERVIEW (AI generated, then edited)
 #
-#   Renders Apertium transfer XML (a rule, a macro, or new definitions) as read-only styled HTML for the "Work on Rules with AI" preview, so the linguist sees a rule the way XXE shows it
-#   (labels, coloured attribute chips, comment boxes, plus/minus collapsers) without ever seeing raw markup. The HTML is a complete self-contained document (CSS inlined, collapser script
-#   embedded) that the dialog loads into a QWebEngineView.
+#   Renders Apertium transfer XML (a rule, a macro, new definitions, or a whole rules file) as read-only styled HTML, so the linguist sees rules the way XXE shows them (labels, coloured
+#   attribute chips, comment boxes, plus/minus collapsers) without ever seeing raw markup. It serves the AI Rule Studio's preview and the Compare Rule Files tool. The HTML is a complete
+#   self-contained document (CSS inlined, scripts embedded) that the caller loads into a QWebEngineView.
 #
-#   THE FOUR VIEWS
+#   THE VIEWS
 #
 #   renderRuleHtml - a single rule plus any new definitions (Create). renderRulePreviewHtml - the clicked rule alone in the left pane, right pane left free (Modify/Explain, before the AI answers).
 #   renderExplanationHtml - the rule on the left, the AI's Markdown explanation on the right (Explain). renderComparisonHtml - before and after side by side with diff highlighting (Modify).
+#   renderFileComparisonHtml - two whole rules files side by side (Compare Rule Files). Both comparisons are built by comparisonDocument, so they look and behave the same; for a file the
+#   older version can go on the right (beforeOnRight), since the colours always read from the older version to the newer one.
 #
 #   LABELS AND COLOURS
 #
@@ -104,14 +119,17 @@
 #   header line is coloured, never its children. On a changed row, each value is also compared piece by piece (letter runs, digit runs, punctuation) with the other pane's (highlightDifferences),
 #   and the differing pieces are shown darker orange: values always (a changed side value is highlighted whole), a comment only when the two are alike enough (COMMENT_DIFF_MIN_RATIO) for the
 #   marks not to be noise. The comparison is wrapped in a "diffview" class that turns the normal chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre
-#   side text black, so the XXE palette doesn't compete with the diff colours.
+#   side text black, so the XXE palette doesn't compete with the diff colours. Rule names and macro names (NAME_CHIPS) are the exception and keep their colour, as landmarks in a long file.
 #
 #   LINED-UP SCROLLING
 #
 #   The two comparison panes scroll as one, with their rows level, like a side-by-side diff tool. The trap is that the panes are rendered separately, so they must agree exactly on which rows
 #   pair up: alignChildrenForSide has the after pane invert the before pane's alignment rather than run its own (difflib isn't symmetric). Each matched pair gets the same data-pair id in both
 #   panes ("0" for the top element, then "<parent id>.<before position>-<after position>"), and ALIGN_SCRIPT, run in the browser after layout, pads the higher twin of each pair down to its
-#   partner. It re-runs on resize/zoom and on a fold; folding a block folds its twin too (COLLAPSER_SCRIPT). A pair it can't find simply isn't padded - the panes stay readable either way.
+#   partner. It re-runs on resize/zoom and on a fold; folding a block folds its twin too, and keeps the clicked row where it was on screen (COLLAPSER_SCRIPT). A pair it can't find simply
+#   isn't padded - the panes stay readable either way.
+#   The same script groups the highlighted rows into changes and steps through them (diffNav), for the Compare Rule Files arrow buttons; see the comment above ALIGN_SCRIPT for how it stays
+#   fast on a whole file of thousands of rows.
 #
 #   EXPLANATION TEXT
 #
@@ -123,7 +141,8 @@
 #   loadSpec / loadCss read the display spec and the stylesheet. childKey/childSignature, alignByKind and alignChildren do the matching. highlightDifferences, renderChip and renderRowLine
 #   build one element's header row; diffClass decides "changed"; elementToHtml recurses over the tree, calling alignChildrenForSide in compare mode and handing out the pair ids. parseFragment
 #   parses XML keeping comments; colorsToCss turns the derived colours into CSS. markdownToHtml and colorLexicalUnitsInMarkdown render the explanation. COLLAPSER_SCRIPT and ALIGN_SCRIPT are
-#   the browser-side scripts; wrapDocument wraps a body into the final document, and the four render*Html functions at the end are the public entry points.
+#   the browser-side scripts; wrapDocument wraps a body into the final document. The render*Html functions at the end are the public entry points, with comparisonDocument building both
+#   comparisons and parseRuleFile reading a whole rules file for renderFileComparisonHtml.
 #
 
 import os
@@ -212,14 +231,14 @@ SPEC = {
 # "_collapsible" key); it mirrors the elements transfer.css currently collapses that can appear in a rule/def preview.
 COLLAPSIBLE_FALLBACK = {'rule', 'action', 'when', 'otherwise', 'out', 'def-cat', 'def-attr', 'def-list', 'def-macro'}
 
-# The preview shows a single whole rule, or a single whole macro, at the top. Folding that top element away would leave nothing, so rule and def-macro never get a collapser here even though
-# transfer.css marks them collapsible (in XXE you see the whole file, so folding a rule there makes sense).
-COLLAPSER_EXCLUDE = {'rule', 'def-macro'}
+# Vertical indent guides mark the lengthy, deeply-nested blocks so the eye can track which rows line up with which block (like a code editor's indent guides) - in a whole rules file, a guide
+# down the length of each rule and macro is what shows where one ends and the next begins. This is deliberately a DIFFERENT, preview-only set from the collapsible elements: guides go on these
+# blocks whether or not XXE lets you fold them (choose/test/let/and/or/not are not collapsible in transfer.css but still benefit from a guide).
+INDENT_GUIDE_TAGS = {'rule', 'def-macro', 'action', 'let', 'choose', 'when', 'otherwise', 'test', 'out', 'and', 'or', 'not'}
 
-# Vertical indent guides mark the lengthy, deeply-nested logic blocks so the eye can track which rows line up with which block (like a code editor's indent guides). This is deliberately a
-# DIFFERENT, preview-only set from the collapsible elements: guides go on the block-logic elements whether or not XXE lets you fold them (choose/test/and/or/not are not collapsible in
-# transfer.css but still benefit from a guide), and never on the single top-level rule/macro.
-INDENT_GUIDE_TAGS = {'choose', 'when', 'otherwise', 'test', 'out', 'and', 'or', 'not'}
+# The name chips that keep their XXE colour in the comparison, where every other chip is white (see .keep-color in transfer_preview.css): a rule's name and a macro's name in its definition.
+# They are the landmarks for finding your place in a long rules file. (Element tag, attribute) pairs; a macro's name where it is called (call-macro) is not one of them.
+NAME_CHIPS = {('rule', 'comment'), ('def-macro', 'n')}
 
 LIB_DIR = os.path.dirname(os.path.realpath(__file__))
 # The derived per-language preview specs live in the Lib/AI subfolder (grouped with the other Work-on-Rules-with-AI runtime data) rather than the Lib root.
@@ -355,9 +374,10 @@ def highlightDifferences(text: str, otherText=None, minRatio: float = 0.0) -> st
 
     return ''.join(out)
 
-def renderChip(value: str, colorClass: str, otherValue=None) -> str:
+def renderChip(value: str, colorClass: str, otherValue=None, keepColor: bool = False) -> str:
     '''Render one attribute value. Most values are coloured chips (a bordered box); the "plain" classes (c-plain and the c-side-* side colours) are shown as plain coloured text with no box.
-    `otherValue` is the same attribute's value in the other pane of a comparison, on a changed row; the parts that differ from it are highlighted (see highlightDifferences).'''
+    `otherValue` is the same attribute's value in the other pane of a comparison, on a changed row; the parts that differ from it are highlighted (see highlightDifferences). `keepColor`
+    marks a name chip (NAME_CHIPS) that keeps its colour in the comparison.'''
 
     shown = highlightDifferences(value, otherValue)
 
@@ -366,7 +386,7 @@ def renderChip(value: str, colorClass: str, otherValue=None) -> str:
 
     # An empty value (e.g. <lit v=""/>, the empty string used to clear an attribute) still gets a visible coloured box: a non-breaking space gives it content, and the chip's min-width
     # keeps it from collapsing, so an empty literal reads as an (empty-valued) box rather than nothing.
-    return '<span class="chip {cls}">{val}</span>'.format(cls=colorClass, val=shown or '&nbsp;')
+    return '<span class="chip {cls}{keep}">{val}</span>'.format(cls=colorClass, keep=' keep-color' if keepColor else '', val=shown or '&nbsp;')
 
 def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False, changedFrom=None) -> str:
     '''Render an element's header row: its label plus its displayed attributes, using the given per-language display spec. With `collapsible` a plus/minus collapser box is placed in
@@ -421,12 +441,12 @@ def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False, chang
         if attrLabel:
             pieces.append('<span class="attrlabel">' + html.escape(attrLabel) + '</span>')
 
-        pieces.append(renderChip(value, colorClass, otherValue))
+        pieces.append(renderChip(value, colorClass, otherValue, (elem.tag, name) in NAME_CHIPS))
 
     return '<span class="rowline">' + collapser + ''.join(pieces) + '</span>'
 
 def diffClass(elem: ET.Element, other) -> str:
-    '''Diff class for an element vs. its positional counterpart: "changed" if the tag or attributes differ, else "".'''
+    '''Diff class for an element vs. its counterpart (as paired by alignChildren): "changed" if the tag or attributes differ, else "".'''
 
     if other is None:
         return ''
@@ -453,8 +473,8 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
     '''Recursively render an element to HTML.
 
     Diff highlighting only happens when `compare` is True (the side-by-side modify view). In the single-rule create/explain views `compare` is False and no added/changed/removed classes
-    are emitted, so the rule renders plain (like XXE) rather than being flagged wholesale as "added". `other` is the positional counterpart in the compared tree; `side` is which pane we
-    are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.
+    are emitted, so the rule renders plain (like XXE) rather than being flagged wholesale as "added". `other` is the counterpart in the compared tree (as paired by alignChildren); `side` is
+    which pane we are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.
     `pairId` names a matched pair of rows: the element is rendered with it as data-pair, and its twin in the other pane carries the same id, so ALIGN_SCRIPT can line the two up.'''
 
     if spec is None:
@@ -472,10 +492,10 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
 
         return '<div class="' + classAttr + '"' + pairAttr + '><span class="rowline">' + highlightDifferences(text, otherText, COMMENT_DIFF_MIN_RATIO) + '</span></div>'
 
-    # Two independent, children-gated decisions (see the constants above): a collapser fold control goes on the elements transfer.css marks collapsible (minus the top-level rule/macro),
-    # and a vertical indent guide - the "guide" class the CSS keys off - goes on the lengthy logic blocks. The two sets overlap (e.g. out, when) but are not the same.
+    # Two independent, children-gated decisions (see the constants above): a collapser fold control goes on the elements transfer.css marks collapsible (rules and macros included), and a
+    # vertical indent guide - the "guide" class the CSS keys off - goes on the lengthy blocks. The two sets overlap (e.g. rule, out, when) but are not the same.
     children = [c for c in elem]
-    collapsible = bool(children) and elem.tag not in COLLAPSER_EXCLUDE and elem.tag in (spec.get('_collapsible') or COLLAPSIBLE_FALLBACK)
+    collapsible = bool(children) and elem.tag in (spec.get('_collapsible') or COLLAPSIBLE_FALLBACK)
     guided = bool(children) and elem.tag in INDENT_GUIDE_TAGS
 
     cls = (forced or diffClass(elem, other)) if compare else ''
@@ -612,41 +632,205 @@ def colorLexicalUnitsInMarkdown(mdText: str) -> str:
 # Clicking a collapser box folds/unfolds its block: toggle the "collapsed" class on the enclosing .el, which hides the children and swaps the minus icon for the plus (both in the CSS).
 # One delegated listener on the document covers every collapser without per-element handlers. In the comparison a block's twin in the other pane (same data-pair) is folded to match, and
 # the panes are re-aligned (alignPanes, from ALIGN_SCRIPT, exists only in the comparison document).
-COLLAPSER_SCRIPT = ('<script>document.addEventListener("click", function(e) {'
-                    ' if (!(e.target.classList && e.target.classList.contains("collapser"))) { return; }'
-                    ' var block = e.target.closest(".el");'
-                    ' block.classList.toggle("collapsed");'
-                    ' var pair = block.getAttribute("data-pair");'
-                    ' if (pair) { document.querySelectorAll(\'.el[data-pair="\' + pair + \'"]\').forEach(function(twin) { twin.classList.toggle("collapsed", block.classList.contains("collapsed")); }); }'
-                    ' if (window.alignPanes) { window.alignPanes(); } });</script>')
+#
+# The clicked row must stay put on screen. Folding changes the height of everything below it, and in the comparison the re-alignment first strips all the padding, which can shrink the page
+# under the current scroll position and make the browser pull it back - so far down a long file the view jumped somewhere else. The row's screen position is noted before the fold and the
+# scrolling area (the joined comparison panes, a split view's own pane, or the page) is moved afterwards by however far the row drifted.
+COLLAPSER_SCRIPT = '''<script>
+document.addEventListener("click", function(e) {
+    if (!(e.target.classList && e.target.classList.contains("collapser"))) { return; }
+    var block = e.target.closest(".el");
+    var row = block.firstElementChild;
+    var scroller = block.closest(".compare.diffview") || (document.body.classList.contains("split") && block.closest(".pane")) || document.scrollingElement;
+    var topBefore = row.getBoundingClientRect().top;
 
-# Lines up the Before and After panes of the comparison, which scroll together as one (see .diffview in transfer_preview.css). Every matched pair of rows carries the same data-pair id in
-# both panes. Walking the pairs top to bottom, whichever twin sits higher gets a top margin that brings it level with the other; a removed or added block thereby leaves a matching gap in the
-# opposite pane, like a side-by-side diff tool. Pairs are visited in document order, which is the same order in both panes (alignChildren keeps order), so each margin only pushes later rows
-# down and never undoes an earlier alignment. A twin hidden inside a folded block (offsetParent is null) is skipped. Finally both panes get the same minimum height so their borders end
-# together. It runs on load and again whenever the layout can change: a resize (which also covers the dialog's zoom) and a fold (COLLAPSER_SCRIPT calls it).
-ALIGN_SCRIPT = ('<script>'
-                'function alignPanes() {'
-                ' var panes = document.querySelectorAll(".diffview > .pane");'
-                ' if (panes.length < 2) { return; }'
-                ' var left = panes[0], right = panes[1];'
-                ' document.querySelectorAll(".diffview .el[data-pair]").forEach(function(row) { row.style.marginTop = ""; });'
-                ' left.style.minHeight = ""; right.style.minHeight = "";'
-                ' var twinOf = {};'
-                ' right.querySelectorAll(".el[data-pair]").forEach(function(row) { twinOf[row.getAttribute("data-pair")] = row; });'
-                ' left.querySelectorAll(".el[data-pair]").forEach(function(leftRow) {'
-                '  var rightRow = twinOf[leftRow.getAttribute("data-pair")];'
-                '  if (!rightRow || !leftRow.offsetParent || !rightRow.offsetParent) { return; }'
-                '  var gap = leftRow.getBoundingClientRect().top - rightRow.getBoundingClientRect().top;'
-                '  if (Math.abs(gap) < 0.5) { return; }'
-                '  var higher = gap > 0 ? rightRow : leftRow;'
-                '  higher.style.marginTop = Math.abs(gap) + "px"; });'
-                ' var height = Math.max(left.offsetHeight, right.offsetHeight);'
-                ' left.style.minHeight = height + "px"; right.style.minHeight = height + "px"; }'
-                'window.alignPanes = alignPanes;'
-                'window.addEventListener("load", alignPanes);'
-                'window.addEventListener("resize", alignPanes);'
-                '</script>')
+    block.classList.toggle("collapsed");
+    var pair = block.getAttribute("data-pair");
+    if (pair) { document.querySelectorAll('.el[data-pair="' + pair + '"]').forEach(function(twin) { twin.classList.toggle("collapsed", block.classList.contains("collapsed")); }); }
+    if (window.alignPanes) { window.alignPanes(); }
+
+    scroller.scrollTop += row.getBoundingClientRect().top - topBefore;
+});
+</script>'''
+
+# The browser-side half of the comparison: lining the panes up, and finding and stepping through the changes. Kept as one readable block of JavaScript rather than concatenated one-liners.
+#
+# alignPanes lines up the Before and After panes, which scroll together as one (see .diffview in transfer_preview.css). Every matched pair of rows carries the same data-pair id in both panes;
+# whichever twin sits higher gets top padding that brings its row level with the other, so a removed or added block leaves a matching gap in the opposite pane, like a side-by-side diff tool.
+# Two things keep it fast and exact on a whole rule file of thousands of rows. Every position is read before anything is changed, so the browser lays the page out once instead of once per
+# row; and because padding a row pushes it and everything after it in its pane down by exactly that amount, a running total per pane gives each later row's position without re-measuring.
+# That relies on the pairs being in the same order in both panes, which alignChildren guarantees. Padding is used rather than margin because a margin can merge with the margin of a comment box
+# inside the row instead of adding to it, which would throw the running total off. A twin hidden inside a folded block (offsetParent is null) is skipped. Both panes then get the same minimum
+# height so their borders end together.
+#
+# groupChanges groups the highlighted rows into the changes the next/previous buttons step through. A row inside an added or removed block belongs to that block's change; a changed row counts
+# only its own line, an added or removed one its whole block; and rows that touch or overlap (a run of consecutive changes, or a removed block facing the added block that replaced it) are one
+# change. The grouping is done once, on the fully open page when it first loads, and then kept: it depends on where rows sit, and folding stacks rows that are far apart onto one line, so
+# regrouping after a fold would make the count jump (11 changes open, 1 change after Collapse All). Folding only moves where a change is - groupTop measures a change hidden in a folded block
+# at the row of the block that hides it.
+#
+# diffNav(direction) scrolls to the next (1) or previous (-1) change, outlines it, and returns [its number, how many there are] - [0, n] when there is none that way. Pressed again without the
+# user scrolling in between, it steps from the change it last showed; after a manual scroll it steps from where the user scrolled to. A change that is folded away - inside a folded block, or
+# itself a folded added/removed block - is opened first, in both panes (openChange), so the arrows always show the change rather than a folded row. diffSummary re-aligns and returns the count.
+# foldAll is the Collapse All / Expand All buttons: collapsing folds every block that can fold, the sections included, so a whole rules file comes down to its six section lines (Categories,
+# Attributes, Variables, Lists, Macros, Rules); expanding opens everything.
+#
+# Everything re-runs whenever the layout can change: on load, on resize (which also covers the dialog's zoom) and on a fold (COLLAPSER_SCRIPT calls alignPanes). alignPanes puts the scroll
+# position back afterwards, because stripping the old padding can briefly shrink the page and make the browser pull the scroll position up.
+ALIGN_SCRIPT = '''<script>
+var diffGroups = null;
+var currentHunk = -1;
+var lastScrollSet = null;
+var NAV_MARGIN = 40;
+
+function alignPanes() {
+    var panes = document.querySelectorAll(".diffview > .pane");
+    if (panes.length < 2) { return; }
+    var left = panes[0], right = panes[1];
+    var container = document.querySelector(".compare.diffview");
+    var scrollTop = container.scrollTop;
+
+    document.querySelectorAll(".diffview .el[data-pair]").forEach(function(row) { row.style.paddingTop = ""; });
+    left.style.minHeight = "";
+    right.style.minHeight = "";
+
+    var twinOf = {};
+    right.querySelectorAll(".el[data-pair]").forEach(function(row) { twinOf[row.getAttribute("data-pair")] = row; });
+
+    var pairs = [];
+    left.querySelectorAll(".el[data-pair]").forEach(function(leftRow) {
+        var rightRow = twinOf[leftRow.getAttribute("data-pair")];
+        if (!rightRow || !leftRow.offsetParent || !rightRow.offsetParent) { return; }
+        pairs.push([leftRow, rightRow, leftRow.firstElementChild.getBoundingClientRect().top, rightRow.firstElementChild.getBoundingClientRect().top]);
+    });
+
+    var leftShift = 0, rightShift = 0, padding = [];
+    pairs.forEach(function(pair) {
+        var gap = (pair[2] + leftShift) - (pair[3] + rightShift);
+        if (gap > 0.5) { padding.push([pair[1], gap]); rightShift += gap; }
+        else if (gap < -0.5) { padding.push([pair[0], -gap]); leftShift -= gap; }
+    });
+    padding.forEach(function(item) { item[0].style.paddingTop = item[1] + "px"; });
+
+    var height = Math.max(left.offsetHeight, right.offsetHeight);
+    left.style.minHeight = height + "px";
+    right.style.minHeight = height + "px";
+    container.scrollTop = scrollTop;
+    if (diffGroups === null) { diffGroups = groupChanges(); }
+}
+
+function contentBase() {
+    var container = document.querySelector(".compare.diffview");
+    return container.getBoundingClientRect().top - container.scrollTop;
+}
+
+function shownRowOf(row) {
+    var shown = row;
+    while (shown && !shown.offsetParent) { shown = shown.parentElement.closest(".el"); }
+    return shown;
+}
+
+function groupChanges() {
+    var container = document.querySelector(".compare.diffview");
+    if (!container) { return []; }
+    var base = contentBase();
+
+    var spans = [];
+    container.querySelectorAll(".el.changed, .el.added, .el.removed").forEach(function(row) {
+        if (row.parentElement.closest(".el.added, .el.removed") || !row.offsetParent) { return; }
+        var top = row.firstElementChild.getBoundingClientRect().top;
+        var bottom = (row.classList.contains("changed") ? row.firstElementChild : row).getBoundingClientRect().bottom;
+        spans.push({top: top - base, bottom: bottom - base, rows: [row]});
+    });
+    spans.sort(function(a, b) { return a.top - b.top; });
+
+    var groups = [];
+    spans.forEach(function(span) {
+        var last = groups[groups.length - 1];
+        if (last && span.top <= last.bottom + 2) { last.bottom = Math.max(last.bottom, span.bottom); last.rows = last.rows.concat(span.rows); }
+        else { groups.push(span); }
+    });
+    return groups.map(function(group) { return group.rows; });
+}
+
+function groupTop(group) {
+    var base = contentBase();
+    var top = Infinity;
+    group.forEach(function(row) {
+        var shown = shownRowOf(row);
+        if (shown) { top = Math.min(top, shown.firstElementChild.getBoundingClientRect().top - base); }
+    });
+    return top;
+}
+
+function diffNav(direction) {
+    var container = document.querySelector(".compare.diffview");
+    if (!container || !diffGroups || !diffGroups.length) { return [0, 0]; }
+    var count = diffGroups.length;
+    var target = -1;
+
+    if (currentHunk >= 0 && container.scrollTop === lastScrollSet) {
+        target = currentHunk + direction;
+    } else {
+        var reference = container.scrollTop + NAV_MARGIN;
+        for (var i = 0; i < count; i++) {
+            var top = groupTop(diffGroups[i]);
+            if (direction > 0 && top > reference + 2) { target = i; break; }
+            if (direction < 0 && top < reference - 2) { target = i; }
+        }
+    }
+
+    if (target < 0 || target >= count) { return [currentHunk >= 0 && container.scrollTop === lastScrollSet ? currentHunk + 1 : 0, count]; }
+
+    var group = diffGroups[target];
+    var folded = group.filter(function(row) { return !row.offsetParent || row.querySelector(".el.collapsed") || row.classList.contains("collapsed"); });
+    if (folded.length) {
+        folded.forEach(openChange);
+        alignPanes();
+    }
+
+    document.querySelectorAll(".current-change").forEach(function(row) { row.classList.remove("current-change"); });
+    group.forEach(function(row) { row.classList.add("current-change"); });
+    container.scrollTop = Math.max(0, groupTop(group) - NAV_MARGIN);
+    lastScrollSet = container.scrollTop;
+    currentHunk = target;
+    return [target + 1, count];
+}
+
+function diffSummary() {
+    alignPanes();
+    return diffGroups ? diffGroups.length : 0;
+}
+
+function unfold(block) {
+    block.classList.remove("collapsed");
+    var pair = block.getAttribute("data-pair");
+    if (pair) { document.querySelectorAll('.el[data-pair="' + pair + '"]').forEach(function(twin) { twin.classList.remove("collapsed"); }); }
+}
+
+function openChange(row) {
+    for (var block = row; block; block = block.parentElement.closest(".el")) {
+        if (block.classList.contains("collapsed")) { unfold(block); }
+    }
+    if (!row.classList.contains("changed")) { row.querySelectorAll(".el.collapsed").forEach(unfold); }
+}
+
+function foldAll(folded) {
+    document.querySelectorAll(".el").forEach(function(block) {
+        if (!block.querySelector(":scope > .rowline > .collapser")) { return; }
+        block.classList.toggle("collapsed", folded);
+    });
+    document.querySelectorAll(".current-change").forEach(function(row) { row.classList.remove("current-change"); });
+    currentHunk = -1;
+    alignPanes();
+    document.querySelector(".compare.diffview").scrollTop = 0;
+    return diffGroups ? diffGroups.length : 0;
+}
+
+window.alignPanes = alignPanes;
+window.addEventListener("load", alignPanes);
+window.addEventListener("resize", alignPanes);
+</script>'''
 
 def wrapDocument(bodyHtml: str, colors=None, split: bool = False) -> str:
     '''Wrap rendered body HTML in a full document with the inlined CSS (plus the derived chip-colour overrides) and the collapser click handler. With `split` the body gets the "split"
@@ -695,13 +879,12 @@ def renderExplanationHtml(ruleXml: str, explanationText: str, lang: str = 'en') 
 
     return wrapDocument('<div class="compare">' + left + right + '</div>', spec.get('_colors'), split=True)
 
-def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
-    '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (positional); the panes are always readable even
-    if the highlighting is imperfect.'''
+def comparisonDocument(before: ET.Element, after: ET.Element, spec: dict, leftHeading: str = '', rightHeading: str = '', beforeOnRight: bool = False) -> str:
+    '''Build the side-by-side comparison document for two parsed trees - shared by the AI Rule Studio's modify preview (two versions of one rule) and the Compare Rule Files tool (two versions
+    of a whole rules file). The headings are optional because the Compare Rule Files window names each side in a combo box above its pane instead.
 
-    spec = loadSpec(lang)
-    before = parseFragment(beforeXml)
-    after = parseFragment(afterXml)
+    The colours always describe the change from `before` to `after` (removed = only in before, added = only in after). Normally before is the left pane; with beforeOnRight the panes swap, for
+    a caller whose older version is on the right. Only the pane order changes - the pair ids don't depend on it, so the panes still line up.'''
 
     # The legend and pane headings are UI text, so they go through the Qt translator like the dialog's own strings (escaped, since a translation lands in the HTML).
     legend = ('<div class="legend">'
@@ -710,13 +893,37 @@ def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str
               '<span class="sw" style="background:#FFD8A8"></span>' + html.escape(_translate('TransferPreview', 'changed')) +
               '</div>')
 
-    beforeHeading = html.escape(_translate('TransferPreview', 'Before'))
-    afterHeading = html.escape(_translate('TransferPreview', 'After'))
+    leftTitle = '<h3>' + html.escape(leftHeading) + '</h3>' if leftHeading else ''
+    rightTitle = '<h3>' + html.escape(rightHeading) + '</h3>' if rightHeading else ''
 
     # The two top-level elements are the first matched pair ("0"); every matched descendant's pair id builds on it, so ALIGN_SCRIPT can line the panes up row for row.
-    left = '<div class="pane"><h3>' + beforeHeading + '</h3>' + elementToHtml(before, after, side='before', spec=spec, compare=True, pairId='0') + '</div>'
-    right = '<div class="pane"><h3>' + afterHeading + '</h3>' + elementToHtml(after, before, side='after', spec=spec, compare=True, pairId='0') + '</div>'
+    beforeHtml = elementToHtml(before, after, side='before', spec=spec, compare=True, pairId='0')
+    afterHtml = elementToHtml(after, before, side='after', spec=spec, compare=True, pairId='0')
+
+    left = '<div class="pane">' + leftTitle + (afterHtml if beforeOnRight else beforeHtml) + '</div>'
+    right = '<div class="pane">' + rightTitle + (beforeHtml if beforeOnRight else afterHtml) + '</div>'
 
     # The diffview class turns the normal chip and comment-box fills white (or the row's diff colour on a highlighted row) and the side text black, so only the diff colours stand out, and
     # makes the two panes scroll as one - see transfer_preview.css.
     return wrapDocument(legend + '<div class="compare diffview">' + left + right + '</div>' + ALIGN_SCRIPT, spec.get('_colors'), split=True)
+
+def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
+    '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (rows are lined up with difflib - see
+    alignChildren); the panes are always readable even if the highlighting is imperfect.'''
+
+    return comparisonDocument(parseFragment(beforeXml), parseFragment(afterXml), loadSpec(lang), _translate('TransferPreview', 'Before'), _translate('TransferPreview', 'After'))
+
+def parseRuleFile(path: str) -> ET.Element:
+    '''Parse a whole transfer rules file, keeping its comments, and return the root (<transfer>, or <interchunk>/<postchunk> for the later phases). The DOCTYPE line's external DTD is not
+    fetched. Raises OSError or ET.ParseError for the caller to report.'''
+
+    parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+    return ET.parse(path, parser=parser).getroot()
+
+def renderFileComparisonHtml(beforePath: str, afterPath: str, lang: str = 'en', beforeOnRight: bool = False) -> str:
+    '''Render two whole transfer rules files side by side - used by the Compare Rule Files tool. The colours describe the change from beforePath (the older version) to afterPath; beforeOnRight
+    puts the older one in the right pane. Children are lined up in order with difflib (see alignChildren), so an inserted or deleted rule marks only itself rather than throwing the rest out
+    of step. Nothing is matched by name, though: a rule moved elsewhere in the file shows as removed in one place and added in the other. Raises OSError or ET.ParseError when a file can't
+    be read or isn't well-formed XML.'''
+
+    return comparisonDocument(parseRuleFile(beforePath), parseRuleFile(afterPath), loadSpec(lang), beforeOnRight=beforeOnRight)
