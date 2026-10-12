@@ -348,5 +348,5 @@ No se envió nada a la IA. Corrige el nombre de la macro e inténtalo de nuevo.<
       <source>Opened the transfer rules file in the XML editor. After you save there, click Refresh Rules so this window picks up your changes.</source>
       <translation>Se abrió el archivo de reglas de transferencia en el editor XML. Después de guardar allí, haz clic en Actualizar reglas para que esta ventana recoja tus cambios.</translation>
     </message>
-</context>
+  </context>
 </TS>
