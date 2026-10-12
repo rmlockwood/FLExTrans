@@ -32,6 +32,11 @@ takes the draft in this file and copies the chapters into Paratext to the projec
       <translation>Der Textname &quot;{sourceText}&quot; ist ungültig. Er sollte die Form GEN 01 oder Genesis 23-38 haben.</translation>
     </message>
     <message>
+      <location filename="../ExportToParatext.py" line="250"/>
+      <source>The text name &quot;{sourceText}&quot; is missing chapter number(s) after the book name. It should be of the form GEN 01 or Genesis 23-38</source>
+      <translation>Dem Textnamen &quot;{sourceText}&quot; fehlen die Kapitelnummer(n) nach dem Buchnamen. Er sollte die Form GEN 01 oder Genesis 23-38 haben</translation>
+    </message>
+    <message>
       <location filename="../ExportToParatext.py" line="199"/>
       <source>The book name or abbreviation {book} is invalid. It should match a Paratext book.</source>
       <translation>Der Buchname oder die Abkürzung {book} ist ungültig. Es sollte mit einem Paratext-Buch übereinstimmen.</translation>
