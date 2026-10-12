@@ -34,8 +34,8 @@ entièrement analysé, vous recevrez des avertissements.
 Ensuite, ce module parcourra chaque faisceau dans le texte interlinéaire et exportera
 les informations au format dont Apertium a besoin. L'idée générale est que
 les affixes et les clitiques seront exportés comme &lt;glose&gt; et les racines/radicaux seront exportés
-comme mot_vedette&lt;catégorie grammaticale&gt;&lt;trait1&gt;...&lt;traitN&gt;&lt;classe1&gt;...&lt;classeN&gt;. Où feat1 à featN sont un ou plusieurs
-traits de flexion qui peuvent être présents pour la racine/radical
+comme mot_vedette&lt;catégorie grammaticale&gt;&lt;trait1&gt;...&lt;traitN&gt;&lt;classe1&gt;...&lt;classeN&gt;. Où feat1 à featN sont une ou plusieurs
+caractéristiques flexionnelles qui peuvent être présentes pour la racine/radical
 et classe1 à classeN sont des classes flexionnelles qui peuvent être présentes sur le radical.
 Les phrases exportées seront stockées dans le fichier spécifié par le paramètre Fichier de sortie du texte analysé.
 Il s'appelle généralement source_text-aper.txt et se trouve habituellement dans le dossier de compilation.</translation>
