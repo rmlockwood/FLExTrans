@@ -53,7 +53,10 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CompareRuleFilesDlg'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = _translate("CompareRuleFiles", """This module shows two versions of your transfer rules side by side, with what was removed, added, or changed highlighted, so you can see what has changed between them. FLExTrans saves a copy of the rules file whenever a tool is about to change it, and you can compare the current file with any of those copies, compare two copies, or browse to any other rules file. The arrow buttons take you from one change to the next.""")
+descr = _translate("CompareRuleFiles", 
+"""This module shows two versions of your transfer rules side by side, with what was removed, added, or changed highlighted, so you can see what has changed between them. FLExTrans saves a copy of the 
+rules file whenever a tool is about to change it, and you can compare the current file with any of those copies, compare two copies, or browse to any other rules file. The arrow buttons take you from 
+one change to the next.""")
 docs = {FTM_Name       : _translate("CompareRuleFiles", "Compare Rule Files"),
         FTM_Version    : "3.17",
         FTM_ModifiesDB : False,

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1063</width>
     <height>800</height>
    </rect>
   </property>
@@ -16,45 +16,6 @@
   <layout class="QVBoxLayout" name="mainLayout">
    <item>
     <layout class="QHBoxLayout" name="navigationLayout">
-     <item>
-      <widget class="QToolButton" name="previousChangeButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Go to the previous change between the two files.</string>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::ArrowType::UpArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="nextChangeButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Go to the next change between the two files.</string>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::ArrowType::DownArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="summaryLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
      <item>
       <widget class="QPushButton" name="collapseAllButton">
        <property name="toolTip">
@@ -72,6 +33,78 @@
        </property>
        <property name="text">
         <string>Expand All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="previousChangeButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Go to the previous change between the two files.</string>
+       </property>
+       <property name="text">
+        <string notr="true">▲</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="nextChangeButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Go to the next change between the two files.</string>
+       </property>
+       <property name="text">
+        <string notr="true">▼</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="summaryLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -96,7 +129,7 @@
        <property name="minimumSize">
         <size>
          <width>25</width>
-         <height>23</height>
+         <height>26</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -124,7 +157,7 @@
        <property name="minimumSize">
         <size>
          <width>25</width>
-         <height>23</height>
+         <height>26</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -149,10 +182,10 @@
       <number>16</number>
      </property>
      <property name="leftMargin">
-      <number>8</number>
+      <number>0</number>
      </property>
      <property name="rightMargin">
-      <number>24</number>
+      <number>0</number>
      </property>
      <item>
       <widget class="QComboBox" name="leftVersionCombo">
@@ -232,7 +265,7 @@
   <customwidget>
    <class>QWebEngineView</class>
    <extends>QWidget</extends>
-   <header>QtWebEngineWidgets/QWebEngineView</header>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
   </customwidget>
  </customwidgets>
  <resources/>

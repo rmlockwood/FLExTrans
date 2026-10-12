@@ -5,6 +5,9 @@
 #   SIL International
 #   10/10/26
 #
+#   Version 3.17.3 - 10/12/26 - Ron Lockwood
+#    The arrows are push buttons now, with the down arrow the default button and given the focus at startup.
+#
 #   Version 3.17.2 - 10/10/26 - Ron Lockwood
 #    Added Collapse All / Expand All and Open Rules File buttons; the arrows now open a folded block to reach a change inside it. The change count has no direction text after it.
 #
@@ -46,7 +49,8 @@
 #   The rendered page is written to a file in a temporary folder and loaded from there rather than handed to setHtml, because QWebEngineView.setHtml silently refuses content over 2 MB, and
 #   a whole rules file's comparison can approach that. Each render gets a new file name so the view can't serve a stale page from its cache. The folder is removed when the window closes.
 #   Once a page has loaded, diffSummary (in the page) is asked how many changes there are: none says so at the top and greys the arrow buttons; otherwise the arrows call diffNav and the
-#   label says which change is showing. The zoom factor is kept on the dialog and re-applied after every load, since each new page would otherwise come up at the default size.
+#   label says which change is showing. The down arrow is the default button (Enter steps forward) and has the focus from the start. For that the arrows begin enabled and aren't greyed
+#   while a page loads - a greyed button can't hold the focus - and are only greyed when a page reports no changes. The zoom factor is kept on the dialog and re-applied after every load, since each new page would otherwise come up at the default size.
 #
 #   A change inside a folded block is still a stop for the arrows: the page counts it at the folded block's row and opens the block when the arrows reach it. Collapse All folds every block, the
 #   sections included, so a rules file comes down to its six section lines; Expand All opens everything. Both ask the page for the new change count, because folding regroups the changes. Open Rules File opens
@@ -124,6 +128,10 @@ class CompareRuleFilesDlg(QDialog):
         self.renderCount = 0
         self.lastLeftIndex = 0
         self.olderOnRight = False
+
+        # The down arrow is the default button (set in the .ui) and starts with the focus, so Enter steps to the first change straight away. The arrows start out enabled for this reason:
+        # a greyed button can't take the focus, and the focus would go to Collapse All instead.
+        self.ui.nextChangeButton.setFocus()
 
         self.populateVersionLists()
 
@@ -276,9 +284,8 @@ class CompareRuleFilesDlg(QDialog):
         leftPath = self.ui.leftVersionCombo.currentData()
         rightPath = self.ui.rightVersionCombo.currentData()
 
-        self.ui.previousChangeButton.setEnabled(False)
-        self.ui.nextChangeButton.setEnabled(False)
-
+        # The arrows are left as they are while the page loads rather than greyed: greying them would take the focus off the down arrow at startup. A click before the page is in does
+        # nothing (diffNav isn't defined yet, so onNavigated gets no result), and onSummary greys them once the page says there are no changes.
         # The colours read as the change from the older version to the newer one - a rule added since a backup is green, not red - whichever side each was picked on. With the default
         # backup-left, current-file-right layout the older one is on the left, the usual case.
         self.olderOnRight = self.isOlder(rightPath, leftPath)
@@ -291,6 +298,8 @@ class CompareRuleFilesDlg(QDialog):
 
             self.ui.summaryLabel.setText(_translate('CompareRuleFiles', 'These files could not be compared: {err}').format(err=err))
             self.ui.comparisonView.setHtml('')
+            self.ui.previousChangeButton.setEnabled(False)
+            self.ui.nextChangeButton.setEnabled(False)
             return
 
         # A new file name for every render, so the view can't show a cached copy of an earlier comparison; the previous page's file is no longer needed.

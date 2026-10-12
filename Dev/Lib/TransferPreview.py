@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.9 - 10/12/26 - Ron Lockwood
+#    Corrected docstrings that called the comparison positional or said rules are matched by name; rows are lined up in order with difflib.
+#
 #   Version 3.17.8 - 10/10/26 - Ron Lockwood
 #    The change arrows open folded blocks to reach a change; added foldAll for the Compare Rule Files tool's Collapse All / Expand All buttons. Changes are grouped once, on the open page, so
 #    folding doesn't change the count.
@@ -443,7 +446,7 @@ def renderRowLine(elem: ET.Element, spec: dict, collapsible: bool = False, chang
     return '<span class="rowline">' + collapser + ''.join(pieces) + '</span>'
 
 def diffClass(elem: ET.Element, other) -> str:
-    '''Diff class for an element vs. its positional counterpart: "changed" if the tag or attributes differ, else "".'''
+    '''Diff class for an element vs. its counterpart (as paired by alignChildren): "changed" if the tag or attributes differ, else "".'''
 
     if other is None:
         return ''
@@ -470,8 +473,8 @@ def elementToHtml(elem, other=None, side: str = 'after', forced: str = '', spec=
     '''Recursively render an element to HTML.
 
     Diff highlighting only happens when `compare` is True (the side-by-side modify view). In the single-rule create/explain views `compare` is False and no added/changed/removed classes
-    are emitted, so the rule renders plain (like XXE) rather than being flagged wholesale as "added". `other` is the positional counterpart in the compared tree; `side` is which pane we
-    are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.
+    are emitted, so the rule renders plain (like XXE) rather than being flagged wholesale as "added". `other` is the counterpart in the compared tree (as paired by alignChildren); `side` is
+    which pane we are rendering ("before"/"after") so a child with no counterpart is marked "removed" on the before side and "added" on the after side; `forced` propagates that marker down a subtree.
     `pairId` names a matched pair of rows: the element is rendered with it as data-pair, and its twin in the other pane carries the same id, so ALIGN_SCRIPT can line the two up.'''
 
     if spec is None:
@@ -905,8 +908,8 @@ def comparisonDocument(before: ET.Element, after: ET.Element, spec: dict, leftHe
     return wrapDocument(legend + '<div class="compare diffview">' + left + right + '</div>' + ALIGN_SCRIPT, spec.get('_colors'), split=True)
 
 def renderComparisonHtml(beforeXml: str, afterXml: str, lang: str = 'en') -> str:
-    '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (positional); the panes are always readable even
-    if the highlighting is imperfect.'''
+    '''Render before/after side-by-side - used for the "modify" preview. `lang` selects the label language. Diff highlighting is best-effort (rows are lined up with difflib - see
+    alignChildren); the panes are always readable even if the highlighting is imperfect.'''
 
     return comparisonDocument(parseFragment(beforeXml), parseFragment(afterXml), loadSpec(lang), _translate('TransferPreview', 'Before'), _translate('TransferPreview', 'After'))
 
@@ -919,7 +922,8 @@ def parseRuleFile(path: str) -> ET.Element:
 
 def renderFileComparisonHtml(beforePath: str, afterPath: str, lang: str = 'en', beforeOnRight: bool = False) -> str:
     '''Render two whole transfer rules files side by side - used by the Compare Rule Files tool. The colours describe the change from beforePath (the older version) to afterPath; beforeOnRight
-    puts the older one in the right pane. Rules, macros and definitions are matched up by name wherever they sit in the file (see alignChildren), so a moved or renamed one doesn't throw the
-    rest out of step. Raises OSError or ET.ParseError when a file can't be read or isn't well-formed XML.'''
+    puts the older one in the right pane. Children are lined up in order with difflib (see alignChildren), so an inserted or deleted rule marks only itself rather than throwing the rest out
+    of step. Nothing is matched by name, though: a rule moved elsewhere in the file shows as removed in one place and added in the other. Raises OSError or ET.ParseError when a file can't
+    be read or isn't well-formed XML.'''
 
     return comparisonDocument(parseRuleFile(beforePath), parseRuleFile(afterPath), loadSpec(lang), beforeOnRight=beforeOnRight)
