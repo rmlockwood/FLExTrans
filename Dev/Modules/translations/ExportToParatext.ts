@@ -35,6 +35,11 @@ prend le brouillon dans ce fichier et copie les chapitres dans Paratext vers le 
         <translation>Le nom du texte « {sourceText} » est invalide, il devrait être de la forme GEN 01 ou Genèse 23-38</translation>
     </message>
     <message>
+      <location filename="../ExportToParatext.py" line="250"/>
+      <source>The text name &quot;{sourceText}&quot; is missing chapter number(s) after the book name. It should be of the form GEN 01 or Genesis 23-38</source>
+      <translation>Il manque le ou les numéros de chapitre après le nom du livre dans le nom du texte &quot;{sourceText}&quot;. Il devrait être de la forme GEN 01 ou Genèse 23-38</translation>
+    </message>
+    <message>
         <location filename="../ExportToParatext.py" line="199"/>
         <source>The book name or abbreviation {book} is invalid. It should match a Paratext book.</source>
         <translation>Le nom ou l'abréviation du livre {book} est invalide. Il devrait correspondre à un livre Paratext.</translation>
