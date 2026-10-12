@@ -22,7 +22,7 @@ dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! 
 must run the modules up to and including {runApert} before running this module.</source>
       <translation>Ce module affichera une vue plus lisible du fichier Apertium source ou cible.
 Les unités lexicales sont codées par couleur comme suit : noir-lemme, bleu-catégorie
-grammaticale, vert-affixe ou trait ou classe, jaune-ponctuation non-phrastique,
+grammaticale, vert-affixe ou caractéristique ou classe, jaune-ponctuation non-phrastique,
 rose foncé-lemme inconnu, rose-catégorie inconnue, rouge-lemme non trouvé. Important ! Vous
 devez exécuter les modules jusqu'à {runApert} avant d'exécuter ce module.</translation>
     </message>
