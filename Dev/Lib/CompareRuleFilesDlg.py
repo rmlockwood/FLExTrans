@@ -5,6 +5,9 @@
 #   SIL International
 #   10/10/26
 #
+#   Version 3.17.4 - 10/12/26 - Ron Lockwood
+#    When the two versions differ, the window goes to the first change as soon as the comparison has loaded. Lint fixes.
+#
 #   Version 3.17.3 - 10/12/26 - Ron Lockwood
 #    The arrows are push buttons now, with the down arrow the default button and given the focus at startup.
 #
@@ -48,8 +51,8 @@
 #
 #   The rendered page is written to a file in a temporary folder and loaded from there rather than handed to setHtml, because QWebEngineView.setHtml silently refuses content over 2 MB, and
 #   a whole rules file's comparison can approach that. Each render gets a new file name so the view can't serve a stale page from its cache. The folder is removed when the window closes.
-#   Once a page has loaded, diffSummary (in the page) is asked how many changes there are: none says so at the top and greys the arrow buttons; otherwise the arrows call diffNav and the
-#   label says which change is showing. The down arrow is the default button (Enter steps forward) and has the focus from the start. For that the arrows begin enabled and aren't greyed
+#   Once a page has loaded, diffSummary (in the page) is asked how many changes there are: none says so at the top and greys the arrow buttons; otherwise the view goes straight to the first
+#   change (onLoadSummary), the arrows call diffNav and the label says which change is showing. The down arrow is the default button (Enter steps forward) and has the focus from the start. For that the arrows begin enabled and aren't greyed
 #   while a page loads - a greyed button can't hold the focus - and are only greyed when a page reports no changes. The zoom factor is kept on the dialog and re-applied after every load, since each new page would otherwise come up at the default size.
 #
 #   A change inside a folded block is still a stop for the arrows: the page counts it at the folded block's row and opens the block when the arrows reach it. Collapse All folds every block, the
@@ -59,7 +62,7 @@
 #   CODE STRUCTURE
 #
 #   tagDescription turns a history tag into words. CompareRuleFilesDlg builds the window from CompareRuleFilesWindow.ui (__init__), fills the lists (populateVersionLists, addVersionItem,
-#   selectVersion, versionLabel), reacts to a pick (onLeftVersionChanged, onRightVersionChanged, browseForLeftVersion), renders (showComparison -> onLoadFinished -> onSummary), steps through
+#   selectVersion, versionLabel), reacts to a pick (onLeftVersionChanged, browseForLeftVersion; a right-hand pick goes straight to showComparison), renders (showComparison -> onLoadFinished -> onLoadSummary -> onSummary, navigate), steps through
 #   the changes (onPreviousChange, onNextChange -> onNavigated), folds (onCollapseAll, onExpandAll -> foldAll), opens the rules file in XXE (onOpenRulesFile), zooms, and cleans up its
 #   temporary folder in done. showRuleFileComparison is the entry point for other modules.
 #
@@ -147,9 +150,10 @@ class CompareRuleFilesDlg(QDialog):
         self.selectVersion(self.ui.rightVersionCombo, rightPath or rulesFile, RIGHT_INSERT_INDEX)
         self.lastLeftIndex = self.ui.leftVersionCombo.currentIndex()
 
-        # Connect only now, so filling and pre-selecting the lists above doesn't render the comparison several times over.
+        # Connect only now, so filling and pre-selecting the lists above doesn't render the comparison several times over. The right-hand list has no Browse..., so a pick there goes straight
+        # to showComparison; PyQt drops the index currentIndexChanged sends, since showComparison takes none.
         self.ui.leftVersionCombo.currentIndexChanged.connect(self.onLeftVersionChanged)
-        self.ui.rightVersionCombo.currentIndexChanged.connect(self.onRightVersionChanged)
+        self.ui.rightVersionCombo.currentIndexChanged.connect(self.showComparison)
         self.ui.previousChangeButton.clicked.connect(self.onPreviousChange)
         self.ui.nextChangeButton.clicked.connect(self.onNextChange)
         self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
@@ -248,10 +252,6 @@ class CompareRuleFilesDlg(QDialog):
         self.lastLeftIndex = index
         self.showComparison()
 
-    def onRightVersionChanged(self, index):
-
-        self.showComparison()
-
     def browseForLeftVersion(self):
         '''Let the user pick any rules file for the left-hand side. It is added to the list and shown; cancelling puts the list back on the version it showed before.'''
 
@@ -348,7 +348,16 @@ class CompareRuleFilesDlg(QDialog):
         # page() is typed Optional, but a view always has a page once one has finished loading in it.
         if page is not None:
 
-            page.runJavaScript('diffSummary()', self.onSummary)
+            page.runJavaScript('diffSummary()', self.onLoadSummary)
+
+    def onLoadSummary(self, count):
+        '''The count for a newly loaded comparison: show it, and when there are differences go straight to the first one, so the window opens on a change rather than the top of the file.'''
+
+        self.onSummary(count)
+
+        if int(count or 0) > 0:
+
+            self.navigate(1)
 
     def onSummary(self, count):
         '''Say how many changes there are - or that there are none, with the arrow buttons greyed - at the top of the window.'''
