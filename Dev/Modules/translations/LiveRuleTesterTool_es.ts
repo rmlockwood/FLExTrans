@@ -378,6 +378,16 @@ Ejecuta el módulo {moduleName} por separado para obtener más detalles.</transl
     <source>(no contents could be read from {file})</source>
     <translation>(no se pudo leer ningún contenido de {file})</translation>
   </message>
+  <message>
+    <location filename="../LiveRuleTesterTool.py" line="2003"/>
+    <source>Add to Testbed</source>
+    <translation>Agregar al banco de pruebas</translation>
+  </message>
+  <message>
+    <location filename="../LiveRuleTesterTool.py" line="2003"/>
+    <source>It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</source>
+    <translation>Parece que no sintetizaste después de tu última transferencia. Esto podría hacer que la prueba que estás agregando tenga datos esperados incorrectos. ¿Seguro que quieres agregar la prueba?</translation>
+  </message>
   </context>
   <context>
     <name>RunApertium</name>
