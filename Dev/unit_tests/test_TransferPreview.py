@@ -107,42 +107,41 @@ class TestWrapDocument(unittest.TestCase):
 
         self.assertIn('pane explanation rtl', out)
 
-# A rule exercising the block elements and the caseless checkbox. transfer.css marks rule/action/when/out collapsible (but the top-level rule is excluded in the preview); the separate
-# indent-guide set is choose/when/otherwise/test/out/and/or/not.
+# A rule exercising the block elements and the caseless checkbox. transfer.css marks rule/action/when/out collapsible, and the top-level rule folds too (in a whole rules file, folding a rule
+# is how you get it out of the way). The separate indent-guide set is rule/def-macro/action/let/choose/when/otherwise/test/out/and/or/not.
 RULE_WITH_BLOCKS = ('<rule comment="R"><pattern><pattern-item n="c_n"/></pattern><action><choose><when><test>'
                     '<equal caseless="yes"><clip pos="1" side="sl" part="lem"/><lit v="x"/></equal></test>'
                     '<out><lu><clip pos="1" side="tl" part="whole"/></lu></out></when></choose></action></rule>')
 
 class TestBlockRendering(unittest.TestCase):
 
-    def test_collapsers_from_stylesheet_minus_top_level(self):
+    def test_collapsers_from_stylesheet(self):
 
         out = TransferPreview.renderRuleHtml(RULE_WITH_BLOCKS)
 
-        # action, when, and out carry a collapser() in transfer.css and have children; the top-level rule is excluded, and choose/test are not collapsible in transfer.css.
-        self.assertEqual(out.count('<span class="collapser">'), 3)
+        # rule, action, when, and out carry a collapser() in transfer.css and have children; choose/test are not collapsible in transfer.css.
+        self.assertEqual(out.count('<span class="collapser">'), 4)
 
-    def test_top_level_rule_and_macro_get_no_collapser(self):
+    def test_top_level_rule_and_macro_get_collapser(self):
 
-        # The whole rule (or macro) is the only thing shown, so it is never foldable - even though transfer.css marks both collapsible for the full-file XXE view.
+        # The top-level rule (or macro) folds like any other collapsible block: in the Compare Rule Files view of a whole file, folding one is how you get it out of the way.
         ruleOut = TransferPreview.renderRuleHtml('<rule comment="R"><pattern><pattern-item n="c_n"/></pattern></rule>')
         macroOut = TransferPreview.renderRuleHtml('<def-macro n="m_x" npar="1"><let><var n="v"/><lit v=""/></let></def-macro>')
 
-        # Neither the rule nor the macro (nor their non-collapsible children here) produces a collapser.
-        self.assertNotIn('<span class="collapser">', ruleOut)
-        self.assertNotIn('<span class="collapser">', macroOut)
+        # Only the rule and the macro themselves are collapsible here (pattern and let aren't), so each document has exactly one collapser.
+        self.assertEqual(ruleOut.count('<span class="collapser">'), 1)
+        self.assertEqual(macroOut.count('<span class="collapser">'), 1)
 
     def test_indent_guides_are_a_separate_set(self):
 
         out = TransferPreview.renderRuleHtml(RULE_WITH_BLOCKS)
 
-        # Guides go on the lengthy logic blocks, including choose and test, which are NOT collapsible.
-        for tag in ('choose', 'when', 'test', 'out'):
+        # Guides go on the lengthy blocks, including choose and test, which are NOT collapsible.
+        for tag in ('rule', 'action', 'choose', 'when', 'test', 'out'):
             self.assertIn('el ' + tag + ' guide', out)
 
-        # action has a collapser but is not in the guide set; the top-level rule gets neither.
-        self.assertNotIn('el action guide', out)
-        self.assertNotIn('el rule guide', out)
+        # pattern has children but is in neither set: no guide.
+        self.assertNotIn('el pattern guide', out)
 
     def test_guides_on_and_or_not(self):
 
@@ -155,11 +154,11 @@ class TestBlockRendering(unittest.TestCase):
 
     def test_empty_block_gets_neither(self):
 
-        # otherwise is both collapsible and in the guide set, but empty here: nothing to fold or to guide. Only action (with children) yields a collapser; choose is not collapsible.
+        # otherwise is both collapsible and in the guide set, but empty here: nothing to fold or to guide. Only rule and action (with children) yield a collapser; choose is not collapsible.
         out = TransferPreview.renderRuleHtml('<rule comment="R"><action><choose><otherwise/></choose></action></rule>')
 
         self.assertNotIn('otherwise guide', out)
-        self.assertEqual(out.count('<span class="collapser">'), 1)   # action only
+        self.assertEqual(out.count('<span class="collapser">'), 2)   # rule and action
 
     def test_caseless_checkbox_checked(self):
 
