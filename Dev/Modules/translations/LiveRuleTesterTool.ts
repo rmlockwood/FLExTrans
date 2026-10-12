@@ -372,6 +372,16 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
         <source>(no contents could be read from {file})</source>
         <translation type="unfinished">(no contents could be read from {file})</translation>
     </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="2003"/>
+        <source>Add to Testbed</source>
+        <translation type="unfinished">Add to Testbed</translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="2003"/>
+        <source>It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</source>
+        <translation type="unfinished">It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</translation>
+    </message>
 </context>
 <context>
     <name>RunApertium</name>
