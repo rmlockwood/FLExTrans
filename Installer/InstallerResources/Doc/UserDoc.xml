@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->7 October 2026</date
+>12 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -3728,6 +3728,73 @@ type="tFlexx"
 ><p
 >Ideally you should paste source and target data that illustrate the same meanings, so the AI can line the two languages up. As a best practice, before you copy the data hide the word gloss, word category, and free translation lines in the Print View, so that only the information helpful for rule writing is included.</p
 ></section3
+></section2
+><section2
+id="sCompareRuleFiles"
+><secTitle
+>The <object
+type="tTool"
+>Compare Rule Files</object
+> Tool</secTitle
+><p
+>The <object
+type="tTool"
+>Compare Rule Files</object
+> tool shows two versions of your transfer rules side by side and highlights what is different between them, so you can see exactly what has changed — for instance, what the <object
+type="tAIRuleStudio"
+></object
+> or the <object
+type="tTool"
+>Rule Assistant</object
+> did to your rules, or what you have changed yourself since you last ran the <object
+type="tTestbed"
+></object
+>. The window is shown in <exampleRef
+letter="xCompareRuleFiles"
+num="xCompareRuleFiles"
+></exampleRef
+>.</p
+><example
+num="xCompareRuleFiles"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/CompareRuleFiles.png"
+></img
+></chart
+></example
+><p
+>The versions you can compare come from the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder. <object
+type="tFlextrans"
+></object
+> saves a copy of your transfer rule file there whenever a tool is about to change it or wants a record of it: when a test is added to the testbed, when a testbed run starts, and before the <object
+type="tTool"
+>Rule Assistant</object
+>, the <object
+type="tAIRuleStudio"
+></object
+> tool or the <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes</object
+> tool writes to it. Use the two lists at the top of the window to choose the versions. Each list holds the current rules file first, followed by every saved copy, newest first. A saved copy is listed by when it was saved and what saved it, for example “Saturday, October 10, 2026 10:17 AM - before AI Rule Studio changes”. A copy holds the rules as they were at that moment, so “before AI Rule Studio changes” is your rule file just before the <object
+type="tAIRuleStudio"
+></object
+> tool changed it. Hover the mouse over an entry to see the full path of its file. The left-hand list also has a Browse... entry, which lets you compare against any transfer rules file on your computer, such as one from a backup or another project.</p
+><p
+>When the tool opens, the left side shows the newest saved copy and the right side shows the current rules file, so you see straight away what has changed since the last copy was saved. In general, put the older version on the left and the newer one on the right.</p
+><p
+>The comparison uses the same layout and colors as the before-and-after view in the <object
+type="tAIRuleStudio"
+></object
+> tool. Parts that were removed are shown in red, parts that were added in green, and parts that were changed in orange, with the exact words or values that changed picked out in a darker orange. The colors always describe the change from the older version to the newer one, even if you put the newer version on the left. So a rule you added since a copy was saved is always green. The two sides scroll together, and matching parts are lined up across from each other so that you can read them row by row.</p
+><p
+>The line at the top of the window says how many changes there are, or that the two versions are the same. Use the up and down arrow buttons to step to the previous or next change; the line then shows which change you are on (for example “Change 2 of 6.”). The down arrow is selected when the window opens, so you can press Enter to step forward through the changes. Click the box beside a section, rule or other block to fold it up or open it again. Collapse All folds every block, leaving just the main sections of the rules file, and Expand All opens everything up again. All the changes inside a folded block count as a single change, and when the arrow buttons reach one, the block is opened for you. Use the Zoom + and − buttons to make the text bigger or smaller.</p
+><p
+>The Open Rules File button at the bottom left opens your current transfer rules file in the XML editor, so you can fix something you noticed while comparing. The comparison does not update by itself after you save changes in the editor; pick the current rules file in the list again to see them.</p
 ></section2
 ><section2
 id="sDeleteTexts"

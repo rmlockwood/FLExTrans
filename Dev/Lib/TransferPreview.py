@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.10 - 10/12/26 - Ron Lockwood
+#    diffNav(1) from the top of the page always goes to the first change, so the Compare Rule Files window can open on it.
+#
 #   Version 3.17.9 - 10/12/26 - Ron Lockwood
 #    Corrected docstrings that called the comparison positional or said rules are matched by name; rows are lined up in order with difflib.
 #
@@ -670,7 +673,8 @@ document.addEventListener("click", function(e) {
 # at the row of the block that hides it.
 #
 # diffNav(direction) scrolls to the next (1) or previous (-1) change, outlines it, and returns [its number, how many there are] - [0, n] when there is none that way. Pressed again without the
-# user scrolling in between, it steps from the change it last showed; after a manual scroll it steps from where the user scrolled to. A change that is folded away - inside a folded block, or
+# user scrolling in between, it steps from the change it last showed; after a manual scroll it steps from where the user scrolled to. Going forward from the very top of the page always lands on
+# the first change, even one that starts within NAV_MARGIN of the top and so would otherwise count as already passed. A change that is folded away - inside a folded block, or
 # itself a folded added/removed block - is opened first, in both panes (openChange), so the arrows always show the change rather than a folded row. diffSummary re-aligns and returns the count.
 # foldAll is the Collapse All / Expand All buttons: collapsing folds every block that can fold, the sections included, so a whole rules file comes down to its six section lines (Categories,
 # Attributes, Variables, Lists, Macros, Rules); expanding opens everything.
@@ -771,6 +775,8 @@ function diffNav(direction) {
 
     if (currentHunk >= 0 && container.scrollTop === lastScrollSet) {
         target = currentHunk + direction;
+    } else if (direction > 0 && container.scrollTop === 0) {
+        target = 0;
     } else {
         var reference = container.scrollTop + NAV_MARGIN;
         for (var i = 0; i < count; i++) {
