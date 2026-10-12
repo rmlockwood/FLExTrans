@@ -21,7 +21,7 @@
     <message>
       <location filename="../Linker.py" line="246"/>
       <source>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</source>
-      <translation>Après avoir sélectionné le sens souhaité ici, double-cliquez dans la colonne Entrée de dictionnaire cible pour la ligne souhaitée pour y créer un lien.</translation>
+      <translation>Après avoir sélectionné le sens souhaité ici, double-cliquez dans la colonne Mot-vedette cible pour la ligne souhaitée pour y créer un lien.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="249"/>
@@ -93,7 +93,7 @@
       <source>Type the beginning of an entry or any text (if &apos;Filter on all fields&apos; is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</source>
       <translation>Saisissez le début d'une entrée ou un texte quelconque (si &apos;Filtrer sur tous les champs &apos; est coché), 
-puis double-cliquez dans la colonne Entrée de dictionnaire cible de la ligne souhaitée pour y créer un lien.</translation>
+puis double-cliquez dans la colonne Mot-vedette cible de la ligne souhaitée pour y créer un lien.</translation>
     </message>
     <message>
       <location filename="../Linker.py" line="261"/>
