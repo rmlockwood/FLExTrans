@@ -332,12 +332,14 @@ class TestCreateBookFile(unittest.TestCase):
         expectedFlags = '1' + '0' * 38 + '1' + '0' * 83
         self.assertEqual(readBytes(self.folder, 'Settings.xml'), codecs.BOM_UTF8 + settingsXml(booksPresent=expectedFlags).encode('utf-8'))
 
-    # For now createBookFile() leaves Paratext's Settings.xml alone (its markBookPresent() call is commented out)
-    def test_create_leaves_settings_alone(self):
+    # Creating a book flags it in Paratext's Settings.xml, so Paratext shows it
+    def test_create_marks_book_present(self):
 
         writeFile(self.folder, 'Settings.xml', settingsXml(), bom=True)
         createBookFile(os.path.join(self.folder, '41MATABC.SFM'), 'MAT', self.folder)
-        self.assertEqual(readBytes(self.folder, 'Settings.xml'), codecs.BOM_UTF8 + settingsXml().encode('utf-8'))
+
+        expectedFlags = '1' + '0' * 38 + '1' + '0' * 83
+        self.assertEqual(readBytes(self.folder, 'Settings.xml'), codecs.BOM_UTF8 + settingsXml(booksPresent=expectedFlags).encode('utf-8'))
 
     def test_marks_book_present_without_bom(self):
 
