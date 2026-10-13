@@ -373,21 +373,21 @@ Führen Sie das Modul {moduleName} separat aus, um weitere Details zu erhalten.<
       <source>Problem opening file: {tgt_file}.</source>
       <translation>Problem beim Öffnen der Datei: {tgt_file}.</translation>
     </message>
-  <message>
-    <location filename="../LiveRuleTesterTool.py" line="3356"/>
-    <source>(no contents could be read from {file})</source>
-    <translation>(aus {file} konnte kein Inhalt gelesen werden)</translation>
-  </message>
-  <message>
-    <location filename="../LiveRuleTesterTool.py" line="2003"/>
-    <source>Add to Testbed</source>
-    <translation>Zum Testbett hinzufügen</translation>
-  </message>
-  <message>
-    <location filename="../LiveRuleTesterTool.py" line="2003"/>
-    <source>It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</source>
-    <translation>Anscheinend haben Sie nach Ihrem letzten Transfer nicht synthetisiert. Dadurch könnte der Test, den Sie hinzufügen, falsche erwartete Daten haben. Möchten Sie den Test wirklich hinzufügen?</translation>
-  </message>
+    <message>
+      <location filename="../LiveRuleTesterTool.py" line="3356"/>
+      <source>(no contents could be read from {file})</source>
+      <translation>(aus {file} konnte kein Inhalt gelesen werden)</translation>
+    </message>
+    <message>
+      <location filename="../LiveRuleTesterTool.py" line="2003"/>
+      <source>Add to Testbed</source>
+      <translation type="unfinished">Add to Testbed</translation>
+    </message>
+    <message>
+      <location filename="../LiveRuleTesterTool.py" line="2003"/>
+      <source>It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</source>
+      <translation type="unfinished">It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</translation>
+    </message>
   </context>
   <context>
     <name>RunApertium</name>
