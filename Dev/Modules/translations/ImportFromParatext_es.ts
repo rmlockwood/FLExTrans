@@ -52,11 +52,6 @@ agrupados en la configuración principal de FLExTrans y luego regresa a este mó
       <translation>No se pudo abrir el archivo de configuración: {myConfig}</translation>
     </message>
     <message>
-      <location filename="../ImportFromParatext.py" line="349"/>
-      <source>Could not find the book file: {bookPath}</source>
-      <translation>No se pudo encontrar el archivo del libro: {bookPath}</translation>
-    </message>
-    <message>
       <location filename="../ImportFromParatext.py" line="363"/>
       <source>Starting chapter not found.</source>
       <translation>No se encontró el capítulo inicial.</translation>

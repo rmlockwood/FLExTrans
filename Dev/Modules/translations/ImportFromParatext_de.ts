@@ -47,11 +47,6 @@ Importieren in mehrere FLEx-Projekte aus mehreren Paratext-Projekten ist möglic
       <translation>Die Konfigurationsdatei konnte nicht geöffnet werden: {myConfig}</translation>
     </message>
     <message>
-      <location filename="../ImportFromParatext.py" line="349"/>
-      <source>Could not find the book file: {bookPath}</source>
-      <translation>Die Buchdatei konnte nicht gefunden werden: {bookPath}</translation>
-    </message>
-    <message>
       <location filename="../ImportFromParatext.py" line="363"/>
       <source>Starting chapter not found.</source>
       <translation>Startkapitel nicht gefunden.</translation>

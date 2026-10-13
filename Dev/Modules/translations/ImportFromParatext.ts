@@ -53,11 +53,6 @@ projets de cluster dans les paramètres principaux de FLExTrans, puis revenez à
         <translation>Impossible d'ouvrir le fichier de configuration : {myConfig}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="349"/>
-        <source>Could not find the book file: {bookPath}</source>
-        <translation>Impossible de trouver le fichier du livre : {bookPath}</translation>
-    </message>
-    <message>
         <location filename="../ImportFromParatext.py" line="363"/>
         <source>Starting chapter not found.</source>
         <translation>Chapitre de départ introuvable.</translation>

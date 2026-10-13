@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>12 October 2026</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>13 October 2026</small></center>
       <center><small>Version: 3.17</small></center>
       <hr>
       <div>
@@ -1241,10 +1241,14 @@
          <li>Run the export module as usual. For the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation, type the abbreviation that is part of the book file names.
          </li>
       </ol>
-      <p>The book file must already exist in that folder. To go back to exporting to the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> folder, clear the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Export Files</span> setting.
+      <p>To go back to exporting to the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> folder, clear the <span style="font-weight:bold; color:#964B00; ">Alternate Location for Paratext Export Files</span> setting.
       </p>
       <p>Cluster projects work with the alternate export folder the same way as with the alternate import folder: the book files can
          sit side by side in it or in a subfolder per project, and the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project lists show the projects found there.
+      </p>
+      <p>If the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project doesn't have the book yet, both export modules ask whether you want to create it. This works in the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> projects folder as well as in an alternate export folder. If you click <span style="font-style:normal; font-weight:bold; ">Yes</span>, a new book file is created with an \id line and an empty chapter marker (\c 1, \c 2, and so on) for every chapter of the
+         book, following the project's versification. The chapters you are exporting then fill in their markers and the other chapters
+         stay empty, ready to be filled in later. The file is named the way <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> names the project's other books, for example 41MATABC.SFM for Matthew in the ABC project. If the project is open in <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>, close it and open it again to see the new book. If you click <span style="font-style:normal; font-weight:bold; ">No</span>, nothing is exported. The project itself must already exist, since only book files are created.
       </p>
       <h4 style=""><a name="sPtxExportFromSynth"></a>4.4.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Export FLExTrans Draft to Paratext</span></h4>
       <p>To export chapters to <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> from the newly synthesized text, use this tool. It is designed to work well with a text that you have previously imported

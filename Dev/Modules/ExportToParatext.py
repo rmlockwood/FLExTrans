@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.4 - 10/12/26 - Ron Lockwood
+#    Fixes #1623. The Paratext book file no longer has to exist; the export offers to create it.
+#
 #   Version 3.17.3 - 10/12/26 - Ron Lockwood
 #    Fixes #1622. Say chapter number(s) are missing when the text name is just a valid book name.
 #
@@ -102,7 +105,8 @@
 #   The draft itself is read from the file named by the Target Output Synthesis File setting, typically target_text-syn.txt in the Build folder. Before anything is written out, the Text Out rules are
 #   run over it (the same search and replace rules the Text Out Rules module edits), which is where the last cleanups of the synthesized text happen. The result is handed to
 #   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it. The book file is looked for in the Paratext project's folder, unless the Alternate Location
-#   for Paratext Export Files setting names a folder, in which case it is looked for there instead (the project abbreviation is still needed because it is part of the book file name).
+#   for Paratext Export Files setting names a folder, in which case it is looked for there instead (the project abbreviation is still needed because it is part of the book file name). If the project
+#   doesn't have that book yet, doExport() asks whether to create a new book file for it, named the way Paratext names the project's books (see ChapterSelection.askToCreateBookFile()).
 #
 #   HOW THE TEXT NAME IS PARSED
 #
@@ -171,7 +175,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
