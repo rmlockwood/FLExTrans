@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.17.5 - 10/12/26 - Ron Lockwood
+#    Fixes #1623. When the book file can't be found, name the book, project, expected file name and folder.
+#
 #   Version 3.17.4 - 10/7/26 - Ron Lockwood
 #    Cluster project combo boxes list the projects in the alternate Paratext folder when it is set.
 #
@@ -256,7 +259,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
-        FTM_Version    : "3.17.4",
+        FTM_Version    : "3.17.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -428,7 +431,7 @@ def do_import(DB, report, chapSelectObj, tree):
 
     if not bookPath:
 
-        report.Error(_translate("ImportFromParatext", "Could not find the book file: {bookPath}").format(bookPath=Utils.shortenPathForDisplay(bookPath)))
+        report.Error(chapSelectObj.getBookNotFoundMessage())
         return
     
     # Open the Paratext file and read the contents

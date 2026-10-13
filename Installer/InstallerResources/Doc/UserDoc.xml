@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->12 October 2026</date
+>13 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -2297,7 +2297,7 @@ type="tTool"
 > project abbreviation, type the abbreviation that is part of the book file names.</li
 ></ol
 ><p
->The book file must already exist in that folder. To go back to exporting to the standard <object
+>To go back to exporting to the standard <object
 type="tTool"
 >Paratext</object
 > folder, clear the <object
@@ -2309,6 +2309,26 @@ type="tSettingsProperty"
 type="tTool"
 >Paratext</object
 > project lists show the projects found there.</p
+><p
+>If the <object
+type="tTool"
+>Paratext</object
+> project doesn't have the book yet, both export modules ask whether you want to create it. This works in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder as well as in an alternate export folder. If you click <object
+type="tButton"
+>Yes</object
+>, a new book file is created with an \id line and an empty chapter marker (\c 1, \c 2, and so on) for every chapter of the book, following the project's versification. The chapters you are exporting then fill in their markers and the other chapters stay empty, ready to be filled in later. The file is named the way <object
+type="tTool"
+>Paratext</object
+> names the project's other books, for example 41MATABC.SFM for Matthew in the ABC project. If the project is open in <object
+type="tTool"
+>Paratext</object
+>, close it and open it again to see the new book. If you click <object
+type="tButton"
+>No</object
+>, nothing is exported. The project itself must already exist, since only book files are created.</p
 ><section4
 id="sPtxExportFromSynth"
 ><secTitle

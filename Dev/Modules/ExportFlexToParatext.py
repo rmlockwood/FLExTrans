@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.17.4 - 10/12/26 - Ron Lockwood
+#    Fixes #1623. The Paratext book file no longer has to exist; the export offers to create it. Updated the code description block.
+#
 #   Version 3.17.3 - 10/7/26 - Ron Lockwood
 #    Support the Alternate Location for Paratext Export Files setting, including for cluster projects.
 #
@@ -71,6 +74,7 @@
 #   chapters into that book's Paratext file. That file is looked for in the Paratext project's folder, unless the Alternate Location for Paratext Export Files setting names a folder, in which
 #   case every export (cluster projects included) looks for its book file there instead - in the project's own subfolder if it has one, otherwise directly in the folder - and the cluster
 #   project combo boxes list the projects found in that folder. The Paratext project abbreviation is still used, since it is part of the book file name (see ChapterSelection.getProjectFolder()).
+#   If a project doesn't have the book yet, doExport() asks whether to create a new book file for it, so each cluster project with a missing book gets its own question.
 #
 #   PICKING THE TEXTS
 #
@@ -142,7 +146,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Target FLEx to Paratext"),
-        FTM_Version    : "3.17.3",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportFlexToParatext", "Export one or more texts that contain scripture from the target FLEx project to Paratext."),
         FTM_Help       : "",
