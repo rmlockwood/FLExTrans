@@ -5,6 +5,9 @@
 #   SIL International
 #   11/25/2021
 #
+#   Version 3.17.2 - 10/13/26 - Ron Lockwood
+#    Offer to delete old backup copies and old testbed results (6, 12 or 24 months, newest 50 kept) when 100 are over a year old, at most every 3 months.
+#
 #   Version 3.17.1 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. Glob on the bare target project name so dictionary files are cleaned when the target is a .fwdata path. Added the code description block.
 #
@@ -71,6 +74,9 @@
 #   changed, and the testbed and STAMP conversion keep cache files. When a setting changes, a project is swapped, or a project folder is copied, those timestamps can lie and stale output gets used.
 #   Clean Files is the "start over" button for that. It never touches the FLEx projects and it doesn't delete anything the user authors (transfer rules, testbed, replacement dictionary, etc.).
 #
+#   It also does a second, separate job: housekeeping for the things that pile up over the life of a project. After the generated files are gone it offers - each in its own window, and only now and
+#   then - to delete old backup copies of the transfer rules and testbed files, and then old runs from the testbed results file. See DELETING OLD ITEMS below.
+#
 #   WHAT IT DELETES
 #
 #    - Files whose paths come from settings: the synthesis output, target .ana file, transfer results, analyzed text, bilingual dictionary and its .dix.old backup, target affix gloss list, the four
@@ -87,6 +93,21 @@
 #   file outside the standard FLEx Projects folder (#1334); Utils.targetProjectDisplayName() reduces a path to the bare name, since globbing on the path would match nothing. In One project mode
 #   there is no target project and the dictionary files are named after the source project, so DB.ProjectName() is used instead.
 #
+#   DELETING OLD ITEMS
+#
+#   Every tool that changes the transfer rules file or the testbed file saves a dated copy first, in Output\rule-file-history and Output\testbed-file-history, and every testbed run adds a whole
+#   copy of the testbed to the testbed results file. None of that is generated output that a rerun would recreate, so it is never deleted without asking. The user picks an age - 6, 12 or
+#   24 months, with 24 selected to begin with - or says No. The rule, in Lib/DeleteOldFilesDlg.py, is that an item goes only if it is older than the chosen age AND is not one of the newest 50 in
+#   its group, so a project that has sat untouched for two years still keeps its last 50. For the backup copies a group is all the copies of one file (the testbed, transfer_rules.t1x, and the
+#   .t2x and .t3x of an advanced project), so each keeps 50; the results file is one group.
+#
+#    - A backup copy's date is read from its name (RuleFileHistory.parseHistoryFileName), not its modified time, which shutil.copy2 carried over from the original file. A file in those folders
+#      whose name doesn't parse is not a copy FLExTrans made, so it is left alone.
+#    - A testbed run's date is its startDateTime. A run whose date can't be read is left alone.
+#    - Clean Files is run often, so the window only opens when at least 100 items are over a year old and the user wasn't asked in the last 3 months (DeleteOldFilesDlg.shouldAsk()). The
+#      last-asked date is kept per project in Config\OldFileCleanup.toml, and is recorded when the window opens, so saying No starts the 3 months just as Yes does. The details are in WHEN TO ASK
+#      in DeleteOldFilesDlg.py.
+#
 #   TRAPS
 #
 #    - Every removal is wrapped in a try with a bare except that ignores the error, because a missing file is the normal case (a module that hasn't been run yet, a setting that isn't set).
@@ -97,9 +118,10 @@
 #
 #   CODE STRUCTURE
 #
-#   After the docs dictionary there is only MainFunction(), which FlexTools calls. It reads the settings, logs to Mixpanel, and then deletes the files in this order: the setting-based and
-#   makefile files, the target dictionary files, the cache files, the LiveRuleTester folder, the HermitCrab files, the Generate files and finally the Rule Assistant files. The FlexToolsModule
-#   declaration is at the bottom.
+#   After the docs dictionary come the functions for deleting old items: copyCountText() and runCountText() word the counts beside each age, then offerToDeleteOldBackupCopies() and offerToDeleteOldTestbedResults(),
+#   which each gather their dated items, open DeleteOldFilesDlg if there is anything to offer, and delete what the user agreed to. MainFunction(), which FlexTools calls, reads the settings, logs to
+#   Mixpanel, and then deletes the files in this order: the setting-based and makefile files, the target dictionary files, the cache files, the LiveRuleTester folder, the HermitCrab files, the
+#   Generate files and the Rule Assistant files. Last it calls the two offer functions. The FlexToolsModule declaration is at the bottom.
 #
 
 import os
@@ -116,6 +138,9 @@ import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
+import RuleFileHistory
+import Testbed
+import DeleteOldFilesDlg
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -131,20 +156,164 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'DeleteOldFilesWindow']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  
         FTM_Description: _translate("CleanFiles",
-"""Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.""")}
+"""Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders. It also offers to delete old backup copies of the transfer rules and testbed files and old testbed results, always keeping the newest 50.""")}
 
 #app.quit()
 #del app
+
+def copyCountText(count):
+    '''The text shown beside an age in the window for backup copies: how many copies that age would delete.'''
+
+    if count == 1:
+
+        return _translate("CleanFiles", "1 copy")
+
+    return _translate("CleanFiles", "{count} copies").format(count=count)
+
+def runCountText(count):
+    '''The text shown beside an age in the window for testbed results: how many runs that age would delete.'''
+
+    if count == 1:
+
+        return _translate("CleanFiles", "1 result")
+
+    return _translate("CleanFiles", "{count} results").format(count=count)
+
+def offerToDeleteOldBackupCopies(report):
+    '''Ask whether to delete old backup copies of the transfer rules and testbed files, and delete the ones the user agrees to. Does nothing, and asks nothing, unless DeleteOldFilesDlg.shouldAsk()
+       says it is time to ask.'''
+
+    # Gather the copies in both history folders, grouped by the file each is a copy of. The folder is part of the key so that a rules file and a testbed file that happen to share a stem stay apart.
+    groups = {}
+
+    for historyDir in [RuleFileHistory.getHistoryDir(), Testbed.getTestbedHistoryDir()]:
+
+        try:
+            fileNames = os.listdir(historyDir)
+
+        except OSError:
+
+            # No folder yet just means nothing has been saved there
+            continue
+
+        for fileName in fileNames:
+
+            parsed = RuleFileHistory.parseHistoryFileName(fileName)
+            path = os.path.join(historyDir, fileName)
+
+            # Leave alone anything FLExTrans didn't name, and any sub-folder
+            if not parsed or not os.path.isfile(path):
+
+                continue
+
+            stem, savedAt, _tag, extension = parsed
+            groups.setdefault((historyDir, stem.lower(), extension.lower()), []).append((savedAt, path))
+
+    datedGroups = list(groups.values())
+
+    # Only ask when a real batch is over a year old and the user wasn't asked recently
+    if not DeleteOldFilesDlg.shouldAsk(datedGroups, DeleteOldFilesDlg.readLastAsked(DeleteOldFilesDlg.LAST_ASKED_BACKUP_COPIES)):
+
+        return
+
+    # Record the date before asking, so that a No starts the cooldown just as a Yes does
+    DeleteOldFilesDlg.saveLastAsked(DeleteOldFilesDlg.LAST_ASKED_BACKUP_COPIES)
+
+    ageCounts = DeleteOldFilesDlg.countOldItems(datedGroups)
+    totalCount = sum(len(group) for group in datedGroups)
+    message = _translate("CleanFiles", "FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and some of them are old.\n\nDo you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.").format(total=totalCount, keep=DeleteOldFilesDlg.KEEP_NEWEST)
+
+    dlg = DeleteOldFilesDlg.DeleteOldFilesDlg(_translate("CleanFiles", "Delete Old Backup Copies"), message, ageCounts, copyCountText)
+    dlg.exec()
+
+    if dlg.chosenMonths is None:
+
+        report.Info(_translate("CleanFiles", "No backup copies were deleted."))
+        return
+
+    deletedCount = 0
+    failedCount = 0
+    firstError = ''
+
+    # Keep going past a copy that can't be deleted (open in another program, say), and report the failures together at the end
+    for path in DeleteOldFilesDlg.selectOldItems(datedGroups, dlg.chosenMonths):
+
+        try:
+            os.remove(path)
+            deletedCount += 1
+
+        except OSError as err:
+
+            failedCount += 1
+            firstError = firstError or str(err)
+
+    report.Info(_translate("CleanFiles", "Old backup copies deleted: {count}.").format(count=deletedCount))
+
+    if failedCount:
+
+        report.Warning(_translate("CleanFiles", "Old backup copies that could not be deleted: {count}. The first error was: {errorText}").format(count=failedCount, errorText=firstError))
+
+def offerToDeleteOldTestbedResults(configMap, report):
+    '''Ask whether to delete old runs from the testbed results file, and delete the ones the user agrees to. Does nothing, and asks nothing, unless DeleteOldFilesDlg.shouldAsk() says
+       it is time to ask.'''
+
+    resultsPath = ReadConfig.getConfigVal(configMap, ReadConfig.TESTBED_RESULTS_FILE, report, giveError=False)
+
+    try:
+        resultsTree, datedResults = Testbed.loadDatedTestbedResults(resultsPath)
+
+    except ValueError as err:
+
+        report.Warning(str(err))
+        return
+
+    if resultsTree is None:
+
+        return
+
+    # Only ask when a real batch is over a year old and the user wasn't asked recently
+    if not DeleteOldFilesDlg.shouldAsk([datedResults], DeleteOldFilesDlg.readLastAsked(DeleteOldFilesDlg.LAST_ASKED_TESTBED_RESULTS)):
+
+        return
+
+    # Record the date before asking, so that a No starts the cooldown just as a Yes does
+    DeleteOldFilesDlg.saveLastAsked(DeleteOldFilesDlg.LAST_ASKED_TESTBED_RESULTS)
+
+    ageCounts = DeleteOldFilesDlg.countOldItems([datedResults])
+    message = _translate("CleanFiles", "The testbed log holds the results of {total} testbed runs, and some of them are old.\n\nDo you want to delete the old results? The newest {keep} results are always kept, however old they are.").format(total=len(datedResults), keep=DeleteOldFilesDlg.KEEP_NEWEST)
+
+    dlg = DeleteOldFilesDlg.DeleteOldFilesDlg(_translate("CleanFiles", "Delete Old Testbed Results"), message, ageCounts, runCountText)
+    dlg.exec()
+
+    if dlg.chosenMonths is None:
+
+        report.Info(_translate("CleanFiles", "No testbed results were deleted."))
+        return
+
+    oldResults = DeleteOldFilesDlg.selectOldItems([datedResults], dlg.chosenMonths)
+
+    # resultsPath is set, since loadDatedTestbedResults() returns no tree without it
+    assert resultsPath is not None
+
+    try:
+        Testbed.removeTestbedResults(resultsTree, oldResults, resultsPath)
+
+    except OSError as err:
+
+        report.Error(_translate("CleanFiles", "The old testbed results could not be deleted. The error was: {errorText}").format(errorText=str(err)))
+        return
+
+    report.Info(_translate("CleanFiles", "Old testbed results deleted: {count}.").format(count=len(oldResults)))
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -153,6 +322,9 @@ def MainFunction(DB, report, modify=True):
     buildFolder = FTPaths.BUILD_DIR
     buildFolder += '\\'
     
+    # Load the translations for the libraries this module uses, which includes the window that offers to delete old items
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], translators, loadBase=True)
+
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
@@ -371,6 +543,10 @@ def MainFunction(DB, report, modify=True):
         os.remove(os.path.join(buildFolder, Utils.RULE_ASSISTANT_DISPLAY_DATA_FILE))
     except:
         pass # ignore errors
+
+    # Housekeeping for things that pile up rather than get regenerated. Each asks first, and only now and then (see DeleteOldFilesDlg.shouldAsk()).
+    offerToDeleteOldBackupCopies(report)
+    offerToDeleteOldTestbedResults(configMap, report)
 
 #----------------------------------------------------------------
 # define the FlexToolsModule

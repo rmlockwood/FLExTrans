@@ -187,12 +187,12 @@ docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
         FTM_Description: _translate("TestbedLogViewer", 
-"""View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.""")}
+"""View testbed run results. The maximum number of results to display is set by default to 50.""")}
                  
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
-MAX_RESULTS_TO_DISPLAY = 25
+MAX_RESULTS_TO_DISPLAY = 50
 
 # The selected-row highlight. Matches TEST_HIGHLIGHT_COLOR in TestBedEditor.py so both windows look alike; the default dark blue makes the colored html in the cells hard to read.
 TEST_HIGHLIGHT_COLOR = QtGui.QColor('#D3D3D3')

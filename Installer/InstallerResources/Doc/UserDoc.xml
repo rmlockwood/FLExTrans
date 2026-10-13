@@ -7141,7 +7141,10 @@ type="tFoldername"
 > folder, under a name like <object
 type="tFilename"
 >testbed_2026-10-07_14-40-23_before_editor_save.xml</object
-> - your testbed file’s name with the date, the time and a tag saying what was about to change it. These copies are never deleted, so you can always go back to an earlier version of your testbed. To restore one, copy it into the project folder and rename it to <object
+> - your testbed file’s name with the date, the time and a tag saying what was about to change it. These copies are kept so that you can go back to an earlier version of your testbed. The <object
+type="tTool"
+>Clean Files</object
+> module offers to delete copies older than 6, 12 or 24 months, but only if you say yes, and it always keeps the newest 50. It only asks once 100 or more copies are over a year old, and then no more than once every three months. It offers the same for the copies of your transfer rule file and for old results in the testbed log. To restore one, copy it into the project folder and rename it to <object
 type="tFilename"
 >testbed.xml</object
 >, replacing the file that is there. You can delete old copies from the folder whenever you like.</p

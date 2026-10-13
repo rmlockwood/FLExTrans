@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.11 - 10/13/26 - Ron Lockwood
+#    Added loadDatedTestbedResults and removeTestbedResults so that Clean Files can delete old results from the testbed results file.
+#
 #   Version 3.17.10 - 10/7/26 - Ron Lockwood
 #    Save a backup copy of the testbed file to Output\testbed-file-history before the first write, and stop rewriting the file just to read it.
 #
@@ -108,7 +111,8 @@
 #      the level is there so that a user could one day keep several testbeds. The FLExTransTestbed element also carries source_direction, which is where right-to-left-ness comes from.
 #    - The testbed results file (Testbed Results File setting) is the log of runs. Its shape is FLExTransTestbedResults / testbedResult, one testbedResult per run, stamped with a start and an end
 #      date-time and holding a whole copy of the testbed as it stood when that run began. Newest goes first. Keeping a copy rather than a reference is what lets the log viewer show an old run
-#      faithfully after the testbed itself has moved on.
+#      faithfully after the testbed itself has moved on. It is also why the file grows so large; Clean Files offers to delete the old runs through loadDatedTestbedResults() and
+#      removeTestbedResults(), which work on the bare ElementTree rather than the object layers below, since building objects for every test of every run just to count dates would be slow.
 #
 #   THE OBJECT LAYERS
 #
@@ -192,13 +196,14 @@
 #   BACKUP COPIES
 #
 #   The first time a FlexTransTestbedFile object writes the file, it saves a copy of the file as it was to Output\testbed-file-history first. The copy is named <stem>_<YYYY-MM-DD_HH-MM-SS>_<tag>.xml,
-#   just like the copies RuleFileHistory keeps of the transfer rules, and the tag says what was about to overwrite it (editor save, test added, testbed run). Nothing deletes these copies. Reading the
+#   just like the copies RuleFileHistory keeps of the transfer rules, and the tag says what was about to overwrite it (editor save, test added, testbed run). Only Clean Files deletes these copies,
+#   and only the old ones once the user agrees. Reading the
 #   file normalizes it to NFD in memory, not on disk, so only write() ever changes the file and every change is preceded by a copy. It used to rewrite the file on every read.
 #
 #   CODE STRUCTURE
 #
 #   Top to bottom the file goes: the XML element and attribute name constants, then the viewer color constants, then LexicalUnit and LexicalUnitParser, then the four testbed classes working upward
-#   from a test to the file, then the same three levels for the results side, then the Apertium log functions, and finally the color coding functions.
+#   from a test to the file, then the same three levels for the results side and the two functions for deleting old results, then the Apertium log functions, and finally the color coding functions.
 #
 #   Two caches are worth knowing about. __luCache is shared down through a testbed so that the same lexical unit occurring in many tests becomes one shared LexicalUnit object, which is what keeps
 #   opening a large log quick. __testCache alongside it was meant to do the same for whole tests but is currently disabled - the hash is hard coded to 0 and the line that would store an object is
@@ -1303,8 +1308,8 @@ class FlexTransTestbedFile():
         # __init__ raises a ValueError if the testbed path setting is missing, so by the time write() can be called the path is always set
         assert self.__testbedPath is not None
 
-        # Before the first write, save a copy of the file as it stands in Output\testbed-file-history. historyTag says what is about to overwrite it. Nothing deletes these copies; the user can
-        # prune the folder by hand. A copy that can't be saved is only a warning - it mustn't throw away the changes the user is saving.
+        # Before the first write, save a copy of the file as it stands in Output\testbed-file-history. historyTag says what is about to overwrite it. Clean Files offers to delete old copies;
+        # the user can also prune the folder by hand. A copy that can't be saved is only a warning - it mustn't throw away the changes the user is saving.
         if not self.__historyCopySaved:
 
             self.__historyCopySaved = True
@@ -1567,6 +1572,53 @@ class FlexTransTestbedResultsFile():
         ET.indent(self.__testbedResultsTree, space='\t')
 
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
+
+def loadDatedTestbedResults(resultsPath):
+    '''Read the testbed results file and return (tree, list of (start datetime, testbedResult element)), one pair per run, for Clean Files to pick the old runs from. A run whose start date-time
+       can't be read is left out of the list, so it can never be picked for deletion. Returns (None, []) when there is no results file yet. Raises ValueError if the file can't be parsed.'''
+
+    if not resultsPath or not os.path.isfile(resultsPath):
+
+        return None, []
+
+    try:
+        resultsTree = ET.parse(resultsPath)
+
+    except ET.ParseError:
+
+        raise ValueError(_translate("Testbed", "The testbed results file: {resultsPath} is invalid.").format(resultsPath=Utils.shortenPathForDisplay(resultsPath)))
+
+    datedResults = []
+
+    for resultNode in resultsTree.getroot().findall(TESTBED_RESULT):
+
+        try:
+            startedAt = datetime.strptime(resultNode.attrib.get(START_DATE_TIME, ''), XML_DATETIME_FORMAT)
+
+        except ValueError:
+
+            continue
+
+        datedResults.append((startedAt, resultNode))
+
+    return resultsTree, datedResults
+
+def removeTestbedResults(resultsTree, resultNodes, resultsPath):
+    '''Remove the given testbedResult elements from the results tree that loadDatedTestbedResults() returned and write the file back, indented the same way FlexTransTestbedResultsFile.write()
+       does it. Raises OSError if the file can't be written.'''
+
+    resultsRoot = resultsTree.getroot()
+
+    for resultNode in resultNodes:
+
+        resultsRoot.remove(resultNode)
+
+    ET.indent(resultsTree, space='\t')
+
+    # Write a temporary file next to the real one and then swap it in, so that a write that fails part way through (a full disk, say) leaves the user's results file as it was instead of truncated.
+    tempPath = resultsPath + '.tmp'
+    resultsTree.write(tempPath, encoding='utf-8', xml_declaration=True)
+    os.replace(tempPath, resultsPath)
 
 # The name of the log file the Apertium tools write their rule trace to. The makefile in the Build folder sends apertium-transfer's standard error there (and, when advanced transfer is turned on,
 # appends the interchunk and postchunk traces to the same file). The Live Rule Tester's makefile uses the same name for its transfer stage, so that module takes the name from here rather than
