@@ -5,6 +5,9 @@
 #   SIL International
 #   9/2/26
 #
+#   Version 3.17.3 - 10/13/26 - Ron Lockwood
+#    Added parseHistoryFileName, which reads the stem, date, tag and extension out of any saved copy's name so that Clean Files can find the old ones to delete.
+#
 #   Version 3.17.2 - 10/10/26 - Ron Lockwood
 #    Added listHistoryCopies, which reads the saved copies of a rules file back (newest first, with the date and tag parsed from each name) for the Compare Rule Files tool.
 #
@@ -15,8 +18,8 @@
 #
 #   Every part of FLExTrans that is about to change the transfer rules file, or that wants a record of the rules that produced a given result, saves a timestamped copy of the file through this
 #   module. All of those copies land in one folder, Output\rule-file-history, and each name carries a tag saying what saved it, so the whole history of a project's rules is one sorted listing
-#   instead of a folder per producer plus a scattering of .bak files beside the rules file itself. Nothing in FLExTrans ever deletes these copies; they are small and the user can prune the folder
-#   by hand whenever they like.
+#   instead of a folder per producer plus a scattering of .bak files beside the rules file itself. The copies are small, but they pile up, so Clean Files offers to delete the old ones (always
+#   keeping the newest 50 of each file); nothing else in FLExTrans deletes them, and the user can also prune the folder by hand.
 #
 #   A name looks like <stem>_<YYYY-MM-DD_HH-MM-SS>_<tag><extension> - for example transfer_rules_2026-09-02_14-35-01_testbed_run.t1x. The date leads the tag so that the folder sorts
 #   chronologically, and the original extension stays last so that a copy still opens in XMLmind XML Editor when it is double-clicked.
@@ -25,7 +28,8 @@
 #   Lib/OldRuleHistoryConversion.py, which is meant to be deleted once nobody is upgrading from that version any more. Nothing here knows about it.
 #
 #   Reading the history back is here too (listHistoryCopies), so the name format is parsed in the same file that writes it. The Compare Rule Files tool uses it to offer the saved copies of the
-#   rules file for comparison.
+#   rules file for comparison. parseHistoryFileName reads any saved copy's name without knowing the stem in advance; Clean Files uses it on this folder and on Output\testbed-file-history, whose
+#   copies of the testbed file are named the same way.
 #
 #   This module is deliberately free of Qt, FLEx and flextoolslib imports so that AIRules.py - which is Qt-free by design so that it can be used and tested standalone - can call it.
 
@@ -48,6 +52,10 @@ TAG_BEFORE_CAT_SETUP  = 'before_cat_setup'
 
 # The date-time stamp every producer uses, so that one directory listing sorts chronologically no matter what saved each copy. Dashes, not colons, because a colon can't go in a Windows file name.
 STAMP_FORMAT = '%Y-%m-%d_%H-%M-%S'
+
+# Any saved copy's name, whatever its stem: <stem>_<stamp>_<tag><extension>. The stem is greedy so that a stem which itself contains something stamp-like still splits at the last stamp. Tags never
+# contain a dot, which is what separates the tag from the extension; the extension is optional so that a copy of a file without one still parses.
+HISTORY_NAME_RE = re.compile(r'^(.+)_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})_([^.]+)(\.[^.]+)?$')
 
 def getHistoryDir():
     '''Return the folder that saved copies of the transfer rules file go in. This is a function and not a module level constant so that FTPaths.OUTPUT_DIR is read when a copy is saved rather than
@@ -99,6 +107,26 @@ def saveHistoryCopies(rulesFiles, tag):
             firstError = errorMsg
 
     return destPaths, firstError
+
+def parseHistoryFileName(fileName):
+    '''Split the name of a saved copy into (stem, datetime saved, tag, extension), or return None when the name isn't in the <stem>_<date>_<time>_<tag><extension> form or its stamp isn't a real
+       date. The extension includes its dot and is '' when there is none. The date comes from the name rather than the file's modified time, because shutil.copy2 carries the original file's modified
+       time over to the copy.'''
+
+    match = HISTORY_NAME_RE.match(fileName)
+
+    if not match:
+
+        return None
+
+    try:
+        savedAt = datetime.strptime(match.group(2), STAMP_FORMAT)
+
+    except ValueError:
+
+        return None
+
+    return match.group(1), savedAt, match.group(3), match.group(4) or ''
 
 def listHistoryCopies(rulesFile):
     '''Return the saved copies of the transfer rules file at rulesFile, newest first, as a list of (path, datetime saved, tag). Only copies of this file are returned - its stem and extension must
