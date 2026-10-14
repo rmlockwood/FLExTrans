@@ -34,11 +34,6 @@ toma el borrador de este archivo y copia los capítulos en Paratext al proyecto 
       <translation>El nombre del texto &quot;{sourceText}&quot; no es válido. Debería tener el formato GEN 01 o Génesis 23-38</translation>
     </message>
     <message>
-      <location filename="../ExportToParatext.py" line="250"/>
-      <source>The text name &quot;{sourceText}&quot; is missing chapter number(s) after the book name. It should be of the form GEN 01 or Genesis 23-38</source>
-      <translation>Falta el número o los números de capítulo después del nombre del libro en el nombre del texto &quot;{sourceText}&quot;. Debe tener la forma GEN 01 o Génesis 23-38</translation>
-    </message>
-    <message>
       <location filename="../ExportToParatext.py" line="199"/>
       <source>The book name or abbreviation {book} is invalid. It should match a Paratext book.</source>
       <translation>El nombre o la abreviatura del libro {book} no es válido. Debería coincidir con un libro de Paratext.</translation>
