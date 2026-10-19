@@ -74,19 +74,24 @@
         <translation>Die rechts angezeigte Version der Transferregeln: die aktuelle Regeldatei oder eine im Verlaufsordner der Regeldateien gespeicherte Kopie.</translation>
     </message>
     <message>
-        <location filename="../CompareRuleFilesWindow.py" line="130"/>
-        <source>Open the current transfer rules file in the XML editor.</source>
-        <translation>Die aktuelle Transferregeldatei im XML-Editor öffnen.</translation>
-    </message>
-    <message>
-        <location filename="../CompareRuleFilesWindow.py" line="131"/>
-        <source>Open Rules File</source>
-        <translation>Regeldatei öffnen</translation>
-    </message>
-    <message>
         <location filename="../CompareRuleFilesWindow.py" line="132"/>
         <source>Close</source>
         <translation>Schließen</translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesWindow.py" line="146"/>
+        <source>Open</source>
+        <translation>Öffnen</translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesWindow.py" line="159"/>
+        <source>Read both files again and redo the comparison, for example after you have saved changes in the XML editor.</source>
+        <translation>Beide Dateien erneut einlesen und den Vergleich neu erstellen, z. B. nachdem Sie Änderungen im XML-Editor gespeichert haben.</translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesWindow.py" line="160"/>
+        <source>Refresh Files</source>
+        <translation>Dateien aktualisieren</translation>
     </message>
 </context>
 </TS>

@@ -5,6 +5,9 @@
 #   SIL International
 #   10/10/26
 #
+#   Version 3.17.5 - 10/19/26 - Ron Lockwood
+#    Fixes #1644. An Open button beside each version list replaces Open Rules File; a saved copy opens as a read-only copy. Added Refresh Files.
+#
 #   Version 3.17.4 - 10/12/26 - Ron Lockwood
 #    When the two versions differ, the window goes to the first change as soon as the comparison has loaded. Lint fixes.
 #
@@ -56,19 +59,27 @@
 #   while a page loads - a greyed button can't hold the focus - and are only greyed when a page reports no changes. The zoom factor is kept on the dialog and re-applied after every load, since each new page would otherwise come up at the default size.
 #
 #   A change inside a folded block is still a stop for the arrows: the page counts it at the folded block's row and opens the block when the arrows reach it. Collapse All folds every block, the
-#   sections included, so a rules file comes down to its six section lines; Expand All opens everything. Both ask the page for the new change count, because folding regroups the changes. Open Rules File opens
-#   the current rules file in XXE; the comparison doesn't follow edits made there until the user picks the version again.
+#   sections included, so a rules file comes down to its six section lines; Expand All opens everything. Both ask the page for the new change count, because folding regroups the changes.
+#
+#   OPENING A VERSION
+#
+#   Each version list has an Open button beside it that opens whatever that list shows in XXE, so there is never a question of which file a button means; its tooltip gives the full path and
+#   follows the list's selection. The current rules file and a browsed file open as they are. A saved copy (anything under the rule file history folder) must not be edited, though - the history
+#   is a record of what the rules were - so it is copied to a read-only file in its own temp folder and that copy is opened, after a message saying to save it under a different name to keep any changes. The history
+#   file itself is never made read-only: Clean Files deletes old copies with os.remove, which fails on a read-only file in Windows. The read-only copies' folder isn't removed when the window
+#   closes, since XXE may still have one open; the next copy of the same file overwrites it. The comparison doesn't follow edits made in XXE until Refresh Files reads both files again.
 #
 #   CODE STRUCTURE
 #
 #   tagDescription turns a history tag into words. CompareRuleFilesDlg builds the window from CompareRuleFilesWindow.ui (__init__), fills the lists (populateVersionLists, addVersionItem,
 #   selectVersion, versionLabel), reacts to a pick (onLeftVersionChanged, browseForLeftVersion; a right-hand pick goes straight to showComparison), renders (showComparison -> onLoadFinished -> onLoadSummary -> onSummary, navigate), steps through
-#   the changes (onPreviousChange, onNextChange -> onNavigated), folds (onCollapseAll, onExpandAll -> foldAll), opens the rules file in XXE (onOpenRulesFile), zooms, and cleans up its
-#   temporary folder in done. showRuleFileComparison is the entry point for other modules.
+#   the changes (onPreviousChange, onNextChange -> onNavigated), folds (onCollapseAll, onExpandAll -> foldAll), opens a version in XXE (onOpenLeftFile, onOpenRightFile -> openVersion ->
+#   isHistoryCopy, makeReadOnlyCopy; updateOpenTooltips keeps the buttons' tooltips current), re-reads the files (onRefresh), zooms, and cleans up its temporary folder in done. showRuleFileComparison is the entry point for other modules.
 #
 
 import os
 import shutil
+import stat
 import tempfile
 import xml.etree.ElementTree as ET
 
@@ -90,6 +101,9 @@ BROWSE_ITEM = '<browse>'
 # Where the left-hand list's fixed entries end: the current file (0) and Browse... (1). A browsed file is inserted here, and the right-hand list, which has no Browse..., inserts at 1.
 LEFT_INSERT_INDEX = 2
 RIGHT_INSERT_INDEX = 1
+
+# Where a saved copy is copied to when it is opened, read-only, in the XML editor. A folder of its own rather than the window's temp folder, which is removed when the window closes.
+READ_ONLY_COPY_DIR = os.path.join(tempfile.gettempdir(), 'FLExTransReadOnlyRules')
 
 ZOOM_FACTOR_STEP = 1.15
 MIN_ZOOM = 0.25
@@ -149,18 +163,23 @@ class CompareRuleFilesDlg(QDialog):
 
         self.selectVersion(self.ui.rightVersionCombo, rightPath or rulesFile, RIGHT_INSERT_INDEX)
         self.lastLeftIndex = self.ui.leftVersionCombo.currentIndex()
+        self.updateOpenTooltips()
 
         # Connect only now, so filling and pre-selecting the lists above doesn't render the comparison several times over. The right-hand list has no Browse..., so a pick there goes straight
         # to showComparison; PyQt drops the index currentIndexChanged sends, since showComparison takes none.
         self.ui.leftVersionCombo.currentIndexChanged.connect(self.onLeftVersionChanged)
         self.ui.rightVersionCombo.currentIndexChanged.connect(self.showComparison)
+        self.ui.leftVersionCombo.currentIndexChanged.connect(self.updateOpenTooltips)
+        self.ui.rightVersionCombo.currentIndexChanged.connect(self.updateOpenTooltips)
         self.ui.previousChangeButton.clicked.connect(self.onPreviousChange)
         self.ui.nextChangeButton.clicked.connect(self.onNextChange)
         self.ui.zoomIncreaseButton.clicked.connect(self.onZoomIncrease)
         self.ui.zoomDecreaseButton.clicked.connect(self.onZoomDecrease)
         self.ui.collapseAllButton.clicked.connect(self.onCollapseAll)
         self.ui.expandAllButton.clicked.connect(self.onExpandAll)
-        self.ui.openRulesFileButton.clicked.connect(self.onOpenRulesFile)
+        self.ui.openLeftFileButton.clicked.connect(self.onOpenLeftFile)
+        self.ui.openRightFileButton.clicked.connect(self.onOpenRightFile)
+        self.ui.refreshButton.clicked.connect(self.onRefresh)
         self.ui.closeButton.clicked.connect(self.reject)
         self.ui.comparisonView.loadFinished.connect(self.onLoadFinished)
         self.ui.comparisonView.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
@@ -433,19 +452,94 @@ class CompareRuleFilesDlg(QDialog):
 
             page.runJavaScript('foldAll({f})'.format(f='true' if folded else 'false'), self.onSummary)
 
-    # --- opening the rules file --------------------------------------------
+    # --- opening a version --------------------------------------------------
 
-    def onOpenRulesFile(self):
-        '''Open the current transfer rules file in the XML editor. os.startfile hands it to whatever is registered for .t1x (XXE), like AI Rule Studio's Open Rule File, and keeps this window
-        responsive while the editor is open.'''
+    def onOpenLeftFile(self):
+
+        self.openVersion(self.ui.leftVersionCombo)
+
+    def onOpenRightFile(self):
+
+        self.openVersion(self.ui.rightVersionCombo)
+
+    def updateOpenTooltips(self):
+        '''Point each Open button's tooltip at the file its list now shows, saying when it will open read-only. Connected to both lists, so PyQt drops the index currentIndexChanged sends.'''
+
+        for combo, button in ((self.ui.leftVersionCombo, self.ui.openLeftFileButton), (self.ui.rightVersionCombo, self.ui.openRightFileButton)):
+
+            path = combo.currentData()
+
+            # Browse... is only the current entry while its file chooser is open, and the list goes back to a real version straight after.
+            if not path or path == BROWSE_ITEM:
+
+                continue
+
+            if self.isHistoryCopy(path):
+
+                button.setToolTip(_translate('CompareRuleFiles', 'Open a read-only copy of this saved version in the XML editor: {path}').format(path=path))
+
+            else:
+                button.setToolTip(_translate('CompareRuleFiles', 'Open this file in the XML editor: {path}').format(path=path))
+
+    def isHistoryCopy(self, path: str) -> bool:
+        '''Whether path is in the rule file history folder (or a folder under it, e.g. one the user has moved old copies into) - a saved copy that must stay as it was.'''
+
+        historyDir = os.path.normcase(os.path.abspath(RuleFileHistory.getHistoryDir()))
+        filePath = os.path.normcase(os.path.abspath(path))
+
+        return filePath.startswith(historyDir + os.sep)
+
+    def openVersion(self, combo):
+        '''Open the version a list shows in the XML editor. A saved copy is opened as a read-only copy, after saying why and how to keep changes; anything else opens as it is. os.startfile
+        hands the file to whatever is registered for .t1x (XXE), like AI Rule Studio's Open Rule File, and keeps this window responsive while the editor is open.'''
+
+        path = combo.currentData()
+
+        if not path or path == BROWSE_ITEM:
+
+            return
 
         try:
-            os.startfile(self.rulesFile)
+            if self.isHistoryCopy(path):
+
+                openPath = self.makeReadOnlyCopy(path)
+
+                QMessageBox.information(self, _translate('CompareRuleFiles', 'Opening a saved copy'),
+                                        _translate('CompareRuleFiles', 'This is a copy saved in the rule file history, so it opens read-only to keep the history as it was.\n\n'
+                                                   'To keep changes you make to it, save it under a different name in the XML editor.'))
+
+            else:
+                openPath = path
+
+            os.startfile(openPath)
 
         except OSError as err:
 
             QMessageBox.warning(self, _translate('CompareRuleFiles', 'Could not open the editor'),
-                                _translate('CompareRuleFiles', 'The transfer rules file could not be opened ({err}). Open it yourself from: {path}').format(err=err, path=self.rulesFile))
+                                _translate('CompareRuleFiles', 'The transfer rules file could not be opened ({err}). Open it yourself from: {path}').format(err=err, path=path))
+
+    def makeReadOnlyCopy(self, path: str) -> str:
+        '''Copy a saved copy into READ_ONLY_COPY_DIR under its own name, mark the copy read-only and return its path. A copy left from opening the same file before is made writable first so
+        it can be replaced. Raises OSError when the copy can't be made.'''
+
+        os.makedirs(READ_ONLY_COPY_DIR, exist_ok=True)
+        copyPath = os.path.join(READ_ONLY_COPY_DIR, os.path.basename(path))
+
+        if os.path.exists(copyPath):
+
+            os.chmod(copyPath, stat.S_IWRITE | stat.S_IREAD)
+
+        shutil.copy2(path, copyPath)
+        os.chmod(copyPath, stat.S_IREAD)
+
+        return copyPath
+
+    # --- refreshing ---------------------------------------------------------
+
+    def onRefresh(self):
+        '''Read both selected files again and redo the comparison, e.g. after the user has saved changes in the XML editor.'''
+
+        self.showComparison()
 
     # --- zoom ---------------------------------------------------------------
 

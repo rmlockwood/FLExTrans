@@ -98,5 +98,27 @@
         <source>The transfer rules file could not be opened ({err}). Open it yourself from: {path}</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../CompareRuleFilesDlg.py" line="479"/>
+        <source>Open a read-only copy of this saved version in the XML editor: {path}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesDlg.py" line="482"/>
+        <source>Open this file in the XML editor: {path}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesDlg.py" line="507"/>
+        <source>Opening a saved copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesDlg.py" line="508"/>
+        <source>This is a copy saved in the rule file history, so it opens read-only to keep the history as it was.
+
+To keep changes you make to it, save it under a different name in the XML editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

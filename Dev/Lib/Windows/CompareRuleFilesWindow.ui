@@ -177,7 +177,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="versionLayout">
+    <layout class="QHBoxLayout" name="versionLayout" stretch="1,1">
      <property name="spacing">
       <number>16</number>
      </property>
@@ -188,30 +188,52 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QComboBox" name="leftVersionCombo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>The version of the transfer rules shown on the left: a copy saved in the rule file history folder, the current rules file, or any rules file you browse to.</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="leftVersionLayout">
+       <item>
+        <widget class="QPushButton" name="openLeftFileButton">
+         <property name="text">
+          <string>Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="leftVersionCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>The version of the transfer rules shown on the left: a copy saved in the rule file history folder, the current rules file, or any rules file you browse to.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QComboBox" name="rightVersionCombo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>The version of the transfer rules shown on the right: the current rules file, or a copy saved in the rule file history folder.</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="rightVersionLayout">
+       <item>
+        <widget class="QComboBox" name="rightVersionCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>The version of the transfer rules shown on the right: the current rules file, or a copy saved in the rule file history folder.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="openRightFileButton">
+         <property name="text">
+          <string>Open</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -228,12 +250,12 @@
    <item>
     <layout class="QHBoxLayout" name="buttonLayout">
      <item>
-      <widget class="QPushButton" name="openRulesFileButton">
+      <widget class="QPushButton" name="refreshButton">
        <property name="toolTip">
-        <string>Open the current transfer rules file in the XML editor.</string>
+        <string>Read both files again and redo the comparison, for example after you have saved changes in the XML editor.</string>
        </property>
        <property name="text">
-        <string>Open Rules File</string>
+        <string>Refresh Files</string>
        </property>
       </widget>
      </item>
