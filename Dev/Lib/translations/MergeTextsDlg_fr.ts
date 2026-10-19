@@ -1,142 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="fr" sourcelanguage="en">
-<context>
+  <context>
     <name>MergeTextsDlg</name>
     <message>
-        <location filename="../MergeTextsDlg.py" line="107" />
-        <source>Merging FLEx Texts</source>
-        <translation>Fusion de textes FLEx</translation>
+      <location filename="../MergeTextsDlg.py" line="107"/>
+      <source>Merging FLEx Texts</source>
+      <translation>Fusion de textes FLEx</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="130" />
-        <source>Merge these {count} text(s) into a new text called "{targetName}"?</source>
-        <translation>Fusionner ces {count} texte(s) dans un nouveau texte nommé "{targetName}" ?</translation>
+      <location filename="../MergeTextsDlg.py" line="130"/>
+      <source>Merge these {count} text(s) into a new text called "{targetName}"?</source>
+      <translation>Fusionner ces {count} texte(s) dans un nouveau texte nommé "{targetName}" ?</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="144" />
-        <source>Their paragraphs will be moved into the new text and the texts above will then be DELETED.</source>
-        <translation>Leurs paragraphes seront déplacés dans le nouveau texte, puis les textes ci-dessus seront SUPPRIMÉS.</translation>
+      <location filename="../MergeTextsDlg.py" line="144"/>
+      <source>Their paragraphs will be moved into the new text and the texts above will then be DELETED.</source>
+      <translation>Leurs paragraphes seront déplacés dans le nouveau texte, puis les textes ci-dessus seront SUPPRIMÉS.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="148" />
-        <source>This CANNOT be undone. If FLEx is open, make sure you are NOT in the Texts &amp; Words section of FLEx.</source>
-        <translation>Cette action est IRRÉVERSIBLE. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Textes et Mots de FLEx.</translation>
+      <location filename="../MergeTextsDlg.py" line="148"/>
+      <source>This CANNOT be undone. If FLEx is open, make sure you are NOT in the Texts &amp; Words section of FLEx.</source>
+      <translation>Cette action est IRRÉVERSIBLE. Si FLEx est ouvert, assurez-vous de ne PAS être dans la section Textes et Mots de FLEx.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="268" />
-        <source>{displayBase}  ({count} texts)</source>
-        <translation>{displayBase}  ({count} textes)</translation>
+      <location filename="../MergeTextsDlg.py" line="268"/>
+      <source>{displayBase}  ({count} texts)</source>
+      <translation>{displayBase}  ({count} textes)</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="270" />
-        <source>(choose texts)</source>
-        <translation>(choisir des textes)</translation>
+      <location filename="../MergeTextsDlg.py" line="270"/>
+      <source>(choose texts)</source>
+      <translation>(choisir des textes)</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="303" />
-        <source>{textName}  [current FLExTrans source text]</source>
-        <translation>{textName}  [texte source FLExTrans actuel]</translation>
+      <location filename="../MergeTextsDlg.py" line="303"/>
+      <source>{textName}  [current FLExTrans source text]</source>
+      <translation>{textName}  [texte source FLExTrans actuel]</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="699" />
-        <source>The text "{textName}" has no contents and cannot be merged. Remove it from the list.</source>
-        <translation>Le texte "{textName}" n'a aucun contenu et ne peut pas être fusionné. Retirez-le de la liste.</translation>
+      <location filename="../MergeTextsDlg.py" line="699"/>
+      <source>The text "{textName}" has no contents and cannot be merged. Remove it from the list.</source>
+      <translation>Le texte "{textName}" n'a aucun contenu et ne peut pas être fusionné. Retirez-le de la liste.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="719" />
-        <source>These texts have no paragraphs and will be skipped: {nameList}.</source>
-        <translation>Ces textes n'ont aucun paragraphe et seront ignorés : {nameList}.</translation>
+      <location filename="../MergeTextsDlg.py" line="719"/>
+      <source>These texts have no paragraphs and will be skipped: {nameList}.</source>
+      <translation>Ces textes n'ont aucun paragraphe et seront ignorés : {nameList}.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="726" />
-        <source>The selected texts use more than one writing system ({wsList}), so the merged text would have mixed content.</source>
-        <translation>Les textes sélectionnés utilisent plusieurs systèmes d'écriture ({wsList}), le texte fusionné aurait donc un contenu mixte.</translation>
+      <location filename="../MergeTextsDlg.py" line="726"/>
+      <source>The selected texts use more than one writing system ({wsList}), so the merged text would have mixed content.</source>
+      <translation>Les textes sélectionnés utilisent plusieurs systèmes d'écriture ({wsList}), le texte fusionné aurait donc un contenu mixte.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="730" />
-        <source>A discourse chart is based on these texts and will be left pointing at nothing: {nameList}. Delete those charts in the FLEx Discourse area first, then merge, then chart the merged text.</source>
-        <translation>Un tableau de discours est basé sur ces textes et ne pointera plus vers rien : {nameList}. Supprimez d'abord ces tableaux dans la section Discours de FLEx, puis fusionnez les textes, puis créez le tableau du texte fusionné.</translation>
+      <location filename="../MergeTextsDlg.py" line="730"/>
+      <source>A discourse chart is based on these texts and will be left pointing at nothing: {nameList}. Delete those charts in the FLEx Discourse area first, then merge, then chart the merged text.</source>
+      <translation>Un tableau de discours est basé sur ces textes et ne pointera plus vers rien : {nameList}. Supprimez d'abord ces tableaux dans la section Discours de FLEx, puis fusionnez les textes, puis créez le tableau du texte fusionné.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="734" />
-        <source>These texts have media files, which belong to the text and not to its paragraphs. They will not be deleted, so their media survives: {nameList}.</source>
-        <translation>Ces textes contiennent des fichiers médias, qui appartiennent au texte et non à ses paragraphes. Ils ne seront pas supprimés, afin que leurs médias soient conservés : {nameList}.</translation>
+      <location filename="../MergeTextsDlg.py" line="734"/>
+      <source>These texts have media files, which belong to the text and not to its paragraphs. They will not be deleted, so their media survives: {nameList}.</source>
+      <translation>Ces textes contiennent des fichiers médias, qui appartiennent au texte et non à ses paragraphes. Ils ne seront pas supprimés, afin que leurs médias soient conservés : {nameList}.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="742" />
-        <source>{count} text tag(s) will be lost, because moving text tags to the merged text is turned off.</source>
-        <translation>{count} étiquette(s) de texte seront perdues, car le déplacement des étiquettes de texte vers le texte fusionné est désactivé.</translation>
+      <location filename="../MergeTextsDlg.py" line="742"/>
+      <source>{count} text tag(s) will be lost, because moving text tags to the merged text is turned off.</source>
+      <translation>{count} étiquette(s) de texte seront perdues, car le déplacement des étiquettes de texte vers le texte fusionné est désactivé.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="760" />
-        <source>Please read:</source>
-        <translation>Veuillez lire :</translation>
+      <location filename="../MergeTextsDlg.py" line="760"/>
+      <source>Please read:</source>
+      <translation>Veuillez lire :</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="816" />
-        <source>Name Already Used</source>
-        <translation>Nom déjà utilisé</translation>
+      <location filename="../MergeTextsDlg.py" line="816"/>
+      <source>Name Already Used</source>
+      <translation>Nom déjà utilisé</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="803" />
-        <source>The name "{targetName}" belongs to one of the texts you are merging. Choose a different name for the merged text, or take that text out of the list.</source>
-        <translation>Le nom "{targetName}" appartient à l'un des textes que vous fusionnez. Choisissez un autre nom pour le texte fusionné ou retirez ce texte de la liste.</translation>
+      <location filename="../MergeTextsDlg.py" line="803"/>
+      <source>The name "{targetName}" belongs to one of the texts you are merging. Choose a different name for the merged text, or take that text out of the list.</source>
+      <translation>Le nom "{targetName}" appartient à l'un des textes que vous fusionnez. Choisissez un autre nom pour le texte fusionné ou retirez ce texte de la liste.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="816" />
-        <source>The {projectName} project already has a text called "{targetName}". Use the name "{uniqueName}" instead?</source>
-        <translation>Le projet {projectName} contient déjà un texte nommé "{targetName}". Utiliser le nom "{uniqueName}" à la place ?</translation>
+      <location filename="../MergeTextsDlg.py" line="816"/>
+      <source>The {projectName} project already has a text called "{targetName}". Use the name "{uniqueName}" instead?</source>
+      <translation>Le projet {projectName} contient déjà un texte nommé "{targetName}". Utiliser le nom "{uniqueName}" à la place ?</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="835" />
-        <source>Nothing to Merge</source>
-        <translation>Rien à fusionner</translation>
+      <location filename="../MergeTextsDlg.py" line="835"/>
+      <source>Nothing to Merge</source>
+      <translation>Rien à fusionner</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="835" />
-        <source>Choose at least two texts to merge.</source>
-        <translation>Choisissez au moins deux textes à fusionner.</translation>
+      <location filename="../MergeTextsDlg.py" line="835"/>
+      <source>Choose at least two texts to merge.</source>
+      <translation>Choisissez au moins deux textes à fusionner.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="842" />
-        <source>No Name</source>
-        <translation>Aucun nom</translation>
+      <location filename="../MergeTextsDlg.py" line="842"/>
+      <source>No Name</source>
+      <translation>Aucun nom</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="842" />
-        <source>Type a name for the merged text.</source>
-        <translation>Saisissez un nom pour le texte fusionné.</translation>
+      <location filename="../MergeTextsDlg.py" line="842"/>
+      <source>Type a name for the merged text.</source>
+      <translation>Saisissez un nom pour le texte fusionné.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="572" />
-        <source>Covers chapter {chapNum}.</source>
-        <translation>Couvre le chapitre {chapNum}.</translation>
+      <location filename="../MergeTextsDlg.py" line="572"/>
+      <source>Covers chapter {chapNum}.</source>
+      <translation>Couvre le chapitre {chapNum}.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="575" />
-        <source>Covers chapters {lowChap} to {highChap}.</source>
-        <translation>Couvre les chapitres {lowChap} à {highChap}.</translation>
+      <location filename="../MergeTextsDlg.py" line="575"/>
+      <source>Covers chapters {lowChap} to {highChap}.</source>
+      <translation>Couvre les chapitres {lowChap} à {highChap}.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="579" />
-        <source>Missing: {chapterList}.</source>
-        <translation>Manquants : {chapterList}.</translation>
+      <location filename="../MergeTextsDlg.py" line="579"/>
+      <source>Missing: {chapterList}.</source>
+      <translation>Manquants : {chapterList}.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="583" />
-        <source>Covered twice: {chapterList}.</source>
-        <translation>En double : {chapterList}.</translation>
+      <location filename="../MergeTextsDlg.py" line="583"/>
+      <source>Covered twice: {chapterList}.</source>
+      <translation>En double : {chapterList}.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="588" />
-        <source>No gaps.</source>
-        <translation>Aucune lacune.</translation>
+      <location filename="../MergeTextsDlg.py" line="588"/>
+      <source>No gaps.</source>
+      <translation>Aucune lacune.</translation>
     </message>
     <message>
-        <location filename="../MergeTextsDlg.py" line="536" />
-        <source>{textCount} text(s) selected.</source>
-        <translation>{textCount} texte(s) sélectionné(s).</translation>
+      <location filename="../MergeTextsDlg.py" line="536"/>
+      <source>{textCount} text(s) selected.</source>
+      <translation>{textCount} texte(s) sélectionné(s).</translation>
     </message>
-</context>
+  </context>
 </TS>
