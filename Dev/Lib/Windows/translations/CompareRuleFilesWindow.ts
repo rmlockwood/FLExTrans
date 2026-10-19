@@ -74,18 +74,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CompareRuleFilesWindow.py" line="130"/>
-        <source>Open the current transfer rules file in the XML editor.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CompareRuleFilesWindow.py" line="131"/>
-        <source>Open Rules File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../CompareRuleFilesWindow.py" line="132"/>
         <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesWindow.py" line="146"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesWindow.py" line="159"/>
+        <source>Read both files again and redo the comparison, for example after you have saved changes in the XML editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CompareRuleFilesWindow.py" line="160"/>
+        <source>Refresh Files</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
