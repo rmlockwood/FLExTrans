@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.11 - 10/19/26 - Ron Lockwood
+#    Fixes #1643. In the comparison, rule and macro names now use a lighter shade of their colour (light blue / light purple) so they stand out less.
+#
 #   Version 3.17.10 - 10/12/26 - Ron Lockwood
 #    diffNav(1) from the top of the page always goes to the first change, so the Compare Rule Files window can open on it.
 #
@@ -122,7 +125,7 @@
 #   header line is coloured, never its children. On a changed row, each value is also compared piece by piece (letter runs, digit runs, punctuation) with the other pane's (highlightDifferences),
 #   and the differing pieces are shown darker orange: values always (a changed side value is highlighted whole), a comment only when the two are alike enough (COMMENT_DIFF_MIN_RATIO) for the
 #   marks not to be noise. The comparison is wrapped in a "diffview" class that turns the normal chip and comment fills white (or the row's diff colour on a highlighted row) and the red/ochre
-#   side text black, so the XXE palette doesn't compete with the diff colours. Rule names and macro names (NAME_CHIPS) are the exception and keep their colour, as landmarks in a long file.
+#   side text black, so the XXE palette doesn't compete with the diff colours. Rule names and macro names (NAME_CHIPS) are the exception and keep a lighter shade of their colour, as landmarks in a long file.
 #
 #   LINED-UP SCROLLING
 #
@@ -239,7 +242,7 @@ COLLAPSIBLE_FALLBACK = {'rule', 'action', 'when', 'otherwise', 'out', 'def-cat',
 # blocks whether or not XXE lets you fold them (choose/test/let/and/or/not are not collapsible in transfer.css but still benefit from a guide).
 INDENT_GUIDE_TAGS = {'rule', 'def-macro', 'action', 'let', 'choose', 'when', 'otherwise', 'test', 'out', 'and', 'or', 'not'}
 
-# The name chips that keep their XXE colour in the comparison, where every other chip is white (see .keep-color in transfer_preview.css): a rule's name and a macro's name in its definition.
+# The name chips that keep a lighter shade of their XXE colour in the comparison, where every other chip is white (see .keep-color in transfer_preview.css): a rule's name and a macro's name in its definition.
 # They are the landmarks for finding your place in a long rules file. (Element tag, attribute) pairs; a macro's name where it is called (call-macro) is not one of them.
 NAME_CHIPS = {('rule', 'comment'), ('def-macro', 'n')}
 

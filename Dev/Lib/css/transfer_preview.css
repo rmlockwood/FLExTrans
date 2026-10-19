@@ -167,8 +167,11 @@ body {
 .diffview .chip:not(.keep-color),
 .diffview .comment .rowline { background: #FFFFFF; }
 
-/* The exception: a rule's name and a macro's name in its definition (keep-color, see NAME_CHIPS in TransferPreview.py) keep their XXE colour, as landmarks for finding your place in a long
-   rules file. They still take the diff colour below when their row is highlighted. */
+/* The exception: a rule's name and a macro's name in its definition (keep-color, see NAME_CHIPS in TransferPreview.py) keep a colour, as landmarks for finding your place in a long rules file.
+   It is a lighter shade of the XXE colour (light blue / light purple) so the names are still noticeable without drawing too much attention. They still take the diff colour below when their
+   row is highlighted - these rules have the same specificity as the diff rules, so they must stay above them. */
+.diffview .chip.keep-color.c-rule  { background: #F2F6FF; }
+.diffview .chip.keep-color.c-macro { background: #FDEEFD; }
 
 .diffview .changed > .rowline .chip,
 .diffview .comment.changed > .rowline { background: #FFD8A8; }
