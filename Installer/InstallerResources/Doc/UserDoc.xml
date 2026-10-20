@@ -6900,10 +6900,45 @@ type="tCollection"
 > collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see some pop-up text of which <object
 type="tFlexx"
 ></object
-> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <object
-type="tFlextrans"
+> source text the words came from. If the test is invalid, the pop-up text also tells you why (see below). Expand a test to see more about it: the comment you gave the test, if any, and a Rules applied: node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the comment that names the rule, followed by the lexical units the rule matched. That comment is the one the rule carried when the testbed was run, so an old result still tells you which rule fired even after rules have been added to or removed from the rules file.</p
+><p
+>Each test starts with an icon: a green check if the test passed, a red X if it failed (the <object
+type="tBold"
+>Actual Result</object
+> is then shown in red), or a yellow triangle if the test is invalid. Each time the testbed is run, every test is checked against the source <object
+type="tFlexx"
 ></object
-> found the test invalid. Expand a test to see more about it: the comment you gave the test, if any, and a Rules applied: node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the comment that names the rule, followed by the lexical units the rule matched. That comment is the one the rule carried when the testbed was run, so an old result still tells you which rule fired even after rules have been added to or removed from the rules file.</p
+> project. A test is marked invalid if any of its lexical units uses something that is no longer in the project: a lemma and sense number (e.g. <object
+type="tItalic"
+>house1.1</object
+>) that doesn’t match a sense with a grammatical category, a grammatical category abbreviation that doesn’t exist, or a feature, class or affix that doesn’t match any inflection feature, inflection class or affix gloss. This usually happens after a sense is deleted or reordered, or after a category abbreviation or affix gloss is changed. An invalid test is not translated, so its lexical units are shown in orange, the <object
+type="tBold"
+>Actual Result</object
+> shows <object
+type="tItalic"
+>n/a</object
+>, and it is counted under Invalid in the summary for that run.</p
+><p
+>To find out why a test is invalid, hover over its Source Lexical Units. After the source text, the pop-up text gives the reason, for example <object
+type="tItalic"
+>Word Sense: house1.3 not found.</object
+>, <object
+type="tItalic"
+>Grammatical Category: vt not found.</object
+> or <object
+type="tItalic"
+>Tag: 3sg not found.</object
+> Only the first problem in the test is reported. To fix the test, correct the lexical unit in the <object
+type="tTool"
+>Testbed Editor</object
+> (see <sectionRef
+sec="sTestbedEditorTool"
+showTitle="full"
+></sectionRef
+>), or add back or rename the item in <object
+type="tFlexx"
+></object
+>. Then run the testbed again. The yellow triangle goes away on the next run once every lexical unit in the test is valid.</p
 ><example
 num="xViewerImage"
 ><chart
