@@ -6891,18 +6891,18 @@ type="tTool"
 >Testbed Log Viewer</object
 ></secTitle
 ><p
->This module you will find in both the <object
+>This module is found in both the <object
 type="tCollection"
 >Tools</object
 > and <object
 type="tCollection"
 >Run Testbed</object
-> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see some pop-up text of which <object
+> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see a pop-up with text detailing which <object
 type="tFlexx"
 ></object
-> source text the words came from. If the test is invalid, the pop-up text also tells you why (see below). Expand a test to see more about it: the comment you gave the test, if any, and a Rules applied: node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the comment that names the rule, followed by the lexical units the rule matched. That comment is the one the rule carried when the testbed was run, so an old result still tells you which rule fired even after rules have been added to or removed from the rules file.</p
+> source text the words came from. If the test is invalid, the pop-up text also tells you why (see below). Expand a test to see more about it: the comment you gave the test, if any, and a 'Rules applied' node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the name of the rule, followed by the lexical units the rule matched. The rule number and rule name are as per the rules file in use when the test was added to the testbed.</p
 ><p
->Each test starts with an icon: a green check if the test passed, a red X if it failed (the <object
+>Each test starts with an icon: a green checkmark if the test passed, a red X if it failed (the <object
 type="tBold"
 >Actual Result</object
 > is then shown in red), or a yellow triangle if the test is invalid. Each time the testbed is run, every test is checked against the source <object
@@ -6911,7 +6911,7 @@ type="tFlexx"
 > project. A test is marked invalid if any of its lexical units uses something that is no longer in the project: a lemma and sense number (e.g. <object
 type="tItalic"
 >house1.1</object
->) that doesn’t match a sense with a grammatical category, a grammatical category abbreviation that doesn’t exist, or a feature, class or affix that doesn’t match any inflection feature, inflection class or affix gloss. This usually happens after a sense is deleted or reordered, or after a category abbreviation or affix gloss is changed. An invalid test is not translated, so its lexical units are shown in orange, the <object
+>) that doesn’t match a sense with a grammatical category, or a grammatical category abbreviation that doesn’t exist, or a feature, class or affix that doesn’t match any inflection feature, inflection class or affix gloss. This usually happens after a sense is deleted or reordered, or after a category abbreviation or affix gloss is changed. An invalid test is not translated, so its lexical units are shown in orange, the <object
 type="tBold"
 >Actual Result</object
 > shows <object
@@ -6922,7 +6922,7 @@ type="tItalic"
 >To find out why a test is invalid, hover over its Source Lexical Units. After the source text, the pop-up text gives the reason, for example <object
 type="tItalic"
 >Word Sense: house1.3 not found.</object
->, <object
+>, or <object
 type="tItalic"
 >Grammatical Category: vt not found.</object
 > or <object
@@ -6935,10 +6935,10 @@ type="tTool"
 sec="sTestbedEditorTool"
 showTitle="full"
 ></sectionRef
->), or add back or rename the item in <object
+>), or recreate or rename the item in <object
 type="tFlexx"
 ></object
->. Then run the testbed again. The yellow triangle goes away on the next run once every lexical unit in the test is valid.</p
+>. Then run the testbed again. Once every lexical unit in the test is valid, the yellow triangle will no longer be seen on the next run .</p
 ><example
 num="xViewerImage"
 ><chart

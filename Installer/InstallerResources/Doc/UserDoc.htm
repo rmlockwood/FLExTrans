@@ -3512,24 +3512,24 @@
       <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has a collection of tools to help you maintain the testbed, run the testbed and see the results.
       </p>
       <h3 style=""><a name="sTestbedLogViewer"></a>7.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></h3>
-      <p>This module you will find in both the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> and <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the
+      <p>This module is found in both the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> and <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the
          results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units
-         of a test to see some pop-up text of which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source text the words came from. If the test is invalid, the pop-up text also tells you why (see below). Expand a test to
-         see more about it: the comment you gave the test, if any, and a Rules applied: node. Open that node and you get a row for
+         of a test to see a pop-up with text detailing which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source text the words came from. If the test is invalid, the pop-up text also tells you why (see below). Expand a test to
+         see more about it: the comment you gave the test, if any, and a 'Rules applied' node. Open that node and you get a row for
          each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and
-         the comment that names the rule, followed by the lexical units the rule matched. That comment is the one the rule carried
-         when the testbed was run, so an old result still tells you which rule fired even after rules have been added to or removed
-         from the rules file.
+         the name of the rule, followed by the lexical units the rule matched. The rule number and rule name are as per the rules file
+         in use when the test was added to the testbed.
       </p>
-      <p>Each test starts with an icon: a green check if the test passed, a red X if it failed (the <span style="font-weight:bold; ">Actual Result</span> is then shown in red), or a yellow triangle if the test is invalid. Each time the testbed is run, every test is checked against
+      <p>Each test starts with an icon: a green checkmark if the test passed, a red X if it failed (the <span style="font-weight:bold; ">Actual Result</span> is then shown in red), or a yellow triangle if the test is invalid. Each time the testbed is run, every test is checked against
          the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. A test is marked invalid if any of its lexical units uses something that is no longer in the project: a lemma and
-         sense number (e.g. <span style="font-style:italic; ">house1.1</span>) that doesn&#8217;t match a sense with a grammatical category, a grammatical category abbreviation that doesn&#8217;t exist, or a feature,
-         class or affix that doesn&#8217;t match any inflection feature, inflection class or affix gloss. This usually happens after a sense
-         is deleted or reordered, or after a category abbreviation or affix gloss is changed. An invalid test is not translated, so
-         its lexical units are shown in orange, the <span style="font-weight:bold; ">Actual Result</span> shows <span style="font-style:italic; ">n/a</span>, and it is counted under Invalid in the summary for that run.
+         sense number (e.g. <span style="font-style:italic; ">house1.1</span>) that doesn&#8217;t match a sense with a grammatical category, or a grammatical category abbreviation that doesn&#8217;t exist, or a
+         feature, class or affix that doesn&#8217;t match any inflection feature, inflection class or affix gloss. This usually happens after
+         a sense is deleted or reordered, or after a category abbreviation or affix gloss is changed. An invalid test is not translated,
+         so its lexical units are shown in orange, the <span style="font-weight:bold; ">Actual Result</span> shows <span style="font-style:italic; ">n/a</span>, and it is counted under Invalid in the summary for that run.
       </p>
       <p>To find out why a test is invalid, hover over its Source Lexical Units. After the source text, the pop-up text gives the reason,
-         for example <span style="font-style:italic; ">Word Sense: house1.3 not found.</span>, <span style="font-style:italic; ">Grammatical Category: vt not found.</span> or <span style="font-style:italic; ">Tag: 3sg not found.</span> Only the first problem in the test is reported. To fix the test, correct the lexical unit in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span> (see &#8220;<a href="#sTestbedEditorTool"><span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span></a>&#8221;), or add back or rename the item in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. Then run the testbed again. The yellow triangle goes away on the next run once every lexical unit in the test is valid.
+         for example <span style="font-style:italic; ">Word Sense: house1.3 not found.</span>, or <span style="font-style:italic; ">Grammatical Category: vt not found.</span> or <span style="font-style:italic; ">Tag: 3sg not found.</span> Only the first problem in the test is reported. To fix the test, correct the lexical unit in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span> (see &#8220;<a href="#sTestbedEditorTool"><span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Editor</span></a>&#8221;), or recreate or rename the item in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. Then run the testbed again. Once every lexical unit in the test is valid, the yellow triangle will no longer be seen on
+         the next run .
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
