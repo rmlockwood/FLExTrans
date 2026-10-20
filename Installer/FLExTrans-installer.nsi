@@ -34,7 +34,7 @@ Unicode True
 !define GIT_RESOURCES "${GIT_FOLDER}\${INSTALLER_RESOURCES}"
 !define MAKEFILESDIR "${GIT_RESOURCES}\Makefiles"
 !define TRANSFER_RULESDIR "${GIT_RESOURCES}\TransferRules"
-!define VBSDIR "${GIT_RESOURCES}\VBS"
+!define LAUNCHERDIR "${GIT_RESOURCES}\Launcher"
 !define INIDIR "${GIT_RESOURCES}\INI"
 !define REPLACEMENT_FILE "${GIT_RESOURCES}\replace.dix"
 
@@ -284,14 +284,19 @@ Section "MainSection" SEC01
       StrCpy $9 "Tools"
     ${EndIf}
 
-    # Overwrite FLExTrans.vbs
+    # Overwrite FLExTrans.bat
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
        ; Delete a old FlexTools.vbs file if it exists
        ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
           Delete "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
       ${EndIf}
+
+       ; Delete the old FLExTrans.vbs launcher. VBScript is being phased out of Windows and is disabled on some machines, so FLExTrans.bat replaces it (issue #1639).
+       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FLExTrans.vbs"
+          Delete "${WORKPROJECTSDIR}\$1\FLExTrans.vbs"
+      ${EndIf}
       SetOutPath "${WORKPROJECTSDIR}\$1"
-      File "${VBSDIR}\FLExTrans.vbs"
+      File "${LAUNCHERDIR}\FLExTrans.bat"
     ${EndIf}
     
     # Overwrite flextools.ini

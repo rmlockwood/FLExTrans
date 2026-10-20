@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17.3 - 10/20/26 - Ron Lockwood
+#    Fixes #1639. Run STAMP with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw.
+#
 #   Version 3.17.2 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. The target can be a .fwdata path (opened with Utils.openTargetProject): STAMP files use the bare name, XAmpleAddonData.xml is found beside the .fwdata. Added the code description block.
 #
@@ -254,7 +257,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -1553,8 +1556,9 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False, DB
     cmdFileName = create_synthesis_files(partPath, configMap, report)
 
     # run STAMP to synthesize the results. E.g. stamp64" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
+    # CREATE_NO_WINDOW because FLExTrans runs under pyw, which has no console, so Windows would otherwise open a console window for STAMP that can flash on screen.
     try:
-        result = subprocess.run([FTPaths.STAMP_EXE, '-f', cmdFileName, '-i', Utils.get_short_dir_only_path(anaFile), '-o', Utils.get_short_dir_only_path(synFile)], capture_output=False)
+        result = subprocess.run([FTPaths.STAMP_EXE, '-f', cmdFileName, '-i', Utils.get_short_dir_only_path(anaFile), '-o', Utils.get_short_dir_only_path(synFile)], capture_output=False, creationflags=subprocess.CREATE_NO_WINDOW)
 
         if result.returncode != 0:
                 

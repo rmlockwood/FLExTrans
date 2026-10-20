@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.17.2 - 10/20/26 - Ron Lockwood
+#    Fixes #1639. Run the HermitCrab config generator and synthesizer with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw.
+#
 #   Version 3.17.1 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. Open the target with Utils.openTargetProject and take its .fwdata path from the opened project, so a target stored elsewhere works. Added the code description block.
 #
@@ -209,7 +212,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -316,8 +319,9 @@ def buildTempProjectInTargetWS(sourceFwdataPath, projName, targetWSTag, report):
 # and warnings are appended to errorList. projName is only used for the KeyNotFoundException hint message.
 def generateHCConfigFile(genFwdataPath, HCconfigPath, projName, DLLobj, errorList):
 
+    # CREATE_NO_WINDOW because FLExTrans runs under pyw, which has no console, so Windows would otherwise open a console window for the generator that can flash on screen.
     try:
-        result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, genFwdataPath, HCconfigPath], capture_output=True)
+        result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, genFwdataPath, HCconfigPath], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
         if result.returncode == 0:
 
@@ -844,8 +848,9 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
             # If we are to trace the HC synthesis, we need the -t -s parameters
             if trace:
                 params.extend(['-t', '-s'])
-                
-            result = subprocess.run(params, capture_output=True, check=True)
+
+            # CREATE_NO_WINDOW because FLExTrans runs under pyw, which has no console, so Windows would otherwise open a console window for the synthesizer that can flash on screen.
+            result = subprocess.run(params, capture_output=True, check=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode != 0:
                 
