@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.7 - 10/20/26 - Ron Lockwood
+#    Fixes #1639. Run the Apertium rule compiler with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw.
+#
 #   Version 3.17.6 - 9/3/26 - Ron Lockwood
 #    Added isWellFormed, so a caller can ask whether a candidate rule parses before handing it to something that will parse it (the preview renderer, spliceIntoTemp, applyRule) rather
 #    than each of them catching ParseError for itself.
@@ -1229,10 +1232,11 @@ def validateFile(tempPath: str, compilerExe: Optional[str] = None) -> tuple:
         errors.append('XML is not well-formed: ' + str(e))
 
     # Authoritative structural pass with the bundled Apertium compiler. It exits non-zero only on real errors; it also emits warnings (e.g. "same pattern ... Skipping") to stderr with
-    # a zero exit, so gate failure on the return code, not on stderr being non-empty.
+    # a zero exit, so gate failure on the return code, not on stderr being non-empty. CREATE_NO_WINDOW because FLExTrans runs under pyw, which has no console, so Windows would
+    # otherwise open a console window for the compiler that can flash on screen.
     if compilerExe and os.path.isfile(compilerExe):
 
-        result = subprocess.run([compilerExe, tempPath, os.path.join(os.path.dirname(tempPath), 'candidate.t1x.bin')], capture_output=True)
+        result = subprocess.run([compilerExe, tempPath, os.path.join(os.path.dirname(tempPath), 'candidate.t1x.bin')], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
         stderr = result.stderr.decode('utf-8', errors='replace').strip()
 
         if result.returncode != 0:

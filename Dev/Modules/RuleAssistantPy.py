@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.17.2 - 10/20/26 - Ron Lockwood
+#    Fixes #1639. Run lt-comp and lt-proc with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw.
+#
 #   Version 3.17.1 - 9/29/26 - Ron Lockwood
 #    Fixes #1334. Stop if the target project can't be opened, and always close it before returning. Added the code description block.
 #
@@ -149,7 +152,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs a tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs a tool for creating transfer rules."),
         FTM_Help       : "",
@@ -424,8 +427,9 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
         text.write(fout)
 
-    # Compile the bilingual dictionary
-    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-comp.exe'), 'lr', bidixDix, bidixBin], capture_output=True)
+    # Compile the bilingual dictionary. CREATE_NO_WINDOW here and for lt-proc below because FLExTrans runs under pyw, which has no console, so Windows would otherwise open
+    # a console window for each tool that can flash on screen.
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-comp.exe'), 'lr', bidixDix, bidixBin], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
     if not os.path.isfile(bidixBin):
 
@@ -433,7 +437,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         return False
 
     ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
-    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'), '-b', bidixBin, fsrc, ftgt], capture_output=True)
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'), '-b', bidixBin, fsrc, ftgt], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
     try:
         with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:

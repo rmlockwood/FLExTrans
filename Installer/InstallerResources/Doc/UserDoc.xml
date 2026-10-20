@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->19 October 2026</date
+>20 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -364,8 +364,14 @@ type="tFilename"
 ><li
 >Double-click on the file <object
 type="tBold"
->FLExTrans.vbs</object
-> (a Visual Basic script file).</li
+>FLExTrans.bat</object
+> (a Windows batch file). If Windows hides file extensions, it is the <object
+type="tBold"
+>FLExTrans</object
+> file whose type is <object
+type="tBold"
+>Windows Batch File</object
+>.</li
 ><li
 >It should look like <exampleRef
 letter="xFirstStart"
@@ -9557,8 +9563,14 @@ type="tFilename"
 ><li
 >Double-click on the file <object
 type="tBold"
->FLExTrans.vbs</object
-> (a Visual Basic script file).</li
+>FLExTrans.bat</object
+> (a Windows batch file). If Windows hides file extensions, it is the <object
+type="tBold"
+>FLExTrans</object
+> file whose type is <object
+type="tBold"
+>Windows Batch File</object
+>.</li
 ><li
 >The <object
 type="tFlexxTools"

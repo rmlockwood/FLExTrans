@@ -554,7 +554,7 @@ The `.nsi` references files from two places:
 
 1. **`GIT_FOLDER`** — your repo. Everything in `Installer\InstallerResources\` lives in
    git and is pulled from here: `DialogImages` (icons), `INI`, `Makefiles`,
-   `TransferRules`, `VBS`, `replace.dix`, `Apertium4Windows`, `Make4Windows`,
+   `TransferRules`, `Launcher`, `replace.dix`, `Apertium4Windows`, `Make4Windows`,
    `Sample Projects`, `Doc`, etc.
 2. **`RESOURCE_FOLDER`** — a folder you create that holds the **large third-party
    installers** that are *not* in git. From the `.nsi` defines, it must contain:

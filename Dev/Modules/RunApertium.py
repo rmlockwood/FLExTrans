@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.17.6 - 10/20/26 - Ron Lockwood
+#    Fixes #1639. Run the make batch file with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw.
+#
 #   Version 3.17.5 - 9/8/26 - Ron Lockwood
 #    Comment updates for making attr-item's tags attribute required in the Apertium DTDs.
 #
@@ -187,7 +190,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
-        FTM_Version    : "3.17.5",
+        FTM_Version    : "3.17.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help       : "",  
@@ -520,7 +523,9 @@ def run_makefile(absPathToBuildFolder, report):
     f.write(outStr)
     f.close()
 
-    retVal = subprocess.call([fullPathMake])
+    # FLExTrans runs under pyw, which has no console, so Windows would open a console window for the batch file that flashes on screen while make runs.
+    # CREATE_NO_WINDOW gives it a console with no window instead; cmd, make and the Apertium tools it starts all share that hidden console.
+    retVal = subprocess.call([fullPathMake], creationflags=subprocess.CREATE_NO_WINDOW)
     return retVal
 
 def runApertium(DB, configMap, report):
