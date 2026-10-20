@@ -3,6 +3,9 @@
 #
 #   Lærke Roager Jespersen
 #
+#   Version 3.17.29 - 10/20/26 - Ron Lockwood
+#    Revalidate the tests against the source project on Save so a fixed test no longer shows as invalid.
+#
 #   Version 3.17.28 - 10/7/26 - Ron Lockwood
 #    Say in the module description that the category and features or classes are filled in when you leave the lemma cell.
 #
@@ -108,10 +111,12 @@
 # INVALID TESTS
 #
 # When the testbed is run, each test is validated against the source FLEx project, and a test with a lemma, category or tag that no longer exists is marked is_valid="no" with an invalidReason
-# attribute. _loadTree shows such a test, and its lexical units, in the log viewer's invalid color (PUNC_COLOR) and puts the reason on the test row's Gram. Cat. cell under INVALID_REASON_ROLE.
+# attribute. _showTestValidity shows such a test, and its lexical units, in the log viewer's invalid color (PUNC_COLOR) and puts the reason on the test row's Gram. Cat. cell under INVALID_REASON_ROLE.
 # A QTreeWidget can't span just some columns, so LexicalUnitColumnDelegate paints the reason, in red, across the Gram. Cat., Features and Affixes cells. It draws it while painting the last of
 # them in visual order, because the view paints cells in that order and the later cells' backgrounds would otherwise cover it. The reason is never item text, so Save ignores it and resizing the
-# columns to their contents doesn't widen them to fit it. The editor doesn't revalidate: the reason stays until the testbed is next run, even if the user fixes the test here.
+# columns to their contents doesn't widen them to fit it. Save revalidates every test the same way the testbed run does, so a test the user fixed here loses its invalid look (and one they broke
+# gains it). Save first has each test rebuild its lexical unit list from the rewritten XML (refreshLexicalUnitList), since validate() checks that list, not the XML. _showTestValidity clears the
+# invalid look as well as setting it, and runs with the tree's signals blocked so the color changes don't count as edits.
 #
 # TEXT DIRECTION
 #
@@ -131,10 +136,12 @@
 #
 # setDirectionFromText and showToolTipIfCutOff are helpers both delegates call, from initStyleOption and helpEvent respectively. LexicalUnitColumnDelegate is the completion delegate for
 # the lexical unit columns, plus per-cell text direction (except Source/Lemma) and the invalid reason painting. ChildRowReadOnlyDelegate keeps the Expected Result and Comment columns
-# read-only on lexical unit rows and sets each cell's text direction. Main.__init__ mirrors the tree for a right-to-left source, loads the tree and connects controls. _loadTree creates rows from the model and fits the columns to their contents. _fitHeaderText makes the header tall enough, and each column wide
+# read-only on lexical unit rows and sets each cell's text direction. Main.__init__ mirrors the tree for a right-to-left source, loads the tree and connects controls. _loadTree creates rows from
+# the model, calls _showTestValidity on each test and fits the columns to their contents. _fitHeaderText makes the header tall enough, and each column wide
 # enough, for its bold header text, then re-fits Expected Result. _fitExpectedColumn, _onSectionResized and eventFilter handle the Expected Result width (see COLUMN WIDTHS). _addTest creates and
 # appends a new test. _deleteTest removes the selected test after confirmation. _onItemChanged tracks edits and re-fits Expected Result when one changes. save first calls _findBlankLexicalUnit
-# and refuses to write if any lexical unit row has a blank lemma or grammatical category; otherwise it writes all rows. closeEvent handles unsaved changes and keeps the window open if that save
+# and refuses to write if any lexical unit row has a blank lemma or grammatical category; otherwise it writes all rows, revalidates the tests, writes the file and calls _showTestValidity on
+# every test row. closeEvent handles unsaved changes and keeps the window open if that save
 # is refused. _editTransferRules opens the transfer rules file (Transfer Rules File setting, read in MainFunction) in XMLmind XML Editor, just as the Live Rule Tester's Edit Transfer Rules button does.
 #
 # TRANSLATION
@@ -191,11 +198,11 @@ if app is None:
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # Libraries (and the window) whose translations we load in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestBedEditorWindow']
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'TestbedValidator', 'TestBedEditorWindow']
 
 docs = {
     FTM_Name:        _translate("TestBedEditor", "Testbed Editor"),
-    FTM_Version:     "3.17.28",
+    FTM_Version:     "3.17.29",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("TestBedEditor", "View and edit tests in the testbed."),
     FTM_Help:        "",
@@ -397,6 +404,7 @@ class Main(QMainWindow):
         self.testbedFileObj = testbedFileObj
         self.transferRulesFile = transferRulesFile
         self.report         = report
+        self.DB             = DB             # kept for revalidating the tests on Save
         self.unsaved        = False
         self.sourceLemmas, self.sourceAffixes = gatherCompletionData(DB, report, testbedFileObj.composed)
         self.sourcePOS = gatherPOSTags(DB, report, [SENT])
@@ -578,22 +586,6 @@ class Main(QMainWindow):
             # Store the test object for Save
             testItem.setData(COL_SOURCE, Qt.ItemDataRole.UserRole, testObj)
 
-            # A test the testbed marked invalid (e.g. a lemma or tag no longer in the source project) is shown in the log viewer's invalid color, with the reason drawn in red across the lexical unit columns by
-            # LexicalUnitColumnDelegate. The reason is also the tooltip, in case it's too long to show in full.
-            if not testObj.isValid():
-
-                invalidReason = testObj.getInvalidReason()
-
-                for col in range(tree.columnCount()):
-
-                    testItem.setForeground(col, QBrush(INVALID_TEXT_COLOR))
-
-                testItem.setData(COL_GRAMCAT, INVALID_REASON_ROLE, invalidReason)
-
-                for col in REASON_SPAN_COLUMNS:
-
-                    testItem.setToolTip(col, invalidReason)
-
             # LU (child) rows — headword, gramm cat, features, affixes editable
             for lu in testObj.getLexicalUnitList():
 
@@ -641,13 +633,8 @@ class Main(QMainWindow):
                 luItem.setText(COL_AFFIXES,  myAffixes)
                 self._colorLexicalUnitItem(luItem)
 
-                # The lexical units of an invalid test get the invalid color too, overriding the usual lemma, category and affix colors.
-                if not testObj.isValid():
-
-                    for col in range(tree.columnCount()):
-
-                        luItem.setForeground(col, QBrush(INVALID_TEXT_COLOR))
-
+            # Show the test as invalid if the testbed marked it so. This comes after its lexical unit rows are made since it recolors them too.
+            self._showTestValidity(testItem, testObj)
             testItem.setExpanded(True)
 
         # Fit each column to its contents. The Expected Result column is then trimmed by _fitExpectedColumn (called from _fitHeaderText) so it doesn't push the Comment column off the edge.
@@ -661,6 +648,68 @@ class Main(QMainWindow):
         self.expectedContentWidth = None
         self._fitHeaderText()
         tree.blockSignals(False)
+
+    def _showTestValidity(self, testItem, testObj):
+
+        tree = self.ui.treeWidget
+
+        # A test the testbed marked invalid (e.g. a lemma or tag no longer in the source project) is shown in the log viewer's invalid color, with the reason drawn in red across the lexical unit
+        # columns by LexicalUnitColumnDelegate. The reason is also the tooltip, in case it's too long to show in full. The caller blocks the tree's signals, since recoloring an item fires itemChanged.
+        if not testObj.isValid():
+
+            invalidReason = testObj.getInvalidReason()
+
+            for col in range(tree.columnCount()):
+
+                testItem.setForeground(col, QBrush(INVALID_TEXT_COLOR))
+
+            testItem.setData(COL_GRAMCAT, INVALID_REASON_ROLE, invalidReason)
+
+            for col in REASON_SPAN_COLUMNS:
+
+                testItem.setToolTip(col, invalidReason)
+
+            # The lexical units of an invalid test get the invalid color too, overriding the usual lemma, category and affix colors.
+            for j in range(testItem.childCount()):
+
+                luItem = testItem.child(j)
+
+                # The stubs type child() as Optional; it can't be None for an index within childCount(), but skip it if it ever is.
+                if luItem is None:
+
+                    continue
+
+                for col in range(tree.columnCount()):
+
+                    luItem.setForeground(col, QBrush(INVALID_TEXT_COLOR))
+        else:
+            # A valid test may have been invalid until Save revalidated it, so take away anything the branch above set: the test row goes back to the default text color and the lexical
+            # unit rows to their usual lemma, category and affix colors.
+            for col in range(tree.columnCount()):
+
+                testItem.setData(col, Qt.ItemDataRole.ForegroundRole, None)
+
+            testItem.setData(COL_GRAMCAT, INVALID_REASON_ROLE, None)
+
+            for col in REASON_SPAN_COLUMNS:
+
+                testItem.setToolTip(col, '')
+
+            for j in range(testItem.childCount()):
+
+                luItem = testItem.child(j)
+
+                # The stubs type child() as Optional; it can't be None for an index within childCount(), but skip it if it ever is.
+                if luItem is None:
+
+                    continue
+
+                # _colorLexicalUnitItem only colors the lexical unit columns, so clear the invalid color from the Expected Result and Comment columns first.
+                for col in range(tree.columnCount()):
+
+                    luItem.setData(col, Qt.ItemDataRole.ForegroundRole, None)
+
+                self._colorLexicalUnitItem(luItem)
 
     def _fitExpectedColumn(self):
 
@@ -1056,8 +1105,39 @@ class Main(QMainWindow):
                     if tag:
                         ET.SubElement(otherTagsElem, TAG).text = tag
 
+            # validate() checks the test's lexical unit list, not its XML, so rebuild the list from the lexical units just written.
+            testObj.refreshLexicalUnitList()
+
+        # Revalidate every test against the source project, the same way running the testbed does, so a test the user fixed is no longer marked invalid and one they broke now is.
+        # This only updates the tests' is_valid and invalidReason attributes in memory; the write below saves them along with the edits.
+        self.testbedFileObj.getFLExTransTestbedXMLObject().validate(self.DB, self.report)
+
         # The first save of the session saves a copy of the file as it was to Output\testbed-file-history before overwriting it
         self.testbedFileObj.write(TAG_BEFORE_EDITOR_SAVE)
+
+        # Show each test's new validity. Block the tree's signals while recoloring, or _onItemChanged would mark the just-saved file as having unsaved changes again.
+        tree.blockSignals(True)
+
+        for i in range(tree.topLevelItemCount()):
+
+            testItem = tree.topLevelItem(i)
+
+            # The stubs type topLevelItem() as Optional; it can't be None for an index within topLevelItemCount(), but skip it if it ever is.
+            if testItem is None:
+
+                continue
+
+            self._showTestValidity(testItem, testItem.data(COL_SOURCE, Qt.ItemDataRole.UserRole))
+
+        tree.blockSignals(False)
+
+        # With signals blocked the view wasn't told about the changes, so repaint it to draw the new colors and add or remove the invalid reasons.
+        viewport = tree.viewport()
+
+        if viewport is not None:
+
+            viewport.update()
+
         self.unsaved = False
         self.ui.saveLabel.setText(_translate("TestBedEditor", 'Testbed file saved.'))
         return True
