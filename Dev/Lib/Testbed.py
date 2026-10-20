@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.12 - 10/20/26 - Ron Lockwood
+#    Added refreshLexicalUnitList so the Testbed Editor can revalidate a test after rewriting its lexical units.
+#
 #   Version 3.17.11 - 10/13/26 - Ron Lockwood
 #    Added loadDatedTestbedResults and removeTestbedResults so that Clean Files can delete old results from the testbed results file.
 #
@@ -142,7 +145,9 @@
 #   appended so that a transfer rule matching at the end of one test can't run on into the next, and extractResults() reads one line back, strips that EOL off again (it comes back looking different
 #   depending on whether STAMP or HermitCrab did the synthesis), collapses runs of spaces, and stores the line as the actual result normalized to decomposed unicode so that the comparison against
 #   the expected result is fair. There is validate(), which asks a TestbedValidator whether every lexical unit still exists in the source FLEx project and marks the test invalid with a reason when
-#   one doesn't - and sets a changed flag, so that the file only gets rewritten when a mark actually changed. And there are setAppliedRules() and getAppliedRules(), which store the rules that fired
+#   one doesn't - and sets a changed flag, so that the file only gets rewritten when a mark actually changed. validate() checks the lexical unit list built when the object was made, so a caller that
+#   rewrites the test's lexicalUnit elements (the Testbed Editor's Save) must call refreshLexicalUnitList() first or it validates the old ones. And there are setAppliedRules() and getAppliedRules(), 
+#   which store the rules that fired
 #   for the test under an appliedRules element, each rule as its number, the comment that named it in the rules file, and the lexical units it matched written as an Apertium stream so that a lemma
 #   containing a space survives the round trip. The comment is stored next to the number because the rules file goes on being edited: by the time someone reads the log, rule 18 may well be a
 #   different rule than the one that fired here.
@@ -715,7 +720,15 @@ class TestbedTestXMLObject():
     
     def getLexicalUnitList(self):
         return self.__luList
-    
+
+    def refreshLexicalUnitList(self):
+
+        # Rebuild the lexical unit list from the test's lexicalUnit elements as they stand now, for a caller that has rewritten them (the Testbed Editor's Save) and is about to validate().
+        # The shared cache can't be used: it is keyed on headword, sense and tags but not the category, so a test whose category alone was edited would get the old LexicalUnit back.
+        # Give this test a fresh cache of its own instead; the other tests keep the shared one, and their LexicalUnit objects still match their unchanged XML.
+        self.__luCache = {}
+        self.__createLUListFromXMLStructure()
+
     def __createLUListFromXMLStructure(self):
         self.__luList = []
 
