@@ -5,6 +5,9 @@
 #   SIL International
 #   10/13/26
 #
+#   Version 3.17.2 - 10/21/26 - Ron Lockwood
+#    Updated the code description block to say the trigger count of 100 is a total across all groups.
+#
 #   Version 3.17.1 - 10/13/26 - Ron Lockwood
 #    Initial version. Asks whether to delete old items (6, 12 or 24 months), always keeps the newest 50, and only asks when 100 are over a year old, at most every 3 months.
 #
@@ -28,6 +31,9 @@
 #   Clean Files is run often, so asking every time anything at all is old would nag. shouldAsk() holds two conditions, and both must be true:
 #    - Enough has piled up: at least TRIGGER_MIN_COUNT (100) items that selectOldItems() would delete at TRIGGER_MONTHS (12). Without this, the day after a cleanup the user would be asked about
 #      the one or two items that have just crossed the line. After a cleanup the count starts again from zero, so the next question comes only once another real batch has built up.
+#      The 100 is a total across all the groups, not a count per group: each group first keeps its newest KEEP_NEWEST, and what is left over in every group is added up. So for the backup copies,
+#      70 deletable testbed copies and 70 deletable rules copies make 140 and the user is asked, though neither file reaches 100 on its own. This is deliberate - the question is whether there
+#      is a cleanup worth doing, wherever the items come from. A per-group trigger would never ask a project whose old items are spread over several files, however many there are in all.
 #    - The user hasn't been asked recently: not within COOLDOWN_MONTHS (3) of the last time. The date is recorded whenever the window is shown, whether the answer was Yes or No - otherwise someone
 #      who keeps saying No would be asked on every run, which is the most annoying case of all.
 #   Once the window is open the user can still pick 6 or 24 months; the trigger only decides whether to ask.
