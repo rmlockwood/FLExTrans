@@ -1,13 +1,40 @@
-"""
-The FLExTrans drafting steps, and running any other FlexTools module.
+#
+#   fttranslator/steps/flextrans
+#
+#   Ron Lockwood
+#   SIL International
+#   10/26/26
+#
+#   Version 3.17 - 10/26/26 - Ron Lockwood
+#    Initial version. The FLExTrans drafting steps, and running any other FlexTools module from the collection.
+#
+#   OVERVIEW (AI generated, then edited)
+#
+#   The middle of the pipeline is the work project's collection. This file supplies the steps for its entries in two ways.
+#
+#   BUILT-IN STEPS
+#
+#   The seven standard drafting modules are run by calling each module's core function directly, the same calls FLExTrans' TranslateText.py makes. That skips the FlexTools-only parts of each
+#   module's MainFunction: loading Qt translators, logging to Mixpanel and re-reading the configuration. builtins() keys each step both by its module file stem and by its FTM_Name, lowercased,
+#   because those are the two ways a collection .ini can name a module (see pipeline.entryKey()). Insert Target Text stays in the collection but skips itself unless --insert was given.
+#
+#   CUSTOM MODULES
+#
+#   Any other collection entry is loaded as a FlexTools module and run through its FlexToolsModule.Run(), so a team adds custom code the same way as in FlexTools. modulePath() resolves the entry
+#   as FlexTools does - a path relative to the Modules folder, or '<subfolder>.<FTM_Name>' - and also accepts a path relative to the work project's Config folder (or an absolute one), so a
+#   profile can carry its own modules. A module that declares FTM_ModifiesDB runs inside a flexicon UndoableOperation, since the source project is open undoable and writes need a unit of work.
+#
+#   IMPORT ORDER
+#
+#   FLExTrans modules can only be imported after env.bootstrap(), so every FLExTrans module is imported by name when a step runs (_lib()), never at the top of this file.
+#
+#   CODE STRUCTURE
+#
+#   _lib() imports a FLExTrans module by name. The seven built-in step functions follow in pipeline order, then _DRAFTING (stem, name, function) and builtins(), which Translator.steps() hands to
+#   pipeline.build(). Last come the custom-module functions: _findByName() and modulePath() find the file, and loadFlexToolsModule() loads it and wraps it in a Step.
+#
 
-The built-in steps call each module's core function the way
-FLExTrans' TranslateText.py does, skipping the FlexTools-only parts of
-MainFunction (Qt translators, Mixpanel, re-reading the configuration).
-They are imported lazily because FLExTrans modules can only be imported
-after env.bootstrap().
-"""
-
+import importlib
 import importlib.util
 import os
 import re
@@ -15,135 +42,180 @@ import re
 from ..pipeline import Step
 from . import ingest
 
-
 def _lib(name):
+    '''Import a FLExTrans module by name. Done when a step runs, since FLExTrans can only be imported after env.bootstrap().'''
+
     return importlib.import_module(name)
 
+def extractSourceText(ctx):
 
-def extract_source_text(ctx):
-    ok = _lib("ExtractSourceText").doExtractSourceText(ctx.ft_db, ctx.config_map, ctx.report)
-    # The extracted file is all the rest of the pipeline needs from the source analyses.
-    ingest.release_approvals(ctx)
+    ok = _lib("ExtractSourceText").doExtractSourceText(ctx.ftDb, ctx.configMap, ctx.report)
+
+    # The extracted file is all the rest of the pipeline needs from the source analyses, so the guessed approvals can go now
+    ingest.releaseApprovals(ctx)
+
     return bool(ok)
 
+def buildBilingualLexicon(ctx):
 
-def build_bilingual_lexicon(ctx):
-    errors = _lib("ExtractBilingualLexicon").extract_bilingual_lex(
-        ctx.ft_db, ctx.config_map, ctx.report, useCacheIfAvailable=True)
-    return bool(_lib("Utils").processErrorList(errors, ctx.report))
+    errorList = _lib("ExtractBilingualLexicon").extract_bilingual_lex(ctx.ftDb, ctx.configMap, ctx.report, useCacheIfAvailable=True)
+    return bool(_lib("Utils").processErrorList(errorList, ctx.report))
 
+def runApertium(ctx):
 
-def run_apertium(ctx):
-    return bool(_lib("RunApertium").runApertium(ctx.ft_db, ctx.config_map, ctx.report))
+    return bool(_lib("RunApertium").runApertium(ctx.ftDb, ctx.configMap, ctx.report))
 
+def catalogTargetAffixes(ctx):
 
-def catalog_target_affixes(ctx):
     ReadConfig = _lib("ReadConfig")
-    out_file = ctx.config(ReadConfig.TARGET_AFFIX_GLOSS_FILE)
-    if not out_file:
+    outFile = ctx.config(ReadConfig.TARGET_AFFIX_GLOSS_FILE)
+
+    if not outFile:
+
         return False
-    errors = _lib("CatalogTargetAffixes").catalog_affixes(
-        ctx.ft_db, ctx.config_map, out_file, ctx.report, useCacheIfAvailable=True)
-    return bool(_lib("Utils").processErrorList(errors, ctx.report))
 
+    errorList = _lib("CatalogTargetAffixes").catalog_affixes(ctx.ftDb, ctx.configMap, outFile, ctx.report, useCacheIfAvailable=True)
+    return bool(_lib("Utils").processErrorList(errorList, ctx.report))
 
-def convert_to_synthesizer_format(ctx):
-    return bool(_lib("ConvertTextToSTAMPformat").convertToSynthesizerFormat(
-        ctx.ft_db, ctx.config_map, ctx.report))
+def convertToSynthesizerFormat(ctx):
 
+    return bool(_lib("ConvertTextToSTAMPformat").convertToSynthesizerFormat(ctx.ftDb, ctx.configMap, ctx.report))
 
-def synthesize_text(ctx):
+def synthesizeText(ctx):
+
     ReadConfig = _lib("ReadConfig")
+
+    # The same choice DoSynthesis makes: HermitCrab synthesis if the setting is on, otherwise STAMP
     if ctx.config(ReadConfig.HERMIT_CRAB_SYNTHESIS) == "y":
-        return bool(_lib("DoHermitCrabSynthesis").doHermitCrab(ctx.ft_db, ctx.report, ctx.config_map))
-    return bool(_lib("DoStampSynthesis").doStamp(ctx.ft_db, ctx.report, ctx.config_map))
 
+        return bool(_lib("DoHermitCrabSynthesis").doHermitCrab(ctx.ftDb, ctx.report, ctx.configMap))
 
-def insert_target_text(ctx):
+    return bool(_lib("DoStampSynthesis").doStamp(ctx.ftDb, ctx.report, ctx.configMap))
+
+def insertTargetText(ctx):
+
     if not ctx.options.insert:
+
         ctx.report.Info("Not inserting into the target project (use --insert).")
         return True
+
     ReadConfig = _lib("ReadConfig")
     insert = _lib("InsertTargetText").insertTargetText
+
+    # One-project mode writes into the source project, which needs a unit of work
     if ctx.config(ReadConfig.TWO_PROJECT_MODE, required=False) == "n":
-        # One-project mode writes into the source project, which needs a unit of work.
+
         with ctx.db.UndoableOperation("FTtranslator: insert target text"):
-            return bool(insert(ctx.ft_db, ctx.config_map, ctx.report))
-    return bool(insert(ctx.ft_db, ctx.config_map, ctx.report))
 
+            return bool(insert(ctx.ftDb, ctx.configMap, ctx.report))
 
-# Keyed by module file stem and by FTM_Name (lowercased), the two ways a
-# collection .ini can name a module.
+    return bool(insert(ctx.ftDb, ctx.configMap, ctx.report))
+
+# The standard drafting modules: file stem, FTM_Name and the step function. Keyed by both (lowercased) in builtins(), the two ways a collection .ini can name a module.
 _DRAFTING = [
-    ("ExtractSourceText", "Extract Source Text", extract_source_text),
-    ("ExtractBilingualLexicon", "Build Bilingual Lexicon", build_bilingual_lexicon),
-    ("RunApertium", "Run Apertium", run_apertium),
-    ("CatalogTargetAffixes", "Catalog Target Affixes", catalog_target_affixes),
-    ("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format", convert_to_synthesizer_format),
-    ("DoSynthesis", "Synthesize Text", synthesize_text),
-    ("InsertTargetText", "Insert Target Text", insert_target_text),
+    ("ExtractSourceText", "Extract Source Text", extractSourceText),
+    ("ExtractBilingualLexicon", "Build Bilingual Lexicon", buildBilingualLexicon),
+    ("RunApertium", "Run Apertium", runApertium),
+    ("CatalogTargetAffixes", "Catalog Target Affixes", catalogTargetAffixes),
+    ("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format", convertToSynthesizerFormat),
+    ("DoSynthesis", "Synthesize Text", synthesizeText),
+    ("InsertTargetText", "Insert Target Text", insertTargetText),
 ]
 
-
 def builtins():
+    '''Return the built-in steps, keyed by module file stem and by FTM_Name, both lowercased.'''
+
     table = {}
+
     for stem, name, func in _DRAFTING:
+
         step = Step(name, func, "builtin", f"FLExTrans\\{stem}.py")
         table[stem.lower()] = table[name.lower()] = step
+
     return table
 
+def _findByName(folder, name):
+    '''Return the module file in folder whose docs give it the FTM_Name name, or None. The name may be wrapped in _translate(), as FLExTrans modules do.'''
 
-# ---------------------------------------------------------------- custom modules
-
-def _find_by_name(folder, name):
-    """A module file in `folder` whose docs give it FTM_Name `name`."""
     pattern = re.compile(r"FTM_Name\s*:\s*(?:_translate\([^,]+,\s*)?[\"']" + re.escape(name) + r"[\"']")
-    for fname in sorted(os.listdir(folder)):
-        if fname.endswith(".py") and not fname.startswith("__"):
-            path = os.path.join(folder, fname)
-            with open(path, encoding="utf-8", errors="replace") as f:
-                if pattern.search(f.read()):
+
+    for fileName in sorted(os.listdir(folder)):
+
+        if fileName.endswith(".py") and not fileName.startswith("__"):
+
+            path = os.path.join(folder, fileName)
+
+            with open(path, encoding="utf-8", errors="replace") as moduleFile:
+
+                if pattern.search(moduleFile.read()):
+
                     return path
+
     return None
 
+def modulePath(env, entry):
+    '''Resolve a collection entry to a module file, or None. See CUSTOM MODULES above for the forms an entry can take.'''
 
-def module_path(env, entry):
-    """Resolve a collection entry the way FlexTools does: a path relative to
-    the Modules folder, or '<subfolder>.<FTM_Name>'. A path may also be
-    relative to the work project's Config folder (or absolute), so a
-    profile can carry its own modules."""
-    e = entry.replace("/", "\\")
-    if e.lower().endswith(".py"):
-        for base in (env.modules_root, env.config_dir):
-            path = os.path.join(base, *e.split("\\"))
+    normalized = entry.replace("/", "\\")
+
+    # A path: relative to the Modules folder, then to the work project's Config folder. os.path.join() keeps an absolute path as it is.
+    if normalized.lower().endswith(".py"):
+
+        for baseDir in (env.modulesRoot, env.configDir):
+
+            path = os.path.join(baseDir, *normalized.split("\\"))
+
             if os.path.exists(path):
+
                 return path
+
         return None
-    sub, _, name = e.partition(".")
-    folder = os.path.join(env.modules_root, sub)
-    return _find_by_name(folder, name) if os.path.isdir(folder) else None
 
+    # '<subfolder>.<FTM_Name>'
+    subfolder, _, name = normalized.partition(".")
+    folder = os.path.join(env.modulesRoot, subfolder)
 
-def load_flextools_module(env, entry):
-    path = module_path(env, entry)
+    return _findByName(folder, name) if os.path.isdir(folder) else None
+
+def loadFlexToolsModule(env, entry):
+    '''Load the FlexTools module a collection entry names and return a Step that runs it.'''
+
+    path = modulePath(env, entry)
+
     if not path:
-        raise SystemExit(f"Collection entry '{entry}' is not a module under {env.modules_root}")
-    spec = importlib.util.spec_from_file_location(
-        "ftt_custom_" + re.sub(r"\W", "_", os.path.basename(path)[:-3]), path)
+
+        raise SystemExit(f"Collection entry '{entry}' is not a module under {env.modulesRoot}")
+
+    # Load it under a name of its own, so it can't clash with a FLExTrans module of the same file name
+    spec = importlib.util.spec_from_file_location("ftt_custom_" + re.sub(r"\W", "_", os.path.basename(path)[:-3]), path)
+
+    if spec is None or spec.loader is None:
+
+        raise SystemExit(f"'{path}' could not be loaded as a Python module")
+
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    ftm = getattr(module, "FlexToolsModule", None)
-    if ftm is None:
-        raise SystemExit(f"'{path}' has no FlexToolsModule")
-    from flextoolslib import FTM_Name, FTM_ModifiesDB
-    modifies = bool(ftm.docs.get(FTM_ModifiesDB))
+    flexToolsModule = getattr(module, "FlexToolsModule", None)
 
-    def run(ctx):
-        if modifies:
-            with ctx.db.UndoableOperation(f"FTtranslator: {ftm.docs[FTM_Name]}"):
-                ftm.Run(ctx.ft_db, ctx.report, True)
+    if flexToolsModule is None:
+
+        raise SystemExit(f"'{path}' has no FlexToolsModule")
+
+    from flextoolslib import FTM_Name, FTM_ModifiesDB
+
+    modifiesDb = bool(flexToolsModule.docs.get(FTM_ModifiesDB))
+
+    def runModule(ctx):
+
+        # A module that writes needs a unit of work, since the source project is open undoable
+        if modifiesDb:
+
+            with ctx.db.UndoableOperation(f"FTtranslator: {flexToolsModule.docs[FTM_Name]}"):
+
+                flexToolsModule.Run(ctx.ftDb, ctx.report, True)
         else:
-            ftm.Run(ctx.ft_db, ctx.report, False)
+            flexToolsModule.Run(ctx.ftDb, ctx.report, False)
+
         return True
 
-    return Step(ftm.docs[FTM_Name], run, "flextools", entry)
+    return Step(flexToolsModule.docs[FTM_Name], runModule, "flextools", entry)

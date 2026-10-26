@@ -24,6 +24,7 @@ The phone app is the long-term goal. A CLI comes first, and a web app may come l
 - **Custom code:** a FlexTools module in the collection (`[Modules\FixNina.py]`, in the work project's Config folder) changed the transfer output mid-pipeline. A Python hook from `fttranslator.ini` also ran.
 - The `steps`, `check` and `runs` commands work. Each run writes a JSON record to `<work project>\Output\ftt_runs\`.
 - Unit tests (9, no FieldWorks needed) pass: `python -m unittest discover -s tests`.
+- **Coding standards:** on 2026-10-26 all the Python was brought into line with the FLExTrans repo's `CLAUDE.md` (camelCase names, version-history headers, description blocks, blank-line rules, one-line calls). The `steps`, `check` and `translate` output and the run record were identical before and after, and pyright is clean. Hook files see the camelCase `Context` attributes (`ctx.ftDb`, `ctx.configMap`); the `.ini` keys, CLI flags and run-record JSON keys did not change.
 
 Not started:
 - Upstream FT changes.
@@ -48,15 +49,15 @@ The environment is Python 3.13, flexlibs 1.2.8, pyflexicon 4.13, flextoolslib 20
 
 | File | Role |
 |---|---|
-| `fttranslator/cli.py` | argparse commands. Redirects file descriptor 1 to stderr during a run (`stdout_to_stderr`) |
+| `fttranslator/cli.py` | argparse commands. Redirects file descriptor 1 to stderr during a run (`stdoutToStderr`) |
 | `fttranslator/env.py` | `bootstrap()`: makes FT importable and runnable headless (see gotchas) |
-| `fttranslator/profile.py` | Work project + optional `Config\fttranslator.ini` (collection, title_prefix, source_project, `[hooks]`). Imports neither FT nor FieldWorks |
+| `fttranslator/profile.py` | Work project + optional `Config\fttranslator.ini` (collection, title_prefix, source_project, `[hooks]`; the `.ini` keys keep their underscores, the Python attributes are camelCase). Imports neither FT nor FieldWorks |
 | `fttranslator/pipeline.py` | `Options`, `RunResult`, `Context`, `Step`. `build()` turns the collection .ini into steps and adds hooks. `run()` runs them in order |
-| `fttranslator/translator.py` | `Translator` API (also meant for a future service). `flexlibs_view()`. `_config_override()` |
-| `fttranslator/steps/ingest.py` | Import Text, Parse Words, Approve Guesses (+ `fill_senses`), `release_approvals` |
+| `fttranslator/translator.py` | `Translator` API (also meant for a future service). `flexlibsView()`. `_configOverride()` |
+| `fttranslator/steps/ingest.py` | Import Text, Parse Words, Approve Guesses (+ `fillSenses`), `releaseApprovals` |
 | `fttranslator/steps/flextrans.py` | Built-in wrappers around FT's core functions. Loader for custom FlexTools modules |
 | `fttranslator/steps/finish.py` | Collect Output: translation + Text Out rules + failed-word diagnostics |
-| `parse_priority/` | Earlier tool: guesser (`Ranker`), HermitCrab parse + `Filer`, `textedit.approve_guesses`/`add_sentence`. Used as a library; not changed |
+| `parse_priority/` | Earlier tool: guesser (`Ranker`), HermitCrab parse + `Filer`, `textedit.approveGuesses`/`addSentence`. Used as a library, and has its own CLI |
 | `tests/test_pipeline.py` | Profile, pipeline build, hooks and the run loop, tested with stub steps |
 
 Pipeline order:
@@ -85,10 +86,10 @@ Hooks wrap any of these steps by name.
    - The user chose "keep the text, mark it for review". In-text analyses get the guesser's top priority (7), so auto-approved mistakes would reinforce themselves.
    - The approvals are undone right after Extract Source Text. They are kept only if the undo-stack depth (`ActionHandlerAccessor.UndoableSequenceCount`) shows that another step has written to the source since, in which case a warning is given.
    - The text stays in the project, titled `FTT <timestamp>`, for review in FLEx.
-6. **`fill_senses`: HermitCrab-filed analyses have an msa but no sense on each bundle,** and FT then reports "No sense found". When approving, each bundle's `SenseRA` is set from its msa, as FLEx does when a parse is confirmed.
+6. **`fillSenses`: HermitCrab-filed analyses have an msa but no sense on each bundle,** and FT then reports "No sense found". When approving, each bundle's `SenseRA` is set from its msa, as FLEx does when a parse is confirmed.
 7. **The config is never written.**
-   - `SourceTextName` is set in the run's `config_map` only.
-   - `_config_override` patches `ReadConfig.readConfig` for the duration of a run, so FT code that re-reads the config sees this run's values. That includes `RunApertium.run_makefile` and custom modules' `MainFunction`.
+   - `SourceTextName` is set in the run's `configMap` only.
+   - `_configOverride` patches `ReadConfig.readConfig` for the duration of a run, so FT code that re-reads the config sees this run's values. That includes `RunApertium.run_makefile` and custom modules' `MainFunction`.
 8. **Output goes to stdout and is inserted only with `--insert`.** The user chose this. The Insert Target Text entry stays in the collection and skips itself.
 
 ## Gotchas found
@@ -136,7 +137,7 @@ jouer, avec, long and voiture have no target link in the test data. "Los niñas"
 - **Inbox texts:** these are marked only by the title prefix, not by a genre or tag. Something like a genre would make review lists easier.
 - **Synthesis-failure detection** only knows STAMP's `%n%form%` marker. HermitCrab synthesis has not been tested (`HermitCrabSynthesis=y`; it needs the HC exes on PATH).
 - **One-project mode** (`TwoProjectMode=n`) has not been tested. Insert is wrapped in an undoable operation for that case.
-- **Undo stack after filing:** it is unverified whether `ParseFiler`'s non-undoable tasks ever clear the undo stack. The depth check in `release_approvals` would catch that case and keep the approvals.
+- **Undo stack after filing:** it is unverified whether `ParseFiler`'s non-undoable tasks ever clear the undo stack. The depth check in `releaseApprovals` would catch that case and keep the approvals.
 - **`check`** doesn't yet verify that the collection's custom modules import cleanly. It only checks that the pipeline resolves, which does import them.
 
 ## Next steps (from the plan)

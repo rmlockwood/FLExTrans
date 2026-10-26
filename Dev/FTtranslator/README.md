@@ -62,7 +62,7 @@ after: Run Apertium = my_fixups:adjust_transfer_output
 
 You can add custom code in two ways:
 - **FlexTools module.** Add it to the collection, as in FlexTools. The entry can be a path relative to `FlexTools\Modules` or to the work project's `Config` folder (for example `[Modules\MyStep.py]`), or `Folder.FTM_Name`. The module gets the source project (a flexlibs `FLExProject`) and the report, and `ReadConfig.readConfig()` returns this run's configuration.
-- **Hook.** A function in a `.py` file in `Config` (or anywhere on `sys.path`). It gets the whole `Context`: `ctx.db` (flexicon, undoable), `ctx.ft_db` (flexlibs), `ctx.config_map`, `ctx.result` and `ctx.state`.
+- **Hook.** A function in a `.py` file in `Config` (or anywhere on `sys.path`). It gets the whole `Context`: `ctx.db` (flexicon, undoable), `ctx.ftDb` (flexlibs), `ctx.configMap`, `ctx.result` and `ctx.state`.
 
 Steps pass data to each other through FLExTrans' usual files (`Build\source_text-aper.txt`, `Build\target_text-aper.txt`, …). A custom step usually reads or rewrites one of these files.
 
