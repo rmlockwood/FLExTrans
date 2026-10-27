@@ -5,6 +5,12 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.2 - 10/27/26 - Ron Lockwood
+#    Time each step and record the times in the run result.
+#
+#   Version 3.17.1 - 10/26/26 - Ron Lockwood
+#    Updated the default title in the Options docstring.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. The translation pipeline: the steps built from the collection and hooks, and the loop that runs them.
 #
@@ -20,7 +26,7 @@
 #
 #   A step is a callable func(ctx) -> bool. Returning False stops the pipeline, and so does any error reported while the step runs, even if the step then returns True - a FLExTrans core function
 #   often reports an error and carries on. Returning None counts as success, so a hook that forgets to return still lets the run go on. An exception from a step is reported and stops the run;
-#   SystemExit is let through, since it is how FTtranslator reports a set-up problem to the command line.
+#   SystemExit is let through, since it is how FTtranslator reports a set-up problem to the command line. Each step that runs is timed into ctx.result.timings, which --timing (or -v) prints.
 #
 #   NAMING A STEP
 #
@@ -42,6 +48,7 @@
 
 import importlib
 import sys
+import time
 import traceback
 from dataclasses import dataclass, field, asdict
 from typing import Any, Callable
@@ -51,7 +58,7 @@ from .report import errorCount, messages
 @dataclass
 class Options:
     '''What the caller asked for. insert also inserts the result into the target project; keepApprovals leaves the guessed analyses approved in the source text; title names the new
-       source text (default: the profile's title prefix and the date and time).'''
+       source text (default: the profile's title prefix, the date and time, and the text's first three words).'''
 
     insert: bool = False
     keepApprovals: bool = False
@@ -77,6 +84,10 @@ class RunResult:
     unsynthesized: list = field(default_factory=list)
 
     messages: list = field(default_factory=list)
+
+    # Each step that ran as {step, seconds}, filled in by run(). totalSeconds is the whole of Translator.translate(), including opening and closing the source project.
+    timings: list = field(default_factory=list)
+    totalSeconds: float | None = None
 
     # Where the run record was saved, filled in by Translator.saveRun(). Not a field, so it isn't written into the record itself.
     record = None
@@ -204,6 +215,7 @@ def run(steps, ctx):
         report.Blank()
         report.Info(f"== {step.name}")
         errorsBefore = errorCount(report)
+        startTime = time.perf_counter()
 
         try:
             ok = step.func(ctx)
@@ -217,6 +229,8 @@ def run(steps, ctx):
             report.Error(f"{step.name} failed: {err}", traceback.format_exc())
             ok = False
 
+        # A failed step is timed too, so a slow failure shows up
+        ctx.result.timings.append({"step": step.name, "seconds": round(time.perf_counter() - startTime, 3)})
         ctx.result.steps.append(step.name)
 
         # A step fails by returning False or by reporting an error

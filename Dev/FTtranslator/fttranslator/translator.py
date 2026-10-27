@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.1 - 10/27/26 - Ron Lockwood
+#    Record the total time of each run.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. The Translator API: one profile, set up once, translating any number of texts.
 #
@@ -12,7 +15,7 @@
 #
 #   Translator is the API the command line uses, and the one a service or web app would use. Creating one sets up the process for a work project (env.bootstrap()) and loads its profile; after
 #   that, translate() can be called any number of times. Each call opens the source project, runs the pipeline, releases the guessed approvals if the run stopped before doing so itself, closes
-#   the project, and saves a run record.
+#   the project, and saves a run record. The steps are timed by pipeline.run(); translate() adds the total, which also covers opening and closing the project.
 #
 #   TWO VIEWS OF ONE PROJECT
 #
@@ -39,6 +42,7 @@
 import contextlib
 import json
 import re
+import time
 
 from . import env as ftEnv
 from . import pipeline
@@ -81,6 +85,8 @@ class Translator:
         from parse_priority import fw
         from .steps.ingest import releaseApprovals
 
+        # The total covers the whole run, opening and closing the project as well as the steps
+        startTime = time.perf_counter()
         report = makeReporter(self.verbose)
         ctx = pipeline.Context(self.env, self.profile, None, report, self.readConfig(report), options or pipeline.Options())
         ctx.result.source = text
@@ -101,6 +107,8 @@ class Translator:
                 releaseApprovals(ctx)
             finally:
                 ctx.db.CloseProject()
+
+        ctx.result.totalSeconds = round(time.perf_counter() - startTime, 3)
 
         if ctx.result.title:
 

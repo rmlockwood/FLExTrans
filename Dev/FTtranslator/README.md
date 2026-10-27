@@ -22,7 +22,7 @@ The pipeline:
 
 | # | Step | What it does |
 |---|---|---|
-| 1 | Import Text | Adds the text to the source project as a new text, titled `FTT <date time>` |
+| 1 | Import Text | Adds the text to the source project as a new text, titled `FTT <date time> <first three words>` |
 | 2 | Parse Words | Parses each word with HermitCrab and files the results, as FLEx's *Parse Words in Text* does |
 | 3 | Approve Guesses | Approves the guesser's most likely analysis for each word in context, as *Approve All* does (`AnalysisGuessServices`, see [parse_priority_README.md](parse_priority_README.md)). Each morph is given a sense, as FLEx does when a parse is confirmed |
 | 4… | the collection | Each entry of the Drafting collection, in order. The standard FLExTrans modules run their core functions directly, the same calls `TranslateText.py` makes. Any other entry runs as a FlexTools module |
@@ -30,18 +30,19 @@ The pipeline:
 
 **Approvals are temporary by default.** The guesser counts in-text analyses most, so approved mistakes would reinforce themselves in later translations. After Extract Source Text, FTtranslator undoes the approvals. The new text stays in the source project with its words unapproved. FLEx shows the same guesses there, and when someone confirms them in FLEx they become part of the corpus. Use `--keep-approvals` to keep them, as FLExTrans users normally do.
 
-Every run is saved as JSON in `<work project>\Output\ftt_runs\`. The file holds the source and translation, each word's chosen analysis and why it was chosen (context, priority, count or a GUID tie), the failed words, and all messages. Use `runs` to list them. This is the start of the loop for improving the translator.
+Every run is saved as JSON in `<work project>\Output\ftt_runs\`. The file holds the source and translation, each word's chosen analysis and why it was chosen (context, priority, count or a GUID tie), the failed words, all messages, and how long each step took. Use `runs` to list them. This is the start of the loop for improving the translator.
 
 ## Commands
 
 ```
-python -m fttranslator translate WORKDIR [TEXT] [--file F] [--title T] [--insert] [--keep-approvals] [--json OUT] [-v]
+python -m fttranslator translate WORKDIR [TEXT] [--file F] [--title T] [--insert] [--keep-approvals] [--json OUT] [--modules] [--timing] [-v]
 python -m fttranslator steps     WORKDIR     # the pipeline that would run
 python -m fttranslator check     WORKDIR     # projects, tools, active parser
 python -m fttranslator runs      WORKDIR     # earlier runs and their failed words
 ```
 
 - If neither TEXT nor `--file` is given, the text is read from stdin. Each line becomes a paragraph.
+- `--timing` prints how long each step took and the total time, on stderr. `-v` prints them too.
 - `--insert` also runs Insert Target Text, which puts the translation into the target project. Otherwise that collection step is skipped.
 - `--modules` points at a FLExTrans modules folder. The default is the installed `…\FlexTools\Modules\FLExTrans` next to the work project. `--modules dev` uses this repo's own `Dev\Modules`. Any other path to a modules folder also works.
 

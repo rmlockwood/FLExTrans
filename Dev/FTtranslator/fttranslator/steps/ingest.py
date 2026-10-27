@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.1 - 10/26/26 - Ron Lockwood
+#    The default title of the imported text ends with the text's first three words. The title is read back as stored (NFD) so FLExTrans finds non-ASCII titles.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. The first three steps: import the text, parse its words with HermitCrab, approve the guesser's choices.
 #
@@ -26,6 +29,8 @@
 #
 #   TRAPS
 #
+#    - FieldWorks stores the title decomposed (NFD), and FLExTrans modules compare SourceTextName with == against the stored titles. importText() reads the title back after creating the text,
+#      so a title with an accented letter (from --title or the text's first words) still matches.
 #    - Filing parser results (parse_priority's Filer) can't be undone, as in FLEx. It runs outside any unit of work, so Parse Words is not wrapped in an UndoableOperation.
 #    - A parser error on a word must not be filed as "no parses", or the filer would mark every existing analysis of the word as parser-disapproved. Such a word is skipped.
 #    - HermitCrab-filed analyses have an msa but no sense on each morph bundle, and FLExTrans then reports "No sense found". fillSenses() sets each bundle's sense from its msa while approving,
@@ -33,14 +38,15 @@
 #
 #   CODE STRUCTURE
 #
-#   uniqueTitle() picks an unused title for the new text. Then the three steps in pipeline order: importText(), parseWords() and approveGuesses() (with its helper fillSenses()). _undoDepth() and
+#   uniqueTitle() picks an unused title for the new text, and firstWords() gives the words the default title ends with. Then the three steps in pipeline order: importText(), parseWords() and approveGuesses() (with its helper fillSenses()). _undoDepth() and
 #   releaseApprovals() undo the approvals. STEPS lists the steps for Translator.steps().
 #
 
+import unicodedata
 from datetime import datetime
 
 from parse_priority import textedit
-from parse_priority.guesser import Ranker, describe, findOccurrences, formOf, iterTexts, senseForMsa
+from parse_priority.guesser import Ranker, describe, findOccurrences, formOf, iterTexts, senseForMsa, titleKey
 from parse_priority.parsing import Filer, parseText
 
 from ..pipeline import Step
@@ -49,21 +55,34 @@ from ..pipeline import Step
 APPROVALS_PENDING = "approvalsPending"
 
 def uniqueTitle(project, title):
-    '''Return title, or title with " (2)", " (3)", ... added if a text already has it. Titles are compared case-insensitively, as FLEx does.'''
+    '''Return title, or title with " (2)", " (3)", ... added if a text already has it. Titles are compared case-insensitively, as FLEx does, and ignoring Unicode normalization.'''
 
-    existing = {name.lower() for name, _ in iterTexts(project)}
+    existing = {titleKey(name) for name, _ in iterTexts(project)}
 
-    if title.lower() not in existing:
+    if titleKey(title) not in existing:
 
         return title
 
     number = 2
 
-    while f"{title} ({number})".lower() in existing:
+    while titleKey(f"{title} ({number})") in existing:
 
         number += 1
 
     return f"{title} ({number})"
+
+def firstWords(paragraphs, count):
+    '''Return the first count words of the text, without the punctuation that ends the last one (e.g. "Bonjour." gives "Bonjour").'''
+
+    words = " ".join(paragraphs).split()[:count]
+    snippet = " ".join(words)
+
+    # Strip by Unicode category rather than with \w, which would also strip a combining diacritic at the end of a word
+    while snippet and unicodedata.category(snippet[-1]).startswith("P"):
+
+        snippet = snippet[:-1]
+
+    return snippet
 
 def importText(ctx):
     '''Add the source text to the source project as a new text, one paragraph per non-blank line, and point this run's configuration at it.'''
@@ -75,14 +94,21 @@ def importText(ctx):
         ctx.report.Error("There is no source text to translate.")
         return False
 
+    # The default title ends with the first few words of the text, so the texts FTtranslator adds can be told apart in FLEx's list of texts
     stamp = datetime.now().strftime("%Y-%m-%d %H%M%S")
-    title = uniqueTitle(ctx.db, ctx.options.title or f"{ctx.profile.titlePrefix} {stamp}")
+    title = uniqueTitle(ctx.db, ctx.options.title or f"{ctx.profile.titlePrefix} {stamp} {firstWords(paragraphs, 3)}")
 
     with ctx.db.UndoableOperation("FTtranslator: import text"):
 
         for paragraph in paragraphs:
 
             textedit.addSentence(ctx.db, title, paragraph, {}, approve=False)
+
+    # Use the title as FieldWorks stored it. It is stored decomposed (NFD), and FLExTrans compares titles exactly, so "garçons" as typed (NFC) wouldn't be found by Extract Source Text.
+    for storedTitle, _ in iterTexts(ctx.db, title):
+
+        title = storedTitle
+        break
 
     ctx.result.title = title
 

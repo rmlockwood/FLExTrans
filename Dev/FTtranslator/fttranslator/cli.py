@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.1 - 10/27/26 - Ron Lockwood
+#    Added --timing to show each step's time and the total; -v shows them too.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. The fttranslator command line: translate, steps, check and runs.
 #
@@ -25,7 +28,7 @@
 #
 #   CODE STRUCTURE
 #
-#   _translator() builds the Translator for a command. Then cmdTranslate() with its helpers stdoutToStderr(), summarize() and _unique(), followed by cmdSteps(), cmdCheck() and cmdRuns(). main()
+#   _translator() builds the Translator for a command. Then cmdTranslate() with its helpers stdoutToStderr(), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck() and cmdRuns(). main()
 #   sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
 #
 
@@ -86,6 +89,11 @@ def cmdTranslate(args):
 
         print(result.translation)
 
+    # -v shows the step times too, since a verbose run is usually one being looked into
+    if args.timing or args.verbose:
+
+        printTimings(result, sys.stderr)
+
     summarize(result, sys.stderr)
 
     return 0 if result.ok else 1
@@ -104,6 +112,23 @@ def stdoutToStderr():
         sys.stdout.flush()
         os.dup2(savedStdout, 1)
         os.close(savedStdout)
+
+def printTimings(result, out):
+    '''Print how long each step took, the time outside the steps (opening and closing the project), and the total.'''
+
+    print(file=out)
+    print("Step times:", file=out)
+
+    for timing in result.timings:
+
+        print(f"  {timing['step']:38s} {timing['seconds']:8.2f} s", file=out)
+
+    # totalSeconds is None only if translate() stopped with an exception before it was set
+    if result.totalSeconds is not None:
+
+        stepSeconds = sum(timing["seconds"] for timing in result.timings)
+        print(f"  {'Open and close the source project':38s} {result.totalSeconds - stepSeconds:8.2f} s", file=out)
+        print(f"  {'Total':38s} {result.totalSeconds:8.2f} s", file=out)
 
 def summarize(result, out):
     '''Print the words that failed, grouped by why, then OK or FAILED.'''
@@ -278,7 +303,8 @@ def main(argv=None):
     subparser.add_argument("--insert", action="store_true", help="also insert the translation into the target project (Insert Target Text)")
     subparser.add_argument("--keep-approvals", dest="keepApprovals", action="store_true", help="leave the guessed analyses approved in the source text (they then count for future guesses); default: release them for review in FLEx")
     subparser.add_argument("--json", help="also write the run record (approvals, failures, messages) here")
-    subparser.add_argument("-v", "--verbose", action="store_true", help="show all FLExTrans messages")
+    subparser.add_argument("-v", "--verbose", action="store_true", help="show all FLExTrans messages, and the step times")
+    subparser.add_argument("--timing", action="store_true", help="show how long each step took and the total time")
     subparser.set_defaults(func=cmdTranslate)
 
     subparser = subparsers.add_parser("steps", help="list the pipeline steps")

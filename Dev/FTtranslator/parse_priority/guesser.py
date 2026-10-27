@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.1 - 10/26/26 - Ron Lockwood
+#    Text titles are compared ignoring Unicode normalization (titleKey()), since FieldWorks stores them in NFD.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. Finds word occurrences in texts and asks FieldWorks' analysis guesser to rank their analyses.
 #
@@ -30,11 +33,12 @@
 #
 #   CODE STRUCTURE
 #
-#   Formatting helpers first: _text(), formOf(), describe(), senseForMsa() and approval(). Then occurrences: Occurrence, neighbour(), _key(), iterTexts(), findOccurrences(), findWordform(),
+#   Formatting helpers first: _text(), formOf(), describe(), senseForMsa() and approval(). Then occurrences: Occurrence, neighbour(), _key(), titleKey(), iterTexts(), findOccurrences(), findWordform(),
 #   sortedAnalyses() and pickAnalysis(). Last, ranking: Explained holds explain()'s numbers for one analysis, and Ranker wraps AnalysisGuessServices (ranked(), bestGuess(), basis(), explain()).
 #   FTtranslator's ingest steps use findOccurrences(), Ranker and the formatting helpers; the parse_priority commands use all of it.
 #
 
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -193,14 +197,19 @@ def _key(neighbourObject):
 
     return neighbourObject if neighbourObject == EMPTY else str(neighbourObject.Guid)
 
+def titleKey(title):
+    '''Return title in a form for comparing titles: case-folded and decomposed (NFD). FieldWorks stores strings in NFD, so a title typed as "garçons" (NFC) wouldn't otherwise match.'''
+
+    return unicodedata.normalize("NFD", title).casefold()
+
 def iterTexts(project, textName=None):
-    '''Yield (title, text) for each text with contents, or only the one titled textName (case-insensitive).'''
+    '''Yield (title, text) for each text with contents, or only the one titled textName (ignoring case and Unicode normalization).'''
 
     for text in project.Texts.GetAll():
 
         title = _text(text.Name.BestVernacularAnalysisAlternative)
 
-        if textName and title.lower() != textName.lower():
+        if textName and titleKey(title) != titleKey(textName):
 
             continue
 

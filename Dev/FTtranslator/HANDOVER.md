@@ -85,7 +85,7 @@ Hooks wrap any of these steps by name.
 5. **Approvals are temporary by default.**
    - The user chose "keep the text, mark it for review". In-text analyses get the guesser's top priority (7), so auto-approved mistakes would reinforce themselves.
    - The approvals are undone right after Extract Source Text. They are kept only if the undo-stack depth (`ActionHandlerAccessor.UndoableSequenceCount`) shows that another step has written to the source since, in which case a warning is given.
-   - The text stays in the project, titled `FTT <timestamp>`, for review in FLEx.
+   - The text stays in the project, titled `FTT <timestamp> <first three words>`, for review in FLEx.
 6. **`fillSenses`: HermitCrab-filed analyses have an msa but no sense on each bundle,** and FT then reports "No sense found". When approving, each bundle's `SenseRA` is set from its msa, as FLEx does when a parse is confirmed.
 7. **The config is never written.**
    - `SourceTextName` is set in the run's `configMap` only.
