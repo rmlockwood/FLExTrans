@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.1 - 10/27/26 - Ron Lockwood
+#    Delete the previous transfer output before Run Apertium, so make can't skip the transfer when runs finish within the same second.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. The FLExTrans drafting steps, and running any other FlexTools module from the collection.
 #
@@ -17,6 +20,12 @@
 #   The seven standard drafting modules are run by calling each module's core function directly, the same calls FLExTrans' TranslateText.py makes. That skips the FlexTools-only parts of each
 #   module's MainFunction: loading Qt translators, logging to Mixpanel and re-reading the configuration. builtins() keys each step both by its module file stem and by its FTM_Name, lowercased,
 #   because those are the two ways a collection .ini can name a module (see pipeline.entryKey()). Insert Target Text stays in the collection but skips itself unless --insert was given.
+#
+#   MAKE AND FAST RUNS
+#
+#   Run Apertium runs make, which skips the transfer when target_text-aper.txt is not older than the source file. File times only go to the second, so a run that finishes within the same second
+#   as the one before (easy once the projects stay open, as in the interactive command) would have its transfer skipped and the previous run's output synthesized again. runApertium() therefore deletes the
+#   transfer output, and the intermediate target_text0-2.txt files of Makefile.advanced, before running make. make still reuses bilingual.bin and the compiled rules when they are current.
 #
 #   CUSTOM MODULES
 #
@@ -62,6 +71,18 @@ def buildBilingualLexicon(ctx):
     return bool(_lib("Utils").processErrorList(errorList, ctx.report))
 
 def runApertium(ctx):
+
+    ReadConfig = _lib("ReadConfig")
+    FTPaths = _lib("FTPaths")
+
+    # Delete the transfer output, and the advanced makefile's intermediate files, so make has to run the transfer again. See MAKE AND FAST RUNS above.
+    staleFiles = [ctx.config(ReadConfig.TRANSFER_RESULTS_FILE, required=False)] + [os.path.join(FTPaths.BUILD_DIR, f"target_text{stage}.txt") for stage in range(3)]
+
+    for path in staleFiles:
+
+        if path and os.path.isfile(path):
+
+            os.remove(path)
 
     return bool(_lib("RunApertium").runApertium(ctx.ftDb, ctx.configMap, ctx.report))
 

@@ -53,7 +53,8 @@ The environment is Python 3.13, flexlibs 1.2.8, pyflexicon 4.13, flextoolslib 20
 | `fttranslator/env.py` | `bootstrap()`: makes FT importable and runnable headless (see gotchas) |
 | `fttranslator/profile.py` | Work project + optional `Config\fttranslator.ini` (collection, title_prefix, source_project, `[hooks]`; the `.ini` keys keep their underscores, the Python attributes are camelCase). Imports neither FT nor FieldWorks |
 | `fttranslator/pipeline.py` | `Options`, `RunResult`, `Context`, `Step`. `build()` turns the collection .ini into steps and adds hooks. `run()` runs them in order |
-| `fttranslator/translator.py` | `Translator` API (also meant for a future service). `flexlibsView()`. `_configOverride()` |
+| `fttranslator/translator.py` | `Translator` API (also meant for a future service). Keeps the projects open across runs; `close()`. `flexlibsView()`. `_configOverride()` |
+| `fttranslator/sharedtarget.py` | `SharedTarget`: opens the target once and hands FT's modules a view of it through patched flexlibs `OpenProject`/`CloseProject`; `save()` after each run |
 | `fttranslator/steps/ingest.py` | Import Text, Parse Words, Approve Guesses (+ `fillSenses`), `releaseApprovals` |
 | `fttranslator/steps/flextrans.py` | Built-in wrappers around FT's core functions. Loader for custom FlexTools modules |
 | `fttranslator/steps/finish.py` | Collect Output: translation + Text Out rules + failed-word diagnostics |
@@ -132,7 +133,9 @@ jouer, avec, long and voiture have no target link in the test data. "Los niñas"
 
 ## Known limitations / open questions
 
-- **Speed:** each FT step opens and closes the target project itself, so a run takes roughly 15 s. A service would need FT to accept an already open target project.
+- **Speed:** `Translator` keeps both projects open from the first `translate()` to `close()`. FT's own steps still open and close the target themselves, so `sharedtarget.py` patches flexlibs' `OpenProject`/`CloseProject` during each run to hand them the one open target. In an `interactive` session, the first sentence takes about 5 s and each later one about 0.5 s. A one-shot `translate` still pays about 3 s to start, about 2 s to close, and a few seconds more when the process exits.
+- **make and same-second runs:** Run Apertium's make skips the transfer when `target_text-aper.txt` isn't older than the source file, and file times only go to the second. The built-in Run Apertium step deletes the transfer output (and `Makefile.advanced`'s `target_text0-2.txt`) first.
+- **Projects held open:** while a `Translator` is open, FLEx can't open its projects unless sharing is on, and edits made in FLEx meanwhile may not be seen.
 - **Input handling:** each input line becomes one paragraph. There is no chapter or verse handling, and no Paratext export path (`ProductionModeOutputFlex=n` is ignored; insert is the only target).
 - **Inbox texts:** these are marked only by the title prefix, not by a genre or tag. Something like a genre would make review lists easier.
 - **Synthesis-failure detection** only knows STAMP's `%n%form%` marker. HermitCrab synthesis has not been tested (`HermitCrabSynthesis=y`; it needs the HC exes on PATH).

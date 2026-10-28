@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.2 - 10/27/26 - Ron Lockwood
+#    Added the interactive command: type a sentence, get its translation, repeat until Ctrl+C, with the projects kept open.
+#
 #   Version 3.17.1 - 10/27/26 - Ron Lockwood
 #    Added --timing to show each step's time and the total; -v shows them too.
 #
@@ -21,6 +24,13 @@
 #   Printing to sys.stderr isn't enough: the programs FLExTrans runs (make, STAMP) write straight to the console through file descriptor 1. stdoutToStderr() points descriptor 1 at stderr for the
 #   length of a run and puts it back afterwards, so only the translation, printed after the run, reaches stdout.
 #
+#   INTERACTIVE
+#
+#   interactive is a read-translate loop: it prompts with "> ", translates each sentence as its own text when Enter is pressed, and shows only the answer and any failed words - the output of
+#   make and STAMP goes nowhere instead of to the screen (silenceTools()), unless -v is given. One Translator serves the whole session, so the projects are opened once and each sentence after the first takes
+#   about half a second (see KEEPING THE PROJECTS OPEN in translator.py). It ends on Ctrl+C, or Ctrl+Z then Enter. Ctrl+C at the prompt stops at once, but Ctrl+C during a translation only
+#   asks to stop (CtrlCStopper): an interrupt in the middle of FieldWorks or the FLExTrans steps could leave a unit of work open, and the projects must still be saved and closed.
+#
 #   ENCODINGS
 #
 #   main() switches stdout and stderr to UTF-8 so vernacular text survives a Windows console code page or a redirect, and reads stdin as UTF-8 with an optional byte-order mark. The command line
@@ -28,8 +38,8 @@
 #
 #   CODE STRUCTURE
 #
-#   _translator() builds the Translator for a command. Then cmdTranslate() with its helpers stdoutToStderr(), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck() and cmdRuns(). main()
-#   sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
+#   _translator() builds the Translator for a command. Then cmdTranslate() and cmdInteractive() with their helpers CtrlCStopper, stdoutToStderr(), silenceTools(), printTimings() (for --timing or -v),
+#   summarize() and _unique(), followed by cmdSteps(), cmdCheck() and cmdRuns(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
 #
 
 import argparse
@@ -37,6 +47,7 @@ import contextlib
 import json
 import os
 import shutil
+import signal
 import sys
 from pathlib import Path
 
@@ -45,6 +56,7 @@ USAGE_TEXT = """
 Command line for FTtranslator: end-to-end translation with FLEx and FLExTrans.
 
   translate WORKDIR [TEXT] [--file F]   translate a text, print the result
+  interactive WORKDIR                   type sentences one at a time and get each translation
   steps     WORKDIR                     list the pipeline that would run
   check     WORKDIR                     check projects, tools and configuration
   runs      WORKDIR                     list earlier runs and the words that failed
@@ -75,9 +87,8 @@ def cmdTranslate(args):
     else:
         text = sys.stdin.read()
 
-    translator = _translator(args)
-
-    with stdoutToStderr():
+    # Leaving the with block closes the projects the run opened
+    with _translator(args) as translator, stdoutToStderr():
 
         result = translator.translate(text, Options(insert=args.insert, keepApprovals=args.keepApprovals, title=args.title))
 
@@ -98,6 +109,101 @@ def cmdTranslate(args):
 
     return 0 if result.ok else 1
 
+def cmdInteractive(args):
+    '''Prompt for a sentence, translate it, show the answer, and repeat until Ctrl+C, keeping the projects open in between. See INTERACTIVE above.'''
+
+    from .pipeline import Options
+
+    options = Options(insert=args.insert, keepApprovals=args.keepApprovals)
+    sentenceCount = 0
+    ctrlC = CtrlCStopper()
+
+    try:
+        with _translator(args) as translator:
+
+            print("Ready. Type a sentence and press Enter (the first one takes a few seconds). Ctrl+C to stop.", file=sys.stderr)
+
+            while not ctrlC.requested:
+
+                print("> ", end="", file=sys.stderr, flush=True)
+                line = ctrlC.readline(sys.stdin)
+
+                # End of input (Ctrl+Z then Enter), or Ctrl+C at the prompt
+                if not line:
+
+                    break
+
+                text = line.strip()
+
+                if not text:
+
+                    continue
+
+                # The output of make and STAMP goes nowhere, unless -v asks to see everything
+                with stdoutToStderr() if args.verbose else silenceTools():
+
+                    result = translator.translate(text, options)
+
+                sentenceCount += 1
+
+                if result.translation:
+
+                    print(" ".join(result.translation.split()), flush=True)
+
+                if args.timing or args.verbose:
+
+                    printTimings(result, sys.stderr)
+
+                summarize(result, sys.stderr, brief=True)
+
+    finally:
+        ctrlC.restore()
+
+    print(f"\nTranslated {sentenceCount} sentence(s).", file=sys.stderr)
+
+    return 0
+
+class CtrlCStopper:
+    '''Ctrl+C handling for the interactive command. At the prompt, Ctrl+C stops at once; during a translation it only asks to stop, so the run finishes and the projects are saved and closed.'''
+
+    def __init__(self):
+
+        self.requested = False
+        self.waiting = False
+        self.previous = signal.signal(signal.SIGINT, self._handle)
+
+    def _handle(self, signum, frame):
+
+        if self.waiting:
+
+            raise KeyboardInterrupt
+
+        if not self.requested:
+
+            print("\nStopping...", file=sys.stderr, flush=True)
+
+        self.requested = True
+
+    def readline(self, stream):
+        '''Read a line, returning "" (as at end of input) if Ctrl+C is pressed while waiting for it.'''
+
+        self.waiting = True
+
+        try:
+            return stream.readline()
+
+        except (KeyboardInterrupt, EOFError):
+
+            self.requested = True
+            return ""
+
+        finally:
+            self.waiting = False
+
+    def restore(self):
+
+        signal.signal(signal.SIGINT, self.previous)
+
 @contextlib.contextmanager
 def stdoutToStderr():
     '''Point file descriptor 1 at stderr for the length of the with block. See KEEPING STDOUT CLEAN above.'''
@@ -113,8 +219,35 @@ def stdoutToStderr():
         os.dup2(savedStdout, 1)
         os.close(savedStdout)
 
+@contextlib.contextmanager
+def silenceTools():
+    '''For the length of the with block, send what the tools FLExTrans runs write (make to descriptor 1, STAMP to 2) nowhere, while Python's own sys.stderr - FTtranslator's warnings
+       and errors - still reaches the screen through a saved copy of descriptor 2.'''
+
+    sys.stdout.flush()
+    sys.stderr.flush()
+    savedStdout = os.dup(1)
+    savedStderr = os.dup(2)
+    devNull = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devNull, 1)
+    os.dup2(devNull, 2)
+    originalStderr = sys.stderr
+    sys.stderr = open(savedStderr, "w", encoding="utf-8", errors="replace", closefd=False)
+
+    try:
+        yield
+    finally:
+        sys.stderr.flush()
+        sys.stderr = originalStderr
+        os.dup2(savedStdout, 1)
+        os.dup2(savedStderr, 2)
+
+        for descriptor in (savedStdout, savedStderr, devNull):
+
+            os.close(descriptor)
+
 def printTimings(result, out):
-    '''Print how long each step took, the time outside the steps (opening and closing the project), and the total.'''
+    '''Print how long each step took, the time outside the steps (opening the source project on the first run, and saving), and the total.'''
 
     print(file=out)
     print("Step times:", file=out)
@@ -127,11 +260,11 @@ def printTimings(result, out):
     if result.totalSeconds is not None:
 
         stepSeconds = sum(timing["seconds"] for timing in result.timings)
-        print(f"  {'Open and close the source project':38s} {result.totalSeconds - stepSeconds:8.2f} s", file=out)
+        print(f"  {'Outside the steps (open, save)':38s} {result.totalSeconds - stepSeconds:8.2f} s", file=out)
         print(f"  {'Total':38s} {result.totalSeconds:8.2f} s", file=out)
 
-def summarize(result, out):
-    '''Print the words that failed, grouped by why, then OK or FAILED.'''
+def summarize(result, out, brief=False):
+    '''Print the words that failed, grouped by why, then OK or FAILED. brief (the interactive command) leaves out the blank line before and the OK line, so a good answer is just the answer.'''
 
     def printWords(label, words):
 
@@ -139,11 +272,18 @@ def summarize(result, out):
 
             print(f"{label} ({len(words)}): {', '.join(words)}", file=out)
 
-    print(file=out)
+    if not brief:
+
+        print(file=out)
+
     printWords("No parse", result.unparsed)
     printWords("No analysis", _unique(result.unanalysed))
     printWords("Not linked to target lexicon", result.untranslated)
     printWords("Not synthesized", result.unsynthesized)
+
+    if result.ok and brief:
+
+        return
 
     if result.ok:
 
@@ -306,6 +446,14 @@ def main(argv=None):
     subparser.add_argument("-v", "--verbose", action="store_true", help="show all FLExTrans messages, and the step times")
     subparser.add_argument("--timing", action="store_true", help="show how long each step took and the total time")
     subparser.set_defaults(func=cmdTranslate)
+
+    subparser = subparsers.add_parser("interactive", help="type sentences one at a time and get each translation, until Ctrl+C")
+    addCommon(subparser)
+    subparser.add_argument("--insert", action="store_true", help="also insert each translation into the target project (Insert Target Text)")
+    subparser.add_argument("--keep-approvals", dest="keepApprovals", action="store_true", help="leave the guessed analyses approved in the source texts; default: release them for review in FLEx")
+    subparser.add_argument("-v", "--verbose", action="store_true", help="show all FLExTrans messages and tool output, and the step times")
+    subparser.add_argument("--timing", action="store_true", help="show how long each step took and the total time, for each sentence")
+    subparser.set_defaults(func=cmdInteractive)
 
     subparser = subparsers.add_parser("steps", help="list the pipeline steps")
     addCommon(subparser)
