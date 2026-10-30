@@ -5,6 +5,12 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.2 - 10/29/26 - Ron Lockwood
+#    Prepare each word as FLEx does before parsing it: spaces become '.', so phrases parse, and the form is normalized to NFD.
+#
+#   Version 3.17.1 - 10/28/26 - Ron Lockwood
+#    Parse a capitalized word in lowercase when it gets no parses as written.
+#
 #   Version 3.17 - 10/26/26 - Ron Lockwood
 #    Initial version. Runs the HermitCrab parser on the words of a text and files the results the way FLEx does.
 #
@@ -12,6 +18,20 @@
 #
 #   Runs FieldWorks' parser (HermitCrab, through flexicon's project.Parser) on each distinct word of a text, and optionally files the results into the project the way FLEx's "Parse Words in
 #   Text" does, using FieldWorks' own ParseFiler.
+#
+#   CAPITALIZED WORDS
+#
+#   HermitCrab only accepts the characters the grammar defines as phonemes, and many grammars define only lowercase ones (Kurmanji does), so a sentence-initial or title-case word fails with
+#   "undefined phoneme". When a word with capitals gets an error or no parses, parseText() parses its lowercase form, and uses that result only if it found parses. The guard matters: a proper
+#   noun whose lexeme is capitalized gets no parses in lowercase, and filing that empty result would mark every existing analysis of the word as parser-disapproved; keeping the original error
+#   makes the caller skip the word instead. The result is filed against the word as written, since that is the wordform the text uses. FLEx's ParserWorker.ParseAndUpdateWordform also parses
+#   the lowercase form of a capitalized word.
+#
+#   PHRASES
+#
+#   When a text is added, FLEx joins words that match an existing multi-word wordform (a phrase such as 'hata sibuna li') into one occurrence. HermitCrab stops at a space with an "undefined
+#   phoneme" error, but it takes '.' as the boundary between the words of a phrase, the way FieldWorks' HermitCrab loader writes multi-word lexemes. So parserForm() does what
+#   ParserWorker.ParseAndUpdateWordform does before calling the parser: replace each space with '.' and normalize to NFD. The wordform keeps its spaces; only the parser sees the dots.
 #
 #   FILING CANNOT BE UNDONE
 #
@@ -25,9 +45,11 @@
 #
 #   CODE STRUCTURE
 #
-#   describeParse() describes a parser result for display, parseText() parses a text's words, and Filer files the results. FTtranslator's Parse Words step uses parseText() and Filer, and so
-#   does the parse command.
+#   describeParse() describes a parser result for display, parserForm() prepares a word for the parser, _hasParses() tells whether a result found anything, parseText() parses a text's words,
+#   and Filer files the results. FTtranslator's Parse Words step uses parseText() and Filer, and so does the parse command.
 #
+
+import unicodedata
 
 from . import fw
 from .guesser import findOccurrences, formOf, senseForMsa, _text
@@ -47,6 +69,16 @@ def describeParse(parse):
         parts.append(f"{form}:{gloss}")
 
     return " + ".join(parts)
+
+def parserForm(word):
+    '''Return word as the parser needs it: each space replaced with '.', normalized to NFD. See PHRASES above.'''
+
+    return unicodedata.normalize("NFD", word.replace(" ", "."))
+
+def _hasParses(parseResult):
+    '''True if the parser ran without an error and found at least one parse.'''
+
+    return bool(parseResult.IsValid and not parseResult.ErrorMessage and parseResult.Analyses.Count > 0)
 
 def parseText(project, textName=None):
     '''Parse each distinct word in the text titled textName (or in all texts). Returns a list of (word, [(description, matching IWfiAnalysis or None)], error, ParseResult), in text
@@ -69,7 +101,16 @@ def parseText(project, textName=None):
 
     for word in words:
 
-        parseResult = project.Parser.ParseWord(word)
+        parseResult = project.Parser.ParseWord(parserForm(word))
+
+        # A capitalized word may fail only because of its capitals. See CAPITALIZED WORDS above.
+        if word.lower() != word and not _hasParses(parseResult):
+
+            lowercaseResult = project.Parser.ParseWord(parserForm(word.lower()))
+
+            if _hasParses(lowercaseResult):
+
+                parseResult = lowercaseResult
 
         if not parseResult.IsValid or parseResult.ErrorMessage:
 
