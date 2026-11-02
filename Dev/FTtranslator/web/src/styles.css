@@ -1,0 +1,402 @@
+/* FTtranslator page styles. Colors are tokens on :root, redefined for dark mode, so the page follows the system theme. */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #1c2330;
+  --muted: #667085;
+  --border: #dde2ea;
+  --accent: #2f5fd0;
+  --accent-text: #ffffff;
+  --ok: #1d7a46;
+  --ok-bg: #e5f4ec;
+  --warn: #8a5a00;
+  --warn-bg: #fdf3dc;
+  --error: #b42318;
+  --error-bg: #fdecea;
+  --chip-bg: #eef1f6;
+  --bar: #9db4ea;
+
+  color-scheme: light;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171c;
+    --surface: #1d2129;
+    --text: #e6e9ef;
+    --muted: #98a2b3;
+    --border: #2f3542;
+    --accent: #6d93f2;
+    --accent-text: #0d1220;
+    --ok: #5cc98a;
+    --ok-bg: #173325;
+    --warn: #f0c060;
+    --warn-bg: #3a2f14;
+    --error: #f1877d;
+    --error-bg: #3d1c1a;
+    --chip-bg: #2a303c;
+    --bar: #4a68b0;
+
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+/* Header */
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.projects {
+  margin-top: 2px;
+}
+
+.pill {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.pill-ok {
+  color: var(--ok);
+  background: var(--ok-bg);
+  border-color: transparent;
+}
+
+.pill-busy {
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-color: transparent;
+}
+
+.pill-error {
+  color: var(--error);
+  background: var(--error-bg);
+  border-color: transparent;
+}
+
+/* The box the sentence is typed into */
+
+.composer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.15rem;
+}
+
+.composer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.spacer {
+  flex: 1;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button.primary {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+  min-width: 120px;
+}
+
+button.primary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+button.ghost {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Tabs */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 24px 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 8px 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+.tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+/* Result cards */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-failed {
+  border-color: var(--error);
+}
+
+.pending {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.source {
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+
+.card-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+}
+
+.badge {
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.badge-ok {
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.badge-failed {
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+.translation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.translation {
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.translation p {
+  margin: 0;
+}
+
+.problems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.problem-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.problem-label {
+  color: var(--warn);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 110px;
+}
+
+.chip {
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--chip-bg);
+  font-size: 0.9rem;
+}
+
+.error-text {
+  color: var(--error);
+}
+
+/* The folded-away details */
+
+.details-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+details summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+details[open] summary {
+  margin-bottom: 6px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: start;
+  padding: 3px 8px 3px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.timings td {
+  border-bottom: none;
+}
+
+.timings .total td {
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.bar-cell {
+  width: 45%;
+}
+
+.bar {
+  display: inline-block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bar);
+}
+
+.number {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.messages {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.9rem;
+}
+
+.message-warning {
+  color: var(--warn);
+}
+
+.message-error {
+  color: var(--error);
+}
+
+@media (max-width: 600px) {
+  .top,
+  .card-header {
+    flex-direction: column;
+  }
+}

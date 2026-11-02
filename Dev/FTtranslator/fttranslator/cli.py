@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.3 - 10/30/26 - Ron Lockwood
+#    Added the serve command: a local web server for the React front end, with the projects kept open.
+#
 #   Version 3.17.2 - 10/27/26 - Ron Lockwood
 #    Added the interactive command: type a sentence, get its translation, repeat until Ctrl+C, with the projects kept open.
 #
@@ -31,6 +34,11 @@
 #   about half a second (see KEEPING THE PROJECTS OPEN in translator.py). It ends on Ctrl+C, or Ctrl+Z then Enter. Ctrl+C at the prompt stops at once, but Ctrl+C during a translation only
 #   asks to stop (CtrlCStopper): an interrupt in the middle of FieldWorks or the FLExTrans steps could leave a unit of work open, and the projects must still be saved and closed.
 #
+#   SERVE
+#
+#   serve is the same idea behind a web page: it starts the local web server in server.py, which keeps one Translator (and so the open projects) for its whole life, and opens the React front end
+#   in the browser. It stops on Ctrl+C the same safe way, using CtrlCStopper.
+#
 #   ENCODINGS
 #
 #   main() switches stdout and stderr to UTF-8 so vernacular text survives a Windows console code page or a redirect, and reads stdin as UTF-8 with an optional byte-order mark. The command line
@@ -38,8 +46,8 @@
 #
 #   CODE STRUCTURE
 #
-#   _translator() builds the Translator for a command. Then cmdTranslate() and cmdInteractive() with their helpers CtrlCStopper, stdoutToStderr(), silenceTools(), printTimings() (for --timing or -v),
-#   summarize() and _unique(), followed by cmdSteps(), cmdCheck() and cmdRuns(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
+#   _translator() builds the Translator for a command. Then cmdTranslate(), cmdInteractive() and cmdServe() with their helpers CtrlCStopper, stdoutToStderr(), silenceTools() (all three also used by
+#   server.py), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck() and cmdRuns(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
 #
 
 import argparse
@@ -57,6 +65,7 @@ Command line for FTtranslator: end-to-end translation with FLEx and FLExTrans.
 
   translate WORKDIR [TEXT] [--file F]   translate a text, print the result
   interactive WORKDIR                   type sentences one at a time and get each translation
+  serve     WORKDIR [--port N]          translate in the browser (the React front end)
   steps     WORKDIR                     list the pipeline that would run
   check     WORKDIR                     check projects, tools and configuration
   runs      WORKDIR                     list earlier runs and the words that failed
@@ -163,8 +172,21 @@ def cmdInteractive(args):
 
     return 0
 
+def cmdServe(args):
+    '''Run the local web server for the React front end until Ctrl+C, keeping the projects open in between. See SERVE above.'''
+
+    from .server import serve
+
+    # Leaving the with block saves and closes the projects
+    with _translator(args) as translator:
+
+        serve(translator, args.port, verbose=args.verbose, openBrowser=not args.noBrowser)
+
+    return 0
+
 class CtrlCStopper:
-    '''Ctrl+C handling for the interactive command. At the prompt, Ctrl+C stops at once; during a translation it only asks to stop, so the run finishes and the projects are saved and closed.'''
+    '''Ctrl+C handling for the interactive and serve commands. At the prompt, Ctrl+C stops at once; during a translation it only asks to stop, so the run finishes and the projects are saved
+       and closed. serve never sets waiting, so there Ctrl+C always just asks, and the server loop checks between requests.'''
 
     def __init__(self):
 
@@ -454,6 +476,13 @@ def main(argv=None):
     subparser.add_argument("-v", "--verbose", action="store_true", help="show all FLExTrans messages and tool output, and the step times")
     subparser.add_argument("--timing", action="store_true", help="show how long each step took and the total time, for each sentence")
     subparser.set_defaults(func=cmdInteractive)
+
+    subparser = subparsers.add_parser("serve", help="translate in the browser: a local web server for the React front end, until Ctrl+C")
+    addCommon(subparser)
+    subparser.add_argument("--port", type=int, default=8765, help="the port to listen on (default 8765); 0 picks a free one")
+    subparser.add_argument("--no-browser", dest="noBrowser", action="store_true", help="don't open the page in the browser")
+    subparser.add_argument("-v", "--verbose", action="store_true", help="show all FLExTrans messages, tool output and requests in the console")
+    subparser.set_defaults(func=cmdServe)
 
     subparser = subparsers.add_parser("steps", help="list the pipeline steps")
     addCommon(subparser)

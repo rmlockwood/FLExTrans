@@ -37,6 +37,7 @@ Every run is saved as JSON in `<work project>\Output\ftt_runs\`. The file holds 
 ```
 python -m fttranslator translate WORKDIR [TEXT] [--file F] [--title T] [--insert] [--keep-approvals] [--json OUT] [--modules] [--timing] [-v]
 python -m fttranslator interactive WORKDIR [--insert] [--keep-approvals] [--timing] [-v]
+python -m fttranslator serve     WORKDIR [--port N] [--no-browser] [-v]
 python -m fttranslator steps     WORKDIR     # the pipeline that would run
 python -m fttranslator check     WORKDIR     # projects, tools, active parser
 python -m fttranslator runs      WORKDIR     # earlier runs and their failed words
@@ -45,8 +46,37 @@ python -m fttranslator runs      WORKDIR     # earlier runs and their failed wor
 - If neither TEXT nor `--file` is given, the text is read from stdin. Each line becomes a paragraph.
 - `--timing` prints how long each step took and the total time, on stderr. `-v` prints them too.
 - `interactive` waits at a `>` prompt. Type a sentence and press Enter to get its translation, then type the next. Each sentence becomes its own text. Only the answer and any failed words are shown; `-v` also shows the tools' output. The projects stay open for the whole session, so the first sentence takes about 5 s and each later one about 0.5 s. Press Ctrl+C (or Ctrl+Z then Enter) to stop. Ctrl+C during a translation stops once that translation is finished, so the projects are saved and closed.
+- `serve` does the same as `interactive`, but in the browser. It starts a local web server at `http://localhost:8765/` and opens the page there. Type a sentence and press Enter. Each result
+  shows the translation, the failed words, and, folded away, the analyses chosen, the messages and the step times. A **Saved runs** tab lists the run records. The projects stay open until you
+  press Ctrl+C in the console. The page has to be built once first; see [The web front end](#the-web-front-end).
 - `--insert` also runs Insert Target Text, which puts the translation into the target project. Otherwise that collection step is skipped.
 - `--modules` points at a FLExTrans modules folder. The default is the installed `…\FlexTools\Modules\FLExTrans` next to the work project. `--modules dev` uses this repo's own `Dev\Modules`. Any other path to a modules folder also works.
+
+## The web front end
+
+The page is a React app in `web\`. It needs Node.js 20 or later to build, but not to run. Build it once, and again after changing it:
+
+```
+cd web
+npm install
+npm run build
+```
+
+This writes `web\dist`, which `serve` serves. Neither `web\dist` nor `web\node_modules` is committed.
+
+To work on the page, run `serve` and `npm run dev` side by side. Open the address Vite prints (`http://localhost:5173/`). It reloads on every edit and passes `/api` requests to the server on
+port 8765. Set `FTT_PORT` if the server is on another port.
+
+The server's API (`fttranslator/server.py`):
+
+| Request | What it does |
+|---|---|
+| `GET /api/status` | Work project, source and target projects, whether the projects are open yet, and how many texts this session has translated |
+| `POST /api/translate` | Body `{text, insert, keepApprovals}`. Translates the text and returns `{result, record}`: the run record and where it was saved |
+| `GET /api/runs?limit=N` | The saved run records, newest first |
+
+The server listens on 127.0.0.1 only. It answers one request at a time, on the thread that opened the projects. A POST must send `Content-Type: application/json`, and the `Host` header
+must be `localhost` or `127.0.0.1`. These checks stop other web pages open in the browser from starting a translation, which writes to the FLEx projects.
 
 ## Customizing
 
@@ -85,5 +115,7 @@ Steps pass data to each other through FLExTrans' usual files (`Build\source_text
 - `fttranslator/steps/`: `ingest.py` (import, parse, approve, release), `flextrans.py` (drafting steps, FlexTools modules), `finish.py` (output and failed words).
 - `fttranslator/translator.py`: the `Translator` API, which the CLI uses and which a service or web app can use too. It keeps both projects open from the first `translate()` until `close()` (or the end of a `with` block).
 - `fttranslator/sharedtarget.py`: hands every FLExTrans module that opens the target project the one copy that is already open.
+- `fttranslator/server.py`: the `serve` command's web server and JSON API, around one `Translator`.
+- `web/`: the React front end (Vite + TypeScript). `src/App.tsx` is the page, `src/ResultCard.tsx` shows one translation, and `src/api.ts` calls the server.
 - `parse_priority/`: the parser and guesser tools that the ingest steps are built on.
 - `tests/`: `python -m unittest discover -s tests`. These tests don't need FieldWorks.

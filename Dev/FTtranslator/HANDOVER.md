@@ -54,6 +54,8 @@ The environment is Python 3.13, flexlibs 1.2.8, pyflexicon 4.13, flextoolslib 20
 | `fttranslator/profile.py` | Work project + optional `Config\fttranslator.ini` (collection, title_prefix, source_project, `[hooks]`; the `.ini` keys keep their underscores, the Python attributes are camelCase). Imports neither FT nor FieldWorks |
 | `fttranslator/pipeline.py` | `Options`, `RunResult`, `Context`, `Step`. `build()` turns the collection .ini into steps and adds hooks. `run()` runs them in order |
 | `fttranslator/translator.py` | `Translator` API (also meant for a future service). Keeps the projects open across runs; `close()`. `flexlibsView()`. `_configOverride()` |
+| `fttranslator/server.py` | `serve`: stdlib single-threaded `HTTPServer` driven by `handle_request()` on the main thread (FieldWorks thread affinity, runs can't overlap). JSON API + serves `web\dist`. Localhost-only, JSON-only POST, Host check |
+| `web/` | React front end (Vite 6 + TypeScript). `npm install` + `npm run build` → `web\dist`; `npm run dev` proxies `/api` to port 8765 |
 | `fttranslator/sharedtarget.py` | `SharedTarget`: opens the target once and hands FT's modules a view of it through patched flexlibs `OpenProject`/`CloseProject`; `save()` after each run |
 | `fttranslator/steps/ingest.py` | Import Text, Parse Words, Approve Guesses (+ `fillSenses`), `releaseApprovals` |
 | `fttranslator/steps/flextrans.py` | Built-in wrappers around FT's core functions. Loader for custom FlexTools modules |
@@ -151,8 +153,10 @@ jouer, avec, long and voiture have no target link in the test data. "Los niñas"
    - Let the core functions accept an open `TargetDB`, so each step doesn't open and close the target.
 2. **Speed:** keep both projects open across translations. Check the effect of `CacheData=y` (already on in the scratch config).
 3. **Service (Phase 4):**
-   - A long-running Windows host (for example FastAPI) built on `Translator`, keeping the projects open.
-   - Endpoints for translate, runs and fixes. A web app on top.
+   - Started 2026-10-30: `serve` is a local host built on `Translator`. It keeps the projects open and has endpoints for status, translate and runs, with a React page on top. It uses the
+     standard library rather than FastAPI, since runs can't overlap anyway.
+   - Still to do: endpoints for fixes, and a way to reach it from other machines. That needs authentication before it listens anywhere but localhost.
+   - `web/` pins Vite 6.4.4. 6.4.5 fixes a moderate dev-server advisory (GHSA-8g5g-mxqh-grgj) but was too new on 2026-10-30. Bump it once it is two weeks old. The built page isn't affected.
 4. **Phone apps (Phase 5):**
    - A translator client.
    - A companion review app built from the `ftt_runs` JSON. It would list unparsed, unlinked and unsynthesized words and send fixes to FLEx through the service: add an entry or sense, link a target sense, confirm a parse.

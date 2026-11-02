@@ -1,0 +1,24 @@
+{
+  "name": "fttranslator-web",
+  "private": true,
+  "version": "3.17.0",
+  "description": "React front end for FTtranslator. Served by: python -m fttranslator serve WORKDIR",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.10",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "typescript": "5.6.3",
+    "vite": "6.4.4"
+  }
+}
