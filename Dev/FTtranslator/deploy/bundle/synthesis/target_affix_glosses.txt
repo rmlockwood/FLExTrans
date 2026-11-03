@@ -11,3 +11,6 @@ PRS_3PL|suffix
 PRS_3SG|suffix
 PRS_3SG_COP|suffix
 SG|suffix
+SG1|suffix
+SG2|suffix
+SG3|suffix

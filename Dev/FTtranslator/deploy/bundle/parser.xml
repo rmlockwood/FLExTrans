@@ -617,10 +617,10 @@
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule3" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-ait</Name>
+            <Name>-e1</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule4">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
+                <MorphologicalInput requiredMPRFeatures="mpr3" excludedMPRFeatures="mpr12">
                   <PhoneticSequence id="msubrule4_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -638,31 +638,15 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule4_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+ait</PhoneticShape>
+                    <PhoneticShape>+^0</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9538</Property>
+                  <Property name="ID">10386</Property>
                 </Properties>
               </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-              </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-            </RequiredHeadFeatures>
-            <Gloss>IMPFV.3SG</Gloss>
-            <Properties>
-              <Property name="ID">9048</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule4" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-ais1</Name>
-            <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule5">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
                   <PhoneticSequence id="msubrule5_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -680,31 +664,15 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule5_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+ais</PhoneticShape>
+                    <PhoneticShape>+it</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">11630</Property>
+                  <Property name="ID">6280</Property>
                 </Properties>
               </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
-              </FeatureValue>
-            </RequiredHeadFeatures>
-            <Gloss>IMPFV.1SG</Gloss>
-            <Properties>
-              <Property name="ID">8581</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule5" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-iez</Name>
-            <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule6">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
+                <MorphologicalInput requiredMPRFeatures="mpr4" excludedMPRFeatures="mpr12">
                   <PhoneticSequence id="msubrule6_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -722,31 +690,15 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule6_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+iez</PhoneticShape>
+                    <PhoneticShape>+t</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2457</Property>
+                  <Property name="ID">3381</Property>
                 </Properties>
               </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-              </FeatureValue>
-            </RequiredHeadFeatures>
-            <Gloss>IMPFV.2PL</Gloss>
-            <Properties>
-              <Property name="ID">5606</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule6" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-es</Name>
-            <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule7">
-                <MorphologicalInput requiredMPRFeatures="mpr3 mpr4" excludedMPRFeatures="mpr12">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
                   <PhoneticSequence id="msubrule7_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -763,450 +715,6 @@
                 </MorphologicalInput>
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule7_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+s</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">9030</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule8">
-                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule8_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule8_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+is</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">4452</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule9">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule9_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule9_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+es</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">1534</Property>
-                </Properties>
-              </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
-              </FeatureValue>
-            </RequiredHeadFeatures>
-            <Gloss>PRS.2SG</Gloss>
-            <Properties>
-              <Property name="ID">6376</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule7" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-e3</Name>
-            <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule10">
-                <MorphologicalInput requiredMPRFeatures="mpr3 mpr4" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule10_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule10_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+s</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">8359</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule11">
-                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule11_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule11_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+is</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">7917</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule12">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule12_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule12_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+e</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">9865</Property>
-                </Properties>
-              </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-              </FeatureValue>
-            </RequiredHeadFeatures>
-            <Gloss>PRS.1SG</Gloss>
-            <Properties>
-              <Property name="ID">11352</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule8" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-ent</Name>
-            <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule13">
-                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule13_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule13_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+issent</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">8668</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule14">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule14_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule14_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+ent</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">745</Property>
-                </Properties>
-              </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-              </FeatureValue>
-            </RequiredHeadFeatures>
-            <Gloss>PRS.3PL</Gloss>
-            <Properties>
-              <Property name="ID">724</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule9" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-ions</Name>
-            <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule15">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule15_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule15_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+ions</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">5999</Property>
-                </Properties>
-              </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-              </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-            </RequiredHeadFeatures>
-            <Gloss>IMPFV.1PL</Gloss>
-            <Properties>
-              <Property name="ID">4525</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule10" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-ez</Name>
-            <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule16">
-                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule16_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule16_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+issez</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">2491</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule17">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule17_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule17_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+ez</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">7232</Property>
-                </Properties>
-              </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
-              </FeatureValue>
-            </RequiredHeadFeatures>
-            <Gloss>PRS.2PL</Gloss>
-            <Properties>
-              <Property name="ID">5647</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule11" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-e1</Name>
-            <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule18">
-                <MorphologicalInput requiredMPRFeatures="mpr3" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule18_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule18_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+^0</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">10386</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule19">
-                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule19_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule19_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+it</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">6280</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule20">
-                <MorphologicalInput requiredMPRFeatures="mpr4" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule20_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule20_stem" />
-                  <InsertSegments>
-                    <PhoneticShape>+t</PhoneticShape>
-                  </InsertSegments>
-                </MorphologicalOutput>
-                <Properties>
-                  <Property name="ID">3381</Property>
-                </Properties>
-              </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule21">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule21_stem">
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char36" />
-                      <BoundaryMarker boundary="char35" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="1" max="-1">
-                      <SimpleContext naturalClass="nc1" />
-                    </OptionalSegmentSequence>
-                    <OptionalSegmentSequence min="0" max="-1">
-                      <BoundaryMarker boundary="char35" />
-                      <BoundaryMarker boundary="char36" />
-                    </OptionalSegmentSequence>
-                  </PhoneticSequence>
-                </MorphologicalInput>
-                <MorphologicalOutput>
-                  <CopyFromInput index="msubrule21_stem" />
                   <InsertSegments>
                     <PhoneticShape>+e</PhoneticShape>
                   </InsertSegments>
@@ -1228,12 +736,12 @@
               <Property name="ID">9954</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule12" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-ais2</Name>
+          <MorphologicalRule id="mrule4" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-es</Name>
             <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule22">
-                <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule22_stem">
+              <MorphologicalSubrule id="msubrule8">
+                <MorphologicalInput requiredMPRFeatures="mpr3 mpr4" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule8_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
                       <BoundaryMarker boundary="char35" />
@@ -1248,7 +756,253 @@
                   </PhoneticSequence>
                 </MorphologicalInput>
                 <MorphologicalOutput>
-                  <CopyFromInput index="msubrule22_stem" />
+                  <CopyFromInput index="msubrule8_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+s</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9030</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule9">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule9_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule9_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+is</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4452</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule10">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule10_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule10_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+es</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">1534</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.2SG</Gloss>
+            <Properties>
+              <Property name="ID">6376</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule5" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ait</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule11">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule11_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule11_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ait</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9538</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.3SG</Gloss>
+            <Properties>
+              <Property name="ID">9048</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule6" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ent</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule12">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule12_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule12_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+issent</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8668</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule13">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule13_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule13_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ent</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">745</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.3PL</Gloss>
+            <Properties>
+              <Property name="ID">724</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule7" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ions</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule14">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule14_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule14_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ions</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">5999</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.1PL</Gloss>
+            <Properties>
+              <Property name="ID">4525</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule8" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ais2</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule15">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule15_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule15_stem" />
                   <InsertSegments>
                     <PhoneticShape>+ais</PhoneticShape>
                   </InsertSegments>
@@ -1270,12 +1024,54 @@
               <Property name="ID">7405</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule13" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule9" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ais1</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule16">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule16_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule16_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ais</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">11630</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.1SG</Gloss>
+            <Properties>
+              <Property name="ID">8581</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule10" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
             <Name>-ons</Name>
             <MorphologicalSubrules>
-              <MorphologicalSubrule id="msubrule23">
+              <MorphologicalSubrule id="msubrule17">
                 <MorphologicalInput requiredMPRFeatures="mpr2" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule23_stem">
+                  <PhoneticSequence id="msubrule17_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
                       <BoundaryMarker boundary="char35" />
@@ -1297,7 +1093,7 @@
                   </PhoneticSequence>
                 </MorphologicalInput>
                 <MorphologicalOutput>
-                  <CopyFromInput index="msubrule23_stem" />
+                  <CopyFromInput index="msubrule17_stem" />
                   <InsertSegments>
                     <PhoneticShape>+eons</PhoneticShape>
                   </InsertSegments>
@@ -1307,9 +1103,9 @@
                   <Property name="Env">/ g _ </Property>
                 </Properties>
               </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule24">
+              <MorphologicalSubrule id="msubrule18">
                 <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule24_stem">
+                  <PhoneticSequence id="msubrule18_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
                       <BoundaryMarker boundary="char35" />
@@ -1324,7 +1120,7 @@
                   </PhoneticSequence>
                 </MorphologicalInput>
                 <MorphologicalOutput>
-                  <CopyFromInput index="msubrule24_stem" />
+                  <CopyFromInput index="msubrule18_stem" />
                   <InsertSegments>
                     <PhoneticShape>+issons</PhoneticShape>
                   </InsertSegments>
@@ -1333,9 +1129,9 @@
                   <Property name="ID">619</Property>
                 </Properties>
               </MorphologicalSubrule>
-              <MorphologicalSubrule id="msubrule25">
+              <MorphologicalSubrule id="msubrule19">
                 <MorphologicalInput excludedMPRFeatures="mpr12">
-                  <PhoneticSequence id="msubrule25_stem">
+                  <PhoneticSequence id="msubrule19_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
                       <BoundaryMarker boundary="char35" />
@@ -1350,7 +1146,7 @@
                   </PhoneticSequence>
                 </MorphologicalInput>
                 <MorphologicalOutput>
-                  <CopyFromInput index="msubrule25_stem" />
+                  <CopyFromInput index="msubrule19_stem" />
                   <InsertSegments>
                     <PhoneticShape>+ons</PhoneticShape>
                   </InsertSegments>
@@ -1372,8 +1168,212 @@
               <Property name="ID">913</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule14" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule11" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
             <Name>-aient</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule20">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule20_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule20_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+aient</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">10653</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.3PL</Gloss>
+            <Properties>
+              <Property name="ID">2147</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule12" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ez</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule21">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule21_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule21_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+issez</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">2491</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule22">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule22_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule22_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ez</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">7232</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.2PL</Gloss>
+            <Properties>
+              <Property name="ID">5647</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule13" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-e3</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule23">
+                <MorphologicalInput requiredMPRFeatures="mpr3 mpr4" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule23_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule23_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+s</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8359</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule24">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule24_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule24_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+is</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">7917</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule25">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule25_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule25_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+e</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9865</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.1SG</Gloss>
+            <Properties>
+              <Property name="ID">11352</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule14" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-iez</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule26">
                 <MorphologicalInput excludedMPRFeatures="mpr12">
@@ -1394,24 +1394,24 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule26_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+aient</PhoneticShape>
+                    <PhoneticShape>+iez</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">10653</Property>
+                  <Property name="ID">2457</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
               <FeatureValue feature="feat6012" symbolValues="sym5735" />
               <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
                 <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
               </FeatureValue>
             </RequiredHeadFeatures>
-            <Gloss>IMPFV.3PL</Gloss>
+            <Gloss>IMPFV.2PL</Gloss>
             <Properties>
-              <Property name="ID">2147</Property>
+              <Property name="ID">5606</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule15">
@@ -1676,7 +1676,7 @@
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
-            <Gloss>SG</Gloss>
+            <Gloss>SG2</Gloss>
             <Properties>
               <Property name="ID">926</Property>
             </Properties>
@@ -1905,7 +1905,7 @@
                 <FeatureValue feature="feat8657" symbolValues="sym4766" />
               </FeatureValue>
             </RequiredHeadFeatures>
-            <Gloss>SG</Gloss>
+            <Gloss>SG3</Gloss>
             <Properties>
               <Property name="ID">2757</Property>
             </Properties>
@@ -1971,16 +1971,16 @@
                 <FeatureValue feature="feat8657" symbolValues="sym9886" />
               </FeatureValue>
             </RequiredHeadFeatures>
-            <Gloss>PL</Gloss>
+            <Gloss>PL2</Gloss>
             <Properties>
               <Property name="ID">3380</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule25" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-er</Name>
+            <Name>-t</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule42">
-                <MorphologicalInput requiredMPRFeatures="mpr3">
+                <MorphologicalInput>
                   <PhoneticSequence id="msubrule42_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -1998,15 +1998,24 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule42_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+re</PhoneticShape>
+                    <PhoneticShape>+t</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">8158</Property>
+                  <Property name="ID">5092</Property>
                 </Properties>
               </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>PstPrf</Gloss>
+            <Properties>
+              <Property name="ID">10360</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule26" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-er</Name>
+            <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule43">
-                <MorphologicalInput requiredMPRFeatures="mpr5">
+                <MorphologicalInput requiredMPRFeatures="mpr3">
                   <PhoneticSequence id="msubrule43_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -2024,15 +2033,15 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule43_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+ir</PhoneticShape>
+                    <PhoneticShape>+re</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">6852</Property>
+                  <Property name="ID">8158</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule44">
-                <MorphologicalInput requiredMPRFeatures="mpr4">
+                <MorphologicalInput requiredMPRFeatures="mpr5">
                   <PhoneticSequence id="msubrule44_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -2050,15 +2059,15 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule44_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+oir</PhoneticShape>
+                    <PhoneticShape>+ir</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2716</Property>
+                  <Property name="ID">6852</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule45">
-                <MorphologicalInput>
+                <MorphologicalInput requiredMPRFeatures="mpr4">
                   <PhoneticSequence id="msubrule45_stem">
                     <OptionalSegmentSequence min="0" max="-1">
                       <BoundaryMarker boundary="char36" />
@@ -2076,22 +2085,13 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule45_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+er</PhoneticShape>
+                    <PhoneticShape>+oir</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">3513</Property>
+                  <Property name="ID">2716</Property>
                 </Properties>
               </MorphologicalSubrule>
-            </MorphologicalSubrules>
-            <Gloss>INF</Gloss>
-            <Properties>
-              <Property name="ID">975</Property>
-            </Properties>
-          </MorphologicalRule>
-          <MorphologicalRule id="mrule26" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
-            <Name>-t</Name>
-            <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule46">
                 <MorphologicalInput>
                   <PhoneticSequence id="msubrule46_stem">
@@ -2111,17 +2111,17 @@
                 <MorphologicalOutput>
                   <CopyFromInput index="msubrule46_stem" />
                   <InsertSegments>
-                    <PhoneticShape>+t</PhoneticShape>
+                    <PhoneticShape>+er</PhoneticShape>
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">5092</Property>
+                  <Property name="ID">3513</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
-            <Gloss>PstPrf</Gloss>
+            <Gloss>INF</Gloss>
             <Properties>
-              <Property name="ID">10360</Property>
+              <Property name="ID">975</Property>
             </Properties>
           </MorphologicalRule>
         </MorphologicalRuleDefinitions>

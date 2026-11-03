@@ -2239,12 +2239,12 @@
    "contexts": [
     [
      "65620dd2-cbeb-4844-9095-e8b9543bbe44",
-     "<edge>",
+     "w:le",
      "w:joue"
     ],
     [
      "65620dd2-cbeb-4844-9095-e8b9543bbe44",
-     "w:le",
+     "<edge>",
      "w:joue"
     ],
     [
@@ -2461,11 +2461,6 @@
      "p:."
     ],
     [
-     "362e47a4-aad8-4d5e-ba98-a924157b5187",
-     "w:je",
-     "w:avec"
-    ],
-    [
      "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
      "w:garçon",
      "w:avec"
@@ -2473,22 +2468,27 @@
     [
      "362e47a4-aad8-4d5e-ba98-a924157b5187",
      "w:je",
+     "w:avec"
+    ],
+    [
+     "362e47a4-aad8-4d5e-ba98-a924157b5187",
+     "w:je",
+     "p:."
+    ],
+    [
+     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "w:garçon",
+     "p:."
+    ],
+    [
+     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "w:garçon",
      "p:."
     ],
     [
      "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
      "w:garçon",
      "w:avec"
-    ],
-    [
-     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
-     "w:garçon",
-     "p:."
-    ],
-    [
-     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
-     "w:garçon",
-     "p:."
     ]
    ],
    "guid": "6cafd1a9-cf9a-4163-bc19-f5afa1914619"
@@ -4038,6 +4038,11 @@
     ],
     [
      "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "w:mange",
+     "w:petit"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
      "p:8",
      "w:couple"
     ],
@@ -4050,11 +4055,6 @@
      "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
      "w:mangent",
      "w:poisson"
-    ],
-    [
-     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
-     "w:mange",
-     "w:petit"
     ]
    ],
    "guid": "031e15cd-c608-4427-8047-1aadd15d2219"
