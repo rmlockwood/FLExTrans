@@ -97,14 +97,15 @@ must be `localhost` or `127.0.0.1`. These checks stop other web pages open in th
 
 ## Deploying to Railway
 
-`deploy\Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3
+`Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3
 and Debian's `apertium` and `lttoolbox` packages. The bundle it serves is `deploy\bundle\`, a copy of a work project's `Output\ftt_bundle\`. It is committed for the FTT-Scratch test pair only,
 since a bundle holds the project's lexicon and the repository is public.
 
 In Railway, create a service from this repository and branch, then in its settings:
-- **Root Directory:** `/Dev/FTtranslator`
-- **Config file path:** `/Dev/FTtranslator/railway.toml` (Railway doesn't look under the root directory for it). It selects the Dockerfile, rebuilds only when `Dev/FTtranslator` changes,
-  and uses `/api/status` as the health check.
+- **Root Directory:** `/Dev/FTtranslator`. Railway then finds `Dockerfile` there by its name; without this setting it falls back to its Railpack builder, which fails ("could not determine
+  how to build the app").
+- **Config file path (optional):** `/Dev/FTtranslator/railway.toml` (Railway doesn't look under the root directory for it). It rebuilds only when `Dev/FTtranslator` changes, and uses
+  `/api/status` as the health check.
 - **Networking:** generate a public domain. The server listens on Railway's `$PORT`.
 
 To update the translations after changing the projects, run `export-bundle` again, copy `Output\ftt_bundle\` over `deploy\bundle\`, and push. Anyone with the address can translate, so

@@ -64,7 +64,7 @@
 #   SERVE-OFFLINE
 #
 #   serve-offline is serve without FieldWorks, FLExTrans or a work project: it runs the same chain as offline-stream --synthesize behind the React front end (offlineserver.py), from a bundle
-#   folder alone. It is what the Docker image in deploy\Dockerfile runs on Railway, listening on 0.0.0.0 and Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving.
+#   folder alone. It is what the Docker image in Dockerfile runs on Railway, listening on 0.0.0.0 and Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving.
 #
 #   ENCODINGS
 #

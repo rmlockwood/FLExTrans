@@ -1,4 +1,4 @@
-# Keep the Docker build context small: only what deploy/Dockerfile copies
+# Keep the Docker build context small: only what Dockerfile copies
 **/bin/
 **/obj/
 **/__pycache__/

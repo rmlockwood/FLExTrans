@@ -1,9 +1,9 @@
-# Railway build and deploy settings for the FieldWorks-free FTtranslator (see deploy/Dockerfile).
+# Railway build and deploy settings for the FieldWorks-free FTtranslator (see Dockerfile).
 # In the Railway service settings, set Root Directory to /Dev/FTtranslator and the config file path to /Dev/FTtranslator/railway.toml (Railway doesn't look for this file under the root directory).
 
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "deploy/Dockerfile"
+dockerfilePath = "Dockerfile"
 
 # Only rebuild when FTtranslator changes, not on every commit to the rest of FLExTrans
 watchPatterns = ["/Dev/FTtranslator/**"]

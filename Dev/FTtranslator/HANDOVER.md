@@ -50,7 +50,7 @@ The phone app is the long-term goal. A CLI comes first, and a web app may come l
     the master, parses and surface files and the synthesized text were identical to the desktop's on two FTT-Scratch texts; `tests/test_synthesis.py` covers complex forms, clitics and
     variants, which FTT-Scratch lacks. Known quirk kept from FLExTrans: `@` (unknown) words still go to HCSynthByGloss.
   - `serve-offline` (`offlineserver.py`): the React page translating from a bundle alone. Run locally on Windows on FTT-Scratch's text 1, its translation was identical to the desktop's.
-    Packaged for Railway by `deploy/Dockerfile` and `railway.toml`; the FTT-Scratch bundle is committed in `deploy/bundle` (Ron's choice for the test pair). Not yet built: no Docker here.
+    Packaged for Railway by `Dockerfile` and `railway.toml`; the FTT-Scratch bundle is committed in `deploy/bundle` (Ron's choice for the test pair). The first Railway build used Railpack because the Dockerfile was in `deploy/`; it was moved to the service root so Railway finds it by name.
     Text Out rules aren't in the bundle yet.
   - Not exercised by any project: discontiguous complex forms (only fa-bcc and fa-taj are set up for them, and they use TreeTran).
   - Not supported: TreeTran projects (refused), which rules out fa-bcc and fa-taj.

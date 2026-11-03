@@ -1,9 +1,9 @@
 # FTtranslator without FieldWorks, for Linux hosts such as Railway.
 #
 # Build from Dev\FTtranslator (the build context must hold fttranslator/, hcparse/, hcsynth/, web/ and deploy/bundle/):
-#   docker build -f deploy/Dockerfile -t fttranslator .
-# Railway builds it the same way from git, using railway.toml. deploy/bundle is a copy of a work project's Output\ftt_bundle, made on the desktop with export-bundle. It is committed for the
-# FTT-Scratch test pair only: it holds the project's lexicon, so a real project's bundle needs another way in (a volume, or a download at start-up).
+#   docker build -t fttranslator .
+# Railway finds this file by its name when the service's Root Directory is /Dev/FTtranslator, and builds it the same way from git. deploy/bundle is a copy of a work project's
+# Output\ftt_bundle, made on the desktop with export-bundle. It is committed for the FTT-Scratch test pair only: it holds the project's lexicon, so a real project's bundle needs another way in.
 #
 # Three stages: the .NET 8 HermitCrab parser and synthesizer are built with the .NET SDK, the React page with Node, and the final image has only the .NET runtime, Python, the Apertium tools
 # and the built pieces. The server listens on $PORT (Railway sets it).
