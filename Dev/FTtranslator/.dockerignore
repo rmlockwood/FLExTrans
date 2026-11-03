@@ -1,0 +1,9 @@
+# Keep the Docker build context small: only what deploy/Dockerfile copies
+**/bin/
+**/obj/
+**/__pycache__/
+web/node_modules/
+web/dist/
+tests/
+parse_priority/
+*.log

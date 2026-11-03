@@ -41,6 +41,11 @@ python -m fttranslator serve     WORKDIR [--port N] [--no-browser] [-v]
 python -m fttranslator steps     WORKDIR     # the pipeline that would run
 python -m fttranslator check     WORKDIR     # projects, tools, active parser
 python -m fttranslator runs      WORKDIR     # earlier runs and their failed words
+python -m fttranslator export-bundle WORKDIR [--out DIR] [-v]
+python -m fttranslator golden    WORKDIR [--text T]... [--out DIR] [-v]
+python -m fttranslator check-golden WORKDIR [--bundle DIR] [--golden DIR] [--show N]
+python -m fttranslator offline-stream WORKDIR [TEXT] [--file F] [--bundle DIR] --hcparse CMD [--transfer] [--tools DIR] [--synthesize --hcsynth CMD] [--synth-dir DIR]
+python -m fttranslator serve-offline --bundle DIR --hcparse CMD --hcsynth CMD [--tools DIR] [--host H] [--port N] [-v]
 ```
 
 - If neither TEXT nor `--file` is given, the text is read from stdin. Each line becomes a paragraph.
@@ -50,6 +55,18 @@ python -m fttranslator runs      WORKDIR     # earlier runs and their failed wor
   shows the translation, the failed words, and, folded away, the analyses chosen, the messages and the step times. A **Saved runs** tab lists the run records. The projects stay open until you
   press Ctrl+C in the console. The page has to be built once first; see [The web front end](#the-web-front-end).
 - `--insert` also runs Insert Target Text, which puts the translation into the target project. Otherwise that collection step is skipped.
+- `export-bundle` writes the offline translation bundle, a snapshot of the work project for a translator that runs without FieldWorks (on a Linux server now, eventually a phone app): the
+  source lexicon data, the source HermitCrab parser, the tokenizer and guesser data, the bilingual lexicon and transfer rules, and the target synthesis data. It goes to
+  `<work project>\Output\ftt_bundle\` or to `--out`. It reads the source and target projects; only HermitCrab synthesis is supported.
+- `offline-stream` translates a text from the bundle alone, with no FieldWorks or FLExTrans, and prints the Apertium stream; `--transfer` prints the target stream and `--synthesize` the
+  synthesized text. `--hcparse` and `--hcsynth` are the commands that run the .NET 8 builds in `hcparse\` and `hcsynth\` (e.g. `"dotnet ...\HCParse.dll"`). `--tools` is the folder with the
+  Apertium tools (`FlexTools\Tools` on Windows; on Linux they are found on PATH).
+- `serve-offline` is `serve` from a bundle alone: the same page, translating with the `offline-stream --synthesize` chain. It writes to no project. See [Deploying to Railway](#deploying-to-railway).
+- `golden` captures test data for a translator that reads the bundle. For each text (or each `--text` title) it saves the text's analyses as `NNN.text.json` and what Extract Source Text
+  really produced from them as `NNN.expected.txt`, with an `index.json` listing the titles and messages. It writes to `<work project>\Output\ftt_golden\` or to `--out`, and also only reads the
+  source project. TreeTran projects are refused by both commands.
+- `check-golden` runs FTtranslator's own Extract Source Text, which works from the bundle and needs no FieldWorks, on every golden pair. It reports how many texts give identical output
+  and messages, and shows where the first few differences are. It exits with 1 if any output differs.
 - `--modules` points at a FLExTrans modules folder. The default is the installed `…\FlexTools\Modules\FLExTrans` next to the work project. `--modules dev` uses this repo's own `Dev\Modules`. Any other path to a modules folder also works.
 
 ## The web front end
@@ -77,6 +94,21 @@ The server's API (`fttranslator/server.py`):
 
 The server listens on 127.0.0.1 only. It answers one request at a time, on the thread that opened the projects. A POST must send `Content-Type: application/json`, and the `Host` header
 must be `localhost` or `127.0.0.1`. These checks stop other web pages open in the browser from starting a translation, which writes to the FLEx projects.
+
+## Deploying to Railway
+
+`deploy\Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3
+and Debian's `apertium` and `lttoolbox` packages. The bundle it serves is `deploy\bundle\`, a copy of a work project's `Output\ftt_bundle\`. It is committed for the FTT-Scratch test pair only,
+since a bundle holds the project's lexicon and the repository is public.
+
+In Railway, create a service from this repository and branch, then in its settings:
+- **Root Directory:** `/Dev/FTtranslator`
+- **Config file path:** `/Dev/FTtranslator/railway.toml` (Railway doesn't look under the root directory for it). It selects the Dockerfile, rebuilds only when `Dev/FTtranslator` changes,
+  and uses `/api/status` as the health check.
+- **Networking:** generate a public domain. The server listens on Railway's `$PORT`.
+
+To update the translations after changing the projects, run `export-bundle` again, copy `Output\ftt_bundle\` over `deploy\bundle\`, and push. Anyone with the address can translate, so
+deploy only a bundle that may be public.
 
 ## Customizing
 
@@ -116,6 +148,9 @@ Steps pass data to each other through FLExTrans' usual files (`Build\source_text
 - `fttranslator/translator.py`: the `Translator` API, which the CLI uses and which a service or web app can use too. It keeps both projects open from the first `translate()` until `close()` (or the end of a `with` block).
 - `fttranslator/sharedtarget.py`: hands every FLExTrans module that opens the target project the one copy that is already open.
 - `fttranslator/server.py`: the `serve` command's web server and JSON API, around one `Translator`.
+- `fttranslator/bundle.py`: the `export-bundle` command's exporter. It writes the source lexicon data that Extract Source Text needs, worked out with FLExTrans' own `Utils` functions.
+- `fttranslator/golden.py`: the `golden` command's capture of test pairs: each text's analyses next to Extract Source Text's real output.
+- `fttranslator/bundleextract.py`: Extract Source Text without FieldWorks or FLExTrans, from a bundle and a text's analyses. A line-for-line port and the reference for a C# version. `check-golden` runs it.
 - `web/`: the React front end (Vite + TypeScript). `src/App.tsx` is the page, `src/ResultCard.tsx` shows one translation, and `src/api.ts` calls the server.
 - `parse_priority/`: the parser and guesser tools that the ingest steps are built on.
-- `tests/`: `python -m unittest discover -s tests`. These tests don't need FieldWorks.
+- `tests/`: `python -m unittest discover -s tests`. These tests don't need FieldWorks. `test_bundleextract.py` covers `bundleextract.py` on a small made-up lexicon.

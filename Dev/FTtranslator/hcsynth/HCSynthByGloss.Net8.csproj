@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    HCSynthByGloss for .NET 8, so FLExTrans' HermitCrab synthesis runs on Linux. The source in upstream/ is FieldWorks' Src/Utilities/HCSynthByGloss at commit
+    bd0608da7f46a7ba084d93fabca61a99dae5f0da, unmodified; FieldWorksShims.cs stands in for the FieldWorks pieces it uses. SIL.Machine is pinned to 3.9.5, the version FieldWorks 9.3.12
+    installs, so the HermitCrab engine is the same one the desktop runs. Build: dotnet publish -c Release -o out (see README.md).
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>HCSynthByGloss</AssemblyName>
+    <RootNamespace>SIL.HCSynthByGloss</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
+    <!-- Upstream warnings (unused variables, the obsolete Assembly.CodeBase in the trace-only code) -->
+    <NoWarn>$(NoWarn);CS0168;CS0169;CS0219;CS0414;CS0649;SYSLIB0012</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="upstream/**/*.cs" />
+    <Compile Include="FieldWorksShims.cs" />
+    <!-- The Designer class looks the strings up as HCSynthByGlossLib.HCSynthByGlossStrings -->
+    <EmbeddedResource Include="upstream/HCSynthByGlossLib/HCSynthByGlossStrings.resx" LogicalName="HCSynthByGlossLib.HCSynthByGlossStrings.resources" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SIL.Machine" Version="3.9.5" />
+    <PackageReference Include="SIL.Machine.Morphology.HermitCrab" Version="3.9.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+FEM|suffix
+FEM_a|suffix
+INF|suffix
+MASC|suffix
+MASC_a|suffix
+PL|suffix
+PROG|suffix
+PRS_1PL|suffix
+PRS_1SG|suffix
+PRS_3PL|suffix
+PRS_3SG|suffix
+PRS_3SG_COP|suffix
+SG|suffix

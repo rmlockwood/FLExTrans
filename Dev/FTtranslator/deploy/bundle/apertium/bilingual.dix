@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">
+<dictionary><alphabet /><sdefs><sdef n="1" c="first person" /><sdef n="2" c="second person" /><sdef n="3" c="third person" /><sdef n="acc" c="accusative case" /><sdef n="adj" c="Adjective" /><sdef n="adv" c="Adverb" /><sdef n="AR" c="AR Verbs" /><sdef n="aux" c="Auxiliary" /><sdef n="BE-AR" c="BE-AR" /><sdef n="BE-ER" c="BE-ER" /><sdef n="conj" c="Conjunction" /><sdef n="coordconj" c="Coordinating conjunction" /><sdef n="cop" c="Copulative verb" /><sdef n="dat" c="dative case" /><sdef n="def" c="Definite article" /><sdef n="dem" c="Demonstrative Adjective" /><sdef n="dempro" c="Demonstrative Pronoun / Demonstrative pronoun" /><sdef n="det" c="Determiner" /><sdef n="ER" c="ER Verbs" /><sdef n="ERR" c="Error in inflection class/feature" /><sdef n="existmrkr" c="Existential marker" /><sdef n="f" c="feminine gender" /><sdef n="fut" c="future tense" /><sdef n="indf" c="Indefinite article" /><sdef n="interrog" c="Interrogative pro-form" /><sdef n="IR" c="IR Verbs" /><sdef n="IRREG" c="Irregular" /><sdef n="m" c="masculine gender" /><sdef n="n" c="Noun" /><sdef n="nom" c="nominative case" /><sdef n="nprop" c="Proper  Noun" /><sdef n="num" c="Numeral" /><sdef n="pfv" /><sdef n="pl" c="plural number" /><sdef n="poss" c="Possessive pronoun" /><sdef n="prep" c="Preposition" /><sdef n="prepart" c="Preposition plus Article" /><sdef n="pret" c="preterit" /><sdef n="pro" c="Pronoun" /><sdef n="pro-form" c="Pro-form" /><sdef n="prs" c="present tense" /><sdef n="prt" c="Particle" /><sdef n="pst" c="past tense" /><sdef n="ptcp" /><sdef n="quant" c="Quantifier" /><sdef n="RE" c="RE Verbs" /><sdef n="refl" c="Reflexive pronoun" /><sdef n="relpro" c="Relative pronoun" /><sdef n="sent" c="Sentence marker" /><sdef n="sg" c="singular number" /><sdef n="subordconj" c="Subordinating conjunction" /><sdef n="UNK" c="Unknown" /><sdef n="v" c="Verb" /><sdef n="X_PL" c="XPlural" /></sdefs><section id="main" type="standard"><e w="1"><i>entrer1.1<s n="v" /><s n="ER" /></i></e>
+    <e w="1"><i>quoi1.1<s n="pro-form" /></i></e>
+    <e w="1"><i>dans1.1<s n="prep" /></i></e>
+    <e w="1"><i>ils1.1<s n="pro" /><s n="m" /><s n="pl" /><s n="3" /></i></e>
+    <e w="1"><i>en1.1<s n="prep" /></i></e>
+    <e w="1"><i>ces1.1<s n="dem" /><s n="pl" /></i></e>
+    <e w="1"><i>même1.1<s n="adj" /></i></e>
+    <e w="1"><i>vous1.1<s n="pro" /><s n="pl" /><s n="2" /></i></e>
+    <e w="1"><i>homme1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><p><l>manger1.1<s n="v" /><s n="ER" /></l><r>comer1.1<s n="v" /><s n="ER" /></r></p></e>
+    <e w="1"><i>monde1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><p><l>voiture1.1<s n="n" /><s n="f" /></l><r>coche1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>bateau1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><i>au1.1<s n="prepart" /><s n="sg" /></i></e>
+    <e w="1"><i>que1.1<s n="subordconj" /></i></e>
+    <e w="1"><i>oiseau1.1<s n="n" /><s n="X_PL" /></i></e>
+    <e w="1"><i>train1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><i>colline1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><i>nous1.1<s n="pro" /><s n="pl" /><s n="1" /></i></e>
+    <e w="1"><i>[SEG]*1.1<s n="n" /><s n="X_PL" /></i></e>
+    <e w="1"><i>saveur1.1<s n="n" /></i></e>
+    <e w="1"><p><l>jouer1.1<s n="v" /><s n="ER" /></l><r>jugar1.1<s n="v" /><s n="AR" /></r></p></e>
+    <e w="1"><i>n’1.1<s n="prt" /></i></e>
+    <e w="1"><i>deux1.1<s n="num" /></i></e>
+    <e w="1"><p><l>à1.1<s n="prep" /></l><r>a1.1<s n="prep" /></r></p></e>
+    <e w="1"><i>pur1.1<s n="adj" /></i></e>
+    <e w="1"><i>perdre1.1<s n="v" /><s n="RE" /></i></e>
+    <e w="1"><p><l>garçon1.1<s n="n" /><s n="m" /></l><r>niño1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>elle1.1<s n="pro" /><s n="f" /><s n="sg" /></i></e>
+    <e w="1"><i>elle1.2<s n="pro" /><s n="f" /><s n="sg" /></i></e>
+    <e w="1"><p><l>qui1.1<s n="relpro" /></l><r>que1.1<s n="relpro" /></r></p></e>
+    <e w="1"><i>Dieu1.1<s n="nprop" /></i></e>
+    <e w="1"><i>devant1.1<s n="prep" /></i></e>
+    <e w="1"><p><l>ce1.1<s n="dem" /><s n="m" /><s n="sg" /></l><r>eso1.1<s n="dem" /></r></p></e>
+    <e w="1"><i>trouver1.1<s n="v" /><s n="ER" /></i></e>
+    <e w="1"><i>sel1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><i>sommet1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><i>aux1.1<s n="prepart" /><s n="pl" /></i></e>
+    <e w="1"><p><l>pomme1.1<s n="n" /><s n="f" /></l><r>manzana1.1<s n="n" /><s n="f" /></r></p></e>
+    <e w="1"><i>sous1.1<s n="prep" /></i></e>
+    <e w="1"><i>bien1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><p><l>poisson1.1<s n="n" /></l><r>pescado1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>celles1.1<s n="dempro" /><s n="f" /><s n="pl" /></i></e>
+    <e w="1"><i>œuf1.1<s n="n" /></i></e>
+    <e w="1"><p><l>la1.1<s n="def" /><s n="f" /><s n="sg" /></l><r>la1.1<s n="def" /></r></p></e>
+    <e w="1"><i>Père1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><p><l>avec1.1<s n="prep" /></l><r>con1.1<s n="prep" /></r></p></e>
+    <e w="1"><p><l>fille1.1<s n="n" /><s n="f" /></l><r>niña1.1<s n="n" /><s n="f" /></r></p></e>
+    <e w="1"><p><l>ras1.1<s n="n" /></l><r>nivel1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>chose1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><i>maison1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><p><l>pas1.1<s n="prt" /></l><r /></p></e>
+    <e w="1"><i>parler1.1<s n="v" /><s n="ER" /></i></e>
+    <e w="1"><i>vélo1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><i>meus1.1<s n="v" /></i></e>
+    <e w="1"><i>lumière1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><i>ainsi<b />que1.1<s n="coordconj" /></i></e>
+    <e w="1"><p><l>le1.1<s n="def" /><s n="m" /><s n="sg" /></l><r>el1.1<s n="def" /></r></p></e>
+    <e w="1"><p><l>le1.2<s n="pro" /><s n="acc" /><s n="m" /><s n="sg" /><s n="3" /></l><r>lo1.1<s n="pro" /><s n="acc" /><s n="m" /><s n="sg" /></r></p></e>
+    <e w="1"><i>vis1.1<s n="v" /></i></e>
+    <e w="1"><i>céleste1.1<s n="adj" /></i></e>
+    <e w="1"><i>pour<b />que1.1<s n="subordconj" /></i></e>
+    <e w="1"><i>bon1.1<s n="adj" /></i></e>
+    <e w="1"><i>vivre1.1<s n="v" /><s n="IRREG" /></i></e>
+    <e w="1"><i>la2.1<s n="pro" /><s n="acc" /><s n="f" /><s n="sg" /></i></e>
+    <e w="1"><i>battre1.1<s n="v" /><s n="RE" /></i></e>
+    <e w="1"><i>sa1.1<s n="poss" /><s n="sg" /><s n="3" /></i></e>
+    <e w="1"><p><l>les1.1<s n="def" /><s n="m" /><s n="pl" /></l><r>los1.1<s n="def" /></r></p></e>
+    <e w="1"><p><l>les1.2<s n="def" /><s n="f" /><s n="pl" /></l><r>las1.1<s n="def" /></r></p></e>
+    <e w="1"><p><l>un1.1<s n="indf" /><s n="sg" /></l><r>un1.1<s n="indf" /></r></p></e>
+    <e w="1"><p><l>long1.1<s n="adj" /></l><r>largo1.1<s n="adj" /></r></p></e>
+    <e w="1"><i>il1.1<s n="pro" /><s n="m" /><s n="sg" /><s n="3" /></i></e>
+    <e w="1"><i>ainsi1.1<s n="coordconj" /></i></e>
+    <e w="1"><i>pied1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><p><l>se1.1<s n="refl" /></l><r>se1.1<s n="refl" /></r></p></e>
+    <e w="1"><i>être1.1<s n="cop" /></i></e>
+    <e w="1"><i>par1.1<s n="prep" /></i></e>
+    <e w="1"><p><l>ceux1.1<s n="dempro" /><s n="m" /><s n="pl" /></l><r>esos1.2<s n="dempro" /></r></p></e>
+    <e w="1"><p><l>mouvoir1.1<s n="v" /><s n="IRREG" /></l><r>mover1.1<s n="v" /><s n="ER" /></r></p></e>
+    <e w="1"><i>je1.1<s n="pro" /><s n="sg" /><s n="1" /></i></e>
+    <e w="1"><p><l>femelle1.1<s n="n" /></l><r>hembra1.1<s n="n" /><s n="f" /></r></p></e>
+    <e w="1"><i>du1.1<s n="prepart" /><s n="m" /><s n="sg" /></i></e>
+    <e w="1"><i>lampe1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><i>celle1.1<s n="dempro" /></i></e>
+    <e w="1"><i>est1.1<s n="cop" /><s n="prs" /><s n="sg" /><s n="3" /></i></e>
+    <e w="1"><i>on1.1<s n="pro" /></i></e>
+    <e w="1"><p><l>bonbon1.1<s n="n" /><s n="m" /></l><r>caramelo1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>cette1.1<s n="dem" /><s n="f" /><s n="sg" /></i></e>
+    <e w="1"><i>ici1.1<s n="adv" /></i></e>
+    <e w="1"><p><l>des2.1<s n="prepart" /><s n="pl" /></l><r>de<b />los1.1<s n="prepart" /></r></p></e>
+    <e w="1"><p><l>terre1.1<s n="n" /><s n="f" /></l><r>tierra1.1<s n="n" /><s n="f" /></r></p></e>
+    <e w="1"><p><l>couple1.1<s n="n" /><s n="m" /></l><r>par1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>ville1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><i>sur1.1<s n="prep" /></i></e>
+    <e w="1"><p><l>sont1.1<s n="cop" /><s n="prs" /><s n="pl" /><s n="3" /></l><r>son1.1<s n="cop" /></r></p></e>
+    <e w="1"><i>si1.1<s n="subordconj" /></i></e>
+    <e w="1"><p><l>animal1.1<s n="n" /><s n="X_PL" /><s n="m" /></l><r>animal1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><p><l>tout1.1<s n="quant" /></l><r>tod1.1<s n="quant" /></r></p></e>
+    <e w="1"><i>rouge1.1<s n="adj" /></i></e>
+    <e w="1"><p><l>de1.1<s n="prep" /></l><r>de1.1<s n="prep" /></r></p></e>
+    <e w="1"><i>route1.1<s n="n" /><s n="f" /></i></e>
+    <e w="1"><p><l>et1.1<s n="coordconj" /></l><r>y1.1<s n="coordconj" /></r></p></e>
+    <e w="1"><i>celui1.1<s n="dempro" /><s n="m" /><s n="sg" /></i></e>
+    <e w="1"><i>avoir1.1<s n="v" /></i></e>
+    <e w="1"><i>avoir1.2<s n="aux" /><s n="IRREG" /></i></e>
+    <e w="1"><i>Noé1.1<s n="nprop" /></i></e>
+    <e w="1"><i>gros1.1<s n="adj" /></i></e>
+    <e w="1"><p><l>mâle1.1<s n="n" /></l><r>macho1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><i>pour1.1<s n="prep" /></i></e>
+    <e w="1"><i>pour1.2<s n="coordconj" /></i></e>
+    <e w="1"><p><l>petit1.1<s n="adj" /></l><r>pequeño1.1<s n="adj" /></r></p></e>
+    <e w="1"><p><l>ne1.1<s n="prt" /></l><r>no1.1<s n="prt" /></r></p></e>
+    <!-- SECTION: Punctuation --><e w="1"><re>[.\?;:!"']+</re><i><s n="sent" /></i></e></section><section id="append" type="standard">
+		<e><p><l>SourceWord1.1<s n="v" /><s n="pfv" /></l><r>TargetWord1.1<s n="v" /><s n="ptcp" /></r></p></e>
+	</section>
+</dictionary>

@@ -1,0 +1,343 @@
+#
+#   fttranslator/offlineserver
+#
+#   Ron Lockwood
+#   SIL International
+#   11/3/26
+#
+#   Version 3.17 - 11/3/26 - Ron Lockwood
+#    Initial version. A web server for the React front end that translates from a bundle alone, with no FieldWorks, FLExTrans or Windows: for Linux hosts such as Railway.
+#
+#   OVERVIEW (AI generated, then edited)
+#
+#   The serve-offline command's web server. It answers the same JSON API as server.py, so the same React front end (web\dist) works unchanged, but each translation runs the FieldWorks-free chain
+#   from an exported bundle (see bundle.py): tokenizer.py, hcparse with the parse filer and guesser (analysisguess.py), Extract Source Text (bundleextract.py), the Apertium tools (transfer.py),
+#   and Convert Text to Synthesizer Format with HermitCrab synthesis (synthesis.py). Nothing is written to any project, so it can listen on every interface of a server.
+#
+#   WHAT IS SET UP ONCE
+#
+#   OfflineTranslator loads the bundle when the server starts: the lexicon, the tokenizer data, the guesser data, the bilingual lexicon's unlinked senses, the compiled Apertium files and the
+#   synthesis data. hcparse is started once and kept running, since starting .NET and loading the parser takes a few seconds and each word after that takes milliseconds; if it dies, the request
+#   fails and the next one starts a new one. HCSynthByGloss is started once per text, as FLExTrans does.
+#
+#   EACH TRANSLATION STARTS FROM THE BUNDLE
+#
+#   Each request gets a fresh Guesser made from the bundle's guesser data, so one text's parses and guesses never affect the next text. That matches the desktop's default (approvals are released
+#   after each run, see ingest.py); what the desktop does keep - parser analyses filed in earlier runs - the parser re-files here anyway. The insert and keepApprovals options have no meaning
+#   without the projects, so they are ignored with a warning in the run record. So the translation of a text only changes when a new bundle is exported and deployed.
+#
+#   THE RUN RECORD
+#
+#   The answer is the desktop's run record (pipeline.RunResult), filled in from what the offline steps know: the approved words with the analysis as morph:gloss pairs and the category, the
+#   words with no parse or no analysis, the untranslated and unsynthesized words found as steps\finish.py finds them, the messages, and each step's time. The approval basis is simpler than the
+#   desktop's (which explains the guesser's ranking): only analysis or best guess. The run records are kept in memory only (the last RUNS_KEPT), so they are lost when the server restarts.
+#
+#   NOT DONE HERE
+#
+#   Text Out rules (TextOutRulesFile, applied by Collect Output on the desktop) aren't in the bundle yet, so a project that has some gets the synthesized text without them.
+#
+#   SAFETY
+#
+#   There is no Host check and no localhost-only binding, unlike server.py, since nothing here can change a project. POST still has to send JSON. Anyone who can reach the address can translate,
+#   and the bundle's lexicon can be worked out from the translations, so only deploy a bundle that may be public, or put the server behind access control.
+#
+#   CODE STRUCTURE
+#
+#   OfflineTranslator holds the bundle and the running tools; translate() runs the chain and builds the RunResult with _approvedWords(), _describe() and _untranslated(). OfflineServer is the
+#   HTTPServer carrying it, and OfflineRequestHandler reuses server.RequestHandler's static files and JSON answers, replacing the request dispatch and the three _api*() methods. serve() runs
+#   the loop for cli.cmdServeOffline(). _firstWords() is a copy of steps\ingest.py's firstWords(), which can't be imported here because ingest.py needs FieldWorks.
+#
+
+import json
+import shlex
+import sys
+import time
+import traceback
+import unicodedata
+from datetime import datetime
+from http.server import HTTPServer
+from pathlib import Path
+from typing import cast
+from urllib.parse import parse_qs, urlparse
+
+from . import analysisguess, bundleextract
+from .pipeline import RunResult
+from .server import RequestHandler
+from .steps.finish import IDENTITY_ENTRY, LEXICAL_UNIT, STAMP_FAILURE, _lemma, _unique
+from .synthesis import Synthesizer
+from .tokenizer import Tokenizer
+from .transfer import Transfer
+from .transferexport import APERTIUM_DIR, BILINGUAL_FILE
+
+# The run records kept for /api/runs
+RUNS_KEPT = 200
+
+# What a new text's title starts with, as the default profile's title prefix does on the desktop
+TITLE_PREFIX = "FTT"
+
+class OfflineTranslator:
+    '''A bundle loaded for translating, with hcparse running and the Apertium files compiled. See WHAT IS SET UP ONCE above.'''
+
+    def __init__(self, bundleDir, hcparseCommand, hcsynthCommand, toolsDir=None):
+
+        self.bundleDir = Path(bundleDir)
+        self.manifest = json.loads((self.bundleDir / "manifest.json").read_text(encoding="utf-8"))
+        self.lexicon = bundleextract.Lexicon.load(self.bundleDir)
+        self.tokenizer = Tokenizer.load(self.bundleDir)
+        self.guesserData = json.loads((self.bundleDir / analysisguess.GUESSER_FILE).read_text(encoding="utf-8"))
+
+        # Source senses with no link to a target sense: steps\finish.py's identity entries in the bilingual lexicon
+        bilingualText = (self.bundleDir / APERTIUM_DIR / BILINGUAL_FILE).read_text(encoding="utf-8")
+        self.unlinked = set(IDENTITY_ENTRY.findall(bilingualText))
+
+        self.hcparseCommand = list(hcparseCommand)
+        self.parser = analysisguess.HCParseProcess(self.hcparseCommand, self.bundleDir)
+        self.transfer = Transfer(self.bundleDir, self.manifest["files"]["apertium"]["rules"], toolsDir=toolsDir)
+        self.synthesizer = Synthesizer(self.bundleDir, hcsynthCommand)
+        self.runs = []
+
+    def close(self):
+
+        self.parser.close()
+
+    def translate(self, text, insert=False, keepApprovals=False):
+        '''Translate a text with the whole offline chain and return its RunResult. See EACH TRANSLATION STARTS FROM THE BUNDLE above.'''
+
+        started = time.perf_counter()
+        result = RunResult(source=text)
+        paragraphs = [line.strip() for line in text.splitlines() if line.strip()]
+        result.title = f"{TITLE_PREFIX} {datetime.now().strftime('%Y-%m-%d %H%M%S')} {_firstWords(paragraphs, 3)}"
+        messages = []
+
+        if insert or keepApprovals:
+
+            messages.append(("warning", "Inserting the translation and keeping approvals need the FLEx projects, so the offline translator ignores them."))
+
+        # Each step is timed as pipeline.run() times the desktop's
+        def step(name, func, *args):
+
+            stepStarted = time.perf_counter()
+            value = func(*args)
+            result.steps.append(name)
+            result.timings.append({"step": name, "seconds": round(time.perf_counter() - stepStarted, 3)})
+
+            return value
+
+        guesser = analysisguess.Guesser(self.guesserData, self.lexicon)
+        textDump = step("Import Text", self.tokenizer.tokenizeText, text, result.title)
+
+        try:
+            result.unparsed = step("Parse Words", analysisguess.parseAndFile, textDump, guesser, self.parser)
+
+        except Exception:
+
+            # hcparse has probably died; the next request starts a new one
+            self.parser = analysisguess.HCParseProcess(self.hcparseCommand, self.bundleDir)
+            raise
+
+        planned = step("Approve Guesses", analysisguess.applyGuesses, textDump, guesser)
+        result.approved, result.unanalysed = self._approvedWords(textDump, planned, guesser, result.title)
+        sourceStream, extractMessages = step("Extract Source Text", bundleextract.extractText, textDump, self.lexicon)
+        messages += extractMessages
+        targetStream = step("Run Apertium", self.transfer.transfer, sourceStream)
+        result.untranslated = self._untranslated(sourceStream, targetStream)
+        translation, synthMessages = step("Synthesize Text", self.synthesizer.synthesize, targetStream)
+        messages += synthMessages
+
+        if translation is not None:
+
+            result.translation = translation.strip()
+            result.unsynthesized = _unique(STAMP_FAILURE.findall(translation))
+            result.ok = True
+
+        result.messages = [{"level": level, "message": message, "ref": None} for level, message in messages]
+        result.totalSeconds = round(time.perf_counter() - started, 3)
+        self.runs = (self.runs + [result.toDict()])[-RUNS_KEPT:]
+
+        return result
+
+    def _approvedWords(self, textDump, planned, guesser, title):
+        '''The approved words as {word, location, analysis, basis}, and the words left without an analysis, as the Approve Guesses step records them on the desktop.'''
+
+        # Each word's position: its paragraph, its sentence within the paragraph and its place in the sentence (punctuation counts, as in FLEx's segments), all from 1
+        positions = {}
+        segmentCounts = {}
+        firstSegs = {}
+
+        for occurrence in textDump["occurrences"]:
+
+            firstSegs.setdefault(occurrence["para"], occurrence["seg"])
+            segmentCounts[occurrence["seg"]] = segmentCounts.get(occurrence["seg"], 0) + 1
+            positions[id(occurrence)] = f"{title} ¶{occurrence['para'] + 1} s{occurrence['seg'] - firstSegs[occurrence['para']] + 1} w{segmentCounts[occurrence['seg']]}"
+
+        approved = []
+        approvedIds = set()
+
+        for occurrence, guess in planned:
+
+            choices = len(guesser.wordforms.get(guesser.owner[guess["guid"]], {}).get("analyses", []))
+            approved.append({"word": occurrence["baseline"], "location": positions[id(occurrence)], "analysis": self._describe(guess), "basis": "only analysis" if choices < 2 else "best guess"})
+            approvedIds.add(id(occurrence))
+
+        unanalysed = [occurrence["baseline"] for occurrence in textDump["occurrences"] if "punct" not in occurrence and id(occurrence) not in approvedIds]
+
+        return approved, unanalysed
+
+    def _describe(self, analysis):
+        '''An analysis as 'mang:eat + e:PRS.3SG [v]', as parse_priority's describe() shows one: each morph with its gloss, then the stem's category.'''
+
+        parts = []
+        category = ""
+
+        for morphBundle in analysis["bundles"]:
+
+            msa = self.lexicon.msas.get(morphBundle["msa"] or "", {})
+            sense = self.lexicon.senses.get(morphBundle["sense"] or msa.get("sense") or "", {})
+            parts.append(f"{morphBundle['text']}:{sense.get('gloss') or '?'}")
+
+            if msa.get("stem") and msa.get("pos") and not category:
+
+                category = f" [{msa['pos']}]"
+
+        return (" + ".join(parts) or "(no morphemes)") + category
+
+    def _untranslated(self, sourceStream, targetStream):
+        '''Words marked @ in the transfer results, then source words whose sense has no link to the target lexicon, as steps\\finish.py's collectOutput() lists them.'''
+
+        noEntry = [_lemma(unit) for unit in LEXICAL_UNIT.findall(targetStream) if unit.startswith("@")]
+        noLink = [_lemma(unit) for unit in LEXICAL_UNIT.findall(sourceStream) if _lemma(unit) in self.unlinked]
+
+        return _unique(noEntry + noLink)
+
+class OfflineServer(HTTPServer):
+    '''The HTTPServer, with the OfflineTranslator and the session's state for the request handler to use.'''
+
+    def __init__(self, address, translator, verbose):
+
+        super().__init__(address, OfflineRequestHandler)
+        self.translator = translator
+        self.verbose = verbose
+        self.translationCount = 0
+
+class OfflineRequestHandler(RequestHandler):
+    '''server.py's handler with the offline translator behind the API. The static files and the JSON answers are server.py's.'''
+
+    @property
+    def offlineServer(self) -> OfflineServer:
+        '''The server this handler belongs to. OfflineServer is the only server that creates this handler, so the cast is safe.'''
+
+        return cast(OfflineServer, self.server)
+
+    def do_GET(self):
+
+        url = urlparse(self.path)
+
+        if url.path == "/api/status":
+
+            self._apiStatus()
+
+        elif url.path == "/api/runs":
+
+            self._apiRuns(parse_qs(url.query))
+
+        elif url.path.startswith("/api/"):
+
+            self._sendError(404, f"No such API: {url.path}")
+        else:
+            self._static(url.path)
+
+    def do_POST(self):
+
+        # A page on another site can't send JSON without a CORS preflight, which this server never approves
+        if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
+
+            self._sendError(415, "Send JSON (Content-Type: application/json)")
+            return
+
+        if urlparse(self.path).path != "/api/translate":
+
+            self._sendError(404, f"No such API: {self.path}")
+            return
+
+        self._apiTranslate()
+
+    def _apiStatus(self):
+
+        manifest = self.offlineServer.translator.manifest
+        self._sendJson({"workProject": manifest.get("workProject") or "", "sourceProject": manifest.get("sourceProject") or "", "targetProject": manifest.get("targetProject") or "",
+                        "projectsOpen": True, "translationCount": self.offlineServer.translationCount})
+
+    def _apiRuns(self, query):
+
+        try:
+            limit = int(query.get("limit", ["50"])[0])
+
+        except ValueError:
+
+            self._sendError(400, "limit must be a number")
+            return
+
+        records = self.offlineServer.translator.runs[-limit:] if limit > 0 else []
+        self._sendJson({"runs": list(reversed(records))})
+
+    def _apiTranslate(self):
+
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            body = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
+
+        except (ValueError, UnicodeDecodeError):
+
+            self._sendError(400, "The request body is not valid JSON")
+            return
+
+        text = body.get("text", "") if isinstance(body, dict) else ""
+
+        if not isinstance(text, str) or not text.strip():
+
+            self._sendError(400, "There is no text to translate")
+            return
+
+        # A failure is answered as an error rather than stopping the server
+        try:
+            result = self.offlineServer.translator.translate(text, insert=bool(body.get("insert")), keepApprovals=bool(body.get("keepApprovals")))
+
+        except Exception as err:
+
+            traceback.print_exc()
+            self._sendError(500, f"The translation failed: {err}")
+            return
+
+        self.offlineServer.translationCount += 1
+        print(f"{'OK    ' if result.ok else 'FAILED'} {result.title}", file=sys.stderr, flush=True)
+        self._sendJson({"result": result.toDict(), "record": None})
+
+def _firstWords(paragraphs, count):
+    '''The first count words of the text, without the punctuation that ends the last one. A copy of steps\\ingest.py's firstWords(); see CODE STRUCTURE above.'''
+
+    words = " ".join(paragraphs).split()[:count]
+    snippet = " ".join(words)
+
+    while snippet and unicodedata.category(snippet[-1]).startswith("P"):
+
+        snippet = snippet[:-1]
+
+    return snippet
+
+def serve(bundleDir, hcparse, hcsynth, host, port, toolsDir=None, verbose=False):
+    '''Load the bundle and answer requests until the process is stopped (Ctrl+C, or the host's stop signal).'''
+
+    print(f"Loading the bundle in {bundleDir} ...", file=sys.stderr, flush=True)
+    translator = OfflineTranslator(bundleDir, shlex.split(hcparse, posix=False), shlex.split(hcsynth, posix=False), toolsDir=toolsDir)
+    server = OfflineServer((host, port), translator, verbose)
+    print(f"FTtranslator (offline) for {translator.manifest.get('workProject') or bundleDir} is at http://{host}:{server.server_address[1]}/  (Ctrl+C to stop)", file=sys.stderr, flush=True)
+
+    try:
+        server.serve_forever()
+
+    except KeyboardInterrupt:
+
+        pass
+    finally:
+        server.server_close()
+        translator.close()

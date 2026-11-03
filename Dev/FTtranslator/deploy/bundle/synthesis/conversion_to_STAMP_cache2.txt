@@ -1,0 +1,12 @@
+COMPLEX FORMS
+IRREGULARLY INFLECTED VARIANT FORMS
+ser1
+1
+< _variant_ es1 >
+3
+absolute_tense
+prs
+person
+3
+number
+sg

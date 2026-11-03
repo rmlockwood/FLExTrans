@@ -1,0 +1,4292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE HermitCrabInput SYSTEM "HermitCrabInput.dtd">
+<HermitCrabInput>
+  <Language>
+    <Name>French-PP-FTT</Name>
+    <PartsOfSpeech>
+      <PartOfSpeech id="pos3235">
+        <Name>adv</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos7720">
+        <Name>n</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos6193">
+        <Name>v</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos3889">
+        <Name>cop</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos6338">
+        <Name>aux</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos6660">
+        <Name>prep</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos7717">
+        <Name>nprop</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos1676">
+        <Name>existmrkr</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos10471">
+        <Name>num</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos2179">
+        <Name>adj</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos7505">
+        <Name>quant</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos7528">
+        <Name>pro-form</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos7445">
+        <Name>pro</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos4571">
+        <Name>poss</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos10438">
+        <Name>interrog</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos2894">
+        <Name>relpro</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos10784">
+        <Name>dempro</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos4354">
+        <Name>refl</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos4978">
+        <Name>det</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos6674">
+        <Name>def</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos9492">
+        <Name>indf</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos417">
+        <Name>dem</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos4983">
+        <Name>conj</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos5384">
+        <Name>coordconj</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos415">
+        <Name>subordconj</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos4605">
+        <Name>prepart</Name>
+      </PartOfSpeech>
+      <PartOfSpeech id="pos5004">
+        <Name>prt</Name>
+      </PartOfSpeech>
+    </PartsOfSpeech>
+    <HeadFeatures>
+      <SymbolicFeature id="feat2407">
+        <Name>case</Name>
+        <Symbols>
+          <Symbol id="sym3674">nom</Symbol>
+          <Symbol id="sym5216">dat</Symbol>
+          <Symbol id="sym6029">acc</Symbol>
+        </Symbols>
+      </SymbolicFeature>
+      <ComplexFeature id="feat3376">
+        <Name>sbj</Name>
+      </ComplexFeature>
+      <SymbolicFeature id="feat3869">
+        <Name>pers</Name>
+        <Symbols>
+          <Symbol id="sym6199">1</Symbol>
+          <Symbol id="sym7965">3</Symbol>
+          <Symbol id="sym10652">2</Symbol>
+        </Symbols>
+      </SymbolicFeature>
+      <ComplexFeature id="feat4001">
+        <Name>adjagr</Name>
+      </ComplexFeature>
+      <ComplexFeature id="feat4843">
+        <Name>prnagr</Name>
+      </ComplexFeature>
+      <SymbolicFeature id="feat6012">
+        <Name>absten</Name>
+        <Symbols>
+          <Symbol id="sym342">prs</Symbol>
+          <Symbol id="sym3495">fut</Symbol>
+          <Symbol id="sym5735">pst</Symbol>
+          <Symbol id="sym9500">pret</Symbol>
+        </Symbols>
+      </SymbolicFeature>
+      <SymbolicFeature id="feat7558">
+        <Name>gen</Name>
+        <Symbols>
+          <Symbol id="sym2874">f</Symbol>
+          <Symbol id="sym4439">m</Symbol>
+        </Symbols>
+      </SymbolicFeature>
+      <ComplexFeature id="feat7646">
+        <Name>artagr</Name>
+      </ComplexFeature>
+      <SymbolicFeature id="feat8657">
+        <Name>num</Name>
+        <Symbols>
+          <Symbol id="sym4766">sg</Symbol>
+          <Symbol id="sym9886">pl</Symbol>
+        </Symbols>
+      </SymbolicFeature>
+      <ComplexFeature id="feat10171">
+        <Name>nagr</Name>
+      </ComplexFeature>
+    </HeadFeatures>
+    <MorphologicalPhonologicalRuleFeatures>
+      <MorphologicalPhonologicalRuleFeature id="mpr1">XPlural</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr2">ER Verbs</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr3">RE Verbs</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr4">Irregular</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr5">IR Verbs</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr6">Irregularly Inflected Form</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr7">Present 3SG</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr8">Present 2SG</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr9">Present</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr10">Past</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr11">Masculine/Feminine Plural</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr12">Present 1SG</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeature id="mpr13">Plural</MorphologicalPhonologicalRuleFeature>
+      <MorphologicalPhonologicalRuleFeatureGroup features="mpr1 mpr2 mpr3 mpr4 mpr5">
+        <Name>inflClasses</Name>
+      </MorphologicalPhonologicalRuleFeatureGroup>
+      <MorphologicalPhonologicalRuleFeatureGroup matchType="all" features="mpr6 mpr7 mpr8 mpr9 mpr10 mpr11 mpr12 mpr13">
+        <Name>lexEntryInflTypes</Name>
+      </MorphologicalPhonologicalRuleFeatureGroup>
+    </MorphologicalPhonologicalRuleFeatures>
+    <StemNames>
+      <StemName id="stemName1" partsOfSpeech="pos2179 pos7505">
+        <Name>Masculine Plural</Name>
+        <Regions>
+          <Region>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+          </Region>
+        </Regions>
+      </StemName>
+      <StemName id="stemName2" partsOfSpeech="pos7720">
+        <Name>Plural</Name>
+        <Regions>
+          <Region>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+          </Region>
+        </Regions>
+      </StemName>
+      <StemName id="stemName3" partsOfSpeech="pos6193 pos3889 pos6338">
+        <Name>Present Singular</Name>
+        <Regions>
+          <Region>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+            </AssignedHeadFeatures>
+          </Region>
+        </Regions>
+      </StemName>
+      <StemName id="stemName4" partsOfSpeech="pos6193 pos3889 pos6338">
+        <Name>PRS.12SG</Name>
+        <Regions>
+          <Region>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+            </AssignedHeadFeatures>
+          </Region>
+          <Region>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+          </Region>
+        </Regions>
+      </StemName>
+      <StemName id="stemName5" partsOfSpeech="pos6193 pos3889 pos6338">
+        <Name>PRS.3SG</Name>
+        <Regions>
+          <Region>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+          </Region>
+        </Regions>
+      </StemName>
+    </StemNames>
+    <CharacterDefinitionTable id="table1">
+      <Name>Main phoneme set</Name>
+      <SegmentDefinitions>
+        <SegmentDefinition id="char1">
+          <Representations>
+            <Representation>’</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char2">
+          <Representations>
+            <Representation>h</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char3">
+          <Representations>
+            <Representation>â</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char4">
+          <Representations>
+            <Representation>ç</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char5">
+          <Representations>
+            <Representation>q</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char6">
+          <Representations>
+            <Representation>à</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char7">
+          <Representations>
+            <Representation>c</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char8">
+          <Representations>
+            <Representation>œ</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char9">
+          <Representations>
+            <Representation>a</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char10">
+          <Representations>
+            <Representation>b</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char11">
+          <Representations>
+            <Representation>d</Representation>
+            <Representation>D</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char12">
+          <Representations>
+            <Representation>e</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char13">
+          <Representations>
+            <Representation>f</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char14">
+          <Representations>
+            <Representation>g</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char15">
+          <Representations>
+            <Representation>i</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char16">
+          <Representations>
+            <Representation>y</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char17">
+          <Representations>
+            <Representation>k</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char18">
+          <Representations>
+            <Representation>l</Representation>
+            <Representation>L</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char19">
+          <Representations>
+            <Representation>m</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char20">
+          <Representations>
+            <Representation>n</Representation>
+            <Representation>N</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char21">
+          <Representations>
+            <Representation>o</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char22">
+          <Representations>
+            <Representation>p</Representation>
+            <Representation>P</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char23">
+          <Representations>
+            <Representation>r</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char24">
+          <Representations>
+            <Representation>s</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char25">
+          <Representations>
+            <Representation>t</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char26">
+          <Representations>
+            <Representation>u</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char27">
+          <Representations>
+            <Representation>v</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char28">
+          <Representations>
+            <Representation>w</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char29">
+          <Representations>
+            <Representation>x</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char30">
+          <Representations>
+            <Representation>z</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char31">
+          <Representations>
+            <Representation>é</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char32">
+          <Representations>
+            <Representation>è</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char33">
+          <Representations>
+            <Representation>j</Representation>
+          </Representations>
+        </SegmentDefinition>
+        <SegmentDefinition id="char34">
+          <Representations>
+            <Representation>ê</Representation>
+          </Representations>
+        </SegmentDefinition>
+      </SegmentDefinitions>
+      <BoundaryDefinitions>
+        <BoundaryDefinition id="char35">
+          <Representations>
+            <Representation>+</Representation>
+          </Representations>
+        </BoundaryDefinition>
+        <BoundaryDefinition id="char36">
+          <Representations>
+            <Representation>^0</Representation>
+            <Representation>*0</Representation>
+            <Representation>&amp;0</Representation>
+            <Representation>∅</Representation>
+          </Representations>
+        </BoundaryDefinition>
+        <BoundaryDefinition id="char37">
+          <Representations>
+            <Representation>.</Representation>
+          </Representations>
+        </BoundaryDefinition>
+      </BoundaryDefinitions>
+    </CharacterDefinitionTable>
+    <NaturalClasses>
+      <FeatureNaturalClass id="nc1">
+        <Name>Any</Name>
+      </FeatureNaturalClass>
+      <SegmentNaturalClass id="nc2">
+        <Name>C</Name>
+        <Segment segment="char10" />
+        <Segment segment="char11" />
+        <Segment segment="char13" />
+        <Segment segment="char14" />
+        <Segment segment="char16" />
+        <Segment segment="char17" />
+        <Segment segment="char18" />
+        <Segment segment="char19" />
+        <Segment segment="char20" />
+        <Segment segment="char22" />
+        <Segment segment="char23" />
+        <Segment segment="char24" />
+        <Segment segment="char25" />
+        <Segment segment="char27" />
+        <Segment segment="char28" />
+        <Segment segment="char29" />
+        <Segment segment="char30" />
+      </SegmentNaturalClass>
+      <SegmentNaturalClass id="nc3">
+        <Name>AOU</Name>
+      </SegmentNaturalClass>
+      <SegmentNaturalClass id="nc4">
+        <Name>Seg</Name>
+        <Segment segment="char2" />
+        <Segment segment="char7" />
+        <Segment segment="char9" />
+        <Segment segment="char10" />
+        <Segment segment="char11" />
+        <Segment segment="char12" />
+        <Segment segment="char13" />
+        <Segment segment="char14" />
+        <Segment segment="char15" />
+        <Segment segment="char16" />
+        <Segment segment="char17" />
+        <Segment segment="char18" />
+        <Segment segment="char19" />
+        <Segment segment="char20" />
+        <Segment segment="char21" />
+        <Segment segment="char22" />
+        <Segment segment="char23" />
+        <Segment segment="char24" />
+        <Segment segment="char25" />
+        <Segment segment="char26" />
+        <Segment segment="char27" />
+        <Segment segment="char28" />
+        <Segment segment="char29" />
+        <Segment segment="char30" />
+        <Segment segment="char33" />
+      </SegmentNaturalClass>
+      <SegmentNaturalClass id="nc5">
+        <Name>IE</Name>
+      </SegmentNaturalClass>
+      <SegmentNaturalClass id="nc6">
+        <Name>V</Name>
+        <Segment segment="char9" />
+        <Segment segment="char12" />
+        <Segment segment="char15" />
+        <Segment segment="char21" />
+        <Segment segment="char26" />
+      </SegmentNaturalClass>
+    </NaturalClasses>
+    <Strata>
+      <Stratum characterDefinitionTable="table1" morphologicalRuleOrder="unordered">
+        <Name>Morphology</Name>
+        <MorphologicalRuleDefinitions>
+          <MorphologicalRule id="mrule1" requiredPartsOfSpeech="pos7720">
+            <Name>-^02</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule1">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule1_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule1_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4570</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>SG</Gloss>
+            <Properties>
+              <Property name="ID">616</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule2" requiredPartsOfSpeech="pos7720">
+            <Name>-s</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule2">
+                <MorphologicalInput requiredMPRFeatures="mpr1">
+                  <PhoneticSequence id="msubrule2_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule2_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+x</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9585</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule3">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule3_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule3_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+s</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8288</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PL</Gloss>
+            <Properties>
+              <Property name="ID">9118</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule3" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ait</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule4">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule4_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule4_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ait</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9538</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.3SG</Gloss>
+            <Properties>
+              <Property name="ID">9048</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule4" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ais1</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule5">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule5_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule5_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ais</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">11630</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.1SG</Gloss>
+            <Properties>
+              <Property name="ID">8581</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule5" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-iez</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule6">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule6_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule6_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+iez</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">2457</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.2PL</Gloss>
+            <Properties>
+              <Property name="ID">5606</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule6" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-es</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule7">
+                <MorphologicalInput requiredMPRFeatures="mpr3 mpr4" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule7_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule7_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+s</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9030</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule8">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule8_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule8_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+is</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4452</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule9">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule9_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule9_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+es</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">1534</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.2SG</Gloss>
+            <Properties>
+              <Property name="ID">6376</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule7" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-e3</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule10">
+                <MorphologicalInput requiredMPRFeatures="mpr3 mpr4" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule10_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule10_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+s</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8359</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule11">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule11_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule11_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+is</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">7917</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule12">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule12_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule12_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+e</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9865</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.1SG</Gloss>
+            <Properties>
+              <Property name="ID">11352</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule8" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ent</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule13">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule13_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule13_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+issent</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8668</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule14">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule14_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule14_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ent</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">745</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.3PL</Gloss>
+            <Properties>
+              <Property name="ID">724</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule9" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ions</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule15">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule15_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule15_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ions</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">5999</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.1PL</Gloss>
+            <Properties>
+              <Property name="ID">4525</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule10" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ez</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule16">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule16_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule16_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+issez</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">2491</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule17">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule17_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule17_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ez</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">7232</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.2PL</Gloss>
+            <Properties>
+              <Property name="ID">5647</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule11" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-e1</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule18">
+                <MorphologicalInput requiredMPRFeatures="mpr3" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule18_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule18_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">10386</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule19">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule19_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule19_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+it</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">6280</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule20">
+                <MorphologicalInput requiredMPRFeatures="mpr4" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule20_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule20_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+t</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">3381</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule21">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule21_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule21_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+e</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">593</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+            </RequiredHeadFeatures>
+            <Gloss>PRS.3SG</Gloss>
+            <Properties>
+              <Property name="ID">9954</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule12" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ais2</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule22">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule22_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule22_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ais</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">11320</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.2SG</Gloss>
+            <Properties>
+              <Property name="ID">7405</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule13" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-ons</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule23">
+                <MorphologicalInput requiredMPRFeatures="mpr2" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule23_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                    <Segments>
+                      <PhoneticShape>g</PhoneticShape>
+                    </Segments>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule23_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+eons</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4925</Property>
+                  <Property name="Env">/ g _ </Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule24">
+                <MorphologicalInput requiredMPRFeatures="mpr5" excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule24_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule24_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+issons</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">619</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule25">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule25_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule25_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ons</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">610</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PRS.1PL</Gloss>
+            <Properties>
+              <Property name="ID">913</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule14" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-aient</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule26">
+                <MorphologicalInput excludedMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule26_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule26_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+aient</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">10653</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>IMPFV.3PL</Gloss>
+            <Properties>
+              <Property name="ID">2147</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule15">
+            <Name>Null</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule27">
+                <MorphologicalInput requiredMPRFeatures="mpr12">
+                  <PhoneticSequence id="msubrule27_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule27_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="IsNull">True</Property>
+                  <Property name="IsPrefix">False</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <OutputHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+            </OutputHeadFeatures>
+            <Properties>
+              <Property name="InflTypeID">7110</Property>
+              <Property name="SlotID">9316</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule16" requiredPartsOfSpeech="pos9492">
+            <Name>-e2</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule28">
+                <MorphologicalInput excludedMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule28_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                    <Segments>
+                      <PhoneticShape>s</PhoneticShape>
+                    </Segments>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule28_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+se</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">2260</Property>
+                  <Property name="Env">/ s _</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule29">
+                <MorphologicalInput excludedMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule29_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                    <Segments>
+                      <PhoneticShape>e</PhoneticShape>
+                    </Segments>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule29_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9780</Property>
+                  <Property name="Env">/ e _ </Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule30">
+                <MorphologicalInput excludedMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule30_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule30_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+e</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">3189</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>FEM</Gloss>
+            <Properties>
+              <Property name="ID">3426</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule17" requiredPartsOfSpeech="pos9492">
+            <Name>-^01</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule31">
+                <MorphologicalInput excludedMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule31_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule31_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9677</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>MASC</Gloss>
+            <Properties>
+              <Property name="ID">121</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule18">
+            <Name>Null</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule32">
+                <MorphologicalInput requiredMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule32_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule32_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="IsNull">True</Property>
+                  <Property name="IsPrefix">False</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <OutputHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </OutputHeadFeatures>
+            <Properties>
+              <Property name="InflTypeID">6057</Property>
+              <Property name="SlotID">360</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule19" requiredPartsOfSpeech="pos9492">
+            <Name>-^02</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule33">
+                <MorphologicalInput excludedMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule33_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule33_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4570</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>SG</Gloss>
+            <Properties>
+              <Property name="ID">926</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule20">
+            <Name>Null</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule34">
+                <MorphologicalInput requiredMPRFeatures="mpr11">
+                  <PhoneticSequence id="msubrule34_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule34_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="IsNull">True</Property>
+                  <Property name="IsPrefix">False</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <OutputHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </OutputHeadFeatures>
+            <Properties>
+              <Property name="InflTypeID">6057</Property>
+              <Property name="SlotID">8070</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule21" requiredPartsOfSpeech="pos2179 pos7505">
+            <Name>-^01</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule35">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule35_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule35_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9677</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>MASC.a</Gloss>
+            <Properties>
+              <Property name="ID">12184</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule22" requiredPartsOfSpeech="pos2179 pos7505">
+            <Name>-e2</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule36">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule36_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                    <Segments>
+                      <PhoneticShape>s</PhoneticShape>
+                    </Segments>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule36_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+se</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">2260</Property>
+                  <Property name="Env">/ s _</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule37">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule37_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                    <Segments>
+                      <PhoneticShape>e</PhoneticShape>
+                    </Segments>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule37_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9780</Property>
+                  <Property name="Env">/ e _ </Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule38">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule38_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule38_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+e</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">3189</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>FEM.a</Gloss>
+            <Properties>
+              <Property name="ID">1319</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule23" requiredPartsOfSpeech="pos2179 pos7505">
+            <Name>-^02</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule39">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule39_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule39_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+^0</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4570</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>SG</Gloss>
+            <Properties>
+              <Property name="ID">2757</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule24" requiredPartsOfSpeech="pos2179 pos7505">
+            <Name>-s</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule40">
+                <MorphologicalInput requiredMPRFeatures="mpr1">
+                  <PhoneticSequence id="msubrule40_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule40_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+x</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9585</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule41">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule41_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule41_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+s</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8288</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <RequiredHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </RequiredHeadFeatures>
+            <Gloss>PL</Gloss>
+            <Properties>
+              <Property name="ID">3380</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule25" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-er</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule42">
+                <MorphologicalInput requiredMPRFeatures="mpr3">
+                  <PhoneticSequence id="msubrule42_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule42_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+re</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">8158</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule43">
+                <MorphologicalInput requiredMPRFeatures="mpr5">
+                  <PhoneticSequence id="msubrule43_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule43_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+ir</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">6852</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule44">
+                <MorphologicalInput requiredMPRFeatures="mpr4">
+                  <PhoneticSequence id="msubrule44_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule44_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+oir</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">2716</Property>
+                </Properties>
+              </MorphologicalSubrule>
+              <MorphologicalSubrule id="msubrule45">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule45_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule45_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+er</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">3513</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>INF</Gloss>
+            <Properties>
+              <Property name="ID">975</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule26" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>-t</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule46">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule46_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <CopyFromInput index="msubrule46_stem" />
+                  <InsertSegments>
+                    <PhoneticShape>+t</PhoneticShape>
+                  </InsertSegments>
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">5092</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>PstPrf</Gloss>
+            <Properties>
+              <Property name="ID">10360</Property>
+            </Properties>
+          </MorphologicalRule>
+        </MorphologicalRuleDefinitions>
+        <AffixTemplates>
+          <AffixTemplate requiredPartsOfSpeech="pos7720">
+            <Name>Nouns</Name>
+            <Slot morphologicalRules="mrule1 mrule2">
+              <Name>nNum</Name>
+            </Slot>
+          </AffixTemplate>
+          <AffixTemplate requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>Finite Verbs</Name>
+            <Slot morphologicalRules="mrule3 mrule4 mrule5 mrule6 mrule7 mrule8 mrule9 mrule10 mrule11 mrule12 mrule13 mrule14 mrule15">
+              <Name>vTnsPrsNum</Name>
+            </Slot>
+          </AffixTemplate>
+          <AffixTemplate requiredPartsOfSpeech="pos9492">
+            <Name>Indefinite article</Name>
+            <Slot morphologicalRules="mrule16 mrule17 mrule18">
+              <Name>dGen</Name>
+            </Slot>
+            <Slot morphologicalRules="mrule19 mrule20">
+              <Name>dNum</Name>
+            </Slot>
+          </AffixTemplate>
+          <AffixTemplate requiredPartsOfSpeech="pos2179 pos7505">
+            <Name>Adjectives</Name>
+            <Slot morphologicalRules="mrule21 mrule22">
+              <Name>aGen</Name>
+            </Slot>
+            <Slot morphologicalRules="mrule23 mrule24">
+              <Name>aNum</Name>
+            </Slot>
+          </AffixTemplate>
+          <AffixTemplate requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+            <Name>Participles</Name>
+            <Slot morphologicalRules="mrule25 mrule26">
+              <Name>vPtcpl</Name>
+            </Slot>
+          </AffixTemplate>
+        </AffixTemplates>
+        <LexicalEntries>
+          <LexicalEntry id="entry1" partOfSpeech="pos6193" ruleFeatures="mpr2">
+            <Allomorphs>
+              <Allomorph id="allo1">
+                <PhoneticShape>entr</PhoneticShape>
+                <Properties>
+                  <Property name="ID">12202</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>entrer</Gloss>
+            <Properties>
+              <Property name="ID">1763</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry2" partOfSpeech="pos7528">
+            <Allomorphs>
+              <Allomorph id="allo2">
+                <PhoneticShape>quoi</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10127</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>what</Gloss>
+            <Properties>
+              <Property name="ID">4930</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry3" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo3">
+                <PhoneticShape>dans</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11213</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>in</Gloss>
+            <Properties>
+              <Property name="ID">8280</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry4" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo4">
+                <PhoneticShape>ils</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9378</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>3PL.MASC</Gloss>
+            <Properties>
+              <Property name="ID">4502</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry5" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo5">
+                <PhoneticShape>en</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9962</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>in</Gloss>
+            <Properties>
+              <Property name="ID">9693</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry6" partOfSpeech="pos417">
+            <Allomorphs>
+              <Allomorph id="allo6">
+                <PhoneticShape>ces</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7353</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEM.PL</Gloss>
+            <Properties>
+              <Property name="ID">10564</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry7" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo7">
+                <PhoneticShape>même</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1258</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>same</Gloss>
+            <Properties>
+              <Property name="ID">5442</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry8" partOfSpeech="pos9492" ruleFeatures="mpr11">
+            <Allomorphs>
+              <Allomorph id="allo8">
+                <PhoneticShape>des</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1945</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>INDEF.MF.PL</Gloss>
+            <Properties>
+              <Property name="ID">6529</Property>
+              <Property name="InflTypeID">6057</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry9" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo9">
+                <PhoneticShape>vous</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8941</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>2PL</Gloss>
+            <Properties>
+              <Property name="ID">3650</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry10" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo10">
+                <PhoneticShape>homme</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5567</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>man</Gloss>
+            <Properties>
+              <Property name="ID">667</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry11" partOfSpeech="pos6193" ruleFeatures="mpr2">
+            <Allomorphs>
+              <Allomorph id="allo11">
+                <PhoneticShape>mang</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3039</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>eat</Gloss>
+            <Properties>
+              <Property name="ID">2530</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry12" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo12">
+                <PhoneticShape>monde</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5028</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>world</Gloss>
+            <Properties>
+              <Property name="ID">10767</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry13" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo13">
+                <PhoneticShape>voiture</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2053</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>car</Gloss>
+            <Properties>
+              <Property name="ID">1785</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry14" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo14">
+                <PhoneticShape>bateau</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5490</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>boat</Gloss>
+            <Properties>
+              <Property name="ID">9898</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry15" partOfSpeech="pos4605">
+            <Allomorphs>
+              <Allomorph id="allo15">
+                <PhoneticShape>au</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10552</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>at.the</Gloss>
+            <Properties>
+              <Property name="ID">9349</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry16" partOfSpeech="pos415">
+            <Allomorphs>
+              <Allomorph id="allo16">
+                <PhoneticShape>que</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1292</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>that</Gloss>
+            <Properties>
+              <Property name="ID">6236</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry17" partOfSpeech="pos7720" ruleFeatures="mpr1">
+            <Allomorphs>
+              <Allomorph id="allo17">
+                <PhoneticShape>oiseau</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5668</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>bird</Gloss>
+            <Properties>
+              <Property name="ID">10204</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry18" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo18">
+                <PhoneticShape>train</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7888</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>train</Gloss>
+            <Properties>
+              <Property name="ID">10226</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry19" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo19">
+                <PhoneticShape>colline</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5464</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>hill</Gloss>
+            <Properties>
+              <Property name="ID">4808</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry20" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo20">
+                <PhoneticShape>nous</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7913</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>1PL</Gloss>
+            <Properties>
+              <Property name="ID">6095</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry21" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo21">
+                <PhoneticShape>saveur</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6469</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>flavor</Gloss>
+            <Properties>
+              <Property name="ID">5248</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry22" partOfSpeech="pos6193" ruleFeatures="mpr2">
+            <Allomorphs>
+              <Allomorph id="allo22">
+                <PhoneticShape>jou</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8989</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>play</Gloss>
+            <Properties>
+              <Property name="ID">9103</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry23" partOfSpeech="pos5004">
+            <Allomorphs>
+              <Allomorph id="allo23">
+                <PhoneticShape>n’</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3178</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>NEG1</Gloss>
+            <Properties>
+              <Property name="ID">8322</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry24" partOfSpeech="pos10471">
+            <Allomorphs>
+              <Allomorph id="allo24">
+                <PhoneticShape>deux</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6365</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>two</Gloss>
+            <Properties>
+              <Property name="ID">10082</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry25" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo25">
+                <PhoneticShape>à</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9161</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>to</Gloss>
+            <Properties>
+              <Property name="ID">4516</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry26" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo26">
+                <PhoneticShape>pur</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1171</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>pure</Gloss>
+            <Properties>
+              <Property name="ID">10239</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry27" partOfSpeech="pos6193" ruleFeatures="mpr3">
+            <Allomorphs>
+              <Allomorph id="allo27">
+                <PhoneticShape>perd</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1756</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>lose</Gloss>
+            <Properties>
+              <Property name="ID">261</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry28" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo28">
+                <PhoneticShape>garçon</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7999</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>boy</Gloss>
+            <Properties>
+              <Property name="ID">1480</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry29" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo29">
+                <PhoneticShape>elle</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8584</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>3SG.FEM</Gloss>
+            <Properties>
+              <Property name="ID">9021</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry30" partOfSpeech="pos2894">
+            <Allomorphs>
+              <Allomorph id="allo30">
+                <PhoneticShape>qui</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1470</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>which</Gloss>
+            <Properties>
+              <Property name="ID">1941</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry31" partOfSpeech="pos7717">
+            <Allomorphs>
+              <Allomorph id="allo31">
+                <PhoneticShape>Dieu</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5209</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>God</Gloss>
+            <Properties>
+              <Property name="ID">5189</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry32" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo32">
+                <PhoneticShape>devant</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10099</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>before</Gloss>
+            <Properties>
+              <Property name="ID">6318</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry33" partOfSpeech="pos417">
+            <Allomorphs>
+              <Allomorph id="allo33">
+                <PhoneticShape>cet</PhoneticShape>
+                <Properties>
+                  <Property name="ID">28</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo34">
+                <PhoneticShape>ce</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8829</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEM.MASC.SG</Gloss>
+            <Properties>
+              <Property name="ID">5601</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry34" partOfSpeech="pos6193" ruleFeatures="mpr2">
+            <Allomorphs>
+              <Allomorph id="allo35">
+                <PhoneticShape>trouv</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1764</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>find</Gloss>
+            <Properties>
+              <Property name="ID">7983</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry35" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo36">
+                <PhoneticShape>sel</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2092</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>salt</Gloss>
+            <Properties>
+              <Property name="ID">6397</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry36" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo37">
+                <PhoneticShape>sommet</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10439</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>summit</Gloss>
+            <Properties>
+              <Property name="ID">7071</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry37" partOfSpeech="pos4605">
+            <Allomorphs>
+              <Allomorph id="allo38">
+                <PhoneticShape>aux</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5341</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>at.the.PL</Gloss>
+            <Properties>
+              <Property name="ID">5048</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry38" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo39">
+                <PhoneticShape>pomme</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8182</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>apple</Gloss>
+            <Properties>
+              <Property name="ID">9979</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry39" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo40">
+                <PhoneticShape>sous</PhoneticShape>
+                <Properties>
+                  <Property name="ID">114</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>under</Gloss>
+            <Properties>
+              <Property name="ID">5478</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry40" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo41">
+                <PhoneticShape>bien</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7234</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>good</Gloss>
+            <Properties>
+              <Property name="ID">693</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry41" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo42">
+                <PhoneticShape>poisson</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8992</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>fish</Gloss>
+            <Properties>
+              <Property name="ID">3287</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry42" partOfSpeech="pos10784">
+            <Allomorphs>
+              <Allomorph id="allo43">
+                <PhoneticShape>celles</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9175</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEMPRO.FEM.PL</Gloss>
+            <Properties>
+              <Property name="ID">6067</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry43" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo44">
+                <PhoneticShape>œuf</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6447</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>egg</Gloss>
+            <Properties>
+              <Property name="ID">10743</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry44" partOfSpeech="pos6674">
+            <Allomorphs>
+              <Allomorph id="allo45">
+                <PhoneticShape>la</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8381</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEF.F.SG</Gloss>
+            <Properties>
+              <Property name="ID">7812</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry45" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo46">
+                <PhoneticShape>Père</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4205</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>Father</Gloss>
+            <Properties>
+              <Property name="ID">9005</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry46" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo47">
+                <PhoneticShape>avec</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11022</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>with</Gloss>
+            <Properties>
+              <Property name="ID">8642</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry47" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo48">
+                <PhoneticShape>fille</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1800</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>girl</Gloss>
+            <Properties>
+              <Property name="ID">10122</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry48" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo49">
+                <PhoneticShape>ras</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6854</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>level</Gloss>
+            <Properties>
+              <Property name="ID">7082</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry49" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo50">
+                <PhoneticShape>chose</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3173</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>thing</Gloss>
+            <Properties>
+              <Property name="ID">7471</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry50" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo51">
+                <PhoneticShape>maison</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2279</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>house</Gloss>
+            <Properties>
+              <Property name="ID">7615</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry51" partOfSpeech="pos5004">
+            <Allomorphs>
+              <Allomorph id="allo52">
+                <PhoneticShape>pas</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9116</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>NEG2</Gloss>
+            <Properties>
+              <Property name="ID">4627</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry52" partOfSpeech="pos6193" ruleFeatures="mpr2">
+            <Allomorphs>
+              <Allomorph id="allo53">
+                <PhoneticShape>parl</PhoneticShape>
+                <Properties>
+                  <Property name="ID">397</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>speak</Gloss>
+            <Properties>
+              <Property name="ID">5805</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry53" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo54">
+                <PhoneticShape>vélo</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1811</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>bicycle</Gloss>
+            <Properties>
+              <Property name="ID">11176</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry54" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo55">
+                <PhoneticShape>lumière</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5620</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>light</Gloss>
+            <Properties>
+              <Property name="ID">9785</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry55" partOfSpeech="pos5384">
+            <Allomorphs>
+              <Allomorph id="allo56">
+                <PhoneticShape>ainsi.que</PhoneticShape>
+                <Properties>
+                  <Property name="ID">66</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>as well as</Gloss>
+            <Properties>
+              <Property name="ID">4250</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry56" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo57">
+                <PhoneticShape>le</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3322</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat2407" symbolValues="sym6029" />
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>3SG.MASC.ACC</Gloss>
+            <Properties>
+              <Property name="ID">4402</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry57" partOfSpeech="pos6674">
+            <Allomorphs>
+              <Allomorph id="allo58">
+                <PhoneticShape>le</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3322</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEF.M.SG</Gloss>
+            <Properties>
+              <Property name="ID">8923</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry58" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo59">
+                <PhoneticShape>céleste</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10512</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>heavenly</Gloss>
+            <Properties>
+              <Property name="ID">4074</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry59" partOfSpeech="pos415">
+            <Allomorphs>
+              <Allomorph id="allo60">
+                <PhoneticShape>pour.que</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8876</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>so that</Gloss>
+            <Properties>
+              <Property name="ID">4314</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry60" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo61">
+                <PhoneticShape>bon</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4369</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>good</Gloss>
+            <Properties>
+              <Property name="ID">5919</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry61" partOfSpeech="pos6193" ruleFeatures="mpr4">
+            <Allomorphs>
+              <Allomorph id="allo62" stemName="stemName3">
+                <PhoneticShape>vi</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10930</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo63">
+                <PhoneticShape>viv</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11147</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>live</Gloss>
+            <Properties>
+              <Property name="ID">9397</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry62" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo64">
+                <PhoneticShape>la</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5119</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat2407" symbolValues="sym6029" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>3SG.FEM.ACC</Gloss>
+            <Properties>
+              <Property name="ID">10828</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry63" partOfSpeech="pos6193" ruleFeatures="mpr3">
+            <Allomorphs>
+              <Allomorph id="allo65">
+                <PhoneticShape>bat</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9425</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo66">
+                <PhoneticShape>batt</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8861</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>beat</Gloss>
+            <Properties>
+              <Property name="ID">2978</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry64" partOfSpeech="pos4571">
+            <Allomorphs>
+              <Allomorph id="allo67">
+                <PhoneticShape>sa</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1427</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>3SG.POSS</Gloss>
+            <Properties>
+              <Property name="ID">6823</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry65" partOfSpeech="pos6674">
+            <Allomorphs>
+              <Allomorph id="allo68">
+                <PhoneticShape>les</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11080</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEF.F.PL</Gloss>
+            <Properties>
+              <Property name="ID">4419</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry66" partOfSpeech="pos6674">
+            <Allomorphs>
+              <Allomorph id="allo69">
+                <PhoneticShape>les</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11080</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEF.M.PL</Gloss>
+            <Properties>
+              <Property name="ID">10417</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry67" partOfSpeech="pos9492">
+            <Allomorphs>
+              <Allomorph id="allo70">
+                <PhoneticShape>un</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4045</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>INDEF</Gloss>
+            <Properties>
+              <Property name="ID">6529</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry68" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo71">
+                <PhoneticShape>longu</PhoneticShape>
+                <RequiredEnvironments>
+                  <Environment>
+                    <RightEnvironment>
+                      <PhoneticTemplate>
+                        <PhoneticSequence>
+                          <Segments>
+                            <PhoneticShape>e</PhoneticShape>
+                          </Segments>
+                        </PhoneticSequence>
+                      </PhoneticTemplate>
+                    </RightEnvironment>
+                  </Environment>
+                </RequiredEnvironments>
+                <Properties>
+                  <Property name="ID">4394</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo72">
+                <PhoneticShape>long</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4989</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>long</Gloss>
+            <Properties>
+              <Property name="ID">2247</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry69" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo73">
+                <PhoneticShape>il</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9282</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>3SG</Gloss>
+            <Properties>
+              <Property name="ID">4386</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry70" partOfSpeech="pos5384">
+            <Allomorphs>
+              <Allomorph id="allo74">
+                <PhoneticShape>ainsi</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5890</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>thus</Gloss>
+            <Properties>
+              <Property name="ID">9908</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry71" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo75">
+                <PhoneticShape>pied</PhoneticShape>
+                <Properties>
+                  <Property name="ID">811</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>stand</Gloss>
+            <Properties>
+              <Property name="ID">6427</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry72" partOfSpeech="pos4354">
+            <Allomorphs>
+              <Allomorph id="allo76">
+                <PhoneticShape>se</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3021</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>REFL</Gloss>
+            <Properties>
+              <Property name="ID">8095</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry73" partOfSpeech="pos3889">
+            <Allomorphs>
+              <Allomorph id="allo77">
+                <PhoneticShape>ét</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6847</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo78">
+                <PhoneticShape>êt</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7322</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>be</Gloss>
+            <Properties>
+              <Property name="ID">3750</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry74" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo79">
+                <PhoneticShape>par</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3358</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>by</Gloss>
+            <Properties>
+              <Property name="ID">579</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry75" partOfSpeech="pos10784">
+            <Allomorphs>
+              <Allomorph id="allo80">
+                <PhoneticShape>ceux</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7535</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEMPRO.MASC.PL</Gloss>
+            <Properties>
+              <Property name="ID">10362</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry76" partOfSpeech="pos6193" ruleFeatures="mpr4">
+            <Allomorphs>
+              <Allomorph id="allo81" stemName="stemName3">
+                <PhoneticShape>meu</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4464</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo82">
+                <PhoneticShape>mouv</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8236</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>move</Gloss>
+            <Properties>
+              <Property name="ID">3407</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry77" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo83">
+                <PhoneticShape>je</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2395</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>1SG</Gloss>
+            <Properties>
+              <Property name="ID">6331</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry78" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo84">
+                <PhoneticShape>femelle</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7269</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>female</Gloss>
+            <Properties>
+              <Property name="ID">8366</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry79" partOfSpeech="pos4605">
+            <Allomorphs>
+              <Allomorph id="allo85">
+                <PhoneticShape>du</PhoneticShape>
+                <Properties>
+                  <Property name="ID">5782</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>of.the</Gloss>
+            <Properties>
+              <Property name="ID">8926</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry80" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo86">
+                <PhoneticShape>lampe</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1139</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>lamp</Gloss>
+            <Properties>
+              <Property name="ID">11595</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry81" partOfSpeech="pos10784">
+            <Allomorphs>
+              <Allomorph id="allo87">
+                <PhoneticShape>celle</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11174</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>DEMPRO.FEM</Gloss>
+            <Properties>
+              <Property name="ID">9413</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry82" partOfSpeech="pos3889">
+            <Allomorphs>
+              <Allomorph id="allo88">
+                <PhoneticShape>est</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3719</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+            </AssignedHeadFeatures>
+            <Gloss>be.PRS.3SG</Gloss>
+            <Properties>
+              <Property name="ID">785</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry83" partOfSpeech="pos7445">
+            <Allomorphs>
+              <Allomorph id="allo89">
+                <PhoneticShape>on</PhoneticShape>
+                <Properties>
+                  <Property name="ID">7762</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>IMPERS.3SG</Gloss>
+            <Properties>
+              <Property name="ID">1345</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry84" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo90">
+                <PhoneticShape>bonbon</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10508</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>candy</Gloss>
+            <Properties>
+              <Property name="ID">391</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry85" partOfSpeech="pos417">
+            <Allomorphs>
+              <Allomorph id="allo91">
+                <PhoneticShape>cette</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8257</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4001">
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEM.FEM.SG</Gloss>
+            <Properties>
+              <Property name="ID">8000</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry86" partOfSpeech="pos3235">
+            <Allomorphs>
+              <Allomorph id="allo92">
+                <PhoneticShape>ici</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4192</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>here</Gloss>
+            <Properties>
+              <Property name="ID">4009</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry87" partOfSpeech="pos4605">
+            <Allomorphs>
+              <Allomorph id="allo93">
+                <PhoneticShape>des</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6270</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat7646">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>of.the.PL</Gloss>
+            <Properties>
+              <Property name="ID">9751</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry88" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo94">
+                <PhoneticShape>terre</PhoneticShape>
+                <Properties>
+                  <Property name="ID">8109</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>earth</Gloss>
+            <Properties>
+              <Property name="ID">7141</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry89" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo95">
+                <PhoneticShape>couple</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2924</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>pair</Gloss>
+            <Properties>
+              <Property name="ID">9415</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry90" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo96">
+                <PhoneticShape>ville</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3568</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>city</Gloss>
+            <Properties>
+              <Property name="ID">1266</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry91" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo97">
+                <PhoneticShape>sur</PhoneticShape>
+                <Properties>
+                  <Property name="ID">860</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>on</Gloss>
+            <Properties>
+              <Property name="ID">7524</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry92" partOfSpeech="pos3889">
+            <Allomorphs>
+              <Allomorph id="allo98">
+                <PhoneticShape>sont</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9689</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat3376">
+                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              </FeatureValue>
+              <FeatureValue feature="feat6012" symbolValues="sym342" />
+            </AssignedHeadFeatures>
+            <Gloss>be.PRS.3PL</Gloss>
+            <Properties>
+              <Property name="ID">3052</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry93" partOfSpeech="pos415">
+            <Allomorphs>
+              <Allomorph id="allo99">
+                <PhoneticShape>si</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6065</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>if</Gloss>
+            <Properties>
+              <Property name="ID">10525</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry94" partOfSpeech="pos7720" ruleFeatures="mpr1">
+            <Allomorphs>
+              <Allomorph id="allo100" stemName="stemName2">
+                <PhoneticShape>animau</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6792</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo101">
+                <PhoneticShape>animal</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4512</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>animal</Gloss>
+            <Properties>
+              <Property name="ID">9858</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry95" partOfSpeech="pos7505">
+            <Allomorphs>
+              <Allomorph id="allo102" stemName="stemName1">
+                <PhoneticShape>tou</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2595</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo103">
+                <PhoneticShape>tout</PhoneticShape>
+                <Properties>
+                  <Property name="ID">6518</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>all</Gloss>
+            <Properties>
+              <Property name="ID">6251</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry96" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo104">
+                <PhoneticShape>rouge</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1586</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>red</Gloss>
+            <Properties>
+              <Property name="ID">8358</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry97" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo105">
+                <PhoneticShape>de</PhoneticShape>
+                <Properties>
+                  <Property name="ID">11654</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>of</Gloss>
+            <Properties>
+              <Property name="ID">5699</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry98" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo106">
+                <PhoneticShape>route</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10981</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat10171">
+                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>road</Gloss>
+            <Properties>
+              <Property name="ID">145</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry99" partOfSpeech="pos5384">
+            <Allomorphs>
+              <Allomorph id="allo107">
+                <PhoneticShape>et</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4720</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>and</Gloss>
+            <Properties>
+              <Property name="ID">6707</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry100" partOfSpeech="pos10784">
+            <Allomorphs>
+              <Allomorph id="allo108">
+                <PhoneticShape>celui</PhoneticShape>
+                <Properties>
+                  <Property name="ID">2154</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <AssignedHeadFeatures>
+              <FeatureValue feature="feat4843">
+                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              </FeatureValue>
+            </AssignedHeadFeatures>
+            <Gloss>DEMPRO.MASC</Gloss>
+            <Properties>
+              <Property name="ID">5562</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry101" partOfSpeech="pos6193">
+            <Allomorphs>
+              <Allomorph id="allo109">
+                <PhoneticShape>av</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4908</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>have</Gloss>
+            <Properties>
+              <Property name="ID">2240</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry102" partOfSpeech="pos6338" ruleFeatures="mpr4">
+            <Allomorphs>
+              <Allomorph id="allo110">
+                <PhoneticShape>av</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4908</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>AUX.have</Gloss>
+            <Properties>
+              <Property name="ID">5990</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry103" partOfSpeech="pos7717">
+            <Allomorphs>
+              <Allomorph id="allo111">
+                <PhoneticShape>Noé</PhoneticShape>
+                <Properties>
+                  <Property name="ID">1844</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>Noah</Gloss>
+            <Properties>
+              <Property name="ID">7015</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry104" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo112">
+                <PhoneticShape>gross</PhoneticShape>
+                <RequiredEnvironments>
+                  <Environment>
+                    <RightEnvironment>
+                      <PhoneticTemplate>
+                        <PhoneticSequence>
+                          <Segments>
+                            <PhoneticShape>e</PhoneticShape>
+                          </Segments>
+                        </PhoneticSequence>
+                      </PhoneticTemplate>
+                    </RightEnvironment>
+                  </Environment>
+                </RequiredEnvironments>
+                <Properties>
+                  <Property name="ID">1887</Property>
+                </Properties>
+              </Allomorph>
+              <Allomorph id="allo113">
+                <PhoneticShape>gros</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4787</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>big</Gloss>
+            <Properties>
+              <Property name="ID">1607</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry105" partOfSpeech="pos7720">
+            <Allomorphs>
+              <Allomorph id="allo114">
+                <PhoneticShape>mâle</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9448</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>male</Gloss>
+            <Properties>
+              <Property name="ID">3048</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry106" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo115">
+                <PhoneticShape>pour</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3629</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>for</Gloss>
+            <Properties>
+              <Property name="ID">7052</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry107" partOfSpeech="pos5384">
+            <Allomorphs>
+              <Allomorph id="allo116">
+                <PhoneticShape>pour</PhoneticShape>
+                <Properties>
+                  <Property name="ID">3629</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>in order to</Gloss>
+            <Properties>
+              <Property name="ID">8430</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry108" partOfSpeech="pos2179">
+            <Allomorphs>
+              <Allomorph id="allo117">
+                <PhoneticShape>petit</PhoneticShape>
+                <Properties>
+                  <Property name="ID">9410</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>little</Gloss>
+            <Properties>
+              <Property name="ID">3811</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry109" partOfSpeech="pos5004">
+            <Allomorphs>
+              <Allomorph id="allo118">
+                <PhoneticShape>ne</PhoneticShape>
+                <Properties>
+                  <Property name="ID">10091</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>NEG1</Gloss>
+            <Properties>
+              <Property name="ID">8885</Property>
+            </Properties>
+          </LexicalEntry>
+        </LexicalEntries>
+      </Stratum>
+      <Stratum characterDefinitionTable="table1" morphologicalRuleOrder="unordered" morphologicalRules="mrule27 mrule28 mrule29 mrule30">
+        <Name>Clitics</Name>
+        <MorphologicalRuleDefinitions>
+          <MorphologicalRule id="mrule27">
+            <Name>quoi</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule47">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule47_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <InsertSegments>
+                    <PhoneticShape>qu’+</PhoneticShape>
+                  </InsertSegments>
+                  <CopyFromInput index="msubrule47_stem" />
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">915</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>what</Gloss>
+            <Properties>
+              <Property name="ID">4930</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule28">
+            <Name>ainsi que</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule48">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule48_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <SimpleContext naturalClass="nc6" />
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <InsertSegments>
+                    <PhoneticShape>ainsi.qu’+</PhoneticShape>
+                  </InsertSegments>
+                  <CopyFromInput index="msubrule48_stem" />
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">9614</Property>
+                  <Property name="Env">/_ [V]</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>as well as</Gloss>
+            <Properties>
+              <Property name="ID">4250</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule29">
+            <Name>pour que</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule49">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule49_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <InsertSegments>
+                    <PhoneticShape>pour.qu’+</PhoneticShape>
+                  </InsertSegments>
+                  <CopyFromInput index="msubrule49_stem" />
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">4095</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>so that</Gloss>
+            <Properties>
+              <Property name="ID">4314</Property>
+            </Properties>
+          </MorphologicalRule>
+          <MorphologicalRule id="mrule30">
+            <Name>de</Name>
+            <MorphologicalSubrules>
+              <MorphologicalSubrule id="msubrule50">
+                <MorphologicalInput>
+                  <PhoneticSequence id="msubrule50_stem">
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char36" />
+                      <BoundaryMarker boundary="char35" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="1" max="-1">
+                      <SimpleContext naturalClass="nc1" />
+                    </OptionalSegmentSequence>
+                    <OptionalSegmentSequence min="0" max="-1">
+                      <BoundaryMarker boundary="char35" />
+                      <BoundaryMarker boundary="char36" />
+                    </OptionalSegmentSequence>
+                  </PhoneticSequence>
+                </MorphologicalInput>
+                <MorphologicalOutput>
+                  <InsertSegments>
+                    <PhoneticShape>d’+</PhoneticShape>
+                  </InsertSegments>
+                  <CopyFromInput index="msubrule50_stem" />
+                </MorphologicalOutput>
+                <Properties>
+                  <Property name="ID">942</Property>
+                </Properties>
+              </MorphologicalSubrule>
+            </MorphologicalSubrules>
+            <Gloss>of</Gloss>
+            <Properties>
+              <Property name="ID">5699</Property>
+            </Properties>
+          </MorphologicalRule>
+        </MorphologicalRuleDefinitions>
+        <LexicalEntries>
+          <LexicalEntry id="entry110" partOfSpeech="pos7528">
+            <Allomorphs>
+              <Allomorph id="allo119">
+                <PhoneticShape>qu’</PhoneticShape>
+                <Properties>
+                  <Property name="ID">915</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>what</Gloss>
+            <Properties>
+              <Property name="ID">4930</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry111" partOfSpeech="pos5384">
+            <Allomorphs>
+              <Allomorph id="allo120">
+                <PhoneticShape>ainsi.qu’</PhoneticShape>
+                <RequiredEnvironments>
+                  <Environment>
+                    <RightEnvironment>
+                      <PhoneticTemplate>
+                        <PhoneticSequence>
+                          <SimpleContext naturalClass="nc6" />
+                        </PhoneticSequence>
+                      </PhoneticTemplate>
+                    </RightEnvironment>
+                  </Environment>
+                </RequiredEnvironments>
+                <Properties>
+                  <Property name="ID">9614</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>as well as</Gloss>
+            <Properties>
+              <Property name="ID">4250</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry112" partOfSpeech="pos415">
+            <Allomorphs>
+              <Allomorph id="allo121">
+                <PhoneticShape>pour.qu’</PhoneticShape>
+                <Properties>
+                  <Property name="ID">4095</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>so that</Gloss>
+            <Properties>
+              <Property name="ID">4314</Property>
+            </Properties>
+          </LexicalEntry>
+          <LexicalEntry id="entry113" partOfSpeech="pos6660">
+            <Allomorphs>
+              <Allomorph id="allo122">
+                <PhoneticShape>d’</PhoneticShape>
+                <Properties>
+                  <Property name="ID">942</Property>
+                </Properties>
+              </Allomorph>
+            </Allomorphs>
+            <Gloss>of</Gloss>
+            <Properties>
+              <Property name="ID">5699</Property>
+            </Properties>
+          </LexicalEntry>
+        </LexicalEntries>
+      </Stratum>
+      <Stratum characterDefinitionTable="table1">
+        <Name>Surface</Name>
+      </Stratum>
+    </Strata>
+  </Language>
+</HermitCrabInput>

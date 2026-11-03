@@ -1,0 +1,48 @@
+{
+ "config": {
+  "CleanUpUnknownTargetWords": "n",
+  "NoWarningForUnanalyzedProperNouns": false,
+  "SentencePunctuation": ".?;:!\"'",
+  "SourceComplexFormsWithInflectionOn1stElement": [],
+  "SourceComplexTypes": [],
+  "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories": [],
+  "SourceDiscontigousComplexTypes": [],
+  "TargetComplexFormsWithInflectionOn1stElement": [],
+  "TargetComplexFormsWithInflectionOn2ndElement": []
+ },
+ "counts": {
+  "entries": 126,
+  "msas": 134,
+  "parserForms": 156,
+  "parserInflTypes": 8,
+  "parserMsas": 134,
+  "phrases": 1,
+  "senses": 135,
+  "wordforms": 153
+ },
+ "created": "2026-11-03T19:42:05",
+ "files": {
+  "apertium": {
+   "dir": "apertium",
+   "rules": [
+    "tr.t1x"
+   ]
+  },
+  "guesser": "guesser.json",
+  "lexicon": "lexicon.json",
+  "parser": "parser.xml",
+  "parserData": "parser.json",
+  "synthesis": {
+   "affixGlosses": "target_affix_glosses.txt",
+   "conversionCache": "conversion_to_STAMP_cache2.txt",
+   "dir": "synthesis",
+   "hermitCrabConfig": "HermitCrab.config"
+  },
+  "tokenizer": "tokenizer.json"
+ },
+ "formatVersion": 1,
+ "interfaceLanguage": "en",
+ "sourceProject": "French-PP-FTT",
+ "targetProject": "Spanish-FTT-Scratch",
+ "workProject": "FTT-Scratch"
+}

@@ -1,0 +1,2579 @@
+{
+ "entries": {
+  "01dff27e-e9bb-4e56-ac81-3e7d2e874dc1": {
+   "clitic": null,
+   "headword": "entrer",
+   "senses": [
+    "6a8c5ded-fd9d-4094-9af4-6990bb3c41c2"
+   ]
+  },
+  "025ea22c-a36c-455d-b638-06e6b78425fd": {
+   "clitic": null,
+   "headword": "quoi",
+   "senses": [
+    "3ffe8ac9-0766-4e2a-a818-980187276844"
+   ]
+  },
+  "02b573bf-a148-4a87-b0e1-c8a5fe5ef801": {
+   "clitic": null,
+   "headword": "dans",
+   "senses": [
+    "3dd547f0-a5f3-4982-b212-3cb72dfe723d"
+   ]
+  },
+  "0360db74-b2e8-4fd8-bfd7-4454c07f3add": {
+   "clitic": null,
+   "headword": "ils",
+   "senses": [
+    "f3eb1768-ab82-4977-a344-7f61979a1aa0"
+   ]
+  },
+  "046445a7-0c25-4313-a127-00e7728895fd": {
+   "clitic": null,
+   "headword": "-s",
+   "senses": [
+    "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+    "b8445393-02d6-4661-8a07-5f32e9cccfa7"
+   ]
+  },
+  "05950dd9-ab44-4818-a9c5-f614bd9547ef": {
+   "clitic": null,
+   "headword": "en",
+   "senses": [
+    "7df25c1c-714a-4cb7-89c6-1775c8335990"
+   ]
+  },
+  "061ca041-a4e7-4457-9be1-ef96851b7d2c": {
+   "clitic": null,
+   "headword": "ces",
+   "senses": [
+    "0935c776-0de1-4054-8a90-3f9bce905371"
+   ]
+  },
+  "063db054-cb57-4a8e-bc50-ba9a7fc597dc": {
+   "clitic": null,
+   "headword": "même",
+   "senses": [
+    "385a82c8-3c2e-4815-ab58-aeb6e4e3d8b2"
+   ]
+  },
+  "0783d8ed-4e03-4e9a-baa9-574c6f5cfdff": {
+   "clitic": null,
+   "headword": "-er",
+   "senses": [
+    "b8bc63b7-d1bd-4f3c-b0aa-993ae5a7cb31"
+   ]
+  },
+  "08328991-ac56-4303-9648-2e72e7c078de": {
+   "clitic": null,
+   "headword": "-ais2",
+   "senses": [
+    "1e44638f-737e-4850-aa1a-b4068f574126"
+   ]
+  },
+  "09bf741d-3c99-4fb5-899a-0ce98d6dee7c": {
+   "clitic": null,
+   "headword": "des1",
+   "resolvesTo": {
+    "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+    "inflFeatures": [
+     "pl"
+    ]
+   },
+   "senses": []
+  },
+  "0a72aede-1b67-4e05-ab44-ef6e8d78e7ee": {
+   "clitic": null,
+   "headword": "vous",
+   "senses": [
+    "3b560ae9-f304-46c1-bb36-e440de3a5111"
+   ]
+  },
+  "0b0d3f50-0498-4c0b-9fc1-5c278e5feaaf": {
+   "clitic": null,
+   "headword": "homme",
+   "senses": [
+    "42671e36-e777-455c-9ce8-9b1b9684c761"
+   ]
+  },
+  "0b169286-0e0d-40b2-9fc7-751808c27361": {
+   "clitic": null,
+   "headword": "manger",
+   "senses": [
+    "dd83f274-0e15-433b-9c16-79e91d0ef15f"
+   ]
+  },
+  "10eeaddc-3932-4575-818b-0fddb1bf6bec": {
+   "clitic": null,
+   "headword": "monde",
+   "senses": [
+    "70dd025b-99c8-4b21-abd7-5cc96b573632"
+   ]
+  },
+  "11e66834-b5cb-4723-bd5b-2db8454a3ad6": {
+   "clitic": null,
+   "headword": "voiture",
+   "senses": [
+    "a94a25d7-7a07-4a68-83f9-243678946aff"
+   ]
+  },
+  "18b6fad1-6391-4843-9c39-d4cde096bdfb": {
+   "clitic": null,
+   "headword": "bateau",
+   "senses": [
+    "4ffc51f3-cdcc-469b-b230-caf4d1044571"
+   ]
+  },
+  "1c781f71-f1e3-48c8-a360-440993dcd266": {
+   "clitic": null,
+   "headword": "au",
+   "senses": [
+    "81581ace-1d2d-4aa3-a431-88eb863806a9"
+   ]
+  },
+  "1f3fa8f7-d4ee-47ce-b9c4-323804961ea0": {
+   "clitic": null,
+   "headword": "que",
+   "senses": [
+    "8b477ceb-54c3-4fbf-8b14-25e4c3f1da71"
+   ]
+  },
+  "1f5756df-7f60-441b-a369-ae6c2817e7a2": {
+   "clitic": null,
+   "headword": "oiseau",
+   "senses": [
+    "2ea603aa-0010-4740-b544-9fddd5351aa5"
+   ]
+  },
+  "205cd4ed-b5aa-457d-96b7-0c34d733574b": {
+   "clitic": null,
+   "headword": "train",
+   "senses": [
+    "64ee1c0e-ef16-42b4-ade3-530c143b56d6"
+   ]
+  },
+  "20e1edb7-7a74-42db-a744-6552578874c7": {
+   "clitic": null,
+   "headword": "colline",
+   "senses": [
+    "4f168631-59a4-4f20-a703-2a841f07800f"
+   ]
+  },
+  "21d2ba05-7ab4-4f7b-a021-11ad1dcb1e14": {
+   "clitic": null,
+   "headword": "nous",
+   "senses": [
+    "52d542e0-e742-4de9-8b03-545e04ef634a"
+   ]
+  },
+  "24d60d09-22a0-452b-b64a-eb4e5f7a60c0": {
+   "clitic": null,
+   "headword": "[SEG]*",
+   "senses": [
+    "fbd1c7a2-52f2-49e9-81f5-c322c5728a3a"
+   ]
+  },
+  "266b5a5f-5e12-4d0b-bafc-74928aee3f7f": {
+   "clitic": null,
+   "headword": "saveur",
+   "senses": [
+    "acd7f50c-d986-439a-819d-53bd3f02b04e"
+   ]
+  },
+  "27e0f574-311a-479a-b641-078eea54c6df": {
+   "clitic": null,
+   "headword": "jouer",
+   "senses": [
+    "a8c3ded0-c456-48ca-9e5e-f5667398eb40"
+   ]
+  },
+  "2a2118b8-3d4c-4bce-bab2-78ba503c0781": {
+   "clitic": null,
+   "headword": "n’",
+   "senses": [
+    "d31431e8-910e-4f97-ae1d-da09d8ca65a9"
+   ]
+  },
+  "30fdab90-b066-41e7-83c3-a70b9e30a3cf": {
+   "clitic": null,
+   "headword": "deux",
+   "senses": [
+    "9c3c059e-8f2f-445f-a6d7-d20375609eb8"
+   ]
+  },
+  "31c0e5bb-dc9b-4a69-af23-41bf0176c916": {
+   "clitic": null,
+   "headword": "à",
+   "senses": [
+    "2b534fe8-57e7-4cb7-bb2f-04b9761e7513"
+   ]
+  },
+  "369d669c-7aaa-4360-ad40-e938f8b11db3": {
+   "clitic": null,
+   "headword": "pur",
+   "senses": [
+    "ef153c5d-6c54-482f-b178-7aaf190df020"
+   ]
+  },
+  "36b95749-38e2-4375-b73a-2b09bc6be294": {
+   "clitic": null,
+   "headword": "perdre",
+   "senses": [
+    "416bad4f-3684-4aa3-ab93-f60eab633ab9"
+   ]
+  },
+  "38d0e133-4461-4497-a7c6-09d23d3cc6a3": {
+   "clitic": null,
+   "headword": "garçon",
+   "senses": [
+    "932efe5e-f3bb-4cf7-9fc5-9081cdca3475"
+   ]
+  },
+  "3b17b67e-bfcd-4615-bd91-192433df0d83": {
+   "clitic": null,
+   "headword": "elle",
+   "senses": [
+    "65273fc8-8e4b-4ba8-b337-38e814aef94e",
+    "864b72d6-9dda-407d-9446-8a001397b539"
+   ]
+  },
+  "3c1b632e-6ca3-4420-b604-9387c9e88888": {
+   "clitic": null,
+   "headword": "-ons",
+   "senses": [
+    "76ade360-0b8c-47eb-b8f5-4f3de79aeba7"
+   ]
+  },
+  "3c2a2101-bb15-44fb-b2f0-abc6d1823689": {
+   "clitic": null,
+   "headword": "qui",
+   "senses": [
+    "2e859a30-9087-4e2c-9fe2-5a46a9e61519"
+   ]
+  },
+  "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d": {
+   "clitic": null,
+   "headword": "-e3",
+   "senses": [
+    "39ee3c2a-db58-4328-a519-947aa80f7c99"
+   ]
+  },
+  "405ad438-2e3b-4ae1-b5d6-8a0e24f8830b": {
+   "clitic": null,
+   "headword": "Dieu",
+   "senses": [
+    "b01147dd-f900-43ab-a0a9-8b8c04beb1e0"
+   ]
+  },
+  "4099ee8a-1205-425d-b1f3-66329b135e9c": {
+   "clitic": null,
+   "headword": "devant",
+   "senses": [
+    "d2370914-5c80-4d05-bffe-08169795b59e"
+   ]
+  },
+  "4372098f-41ee-46cf-80c0-1b7b454b1449": {
+   "clitic": null,
+   "headword": "ce",
+   "senses": [
+    "e8962aae-e560-449e-a617-411f2a1e38b3"
+   ]
+  },
+  "4446fad3-4e88-4550-9589-c4b535beb299": {
+   "clitic": null,
+   "headword": "-e1",
+   "senses": [
+    "c9291f5b-c77e-4b5c-b17d-9148ca6d575e"
+   ]
+  },
+  "466e056c-d991-44d0-88f1-c4522a9e3feb": {
+   "clitic": null,
+   "headword": "trouver",
+   "senses": [
+    "3b4badd5-8b9b-484a-9de2-09231200e6a9"
+   ]
+  },
+  "49b87986-114b-4d8e-9234-21212fabb7ae": {
+   "clitic": null,
+   "headword": "sel",
+   "senses": [
+    "e8bc3a26-bba7-4d8a-b771-681983e0d208"
+   ]
+  },
+  "4b023428-c7f9-40c2-89df-0412016489a6": {
+   "clitic": null,
+   "headword": "sommet",
+   "senses": [
+    "d93b7eaf-2851-41e4-8ba0-4c4678efd969"
+   ]
+  },
+  "4b1680cb-9423-42e2-adda-0ce9dd9b94ee": {
+   "clitic": null,
+   "headword": "aux",
+   "senses": [
+    "d2d11065-cc52-443c-a46c-687f6c3e9ea2"
+   ]
+  },
+  "4d38de8a-78f7-4b4e-9fe7-228575d9be28": {
+   "clitic": null,
+   "headword": "pomme",
+   "senses": [
+    "e81317b3-d7a8-4e8b-9273-6bfe440807ae"
+   ]
+  },
+  "4eb487f9-142c-4ea6-b6df-82ceff244921": {
+   "clitic": null,
+   "headword": "sous",
+   "senses": [
+    "dd02b94f-ce0a-49c8-adf5-daab071b859b"
+   ]
+  },
+  "504f2b1d-7469-4228-be70-99ea60c49b7e": {
+   "clitic": null,
+   "headword": "bien",
+   "senses": [
+    "8f0190c6-95fe-4794-a6f9-2c1a4c234765"
+   ]
+  },
+  "58af57d8-c437-4315-83ad-ccc2797b07cb": {
+   "clitic": null,
+   "headword": "poisson",
+   "senses": [
+    "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32"
+   ]
+  },
+  "5d8ab709-62f7-4fb8-af31-220d5a996998": {
+   "clitic": null,
+   "headword": "celles",
+   "senses": [
+    "01e4150c-d49a-4c9a-8fc9-f6938ea57010"
+   ]
+  },
+  "616cd794-0996-419b-aa0d-ab991606af5a": {
+   "clitic": null,
+   "headword": "œuf",
+   "senses": [
+    "6c22b369-9653-44e8-97ec-b47a1295c46b"
+   ]
+  },
+  "632726c7-23da-4dbe-adf8-b2e192650c4f": {
+   "clitic": null,
+   "headword": "la1",
+   "senses": [
+    "53072aab-0ed6-4437-8a6a-7d37f3048152"
+   ]
+  },
+  "6414e0b7-e74a-40bc-a319-af7f37a60d3e": {
+   "clitic": null,
+   "headword": "Père",
+   "senses": [
+    "71079f44-539b-45ba-8013-f4d3e4019fab"
+   ]
+  },
+  "674267e0-e2d6-4833-9dc9-6691f02f0434": {
+   "clitic": null,
+   "headword": "avec",
+   "senses": [
+    "db1ffab1-0311-4862-a4b1-6a15c64965af"
+   ]
+  },
+  "6823fa27-2b41-414a-bea5-247aeda2688c": {
+   "clitic": null,
+   "headword": "fille",
+   "senses": [
+    "98cd363c-79be-421b-81ae-89f5284876ea"
+   ]
+  },
+  "68e04005-316a-4125-b392-4f0c4109039d": {
+   "clitic": null,
+   "headword": "-ait",
+   "senses": [
+    "ae9920b2-d841-4a70-ab7f-cb83bb532990"
+   ]
+  },
+  "68f1e986-b27a-427d-81a2-4c9d5605fb3f": {
+   "clitic": null,
+   "headword": "ras",
+   "senses": [
+    "2c72955c-b941-4480-ad75-1cbfd2defe86"
+   ]
+  },
+  "6c1ca1f2-ff3b-479f-8f40-b7c2387d76b4": {
+   "clitic": null,
+   "headword": "chose",
+   "senses": [
+    "992688e6-ea94-460e-9353-9947e940876b"
+   ]
+  },
+  "6f83796a-124b-4277-acf6-3e0d649cbd5f": {
+   "clitic": null,
+   "headword": "maison",
+   "senses": [
+    "06a9b34f-32be-46c5-b8c4-30af380062c8"
+   ]
+  },
+  "71d16713-506b-4d4a-8c13-5e630066cf0a": {
+   "clitic": null,
+   "headword": "pas",
+   "senses": [
+    "42170ae9-0aa8-466a-a59d-d549f4098ac6"
+   ]
+  },
+  "73c625e9-e2c8-457d-a5a1-20d00a770eee": {
+   "clitic": null,
+   "headword": "parler",
+   "senses": [
+    "6b80b835-636e-47ae-8630-e42c39d0bd49"
+   ]
+  },
+  "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51": {
+   "clitic": null,
+   "headword": "-^02",
+   "senses": [
+    "8d0035ae-deee-4c32-a645-f74c39a166d3",
+    "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+    "beced4c9-d913-4d8f-9226-f5c3aa5fb936"
+   ]
+  },
+  "7bbaf019-1106-4399-b363-93bc056f6b07": {
+   "clitic": null,
+   "headword": "vélo",
+   "senses": [
+    "b4c813b6-ee2f-4571-a1b8-129b048b9f91"
+   ]
+  },
+  "7fd3493a-66ab-466e-a401-1d3222efbf8f": {
+   "clitic": null,
+   "headword": "-t",
+   "senses": [
+    "09a55edc-65ba-4d07-aaf5-27ab8508b3a3"
+   ]
+  },
+  "7ff43767-4f91-49cb-b87b-2975eaa946b2": {
+   "clitic": null,
+   "headword": "-e2",
+   "senses": [
+    "b1644499-63af-4c6f-8fd5-a434bb229873",
+    "71bfb6ce-6e66-4ea7-b603-120dc6164668"
+   ]
+  },
+  "8130c821-fca1-494c-b84e-2ed52fe6e112": {
+   "clitic": null,
+   "headword": "meus",
+   "senses": [
+    "2a0f65ed-c6b1-4c8a-8ed5-1d7d4b8c34cb"
+   ]
+  },
+  "83ae662b-cb09-4f88-a16b-095177d3321c": {
+   "clitic": null,
+   "headword": "lumière",
+   "senses": [
+    "2f27e809-37c7-476f-9ccc-84c916e129e6"
+   ]
+  },
+  "88aa6a11-2c2b-4310-aa15-f2e49edf90f1": {
+   "clitic": null,
+   "headword": "ainsi que",
+   "senses": [
+    "c18112bd-2b84-4b3a-9b3f-746735a0f4dd"
+   ]
+  },
+  "8b974fa9-81b8-4708-8805-97eec43c0640": {
+   "clitic": null,
+   "headword": "le",
+   "senses": [
+    "c22579cf-734f-4387-98a0-b4fe3e03b250",
+    "b8d7a7e6-06ce-4511-83db-4564ad6ae1e8"
+   ]
+  },
+  "8d5b3fc2-155c-486d-82b6-0dbbcf415c83": {
+   "clitic": null,
+   "headword": "vis",
+   "senses": [
+    "99e43ad8-42c8-4aa1-a37d-7a0e8e0f2d38"
+   ]
+  },
+  "91e8bf5d-acd9-4fdb-bfe3-6c9a14f31219": {
+   "clitic": null,
+   "headword": "céleste",
+   "senses": [
+    "3a8945cd-abf5-4e39-90d3-086139a724d4"
+   ]
+  },
+  "92ace8d2-938c-4c1d-9471-79dda6582247": {
+   "clitic": null,
+   "headword": "pour que",
+   "senses": [
+    "2d9e823d-488c-4ce2-9f94-adc44ed9561d"
+   ]
+  },
+  "9434c3c3-c7f3-4021-b87b-d6811a2ac0a9": {
+   "clitic": null,
+   "headword": "bon",
+   "senses": [
+    "4905a62e-2e23-4983-8c8a-c442e127d8b1"
+   ]
+  },
+  "96b1d6bd-223d-4a88-91af-55244a589857": {
+   "clitic": null,
+   "headword": "vivre",
+   "senses": [
+    "2e9db541-fa7c-44d4-8e13-86498f3a61ba"
+   ]
+  },
+  "9969c969-d8f8-4e63-bb97-07744bfb57fd": {
+   "clitic": null,
+   "headword": "la2",
+   "senses": [
+    "85e2bfbd-10c0-4824-be5c-bf5f6190c6ad"
+   ]
+  },
+  "9a1d03d3-190f-4aff-8792-6b98c1f702dd": {
+   "clitic": null,
+   "headword": "battre",
+   "senses": [
+    "d6dc2ced-e837-43eb-bee1-f3a2abbb2a4d"
+   ]
+  },
+  "9ae9a391-7da0-4161-a3b2-acd23339c789": {
+   "clitic": null,
+   "headword": "sa",
+   "senses": [
+    "136e7e50-b91c-48db-b894-2227162ee282"
+   ]
+  },
+  "9d2c21ee-9244-4c7e-b7ac-204ee14437ab": {
+   "clitic": null,
+   "headword": "les",
+   "senses": [
+    "8b0cea7f-ead0-482b-a654-3a1e2eba947d",
+    "b49184e1-1d5e-4476-abb2-cb11aabd87dc"
+   ]
+  },
+  "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1": {
+   "clitic": null,
+   "headword": "un",
+   "senses": [
+    "c8ddbd04-c6d8-4024-a78b-66d800d617bc"
+   ]
+  },
+  "a206f606-b351-4efe-9ef7-d9c3b724f342": {
+   "clitic": null,
+   "headword": "long",
+   "senses": [
+    "b63a020d-af9e-4292-a105-31e216fe8b76"
+   ]
+  },
+  "a3c2aeaa-24d9-48cc-9852-4a609500a1c4": {
+   "clitic": null,
+   "headword": "il",
+   "senses": [
+    "2fb47683-10c0-433c-9ee5-990833febb1d"
+   ]
+  },
+  "a4975b44-9406-4145-b67d-c129254b23dd": {
+   "clitic": null,
+   "headword": "ainsi",
+   "senses": [
+    "72bafb8b-fe79-4ae4-8f99-fa5fd67fd8db"
+   ]
+  },
+  "a4f1122d-13fd-4f2c-b901-c2e05d9e5ad2": {
+   "clitic": null,
+   "headword": "pied",
+   "senses": [
+    "4db1cdcc-0284-4516-a809-d885e2fc45c1"
+   ]
+  },
+  "a53f7eee-229d-4fd3-99c8-da07bb78291d": {
+   "clitic": null,
+   "headword": "se",
+   "senses": [
+    "7191f0ef-b0d2-4172-b811-e1d7d53a1fb0"
+   ]
+  },
+  "a5ae176b-0a35-4a99-9d29-50917dbb301c": {
+   "clitic": null,
+   "headword": "être",
+   "senses": [
+    "21aa3a38-0c3f-4fe1-9799-c9f9169efb13"
+   ]
+  },
+  "a5b41d76-cde8-4c49-b248-5168b73a62cc": {
+   "clitic": null,
+   "headword": "par",
+   "senses": [
+    "dc6bf11e-181c-4134-9767-392b942a4fe0"
+   ]
+  },
+  "a6b47882-c6ac-47a0-b1fd-315050472606": {
+   "clitic": null,
+   "headword": "-iez",
+   "senses": [
+    "ca896360-ce1f-47e8-96a2-5cb6d9650266"
+   ]
+  },
+  "a6e49da0-7904-4139-a0fd-c9f48eed3e41": {
+   "clitic": null,
+   "headword": "ceux",
+   "senses": [
+    "b4e2ea31-adfc-4682-bd34-1d4a3879d66b"
+   ]
+  },
+  "a70e33b1-499f-498f-b95d-b1153e62ebd3": {
+   "clitic": null,
+   "headword": "mouvoir",
+   "senses": [
+    "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3"
+   ]
+  },
+  "a7db7db2-83d3-4226-b403-5425d8ffb722": {
+   "clitic": null,
+   "headword": "je",
+   "senses": [
+    "32440064-a577-49d4-bfdb-52ff2fb27d59"
+   ]
+  },
+  "a806a20e-5205-40d7-8594-60dd54af40b0": {
+   "clitic": null,
+   "headword": "femelle",
+   "senses": [
+    "3b4c1fde-c112-42c6-affb-40e90b9eeddb"
+   ]
+  },
+  "ab833d57-fd69-45b8-aeaf-4dfa90ee6762": {
+   "clitic": null,
+   "headword": "du",
+   "senses": [
+    "b91b6efc-8f41-4d39-8555-da342a5e5e4a"
+   ]
+  },
+  "ac156de1-9ee5-4159-9ffc-53fa4a1ed0c7": {
+   "clitic": null,
+   "headword": "lampe",
+   "senses": [
+    "551643a2-b5f4-4268-a9cf-c385f0d1a9b7"
+   ]
+  },
+  "ac5a496b-040f-4220-a581-839e9249181b": {
+   "clitic": null,
+   "headword": "celle",
+   "senses": [
+    "668917ea-d06e-4ab3-bec2-c590ccca36f4"
+   ]
+  },
+  "ad9d82ff-5c7d-4089-a85a-d61b354de479": {
+   "clitic": null,
+   "headword": "est",
+   "senses": [
+    "28c3f092-15cb-4934-a0bb-a84ab1879afa"
+   ]
+  },
+  "af0cd035-3759-4678-9b23-9eeff3256ef8": {
+   "clitic": null,
+   "headword": "on",
+   "senses": [
+    "4f3741ba-fb70-4254-85da-60c244c5eb57"
+   ]
+  },
+  "b0b77914-3d4c-410c-ac19-ef352481e72a": {
+   "clitic": null,
+   "headword": "bonbon",
+   "senses": [
+    "9975733d-2119-499b-bfe8-783db0b52cf9"
+   ]
+  },
+  "b1153a5d-2ce7-410f-8380-2f8c1a8099c0": {
+   "clitic": null,
+   "headword": "-ais1",
+   "senses": [
+    "d28beafa-6823-4113-acea-126ad1ccc9e0"
+   ]
+  },
+  "bc3364f9-7310-45cd-8337-eee084fcab81": {
+   "clitic": null,
+   "headword": "-ez",
+   "senses": [
+    "f7c8d60b-8c7c-4991-94a5-3577b9eca70c"
+   ]
+  },
+  "be897932-cc33-4cd9-afa1-7d46c092a6d7": {
+   "clitic": null,
+   "headword": "cette",
+   "senses": [
+    "3d1bf06f-57a8-4e9c-8af8-549a48cd8269"
+   ]
+  },
+  "c2091ccb-145a-4c8a-b420-51e236e53be2": {
+   "clitic": null,
+   "headword": "ici",
+   "senses": [
+    "556b0328-98f2-4646-a066-721d6aa4c0a6"
+   ]
+  },
+  "c35a2b09-f749-47b1-8cae-a67ffc5f2da2": {
+   "clitic": null,
+   "headword": "-ions",
+   "senses": [
+    "c1bf85aa-2607-4c90-8ccd-2b1aa43fd4a8"
+   ]
+  },
+  "c3ee95e0-2233-41e1-b561-c7afc7158781": {
+   "clitic": null,
+   "headword": "-es",
+   "senses": [
+    "987bff92-8f8d-4688-9ab8-bca52cbb73f5"
+   ]
+  },
+  "c4fcb08d-2986-4ae8-9cae-3b870d92d03d": {
+   "clitic": null,
+   "headword": "des2",
+   "senses": [
+    "ba89af77-ce91-490a-b14a-0c89abdbc1f1"
+   ]
+  },
+  "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a": {
+   "clitic": null,
+   "headword": "-^01",
+   "senses": [
+    "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+    "9aa42443-f5e3-4b92-935e-4e07b67266df"
+   ]
+  },
+  "c7025994-9d47-4667-992c-37100c6762df": {
+   "clitic": null,
+   "headword": "terre",
+   "senses": [
+    "eef2c2d9-3fe8-4316-a6a7-85633fc3f20d"
+   ]
+  },
+  "ca6b111e-0fec-430a-a295-a373d578b47d": {
+   "clitic": null,
+   "headword": "couple",
+   "senses": [
+    "498b7853-fd5e-46a7-81cb-077d59516c5a"
+   ]
+  },
+  "cbd3a2ac-509b-4014-928e-d52f6c9a3624": {
+   "clitic": null,
+   "headword": "ville",
+   "senses": [
+    "1bdc54e3-203f-4beb-9418-72418374cecd"
+   ]
+  },
+  "ccf39c2d-8abe-4f24-bfe0-3234a04c03ab": {
+   "clitic": null,
+   "headword": "sur",
+   "senses": [
+    "67e86243-732d-423a-ad2e-94d9afe4699a"
+   ]
+  },
+  "cf67c232-48c1-4962-9a44-7724acba9b77": {
+   "clitic": null,
+   "headword": "sont",
+   "senses": [
+    "410c705f-f85e-4758-8198-3fffaf02fecb"
+   ]
+  },
+  "d221474a-ee78-4c06-8727-526af2652eb6": {
+   "clitic": null,
+   "headword": "si",
+   "senses": [
+    "958e8267-f352-47a8-88a3-bde9406238a9"
+   ]
+  },
+  "d2d9c4b8-967c-4405-bae5-dfe21c306197": {
+   "clitic": null,
+   "headword": "animal",
+   "senses": [
+    "a76936ff-9cb6-4bb7-ad2c-d12a1883c455"
+   ]
+  },
+  "d4f6ea46-d84c-4eaa-b390-417e20eda808": {
+   "clitic": null,
+   "headword": "-ent",
+   "senses": [
+    "5a67da2e-3cb7-4df8-bc83-d46e3350098b"
+   ]
+  },
+  "d5bd511f-da57-4fa0-9f16-b4bedaf1402b": {
+   "clitic": null,
+   "headword": "-aient",
+   "senses": [
+    "e8d4e94a-ea4e-45db-a539-481b2c91baa7"
+   ]
+  },
+  "ddff72c1-effa-455c-b571-aaba38b031fb": {
+   "clitic": null,
+   "headword": "tout",
+   "senses": [
+    "d99031f0-d690-4a8e-811a-73245f47a758"
+   ]
+  },
+  "e15d5546-6840-4cfe-b6c2-bd6790e19dcd": {
+   "clitic": null,
+   "headword": "rouge",
+   "senses": [
+    "62a287fa-c0ba-4a34-9b23-c361934100d8"
+   ]
+  },
+  "e6dfd549-7487-4596-a3ae-d922034a20b1": {
+   "clitic": null,
+   "headword": "de",
+   "senses": [
+    "da8d8670-759f-4820-af5b-041a5c6cd19b"
+   ]
+  },
+  "ec2efde2-accc-4871-a06e-1bd6ddb75e7f": {
+   "clitic": null,
+   "headword": "route",
+   "senses": [
+    "37054df3-4a4a-4cb7-9db5-80fd41b130ec"
+   ]
+  },
+  "ed9cad13-bf4e-42d2-b27c-5b1d74caacc6": {
+   "clitic": null,
+   "headword": "et",
+   "senses": [
+    "e73aa83f-13fd-4554-a96f-4c87ef7488a8"
+   ]
+  },
+  "eed1ccdf-0752-4a63-9357-5e6cc7150982": {
+   "clitic": null,
+   "headword": "celui",
+   "senses": [
+    "f8fd3fb9-9a23-44e2-b9ea-470ddc4c3c38"
+   ]
+  },
+  "ef8a8904-1600-4ddc-bb2a-9eabee82f656": {
+   "clitic": null,
+   "headword": "avoir",
+   "senses": [
+    "42edacaf-1ae0-4459-8ced-3f164e36c35c",
+    "9bfc733b-df66-41f4-9157-8b4f6a84037a"
+   ]
+  },
+  "efdde96d-2c25-43dd-8387-f1b6b365216d": {
+   "clitic": null,
+   "headword": "Noé",
+   "senses": [
+    "9cfe0f2d-f2d4-4f1b-bf55-f1e365964e60"
+   ]
+  },
+  "f985b33a-2c5e-41f6-9623-8cd5b6e01dbb": {
+   "clitic": null,
+   "headword": "gros",
+   "senses": [
+    "8abd45fd-c10d-4867-901b-2dc80071112e"
+   ]
+  },
+  "f9dfa498-3c37-418d-ae05-d76946e03d54": {
+   "clitic": null,
+   "headword": "mâle",
+   "senses": [
+    "6bdfaa97-a3aa-4b32-9a2e-4c49dc4c1b1b"
+   ]
+  },
+  "fa7a5b11-a014-4657-a1f5-c9247577a8dd": {
+   "clitic": null,
+   "headword": "pour",
+   "senses": [
+    "5a9411e0-8c67-422c-be51-d9aca0d5d062",
+    "2950890f-56fc-4676-9c54-1a6f9a9d22af"
+   ]
+  },
+  "fb76bd29-4bb4-426e-b31c-6aac4e8049e4": {
+   "clitic": null,
+   "headword": "petit",
+   "senses": [
+    "1e8f7e25-d0f4-49d4-b68a-571837a82c6d"
+   ]
+  },
+  "fc8cea36-6523-4d86-93f3-ba8a489a16c6": {
+   "clitic": null,
+   "headword": "ne",
+   "senses": [
+    "84b3d225-40a8-4fea-9fc9-fbea3fdf7e9c"
+   ]
+  }
+ },
+ "formatVersion": 1,
+ "msas": {
+  "02f558f9-0384-4104-9528-022079040f53": {
+   "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+   "stem": false
+  },
+  "03a1a019-b645-4a9a-8bc5-25f0e1513216": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "37054df3-4a4a-4cb7-9db5-80fd41b130ec",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "05e71c77-46cd-47db-bba8-0f3ec2ec17d2": {
+   "inflClass": "RE",
+   "pos": "v",
+   "sense": "416bad4f-3684-4aa3-ab93-f60eab633ab9",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "08827ad1-f98a-40d8-9634-eac267edb4dc": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "9975733d-2119-499b-bfe8-783db0b52cf9",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "0cd6c53e-8962-4de5-9397-185ac0ddb24f": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "dc6bf11e-181c-4134-9767-392b942a4fe0",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88": {
+   "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+   "stem": false
+  },
+  "0ed9b951-7ff5-4e6c-bf19-b38f487fcafa": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "42671e36-e777-455c-9ce8-9b1b9684c761",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "0f5ba860-0192-425d-a191-6d0830df3fb6": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "8f0190c6-95fe-4794-a6f9-2c1a4c234765",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "0fe99a7b-e25b-4776-b40e-afa80c7771d6": {
+   "sense": "5a67da2e-3cb7-4df8-bc83-d46e3350098b",
+   "stem": false
+  },
+  "112cfbd4-fbe8-4309-8b64-64743bf70aa4": {
+   "inflClass": null,
+   "pos": "cop",
+   "sense": "28c3f092-15cb-4934-a0bb-a84ab1879afa",
+   "stem": true,
+   "stemFeatures": [
+    "prs",
+    "sg",
+    "3"
+   ]
+  },
+  "13e36e54-f7c4-44f8-9587-b2545706f92a": {
+   "sense": "76ade360-0b8c-47eb-b8f5-4f3de79aeba7",
+   "stem": false
+  },
+  "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5": {
+   "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+   "stem": false
+  },
+  "1530029e-eaa8-48da-a389-6f263f5201e7": {
+   "sense": "b8bc63b7-d1bd-4f3c-b0aa-993ae5a7cb31",
+   "stem": false
+  },
+  "1badaac4-8fb1-4c42-9d66-b290a26da2a7": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "1bdc54e3-203f-4beb-9418-72418374cecd",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "1d126e0e-4e32-4517-8506-78f9744e2f6d": {
+   "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+   "stem": false
+  },
+  "1da9228e-90d6-4057-a5db-e2af0bd87fe6": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "4f3741ba-fb70-4254-85da-60c244c5eb57",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "208e79f2-899c-4030-98ec-8efe5a52cd6b": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "23d8ab80-2c33-49af-a5d4-bbb0a681a13a": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "8abd45fd-c10d-4867-901b-2dc80071112e",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "27f81268-81b2-4cc4-a95c-54c6f50e80cb": {
+   "inflClass": "ER",
+   "pos": "v",
+   "sense": "6a8c5ded-fd9d-4094-9af4-6990bb3c41c2",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "2882c429-1257-448d-95b5-a682faff0d67": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "a94a25d7-7a07-4a68-83f9-243678946aff",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "2bac470e-4813-4875-a23e-dde64e36fa6f": {
+   "inflClass": null,
+   "pos": "relpro",
+   "sense": "2e859a30-9087-4e2c-9fe2-5a46a9e61519",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "30508711-f487-4de8-8aaf-4d98d1e879f9": {
+   "sense": "e8d4e94a-ea4e-45db-a539-481b2c91baa7",
+   "stem": false
+  },
+  "31f3c031-46ca-43db-bcbd-3fbda5427856": {
+   "inflClass": null,
+   "pos": "v",
+   "sense": "42edacaf-1ae0-4459-8ced-3f164e36c35c",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "321d0aaa-a870-4bc3-8261-5f8077ce4508": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "b63a020d-af9e-4292-a105-31e216fe8b76",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "377c12e5-268e-4c65-8a51-c8d2444ec3ef": {
+   "inflClass": "ER",
+   "pos": "v",
+   "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2": {
+   "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+   "stem": false
+  },
+  "418a91c4-1e0c-46e5-9f59-d589ca63591c": {
+   "inflClass": "RE",
+   "pos": "v",
+   "sense": "d6dc2ced-e837-43eb-bee1-f3a2abbb2a4d",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "42f43c08-0155-45c3-9272-9176f7aa3675": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "6bdfaa97-a3aa-4b32-9a2e-4c49dc4c1b1b",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "43219c0d-1de9-4060-9b00-2853b37dc9d6": {
+   "inflClass": null,
+   "pos": "cop",
+   "sense": "410c705f-f85e-4758-8198-3fffaf02fecb",
+   "stem": true,
+   "stemFeatures": [
+    "prs",
+    "pl",
+    "3"
+   ]
+  },
+  "481ca3a3-cc77-4627-8414-5cacba41fe7e": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "4842393c-109c-4e17-b0b4-67b85052787c": {
+   "inflClass": null,
+   "pos": "v",
+   "sense": "2a0f65ed-c6b1-4c8a-8ed5-1d7d4b8c34cb",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "49f5fcd4-f101-4860-af2a-e48453c77083": {
+   "sense": "b8445393-02d6-4661-8a07-5f32e9cccfa7",
+   "stem": false
+  },
+  "4ac8577f-dd44-47e9-b93f-bd78aa5e693f": {
+   "inflClass": "IRREG",
+   "pos": "v",
+   "sense": "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "4b113fd4-1aae-402e-b619-81b20caebc92": {
+   "sense": "71bfb6ce-6e66-4ea7-b603-120dc6164668",
+   "stem": false
+  },
+  "508096af-10d1-4634-973b-6a45f02fdac3": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "3b560ae9-f304-46c1-bb36-e440de3a5111",
+   "stem": true,
+   "stemFeatures": [
+    "pl",
+    "2"
+   ]
+  },
+  "53090c92-c034-4254-9caa-88601cc491cb": {
+   "inflClass": null,
+   "pos": "cop",
+   "sense": "21aa3a38-0c3f-4fe1-9799-c9f9169efb13",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "542e584c-e966-4d14-877a-77e462642868": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "58cf554f-3837-43b1-ab17-c4ebd93c16e6": {
+   "inflClass": null,
+   "pos": "adv",
+   "sense": "556b0328-98f2-4646-a066-721d6aa4c0a6",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "5a4ebb57-e407-46bd-b497-1855420a1c75": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "3a8945cd-abf5-4e39-90d3-086139a724d4",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "5e3b0105-d169-4e7e-9d24-6d21b992e22c": {
+   "inflClass": null,
+   "pos": "coordconj",
+   "sense": "c18112bd-2b84-4b3a-9b3f-746735a0f4dd",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "5f736c9b-ff93-4c05-a7c3-f53189b59956": {
+   "inflClass": null,
+   "pos": "subordconj",
+   "sense": "2d9e823d-488c-4ce2-9f94-adc44ed9561d",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "611edb6d-fba8-4899-8462-aa5560d24736": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "2fb47683-10c0-433c-9ee5-990833febb1d",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "sg",
+    "3"
+   ]
+  },
+  "615e705c-b753-422b-a167-33ce8e190c57": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "b8d7a7e6-06ce-4511-83db-4564ad6ae1e8",
+   "stem": true,
+   "stemFeatures": [
+    "acc",
+    "m",
+    "sg",
+    "3"
+   ]
+  },
+  "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f": {
+   "inflClass": null,
+   "pos": "def",
+   "sense": "b49184e1-1d5e-4476-abb2-cb11aabd87dc",
+   "stem": true,
+   "stemFeatures": [
+    "f",
+    "pl"
+   ]
+  },
+  "638bc981-1db8-494b-94f3-66c1e43ecda6": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "f3eb1768-ab82-4977-a344-7f61979a1aa0",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "pl",
+    "3"
+   ]
+  },
+  "63d41299-958f-42c6-a35f-a88dbc7cee0f": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "2b534fe8-57e7-4cb7-bb2f-04b9761e7513",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "64034ce6-856a-4484-aba4-adaeab0e0474": {
+   "sense": "c1bf85aa-2607-4c90-8ccd-2b1aa43fd4a8",
+   "stem": false
+  },
+  "65fd0b86-f0a8-4b44-88a4-e31c70a8e9b9": {
+   "inflClass": null,
+   "pos": "prt",
+   "sense": "42170ae9-0aa8-466a-a59d-d549f4098ac6",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "6a288c88-7e94-4a55-afd5-1883cda51d46": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "4f168631-59a4-4f20-a703-2a841f07800f",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "6cba74f8-3027-4c58-9800-678525d37f25": {
+   "inflClass": null,
+   "pos": "pro-form",
+   "sense": "3ffe8ac9-0766-4e2a-a818-980187276844",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "6f4f045e-faa1-45a4-b437-e772f552dbba": {
+   "inflClass": null,
+   "pos": "prepart",
+   "sense": "d2d11065-cc52-443c-a46c-687f6c3e9ea2",
+   "stem": true,
+   "stemFeatures": [
+    "pl"
+   ]
+  },
+  "71cd537c-ab19-47e9-9c72-42d1c466f1a5": {
+   "inflClass": null,
+   "pos": "nprop",
+   "sense": "b01147dd-f900-43ab-a0a9-8b8c04beb1e0",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "72e6e3ef-f728-4c79-a1a9-5f6a5ac17636": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "acd7f50c-d986-439a-819d-53bd3f02b04e",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "7741956d-aea7-4105-9d0c-8594bb4b551d": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "385a82c8-3c2e-4815-ab58-aeb6e4e3d8b2",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "77d3f0ee-9387-44dd-b3ad-d0822ba25daf": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "dd02b94f-ce0a-49c8-adf5-daab071b859b",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "79b86445-386b-4ade-bdef-3990553c1ce0": {
+   "inflClass": null,
+   "pos": "dempro",
+   "sense": "f8fd3fb9-9a23-44e2-b9ea-470ddc4c3c38",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "sg"
+   ]
+  },
+  "7a7742be-0904-4630-97d8-e1ca7a993c71": {
+   "inflClass": null,
+   "pos": "dem",
+   "sense": "e8962aae-e560-449e-a617-411f2a1e38b3",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "sg"
+   ]
+  },
+  "7a86b791-ec40-4bcf-b8f5-be5d07f6c61d": {
+   "sense": "ca896360-ce1f-47e8-96a2-5cb6d9650266",
+   "stem": false
+  },
+  "7ba6e231-0e09-4d46-bc92-b744e5ba9ea8": {
+   "sense": "f7c8d60b-8c7c-4991-94a5-3577b9eca70c",
+   "stem": false
+  },
+  "7c8fbb68-1a81-4133-a49f-34f214318b5e": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "da8d8670-759f-4820-af5b-041a5c6cd19b",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "7f0be338-e07e-4fdf-82a5-4b8dad39680b": {
+   "inflClass": "ER",
+   "pos": "v",
+   "sense": "6b80b835-636e-47ae-8630-e42c39d0bd49",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "8159a5c7-8d3f-44f8-9c6a-b32781e5b5dd": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "4905a62e-2e23-4983-8c8a-c442e127d8b1",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "82c975e0-c450-4d0e-b388-bc6e7f0cb657": {
+   "inflClass": "IRREG",
+   "pos": "aux",
+   "sense": "9bfc733b-df66-41f4-9157-8b4f6a84037a",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "84976aa7-2a57-4106-8250-85795d22c9b1": {
+   "inflClass": null,
+   "pos": "dempro",
+   "sense": "01e4150c-d49a-4c9a-8fc9-f6938ea57010",
+   "stem": true,
+   "stemFeatures": [
+    "f",
+    "pl"
+   ]
+  },
+  "8506817d-aa6b-4c6e-a0b7-31a16d42aeea": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "52d542e0-e742-4de9-8b03-545e04ef634a",
+   "stem": true,
+   "stemFeatures": [
+    "pl",
+    "1"
+   ]
+  },
+  "8835241a-2add-42db-8a56-028f6930c377": {
+   "inflClass": null,
+   "pos": "subordconj",
+   "sense": "8b477ceb-54c3-4fbf-8b14-25e4c3f1da71",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "8892594a-db4d-4b1a-aed5-fa2b181b3530": {
+   "inflClass": null,
+   "pos": "quant",
+   "sense": "d99031f0-d690-4a8e-811a-73245f47a758",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "8a019713-18de-4d6b-9c67-a78a4c7dc18d": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "d2370914-5c80-4d05-bffe-08169795b59e",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "8a5959c1-ae9c-4bc7-b7ea-9beb8d727cb7": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "32440064-a577-49d4-bfdb-52ff2fb27d59",
+   "stem": true,
+   "stemFeatures": [
+    "sg",
+    "1"
+   ]
+  },
+  "8b5cbc9c-be44-47b0-b5f9-48f23d13a135": {
+   "sense": "987bff92-8f8d-4688-9ab8-bca52cbb73f5",
+   "stem": false
+  },
+  "8bf4bc55-b961-4b92-9b2d-4189dc498848": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "e8bc3a26-bba7-4d8a-b771-681983e0d208",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "8ca70baa-9c57-4fd6-bb21-f82eba42f57d": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "4db1cdcc-0284-4516-a809-d885e2fc45c1",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "8eebc64a-8d26-4c85-81f7-2034fa687540": {
+   "inflClass": null,
+   "pos": "indf",
+   "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+   "stem": true,
+   "stemFeatures": [
+    "sg"
+   ]
+  },
+  "934d5f5a-6b30-4c5f-a118-b3a303cc5c66": {
+   "inflClass": null,
+   "pos": "coordconj",
+   "sense": "e73aa83f-13fd-4554-a96f-4c87ef7488a8",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "95e86136-ff73-4b54-8199-7240c370c6c4": {
+   "inflClass": null,
+   "pos": "poss",
+   "sense": "136e7e50-b91c-48db-b894-2227162ee282",
+   "stem": true,
+   "stemFeatures": [
+    "sg",
+    "3"
+   ]
+  },
+  "9a497769-c445-4997-9871-60014f5c04ff": {
+   "inflClass": null,
+   "pos": "nprop",
+   "sense": "9cfe0f2d-f2d4-4f1b-bf55-f1e365964e60",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "9b26dd52-171f-4de1-a25b-8d7832e1da7d": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "5a9411e0-8c67-422c-be51-d9aca0d5d062",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "9b9e0dd2-500c-4a16-968e-d335000d3c59": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "d93b7eaf-2851-41e4-8ba0-4c4678efd969",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "9bf15903-5e56-4711-a3e7-5192617cf05a": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "2c72955c-b941-4480-ad75-1cbfd2defe86",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "9ce7fa7b-6b8c-4cc2-9f27-92d779d32263": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "eef2c2d9-3fe8-4316-a6a7-85633fc3f20d",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "a2557376-7de4-4a81-86b1-7e408ede88b2": {
+   "sense": "1e44638f-737e-4850-aa1a-b4068f574126",
+   "stem": false
+  },
+  "a3c43f19-c3e3-4bd7-9f53-09aafbf903b9": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "992688e6-ea94-460e-9353-9947e940876b",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "a4f06874-0e2f-4664-8591-ccbc311316a2": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "67e86243-732d-423a-ad2e-94d9afe4699a",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "a6ddfc72-4d15-47a2-8bcb-29378e341088": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "06a9b34f-32be-46c5-b8c4-30af380062c8",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0": {
+   "inflClass": null,
+   "pos": "def",
+   "sense": "53072aab-0ed6-4437-8a6a-7d37f3048152",
+   "stem": true,
+   "stemFeatures": [
+    "f",
+    "sg"
+   ]
+  },
+  "ae92d66f-e86a-4f1d-832d-c99fa149bef2": {
+   "inflClass": "ER",
+   "pos": "v",
+   "sense": "3b4badd5-8b9b-484a-9de2-09231200e6a9",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "aeed7b3b-07e3-4fff-a6e9-64d773bfd7c9": {
+   "inflClass": null,
+   "pos": "dem",
+   "sense": "3d1bf06f-57a8-4e9c-8af8-549a48cd8269",
+   "stem": true,
+   "stemFeatures": [
+    "f",
+    "sg"
+   ]
+  },
+  "b0afc409-bde3-48c4-8f46-71d4694390e2": {
+   "inflClass": null,
+   "pos": "refl",
+   "sense": "7191f0ef-b0d2-4172-b811-e1d7d53a1fb0",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "b4fd1913-78bb-40c6-b2e2-3d5f9cc3bd88": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "3dd547f0-a5f3-4982-b212-3cb72dfe723d",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "b5b96eb7-61ec-435f-bcb8-ad37a6deac8a": {
+   "inflClass": null,
+   "pos": "prt",
+   "sense": "d31431e8-910e-4f97-ae1d-da09d8ca65a9",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "b653f423-2766-4e15-825a-176cebd39dfb": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "62a287fa-c0ba-4a34-9b23-c361934100d8",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "b67d2c95-4895-4d3f-8aff-dd151f670135": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "3b4c1fde-c112-42c6-affb-40e90b9eeddb",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "b7ef74b4-99a9-4c8c-86a7-a886cb332eca": {
+   "inflClass": null,
+   "pos": "coordconj",
+   "sense": "2950890f-56fc-4676-9c54-1a6f9a9d22af",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "bb550133-1df6-4679-a13d-e99a98709f8e": {
+   "sense": "d28beafa-6823-4113-acea-126ad1ccc9e0",
+   "stem": false
+  },
+  "bc9f5948-8ed1-446c-9ec7-06a03b8c047e": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "db1ffab1-0311-4862-a4b1-6a15c64965af",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "c293dc13-e639-429e-addf-d1406ba22d3d": {
+   "inflClass": null,
+   "pos": "prt",
+   "sense": "84b3d225-40a8-4fea-9fc9-fbea3fdf7e9c",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "c378a34c-c57f-4945-9842-6720ed702502": {
+   "inflClass": null,
+   "pos": "def",
+   "sense": "c22579cf-734f-4387-98a0-b4fe3e03b250",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "sg"
+   ]
+  },
+  "c39a48b5-f441-4a9a-be48-300b9a2c2991": {
+   "inflClass": null,
+   "pos": "prepart",
+   "sense": "b91b6efc-8f41-4d39-8555-da342a5e5e4a",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "sg"
+   ]
+  },
+  "c5c57923-e4f6-4d22-ac42-7d4393b786ab": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "71079f44-539b-45ba-8013-f4d3e4019fab",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "c61f272d-4fec-49c4-83ea-3e714aed536a": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "65273fc8-8e4b-4ba8-b337-38e814aef94e",
+   "stem": true,
+   "stemFeatures": [
+    "f",
+    "sg"
+   ]
+  },
+  "c70343a8-eba4-4af8-a6fd-f0002b96b2f4": {
+   "sense": "ae9920b2-d841-4a70-ab7f-cb83bb532990",
+   "stem": false
+  },
+  "c801df37-8519-4e4c-a69b-0468405d2ac1": {
+   "inflClass": "ER",
+   "pos": "v",
+   "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "c836e54e-ed72-45eb-8d5f-102431daa0b5": {
+   "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+   "stem": false
+  },
+  "cd3f4771-e872-4c60-b7a4-98a9c8731953": {
+   "inflClass": null,
+   "pos": "prepart",
+   "sense": "81581ace-1d2d-4aa3-a431-88eb863806a9",
+   "stem": true,
+   "stemFeatures": [
+    "sg"
+   ]
+  },
+  "ce34c723-9a2b-4a6a-8c9e-8482713de59c": {
+   "inflClass": "IRREG",
+   "pos": "v",
+   "sense": "2e9db541-fa7c-44d4-8e13-86498f3a61ba",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "ce9f741e-c5f5-4754-9d9a-1adf12ce6ec1": {
+   "inflClass": null,
+   "pos": "dempro",
+   "sense": "668917ea-d06e-4ab3-bec2-c590ccca36f4",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "ceb033d2-5697-4b7f-8342-0d836ff50e17": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "498b7853-fd5e-46a7-81cb-077d59516c5a",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "d4dec502-6d55-4079-b91f-b31c9ad59315": {
+   "inflClass": null,
+   "pos": "prep",
+   "sense": "7df25c1c-714a-4cb7-89c6-1775c8335990",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "d6030b47-de95-4480-858c-cdbbe6fa1408": {
+   "inflClass": null,
+   "pos": "prepart",
+   "sense": "ba89af77-ce91-490a-b14a-0c89abdbc1f1",
+   "stem": true,
+   "stemFeatures": [
+    "pl"
+   ]
+  },
+  "d72332b9-41c2-4960-8f65-32203b07492b": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "2f27e809-37c7-476f-9ccc-84c916e129e6",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "d89fd094-3762-4f2f-a58a-ded6a241fb8b": {
+   "inflClass": "X_PL",
+   "pos": "n",
+   "sense": "a76936ff-9cb6-4bb7-ad2c-d12a1883c455",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "d982b5fc-73fb-41f4-9a68-b0b23b95d522": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "4ffc51f3-cdcc-469b-b230-caf4d1044571",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "d99ab532-49a0-4066-b067-89397c2a2a2a": {
+   "inflClass": null,
+   "pos": "coordconj",
+   "sense": "72bafb8b-fe79-4ae4-8f99-fa5fd67fd8db",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "da85e897-9a16-46b3-bb44-5315e055139d": {
+   "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+   "stem": false
+  },
+  "dae758cd-7359-472c-ad66-7525de8ad6e7": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "e81317b3-d7a8-4e8b-9273-6bfe440807ae",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "dd74d11c-e8ff-4080-af9d-b2ce9fc11cb3": {
+   "inflClass": null,
+   "pos": "num",
+   "sense": "9c3c059e-8f2f-445f-a6d7-d20375609eb8",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "de5ab3dc-28f7-402c-938d-4614f996da60": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "98cd363c-79be-421b-81ae-89f5284876ea",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "dfff7abe-1b60-4865-a23a-7d034d7c6579": {
+   "inflClass": "X_PL",
+   "pos": "n",
+   "sense": "2ea603aa-0010-4740-b544-9fddd5351aa5",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "e081e3b1-347b-4d24-8f99-1d41d0101208": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "64ee1c0e-ef16-42b4-ade3-530c143b56d6",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "e0b51e89-5ffb-47de-8e93-4cb707a7048b": {
+   "inflClass": null,
+   "pos": "adj",
+   "sense": "ef153c5d-6c54-482f-b178-7aaf190df020",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "e1a0184b-bae6-4b79-977a-8b55045b41ba": {
+   "inflClass": "X_PL",
+   "pos": "n",
+   "sense": "fbd1c7a2-52f2-49e9-81f5-c322c5728a3a",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "e364a367-db7f-410c-9712-0cde17cdec04": {
+   "inflClass": null,
+   "pos": "v",
+   "sense": "99e43ad8-42c8-4aa1-a37d-7a0e8e0f2d38",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "e3d71c2d-b302-46e4-9308-9892e5e3cce3": {
+   "sense": "09a55edc-65ba-4d07-aaf5-27ab8508b3a3",
+   "stem": false
+  },
+  "e3efde07-aba7-4cef-befd-2b0b74e9436c": {
+   "inflClass": null,
+   "pos": "dempro",
+   "sense": "b4e2ea31-adfc-4682-bd34-1d4a3879d66b",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "pl"
+   ]
+  },
+  "e53a8b23-bd24-4be8-8569-d62d7d983d69": {
+   "inflClass": null,
+   "pos": "def",
+   "sense": "8b0cea7f-ead0-482b-a654-3a1e2eba947d",
+   "stem": true,
+   "stemFeatures": [
+    "m",
+    "pl"
+   ]
+  },
+  "e756932c-5806-4c30-92f6-f5117ee1befc": {
+   "inflClass": null,
+   "pos": "subordconj",
+   "sense": "958e8267-f352-47a8-88a3-bde9406238a9",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "e8230951-ebdc-4fb0-bd15-e56594abdcb2": {
+   "inflClass": null,
+   "pos": "dem",
+   "sense": "0935c776-0de1-4054-8a90-3f9bce905371",
+   "stem": true,
+   "stemFeatures": [
+    "pl"
+   ]
+  },
+  "ec57c726-9466-4b24-b8a4-ecbc61ce360c": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "6c22b369-9653-44e8-97ec-b47a1295c46b",
+   "stem": true,
+   "stemFeatures": null
+  },
+  "ecbbb56c-7728-4bb0-9801-4aaf9226c7cb": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "70dd025b-99c8-4b21-abd7-5cc96b573632",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "ee2d8ed3-7af3-4b0c-925b-a64fbdddbd3a": {
+   "inflClass": null,
+   "pos": "pro",
+   "sense": "85e2bfbd-10c0-4824-be5c-bf5f6190c6ad",
+   "stem": true,
+   "stemFeatures": [
+    "acc",
+    "f",
+    "sg"
+   ]
+  },
+  "f62d26f5-1814-4459-ae6d-e1d1c75086b3": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "b4c813b6-ee2f-4571-a1b8-129b048b9f91",
+   "stem": true,
+   "stemFeatures": [
+    "m"
+   ]
+  },
+  "f997c973-c078-45d3-93b7-09f77cf23eb1": {
+   "sense": "39ee3c2a-db58-4328-a519-947aa80f7c99",
+   "stem": false
+  },
+  "fd208ef1-6704-4288-8365-d3ca43c64e99": {
+   "inflClass": null,
+   "pos": "n",
+   "sense": "551643a2-b5f4-4268-a9cf-c385f0d1a9b7",
+   "stem": true,
+   "stemFeatures": [
+    "f"
+   ]
+  },
+  "feee4d15-adc1-41c5-82a7-77538d641912": {
+   "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+   "stem": false
+  }
+ },
+ "senses": {
+  "01e4150c-d49a-4c9a-8fc9-f6938ea57010": {
+   "entry": "5d8ab709-62f7-4fb8-af31-220d5a996998",
+   "gloss": "DEMPRO.FEM.PL",
+   "msa": "84976aa7-2a57-4106-8250-85795d22c9b1"
+  },
+  "06a9b34f-32be-46c5-b8c4-30af380062c8": {
+   "entry": "6f83796a-124b-4277-acf6-3e0d649cbd5f",
+   "gloss": "house",
+   "msa": "a6ddfc72-4d15-47a2-8bcb-29378e341088"
+  },
+  "0935c776-0de1-4054-8a90-3f9bce905371": {
+   "entry": "061ca041-a4e7-4457-9be1-ef96851b7d2c",
+   "gloss": "DEM.PL",
+   "msa": "e8230951-ebdc-4fb0-bd15-e56594abdcb2"
+  },
+  "09a55edc-65ba-4d07-aaf5-27ab8508b3a3": {
+   "entry": "7fd3493a-66ab-466e-a401-1d3222efbf8f",
+   "gloss": "PstPrf",
+   "msa": "e3d71c2d-b302-46e4-9308-9892e5e3cce3"
+  },
+  "136e7e50-b91c-48db-b894-2227162ee282": {
+   "entry": "9ae9a391-7da0-4161-a3b2-acd23339c789",
+   "gloss": "3SG.POSS",
+   "msa": "95e86136-ff73-4b54-8199-7240c370c6c4"
+  },
+  "1bdc54e3-203f-4beb-9418-72418374cecd": {
+   "entry": "cbd3a2ac-509b-4014-928e-d52f6c9a3624",
+   "gloss": "city",
+   "msa": "1badaac4-8fb1-4c42-9d66-b290a26da2a7"
+  },
+  "1e44638f-737e-4850-aa1a-b4068f574126": {
+   "entry": "08328991-ac56-4303-9648-2e72e7c078de",
+   "gloss": "IMPFV.2SG",
+   "msa": "a2557376-7de4-4a81-86b1-7e408ede88b2"
+  },
+  "1e8f7e25-d0f4-49d4-b68a-571837a82c6d": {
+   "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+   "gloss": "little",
+   "msa": "542e584c-e966-4d14-877a-77e462642868"
+  },
+  "21aa3a38-0c3f-4fe1-9799-c9f9169efb13": {
+   "entry": "a5ae176b-0a35-4a99-9d29-50917dbb301c",
+   "gloss": "be",
+   "msa": "53090c92-c034-4254-9caa-88601cc491cb"
+  },
+  "28c3f092-15cb-4934-a0bb-a84ab1879afa": {
+   "entry": "ad9d82ff-5c7d-4089-a85a-d61b354de479",
+   "gloss": "be.PRS.3SG",
+   "msa": "112cfbd4-fbe8-4309-8b64-64743bf70aa4"
+  },
+  "2950890f-56fc-4676-9c54-1a6f9a9d22af": {
+   "entry": "fa7a5b11-a014-4657-a1f5-c9247577a8dd",
+   "gloss": "in order to",
+   "msa": "b7ef74b4-99a9-4c8c-86a7-a886cb332eca"
+  },
+  "2a0f65ed-c6b1-4c8a-8ed5-1d7d4b8c34cb": {
+   "entry": "8130c821-fca1-494c-b84e-2ed52fe6e112",
+   "gloss": "I move",
+   "msa": "4842393c-109c-4e17-b0b4-67b85052787c"
+  },
+  "2b534fe8-57e7-4cb7-bb2f-04b9761e7513": {
+   "entry": "31c0e5bb-dc9b-4a69-af23-41bf0176c916",
+   "gloss": "to",
+   "msa": "63d41299-958f-42c6-a35f-a88dbc7cee0f"
+  },
+  "2c72955c-b941-4480-ad75-1cbfd2defe86": {
+   "entry": "68f1e986-b27a-427d-81a2-4c9d5605fb3f",
+   "gloss": "level",
+   "msa": "9bf15903-5e56-4711-a3e7-5192617cf05a"
+  },
+  "2d9e823d-488c-4ce2-9f94-adc44ed9561d": {
+   "entry": "92ace8d2-938c-4c1d-9471-79dda6582247",
+   "gloss": "so that",
+   "msa": "5f736c9b-ff93-4c05-a7c3-f53189b59956"
+  },
+  "2e859a30-9087-4e2c-9fe2-5a46a9e61519": {
+   "entry": "3c2a2101-bb15-44fb-b2f0-abc6d1823689",
+   "gloss": "which",
+   "msa": "2bac470e-4813-4875-a23e-dde64e36fa6f"
+  },
+  "2e9db541-fa7c-44d4-8e13-86498f3a61ba": {
+   "entry": "96b1d6bd-223d-4a88-91af-55244a589857",
+   "gloss": "live",
+   "msa": "ce34c723-9a2b-4a6a-8c9e-8482713de59c"
+  },
+  "2ea603aa-0010-4740-b544-9fddd5351aa5": {
+   "entry": "1f5756df-7f60-441b-a369-ae6c2817e7a2",
+   "gloss": "bird",
+   "msa": "dfff7abe-1b60-4865-a23a-7d034d7c6579"
+  },
+  "2f27e809-37c7-476f-9ccc-84c916e129e6": {
+   "entry": "83ae662b-cb09-4f88-a16b-095177d3321c",
+   "gloss": "light",
+   "msa": "d72332b9-41c2-4960-8f65-32203b07492b"
+  },
+  "2fb47683-10c0-433c-9ee5-990833febb1d": {
+   "entry": "a3c2aeaa-24d9-48cc-9852-4a609500a1c4",
+   "gloss": "3SG",
+   "msa": "611edb6d-fba8-4899-8462-aa5560d24736"
+  },
+  "32440064-a577-49d4-bfdb-52ff2fb27d59": {
+   "entry": "a7db7db2-83d3-4226-b403-5425d8ffb722",
+   "gloss": "1SG",
+   "msa": "8a5959c1-ae9c-4bc7-b7ea-9beb8d727cb7"
+  },
+  "37054df3-4a4a-4cb7-9db5-80fd41b130ec": {
+   "entry": "ec2efde2-accc-4871-a06e-1bd6ddb75e7f",
+   "gloss": "road",
+   "msa": "03a1a019-b645-4a9a-8bc5-25f0e1513216"
+  },
+  "385a82c8-3c2e-4815-ab58-aeb6e4e3d8b2": {
+   "entry": "063db054-cb57-4a8e-bc50-ba9a7fc597dc",
+   "gloss": "same",
+   "msa": "7741956d-aea7-4105-9d0c-8594bb4b551d"
+  },
+  "39ee3c2a-db58-4328-a519-947aa80f7c99": {
+   "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+   "gloss": "PRS.1SG",
+   "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1"
+  },
+  "3a8945cd-abf5-4e39-90d3-086139a724d4": {
+   "entry": "91e8bf5d-acd9-4fdb-bfe3-6c9a14f31219",
+   "gloss": "heavenly",
+   "msa": "5a4ebb57-e407-46bd-b497-1855420a1c75"
+  },
+  "3b4badd5-8b9b-484a-9de2-09231200e6a9": {
+   "entry": "466e056c-d991-44d0-88f1-c4522a9e3feb",
+   "gloss": "find",
+   "msa": "ae92d66f-e86a-4f1d-832d-c99fa149bef2"
+  },
+  "3b4c1fde-c112-42c6-affb-40e90b9eeddb": {
+   "entry": "a806a20e-5205-40d7-8594-60dd54af40b0",
+   "gloss": "female",
+   "msa": "b67d2c95-4895-4d3f-8aff-dd151f670135"
+  },
+  "3b560ae9-f304-46c1-bb36-e440de3a5111": {
+   "entry": "0a72aede-1b67-4e05-ab44-ef6e8d78e7ee",
+   "gloss": "2PL",
+   "msa": "508096af-10d1-4634-973b-6a45f02fdac3"
+  },
+  "3d1bf06f-57a8-4e9c-8af8-549a48cd8269": {
+   "entry": "be897932-cc33-4cd9-afa1-7d46c092a6d7",
+   "gloss": "DEM.FEM.SG",
+   "msa": "aeed7b3b-07e3-4fff-a6e9-64d773bfd7c9"
+  },
+  "3dd547f0-a5f3-4982-b212-3cb72dfe723d": {
+   "entry": "02b573bf-a148-4a87-b0e1-c8a5fe5ef801",
+   "gloss": "in",
+   "msa": "b4fd1913-78bb-40c6-b2e2-3d5f9cc3bd88"
+  },
+  "3ffe8ac9-0766-4e2a-a818-980187276844": {
+   "entry": "025ea22c-a36c-455d-b638-06e6b78425fd",
+   "gloss": "what",
+   "msa": "6cba74f8-3027-4c58-9800-678525d37f25"
+  },
+  "410c705f-f85e-4758-8198-3fffaf02fecb": {
+   "entry": "cf67c232-48c1-4962-9a44-7724acba9b77",
+   "gloss": "be.PRS.3PL",
+   "msa": "43219c0d-1de9-4060-9b00-2853b37dc9d6"
+  },
+  "416bad4f-3684-4aa3-ab93-f60eab633ab9": {
+   "entry": "36b95749-38e2-4375-b73a-2b09bc6be294",
+   "gloss": "lose",
+   "msa": "05e71c77-46cd-47db-bba8-0f3ec2ec17d2"
+  },
+  "42170ae9-0aa8-466a-a59d-d549f4098ac6": {
+   "entry": "71d16713-506b-4d4a-8c13-5e630066cf0a",
+   "gloss": "NEG2",
+   "msa": "65fd0b86-f0a8-4b44-88a4-e31c70a8e9b9"
+  },
+  "42671e36-e777-455c-9ce8-9b1b9684c761": {
+   "entry": "0b0d3f50-0498-4c0b-9fc1-5c278e5feaaf",
+   "gloss": "man",
+   "msa": "0ed9b951-7ff5-4e6c-bf19-b38f487fcafa"
+  },
+  "42edacaf-1ae0-4459-8ced-3f164e36c35c": {
+   "entry": "ef8a8904-1600-4ddc-bb2a-9eabee82f656",
+   "gloss": "have",
+   "msa": "31f3c031-46ca-43db-bcbd-3fbda5427856"
+  },
+  "4905a62e-2e23-4983-8c8a-c442e127d8b1": {
+   "entry": "9434c3c3-c7f3-4021-b87b-d6811a2ac0a9",
+   "gloss": "good",
+   "msa": "8159a5c7-8d3f-44f8-9c6a-b32781e5b5dd"
+  },
+  "498b7853-fd5e-46a7-81cb-077d59516c5a": {
+   "entry": "ca6b111e-0fec-430a-a295-a373d578b47d",
+   "gloss": "pair",
+   "msa": "ceb033d2-5697-4b7f-8342-0d836ff50e17"
+  },
+  "4db1cdcc-0284-4516-a809-d885e2fc45c1": {
+   "entry": "a4f1122d-13fd-4f2c-b901-c2e05d9e5ad2",
+   "gloss": "stand",
+   "msa": "8ca70baa-9c57-4fd6-bb21-f82eba42f57d"
+  },
+  "4f168631-59a4-4f20-a703-2a841f07800f": {
+   "entry": "20e1edb7-7a74-42db-a744-6552578874c7",
+   "gloss": "hill",
+   "msa": "6a288c88-7e94-4a55-afd5-1883cda51d46"
+  },
+  "4f3741ba-fb70-4254-85da-60c244c5eb57": {
+   "entry": "af0cd035-3759-4678-9b23-9eeff3256ef8",
+   "gloss": "IMPERS.3SG",
+   "msa": "1da9228e-90d6-4057-a5db-e2af0bd87fe6"
+  },
+  "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3": {
+   "entry": "a70e33b1-499f-498f-b95d-b1153e62ebd3",
+   "gloss": "move",
+   "msa": "4ac8577f-dd44-47e9-b93f-bd78aa5e693f"
+  },
+  "4ffc51f3-cdcc-469b-b230-caf4d1044571": {
+   "entry": "18b6fad1-6391-4843-9c39-d4cde096bdfb",
+   "gloss": "boat",
+   "msa": "d982b5fc-73fb-41f4-9a68-b0b23b95d522"
+  },
+  "52d542e0-e742-4de9-8b03-545e04ef634a": {
+   "entry": "21d2ba05-7ab4-4f7b-a021-11ad1dcb1e14",
+   "gloss": "1PL",
+   "msa": "8506817d-aa6b-4c6e-a0b7-31a16d42aeea"
+  },
+  "53072aab-0ed6-4437-8a6a-7d37f3048152": {
+   "entry": "632726c7-23da-4dbe-adf8-b2e192650c4f",
+   "gloss": "DEF.F.SG",
+   "msa": "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0"
+  },
+  "551643a2-b5f4-4268-a9cf-c385f0d1a9b7": {
+   "entry": "ac156de1-9ee5-4159-9ffc-53fa4a1ed0c7",
+   "gloss": "lamp",
+   "msa": "fd208ef1-6704-4288-8365-d3ca43c64e99"
+  },
+  "556b0328-98f2-4646-a066-721d6aa4c0a6": {
+   "entry": "c2091ccb-145a-4c8a-b420-51e236e53be2",
+   "gloss": "here",
+   "msa": "58cf554f-3837-43b1-ab17-c4ebd93c16e6"
+  },
+  "5a67da2e-3cb7-4df8-bc83-d46e3350098b": {
+   "entry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+   "gloss": "PRS.3PL",
+   "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6"
+  },
+  "5a9411e0-8c67-422c-be51-d9aca0d5d062": {
+   "entry": "fa7a5b11-a014-4657-a1f5-c9247577a8dd",
+   "gloss": "for",
+   "msa": "9b26dd52-171f-4de1-a25b-8d7832e1da7d"
+  },
+  "62a287fa-c0ba-4a34-9b23-c361934100d8": {
+   "entry": "e15d5546-6840-4cfe-b6c2-bd6790e19dcd",
+   "gloss": "red",
+   "msa": "b653f423-2766-4e15-825a-176cebd39dfb"
+  },
+  "64ee1c0e-ef16-42b4-ade3-530c143b56d6": {
+   "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+   "gloss": "train",
+   "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208"
+  },
+  "65273fc8-8e4b-4ba8-b337-38e814aef94e": {
+   "entry": "3b17b67e-bfcd-4615-bd91-192433df0d83",
+   "gloss": "3SG.FEM",
+   "msa": "c61f272d-4fec-49c4-83ea-3e714aed536a"
+  },
+  "668917ea-d06e-4ab3-bec2-c590ccca36f4": {
+   "entry": "ac5a496b-040f-4220-a581-839e9249181b",
+   "gloss": "DEMPRO.FEM",
+   "msa": "ce9f741e-c5f5-4754-9d9a-1adf12ce6ec1"
+  },
+  "67e86243-732d-423a-ad2e-94d9afe4699a": {
+   "entry": "ccf39c2d-8abe-4f24-bfe0-3234a04c03ab",
+   "gloss": "on",
+   "msa": "a4f06874-0e2f-4664-8591-ccbc311316a2"
+  },
+  "6a8c5ded-fd9d-4094-9af4-6990bb3c41c2": {
+   "entry": "01dff27e-e9bb-4e56-ac81-3e7d2e874dc1",
+   "gloss": "entrer",
+   "msa": "27f81268-81b2-4cc4-a95c-54c6f50e80cb"
+  },
+  "6b80b835-636e-47ae-8630-e42c39d0bd49": {
+   "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+   "gloss": "speak",
+   "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b"
+  },
+  "6bdfaa97-a3aa-4b32-9a2e-4c49dc4c1b1b": {
+   "entry": "f9dfa498-3c37-418d-ae05-d76946e03d54",
+   "gloss": "male",
+   "msa": "42f43c08-0155-45c3-9272-9176f7aa3675"
+  },
+  "6c22b369-9653-44e8-97ec-b47a1295c46b": {
+   "entry": "616cd794-0996-419b-aa0d-ab991606af5a",
+   "gloss": "egg",
+   "msa": "ec57c726-9466-4b24-b8a4-ecbc61ce360c"
+  },
+  "6e12ee7f-abc2-4938-8a45-aa7eb1651062": {
+   "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+   "gloss": "MASC.a",
+   "msa": "feee4d15-adc1-41c5-82a7-77538d641912"
+  },
+  "70dd025b-99c8-4b21-abd7-5cc96b573632": {
+   "entry": "10eeaddc-3932-4575-818b-0fddb1bf6bec",
+   "gloss": "world",
+   "msa": "ecbbb56c-7728-4bb0-9801-4aaf9226c7cb"
+  },
+  "71079f44-539b-45ba-8013-f4d3e4019fab": {
+   "entry": "6414e0b7-e74a-40bc-a319-af7f37a60d3e",
+   "gloss": "Father",
+   "msa": "c5c57923-e4f6-4d22-ac42-7d4393b786ab"
+  },
+  "7191f0ef-b0d2-4172-b811-e1d7d53a1fb0": {
+   "entry": "a53f7eee-229d-4fd3-99c8-da07bb78291d",
+   "gloss": "REFL",
+   "msa": "b0afc409-bde3-48c4-8f46-71d4694390e2"
+  },
+  "71bfb6ce-6e66-4ea7-b603-120dc6164668": {
+   "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+   "gloss": "FEM",
+   "msa": "4b113fd4-1aae-402e-b619-81b20caebc92"
+  },
+  "72bafb8b-fe79-4ae4-8f99-fa5fd67fd8db": {
+   "entry": "a4975b44-9406-4145-b67d-c129254b23dd",
+   "gloss": "thus",
+   "msa": "d99ab532-49a0-4066-b067-89397c2a2a2a"
+  },
+  "76ade360-0b8c-47eb-b8f5-4f3de79aeba7": {
+   "entry": "3c1b632e-6ca3-4420-b604-9387c9e88888",
+   "gloss": "PRS.1PL",
+   "msa": "13e36e54-f7c4-44f8-9587-b2545706f92a"
+  },
+  "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32": {
+   "entry": "58af57d8-c437-4315-83ad-ccc2797b07cb",
+   "gloss": "fish",
+   "msa": "481ca3a3-cc77-4627-8414-5cacba41fe7e"
+  },
+  "7df25c1c-714a-4cb7-89c6-1775c8335990": {
+   "entry": "05950dd9-ab44-4818-a9c5-f614bd9547ef",
+   "gloss": "in",
+   "msa": "d4dec502-6d55-4079-b91f-b31c9ad59315"
+  },
+  "81581ace-1d2d-4aa3-a431-88eb863806a9": {
+   "entry": "1c781f71-f1e3-48c8-a360-440993dcd266",
+   "gloss": "at.the",
+   "msa": "cd3f4771-e872-4c60-b7a4-98a9c8731953"
+  },
+  "84b3d225-40a8-4fea-9fc9-fbea3fdf7e9c": {
+   "entry": "fc8cea36-6523-4d86-93f3-ba8a489a16c6",
+   "gloss": "NEG1",
+   "msa": "c293dc13-e639-429e-addf-d1406ba22d3d"
+  },
+  "85e2bfbd-10c0-4824-be5c-bf5f6190c6ad": {
+   "entry": "9969c969-d8f8-4e63-bb97-07744bfb57fd",
+   "gloss": "3SG.FEM.ACC",
+   "msa": "ee2d8ed3-7af3-4b0c-925b-a64fbdddbd3a"
+  },
+  "864b72d6-9dda-407d-9446-8a001397b539": {
+   "entry": "3b17b67e-bfcd-4615-bd91-192433df0d83",
+   "gloss": "it",
+   "msa": "c61f272d-4fec-49c4-83ea-3e714aed536a"
+  },
+  "8abd45fd-c10d-4867-901b-2dc80071112e": {
+   "entry": "f985b33a-2c5e-41f6-9623-8cd5b6e01dbb",
+   "gloss": "big",
+   "msa": "23d8ab80-2c33-49af-a5d4-bbb0a681a13a"
+  },
+  "8b0cea7f-ead0-482b-a654-3a1e2eba947d": {
+   "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+   "gloss": "DEF.M.PL",
+   "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69"
+  },
+  "8b477ceb-54c3-4fbf-8b14-25e4c3f1da71": {
+   "entry": "1f3fa8f7-d4ee-47ce-b9c4-323804961ea0",
+   "gloss": "that",
+   "msa": "8835241a-2add-42db-8a56-028f6930c377"
+  },
+  "8d0035ae-deee-4c32-a645-f74c39a166d3": {
+   "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+   "gloss": "SG",
+   "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+  },
+  "8f0190c6-95fe-4794-a6f9-2c1a4c234765": {
+   "entry": "504f2b1d-7469-4228-be70-99ea60c49b7e",
+   "gloss": "good",
+   "msa": "0f5ba860-0192-425d-a191-6d0830df3fb6"
+  },
+  "932efe5e-f3bb-4cf7-9fc5-9081cdca3475": {
+   "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+   "gloss": "boy",
+   "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b"
+  },
+  "958e8267-f352-47a8-88a3-bde9406238a9": {
+   "entry": "d221474a-ee78-4c06-8727-526af2652eb6",
+   "gloss": "if",
+   "msa": "e756932c-5806-4c30-92f6-f5117ee1befc"
+  },
+  "987bff92-8f8d-4688-9ab8-bca52cbb73f5": {
+   "entry": "c3ee95e0-2233-41e1-b561-c7afc7158781",
+   "gloss": "PRS.2SG",
+   "msa": "8b5cbc9c-be44-47b0-b5f9-48f23d13a135"
+  },
+  "98cd363c-79be-421b-81ae-89f5284876ea": {
+   "entry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+   "gloss": "girl",
+   "msa": "de5ab3dc-28f7-402c-938d-4614f996da60"
+  },
+  "992688e6-ea94-460e-9353-9947e940876b": {
+   "entry": "6c1ca1f2-ff3b-479f-8f40-b7c2387d76b4",
+   "gloss": "thing",
+   "msa": "a3c43f19-c3e3-4bd7-9f53-09aafbf903b9"
+  },
+  "9975733d-2119-499b-bfe8-783db0b52cf9": {
+   "entry": "b0b77914-3d4c-410c-ac19-ef352481e72a",
+   "gloss": "candy",
+   "msa": "08827ad1-f98a-40d8-9634-eac267edb4dc"
+  },
+  "99e43ad8-42c8-4aa1-a37d-7a0e8e0f2d38": {
+   "entry": "8d5b3fc2-155c-486d-82b6-0dbbcf415c83",
+   "gloss": "I live",
+   "msa": "e364a367-db7f-410c-9712-0cde17cdec04"
+  },
+  "9aa42443-f5e3-4b92-935e-4e07b67266df": {
+   "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+   "gloss": "MASC",
+   "msa": "02f558f9-0384-4104-9528-022079040f53"
+  },
+  "9bfc733b-df66-41f4-9157-8b4f6a84037a": {
+   "entry": "ef8a8904-1600-4ddc-bb2a-9eabee82f656",
+   "gloss": "AUX.have",
+   "msa": "82c975e0-c450-4d0e-b388-bc6e7f0cb657"
+  },
+  "9c3c059e-8f2f-445f-a6d7-d20375609eb8": {
+   "entry": "30fdab90-b066-41e7-83c3-a70b9e30a3cf",
+   "gloss": "two",
+   "msa": "dd74d11c-e8ff-4080-af9d-b2ce9fc11cb3"
+  },
+  "9cfe0f2d-f2d4-4f1b-bf55-f1e365964e60": {
+   "entry": "efdde96d-2c25-43dd-8387-f1b6b365216d",
+   "gloss": "Noah",
+   "msa": "9a497769-c445-4997-9871-60014f5c04ff"
+  },
+  "a76936ff-9cb6-4bb7-ad2c-d12a1883c455": {
+   "entry": "d2d9c4b8-967c-4405-bae5-dfe21c306197",
+   "gloss": "animal",
+   "msa": "d89fd094-3762-4f2f-a58a-ded6a241fb8b"
+  },
+  "a8c3ded0-c456-48ca-9e5e-f5667398eb40": {
+   "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+   "gloss": "play",
+   "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1"
+  },
+  "a94a25d7-7a07-4a68-83f9-243678946aff": {
+   "entry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+   "gloss": "car",
+   "msa": "2882c429-1257-448d-95b5-a682faff0d67"
+  },
+  "acd7f50c-d986-439a-819d-53bd3f02b04e": {
+   "entry": "266b5a5f-5e12-4d0b-bafc-74928aee3f7f",
+   "gloss": "flavor",
+   "msa": "72e6e3ef-f728-4c79-a1a9-5f6a5ac17636"
+  },
+  "ae9920b2-d841-4a70-ab7f-cb83bb532990": {
+   "entry": "68e04005-316a-4125-b392-4f0c4109039d",
+   "gloss": "IMPFV.3SG",
+   "msa": "c70343a8-eba4-4af8-a6fd-f0002b96b2f4"
+  },
+  "b01147dd-f900-43ab-a0a9-8b8c04beb1e0": {
+   "entry": "405ad438-2e3b-4ae1-b5d6-8a0e24f8830b",
+   "gloss": "God",
+   "msa": "71cd537c-ab19-47e9-9c72-42d1c466f1a5"
+  },
+  "b1644499-63af-4c6f-8fd5-a434bb229873": {
+   "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+   "gloss": "FEM.a",
+   "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d"
+  },
+  "b49184e1-1d5e-4476-abb2-cb11aabd87dc": {
+   "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+   "gloss": "DEF.F.PL",
+   "msa": "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f"
+  },
+  "b4c813b6-ee2f-4571-a1b8-129b048b9f91": {
+   "entry": "7bbaf019-1106-4399-b363-93bc056f6b07",
+   "gloss": "bicycle",
+   "msa": "f62d26f5-1814-4459-ae6d-e1d1c75086b3"
+  },
+  "b4e2ea31-adfc-4682-bd34-1d4a3879d66b": {
+   "entry": "a6e49da0-7904-4139-a0fd-c9f48eed3e41",
+   "gloss": "DEMPRO.MASC.PL",
+   "msa": "e3efde07-aba7-4cef-befd-2b0b74e9436c"
+  },
+  "b63a020d-af9e-4292-a105-31e216fe8b76": {
+   "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+   "gloss": "long",
+   "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508"
+  },
+  "b8445393-02d6-4661-8a07-5f32e9cccfa7": {
+   "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+   "gloss": "PL",
+   "msa": "49f5fcd4-f101-4860-af2a-e48453c77083"
+  },
+  "b8bc63b7-d1bd-4f3c-b0aa-993ae5a7cb31": {
+   "entry": "0783d8ed-4e03-4e9a-baa9-574c6f5cfdff",
+   "gloss": "INF",
+   "msa": "1530029e-eaa8-48da-a389-6f263f5201e7"
+  },
+  "b8d7a7e6-06ce-4511-83db-4564ad6ae1e8": {
+   "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+   "gloss": "3SG.MASC.ACC",
+   "msa": "615e705c-b753-422b-a167-33ce8e190c57"
+  },
+  "b91b6efc-8f41-4d39-8555-da342a5e5e4a": {
+   "entry": "ab833d57-fd69-45b8-aeaf-4dfa90ee6762",
+   "gloss": "of.the",
+   "msa": "c39a48b5-f441-4a9a-be48-300b9a2c2991"
+  },
+  "ba89af77-ce91-490a-b14a-0c89abdbc1f1": {
+   "entry": "c4fcb08d-2986-4ae8-9cae-3b870d92d03d",
+   "gloss": "of.the.PL",
+   "msa": "d6030b47-de95-4480-858c-cdbbe6fa1408"
+  },
+  "beced4c9-d913-4d8f-9226-f5c3aa5fb936": {
+   "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+   "gloss": "SG",
+   "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2"
+  },
+  "c18112bd-2b84-4b3a-9b3f-746735a0f4dd": {
+   "entry": "88aa6a11-2c2b-4310-aa15-f2e49edf90f1",
+   "gloss": "as well as",
+   "msa": "5e3b0105-d169-4e7e-9d24-6d21b992e22c"
+  },
+  "c1bf85aa-2607-4c90-8ccd-2b1aa43fd4a8": {
+   "entry": "c35a2b09-f749-47b1-8cae-a67ffc5f2da2",
+   "gloss": "IMPFV.1PL",
+   "msa": "64034ce6-856a-4484-aba4-adaeab0e0474"
+  },
+  "c22579cf-734f-4387-98a0-b4fe3e03b250": {
+   "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+   "gloss": "DEF.M.SG",
+   "msa": "c378a34c-c57f-4945-9842-6720ed702502"
+  },
+  "c8ddbd04-c6d8-4024-a78b-66d800d617bc": {
+   "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+   "gloss": "INDEF",
+   "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+  },
+  "c9291f5b-c77e-4b5c-b17d-9148ca6d575e": {
+   "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+   "gloss": "PRS.3SG",
+   "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+  },
+  "ca896360-ce1f-47e8-96a2-5cb6d9650266": {
+   "entry": "a6b47882-c6ac-47a0-b1fd-315050472606",
+   "gloss": "IMPFV.2PL",
+   "msa": "7a86b791-ec40-4bcf-b8f5-be5d07f6c61d"
+  },
+  "d2370914-5c80-4d05-bffe-08169795b59e": {
+   "entry": "4099ee8a-1205-425d-b1f3-66329b135e9c",
+   "gloss": "before",
+   "msa": "8a019713-18de-4d6b-9c67-a78a4c7dc18d"
+  },
+  "d28beafa-6823-4113-acea-126ad1ccc9e0": {
+   "entry": "b1153a5d-2ce7-410f-8380-2f8c1a8099c0",
+   "gloss": "IMPFV.1SG",
+   "msa": "bb550133-1df6-4679-a13d-e99a98709f8e"
+  },
+  "d2d11065-cc52-443c-a46c-687f6c3e9ea2": {
+   "entry": "4b1680cb-9423-42e2-adda-0ce9dd9b94ee",
+   "gloss": "at.the.PL",
+   "msa": "6f4f045e-faa1-45a4-b437-e772f552dbba"
+  },
+  "d31431e8-910e-4f97-ae1d-da09d8ca65a9": {
+   "entry": "2a2118b8-3d4c-4bce-bab2-78ba503c0781",
+   "gloss": "NEG1",
+   "msa": "b5b96eb7-61ec-435f-bcb8-ad37a6deac8a"
+  },
+  "d6dc2ced-e837-43eb-bee1-f3a2abbb2a4d": {
+   "entry": "9a1d03d3-190f-4aff-8792-6b98c1f702dd",
+   "gloss": "beat",
+   "msa": "418a91c4-1e0c-46e5-9f59-d589ca63591c"
+  },
+  "d93b7eaf-2851-41e4-8ba0-4c4678efd969": {
+   "entry": "4b023428-c7f9-40c2-89df-0412016489a6",
+   "gloss": "summit",
+   "msa": "9b9e0dd2-500c-4a16-968e-d335000d3c59"
+  },
+  "d99031f0-d690-4a8e-811a-73245f47a758": {
+   "entry": "ddff72c1-effa-455c-b571-aaba38b031fb",
+   "gloss": "all",
+   "msa": "8892594a-db4d-4b1a-aed5-fa2b181b3530"
+  },
+  "da8d8670-759f-4820-af5b-041a5c6cd19b": {
+   "entry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+   "gloss": "of",
+   "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e"
+  },
+  "db1ffab1-0311-4862-a4b1-6a15c64965af": {
+   "entry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+   "gloss": "with",
+   "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e"
+  },
+  "dc6bf11e-181c-4134-9767-392b942a4fe0": {
+   "entry": "a5b41d76-cde8-4c49-b248-5168b73a62cc",
+   "gloss": "by",
+   "msa": "0cd6c53e-8962-4de5-9397-185ac0ddb24f"
+  },
+  "dd02b94f-ce0a-49c8-adf5-daab071b859b": {
+   "entry": "4eb487f9-142c-4ea6-b6df-82ceff244921",
+   "gloss": "under",
+   "msa": "77d3f0ee-9387-44dd-b3ad-d0822ba25daf"
+  },
+  "dd83f274-0e15-433b-9c16-79e91d0ef15f": {
+   "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+   "gloss": "eat",
+   "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef"
+  },
+  "e73aa83f-13fd-4554-a96f-4c87ef7488a8": {
+   "entry": "ed9cad13-bf4e-42d2-b27c-5b1d74caacc6",
+   "gloss": "and",
+   "msa": "934d5f5a-6b30-4c5f-a118-b3a303cc5c66"
+  },
+  "e81317b3-d7a8-4e8b-9273-6bfe440807ae": {
+   "entry": "4d38de8a-78f7-4b4e-9fe7-228575d9be28",
+   "gloss": "apple",
+   "msa": "dae758cd-7359-472c-ad66-7525de8ad6e7"
+  },
+  "e8962aae-e560-449e-a617-411f2a1e38b3": {
+   "entry": "4372098f-41ee-46cf-80c0-1b7b454b1449",
+   "gloss": "DEM.MASC.SG",
+   "msa": "7a7742be-0904-4630-97d8-e1ca7a993c71"
+  },
+  "e8bc3a26-bba7-4d8a-b771-681983e0d208": {
+   "entry": "49b87986-114b-4d8e-9234-21212fabb7ae",
+   "gloss": "salt",
+   "msa": "8bf4bc55-b961-4b92-9b2d-4189dc498848"
+  },
+  "e8d4e94a-ea4e-45db-a539-481b2c91baa7": {
+   "entry": "d5bd511f-da57-4fa0-9f16-b4bedaf1402b",
+   "gloss": "IMPFV.3PL",
+   "msa": "30508711-f487-4de8-8aaf-4d98d1e879f9"
+  },
+  "eef2c2d9-3fe8-4316-a6a7-85633fc3f20d": {
+   "entry": "c7025994-9d47-4667-992c-37100c6762df",
+   "gloss": "earth",
+   "msa": "9ce7fa7b-6b8c-4cc2-9f27-92d779d32263"
+  },
+  "ef153c5d-6c54-482f-b178-7aaf190df020": {
+   "entry": "369d669c-7aaa-4360-ad40-e938f8b11db3",
+   "gloss": "pure",
+   "msa": "e0b51e89-5ffb-47de-8e93-4cb707a7048b"
+  },
+  "f3d0ef20-5d5c-49a4-981a-ad316e62457f": {
+   "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+   "gloss": "SG",
+   "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+  },
+  "f3eb1768-ab82-4977-a344-7f61979a1aa0": {
+   "entry": "0360db74-b2e8-4fd8-bfd7-4454c07f3add",
+   "gloss": "3PL.MASC",
+   "msa": "638bc981-1db8-494b-94f3-66c1e43ecda6"
+  },
+  "f4df41b5-7736-4bde-addf-e9cb5c33c124": {
+   "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+   "gloss": "PL",
+   "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5"
+  },
+  "f7c8d60b-8c7c-4991-94a5-3577b9eca70c": {
+   "entry": "bc3364f9-7310-45cd-8337-eee084fcab81",
+   "gloss": "PRS.2PL",
+   "msa": "7ba6e231-0e09-4d46-bc92-b744e5ba9ea8"
+  },
+  "f8fd3fb9-9a23-44e2-b9ea-470ddc4c3c38": {
+   "entry": "eed1ccdf-0752-4a63-9357-5e6cc7150982",
+   "gloss": "DEMPRO.MASC",
+   "msa": "79b86445-386b-4ade-bdef-3990553c1ce0"
+  },
+  "fbd1c7a2-52f2-49e9-81f5-c322c5728a3a": {
+   "entry": "24d60d09-22a0-452b-b64a-eb4e5f7a60c0",
+   "gloss": "Noun with X Plural",
+   "msa": "e1a0184b-bae6-4b79-977a-8b55045b41ba"
+  }
+ }
+}

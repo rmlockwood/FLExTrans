@@ -1,0 +1,4264 @@
+{
+ "formatVersion": 1,
+ "monomorphemic": [
+  {
+   "entry": "4372098f-41ee-46cf-80c0-1b7b454b1449",
+   "form": "cet",
+   "morph": "009eaad3-0332-4a08-8b75-8187f8257165",
+   "msa": "7a7742be-0904-4630-97d8-e1ca7a993c71",
+   "sense": "e8962aae-e560-449e-a617-411f2a1e38b3"
+  },
+  {
+   "entry": "88aa6a11-2c2b-4310-aa15-f2e49edf90f1",
+   "form": "ainsi que",
+   "morph": "019bc808-b7e4-4370-a5b5-64769627e15a",
+   "msa": "5e3b0105-d169-4e7e-9d24-6d21b992e22c",
+   "sense": "c18112bd-2b84-4b3a-9b3f-746735a0f4dd"
+  },
+  {
+   "entry": "4eb487f9-142c-4ea6-b6df-82ceff244921",
+   "form": "sous",
+   "morph": "02bcb82e-cb37-4473-931b-2be127099de9",
+   "msa": "77d3f0ee-9387-44dd-b3ad-d0822ba25daf",
+   "sense": "dd02b94f-ce0a-49c8-adf5-daab071b859b"
+  },
+  {
+   "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+   "form": "parl",
+   "morph": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+   "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+   "sense": "6b80b835-636e-47ae-8630-e42c39d0bd49"
+  },
+  {
+   "entry": "a4f1122d-13fd-4f2c-b901-c2e05d9e5ad2",
+   "form": "pied",
+   "morph": "117d9443-11e1-4141-878a-0c4b6fb27010",
+   "msa": "8ca70baa-9c57-4fd6-bb21-f82eba42f57d",
+   "sense": "4db1cdcc-0284-4516-a809-d885e2fc45c1"
+  },
+  {
+   "entry": "ccf39c2d-8abe-4f24-bfe0-3234a04c03ab",
+   "form": "sur",
+   "morph": "12cd15e2-c892-4e0e-aaa4-eaa5652bc53d",
+   "msa": "a4f06874-0e2f-4664-8591-ccbc311316a2",
+   "sense": "67e86243-732d-423a-ad2e-94d9afe4699a"
+  },
+  {
+   "entry": "025ea22c-a36c-455d-b638-06e6b78425fd",
+   "form": "qu’",
+   "morph": "13e6e99f-0eff-4269-87d3-68df4e8a231a",
+   "msa": "6cba74f8-3027-4c58-9800-678525d37f25",
+   "sense": "3ffe8ac9-0766-4e2a-a818-980187276844"
+  },
+  {
+   "entry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+   "form": "d’",
+   "morph": "1466010b-fa57-4e91-a156-cc66b2774c12",
+   "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e",
+   "sense": "da8d8670-759f-4820-af5b-041a5c6cd19b"
+  },
+  {
+   "entry": "ac156de1-9ee5-4159-9ffc-53fa4a1ed0c7",
+   "form": "lampe",
+   "morph": "18ff66f3-b001-4158-ae61-781306c77539",
+   "msa": "fd208ef1-6704-4288-8365-d3ca43c64e99",
+   "sense": "551643a2-b5f4-4268-a9cf-c385f0d1a9b7"
+  },
+  {
+   "entry": "369d669c-7aaa-4360-ad40-e938f8b11db3",
+   "form": "pur",
+   "morph": "199eb63d-4241-43ef-8cd9-66f149f9a7c0",
+   "msa": "e0b51e89-5ffb-47de-8e93-4cb707a7048b",
+   "sense": "ef153c5d-6c54-482f-b178-7aaf190df020"
+  },
+  {
+   "entry": "063db054-cb57-4a8e-bc50-ba9a7fc597dc",
+   "form": "même",
+   "morph": "1b7484bd-4e19-4865-a992-29bfdbca77e2",
+   "msa": "7741956d-aea7-4105-9d0c-8594bb4b551d",
+   "sense": "385a82c8-3c2e-4815-ab58-aeb6e4e3d8b2"
+  },
+  {
+   "entry": "1f3fa8f7-d4ee-47ce-b9c4-323804961ea0",
+   "form": "que",
+   "morph": "1c50fde2-2c46-4b55-8f97-199a8dda58a5",
+   "msa": "8835241a-2add-42db-8a56-028f6930c377",
+   "sense": "8b477ceb-54c3-4fbf-8b14-25e4c3f1da71"
+  },
+  {
+   "entry": "9ae9a391-7da0-4161-a3b2-acd23339c789",
+   "form": "sa",
+   "morph": "1f61532a-5509-4033-a54c-603383a1e77e",
+   "msa": "95e86136-ff73-4b54-8199-7240c370c6c4",
+   "sense": "136e7e50-b91c-48db-b894-2227162ee282"
+  },
+  {
+   "entry": "3c2a2101-bb15-44fb-b2f0-abc6d1823689",
+   "form": "qui",
+   "morph": "205266bf-344e-45e8-9a5f-aa5fe2a50bce",
+   "msa": "2bac470e-4813-4875-a23e-dde64e36fa6f",
+   "sense": "2e859a30-9087-4e2c-9fe2-5a46a9e61519"
+  },
+  {
+   "entry": "8130c821-fca1-494c-b84e-2ed52fe6e112",
+   "form": "meus",
+   "morph": "21f89ebb-227d-4502-a4f5-9bca593e66da",
+   "msa": "4ac8577f-dd44-47e9-b93f-bd78aa5e693f",
+   "sense": "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3"
+  },
+  {
+   "entry": "e15d5546-6840-4cfe-b6c2-bd6790e19dcd",
+   "form": "rouge",
+   "morph": "23238b04-e1e3-440d-88e6-2e16cf63e961",
+   "msa": "b653f423-2766-4e15-825a-176cebd39dfb",
+   "sense": "62a287fa-c0ba-4a34-9b23-c361934100d8"
+  },
+  {
+   "entry": "36b95749-38e2-4375-b73a-2b09bc6be294",
+   "form": "perd",
+   "morph": "27d314dc-70b5-43a1-b095-33a9926e5fb6",
+   "msa": "05e71c77-46cd-47db-bba8-0f3ec2ec17d2",
+   "sense": "416bad4f-3684-4aa3-ab93-f60eab633ab9"
+  },
+  {
+   "entry": "466e056c-d991-44d0-88f1-c4522a9e3feb",
+   "form": "trouv",
+   "morph": "27fc4605-83bb-4c60-9110-4da55b2ea86e",
+   "msa": "ae92d66f-e86a-4f1d-832d-c99fa149bef2",
+   "sense": "3b4badd5-8b9b-484a-9de2-09231200e6a9"
+  },
+  {
+   "entry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+   "form": "fille",
+   "morph": "28bc6f94-5814-4877-9a39-a6fe413bedf1",
+   "msa": "de5ab3dc-28f7-402c-938d-4614f996da60",
+   "sense": "98cd363c-79be-421b-81ae-89f5284876ea"
+  },
+  {
+   "entry": "7bbaf019-1106-4399-b363-93bc056f6b07",
+   "form": "vélo",
+   "morph": "28f50945-790d-4dca-95c3-f2ff16ac2af6",
+   "msa": "f62d26f5-1814-4459-ae6d-e1d1c75086b3",
+   "sense": "b4c813b6-ee2f-4571-a1b8-129b048b9f91"
+  },
+  {
+   "entry": "efdde96d-2c25-43dd-8387-f1b6b365216d",
+   "form": "Noé",
+   "morph": "29ae36a7-722a-4b2c-8103-16db77e0b589",
+   "msa": "9a497769-c445-4997-9871-60014f5c04ff",
+   "sense": "9cfe0f2d-f2d4-4f1b-bf55-f1e365964e60"
+  },
+  {
+   "entry": "f985b33a-2c5e-41f6-9623-8cd5b6e01dbb",
+   "form": "gross",
+   "morph": "2a9c2634-f3fa-43df-a4c5-f0456db10574",
+   "msa": "23d8ab80-2c33-49af-a5d4-bbb0a681a13a",
+   "sense": "8abd45fd-c10d-4867-901b-2dc80071112e"
+  },
+  {
+   "entry": "09bf741d-3c99-4fb5-899a-0ce98d6dee7c",
+   "form": "des",
+   "morph": "2be413ad-cd8f-43f3-a31d-b78dc369810e",
+   "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+   "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc"
+  },
+  {
+   "entry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+   "form": "voiture",
+   "morph": "2df63d5e-3d80-4c47-8c7c-fde6b7f6d9ab",
+   "msa": "2882c429-1257-448d-95b5-a682faff0d67",
+   "sense": "a94a25d7-7a07-4a68-83f9-243678946aff"
+  },
+  {
+   "entry": "49b87986-114b-4d8e-9234-21212fabb7ae",
+   "form": "sel",
+   "morph": "2edf1ea8-97e4-45c9-9766-c74c1e3bbd59",
+   "msa": "8bf4bc55-b961-4b92-9b2d-4189dc498848",
+   "sense": "e8bc3a26-bba7-4d8a-b771-681983e0d208"
+  },
+  {
+   "entry": "eed1ccdf-0752-4a63-9357-5e6cc7150982",
+   "form": "celui",
+   "morph": "306fb186-b286-497e-ba2a-8aab9d1b165c",
+   "msa": "79b86445-386b-4ade-bdef-3990553c1ce0",
+   "sense": "f8fd3fb9-9a23-44e2-b9ea-470ddc4c3c38"
+  },
+  {
+   "entry": "6f83796a-124b-4277-acf6-3e0d649cbd5f",
+   "form": "maison",
+   "morph": "32b2eafc-f09d-4057-a3f3-8b29a04b2457",
+   "msa": "a6ddfc72-4d15-47a2-8bcb-29378e341088",
+   "sense": "06a9b34f-32be-46c5-b8c4-30af380062c8"
+  },
+  {
+   "entry": "a7db7db2-83d3-4226-b403-5425d8ffb722",
+   "form": "je",
+   "morph": "3523b891-22d5-4813-9dbe-87ccaf894e35",
+   "msa": "8a5959c1-ae9c-4bc7-b7ea-9beb8d727cb7",
+   "sense": "32440064-a577-49d4-bfdb-52ff2fb27d59"
+  },
+  {
+   "entry": "ddff72c1-effa-455c-b571-aaba38b031fb",
+   "form": "tou",
+   "morph": "38ed006b-b3bb-4272-bdd8-8361420771a4",
+   "msa": "8892594a-db4d-4b1a-aed5-fa2b181b3530",
+   "sense": "d99031f0-d690-4a8e-811a-73245f47a758"
+  },
+  {
+   "entry": "ca6b111e-0fec-430a-a295-a373d578b47d",
+   "form": "couple",
+   "morph": "402bb0f6-08be-4b2b-966c-5a1a1a76a638",
+   "msa": "ceb033d2-5697-4b7f-8342-0d836ff50e17",
+   "sense": "498b7853-fd5e-46a7-81cb-077d59516c5a"
+  },
+  {
+   "entry": "a53f7eee-229d-4fd3-99c8-da07bb78291d",
+   "form": "se",
+   "morph": "42728138-3fe3-470f-91fb-0b7e04d4a4d3",
+   "msa": "b0afc409-bde3-48c4-8f46-71d4694390e2",
+   "sense": "7191f0ef-b0d2-4172-b811-e1d7d53a1fb0"
+  },
+  {
+   "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+   "form": "mang",
+   "morph": "42c524af-149d-4347-8253-2eb09417eaf4",
+   "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+   "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f"
+  },
+  {
+   "entry": "6c1ca1f2-ff3b-479f-8f40-b7c2387d76b4",
+   "form": "chose",
+   "morph": "459c7131-69ed-4aec-8018-1f54481b9676",
+   "msa": "a3c43f19-c3e3-4bd7-9f53-09aafbf903b9",
+   "sense": "992688e6-ea94-460e-9353-9947e940876b"
+  },
+  {
+   "entry": "2a2118b8-3d4c-4bce-bab2-78ba503c0781",
+   "form": "n’",
+   "morph": "45ba2bca-9add-44a5-8274-18f458036fdf",
+   "msa": "b5b96eb7-61ec-435f-bcb8-ad37a6deac8a",
+   "sense": "d31431e8-910e-4f97-ae1d-da09d8ca65a9"
+  },
+  {
+   "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+   "form": "le",
+   "morph": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+   "msa": "c378a34c-c57f-4945-9842-6720ed702502",
+   "sense": "c22579cf-734f-4387-98a0-b4fe3e03b250"
+  },
+  {
+   "entry": "a5b41d76-cde8-4c49-b248-5168b73a62cc",
+   "form": "par",
+   "morph": "499f7e4b-29b8-41f9-8f19-35c7cfa77deb",
+   "msa": "0cd6c53e-8962-4de5-9397-185ac0ddb24f",
+   "sense": "dc6bf11e-181c-4134-9767-392b942a4fe0"
+  },
+  {
+   "entry": "cbd3a2ac-509b-4014-928e-d52f6c9a3624",
+   "form": "ville",
+   "morph": "4e574588-5712-493d-9bfc-8971a37d6599",
+   "msa": "1badaac4-8fb1-4c42-9d66-b290a26da2a7",
+   "sense": "1bdc54e3-203f-4beb-9418-72418374cecd"
+  },
+  {
+   "entry": "fa7a5b11-a014-4657-a1f5-c9247577a8dd",
+   "form": "pour",
+   "morph": "50043702-18e5-4421-b0c0-1b36abd263d5",
+   "msa": "9b26dd52-171f-4de1-a25b-8d7832e1da7d",
+   "sense": "5a9411e0-8c67-422c-be51-d9aca0d5d062"
+  },
+  {
+   "entry": "ad9d82ff-5c7d-4089-a85a-d61b354de479",
+   "form": "est",
+   "morph": "52313740-d606-4157-87ba-8612569a0dcc",
+   "msa": "112cfbd4-fbe8-4309-8b64-64743bf70aa4",
+   "sense": "28c3f092-15cb-4934-a0bb-a84ab1879afa"
+  },
+  {
+   "entry": "24d60d09-22a0-452b-b64a-eb4e5f7a60c0",
+   "form": "[SEG]*",
+   "morph": "58e83176-a874-498d-a141-c23768488ce7",
+   "msa": "e1a0184b-bae6-4b79-977a-8b55045b41ba",
+   "sense": "fbd1c7a2-52f2-49e9-81f5-c322c5728a3a"
+  },
+  {
+   "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+   "form": "un",
+   "morph": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+   "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+   "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc"
+  },
+  {
+   "entry": "92ace8d2-938c-4c1d-9471-79dda6582247",
+   "form": "pour qu’",
+   "morph": "5ab13961-6371-4ef3-aa93-1d633a7a1989",
+   "msa": "5f736c9b-ff93-4c05-a7c3-f53189b59956",
+   "sense": "2d9e823d-488c-4ce2-9f94-adc44ed9561d"
+  },
+  {
+   "entry": "c2091ccb-145a-4c8a-b420-51e236e53be2",
+   "form": "ici",
+   "morph": "5ce26eb3-ef98-4f95-97ac-b1ee0f2b71e1",
+   "msa": "58cf554f-3837-43b1-ab17-c4ebd93c16e6",
+   "sense": "556b0328-98f2-4646-a066-721d6aa4c0a6"
+  },
+  {
+   "entry": "6414e0b7-e74a-40bc-a319-af7f37a60d3e",
+   "form": "Père",
+   "morph": "5d1408ab-f40b-4d6e-9142-5d23b66b2fae",
+   "msa": "c5c57923-e4f6-4d22-ac42-7d4393b786ab",
+   "sense": "71079f44-539b-45ba-8013-f4d3e4019fab"
+  },
+  {
+   "entry": "9434c3c3-c7f3-4021-b87b-d6811a2ac0a9",
+   "form": "bon",
+   "morph": "60c5f334-36e5-401b-8bee-fb4cb6d4cc2d",
+   "msa": "8159a5c7-8d3f-44f8-9c6a-b32781e5b5dd",
+   "sense": "4905a62e-2e23-4983-8c8a-c442e127d8b1"
+  },
+  {
+   "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+   "form": "longu",
+   "morph": "613749a0-46d0-4b77-9d16-1eeb846e6f30",
+   "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
+   "sense": "b63a020d-af9e-4292-a105-31e216fe8b76"
+  },
+  {
+   "entry": "a70e33b1-499f-498f-b95d-b1153e62ebd3",
+   "form": "meu",
+   "morph": "62deb69b-9843-4709-8426-f979ec0bd94c",
+   "msa": "4ac8577f-dd44-47e9-b93f-bd78aa5e693f",
+   "sense": "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3"
+  },
+  {
+   "entry": "d2d9c4b8-967c-4405-bae5-dfe21c306197",
+   "form": "animal",
+   "morph": "63c25ccf-8fe9-4043-832f-751243498bd4",
+   "msa": "d89fd094-3762-4f2f-a58a-ded6a241fb8b",
+   "sense": "a76936ff-9cb6-4bb7-ad2c-d12a1883c455"
+  },
+  {
+   "entry": "ed9cad13-bf4e-42d2-b27c-5b1d74caacc6",
+   "form": "et",
+   "morph": "6800afc0-7c49-459f-a426-f8bc30976793",
+   "msa": "934d5f5a-6b30-4c5f-a118-b3a303cc5c66",
+   "sense": "e73aa83f-13fd-4554-a96f-4c87ef7488a8"
+  },
+  {
+   "entry": "f985b33a-2c5e-41f6-9623-8cd5b6e01dbb",
+   "form": "gros",
+   "morph": "6994ee15-bd00-468d-a172-7cf7689ebc1a",
+   "msa": "23d8ab80-2c33-49af-a5d4-bbb0a681a13a",
+   "sense": "8abd45fd-c10d-4867-901b-2dc80071112e"
+  },
+  {
+   "entry": "ef8a8904-1600-4ddc-bb2a-9eabee82f656",
+   "form": "av",
+   "morph": "6c589ab4-65ea-4a01-acaa-73baa7ff86b4",
+   "msa": "31f3c031-46ca-43db-bcbd-3fbda5427856",
+   "sense": "42edacaf-1ae0-4459-8ced-3f164e36c35c"
+  },
+  {
+   "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+   "form": "long",
+   "morph": "6e1e19b4-287b-485a-b15d-27eddd3e8d7e",
+   "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
+   "sense": "b63a020d-af9e-4292-a105-31e216fe8b76"
+  },
+  {
+   "entry": "10eeaddc-3932-4575-818b-0fddb1bf6bec",
+   "form": "monde",
+   "morph": "6ecc9f90-c129-46a9-96ef-c6e4c41cf3d2",
+   "msa": "ecbbb56c-7728-4bb0-9801-4aaf9226c7cb",
+   "sense": "70dd025b-99c8-4b21-abd7-5cc96b573632"
+  },
+  {
+   "entry": "9969c969-d8f8-4e63-bb97-07744bfb57fd",
+   "form": "la",
+   "morph": "707075af-77b1-4ab1-81f6-8f1d3fed98bf",
+   "msa": "ee2d8ed3-7af3-4b0c-925b-a64fbdddbd3a",
+   "sense": "85e2bfbd-10c0-4824-be5c-bf5f6190c6ad"
+  },
+  {
+   "entry": "405ad438-2e3b-4ae1-b5d6-8a0e24f8830b",
+   "form": "Dieu",
+   "morph": "722287c1-828a-4b40-9445-eb9f124d30a3",
+   "msa": "71cd537c-ab19-47e9-9c72-42d1c466f1a5",
+   "sense": "b01147dd-f900-43ab-a0a9-8b8c04beb1e0"
+  },
+  {
+   "entry": "4b1680cb-9423-42e2-adda-0ce9dd9b94ee",
+   "form": "aux",
+   "morph": "74ebfe2d-e923-4dc8-abff-aa449e7a3a9d",
+   "msa": "6f4f045e-faa1-45a4-b437-e772f552dbba",
+   "sense": "d2d11065-cc52-443c-a46c-687f6c3e9ea2"
+  },
+  {
+   "entry": "20e1edb7-7a74-42db-a744-6552578874c7",
+   "form": "colline",
+   "morph": "77a23e7d-1db5-4053-b602-e2666863cda7",
+   "msa": "6a288c88-7e94-4a55-afd5-1883cda51d46",
+   "sense": "4f168631-59a4-4f20-a703-2a841f07800f"
+  },
+  {
+   "entry": "18b6fad1-6391-4843-9c39-d4cde096bdfb",
+   "form": "bateau",
+   "morph": "77fcc11e-9e0b-4da9-9878-9cb4fd74617b",
+   "msa": "d982b5fc-73fb-41f4-9a68-b0b23b95d522",
+   "sense": "4ffc51f3-cdcc-469b-b230-caf4d1044571"
+  },
+  {
+   "entry": "0b0d3f50-0498-4c0b-9fc1-5c278e5feaaf",
+   "form": "homme",
+   "morph": "79cf8f8d-aca6-4acb-9bba-6a07f4a53869",
+   "msa": "0ed9b951-7ff5-4e6c-bf19-b38f487fcafa",
+   "sense": "42671e36-e777-455c-9ce8-9b1b9684c761"
+  },
+  {
+   "entry": "83ae662b-cb09-4f88-a16b-095177d3321c",
+   "form": "lumière",
+   "morph": "7b22a483-c041-466e-8dcb-c95b48931b88",
+   "msa": "d72332b9-41c2-4960-8f65-32203b07492b",
+   "sense": "2f27e809-37c7-476f-9ccc-84c916e129e6"
+  },
+  {
+   "entry": "1f5756df-7f60-441b-a369-ae6c2817e7a2",
+   "form": "oiseau",
+   "morph": "7bf7419a-6bca-4b4c-9260-ce7c39736f78",
+   "msa": "dfff7abe-1b60-4865-a23a-7d034d7c6579",
+   "sense": "2ea603aa-0010-4740-b544-9fddd5351aa5"
+  },
+  {
+   "entry": "ab833d57-fd69-45b8-aeaf-4dfa90ee6762",
+   "form": "du",
+   "morph": "7e8a6707-b0e2-45a3-963b-564f8bc8ea55",
+   "msa": "c39a48b5-f441-4a9a-be48-300b9a2c2991",
+   "sense": "b91b6efc-8f41-4d39-8555-da342a5e5e4a"
+  },
+  {
+   "entry": "a4975b44-9406-4145-b67d-c129254b23dd",
+   "form": "ainsi",
+   "morph": "80d9d442-fe75-4cfd-81f7-531d8cf0435e",
+   "msa": "d99ab532-49a0-4066-b067-89397c2a2a2a",
+   "sense": "72bafb8b-fe79-4ae4-8f99-fa5fd67fd8db"
+  },
+  {
+   "entry": "d221474a-ee78-4c06-8727-526af2652eb6",
+   "form": "si",
+   "morph": "84944ecd-59fd-409e-8dfc-435a05dda171",
+   "msa": "e756932c-5806-4c30-92f6-f5117ee1befc",
+   "sense": "958e8267-f352-47a8-88a3-bde9406238a9"
+  },
+  {
+   "entry": "30fdab90-b066-41e7-83c3-a70b9e30a3cf",
+   "form": "deux",
+   "morph": "8b135dcd-a688-433f-b3d4-0e78e6708cf8",
+   "msa": "dd74d11c-e8ff-4080-af9d-b2ce9fc11cb3",
+   "sense": "9c3c059e-8f2f-445f-a6d7-d20375609eb8"
+  },
+  {
+   "entry": "616cd794-0996-419b-aa0d-ab991606af5a",
+   "form": "œuf",
+   "morph": "8d21c5a5-1310-4d17-b675-08fb4d4d6812",
+   "msa": "ec57c726-9466-4b24-b8a4-ecbc61ce360c",
+   "sense": "6c22b369-9653-44e8-97ec-b47a1295c46b"
+  },
+  {
+   "entry": "266b5a5f-5e12-4d0b-bafc-74928aee3f7f",
+   "form": "saveur",
+   "morph": "8d6e7ab5-6fb6-485f-a123-709a48ca47f4",
+   "msa": "72e6e3ef-f728-4c79-a1a9-5f6a5ac17636",
+   "sense": "acd7f50c-d986-439a-819d-53bd3f02b04e"
+  },
+  {
+   "entry": "ddff72c1-effa-455c-b571-aaba38b031fb",
+   "form": "tout",
+   "morph": "8ea4d519-e7a0-4055-bc54-dc2c379f0c5b",
+   "msa": "8892594a-db4d-4b1a-aed5-fa2b181b3530",
+   "sense": "d99031f0-d690-4a8e-811a-73245f47a758"
+  },
+  {
+   "entry": "d2d9c4b8-967c-4405-bae5-dfe21c306197",
+   "form": "animau",
+   "morph": "95314f8a-53bf-4df3-a421-8c407f7e4682",
+   "msa": "d89fd094-3762-4f2f-a58a-ded6a241fb8b",
+   "sense": "a76936ff-9cb6-4bb7-ad2c-d12a1883c455"
+  },
+  {
+   "entry": "a5ae176b-0a35-4a99-9d29-50917dbb301c",
+   "form": "ét",
+   "morph": "9695a8a7-d591-4371-b94f-5d93a3c0f105",
+   "msa": "53090c92-c034-4254-9caa-88601cc491cb",
+   "sense": "21aa3a38-0c3f-4fe1-9799-c9f9169efb13"
+  },
+  {
+   "entry": "68f1e986-b27a-427d-81a2-4c9d5605fb3f",
+   "form": "ras",
+   "morph": "96c0755e-18e8-4190-a4c6-fe74bd1c2649",
+   "msa": "9bf15903-5e56-4711-a3e7-5192617cf05a",
+   "sense": "2c72955c-b941-4480-ad75-1cbfd2defe86"
+  },
+  {
+   "entry": "504f2b1d-7469-4228-be70-99ea60c49b7e",
+   "form": "bien",
+   "morph": "9ee535dc-8d65-420d-85e6-04b1866c16b4",
+   "msa": "0f5ba860-0192-425d-a191-6d0830df3fb6",
+   "sense": "8f0190c6-95fe-4794-a6f9-2c1a4c234765"
+  },
+  {
+   "entry": "a806a20e-5205-40d7-8594-60dd54af40b0",
+   "form": "femelle",
+   "morph": "9f977ad7-9dbb-4713-a114-6abdf4e2c5f6",
+   "msa": "b67d2c95-4895-4d3f-8aff-dd151f670135",
+   "sense": "3b4c1fde-c112-42c6-affb-40e90b9eeddb"
+  },
+  {
+   "entry": "a5ae176b-0a35-4a99-9d29-50917dbb301c",
+   "form": "êt",
+   "morph": "a0b58d7f-0e3b-41ad-98d8-80fc1bd02646",
+   "msa": "53090c92-c034-4254-9caa-88601cc491cb",
+   "sense": "21aa3a38-0c3f-4fe1-9799-c9f9169efb13"
+  },
+  {
+   "entry": "061ca041-a4e7-4457-9be1-ef96851b7d2c",
+   "form": "ces",
+   "morph": "a14fa10a-85ff-404f-a742-686d8ec41649",
+   "msa": "e8230951-ebdc-4fb0-bd15-e56594abdcb2",
+   "sense": "0935c776-0de1-4054-8a90-3f9bce905371"
+  },
+  {
+   "entry": "a6e49da0-7904-4139-a0fd-c9f48eed3e41",
+   "form": "ceux",
+   "morph": "a5204b54-e887-4643-8f5b-18f5ceaebbe9",
+   "msa": "e3efde07-aba7-4cef-befd-2b0b74e9436c",
+   "sense": "b4e2ea31-adfc-4682-bd34-1d4a3879d66b"
+  },
+  {
+   "entry": "af0cd035-3759-4678-9b23-9eeff3256ef8",
+   "form": "on",
+   "morph": "a9ed3c02-7e10-4d67-9291-1cfb61695419",
+   "msa": "1da9228e-90d6-4057-a5db-e2af0bd87fe6",
+   "sense": "4f3741ba-fb70-4254-85da-60c244c5eb57"
+  },
+  {
+   "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+   "form": "train",
+   "morph": "ac8c4883-c52d-4307-b13b-77e18761e1d0",
+   "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
+   "sense": "64ee1c0e-ef16-42b4-ade3-530c143b56d6"
+  },
+  {
+   "entry": "21d2ba05-7ab4-4f7b-a021-11ad1dcb1e14",
+   "form": "nous",
+   "morph": "acfcadec-3e28-4048-a89c-b856947cbeb0",
+   "msa": "8506817d-aa6b-4c6e-a0b7-31a16d42aeea",
+   "sense": "52d542e0-e742-4de9-8b03-545e04ef634a"
+  },
+  {
+   "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+   "form": "garçon",
+   "morph": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+   "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+   "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475"
+  },
+  {
+   "entry": "c7025994-9d47-4667-992c-37100c6762df",
+   "form": "terre",
+   "morph": "b0faa6d5-7335-4f4b-a1a2-e41ea41e08e5",
+   "msa": "9ce7fa7b-6b8c-4cc2-9f27-92d779d32263",
+   "sense": "eef2c2d9-3fe8-4316-a6a7-85633fc3f20d"
+  },
+  {
+   "entry": "4d38de8a-78f7-4b4e-9fe7-228575d9be28",
+   "form": "pomme",
+   "morph": "b2dcf09b-0d18-43a1-b077-7611b247ae7d",
+   "msa": "dae758cd-7359-472c-ad66-7525de8ad6e7",
+   "sense": "e81317b3-d7a8-4e8b-9273-6bfe440807ae"
+  },
+  {
+   "entry": "a70e33b1-499f-498f-b95d-b1153e62ebd3",
+   "form": "mouv",
+   "morph": "b41af142-9aae-4249-a2e3-36482863dbc5",
+   "msa": "4ac8577f-dd44-47e9-b93f-bd78aa5e693f",
+   "sense": "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3"
+  },
+  {
+   "entry": "be897932-cc33-4cd9-afa1-7d46c092a6d7",
+   "form": "cette",
+   "morph": "b4acd1d6-ec57-43f0-9dbd-81940ad4b977",
+   "msa": "aeed7b3b-07e3-4fff-a6e9-64d773bfd7c9",
+   "sense": "3d1bf06f-57a8-4e9c-8af8-549a48cd8269"
+  },
+  {
+   "entry": "3b17b67e-bfcd-4615-bd91-192433df0d83",
+   "form": "elle",
+   "morph": "bb702067-2778-4751-98b5-0770d2943f66",
+   "msa": "c61f272d-4fec-49c4-83ea-3e714aed536a",
+   "sense": "65273fc8-8e4b-4ba8-b337-38e814aef94e"
+  },
+  {
+   "entry": "8d5b3fc2-155c-486d-82b6-0dbbcf415c83",
+   "form": "vis",
+   "morph": "bda2d210-d8fe-4992-98b3-eb2da61be6a6",
+   "msa": "ce34c723-9a2b-4a6a-8c9e-8482713de59c",
+   "sense": "2e9db541-fa7c-44d4-8e13-86498f3a61ba"
+  },
+  {
+   "entry": "4372098f-41ee-46cf-80c0-1b7b454b1449",
+   "form": "ce",
+   "morph": "c128f722-11a1-4219-a9e7-407792161f25",
+   "msa": "7a7742be-0904-4630-97d8-e1ca7a993c71",
+   "sense": "e8962aae-e560-449e-a617-411f2a1e38b3"
+  },
+  {
+   "entry": "9a1d03d3-190f-4aff-8792-6b98c1f702dd",
+   "form": "batt",
+   "morph": "c200819e-c3e8-47ca-824d-45f17cc39ce7",
+   "msa": "418a91c4-1e0c-46e5-9f59-d589ca63591c",
+   "sense": "d6dc2ced-e837-43eb-bee1-f3a2abbb2a4d"
+  },
+  {
+   "entry": "92ace8d2-938c-4c1d-9471-79dda6582247",
+   "form": "pour que",
+   "morph": "c25870aa-6376-40a8-8d70-8cf7e4e1ecd5",
+   "msa": "5f736c9b-ff93-4c05-a7c3-f53189b59956",
+   "sense": "2d9e823d-488c-4ce2-9f94-adc44ed9561d"
+  },
+  {
+   "entry": "0a72aede-1b67-4e05-ab44-ef6e8d78e7ee",
+   "form": "vous",
+   "morph": "c3ed9159-6e35-4bb9-99c7-226c24da8a98",
+   "msa": "508096af-10d1-4634-973b-6a45f02fdac3",
+   "sense": "3b560ae9-f304-46c1-bb36-e440de3a5111"
+  },
+  {
+   "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+   "form": "jou",
+   "morph": "c54804f6-d70e-4129-b5af-a995a9baa832",
+   "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+   "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40"
+  },
+  {
+   "entry": "58af57d8-c437-4315-83ad-ccc2797b07cb",
+   "form": "poisson",
+   "morph": "c55fac0e-a41a-48e6-8454-b21fcbc6b53f",
+   "msa": "481ca3a3-cc77-4627-8414-5cacba41fe7e",
+   "sense": "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32"
+  },
+  {
+   "entry": "71d16713-506b-4d4a-8c13-5e630066cf0a",
+   "form": "pas",
+   "morph": "c82bceca-bbd4-425a-b293-70f567d92d54",
+   "msa": "65fd0b86-f0a8-4b44-88a4-e31c70a8e9b9",
+   "sense": "42170ae9-0aa8-466a-a59d-d549f4098ac6"
+  },
+  {
+   "entry": "31c0e5bb-dc9b-4a69-af23-41bf0176c916",
+   "form": "à",
+   "morph": "c92cdddf-f6f6-4ac9-8ead-5bf682085544",
+   "msa": "63d41299-958f-42c6-a35f-a88dbc7cee0f",
+   "sense": "2b534fe8-57e7-4cb7-bb2f-04b9761e7513"
+  },
+  {
+   "entry": "5d8ab709-62f7-4fb8-af31-220d5a996998",
+   "form": "celles",
+   "morph": "c98c45ed-f30b-4a54-ae58-5237033528d5",
+   "msa": "84976aa7-2a57-4106-8250-85795d22c9b1",
+   "sense": "01e4150c-d49a-4c9a-8fc9-f6938ea57010"
+  },
+  {
+   "entry": "a3c2aeaa-24d9-48cc-9852-4a609500a1c4",
+   "form": "il",
+   "morph": "cbbf9ccd-9f01-43cb-b8ae-4332595a8a33",
+   "msa": "611edb6d-fba8-4899-8462-aa5560d24736",
+   "sense": "2fb47683-10c0-433c-9ee5-990833febb1d"
+  },
+  {
+   "entry": "0360db74-b2e8-4fd8-bfd7-4454c07f3add",
+   "form": "ils",
+   "morph": "cdc1e86d-fb34-4bda-998b-5570f490894c",
+   "msa": "638bc981-1db8-494b-94f3-66c1e43ecda6",
+   "sense": "f3eb1768-ab82-4977-a344-7f61979a1aa0"
+  },
+  {
+   "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+   "form": "petit",
+   "morph": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+   "msa": "542e584c-e966-4d14-877a-77e462642868",
+   "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d"
+  },
+  {
+   "entry": "9a1d03d3-190f-4aff-8792-6b98c1f702dd",
+   "form": "bat",
+   "morph": "cee47a27-e455-4368-ae66-ee1c5d6a1cf9",
+   "msa": "418a91c4-1e0c-46e5-9f59-d589ca63591c",
+   "sense": "d6dc2ced-e837-43eb-bee1-f3a2abbb2a4d"
+  },
+  {
+   "entry": "f9dfa498-3c37-418d-ae05-d76946e03d54",
+   "form": "mâle",
+   "morph": "cf6c70de-e74b-43e7-b7c7-a73aa4405efa",
+   "msa": "42f43c08-0155-45c3-9272-9176f7aa3675",
+   "sense": "6bdfaa97-a3aa-4b32-9a2e-4c49dc4c1b1b"
+  },
+  {
+   "entry": "88aa6a11-2c2b-4310-aa15-f2e49edf90f1",
+   "form": "ainsi qu’",
+   "morph": "d2ff2fee-6833-405c-ac42-641f76dfaf14",
+   "msa": "5e3b0105-d169-4e7e-9d24-6d21b992e22c",
+   "sense": "c18112bd-2b84-4b3a-9b3f-746735a0f4dd"
+  },
+  {
+   "entry": "cf67c232-48c1-4962-9a44-7724acba9b77",
+   "form": "sont",
+   "morph": "d4c8b32e-71d5-485e-9534-ae4fc1881156",
+   "msa": "43219c0d-1de9-4060-9b00-2853b37dc9d6",
+   "sense": "410c705f-f85e-4758-8198-3fffaf02fecb"
+  },
+  {
+   "entry": "05950dd9-ab44-4818-a9c5-f614bd9547ef",
+   "form": "en",
+   "morph": "daaa0583-4be7-4fe6-bdc2-5eaf016a64e4",
+   "msa": "d4dec502-6d55-4079-b91f-b31c9ad59315",
+   "sense": "7df25c1c-714a-4cb7-89c6-1775c8335990"
+  },
+  {
+   "entry": "fc8cea36-6523-4d86-93f3-ba8a489a16c6",
+   "form": "ne",
+   "morph": "dda4785d-37bb-4415-91c1-5315260096c3",
+   "msa": "c293dc13-e639-429e-addf-d1406ba22d3d",
+   "sense": "84b3d225-40a8-4fea-9fc9-fbea3fdf7e9c"
+  },
+  {
+   "entry": "4099ee8a-1205-425d-b1f3-66329b135e9c",
+   "form": "devant",
+   "morph": "dddb7f38-50cf-45b9-a4a4-1fc636920dc7",
+   "msa": "8a019713-18de-4d6b-9c67-a78a4c7dc18d",
+   "sense": "d2370914-5c80-4d05-bffe-08169795b59e"
+  },
+  {
+   "entry": "025ea22c-a36c-455d-b638-06e6b78425fd",
+   "form": "quoi",
+   "morph": "de78af11-665d-497f-afaa-0f29133eefbb",
+   "msa": "6cba74f8-3027-4c58-9800-678525d37f25",
+   "sense": "3ffe8ac9-0766-4e2a-a818-980187276844"
+  },
+  {
+   "entry": "4b023428-c7f9-40c2-89df-0412016489a6",
+   "form": "sommet",
+   "morph": "e5e81a7e-9a53-4b10-b664-fc839fcf3460",
+   "msa": "9b9e0dd2-500c-4a16-968e-d335000d3c59",
+   "sense": "d93b7eaf-2851-41e4-8ba0-4c4678efd969"
+  },
+  {
+   "entry": "b0b77914-3d4c-410c-ac19-ef352481e72a",
+   "form": "bonbon",
+   "morph": "e72cac67-75cb-42ac-a33b-defea63a1b24",
+   "msa": "08827ad1-f98a-40d8-9634-eac267edb4dc",
+   "sense": "9975733d-2119-499b-bfe8-783db0b52cf9"
+  },
+  {
+   "entry": "91e8bf5d-acd9-4fdb-bfe3-6c9a14f31219",
+   "form": "céleste",
+   "morph": "e731528d-c7f3-48a3-a2a5-8e080615451d",
+   "msa": "5a4ebb57-e407-46bd-b497-1855420a1c75",
+   "sense": "3a8945cd-abf5-4e39-90d3-086139a724d4"
+  },
+  {
+   "entry": "1c781f71-f1e3-48c8-a360-440993dcd266",
+   "form": "au",
+   "morph": "e7da50e2-6868-4e36-a60f-5bb994fc7a83",
+   "msa": "cd3f4771-e872-4c60-b7a4-98a9c8731953",
+   "sense": "81581ace-1d2d-4aa3-a431-88eb863806a9"
+  },
+  {
+   "entry": "96b1d6bd-223d-4a88-91af-55244a589857",
+   "form": "vi",
+   "morph": "f078e859-60e0-4545-91b0-eb0986e7ca46",
+   "msa": "ce34c723-9a2b-4a6a-8c9e-8482713de59c",
+   "sense": "2e9db541-fa7c-44d4-8e13-86498f3a61ba"
+  },
+  {
+   "entry": "ec2efde2-accc-4871-a06e-1bd6ddb75e7f",
+   "form": "route",
+   "morph": "f1a575d1-7723-4ba1-9a1c-77792ddc45f2",
+   "msa": "03a1a019-b645-4a9a-8bc5-25f0e1513216",
+   "sense": "37054df3-4a4a-4cb7-9db5-80fd41b130ec"
+  },
+  {
+   "entry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+   "form": "avec",
+   "morph": "f282e038-4687-4733-b9b7-824ce81941a0",
+   "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e",
+   "sense": "db1ffab1-0311-4862-a4b1-6a15c64965af"
+  },
+  {
+   "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+   "form": "les",
+   "morph": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+   "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69",
+   "sense": "8b0cea7f-ead0-482b-a654-3a1e2eba947d"
+  },
+  {
+   "entry": "96b1d6bd-223d-4a88-91af-55244a589857",
+   "form": "viv",
+   "morph": "f5608859-b6c5-4ad5-b98c-3177c68ba3c7",
+   "msa": "ce34c723-9a2b-4a6a-8c9e-8482713de59c",
+   "sense": "2e9db541-fa7c-44d4-8e13-86498f3a61ba"
+  },
+  {
+   "entry": "ac5a496b-040f-4220-a581-839e9249181b",
+   "form": "celle",
+   "morph": "f61b272a-3bc0-47e7-b84a-8befb33876b9",
+   "msa": "ce9f741e-c5f5-4754-9d9a-1adf12ce6ec1",
+   "sense": "668917ea-d06e-4ab3-bec2-c590ccca36f4"
+  },
+  {
+   "entry": "02b573bf-a148-4a87-b0e1-c8a5fe5ef801",
+   "form": "dans",
+   "morph": "f6bde240-edee-47ea-96db-1b1a99b05962",
+   "msa": "b4fd1913-78bb-40c6-b2e2-3d5f9cc3bd88",
+   "sense": "3dd547f0-a5f3-4982-b212-3cb72dfe723d"
+  },
+  {
+   "entry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+   "form": "de",
+   "morph": "fe82029d-0673-42e2-a793-274d39092ff2",
+   "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e",
+   "sense": "da8d8670-759f-4820-af5b-041a5c6cd19b"
+  },
+  {
+   "entry": "01dff27e-e9bb-4e56-ac81-3e7d2e874dc1",
+   "form": "entr",
+   "morph": "ff4a6383-aeb2-4eee-8fd4-99d89af2ac93",
+   "msa": "27f81268-81b2-4cc4-a95c-54c6f50e80cb",
+   "sense": "6a8c5ded-fd9d-4094-9af4-6990bb3c41c2"
+  }
+ ],
+ "repMsas": {},
+ "wordforms": {
+  "1": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "1e446215-101f-4b8d-9835-cb18658a7a41"
+  },
+  "12": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "af498679-deff-4a4e-8bd8-874fdbf8de65"
+  },
+  "2": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "b1ef2d65-7ca9-4141-bcc0-5067814cb96b"
+  },
+  "3": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "4e301fab-3d1b-4729-a18f-9610eb8d1bbc"
+  },
+  "5": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "3139a61f-7cec-420e-8435-f43d0b522945"
+  },
+  "8": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "7f35278e-12e8-44e6-84bd-2082dc98b891"
+  },
+  "Dieu": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "405ad438-2e3b-4ae1-b5d6-8a0e24f8830b",
+       "form": "722287c1-828a-4b40-9445-eb9f124d30a3",
+       "inflType": null,
+       "msa": "71cd537c-ab19-47e9-9c72-42d1c466f1a5",
+       "sense": null,
+       "text": "Dieu"
+      }
+     ],
+     "computer": null,
+     "guid": "979d4437-e3fb-4db2-9d2f-1f20a7949e93",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "1f9dc235-4433-4b00-af92-a0e39cefab0a"
+  },
+  "GARÇONS": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "badebb31-77ac-436b-98f1-37d30be914c8"
+  },
+  "Garçon": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "436c9c54-74f8-4115-9f48-d3f31dd4192b"
+  },
+  "Il": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a3c2aeaa-24d9-48cc-9852-4a609500a1c4",
+       "form": "cbbf9ccd-9f01-43cb-b8ae-4332595a8a33",
+       "inflType": null,
+       "msa": "611edb6d-fba8-4899-8462-aa5560d24736",
+       "sense": null,
+       "text": "il"
+      }
+     ],
+     "computer": null,
+     "guid": "a03b33ca-0513-4bd5-881f-dffb5632cb91",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "5f407b33-9969-4a65-ad01-5e34b17d3c35"
+  },
+  "JOUENT": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "f752bc13-2101-4905-ac23-67b2e9c0e539"
+  },
+  "Joue": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "d52c7751-9f0f-4bda-8bc7-6b8fb5e6877f"
+  },
+  "L'enfant": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "d89f5f44-aa62-49d1-b9cb-a3b072d7b950"
+  },
+  "La": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "632726c7-23da-4dbe-adf8-b2e192650c4f",
+       "form": "b6dfdd91-679c-40a8-85cd-b68bf153ef81",
+       "inflType": null,
+       "msa": "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0",
+       "sense": null,
+       "text": "la"
+      }
+     ],
+     "computer": null,
+     "guid": "05bfa270-9e5a-4e3d-9887-b6a2b317525a",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "9969c969-d8f8-4e63-bb97-07744bfb57fd",
+       "form": "707075af-77b1-4ab1-81f6-8f1d3fed98bf",
+       "inflType": null,
+       "msa": "ee2d8ed3-7af3-4b0c-925b-a64fbdddbd3a",
+       "sense": null,
+       "text": "la"
+      }
+     ],
+     "computer": null,
+     "guid": "f11fd516-1ed0-4d28-90a1-64080af347be",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "5f5f32e7-e31b-4ca3-8686-46ceb3d07e63"
+  },
+  "Le": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+       "form": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+       "inflType": null,
+       "msa": "615e705c-b753-422b-a167-33ce8e190c57",
+       "sense": null,
+       "text": "le"
+      }
+     ],
+     "computer": null,
+     "guid": "6f1ab9bb-127e-4447-b1de-c0bf448b56e3",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+       "form": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+       "inflType": null,
+       "msa": "c378a34c-c57f-4945-9842-6720ed702502",
+       "sense": null,
+       "text": "le"
+      }
+     ],
+     "computer": null,
+     "guid": "9ea55820-8af9-4381-9e4d-92d49db894c2",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "dc99c336-7e7a-475b-9078-382d5bf6099e"
+  },
+  "Les": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "inflType": null,
+       "msa": "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f",
+       "sense": null,
+       "text": "les"
+      }
+     ],
+     "computer": null,
+     "guid": "86679578-0803-4e04-8678-4ac4e0c5a4c9",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "inflType": null,
+       "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69",
+       "sense": null,
+       "text": "les"
+      }
+     ],
+     "computer": null,
+     "guid": "d10a6d5c-666e-40ba-a8a8-b5fdcec91aaf",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "302c9928-b95d-4c3a-ba84-36f26b92073f"
+  },
+  "Los": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "55d413f3-5127-498c-ada3-152a455bb008"
+  },
+  "Mange": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "219e23e5-9028-4e49-9fad-70ac3158e03b"
+  },
+  "Noé": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "efdde96d-2c25-43dd-8387-f1b6b365216d",
+       "form": "29ae36a7-722a-4b2c-8103-16db77e0b589",
+       "inflType": null,
+       "msa": "9a497769-c445-4997-9871-60014f5c04ff",
+       "sense": null,
+       "text": "Noé"
+      }
+     ],
+     "computer": null,
+     "guid": "dc867436-0984-42e0-b19d-50dd8db47c01",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "3b31c29a-7c86-4443-a7d0-a56977530d66"
+  },
+  "Oui": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "6011a420-b117-4360-bf8b-752c5177797d"
+  },
+  "PÈRE": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "6414e0b7-e74a-40bc-a319-af7f37a60d3e",
+       "form": "5d1408ab-f40b-4d6e-9142-5d23b66b2fae",
+       "inflType": null,
+       "msa": "c5c57923-e4f6-4d22-ac42-7d4393b786ab",
+       "sense": null,
+       "text": "Père"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "5682694b-bcc3-45a2-ba9b-b9e0f392cccc",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "90a15bbb-6be4-4eb3-98c0-ad95dc9fe32f"
+  },
+  "Puis": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "3f198f4e-f354-4c9a-8450-7af48465011c"
+  },
+  "Rouge": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "e15d5546-6840-4cfe-b6c2-bd6790e19dcd",
+       "form": "23238b04-e1e3-440d-88e6-2e16cf63e961",
+       "inflType": null,
+       "msa": "b653f423-2766-4e15-825a-176cebd39dfb",
+       "sense": null,
+       "text": "rouge"
+      },
+      {
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "form": "d6e68df2-6f6f-4a14-88f7-17ce99abb893",
+       "inflType": null,
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "sense": null,
+       "text": "^0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "20bf6145-06f3-4792-a165-1931731a35fe",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "e15d5546-6840-4cfe-b6c2-bd6790e19dcd",
+       "form": "23238b04-e1e3-440d-88e6-2e16cf63e961",
+       "inflType": null,
+       "msa": "b653f423-2766-4e15-825a-176cebd39dfb",
+       "sense": null,
+       "text": "rouge"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": null,
+       "text": "^0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "d2462996-f0c5-4291-963b-901f5c0ad5af",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "fc1a831e-2794-4e6a-9414-caf02677c8f0"
+  },
+  "Train": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+       "form": "ac8c4883-c52d-4307-b13b-77e18761e1d0",
+       "inflType": null,
+       "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
+       "sense": null,
+       "text": "train"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "065dbd7e-860f-4ea8-8950-3381cb476268",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "7ca9100d-e3b5-49d0-be94-7a398875f3dc"
+  },
+  "Un": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "inflType": null,
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "sense": null,
+       "text": "un"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "02f558f9-0384-4104-9528-022079040f53",
+       "sense": null,
+       "text": "^0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "63a5455c-7b47-4a0e-8199-8e4191c2c576",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "a0ed1912-f5d9-4fee-955d-39fd2db93ed4"
+  },
+  "a": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "99072c3c-7150-4080-85e6-7993ef575254"
+  },
+  "ainsi": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "4cb10432-4463-41b7-9848-854ad5c69439"
+  },
+  "ainsi que": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "88aa6a11-2c2b-4310-aa15-f2e49edf90f1",
+       "form": "019bc808-b7e4-4370-a5b5-64769627e15a",
+       "inflType": null,
+       "msa": "5e3b0105-d169-4e7e-9d24-6d21b992e22c",
+       "sense": "c18112bd-2b84-4b3a-9b3f-746735a0f4dd",
+       "text": "ainsi que"
+      }
+     ],
+     "computer": "approves",
+     "guid": "6e7f2c2c-05fa-4568-8a4b-da7900543854",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "8e1a5e94-9b1d-46fa-9740-1323ab47533f"
+  },
+  "animaux": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "d2d9c4b8-967c-4405-bae5-dfe21c306197",
+       "form": "95314f8a-53bf-4df3-a421-8c407f7e4682",
+       "inflType": null,
+       "msa": "d89fd094-3762-4f2f-a58a-ded6a241fb8b",
+       "sense": "a76936ff-9cb6-4bb7-ad2c-d12a1883c455",
+       "text": "animau"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "d263de38-feeb-48f0-ae3a-6aeae95d7eab",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+       "text": "x"
+      }
+     ],
+     "computer": null,
+     "guid": "0f581721-5f48-4daa-91dc-3efc30232e4a",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "dd5b8653-fe8f-40b7-9038-5a480322a55b"
+  },
+  "aujourd'hui": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "ba5a23ed-0506-4b04-812b-79b1588c0974"
+  },
+  "avec": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+       "form": "f282e038-4687-4733-b9b7-824ce81941a0",
+       "inflType": null,
+       "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e",
+       "sense": "db1ffab1-0311-4862-a4b1-6a15c64965af",
+       "text": "avec"
+      }
+     ],
+     "computer": "approves",
+     "guid": "823611b4-13ce-4971-b49c-8cb1583f8dd8",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "e5e33e96-5566-4111-a030-50902216864d"
+  },
+  "à": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "31c0e5bb-dc9b-4a69-af23-41bf0176c916",
+       "form": "c92cdddf-f6f6-4ac9-8ead-5bf682085544",
+       "inflType": null,
+       "msa": "63d41299-958f-42c6-a35f-a88dbc7cee0f",
+       "sense": "2b534fe8-57e7-4cb7-bb2f-04b9761e7513",
+       "text": "à"
+      }
+     ],
+     "computer": "approves",
+     "guid": "5251acf1-0c6d-4b91-99c6-4ec9609ebbe0",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "5251acf1-0c6d-4b91-99c6-4ec9609ebbe0",
+     "w:meut",
+     "w:ras"
+    ]
+   ],
+   "guid": "15ddc1c0-d26c-47d6-85b9-e92f8cf60a62"
+  },
+  "bat": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "9a1d03d3-190f-4aff-8792-6b98c1f702dd",
+       "form": "cee47a27-e455-4368-ae66-ee1c5d6a1cf9",
+       "inflType": null,
+       "msa": "418a91c4-1e0c-46e5-9f59-d589ca63591c",
+       "sense": "d6dc2ced-e837-43eb-bee1-f3a2abbb2a4d",
+       "text": "bat"
+      }
+     ],
+     "computer": "approves",
+     "guid": "4870eb16-8962-4264-9c58-3bbc796e58b8",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "99b0a59a-bed6-4bac-8d19-97bbd2a1783a"
+  },
+  "bats": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "f495015f-48f1-4651-a471-ac7d5a3b6c80"
+  },
+  "battent": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "cf2bacdb-83dd-4e2e-90fc-b4dac7145a83"
+  },
+  "battez": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "a39172f6-6600-437b-babf-9d3c3839a856"
+  },
+  "battons": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "e2cff578-8938-41e8-bb87-f511040f2a2a"
+  },
+  "battre": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "60a6ecdc-a78d-4707-b3ec-33c4032a7f6f"
+  },
+  "bob": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "edcbde5f-2559-40bd-b18c-e56721c03af9"
+  },
+  "bonbon": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "b0b77914-3d4c-410c-ac19-ef352481e72a",
+       "form": "e72cac67-75cb-42ac-a33b-defea63a1b24",
+       "inflType": null,
+       "msa": "08827ad1-f98a-40d8-9634-eac267edb4dc",
+       "sense": "9975733d-2119-499b-bfe8-783db0b52cf9",
+       "text": "bonbon"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "62b3de82-ca2d-41b9-9c5a-595b32e71299",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "62b3de82-ca2d-41b9-9c5a-595b32e71299",
+     "w:petit",
+     "p:."
+    ]
+   ],
+   "guid": "759e0a3f-fcd0-49ce-90e4-80eedfdaef10"
+  },
+  "bonbons": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "b0b77914-3d4c-410c-ac19-ef352481e72a",
+       "form": "e72cac67-75cb-42ac-a33b-defea63a1b24",
+       "inflType": null,
+       "msa": "08827ad1-f98a-40d8-9634-eac267edb4dc",
+       "sense": "9975733d-2119-499b-bfe8-783db0b52cf9",
+       "text": "bonbon"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "67ca0ce6-254b-4160-9bcc-59f4eec963e6",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "0cce9200-aeef-43de-8786-bb5f6a5939a4"
+  },
+  "bons": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "9434c3c3-c7f3-4021-b87b-d6811a2ac0a9",
+       "form": "60c5f334-36e5-401b-8bee-fb4cb6d4cc2d",
+       "inflType": null,
+       "msa": "8159a5c7-8d3f-44f8-9c6a-b32781e5b5dd",
+       "sense": null,
+       "text": "bon"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": null,
+       "text": "^0"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "49f5fcd4-f101-4860-af2a-e48453c77083",
+       "sense": null,
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "aa9a1c79-d295-4125-a85f-e888cdc9ec84",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "966831ed-f94e-4af4-bc28-83215106b31b"
+  },
+  "ce": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "4372098f-41ee-46cf-80c0-1b7b454b1449",
+       "form": "c128f722-11a1-4219-a9e7-407792161f25",
+       "inflType": null,
+       "msa": "7a7742be-0904-4630-97d8-e1ca7a993c71",
+       "sense": "e8962aae-e560-449e-a617-411f2a1e38b3",
+       "text": "ce"
+      }
+     ],
+     "computer": "approves",
+     "guid": "ed351d43-e5ed-4c38-a79b-75485346df52",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "ed351d43-e5ed-4c38-a79b-75485346df52",
+     "w:tout",
+     "w:qui"
+    ]
+   ],
+   "guid": "64d13718-0d15-4c99-8ef3-5c67424ba876"
+  },
+  "celle": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "25482c8c-8ad6-4b53-9b32-37e723d97118"
+  },
+  "celles": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "a1db4039-f19c-498f-bea0-b88402c462da"
+  },
+  "celui": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "03af0f0f-34c9-4c51-839d-4eeb93275374"
+  },
+  "ces": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "101fa206-2d04-4a61-bd28-abefec62c51c"
+  },
+  "cet": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "d07fafd3-f2a5-42c6-9dc8-26f37fcfc9f0"
+  },
+  "cette": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "5f82da2c-cfc5-49ff-986c-84fc1ff36e78"
+  },
+  "ceux": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a6e49da0-7904-4139-a0fd-c9f48eed3e41",
+       "form": "a5204b54-e887-4643-8f5b-18f5ceaebbe9",
+       "inflType": null,
+       "msa": "e3efde07-aba7-4cef-befd-2b0b74e9436c",
+       "sense": "b4e2ea31-adfc-4682-bd34-1d4a3879d66b",
+       "text": "ceux"
+      }
+     ],
+     "computer": "approves",
+     "guid": "c5ccdb18-3194-4c2c-b859-72fd917851ad",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "c5ccdb18-3194-4c2c-b859-72fd917851ad",
+     "w:de",
+     "w:qui"
+    ],
+    [
+     "c5ccdb18-3194-4c2c-b859-72fd917851ad",
+     "w:de",
+     "w:qui"
+    ]
+   ],
+   "guid": "5c11ec80-c560-4449-99e4-be0da0b90138"
+  },
+  "chat": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "222d566a-4f5d-4077-a152-24055d61f475"
+  },
+  "colline": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "20e1edb7-7a74-42db-a744-6552578874c7",
+       "form": "77a23e7d-1db5-4053-b602-e2666863cda7",
+       "inflType": null,
+       "msa": "6a288c88-7e94-4a55-afd5-1883cda51d46",
+       "sense": null,
+       "text": "colline"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "7d5569f9-ad31-4a92-a14a-310def98fd94",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "2cba914d-82b0-4dc4-8b8c-679872174601"
+  },
+  "couple": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "ca6b111e-0fec-430a-a295-a373d578b47d",
+       "form": "402bb0f6-08be-4b2b-966c-5a1a1a76a638",
+       "inflType": null,
+       "msa": "ceb033d2-5697-4b7f-8342-0d836ff50e17",
+       "sense": "498b7853-fd5e-46a7-81cb-077d59516c5a",
+       "text": "couple"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "ac75b21b-e1aa-4638-814b-a9ed73187ad4",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "ac75b21b-e1aa-4638-814b-a9ed73187ad4",
+     "w:un",
+     "w:d’"
+    ]
+   ],
+   "guid": "d403c2ff-fb5f-4a07-bbde-1bacba300bff"
+  },
+  "d'un": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "2d417ebf-96d2-4a6f-a30b-8df02410cb6d"
+  },
+  "dans": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "02b573bf-a148-4a87-b0e1-c8a5fe5ef801",
+       "form": "f6bde240-edee-47ea-96db-1b1a99b05962",
+       "inflType": null,
+       "msa": "b4fd1913-78bb-40c6-b2e2-3d5f9cc3bd88",
+       "sense": null,
+       "text": "dans"
+      }
+     ],
+     "computer": null,
+     "guid": "b5a88628-d2ed-4a13-a94e-f76170de0deb",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "79efd3c8-f4d1-4882-b400-fdd8f99553e3"
+  },
+  "de": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+       "form": "fe82029d-0673-42e2-a793-274d39092ff2",
+       "inflType": null,
+       "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e",
+       "sense": "da8d8670-759f-4820-af5b-041a5c6cd19b",
+       "text": "de"
+      }
+     ],
+     "computer": "approves",
+     "guid": "39e33c6e-f113-45a2-9a3b-ed741d829ce7",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "39e33c6e-f113-45a2-9a3b-ed741d829ce7",
+     "w:femelle",
+     "w:ceux"
+    ],
+    [
+     "39e33c6e-f113-45a2-9a3b-ed741d829ce7",
+     "w:et",
+     "w:ceux"
+    ],
+    [
+     "39e33c6e-f113-45a2-9a3b-ed741d829ce7",
+     "w:et",
+     "w:tout"
+    ],
+    [
+     "39e33c6e-f113-45a2-9a3b-ed741d829ce7",
+     "w:ras",
+     "w:terre"
+    ]
+   ],
+   "guid": "8e3b9b8e-da3c-4b1f-aca3-78382ffcb40b"
+  },
+  "des": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "09bf741d-3c99-4fb5-899a-0ce98d6dee7c",
+       "form": "2be413ad-cd8f-43f3-a31d-b78dc369810e",
+       "inflType": "842e6c50-e0ea-4f61-947c-09dc1f03b5f3",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+       "text": "des"
+      }
+     ],
+     "computer": null,
+     "guid": "1dc13832-b332-4a52-b662-829eaf72cd26",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "c4fcb08d-2986-4ae8-9cae-3b870d92d03d",
+       "form": "89041aa1-7bee-4c1a-b942-9c8a010408ad",
+       "inflType": null,
+       "msa": "d6030b47-de95-4480-858c-cdbbe6fa1408",
+       "sense": "ba89af77-ce91-490a-b14a-0c89abdbc1f1",
+       "text": "des"
+      }
+     ],
+     "computer": null,
+     "guid": "902fdb4a-f37e-449a-b496-322f8c955071",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "902fdb4a-f37e-449a-b496-322f8c955071",
+     "w:ainsi que",
+     "w:oiseaux"
+    ]
+   ],
+   "guid": "b4eb4fbb-f084-461c-b973-e9869832d849"
+  },
+  "deux": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "30fdab90-b066-41e7-83c3-a70b9e30a3cf",
+       "form": "8b135dcd-a688-433f-b3d4-0e78e6708cf8",
+       "inflType": null,
+       "msa": "dd74d11c-e8ff-4080-af9d-b2ce9fc11cb3",
+       "sense": null,
+       "text": "deux"
+      }
+     ],
+     "computer": null,
+     "guid": "346c4b9c-57d2-4325-9664-2024cf7b1877",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "d734b40b-9e2c-49a7-b9dd-3ee6f1620c18"
+  },
+  "dit": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "5db60a11-39e8-40a7-855b-a534c693ba93"
+  },
+  "dort": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "f419f9af-d64b-43c3-8a0d-62613743c0ed"
+  },
+  "d’": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+       "form": "1466010b-fa57-4e91-a156-cc66b2774c12",
+       "inflType": null,
+       "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e",
+       "sense": "da8d8670-759f-4820-af5b-041a5c6cd19b",
+       "text": "d’"
+      }
+     ],
+     "computer": "approves",
+     "guid": "137abd6c-7472-49c9-a9ee-f5b7d98cfbeb",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "137abd6c-7472-49c9-a9ee-f5b7d98cfbeb",
+     "w:couple",
+     "w:animaux"
+    ]
+   ],
+   "guid": "f8f82d0c-4e40-44d3-9060-fd5daebd413c"
+  },
+  "elle": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "3b17b67e-bfcd-4615-bd91-192433df0d83",
+       "form": "bb702067-2778-4751-98b5-0770d2943f66",
+       "inflType": null,
+       "msa": "c61f272d-4fec-49c4-83ea-3e714aed536a",
+       "sense": null,
+       "text": "elle"
+      }
+     ],
+     "computer": null,
+     "guid": "35577e4d-97c8-4ab6-b445-4ebe0f18ef7e",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "4adcc307-ee19-4e0b-874f-4ce5980f99d8"
+  },
+  "entre": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "01dff27e-e9bb-4e56-ac81-3e7d2e874dc1",
+       "form": "ff4a6383-aeb2-4eee-8fd4-99d89af2ac93",
+       "inflType": null,
+       "msa": "27f81268-81b2-4cc4-a95c-54c6f50e80cb",
+       "sense": null,
+       "text": "entr"
+      },
+      {
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "inflType": null,
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "0078fffd-a514-45a2-8454-bdd7d360170c",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "01dff27e-e9bb-4e56-ac81-3e7d2e874dc1",
+       "form": "ff4a6383-aeb2-4eee-8fd4-99d89af2ac93",
+       "inflType": null,
+       "msa": "27f81268-81b2-4cc4-a95c-54c6f50e80cb",
+       "sense": null,
+       "text": "entr"
+      },
+      {
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "inflType": null,
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "e4338223-c969-4239-8da5-d70d4ab94b12",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "ab1c9e6c-a96e-4d9e-8722-b07b7298329d"
+  },
+  "est": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "b283b5db-e307-4877-89bb-bae74aee138c"
+  },
+  "et": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "ed9cad13-bf4e-42d2-b27c-5b1d74caacc6",
+       "form": "6800afc0-7c49-459f-a426-f8bc30976793",
+       "inflType": null,
+       "msa": "934d5f5a-6b30-4c5f-a118-b3a303cc5c66",
+       "sense": "e73aa83f-13fd-4554-a96f-4c87ef7488a8",
+       "text": "et"
+      }
+     ],
+     "computer": "approves",
+     "guid": "66fdf61c-1acd-40e1-811a-310469a607ca",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "66fdf61c-1acd-40e1-811a-310469a607ca",
+     "w:mâle",
+     "w:une"
+    ],
+    [
+     "66fdf61c-1acd-40e1-811a-310469a607ca",
+     "w:purs",
+     "w:de"
+    ],
+    [
+     "66fdf61c-1acd-40e1-811a-310469a607ca",
+     "w:oiseaux",
+     "w:de"
+    ]
+   ],
+   "guid": "b7b190ff-d934-49b4-af04-2c75bbddabb9"
+  },
+  "femelle": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a806a20e-5205-40d7-8594-60dd54af40b0",
+       "form": "9f977ad7-9dbb-4713-a114-6abdf4e2c5f6",
+       "inflType": null,
+       "msa": "b67d2c95-4895-4d3f-8aff-dd151f670135",
+       "sense": "3b4c1fde-c112-42c6-affb-40e90b9eeddb",
+       "text": "femelle"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "bb1a2c8a-9abf-4c4c-adbb-a789821c8904",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "bb1a2c8a-9abf-4c4c-adbb-a789821c8904",
+     "w:une",
+     "w:de"
+    ]
+   ],
+   "guid": "53cf621e-3e35-4323-a51b-1703ec69ccdb"
+  },
+  "femme": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "d9fa9038-38a0-450b-915e-dd9b5e5deef0"
+  },
+  "fille": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+       "form": "28bc6f94-5814-4877-9a39-a6fe413bedf1",
+       "inflType": null,
+       "msa": "de5ab3dc-28f7-402c-938d-4614f996da60",
+       "sense": "98cd363c-79be-421b-81ae-89f5284876ea",
+       "text": "fille"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "6aa8922a-0733-4235-96d2-a1669196172b",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "6aa8922a-0733-4235-96d2-a1669196172b",
+     "w:la",
+     "w:mange"
+    ],
+    [
+     "6aa8922a-0733-4235-96d2-a1669196172b",
+     "w:la",
+     "w:mange"
+    ]
+   ],
+   "guid": "e3a186da-7217-4d98-ba6d-888a36c9d5d1"
+  },
+  "filles": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+       "form": "28bc6f94-5814-4877-9a39-a6fe413bedf1",
+       "inflType": null,
+       "msa": "de5ab3dc-28f7-402c-938d-4614f996da60",
+       "sense": "98cd363c-79be-421b-81ae-89f5284876ea",
+       "text": "fille"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "e4d78844-dd19-4ccb-bc99-0921ed1f60fe",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "e4d78844-dd19-4ccb-bc99-0921ed1f60fe",
+     "w:petites",
+     "w:mangent"
+    ]
+   ],
+   "guid": "b409a594-ebec-4bbf-91b4-7d2f5e088476"
+  },
+  "final": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "ef6e5747-4bf2-4d95-8871-debd4286e085"
+  },
+  "garçon": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "inflType": null,
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+       "text": "garçon"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "65620dd2-cbeb-4844-9095-e8b9543bbe44",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "inflType": null,
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+       "text": "garçon"
+      }
+     ],
+     "computer": "approves",
+     "guid": "f408406b-25d6-4062-86fc-9b0a6bf52e8e",
+     "human": "approves",
+     "parser": "disapproves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "65620dd2-cbeb-4844-9095-e8b9543bbe44",
+     "<edge>",
+     "w:joue"
+    ],
+    [
+     "65620dd2-cbeb-4844-9095-e8b9543bbe44",
+     "w:le",
+     "w:joue"
+    ],
+    [
+     "65620dd2-cbeb-4844-9095-e8b9543bbe44",
+     "<edge>",
+     "w:joue"
+    ],
+    [
+     "65620dd2-cbeb-4844-9095-e8b9543bbe44",
+     "w:le",
+     "w:joue"
+    ]
+   ],
+   "guid": "934c956e-40df-46fb-9d86-ee194b46b52c"
+  },
+  "garçons": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "inflType": null,
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+       "text": "garçon"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "96a2e974-e225-40a4-b2b8-51a095458c06",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "96a2e974-e225-40a4-b2b8-51a095458c06",
+     "w:les",
+     "w:mangent"
+    ]
+   ],
+   "guid": "44e6e988-c8a9-41b1-99df-fb7d0ce51091"
+  },
+  "he": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "7cba0cf8-1752-4cfa-b2aa-a0f2c606b1c3"
+  },
+  "hommes": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "0b0d3f50-0498-4c0b-9fc1-5c278e5feaaf",
+       "form": "79cf8f8d-aca6-4acb-9bba-6a07f4a53869",
+       "inflType": null,
+       "msa": "0ed9b951-7ff5-4e6c-bf19-b38f487fcafa",
+       "sense": null,
+       "text": "homme"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": null,
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "ed7e1424-1e5e-4cee-b89d-066128f1e180",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "a3147157-291a-4c18-959b-a089f2e49f41"
+  },
+  "il": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a3c2aeaa-24d9-48cc-9852-4a609500a1c4",
+       "form": "cbbf9ccd-9f01-43cb-b8ae-4332595a8a33",
+       "inflType": null,
+       "msa": "611edb6d-fba8-4899-8462-aa5560d24736",
+       "sense": null,
+       "text": "il"
+      }
+     ],
+     "computer": null,
+     "guid": "faa6d801-e1c6-490a-b142-e02891391c32",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "5ffb3daa-07fd-4215-a52c-4d7db9b3a238"
+  },
+  "je": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a7db7db2-83d3-4226-b403-5425d8ffb722",
+       "form": "3523b891-22d5-4813-9dbe-87ccaf894e35",
+       "inflType": null,
+       "msa": "8a5959c1-ae9c-4bc7-b7ea-9beb8d727cb7",
+       "sense": "32440064-a577-49d4-bfdb-52ff2fb27d59",
+       "text": "je"
+      }
+     ],
+     "computer": "approves",
+     "guid": "ea088a98-e547-425b-88c0-99ea83d261b1",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "ea088a98-e547-425b-88c0-99ea83d261b1",
+     "<edge>",
+     "w:joue"
+    ],
+    [
+     "ea088a98-e547-425b-88c0-99ea83d261b1",
+     "<edge>",
+     "w:joue"
+    ],
+    [
+     "ea088a98-e547-425b-88c0-99ea83d261b1",
+     "<edge>",
+     "w:joue"
+    ]
+   ],
+   "guid": "e60cfc73-92dd-4fc9-88b3-96344715013a"
+  },
+  "joue": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "inflType": null,
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+       "text": "jou"
+      },
+      {
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "inflType": null,
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "sense": "39ee3c2a-db58-4328-a519-947aa80f7c99",
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "362e47a4-aad8-4d5e-ba98-a924157b5187",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "inflType": null,
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+       "text": "jou"
+      },
+      {
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "inflType": null,
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "362e47a4-aad8-4d5e-ba98-a924157b5187",
+     "w:je",
+     "p:."
+    ],
+    [
+     "362e47a4-aad8-4d5e-ba98-a924157b5187",
+     "w:je",
+     "w:avec"
+    ],
+    [
+     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "w:garçon",
+     "w:avec"
+    ],
+    [
+     "362e47a4-aad8-4d5e-ba98-a924157b5187",
+     "w:je",
+     "p:."
+    ],
+    [
+     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "w:garçon",
+     "w:avec"
+    ],
+    [
+     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "w:garçon",
+     "p:."
+    ],
+    [
+     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
+     "w:garçon",
+     "p:."
+    ]
+   ],
+   "guid": "6cafd1a9-cf9a-4163-bc19-f5afa1914619"
+  },
+  "jouent": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "inflType": null,
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+       "text": "jou"
+      },
+      {
+       "entry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+       "form": "105ee80f-1882-40be-8bff-891158dd86ec",
+       "inflType": null,
+       "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6",
+       "sense": "5a67da2e-3cb7-4df8-bc83-d46e3350098b",
+       "text": "ent"
+      }
+     ],
+     "computer": null,
+     "guid": "df08e0ea-fb5f-44d1-a8ef-4cc6c96b2cb3",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "ac4ce3ef-ad2c-4aff-83b5-4bd520e7bc34"
+  },
+  "jouer": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "3f01105c-940b-42d9-9638-a03745131d05"
+  },
+  "joues": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "5500317d-5d70-4a90-a040-a047496cd9ac"
+  },
+  "jouez": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "d0c9c721-8314-4eab-9233-5d4b0d628af2"
+  },
+  "jouons": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "f751f5bc-13e6-44e8-b4ab-c3710c71c8a3"
+  },
+  "jump": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "cdc45304-24f6-4a78-b7e8-10f2c96efadd"
+  },
+  "kilos": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "3cbf526b-03dd-4c05-a3f2-4214df40c421"
+  },
+  "l'orange": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "474287a4-4c74-4f81-b550-6d2586501888"
+  },
+  "la": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "9969c969-d8f8-4e63-bb97-07744bfb57fd",
+       "form": "707075af-77b1-4ab1-81f6-8f1d3fed98bf",
+       "inflType": null,
+       "msa": "ee2d8ed3-7af3-4b0c-925b-a64fbdddbd3a",
+       "sense": "85e2bfbd-10c0-4824-be5c-bf5f6190c6ad",
+       "text": "la"
+      }
+     ],
+     "computer": "approves",
+     "guid": "7af93f3c-774f-4bdf-9551-0a9f6e05c59d",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "632726c7-23da-4dbe-adf8-b2e192650c4f",
+       "form": "b6dfdd91-679c-40a8-85cd-b68bf153ef81",
+       "inflType": null,
+       "msa": "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0",
+       "sense": "53072aab-0ed6-4437-8a6a-7d37f3048152",
+       "text": "la"
+      }
+     ],
+     "computer": null,
+     "guid": "a0c28e81-9bde-458e-b2a2-113653086557",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "a0c28e81-9bde-458e-b2a2-113653086557",
+     "<edge>",
+     "w:fille"
+    ],
+    [
+     "a0c28e81-9bde-458e-b2a2-113653086557",
+     "<edge>",
+     "w:fille"
+    ]
+   ],
+   "guid": "923f557c-adab-4f7d-9577-bb9425417228"
+  },
+  "le": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+       "form": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+       "inflType": null,
+       "msa": "c378a34c-c57f-4945-9842-6720ed702502",
+       "sense": "c22579cf-734f-4387-98a0-b4fe3e03b250",
+       "text": "le"
+      }
+     ],
+     "computer": "approves",
+     "guid": "094725be-8155-4acc-949e-2e45028f6584",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+       "form": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+       "inflType": null,
+       "msa": "615e705c-b753-422b-a167-33ce8e190c57",
+       "sense": "b8d7a7e6-06ce-4511-83db-4564ad6ae1e8",
+       "text": "le"
+      }
+     ],
+     "computer": null,
+     "guid": "720085ff-7b12-46a0-8d6e-322f3512685b",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "094725be-8155-4acc-949e-2e45028f6584",
+     "<edge>",
+     "w:garçon"
+    ],
+    [
+     "094725be-8155-4acc-949e-2e45028f6584",
+     "<edge>",
+     "w:garçon"
+    ],
+    [
+     "720085ff-7b12-46a0-8d6e-322f3512685b",
+     "w:ne",
+     "w:sont"
+    ]
+   ],
+   "guid": "ca3be594-6d46-40b2-8663-44c4f037f6c7"
+  },
+  "les": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "inflType": null,
+       "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69",
+       "sense": "8b0cea7f-ead0-482b-a654-3a1e2eba947d",
+       "text": "les"
+      }
+     ],
+     "computer": "approves",
+     "guid": "230619bb-97f8-43e6-8691-7e7424ce0c5b",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "inflType": null,
+       "msa": "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f",
+       "sense": "b49184e1-1d5e-4476-abb2-cb11aabd87dc",
+       "text": "les"
+      }
+     ],
+     "computer": null,
+     "guid": "97f9d044-a2e1-4ebc-9446-fd2d5a4be62c",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "97f9d044-a2e1-4ebc-9446-fd2d5a4be62c",
+     "<edge>",
+     "w:petites"
+    ],
+    [
+     "230619bb-97f8-43e6-8691-7e7424ce0c5b",
+     "<edge>",
+     "w:garçons"
+    ]
+   ],
+   "guid": "cc6da6b8-6c95-4af4-bb84-710e336b3f75"
+  },
+  "long": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+       "form": "6e1e19b4-287b-485a-b15d-27eddd3e8d7e",
+       "inflType": null,
+       "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
+       "sense": null,
+       "text": "long"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": null,
+       "text": "^0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "4422a2c7-7db3-443f-a635-e08673fc8f09",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "853b9f63-36e4-414b-9553-20a424dfa1d9"
+  },
+  "longs": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "43dc6afe-cadc-46aa-8036-5309cf64621c"
+  },
+  "longue": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+       "form": "613749a0-46d0-4b77-9d16-1eeb846e6f30",
+       "inflType": null,
+       "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
+       "sense": "b63a020d-af9e-4292-a105-31e216fe8b76",
+       "text": "longu"
+      },
+      {
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "inflType": null,
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+       "text": "e"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "f4b35402-8cc6-429d-84cf-0bffeab9d3cf",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "0e71aa20-6870-4295-83e6-f7f07692e194"
+  },
+  "longues": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "40fb036d-5bd0-4a79-b7d2-2496ac5ed0a2"
+  },
+  "los": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "447ee288-67e6-425d-bb1d-702fd9d32e01"
+  },
+  "maison": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "6f83796a-124b-4277-acf6-3e0d649cbd5f",
+       "form": "32b2eafc-f09d-4057-a3f3-8b29a04b2457",
+       "inflType": null,
+       "msa": "a6ddfc72-4d15-47a2-8bcb-29378e341088",
+       "sense": null,
+       "text": "maison"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "1afac59b-3baa-45ad-9715-ed1bd06bb189",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "665dd59e-c320-4051-ae87-3a8cf9f103d4"
+  },
+  "mange": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+       "form": "42c524af-149d-4347-8253-2eb09417eaf4",
+       "inflType": null,
+       "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+       "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+       "text": "mang"
+      },
+      {
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "inflType": null,
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "1c5b6dfe-5d14-4462-b47b-c4a280d7943c",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+       "form": "42c524af-149d-4347-8253-2eb09417eaf4",
+       "inflType": null,
+       "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+       "sense": null,
+       "text": "mang"
+      },
+      {
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "inflType": null,
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "7617e63c-88ec-438e-8445-d87a7d8eb634",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [
+    [
+     "1c5b6dfe-5d14-4462-b47b-c4a280d7943c",
+     "w:fille",
+     "w:une"
+    ],
+    [
+     "1c5b6dfe-5d14-4462-b47b-c4a280d7943c",
+     "w:fille",
+     "w:un"
+    ]
+   ],
+   "guid": "e5fe36cb-23ee-4031-84c7-832fe4f9d624"
+  },
+  "mangent": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+       "form": "42c524af-149d-4347-8253-2eb09417eaf4",
+       "inflType": null,
+       "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+       "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+       "text": "mang"
+      },
+      {
+       "entry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+       "form": "105ee80f-1882-40be-8bff-891158dd86ec",
+       "inflType": null,
+       "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6",
+       "sense": "5a67da2e-3cb7-4df8-bc83-d46e3350098b",
+       "text": "ent"
+      }
+     ],
+     "computer": null,
+     "guid": "01f73b7e-4d4c-44dd-88b9-feec47cccc45",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "01f73b7e-4d4c-44dd-88b9-feec47cccc45",
+     "w:filles",
+     "w:un"
+    ],
+    [
+     "01f73b7e-4d4c-44dd-88b9-feec47cccc45",
+     "w:garçons",
+     "w:un"
+    ]
+   ],
+   "guid": "7cea1ba4-1afc-408e-a981-07192979591a"
+  },
+  "mangeons": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "718a7dc1-71f4-4934-bb12-4c25ce16d99e"
+  },
+  "manger": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "5477ac9e-c2dd-49b6-8e45-abfcdc841437"
+  },
+  "manges": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "adbac391-0071-44cc-bef3-13eb12162914"
+  },
+  "mangez": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "052d725c-1316-4556-9fa2-3795d2591461"
+  },
+  "mâle": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "f9dfa498-3c37-418d-ae05-d76946e03d54",
+       "form": "cf6c70de-e74b-43e7-b7c7-a73aa4405efa",
+       "inflType": null,
+       "msa": "42f43c08-0155-45c3-9272-9176f7aa3675",
+       "sense": "6bdfaa97-a3aa-4b32-9a2e-4c49dc4c1b1b",
+       "text": "mâle"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "0e6d2781-45fa-4222-aef1-7e21ebd96bf7",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "0e6d2781-45fa-4222-aef1-7e21ebd96bf7",
+     "w:un",
+     "w:et"
+    ]
+   ],
+   "guid": "fe136a2d-09f3-4977-8783-6dd505fd4505"
+  },
+  "meus": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "8130c821-fca1-494c-b84e-2ed52fe6e112",
+       "form": "21f89ebb-227d-4502-a4f5-9bca593e66da",
+       "inflType": null,
+       "msa": "4ac8577f-dd44-47e9-b93f-bd78aa5e693f",
+       "sense": "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3",
+       "text": "meus"
+      }
+     ],
+     "computer": "approves",
+     "guid": "33526af2-5cae-4706-832e-ed5fc60ed735",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "ea3c319f-23fa-4a0d-9c9c-4f21c6fe7eec"
+  },
+  "meut": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a70e33b1-499f-498f-b95d-b1153e62ebd3",
+       "form": "62deb69b-9843-4709-8426-f979ec0bd94c",
+       "inflType": null,
+       "msa": "4ac8577f-dd44-47e9-b93f-bd78aa5e693f",
+       "sense": "4f4c36ed-5780-4e5b-bb41-88cc8b86d2c3",
+       "text": "meu"
+      },
+      {
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "form": "49f88c31-abf4-4615-a915-f32fc0a63818",
+       "inflType": null,
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+       "text": "t"
+      }
+     ],
+     "computer": null,
+     "guid": "a53e8273-3da0-4714-85c1-f533e311b99c",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "a53e8273-3da0-4714-85c1-f533e311b99c",
+     "w:se",
+     "w:à"
+    ]
+   ],
+   "guid": "5f8c50c3-ee88-40dd-ac64-ef6e31e033d3"
+  },
+  "mouvent": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "25201ac0-a1b3-41c7-974d-11e8ab0d5f4c"
+  },
+  "mouvez": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "36c56927-060c-45c0-91f7-c4bc5b5ff465"
+  },
+  "mouvoir": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "c34e9048-5127-4348-8a49-711918ede032"
+  },
+  "mouvons": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "3e0fd602-ae71-472e-b53a-8873184148a6"
+  },
+  "ne": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "fc8cea36-6523-4d86-93f3-ba8a489a16c6",
+       "form": "dda4785d-37bb-4415-91c1-5315260096c3",
+       "inflType": null,
+       "msa": "c293dc13-e639-429e-addf-d1406ba22d3d",
+       "sense": "84b3d225-40a8-4fea-9fc9-fbea3fdf7e9c",
+       "text": "ne"
+      }
+     ],
+     "computer": "approves",
+     "guid": "ae3be052-b5d8-472d-9ace-9516df980f41",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "ae3be052-b5d8-472d-9ace-9516df980f41",
+     "w:qui",
+     "w:le"
+    ]
+   ],
+   "guid": "d547e46d-2d4f-439b-a2f5-6ce2c4c5b70f"
+  },
+  "oiseaux": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "1f5756df-7f60-441b-a369-ae6c2817e7a2",
+       "form": "7bf7419a-6bca-4b4c-9260-ce7c39736f78",
+       "inflType": null,
+       "msa": "dfff7abe-1b60-4865-a23a-7d034d7c6579",
+       "sense": null,
+       "text": "oiseau"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "d263de38-feeb-48f0-ae3a-6aeae95d7eab",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": null,
+       "text": "x"
+      }
+     ],
+     "computer": null,
+     "guid": "d16c02bf-4358-45b7-b043-c24f7a0711ec",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "8cd6172b-7133-4835-8208-500daf55c5ee"
+  },
+  "orange": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "6169e264-6d9f-4d73-a4b8-c968148f97be"
+  },
+  "parle": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+       "form": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+       "inflType": null,
+       "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+       "sense": null,
+       "text": "parl"
+      },
+      {
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "inflType": null,
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "865bf640-c281-4369-9651-85443e202fb6",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+       "form": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+       "inflType": null,
+       "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+       "sense": null,
+       "text": "parl"
+      },
+      {
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "inflType": null,
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "a07657d7-1c97-4e8b-a6f9-b9ff439e88ea",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "a1402ae4-be2d-42cc-bf3f-e32c0fc770ab"
+  },
+  "parlent": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "c537844e-9462-4a27-b6be-83e9694c63a7"
+  },
+  "parler": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "b99c3c4f-4e26-4e8a-bce1-d5ebfd092440"
+  },
+  "parles": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "274c7454-55d2-49c0-88c1-c7c9f6410bec"
+  },
+  "parlez": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "d6d68465-718a-4893-95fb-a16207b12e2a"
+  },
+  "parlons": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "31a08c39-322c-49f3-b068-071ec257a499"
+  },
+  "part": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "900ca966-905b-4ff6-a37a-bf3a39a4e4a2"
+  },
+  "pas": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "71d16713-506b-4d4a-8c13-5e630066cf0a",
+       "form": "c82bceca-bbd4-425a-b293-70f567d92d54",
+       "inflType": null,
+       "msa": "65fd0b86-f0a8-4b44-88a4-e31c70a8e9b9",
+       "sense": "42170ae9-0aa8-466a-a59d-d549f4098ac6",
+       "text": "pas"
+      }
+     ],
+     "computer": "approves",
+     "guid": "3ae21a99-9de9-4fc0-9775-ff4f613d299b",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "3ae21a99-9de9-4fc0-9775-ff4f613d299b",
+     "w:sont",
+     "p:–"
+    ]
+   ],
+   "guid": "8386e1bc-0f66-4107-8d53-7a561ee35ddb"
+  },
+  "petit": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "inflType": null,
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+       "text": "petit"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+       "text": "0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "bbb171cb-f44f-436e-bb22-c4d356278c9a",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "bbb171cb-f44f-436e-bb22-c4d356278c9a",
+     "w:un",
+     "w:bonbon"
+    ]
+   ],
+   "guid": "d2271fc9-c81b-424f-806d-f2ce7af8a550"
+  },
+  "petite": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "inflType": null,
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+       "text": "petit"
+      },
+      {
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "inflType": null,
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+       "text": "e"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "ebae526e-8d45-4504-84f6-dfb6d96469a3",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "ebae526e-8d45-4504-84f6-dfb6d96469a3",
+     "w:une",
+     "w:pomme"
+    ]
+   ],
+   "guid": "26167ad0-4dce-49be-854a-2243318d83ea"
+  },
+  "petites": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "inflType": null,
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+       "text": "petit"
+      },
+      {
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "inflType": null,
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+       "text": "e"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "49f5fcd4-f101-4860-af2a-e48453c77083",
+       "sense": "b8445393-02d6-4661-8a07-5f32e9cccfa7",
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "b2a02298-9889-47a1-9cd2-dd010b4ac5e4",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "b2a02298-9889-47a1-9cd2-dd010b4ac5e4",
+     "w:les",
+     "w:filles"
+    ]
+   ],
+   "guid": "29466d01-8765-4397-9508-0506d03d2986"
+  },
+  "petits": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "inflType": null,
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+       "text": "petit"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+       "text": "0"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "49f5fcd4-f101-4860-af2a-e48453c77083",
+       "sense": "b8445393-02d6-4661-8a07-5f32e9cccfa7",
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "2a84e9d7-858d-4d5e-a645-8b6e55e30f3e",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "1a83f3d6-1f0f-44ad-979a-189db349f4c8"
+  },
+  "point": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "2b0b6033-6c96-430e-9a77-038921ab4b2a"
+  },
+  "poisson": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "58af57d8-c437-4315-83ad-ccc2797b07cb",
+       "form": "c55fac0e-a41a-48e6-8454-b21fcbc6b53f",
+       "inflType": null,
+       "msa": "481ca3a3-cc77-4627-8414-5cacba41fe7e",
+       "sense": "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32",
+       "text": "poisson"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "230aa4fa-5b49-4d9c-9ea4-fd1945e97b39",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "230aa4fa-5b49-4d9c-9ea4-fd1945e97b39",
+     "w:un",
+     "p:."
+    ],
+    [
+     "230aa4fa-5b49-4d9c-9ea4-fd1945e97b39",
+     "w:un",
+     "p:."
+    ]
+   ],
+   "guid": "31161abe-19b7-4354-a808-d735ce5dfaa9"
+  },
+  "pomme": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "4d38de8a-78f7-4b4e-9fe7-228575d9be28",
+       "form": "b2dcf09b-0d18-43a1-b077-7611b247ae7d",
+       "inflType": null,
+       "msa": "dae758cd-7359-472c-ad66-7525de8ad6e7",
+       "sense": "e81317b3-d7a8-4e8b-9273-6bfe440807ae",
+       "text": "pomme"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "9b9d8df7-ae39-4f86-b34f-eb3de86a6296",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "9b9d8df7-ae39-4f86-b34f-eb3de86a6296",
+     "w:petite",
+     "p:."
+    ]
+   ],
+   "guid": "f391237b-5adb-435d-a6e2-e1ec32e25e23"
+  },
+  "purs": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "369d669c-7aaa-4360-ad40-e938f8b11db3",
+       "form": "199eb63d-4241-43ef-8cd9-66f149f9a7c0",
+       "inflType": null,
+       "msa": "e0b51e89-5ffb-47de-8e93-4cb707a7048b",
+       "sense": "ef153c5d-6c54-482f-b178-7aaf190df020",
+       "text": "pur"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+       "text": "0"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "49f5fcd4-f101-4860-af2a-e48453c77083",
+       "sense": "b8445393-02d6-4661-8a07-5f32e9cccfa7",
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "cc458467-67e8-4331-b456-5246409c15b8",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "cc458467-67e8-4331-b456-5246409c15b8",
+     "w:sont",
+     "w:et"
+    ]
+   ],
+   "guid": "607f666e-158d-42d0-ac20-e43d273ca417"
+  },
+  "que": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "03f3b49f-b21b-4e4d-ba34-bbe3eff060aa"
+  },
+  "qui": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "3c2a2101-bb15-44fb-b2f0-abc6d1823689",
+       "form": "205266bf-344e-45e8-9a5f-aa5fe2a50bce",
+       "inflType": null,
+       "msa": "2bac470e-4813-4875-a23e-dde64e36fa6f",
+       "sense": "2e859a30-9087-4e2c-9fe2-5a46a9e61519",
+       "text": "qui"
+      }
+     ],
+     "computer": "approves",
+     "guid": "27a7c1a3-0b3e-407f-9a0d-5ae442e32d48",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "27a7c1a3-0b3e-407f-9a0d-5ae442e32d48",
+     "w:ceux",
+     "w:sont"
+    ],
+    [
+     "27a7c1a3-0b3e-407f-9a0d-5ae442e32d48",
+     "w:ceux",
+     "w:ne"
+    ],
+    [
+     "27a7c1a3-0b3e-407f-9a0d-5ae442e32d48",
+     "w:ce",
+     "w:se"
+    ]
+   ],
+   "guid": "3e673aba-d19e-4e37-af76-b53419e059fb"
+  },
+  "ras": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "68f1e986-b27a-427d-81a2-4c9d5605fb3f",
+       "form": "96c0755e-18e8-4190-a4c6-fe74bd1c2649",
+       "inflType": null,
+       "msa": "9bf15903-5e56-4711-a3e7-5192617cf05a",
+       "sense": "2c72955c-b941-4480-ad75-1cbfd2defe86",
+       "text": "ras"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "dd77502c-85e6-4de0-8673-33dd739e67b2",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "dd77502c-85e6-4de0-8673-33dd739e67b2",
+     "w:à",
+     "w:de"
+    ]
+   ],
+   "guid": "564d939e-51d5-44de-8f49-bbef685e8011"
+  },
+  "said": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "efdcdee2-55d6-4aa2-b38c-5d53693a4636"
+  },
+  "sans": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "f79a73db-0f23-4837-8742-82a6cfa28246"
+  },
+  "se": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a53f7eee-229d-4fd3-99c8-da07bb78291d",
+       "form": "42728138-3fe3-470f-91fb-0b7e04d4a4d3",
+       "inflType": null,
+       "msa": "b0afc409-bde3-48c4-8f46-71d4694390e2",
+       "sense": "7191f0ef-b0d2-4172-b811-e1d7d53a1fb0",
+       "text": "se"
+      }
+     ],
+     "computer": "approves",
+     "guid": "dca865f3-93d7-4b9b-955a-c9a0bd8c8e81",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "dca865f3-93d7-4b9b-955a-c9a0bd8c8e81",
+     "w:qui",
+     "w:meut"
+    ]
+   ],
+   "guid": "bc685401-fff5-4165-b778-16328721811e"
+  },
+  "sont": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "cf67c232-48c1-4962-9a44-7724acba9b77",
+       "form": "d4c8b32e-71d5-485e-9534-ae4fc1881156",
+       "inflType": null,
+       "msa": "43219c0d-1de9-4060-9b00-2853b37dc9d6",
+       "sense": "410c705f-f85e-4758-8198-3fffaf02fecb",
+       "text": "sont"
+      }
+     ],
+     "computer": "approves",
+     "guid": "c71e157e-034b-46bf-ae36-b272b1d28fa9",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "c71e157e-034b-46bf-ae36-b272b1d28fa9",
+     "w:qui",
+     "w:purs"
+    ],
+    [
+     "c71e157e-034b-46bf-ae36-b272b1d28fa9",
+     "w:le",
+     "w:pas"
+    ]
+   ],
+   "guid": "22e6cf8d-7ad4-4673-b3ac-03a2f22d50e6"
+  },
+  "sur": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "ccf39c2d-8abe-4f24-bfe0-3234a04c03ab",
+       "form": "12cd15e2-c892-4e0e-aaa4-eaa5652bc53d",
+       "inflType": null,
+       "msa": "a4f06874-0e2f-4664-8591-ccbc311316a2",
+       "sense": null,
+       "text": "sur"
+      }
+     ],
+     "computer": null,
+     "guid": "e45b5473-95e3-4d54-84b1-7f67e6e53b57",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "21036826-f002-4b64-8965-10170f13d6fb"
+  },
+  "terre": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "c7025994-9d47-4667-992c-37100c6762df",
+       "form": "b0faa6d5-7335-4f4b-a1a2-e41ea41e08e5",
+       "inflType": null,
+       "msa": "9ce7fa7b-6b8c-4cc2-9f27-92d779d32263",
+       "sense": "eef2c2d9-3fe8-4316-a6a7-85633fc3f20d",
+       "text": "terre"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "8dcfc558-49df-497d-86e7-f682de074945",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "8dcfc558-49df-497d-86e7-f682de074945",
+     "w:de",
+     "<edge>"
+    ]
+   ],
+   "guid": "f0c87789-cbf4-4f62-b841-feac47d2c7b4"
+  },
+  "tous": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "8a1824d3-7b55-47a9-a60c-6601ef63bc97"
+  },
+  "tout": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "ddff72c1-effa-455c-b571-aaba38b031fb",
+       "form": "8ea4d519-e7a0-4055-bc54-dc2c379f0c5b",
+       "inflType": null,
+       "msa": "8892594a-db4d-4b1a-aed5-fa2b181b3530",
+       "sense": "d99031f0-d690-4a8e-811a-73245f47a758",
+       "text": "tout"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+       "text": "0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "dd20c786-6344-4691-b5bd-875701bb48c9",
+     "human": "approves",
+     "parser": "approves",
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "dd20c786-6344-4691-b5bd-875701bb48c9",
+     "w:de",
+     "w:ce"
+    ]
+   ],
+   "guid": "054876e6-abb4-4b99-8ea0-d2032846228d"
+  },
+  "toute": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "378a058f-2406-45bd-a7be-ab1f9e570e3b"
+  },
+  "toutes": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "ad9c5ea5-e047-4c0b-86a9-ff80ec3e3934"
+  },
+  "train": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+       "form": "ac8c4883-c52d-4307-b13b-77e18761e1d0",
+       "inflType": null,
+       "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
+       "sense": "64ee1c0e-ef16-42b4-ade3-530c143b56d6",
+       "text": "train"
+      }
+     ],
+     "computer": "approves",
+     "guid": "32dadbcf-681c-49dc-a68a-a383f0cbaa0e",
+     "human": "approves",
+     "parser": "disapproves",
+     "used": true,
+     "user": "approves"
+    },
+    {
+     "bundles": [
+      {
+       "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+       "form": "ac8c4883-c52d-4307-b13b-77e18761e1d0",
+       "inflType": null,
+       "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
+       "sense": null,
+       "text": "train"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "dae085c8-896a-4a0e-99bc-da9a1b202ef1",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [
+    [
+     "32dadbcf-681c-49dc-a68a-a383f0cbaa0e",
+     "w:le",
+     "w:le"
+    ]
+   ],
+   "guid": "ff6294ae-a141-44e1-903e-f21b198571d3"
+  },
+  "trouve": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "466e056c-d991-44d0-88f1-c4522a9e3feb",
+       "form": "27fc4605-83bb-4c60-9110-4da55b2ea86e",
+       "inflType": null,
+       "msa": "ae92d66f-e86a-4f1d-832d-c99fa149bef2",
+       "sense": null,
+       "text": "trouv"
+      },
+      {
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "inflType": null,
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "16afc4e7-5335-4838-93e0-25d685145e14",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    },
+    {
+     "bundles": [
+      {
+       "entry": "466e056c-d991-44d0-88f1-c4522a9e3feb",
+       "form": "27fc4605-83bb-4c60-9110-4da55b2ea86e",
+       "inflType": null,
+       "msa": "ae92d66f-e86a-4f1d-832d-c99fa149bef2",
+       "sense": null,
+       "text": "trouv"
+      },
+      {
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "inflType": null,
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "sense": null,
+       "text": "e"
+      }
+     ],
+     "computer": null,
+     "guid": "790b0369-082f-4f65-8ae9-4bf7a222b0d9",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "1941ea30-a507-4320-bd21-192245b4223d"
+  },
+  "un": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "inflType": null,
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+       "text": "un"
+      },
+      {
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "inflType": null,
+       "msa": "02f558f9-0384-4104-9528-022079040f53",
+       "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+       "text": "0"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "w:mangent",
+     "w:poisson"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "p:8",
+     "w:couple"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "p:–",
+     "w:mâle"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "w:mangent",
+     "w:poisson"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "w:mange",
+     "w:petit"
+    ]
+   ],
+   "guid": "031e15cd-c608-4427-8047-1aadd15d2219"
+  },
+  "une": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "inflType": null,
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+       "text": "un"
+      },
+      {
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "inflType": null,
+       "msa": "4b113fd4-1aae-402e-b619-81b20caebc92",
+       "sense": "71bfb6ce-6e66-4ea7-b603-120dc6164668",
+       "text": "e"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+       "text": "0"
+      }
+     ],
+     "computer": null,
+     "guid": "f4f07338-1756-426d-94d5-a1af0df357bd",
+     "human": "approves",
+     "parser": null,
+     "used": true,
+     "user": "approves"
+    }
+   ],
+   "contexts": [
+    [
+     "f4f07338-1756-426d-94d5-a1af0df357bd",
+     "w:mange",
+     "w:petite"
+    ],
+    [
+     "f4f07338-1756-426d-94d5-a1af0df357bd",
+     "w:et",
+     "w:femelle"
+    ]
+   ],
+   "guid": "fbd34dae-c8d7-46e9-9916-b649bc41880a"
+  },
+  "ville": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "cbd3a2ac-509b-4014-928e-d52f6c9a3624",
+       "form": "4e574588-5712-493d-9bfc-8971a37d6599",
+       "inflType": null,
+       "msa": "1badaac4-8fb1-4c42-9d66-b290a26da2a7",
+       "sense": null,
+       "text": "ville"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": null,
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "55102cd9-cb5c-43bb-bea2-236c0fe12b12",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "40a18b37-9520-474f-b737-5cc79b6102ea"
+  },
+  "vis": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "8d5b3fc2-155c-486d-82b6-0dbbcf415c83",
+       "form": "bda2d210-d8fe-4992-98b3-eb2da61be6a6",
+       "inflType": null,
+       "msa": "ce34c723-9a2b-4a6a-8c9e-8482713de59c",
+       "sense": "2e9db541-fa7c-44d4-8e13-86498f3a61ba",
+       "text": "vis"
+      }
+     ],
+     "computer": "approves",
+     "guid": "19ca2a18-90db-4eae-8925-44688255aa85",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "5621d9b8-bb4f-49e3-a560-c25ce39236fe"
+  },
+  "vit": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "7df684e9-ee39-49b9-943b-3ebf255884f4"
+  },
+  "vivent": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "b1ffee31-b1d6-4786-965f-3f2c30351f55"
+  },
+  "vivez": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "fe0ffb59-06e0-460f-bdf7-f0dfd52aff31"
+  },
+  "vivons": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "be4c967e-e449-498a-8181-c59c5e0bac2d"
+  },
+  "vivre": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "9c3560e4-44ec-446e-bc72-3f6552bd6c43"
+  },
+  "voiture": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+       "form": "2df63d5e-3d80-4c47-8c7c-fde6b7f6d9ab",
+       "inflType": null,
+       "msa": "2882c429-1257-448d-95b5-a682faff0d67",
+       "sense": "a94a25d7-7a07-4a68-83f9-243678946aff",
+       "text": "voiture"
+      },
+      {
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "inflType": null,
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+       "text": "^0"
+      }
+     ],
+     "computer": null,
+     "guid": "74056e96-dfe7-4777-8227-ba4c7376ed38",
+     "human": "approves",
+     "parser": "approves",
+     "used": false,
+     "user": "approves"
+    }
+   ],
+   "contexts": [],
+   "guid": "f3a1dcea-508a-494c-87ca-5ffd42526b69"
+  },
+  "voitures": {
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+       "form": "2df63d5e-3d80-4c47-8c7c-fde6b7f6d9ab",
+       "inflType": null,
+       "msa": "2882c429-1257-448d-95b5-a682faff0d67",
+       "sense": null,
+       "text": "voiture"
+      },
+      {
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "inflType": null,
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "sense": null,
+       "text": "s"
+      }
+     ],
+     "computer": null,
+     "guid": "85ec11a4-2ba4-4800-8f49-c90f62f868ff",
+     "human": null,
+     "parser": "approves",
+     "used": false,
+     "user": null
+    }
+   ],
+   "contexts": [],
+   "guid": "30d26c6b-5fde-4988-9008-0f3fc39052df"
+  },
+  "zorglubs": {
+   "analyses": [],
+   "contexts": [],
+   "guid": "24071dfa-0088-437c-ba5a-adc6d6859720"
+  }
+ }
+}

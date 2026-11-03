@@ -24,12 +24,42 @@ The phone app is the long-term goal. A CLI comes first, and a web app may come l
 - **Custom code:** a FlexTools module in the collection (`[Modules\FixNina.py]`, in the work project's Config folder) changed the transfer output mid-pipeline. A Python hook from `fttranslator.ini` also ran.
 - The `steps`, `check` and `runs` commands work. Each run writes a JSON record to `<work project>\Output\ftt_runs\`.
 - Unit tests (9, no FieldWorks needed) pass: `python -m unittest discover -s tests`.
+- **Offline bundle, first pieces (2026-11-03, uncommitted until reviewed):**
+  - `export-bundle` writes the source lexicon data Extract Source Text needs (`bundle.py`). On Mato-Uma (3,710 entries) its stem tags matched all 1,716 lexical units in FT's real output files.
+  - `golden` captures test data (`golden.py`): each text's occurrences and morph bundles as JSON, next to what the real Extract Source Text wrote for it. On Mato-Uma: 130 texts, about 130,000
+    occurrences, Extract Source Text succeeded on all, and every GUID in the dumps resolves in the bundle's lexicon.
+  - `check-golden` runs `bundleextract.py`, a FieldWorks-free port of Extract Source Text, on the golden pairs. Output and messages are byte-identical on all of Mato-Uma (130 texts),
+    Toma-Zialo (24 texts, source project tod-flex1, through a scratch copy of the Config folder) and FTT-Scratch (9 texts). Together they exercise about 4,800 irregularly inflected variants,
+    55 complex-form substitutions, 5,200 enclitics and stem features. Changing one category in a copied bundle made 93 Mato texts differ, so the check does fail when it should.
+  - `hcsynth/` builds FieldWorks' HCSynthByGloss (unmodified source at `bd0608da7f`, plus a small shim file) for .NET 8, so HermitCrab synthesis can run on Linux. On 15,720 generated
+    Mato-Uma lines it matched the installed Windows build except for the order of alternative forms (`%2%a%b%`), which is random run to run in both builds. See `hcsynth/README.md`.
+    The .NET 8 SDK is installed per-user in `%USERPROFILE%\.dotnet` (not on PATH).
+  - Windows-free plan (2026-11-03, Ron's choices): HermitCrab synthesis only (no STAMP); first milestone parses source words by looking up existing analyses (HermitCrab parsing later);
+    test pair FTT-Scratch, switched to `HermitCrabSynthesis=y`. Its Spanish target has duplicate affix glosses (PL, SG), so nouns don't synthesize; Ron chose to proceed as-is, since the
+    Linux version only has to match the desktop. Also noticed: HCSynthByGloss appends its "Duplicate gloss(es)" warning to forms that did synthesize, and FLExTrans leaves it in the output.
+  - HermitCrab parsing without FieldWorks: `hcparse/` (.NET 8 port of `HCParser.ParseWord()`), with the grammar exported from flexicon's live `HCParser` (`parserexport.py`). Same results as
+    FLEx's parser for all 6,729 Mato-Uma wordforms and all 102 FTT-Scratch ones (also on Linux/WSL), apart from the order of analyses.
+  - Tokenizer without FieldWorks (`tokenizer.py`): FLEx's word, punctuation and wordform logic; sentences break at the whitespace after FLEx's sentence-end characters (Ron's rule, simpler
+    than FLEx's). Same words, punctuation and wordforms as FLEx's ParagraphParser on 15 tricky French paragraphs (`golden --tokens`).
+  - Parse filing and guessing without FieldWorks (`analysisguess.py`, data from `guessexport.py`), and the chain `offline-stream`: text to Apertium stream with no FieldWorks. On FTT-Scratch,
+    byte-identical to the desktop's `source_text-aper.txt` for a two-paragraph text. On the 15 edge-case paragraphs, 6 of 17 lines differ, all at the same kind of spot: a capitalized `Le`/`La`
+    whose two new parser analyses tie, which FLEx breaks by its new analyses' random GUIDs (so the desktop's own choice there is random).
+  - Transfer without make (`transfer.py`, data from `transferexport.py`): the makefiles' Apertium commands. On FTT-Scratch the target stream was byte-identical to the desktop's with the
+    Windows tools. The Linux (Debian) tools are untested; Ron chose to test them on Railway.
+  - HermitCrab synthesis without FieldWorks (`synthesis.py`, data from `synthexport.py`): Convert Text to Synthesizer Format (HermitCrab half) and Synthesize Text. From the same target stream,
+    the master, parses and surface files and the synthesized text were identical to the desktop's on two FTT-Scratch texts; `tests/test_synthesis.py` covers complex forms, clitics and
+    variants, which FTT-Scratch lacks. Known quirk kept from FLExTrans: `@` (unknown) words still go to HCSynthByGloss.
+  - `serve-offline` (`offlineserver.py`): the React page translating from a bundle alone. Run locally on Windows on FTT-Scratch's text 1, its translation was identical to the desktop's.
+    Packaged for Railway by `deploy/Dockerfile` and `railway.toml`; the FTT-Scratch bundle is committed in `deploy/bundle` (Ron's choice for the test pair). Not yet built: no Docker here.
+    Text Out rules aren't in the bundle yet.
+  - Not exercised by any project: discontiguous complex forms (only fa-bcc and fa-taj are set up for them, and they use TreeTran).
+  - Not supported: TreeTran projects (refused), which rules out fa-bcc and fa-taj.
 - **Coding standards:** on 2026-10-26 all the Python was brought into line with the FLExTrans repo's `CLAUDE.md` (camelCase names, version-history headers, description blocks, blank-line rules, one-line calls). The `steps`, `check` and `translate` output and the run record were identical before and after, and pyright is clean. Hook files see the camelCase `Context` attributes (`ctx.ftDb`, `ctx.configMap`); the `.ini` keys, CLI flags and run-record JSON keys did not change.
 
 Not started:
 - Upstream FT changes.
-- A service or web app.
-- The phone apps.
+- Reaching the service (`serve`) from other machines.
+- The phone apps, beyond the offline bundle's first pieces.
 
 ## How to run
 
@@ -55,6 +85,9 @@ The environment is Python 3.13, flexlibs 1.2.8, pyflexicon 4.13, flextoolslib 20
 | `fttranslator/pipeline.py` | `Options`, `RunResult`, `Context`, `Step`. `build()` turns the collection .ini into steps and adds hooks. `run()` runs them in order |
 | `fttranslator/translator.py` | `Translator` API (also meant for a future service). Keeps the projects open across runs; `close()`. `flexlibsView()`. `_configOverride()` |
 | `fttranslator/server.py` | `serve`: stdlib single-threaded `HTTPServer` driven by `handle_request()` on the main thread (FieldWorks thread affinity, runs can't overlap). JSON API + serves `web\dist`. Localhost-only, JSON-only POST, Host check |
+| `fttranslator/bundle.py` | `export-bundle`: the offline bundle's source lexicon data (`manifest.json`, `lexicon.json`): entries, senses and msas keyed by GUID, with the strings Extract Source Text would build, worked out by FT's own `Utils` |
+| `fttranslator/bundleextract.py` | Extract Source Text with no FieldWorks or FT imports: bundle + text dump in, Apertium stream and messages out. Line-for-line port; `compareGolden()` is `check-golden` |
+| `fttranslator/golden.py` | `golden`: golden pairs for testing a bundle runtime, `NNN.text.json` (occurrences, morph bundles as GUIDs) + `NNN.expected.txt` (real Extract Source Text output) + `index.json` |
 | `web/` | React front end (Vite 6 + TypeScript). `npm install` + `npm run build` → `web\dist`; `npm run dev` proxies `/api` to port 8765 |
 | `fttranslator/sharedtarget.py` | `SharedTarget`: opens the target once and hands FT's modules a view of it through patched flexlibs `OpenProject`/`CloseProject`; `save()` after each run |
 | `fttranslator/steps/ingest.py` | Import Text, Parse Words, Approve Guesses (+ `fillSenses`), `releaseApprovals` |
@@ -160,7 +193,15 @@ jouer, avec, long and voiture have no target link in the test data. "Los niñas"
 4. **Phone apps (Phase 5):**
    - A translator client.
    - A companion review app built from the `ftt_runs` JSON. It would list unparsed, unlinked and unsynthesized words and send fixes to FLEx through the service: add an entry or sense, link a target sense, confirm a parse.
-   - LCM and the FT tools are Windows/.NET, so phones are clients only.
+   - LCM and the FT tools are Windows/.NET, so a phone can't run the pipeline as it is. A client of the service is one route. The other is an **offline translator**: the desktop exports a
+     bundle (a snapshot of what translation needs) and the phone runs a slimmed-down pipeline on it. The plan, in order:
+     1. `export-bundle` (done): the source lexicon data for Extract Source Text.
+     2. `golden` (done): golden pairs of each text's analyses and Extract Source Text's real output.
+     3. `bundleextract.py` + `check-golden` (done): a Python port of Extract Source Text that gives byte-identical output on the golden pairs. Its description block lists the quirks a
+        further port has to keep, e.g. `getStemFeatures()` caching the first root's features for the whole word, and complex forms being looked up on the variant-resolved entry.
+     4. Port the runtime to C# against the same golden pairs (use a stable sort, e.g. `OrderBy`, where Python's `sort` is relied on), inside a .NET MAUI app hosting the React front end.
+     5. The rest of the pipeline on the phone: HermitCrab parsing and synthesis (SIL.Machine), the guesser, and Apertium (compiled `bilingual.bin` and transfer rules).
+   - An alternative worth a spike: running liblcm itself on the phone, which would avoid reimplementing what LCModel computes. Unproven on Android and iOS.
 5. **Smaller items:**
    - A review command that lists inbox texts still unapproved.
    - Optionally, a genre tag for inbox texts.
