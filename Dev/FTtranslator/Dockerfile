@@ -24,11 +24,14 @@ RUN npm ci
 COPY web/ ./
 RUN npm run build
 
-# 3. The server: .NET 8 runtime (Debian 12), plus Python and Debian's Apertium tools
+# 3. The server: .NET 8 runtime (Debian 12), plus Python and Debian's Apertium tools. Debian's lttoolbox has only lt-proc; lt-comp, which compiles the bilingual lexicon, is in lttoolbox-dev.
 FROM mcr.microsoft.com/dotnet/runtime:8.0
 RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 apertium lttoolbox \
+ && apt-get install -y --no-install-recommends python3 apertium lttoolbox lttoolbox-dev \
  && rm -rf /var/lib/apt/lists/*
+
+# Fail the build, not the first translation, if a tool transfer.py runs is missing
+RUN for tool in lt-comp lt-proc apertium-preprocess-transfer apertium-transfer apertium-interchunk apertium-postchunk; do command -v $tool || { echo "missing: $tool"; exit 1; }; done
 
 WORKDIR /app
 COPY --from=dotnet /out/hcparse /opt/hcparse
