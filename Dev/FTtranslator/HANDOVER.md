@@ -52,7 +52,7 @@ The phone app is the long-term goal. A CLI comes first, and a web app may come l
     variants, which FTT-Scratch lacks. Known quirk kept from FLExTrans: `@` (unknown) words still go to HCSynthByGloss.
   - `serve-offline` (`offlineserver.py`): the React page translating from a bundle alone. Run locally on Windows on FTT-Scratch's text 1, its translation was identical to the desktop's.
     Packaged for Railway by `Dockerfile` and `railway.toml`; the FTT-Scratch bundle is committed in `deploy/bundle` (Ron's choice for the test pair). The first Railway build used Railpack because the Dockerfile was in `deploy/`; it was moved to the service root so Railway finds it by name.
-    Text Out rules aren't in the bundle yet.
+    Text Out rules are exported into the bundle and applied after synthesis (`textout.py`, a port of TextInOutUtils' rule code; `tests/test_textout.py` runs it beside the original).
   - Not exercised by any project: discontiguous complex forms (only fa-bcc and fa-taj are set up for them, and they use TreeTran).
   - Not supported: TreeTran projects (refused), which rules out fa-bcc and fa-taj.
 - **Coding standards:** on 2026-10-26 all the Python was brought into line with the FLExTrans repo's `CLAUDE.md` (camelCase names, version-history headers, description blocks, blank-line rules, one-line calls). The `steps`, `check` and `translate` output and the run record were identical before and after, and pyright is clean. Hook files see the camelCase `Context` attributes (`ctx.ftDb`, `ctx.configMap`); the `.ini` keys, CLI flags and run-record JSON keys did not change.

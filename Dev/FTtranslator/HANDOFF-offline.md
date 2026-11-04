@@ -59,6 +59,7 @@ built from FieldWorks' source.
 | Synthesis | `synthesis.py` (HermitCrab half of `convert_to_STAMP` + `DoHermitCrabSynthesis`), `hcsynth/` (FieldWorks' HCSynthByGloss, unmodified, built for .NET 8) | From the same target stream, master, parses and surface files and the synthesized text identical to the desktop on two texts. `tests/test_synthesis.py` covers complex forms, clitics and variants, which FTT-Scratch lacks. hcsynth matched the Windows build on 15,720 Mato lines except the (random) order of alternative forms |
 | Offline server | `offlineserver.py`; `serve-offline` | Same React page and API as `serve`. Locally, FTT-Scratch text 1 translated identically to the desktop, about 1.7 s |
 | Synthesis DLL (11/4) | `synthesis.py` `loadHCSynthDll()`; `--hcsynth-dll` | `HCSynthByGlossDll` loaded once with pythonnet (CoreCLR), as Live Rule Tester does; config read once. Same surface file as the exe on Windows and Linux (WSL). Synthesis step 0.45 s → 0.06 s a request on FTT-Scratch |
+| Text Out rules (11/4) | `textout.py` (port of TextInOutUtils' rule-applying code); `bundle.py` copies `TextOutRulesFile` as `text_out_rules.xml` | Applied after synthesis by `serve-offline` and `offline-stream --synthesize`. `tests/test_textout.py` runs the port beside the desktop's own functions (taken from its source with `ast`); on Mato-Uma's 46 real rules over 14 of its Build/Output files, identical. Not yet compared end to end on a HermitCrab project with rules (FTT-Scratch has none) |
 | Deployment | `Dockerfile`, `railway.toml`, `.dockerignore`, `deploy/bundle/` | Builds and runs on Railway; translates FTT-Scratch |
 
 Unit tests: `python -m unittest discover -s tests` (24 pass, no FieldWorks needed). Pyright is clean on the new files, also when checked as Python 3.11 (the image's version).
@@ -87,6 +88,7 @@ Written to `<work project>\Output\ftt_bundle` (about 580 KB for FTT-Scratch):
 - `guesser.json`: each wordform's analyses with their approvals and contexts, representative msas, single-morpheme entries.
 - `apertium/`: `bilingual.dix` and `tr.t1x` (and `t2x`/`t3x` for advanced transfer), as Run Apertium hands them to the tools.
 - `synthesis/`: target affix gloss list, the conversion cache, the target `HermitCrab.config`.
+- `text_out_rules.xml`: a copy of the Text Out rules file, when the project has one (the manifest's `files.textOutRules`; absent in older bundles, which then get no rules).
 
 **To update Railway after changing the projects (11/4, later):** run `export-bundle`, then `upload-bundle WORKDIR --url https://….up.railway.app` with `FTT_PASSWORD` set. The server
 holds several bundles in `/data/bundles/<work project>/` on a Railway volume (mount path `/data`), and the page has a drop-down to choose one. `deploy\bundle` (FTT-Scratch) is only the seed
@@ -136,7 +138,6 @@ unless `FTT_UPLOAD_PASSWORD` is also set.
 
 ## Not done / open items
 
-- **Text Out rules** (`TextOutRulesFile`) aren't in the bundle; a project with some gets the synthesized text without them. FTT-Scratch has none.
 - **Linux Apertium output not byte-compared** with the desktop's. Worth one comparison of a target stream from Railway against `Build\target_text-aper.txt`.
 - **HCSynthByGloss and duplicate glosses:** the SG and PL glosses sat on 4 rules each (likely one affix in four template slots, so one entry), yet synthesis failed. Ron fixed the project
   instead; why HCSynthByGloss failed was not investigated.

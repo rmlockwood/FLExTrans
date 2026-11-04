@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.10 - 11/4/26 - Ron Lockwood
+#    offline-stream --synthesize applies the bundle's Text Out rules.
+#
 #   Version 3.17.9 - 11/4/26 - Ron Lockwood
 #    serve-offline serves a folder of bundles (--bundles, or FTT_BUNDLES) with --seed; added upload-bundle to send a bundle to a running server.
 #
@@ -68,7 +71,7 @@
 #
 #   offline-stream runs the FieldWorks-free chain on a text from the bundle alone and prints the Apertium stream: tokenizer, hcparse, filing and guessing (analysisguess.py) and Extract Source
 #   Text (bundleextract.py). --transfer goes on through the Apertium tools (transfer.py), and --synthesize (which implies --transfer) on through Convert Text to Synthesizer Format and HermitCrab
-#   synthesis (synthesis.py), printing the synthesized text. HCSynthByGloss runs either as the --hcsynth program or, with --hcsynth-dll, as the DLL loaded into this process with pythonnet, which
+#   synthesis (synthesis.py), printing the synthesized text after the bundle's Text Out rules (textout.py), as Collect Output applies them. HCSynthByGloss runs either as the --hcsynth program or, with --hcsynth-dll, as the DLL loaded into this process with pythonnet, which
 #   loads the HermitCrab config only once (see EXE OR DLL in synthesis.py). --synth-dir keeps the master, parses and surface forms files for comparison.
 #
 #   SERVE-OFFLINE
@@ -620,12 +623,14 @@ def cmdOfflineStream(args):
     finally:
         parser.close()
 
+    # The transfer rules and the Text Out rules are named in the manifest
+    manifest = json.loads((bundleDir / "manifest.json").read_text(encoding="utf-8"))
+
     # --transfer: on through the Apertium tools, as Run Apertium does (see transfer.py). --synthesize needs the target stream, so it implies --transfer.
     if args.transfer or args.synthesize:
 
         from .transfer import Transfer
 
-        manifest = json.loads((bundleDir / "manifest.json").read_text(encoding="utf-8"))
         stream = Transfer(bundleDir, manifest["files"]["apertium"]["rules"], toolsDir=args.tools).transfer(stream)
 
     # --synthesize: on through Convert Text to Synthesizer Format and HermitCrab synthesis (see synthesis.py); its messages go with the others
@@ -649,6 +654,24 @@ def cmdOfflineStream(args):
                 print(f"{level.upper()}: {message}", file=sys.stderr)
 
             return 1
+
+        # The bundle's Text Out rules, as Collect Output applies them on the desktop, so the output stays comparable with the desktop's (see textout.py)
+        from .textout import TextOutRules
+
+        textOutRules = TextOutRules.load(bundleDir, manifest)
+
+        if textOutRules is not None:
+
+            text, textOutMessages = textOutRules.apply(text)
+            messages = list(messages) + textOutMessages
+
+            if text is None:
+
+                for level, message in messages:
+
+                    print(f"{level.upper()}: {message}", file=sys.stderr)
+
+                return 1
 
         stream = text
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.1 - 11/4/26 - Ron Lockwood
+#    Exports the Text Out rules file (TextOutRulesFile) as text_out_rules.xml, for textout.py.
+#
 #   Version 3.17 - 11/3/26 - Ron Lockwood
 #    Initial version. Exports the source lexicon data Extract Source Text needs, and the source HermitCrab parser, for a translator that runs without FieldWorks.
 #
@@ -21,7 +24,8 @@
 #   In the output folder (by default <work project>\Output\ftt_bundle): parser.xml and parser.json, the source project's HermitCrab parser for hcparse (see parserexport.py);
 #   tokenizer.json (exportTokenizerData()), what tokenizer.py needs to split text as FLEx does; guesser.json, what analysisguess.py needs to file parses and guess (see guessexport.py); the
 #   apertium folder, the bilingual lexicon and rules as Run Apertium gives them to the tools (see transferexport.py); the synthesis folder, the target affix list, complex form and variant cache
-#   and HermitCrab.config that HermitCrab synthesis reads (see synthexport.py); and:
+#   and HermitCrab.config that HermitCrab synthesis reads (see synthexport.py); text_out_rules.xml, a copy of the Text Out rules file (TextOutRulesFile) when the project has one, which
+#   textout.py applies to the synthesized text (exportTextOutRules()); and:
 #    - manifest.json: the format version, when and from which work project and source project the bundle was made, the target project's name, the record counts, and the FlexTrans.config values Extract Source Text reads, keyed by their setting names.
 #      The values are read with InterlinData.initInterlinParams(), so they are parsed exactly as Extract Source Text parses them. The config section also holds the values synthesis.py reads, and
 #      interfaceLanguage is the language code FLExTrans hands HCSynthByGloss.
@@ -60,11 +64,13 @@
 #   CODE STRUCTURE
 #
 #   supportedParams() checks the configuration and returns Extract Source Text's settings; golden.py uses it too. exportBundle() calls it, then exportLexicon(), parserexport.exportParser(),
-#   exportTokenizerData(), guessexport.exportGuesserData(), transferexport.exportTransfer() and synthexport.exportSynthesis(), and writes the files; the export-bundle command in cli.py calls it. exportLexicon() walks every entry and builds the three tables with entryRecord(), senseRecord() and msaRecord().
+#   exportTokenizerData(), guessexport.exportGuesserData(), transferexport.exportTransfer(), synthexport.exportSynthesis() and exportTextOutRules(), and writes the files; the export-bundle command in cli.py calls it. exportLexicon() walks every entry and builds the three tables with entryRecord(), senseRecord() and msaRecord().
 #   _complexForms() collects an entry's complex-form refs for entryRecord(). _sortedAbbrevs() is a helper, and guidOf() and writeJson() are shared with golden.py and parserexport.py.
 #
 
 import json
+import os
+import shutil
 from datetime import datetime
 
 from . import tokenizer
@@ -150,6 +156,15 @@ def exportBundle(project, configMap, outDir, report, sourceProjectName, workProj
 
     synthesisFiles, synthesisConfig, interfaceLanguage = synthesisExport
 
+    # The user's Text Out rules, applied to the synthesized text (see textout.py)
+    textOutExport = exportTextOutRules(configMap, outDir, report)
+
+    if textOutExport is None:
+
+        return False
+
+    textOutFile, textOutRuleCount = textOutExport
+
     manifest = {
         "formatVersion": BUNDLE_FORMAT_VERSION,
         "created": datetime.now().isoformat(timespec="seconds"),
@@ -157,10 +172,10 @@ def exportBundle(project, configMap, outDir, report, sourceProjectName, workProj
         "sourceProject": sourceProjectName,
         "targetProject": ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False) or "",
         "files": {"lexicon": LEXICON_FILE, "parser": parserexport.PARSER_XML_FILE, "parserData": parserexport.PARSER_DATA_FILE, "tokenizer": tokenizer.TOKENIZER_FILE, "guesser": guessexport.GUESSER_FILE,
-                  "apertium": {"dir": transferexport.APERTIUM_DIR, "rules": rulesFiles}, "synthesis": synthesisFiles},
+                  "apertium": {"dir": transferexport.APERTIUM_DIR, "rules": rulesFiles}, "synthesis": synthesisFiles, "textOutRules": textOutFile},
         "interfaceLanguage": interfaceLanguage,
         "counts": {**{table: len(lexicon[table]) for table in ("entries", "senses", "msas")}, "parserForms": parserForms, "parserMsas": parserMsas, "parserInflTypes": parserInflTypes,
-                   "wordforms": len(tokenizerData["wordforms"]), "phrases": sum(len(phrases) for phrases in tokenizerData["phrases"].values())},
+                   "wordforms": len(tokenizerData["wordforms"]), "phrases": sum(len(phrases) for phrases in tokenizerData["phrases"].values()), "textOutRules": textOutRuleCount},
         "config": {
             ReadConfig.SENTENCE_PUNCTUATION: params.sentPunct,
             ReadConfig.SOURCE_FORMS_INFLECTION_1ST: params.typesInfl1stList,
@@ -177,6 +192,42 @@ def exportBundle(project, configMap, outDir, report, sourceProjectName, workProj
 
     report.Info(f"Exported {manifest['counts']['entries']} entries, {manifest['counts']['senses']} senses and {manifest['counts']['msas']} msas to {outDir}.")
     return True
+
+def exportTextOutRules(configMap, outDir, report):
+    '''Copy the Text Out rules file into the bundle. Returns (file name or None, number of active rules), or None if the file has bad XML (reported). As on the desktop, no setting or no
+       file means no rules, not an error.'''
+
+    import xml.etree.ElementTree as ET
+
+    import ReadConfig  # FLExTrans Lib, only importable after env.bootstrap()
+    import Utils
+
+    from . import textout
+
+    rulesPath = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+    bundleRules = outDir / textout.RULES_FILE
+
+    if not rulesPath or not os.path.exists(rulesPath):
+
+        # A bundle exported again after the rules file was removed mustn't keep the old copy
+        if bundleRules.exists():
+
+            bundleRules.unlink()
+
+        return None, 0
+
+    # Checked here, with the desktop's message, so a bad file is found on the desktop rather than by the server
+    try:
+        tree = ET.parse(rulesPath)
+
+    except ET.ParseError:
+
+        report.Error(f"The rules file: {Utils.shortenPathForDisplay(rulesPath)} has invalid XML data.")
+        return None
+
+    shutil.copyfile(rulesPath, bundleRules)
+
+    return textout.RULES_FILE, textout.numRules(tree)
 
 def exportTokenizerData(project):
     '''Return what tokenizer.py needs: the default vernacular writing system's id and word-forming overrides, every wordform's form, and the phrases by their lowercased first word.'''

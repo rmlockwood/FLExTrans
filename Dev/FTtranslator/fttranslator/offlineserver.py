@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.6 - 11/4/26 - Ron Lockwood
+#    Applies the bundle's Text Out rules to the synthesized text, as Collect Output does on the desktop.
+#
 #   Version 3.17.5 - 11/4/26 - Ron Lockwood
 #    Serves several bundles from one folder (a Railway volume), chosen per request, and accepts new bundles by upload (POST /api/bundles/<id>).
 #
@@ -27,7 +30,8 @@
 #
 #   The serve-offline command's web server. It answers the same JSON API as server.py, so the same React front end (web\dist) works unchanged, but each translation runs the FieldWorks-free chain
 #   from an exported bundle (see bundle.py): tokenizer.py, hcparse with the parse filer and guesser (analysisguess.py), Extract Source Text (bundleextract.py), the Apertium tools (transfer.py),
-#   and Convert Text to Synthesizer Format with HermitCrab synthesis (synthesis.py). Nothing is written to any project, so it can listen on every interface of a server.
+#   Convert Text to Synthesizer Format with HermitCrab synthesis (synthesis.py), and the Text Out rules (textout.py). Nothing is written to any project, so it can listen on every interface of
+#   a server.
 #
 #   SEVERAL BUNDLES
 #
@@ -45,9 +49,9 @@
 #
 #   WHAT IS SET UP ONCE
 #
-#   OfflineTranslator loads a bundle when it is first used: the lexicon, the tokenizer data, the guesser data, the bilingual lexicon's unlinked senses, the compiled Apertium files and the
-#   synthesis data. hcparse is started once and kept running, since starting .NET and loading the parser takes a few seconds and each word after that takes milliseconds; if it dies, the request
-#   fails and the next one starts a new one. HermitCrab synthesis is set up once too when --hcsynth-dll is given: HCSynthByGlossDll is loaded into the server with the target
+#   OfflineTranslator loads a bundle when it is first used: the lexicon, the tokenizer data, the guesser data, the bilingual lexicon's unlinked senses, the compiled Apertium files, the
+#   synthesis data and the Text Out rules. hcparse is started once and kept running, since starting .NET and loading the parser takes a few seconds and each word after that takes milliseconds;
+#   if it dies, the request fails and the next one starts a new one. HermitCrab synthesis is set up once too when --hcsynth-dll is given: HCSynthByGlossDll is loaded into the server with the target
 #   HermitCrab config, as FLExTrans' Live Rule Tester keeps it, so a text no longer pays for starting .NET and reading the config (see EXE OR DLL in synthesis.py). With --hcsynth instead,
 #   HCSynthByGloss is started once per text, as FLExTrans' Synthesize Text module does.
 #
@@ -71,9 +75,12 @@
 #   unsynthesized words in the run record are read from the surface forms file, which cleanup doesn't touch. Text HCSynthByGloss appends to a word ("Duplicate gloss(es) found ...") stays, as on
 #   the desktop.
 #
-#   NOT DONE HERE
+#   TEXT OUT RULES
 #
-#   Text Out rules (TextOutRulesFile, applied by Collect Output on the desktop) aren't in the bundle yet, so a project that has some gets the synthesized text without them.
+#   When the bundle has a Text Out rules file (TextOutRulesFile, copied in by bundle.py), it is parsed when the bundle is loaded and applied to the cleaned-up synthesized text, the order Collect
+#   Output uses on the desktop: cleanup happens in synthesis, the rules after it. The "N Text Out rules applied." message goes in the run record; a rule that fails fails the translation, as on
+#   the desktop, with the desktop's message naming the rule. The unsynthesized words are still read from the surface forms file, which the rules never touch. A bundle exported before rules were
+#   exported has no textOutRules entry and gets no rules.
 #
 #   SAFETY
 #
@@ -93,8 +100,8 @@
 #
 #   CODE STRUCTURE
 #
-#   OfflineTranslator holds one bundle and its running tools; translate() runs the chain and builds the RunResult with _approvedWords(), _describe() and _untranslated(), and close() stops
-#   hcparse and removes the temporary folders. BundleSet holds the bundles folder: list(), exists(), get() (loading a translator through the factory it is given), install() for uploads (with
+#   OfflineTranslator holds one bundle and its running tools; translate() runs the chain, ending with the Text Out rules (textout.TextOutRules), and builds the RunResult with _approvedWords(),
+#   _describe() and _untranslated(), and close() stops hcparse and removes the temporary folders. BundleSet holds the bundles folder: list(), exists(), get() (loading a translator through the factory it is given), install() for uploads (with
 #   _extractBundleZip()), remove(), seed() and the run records; validBundleId() and _readManifest() are its helpers. OfflineServer is the HTTPServer carrying the BundleSet, and
 #   OfflineRequestHandler reuses server.RequestHandler's static files and JSON answers, replacing the request dispatch and the _api*() methods. Its do_GET(), do_POST() and do_DELETE() first
 #   check the password with _authorized() or _uploadAuthorized(), which use _passwordMatches(), and answer 401 through _sendAuthRequired(); _bundleId() picks the request's bundle. serve()
@@ -126,6 +133,7 @@ from .pipeline import RunResult
 from .server import RequestHandler
 from .steps.finish import IDENTITY_ENTRY, LEXICAL_UNIT, STAMP_FAILURE, _lemma, _unique
 from .synthesis import Synthesizer
+from .textout import TextOutRules
 from .tokenizer import Tokenizer
 from .transfer import Transfer
 from .transferexport import APERTIUM_DIR, BILINGUAL_FILE
@@ -171,6 +179,9 @@ class OfflineTranslator:
 
         # Always clean up, whatever the bundle's CleanUpUnknownTargetWords says. See CLEANUP above.
         self.synthesizer.clean = "y"
+
+        # None when the bundle has no Text Out rules. See TEXT OUT RULES above.
+        self.textOutRules = TextOutRules.load(self.bundleDir, self.manifest)
 
     def close(self):
         '''Stop hcparse and remove the transfer and synthesis folders, so a bundle that is replaced or removed leaves nothing behind. See SEVERAL BUNDLES above.'''
@@ -225,6 +236,12 @@ class OfflineTranslator:
         result.untranslated = self._untranslated(sourceStream, targetStream)
         translation, synthMessages = step("Synthesize Text", self.synthesizer.synthesize, targetStream)
         messages += synthMessages
+
+        # The user's fix-ups, after cleanup, as Collect Output applies them. A failing rule leaves translation None. See TEXT OUT RULES above.
+        if translation is not None and self.textOutRules is not None:
+
+            translation, textOutMessages = step("Apply Text Out Rules", self.textOutRules.apply, translation)
+            messages += textOutMessages
 
         if translation is not None:
 

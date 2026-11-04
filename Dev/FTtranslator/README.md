@@ -57,10 +57,11 @@ python -m fttranslator upload-bundle WORKDIR|BUNDLEDIR --url URL [--name N]
   press Ctrl+C in the console. The page has to be built once first; see [The web front end](#the-web-front-end).
 - `--insert` also runs Insert Target Text, which puts the translation into the target project. Otherwise that collection step is skipped.
 - `export-bundle` writes the offline translation bundle, a snapshot of the work project for a translator that runs without FieldWorks (on a Linux server now, eventually a phone app): the
-  source lexicon data, the source HermitCrab parser, the tokenizer and guesser data, the bilingual lexicon and transfer rules, and the target synthesis data. It goes to
+  source lexicon data, the source HermitCrab parser, the tokenizer and guesser data, the bilingual lexicon and transfer rules, the target synthesis data, and the Text Out rules file if the
+  project has one. It goes to
   `<work project>\Output\ftt_bundle\` or to `--out`. It reads the source and target projects; only HermitCrab synthesis is supported.
 - `offline-stream` translates a text from the bundle alone, with no FieldWorks or FLExTrans, and prints the Apertium stream; `--transfer` prints the target stream and `--synthesize` the
-  synthesized text. `--hcparse` and `--hcsynth` are the commands that run the .NET 8 builds in `hcparse\` and `hcsynth\` (e.g. `"dotnet ...\HCParse.dll"`). `--hcsynth-dll ...\HCSynthByGloss.dll` is the
+  synthesized text, with the Text Out rules applied. `--hcparse` and `--hcsynth` are the commands that run the .NET 8 builds in `hcparse\` and `hcsynth\` (e.g. `"dotnet ...\HCParse.dll"`). `--hcsynth-dll ...\HCSynthByGloss.dll` is the
   faster alternative to `--hcsynth`: it loads the DLL into the Python process with pythonnet (`pip install pythonnet`), as FLExTrans' Live Rule Tester does, so the HermitCrab config is read
   once rather than for every text (synthesis went from about 0.5 s to 0.06 s a text on FTT-Scratch). `--tools` is the folder with the Apertium tools (`FlexTools\Tools` on Windows; on Linux
   they are found on PATH).
