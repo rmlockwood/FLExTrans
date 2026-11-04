@@ -4,141 +4,141 @@
   <Language>
     <Name>French-PP-FTT</Name>
     <PartsOfSpeech>
-      <PartOfSpeech id="pos3235">
+      <PartOfSpeech id="pos3193">
         <Name>adv</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos7720">
+      <PartOfSpeech id="pos7632">
         <Name>n</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos6193">
+      <PartOfSpeech id="pos6123">
         <Name>v</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos3889">
+      <PartOfSpeech id="pos3838">
         <Name>cop</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos6338">
+      <PartOfSpeech id="pos6267">
         <Name>aux</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos6660">
+      <PartOfSpeech id="pos6584">
         <Name>prep</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos7717">
+      <PartOfSpeech id="pos7629">
         <Name>nprop</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos1676">
+      <PartOfSpeech id="pos1657">
         <Name>existmrkr</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos10471">
+      <PartOfSpeech id="pos10364">
         <Name>num</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos2179">
+      <PartOfSpeech id="pos2154">
         <Name>adj</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos7505">
+      <PartOfSpeech id="pos7420">
         <Name>quant</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos7528">
+      <PartOfSpeech id="pos7443">
         <Name>pro-form</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos7445">
+      <PartOfSpeech id="pos7361">
         <Name>pro</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos4571">
+      <PartOfSpeech id="pos4514">
         <Name>poss</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos10438">
+      <PartOfSpeech id="pos10331">
         <Name>interrog</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos2894">
+      <PartOfSpeech id="pos2858">
         <Name>relpro</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos10784">
+      <PartOfSpeech id="pos10676">
         <Name>dempro</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos4354">
+      <PartOfSpeech id="pos4298">
         <Name>refl</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos4978">
+      <PartOfSpeech id="pos4917">
         <Name>det</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos6674">
+      <PartOfSpeech id="pos6598">
         <Name>def</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos9492">
+      <PartOfSpeech id="pos9389">
         <Name>indf</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos417">
+      <PartOfSpeech id="pos416">
         <Name>dem</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos4983">
+      <PartOfSpeech id="pos4922">
         <Name>conj</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos5384">
+      <PartOfSpeech id="pos5319">
         <Name>coordconj</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos415">
+      <PartOfSpeech id="pos414">
         <Name>subordconj</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos4605">
+      <PartOfSpeech id="pos4548">
         <Name>prepart</Name>
       </PartOfSpeech>
-      <PartOfSpeech id="pos5004">
+      <PartOfSpeech id="pos4943">
         <Name>prt</Name>
       </PartOfSpeech>
     </PartsOfSpeech>
     <HeadFeatures>
-      <SymbolicFeature id="feat2407">
+      <SymbolicFeature id="feat2376">
         <Name>case</Name>
         <Symbols>
-          <Symbol id="sym3674">nom</Symbol>
-          <Symbol id="sym5216">dat</Symbol>
-          <Symbol id="sym6029">acc</Symbol>
+          <Symbol id="sym3626">nom</Symbol>
+          <Symbol id="sym5152">dat</Symbol>
+          <Symbol id="sym5961">acc</Symbol>
         </Symbols>
       </SymbolicFeature>
-      <ComplexFeature id="feat3376">
+      <ComplexFeature id="feat3334">
         <Name>sbj</Name>
       </ComplexFeature>
-      <SymbolicFeature id="feat3869">
+      <SymbolicFeature id="feat3818">
         <Name>pers</Name>
         <Symbols>
-          <Symbol id="sym6199">1</Symbol>
-          <Symbol id="sym7965">3</Symbol>
-          <Symbol id="sym10652">2</Symbol>
+          <Symbol id="sym6129">1</Symbol>
+          <Symbol id="sym7875">3</Symbol>
+          <Symbol id="sym10545">2</Symbol>
         </Symbols>
       </SymbolicFeature>
-      <ComplexFeature id="feat4001">
+      <ComplexFeature id="feat3952">
         <Name>adjagr</Name>
       </ComplexFeature>
-      <ComplexFeature id="feat4843">
+      <ComplexFeature id="feat4785">
         <Name>prnagr</Name>
       </ComplexFeature>
-      <SymbolicFeature id="feat6012">
+      <SymbolicFeature id="feat5944">
         <Name>absten</Name>
         <Symbols>
-          <Symbol id="sym342">prs</Symbol>
-          <Symbol id="sym3495">fut</Symbol>
-          <Symbol id="sym5735">pst</Symbol>
-          <Symbol id="sym9500">pret</Symbol>
+          <Symbol id="sym343">prs</Symbol>
+          <Symbol id="sym3450">fut</Symbol>
+          <Symbol id="sym5668">pst</Symbol>
+          <Symbol id="sym9397">pret</Symbol>
         </Symbols>
       </SymbolicFeature>
-      <SymbolicFeature id="feat7558">
+      <SymbolicFeature id="feat7473">
         <Name>gen</Name>
         <Symbols>
-          <Symbol id="sym2874">f</Symbol>
-          <Symbol id="sym4439">m</Symbol>
+          <Symbol id="sym2838">f</Symbol>
+          <Symbol id="sym4383">m</Symbol>
         </Symbols>
       </SymbolicFeature>
-      <ComplexFeature id="feat7646">
+      <ComplexFeature id="feat7559">
         <Name>artagr</Name>
       </ComplexFeature>
-      <SymbolicFeature id="feat8657">
+      <SymbolicFeature id="feat8559">
         <Name>num</Name>
         <Symbols>
-          <Symbol id="sym4766">sg</Symbol>
-          <Symbol id="sym9886">pl</Symbol>
+          <Symbol id="sym4708">sg</Symbol>
+          <Symbol id="sym9782">pl</Symbol>
         </Symbols>
       </SymbolicFeature>
-      <ComplexFeature id="feat10171">
+      <ComplexFeature id="feat10065">
         <Name>nagr</Name>
       </ComplexFeature>
     </HeadFeatures>
@@ -164,76 +164,76 @@
       </MorphologicalPhonologicalRuleFeatureGroup>
     </MorphologicalPhonologicalRuleFeatures>
     <StemNames>
-      <StemName id="stemName1" partsOfSpeech="pos2179 pos7505">
+      <StemName id="stemName1" partsOfSpeech="pos2154 pos7420">
         <Name>Masculine Plural</Name>
         <Regions>
           <Region>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
           </Region>
         </Regions>
       </StemName>
-      <StemName id="stemName2" partsOfSpeech="pos7720">
+      <StemName id="stemName2" partsOfSpeech="pos7632">
         <Name>Plural</Name>
         <Regions>
           <Region>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
           </Region>
         </Regions>
       </StemName>
-      <StemName id="stemName3" partsOfSpeech="pos6193 pos3889 pos6338">
+      <StemName id="stemName3" partsOfSpeech="pos6123 pos3838 pos6267">
         <Name>Present Singular</Name>
         <Regions>
           <Region>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
             </AssignedHeadFeatures>
           </Region>
         </Regions>
       </StemName>
-      <StemName id="stemName4" partsOfSpeech="pos6193 pos3889 pos6338">
+      <StemName id="stemName4" partsOfSpeech="pos6123 pos3838 pos6267">
         <Name>PRS.12SG</Name>
         <Regions>
           <Region>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
             </AssignedHeadFeatures>
           </Region>
           <Region>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym10545" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
           </Region>
         </Regions>
       </StemName>
-      <StemName id="stemName5" partsOfSpeech="pos6193 pos3889 pos6338">
+      <StemName id="stemName5" partsOfSpeech="pos6123 pos3838 pos6267">
         <Name>PRS.3SG</Name>
         <Regions>
           <Region>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
           </Region>
@@ -510,7 +510,7 @@
       <Stratum characterDefinitionTable="table1" morphologicalRuleOrder="unordered">
         <Name>Morphology</Name>
         <MorphologicalRuleDefinitions>
-          <MorphologicalRule id="mrule1" requiredPartsOfSpeech="pos7720">
+          <MorphologicalRule id="mrule1" requiredPartsOfSpeech="pos7632">
             <Name>-^02</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule1">
@@ -536,21 +536,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">4570</Property>
+                  <Property name="ID">4513</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>SG</Gloss>
             <Properties>
-              <Property name="ID">616</Property>
+              <Property name="ID">610</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule2" requiredPartsOfSpeech="pos7720">
+          <MorphologicalRule id="mrule2" requiredPartsOfSpeech="pos7632">
             <Name>-s</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule2">
@@ -576,7 +576,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9585</Property>
+                  <Property name="ID">9482</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule3">
@@ -602,21 +602,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">8288</Property>
+                  <Property name="ID">8194</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PL</Gloss>
             <Properties>
-              <Property name="ID">9118</Property>
+              <Property name="ID">9016</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule3" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule3" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-e1</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule4">
@@ -642,7 +642,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">10386</Property>
+                  <Property name="ID">10280</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule5">
@@ -668,7 +668,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">6280</Property>
+                  <Property name="ID">6210</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule6">
@@ -694,7 +694,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">3381</Property>
+                  <Property name="ID">3339</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule7">
@@ -720,23 +720,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">593</Property>
+                  <Property name="ID">587</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
             </RequiredHeadFeatures>
             <Gloss>PRS.3SG</Gloss>
             <Properties>
-              <Property name="ID">9954</Property>
+              <Property name="ID">9849</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule4" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule4" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-es</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule8">
@@ -762,7 +762,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9030</Property>
+                  <Property name="ID">8929</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule9">
@@ -788,7 +788,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">4452</Property>
+                  <Property name="ID">4396</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule10">
@@ -814,23 +814,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">1534</Property>
+                  <Property name="ID">1516</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym10545" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PRS.2SG</Gloss>
             <Properties>
-              <Property name="ID">6376</Property>
+              <Property name="ID">6304</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule5" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule5" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ait</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule11">
@@ -856,23 +856,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9538</Property>
+                  <Property name="ID">9435</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat5944" symbolValues="sym5668" />
             </RequiredHeadFeatures>
             <Gloss>IMPFV.3SG</Gloss>
             <Properties>
-              <Property name="ID">9048</Property>
+              <Property name="ID">8947</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule6" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule6" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ent</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule12">
@@ -898,7 +898,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">8668</Property>
+                  <Property name="ID">8570</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule13">
@@ -924,23 +924,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">745</Property>
+                  <Property name="ID">738</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PRS.3PL</Gloss>
             <Properties>
-              <Property name="ID">724</Property>
+              <Property name="ID">718</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule7" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule7" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ions</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule14">
@@ -966,23 +966,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">5999</Property>
+                  <Property name="ID">5931</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
+              <FeatureValue feature="feat5944" symbolValues="sym5668" />
             </RequiredHeadFeatures>
             <Gloss>IMPFV.1PL</Gloss>
             <Properties>
-              <Property name="ID">4525</Property>
+              <Property name="ID">4468</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule8" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule8" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ais2</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule15">
@@ -1008,23 +1008,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">11320</Property>
+                  <Property name="ID">11208</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              <FeatureValue feature="feat5944" symbolValues="sym5668" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym10545" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>IMPFV.2SG</Gloss>
             <Properties>
-              <Property name="ID">7405</Property>
+              <Property name="ID">7322</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule9" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule9" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ais1</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule16">
@@ -1050,23 +1050,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">11630</Property>
+                  <Property name="ID">11516</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              <FeatureValue feature="feat5944" symbolValues="sym5668" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>IMPFV.1SG</Gloss>
             <Properties>
-              <Property name="ID">8581</Property>
+              <Property name="ID">8483</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule10" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule10" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ons</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule17">
@@ -1099,7 +1099,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">4925</Property>
+                  <Property name="ID">4865</Property>
                   <Property name="Env">/ g _ </Property>
                 </Properties>
               </MorphologicalSubrule>
@@ -1126,7 +1126,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">619</Property>
+                  <Property name="ID">613</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule19">
@@ -1152,23 +1152,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">610</Property>
+                  <Property name="ID">604</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PRS.1PL</Gloss>
             <Properties>
-              <Property name="ID">913</Property>
+              <Property name="ID">904</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule11" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule11" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-aient</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule20">
@@ -1194,23 +1194,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">10653</Property>
+                  <Property name="ID">10546</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              <FeatureValue feature="feat5944" symbolValues="sym5668" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>IMPFV.3PL</Gloss>
             <Properties>
-              <Property name="ID">2147</Property>
+              <Property name="ID">2123</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule12" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule12" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-ez</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule21">
@@ -1236,7 +1236,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2491</Property>
+                  <Property name="ID">2457</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule22">
@@ -1262,23 +1262,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">7232</Property>
+                  <Property name="ID">7152</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym10545" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PRS.2PL</Gloss>
             <Properties>
-              <Property name="ID">5647</Property>
+              <Property name="ID">5580</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule13" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule13" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-e3</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule23">
@@ -1304,7 +1304,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">8359</Property>
+                  <Property name="ID">8264</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule24">
@@ -1330,7 +1330,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">7917</Property>
+                  <Property name="ID">7828</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule25">
@@ -1356,23 +1356,23 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9865</Property>
+                  <Property name="ID">9761</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PRS.1SG</Gloss>
             <Properties>
-              <Property name="ID">11352</Property>
+              <Property name="ID">11239</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule14" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule14" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-iez</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule26">
@@ -1398,20 +1398,20 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2457</Property>
+                  <Property name="ID">2425</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat6012" symbolValues="sym5735" />
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat5944" symbolValues="sym5668" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym10545" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>IMPFV.2PL</Gloss>
             <Properties>
-              <Property name="ID">5606</Property>
+              <Property name="ID">5539</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule15">
@@ -1446,18 +1446,18 @@
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <OutputHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
             </OutputHeadFeatures>
             <Properties>
-              <Property name="InflTypeID">7110</Property>
-              <Property name="SlotID">9316</Property>
+              <Property name="InflTypeID">7030</Property>
+              <Property name="SlotID">9214</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule16" requiredPartsOfSpeech="pos9492">
+          <MorphologicalRule id="mrule16" requiredPartsOfSpeech="pos9389">
             <Name>-e2</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule28">
@@ -1490,7 +1490,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2260</Property>
+                  <Property name="ID">2234</Property>
                   <Property name="Env">/ s _</Property>
                 </Properties>
               </MorphologicalSubrule>
@@ -1524,7 +1524,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9780</Property>
+                  <Property name="ID">9676</Property>
                   <Property name="Env">/ e _ </Property>
                 </Properties>
               </MorphologicalSubrule>
@@ -1551,21 +1551,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">3189</Property>
+                  <Property name="ID">3148</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>FEM</Gloss>
             <Properties>
-              <Property name="ID">3426</Property>
+              <Property name="ID">3383</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule17" requiredPartsOfSpeech="pos9492">
+          <MorphologicalRule id="mrule17" requiredPartsOfSpeech="pos9389">
             <Name>-^01</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule31">
@@ -1591,13 +1591,13 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9677</Property>
+                  <Property name="ID">9574</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>MASC</Gloss>
@@ -1637,16 +1637,16 @@
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <OutputHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </OutputHeadFeatures>
             <Properties>
-              <Property name="InflTypeID">6057</Property>
-              <Property name="SlotID">360</Property>
+              <Property name="InflTypeID">5989</Property>
+              <Property name="SlotID">359</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule19" requiredPartsOfSpeech="pos9492">
+          <MorphologicalRule id="mrule19" requiredPartsOfSpeech="pos9389">
             <Name>-^02</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule33">
@@ -1672,13 +1672,13 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">4570</Property>
+                  <Property name="ID">4513</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>SG2</Gloss>
             <Properties>
-              <Property name="ID">926</Property>
+              <Property name="ID">917</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule20">
@@ -1713,16 +1713,16 @@
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <OutputHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </OutputHeadFeatures>
             <Properties>
-              <Property name="InflTypeID">6057</Property>
-              <Property name="SlotID">8070</Property>
+              <Property name="InflTypeID">5989</Property>
+              <Property name="SlotID">7977</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule21" requiredPartsOfSpeech="pos2179 pos7505">
+          <MorphologicalRule id="mrule21" requiredPartsOfSpeech="pos2154 pos7420">
             <Name>-^01</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule35">
@@ -1748,21 +1748,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9677</Property>
+                  <Property name="ID">9574</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>MASC.a</Gloss>
             <Properties>
-              <Property name="ID">12184</Property>
+              <Property name="ID">12070</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule22" requiredPartsOfSpeech="pos2179 pos7505">
+          <MorphologicalRule id="mrule22" requiredPartsOfSpeech="pos2154 pos7420">
             <Name>-e2</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule36">
@@ -1795,7 +1795,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2260</Property>
+                  <Property name="ID">2234</Property>
                   <Property name="Env">/ s _</Property>
                 </Properties>
               </MorphologicalSubrule>
@@ -1829,7 +1829,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9780</Property>
+                  <Property name="ID">9676</Property>
                   <Property name="Env">/ e _ </Property>
                 </Properties>
               </MorphologicalSubrule>
@@ -1856,21 +1856,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">3189</Property>
+                  <Property name="ID">3148</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>FEM.a</Gloss>
             <Properties>
-              <Property name="ID">1319</Property>
+              <Property name="ID">1301</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule23" requiredPartsOfSpeech="pos2179 pos7505">
+          <MorphologicalRule id="mrule23" requiredPartsOfSpeech="pos2154 pos7420">
             <Name>-^02</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule39">
@@ -1896,21 +1896,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">4570</Property>
+                  <Property name="ID">4513</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>SG3</Gloss>
             <Properties>
-              <Property name="ID">2757</Property>
+              <Property name="ID">2719</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule24" requiredPartsOfSpeech="pos2179 pos7505">
+          <MorphologicalRule id="mrule24" requiredPartsOfSpeech="pos2154 pos7420">
             <Name>-s</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule40">
@@ -1936,7 +1936,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9585</Property>
+                  <Property name="ID">9482</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule41">
@@ -1962,21 +1962,21 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">8288</Property>
+                  <Property name="ID">8194</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <RequiredHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </RequiredHeadFeatures>
             <Gloss>PL2</Gloss>
             <Properties>
-              <Property name="ID">3380</Property>
+              <Property name="ID">3338</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule25" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule25" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-t</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule42">
@@ -2002,16 +2002,16 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">5092</Property>
+                  <Property name="ID">5030</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>PstPrf</Gloss>
             <Properties>
-              <Property name="ID">10360</Property>
+              <Property name="ID">10254</Property>
             </Properties>
           </MorphologicalRule>
-          <MorphologicalRule id="mrule26" requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <MorphologicalRule id="mrule26" requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>-er</Name>
             <MorphologicalSubrules>
               <MorphologicalSubrule id="msubrule43">
@@ -2037,7 +2037,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">8158</Property>
+                  <Property name="ID">8065</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule44">
@@ -2063,7 +2063,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">6852</Property>
+                  <Property name="ID">6774</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule45">
@@ -2089,7 +2089,7 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">2716</Property>
+                  <Property name="ID">2679</Property>
                 </Properties>
               </MorphologicalSubrule>
               <MorphologicalSubrule id="msubrule46">
@@ -2115,30 +2115,30 @@
                   </InsertSegments>
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">3513</Property>
+                  <Property name="ID">3469</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>INF</Gloss>
             <Properties>
-              <Property name="ID">975</Property>
+              <Property name="ID">965</Property>
             </Properties>
           </MorphologicalRule>
         </MorphologicalRuleDefinitions>
         <AffixTemplates>
-          <AffixTemplate requiredPartsOfSpeech="pos7720">
+          <AffixTemplate requiredPartsOfSpeech="pos7632">
             <Name>Nouns</Name>
             <Slot morphologicalRules="mrule1 mrule2">
               <Name>nNum</Name>
             </Slot>
           </AffixTemplate>
-          <AffixTemplate requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <AffixTemplate requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>Finite Verbs</Name>
             <Slot morphologicalRules="mrule3 mrule4 mrule5 mrule6 mrule7 mrule8 mrule9 mrule10 mrule11 mrule12 mrule13 mrule14 mrule15">
               <Name>vTnsPrsNum</Name>
             </Slot>
           </AffixTemplate>
-          <AffixTemplate requiredPartsOfSpeech="pos9492">
+          <AffixTemplate requiredPartsOfSpeech="pos9389">
             <Name>Indefinite article</Name>
             <Slot morphologicalRules="mrule16 mrule17 mrule18">
               <Name>dGen</Name>
@@ -2147,7 +2147,7 @@
               <Name>dNum</Name>
             </Slot>
           </AffixTemplate>
-          <AffixTemplate requiredPartsOfSpeech="pos2179 pos7505">
+          <AffixTemplate requiredPartsOfSpeech="pos2154 pos7420">
             <Name>Adjectives</Name>
             <Slot morphologicalRules="mrule21 mrule22">
               <Name>aGen</Name>
@@ -2156,7 +2156,7 @@
               <Name>aNum</Name>
             </Slot>
           </AffixTemplate>
-          <AffixTemplate requiredPartsOfSpeech="pos6193 pos3889 pos6338">
+          <AffixTemplate requiredPartsOfSpeech="pos6123 pos3838 pos6267">
             <Name>Participles</Name>
             <Slot morphologicalRules="mrule25 mrule26">
               <Name>vPtcpl</Name>
@@ -2164,444 +2164,444 @@
           </AffixTemplate>
         </AffixTemplates>
         <LexicalEntries>
-          <LexicalEntry id="entry1" partOfSpeech="pos6193" ruleFeatures="mpr2">
+          <LexicalEntry id="entry1" partOfSpeech="pos6123" ruleFeatures="mpr2">
             <Allomorphs>
               <Allomorph id="allo1">
                 <PhoneticShape>entr</PhoneticShape>
                 <Properties>
-                  <Property name="ID">12202</Property>
+                  <Property name="ID">12088</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>entrer</Gloss>
             <Properties>
-              <Property name="ID">1763</Property>
+              <Property name="ID">1744</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry2" partOfSpeech="pos7528">
+          <LexicalEntry id="entry2" partOfSpeech="pos7443">
             <Allomorphs>
               <Allomorph id="allo2">
                 <PhoneticShape>quoi</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10127</Property>
+                  <Property name="ID">10021</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>what</Gloss>
             <Properties>
-              <Property name="ID">4930</Property>
+              <Property name="ID">4870</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry3" partOfSpeech="pos6660">
+          <LexicalEntry id="entry3" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo3">
                 <PhoneticShape>dans</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11213</Property>
+                  <Property name="ID">11101</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>in</Gloss>
             <Properties>
-              <Property name="ID">8280</Property>
+              <Property name="ID">8186</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry4" partOfSpeech="pos7445">
+          <LexicalEntry id="entry4" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo4">
                 <PhoneticShape>ils</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9378</Property>
+                  <Property name="ID">9276</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>3PL.MASC</Gloss>
             <Properties>
-              <Property name="ID">4502</Property>
+              <Property name="ID">4446</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry5" partOfSpeech="pos6660">
+          <LexicalEntry id="entry5" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo5">
                 <PhoneticShape>en</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9962</Property>
+                  <Property name="ID">9857</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>in</Gloss>
             <Properties>
-              <Property name="ID">9693</Property>
+              <Property name="ID">9590</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry6" partOfSpeech="pos417">
+          <LexicalEntry id="entry6" partOfSpeech="pos416">
             <Allomorphs>
               <Allomorph id="allo6">
                 <PhoneticShape>ces</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7353</Property>
+                  <Property name="ID">7270</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEM.PL</Gloss>
             <Properties>
-              <Property name="ID">10564</Property>
+              <Property name="ID">10457</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry7" partOfSpeech="pos2179">
+          <LexicalEntry id="entry7" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo7">
                 <PhoneticShape>même</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1258</Property>
+                  <Property name="ID">1242</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>same</Gloss>
             <Properties>
-              <Property name="ID">5442</Property>
+              <Property name="ID">5376</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry8" partOfSpeech="pos9492" ruleFeatures="mpr11">
+          <LexicalEntry id="entry8" partOfSpeech="pos9389" ruleFeatures="mpr11">
             <Allomorphs>
               <Allomorph id="allo8">
                 <PhoneticShape>des</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1945</Property>
+                  <Property name="ID">1925</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>INDEF.MF.PL</Gloss>
             <Properties>
-              <Property name="ID">6529</Property>
-              <Property name="InflTypeID">6057</Property>
+              <Property name="ID">6456</Property>
+              <Property name="InflTypeID">5989</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry9" partOfSpeech="pos7445">
+          <LexicalEntry id="entry9" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo9">
                 <PhoneticShape>vous</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8941</Property>
+                  <Property name="ID">8840</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym10652" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym10545" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>2PL</Gloss>
             <Properties>
-              <Property name="ID">3650</Property>
+              <Property name="ID">3602</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry10" partOfSpeech="pos7720">
+          <LexicalEntry id="entry10" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo10">
                 <PhoneticShape>homme</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5567</Property>
+                  <Property name="ID">5501</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>man</Gloss>
             <Properties>
-              <Property name="ID">667</Property>
+              <Property name="ID">661</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry11" partOfSpeech="pos6193" ruleFeatures="mpr2">
+          <LexicalEntry id="entry11" partOfSpeech="pos6123" ruleFeatures="mpr2">
             <Allomorphs>
               <Allomorph id="allo11">
                 <PhoneticShape>mang</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3039</Property>
+                  <Property name="ID">3000</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>eat</Gloss>
             <Properties>
-              <Property name="ID">2530</Property>
+              <Property name="ID">2495</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry12" partOfSpeech="pos7720">
+          <LexicalEntry id="entry12" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo12">
                 <PhoneticShape>monde</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5028</Property>
+                  <Property name="ID">4967</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>world</Gloss>
             <Properties>
-              <Property name="ID">10767</Property>
+              <Property name="ID">10659</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry13" partOfSpeech="pos7720">
+          <LexicalEntry id="entry13" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo13">
                 <PhoneticShape>voiture</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2053</Property>
+                  <Property name="ID">2030</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>car</Gloss>
             <Properties>
-              <Property name="ID">1785</Property>
+              <Property name="ID">1766</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry14" partOfSpeech="pos7720">
+          <LexicalEntry id="entry14" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo14">
                 <PhoneticShape>bateau</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5490</Property>
+                  <Property name="ID">5424</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>boat</Gloss>
             <Properties>
-              <Property name="ID">9898</Property>
+              <Property name="ID">9794</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry15" partOfSpeech="pos4605">
+          <LexicalEntry id="entry15" partOfSpeech="pos4548">
             <Allomorphs>
               <Allomorph id="allo15">
                 <PhoneticShape>au</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10552</Property>
+                  <Property name="ID">10445</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>at.the</Gloss>
             <Properties>
-              <Property name="ID">9349</Property>
+              <Property name="ID">9247</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry16" partOfSpeech="pos415">
+          <LexicalEntry id="entry16" partOfSpeech="pos414">
             <Allomorphs>
               <Allomorph id="allo16">
                 <PhoneticShape>que</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1292</Property>
+                  <Property name="ID">1275</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>that</Gloss>
             <Properties>
-              <Property name="ID">6236</Property>
+              <Property name="ID">6166</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry17" partOfSpeech="pos7720" ruleFeatures="mpr1">
+          <LexicalEntry id="entry17" partOfSpeech="pos7632" ruleFeatures="mpr1">
             <Allomorphs>
               <Allomorph id="allo17">
                 <PhoneticShape>oiseau</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5668</Property>
+                  <Property name="ID">5601</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>bird</Gloss>
             <Properties>
-              <Property name="ID">10204</Property>
+              <Property name="ID">10098</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry18" partOfSpeech="pos7720">
+          <LexicalEntry id="entry18" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo18">
                 <PhoneticShape>train</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7888</Property>
+                  <Property name="ID">7799</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>train</Gloss>
             <Properties>
-              <Property name="ID">10226</Property>
+              <Property name="ID">10120</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry19" partOfSpeech="pos7720">
+          <LexicalEntry id="entry19" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo19">
                 <PhoneticShape>colline</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5464</Property>
+                  <Property name="ID">5398</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>hill</Gloss>
             <Properties>
-              <Property name="ID">4808</Property>
+              <Property name="ID">4750</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry20" partOfSpeech="pos7445">
+          <LexicalEntry id="entry20" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo20">
                 <PhoneticShape>nous</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7913</Property>
+                  <Property name="ID">7824</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>1PL</Gloss>
             <Properties>
-              <Property name="ID">6095</Property>
+              <Property name="ID">6027</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry21" partOfSpeech="pos7720">
+          <LexicalEntry id="entry21" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo21">
                 <PhoneticShape>saveur</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6469</Property>
+                  <Property name="ID">6396</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>flavor</Gloss>
             <Properties>
-              <Property name="ID">5248</Property>
+              <Property name="ID">5184</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry22" partOfSpeech="pos6193" ruleFeatures="mpr2">
+          <LexicalEntry id="entry22" partOfSpeech="pos6123" ruleFeatures="mpr2">
             <Allomorphs>
               <Allomorph id="allo22">
                 <PhoneticShape>jou</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8989</Property>
+                  <Property name="ID">8888</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>play</Gloss>
             <Properties>
-              <Property name="ID">9103</Property>
+              <Property name="ID">9001</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry23" partOfSpeech="pos5004">
+          <LexicalEntry id="entry23" partOfSpeech="pos4943">
             <Allomorphs>
               <Allomorph id="allo23">
                 <PhoneticShape>n’</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3178</Property>
+                  <Property name="ID">3137</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>NEG1</Gloss>
             <Properties>
-              <Property name="ID">8322</Property>
+              <Property name="ID">8227</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry24" partOfSpeech="pos10471">
+          <LexicalEntry id="entry24" partOfSpeech="pos10364">
             <Allomorphs>
               <Allomorph id="allo24">
                 <PhoneticShape>deux</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6365</Property>
+                  <Property name="ID">6293</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>two</Gloss>
             <Properties>
-              <Property name="ID">10082</Property>
+              <Property name="ID">9975</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry25" partOfSpeech="pos6660">
+          <LexicalEntry id="entry25" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo25">
                 <PhoneticShape>à</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9161</Property>
+                  <Property name="ID">9059</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>to</Gloss>
             <Properties>
-              <Property name="ID">4516</Property>
+              <Property name="ID">4460</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry26" partOfSpeech="pos2179">
+          <LexicalEntry id="entry26" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo26">
                 <PhoneticShape>pur</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1171</Property>
+                  <Property name="ID">1157</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>pure</Gloss>
             <Properties>
-              <Property name="ID">10239</Property>
+              <Property name="ID">10133</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry27" partOfSpeech="pos6193" ruleFeatures="mpr3">
+          <LexicalEntry id="entry27" partOfSpeech="pos6123" ruleFeatures="mpr3">
             <Allomorphs>
               <Allomorph id="allo27">
                 <PhoneticShape>perd</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1756</Property>
+                  <Property name="ID">1736</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
@@ -2610,88 +2610,88 @@
               <Property name="ID">261</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry28" partOfSpeech="pos7720">
+          <LexicalEntry id="entry28" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo28">
                 <PhoneticShape>garçon</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7999</Property>
+                  <Property name="ID">7907</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>boy</Gloss>
             <Properties>
-              <Property name="ID">1480</Property>
+              <Property name="ID">1462</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry29" partOfSpeech="pos7445">
+          <LexicalEntry id="entry29" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo29">
                 <PhoneticShape>elle</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8584</Property>
+                  <Property name="ID">8486</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>3SG.FEM</Gloss>
             <Properties>
-              <Property name="ID">9021</Property>
+              <Property name="ID">8920</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry30" partOfSpeech="pos2894">
+          <LexicalEntry id="entry30" partOfSpeech="pos2858">
             <Allomorphs>
               <Allomorph id="allo30">
                 <PhoneticShape>qui</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1470</Property>
+                  <Property name="ID">1452</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>which</Gloss>
             <Properties>
-              <Property name="ID">1941</Property>
+              <Property name="ID">1921</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry31" partOfSpeech="pos7717">
+          <LexicalEntry id="entry31" partOfSpeech="pos7629">
             <Allomorphs>
               <Allomorph id="allo31">
                 <PhoneticShape>Dieu</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5209</Property>
+                  <Property name="ID">5145</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>God</Gloss>
             <Properties>
-              <Property name="ID">5189</Property>
+              <Property name="ID">5126</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry32" partOfSpeech="pos6660">
+          <LexicalEntry id="entry32" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo32">
                 <PhoneticShape>devant</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10099</Property>
+                  <Property name="ID">9992</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>before</Gloss>
             <Properties>
-              <Property name="ID">6318</Property>
+              <Property name="ID">6248</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry33" partOfSpeech="pos417">
+          <LexicalEntry id="entry33" partOfSpeech="pos416">
             <Allomorphs>
               <Allomorph id="allo33">
                 <PhoneticShape>cet</PhoneticShape>
@@ -2702,112 +2702,112 @@
               <Allomorph id="allo34">
                 <PhoneticShape>ce</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8829</Property>
+                  <Property name="ID">8728</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEM.MASC.SG</Gloss>
             <Properties>
-              <Property name="ID">5601</Property>
+              <Property name="ID">5534</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry34" partOfSpeech="pos6193" ruleFeatures="mpr2">
+          <LexicalEntry id="entry34" partOfSpeech="pos6123" ruleFeatures="mpr2">
             <Allomorphs>
               <Allomorph id="allo35">
                 <PhoneticShape>trouv</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1764</Property>
+                  <Property name="ID">1745</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>find</Gloss>
             <Properties>
-              <Property name="ID">7983</Property>
+              <Property name="ID">7892</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry35" partOfSpeech="pos7720">
+          <LexicalEntry id="entry35" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo36">
                 <PhoneticShape>sel</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2092</Property>
+                  <Property name="ID">2069</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>salt</Gloss>
             <Properties>
-              <Property name="ID">6397</Property>
+              <Property name="ID">6325</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry36" partOfSpeech="pos7720">
+          <LexicalEntry id="entry36" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo37">
                 <PhoneticShape>sommet</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10439</Property>
+                  <Property name="ID">10332</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>summit</Gloss>
             <Properties>
-              <Property name="ID">7071</Property>
+              <Property name="ID">6993</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry37" partOfSpeech="pos4605">
+          <LexicalEntry id="entry37" partOfSpeech="pos4548">
             <Allomorphs>
               <Allomorph id="allo38">
                 <PhoneticShape>aux</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5341</Property>
+                  <Property name="ID">5276</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>at.the.PL</Gloss>
             <Properties>
-              <Property name="ID">5048</Property>
+              <Property name="ID">4987</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry38" partOfSpeech="pos7720">
+          <LexicalEntry id="entry38" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo39">
                 <PhoneticShape>pomme</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8182</Property>
+                  <Property name="ID">8089</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>apple</Gloss>
             <Properties>
-              <Property name="ID">9979</Property>
+              <Property name="ID">9873</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry39" partOfSpeech="pos6660">
+          <LexicalEntry id="entry39" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo40">
                 <PhoneticShape>sous</PhoneticShape>
@@ -2818,267 +2818,267 @@
             </Allomorphs>
             <Gloss>under</Gloss>
             <Properties>
-              <Property name="ID">5478</Property>
+              <Property name="ID">5412</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry40" partOfSpeech="pos7720">
+          <LexicalEntry id="entry40" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo41">
                 <PhoneticShape>bien</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7234</Property>
+                  <Property name="ID">7154</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>good</Gloss>
             <Properties>
-              <Property name="ID">693</Property>
+              <Property name="ID">687</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry41" partOfSpeech="pos7720">
+          <LexicalEntry id="entry41" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo42">
                 <PhoneticShape>poisson</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8992</Property>
+                  <Property name="ID">8891</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>fish</Gloss>
             <Properties>
-              <Property name="ID">3287</Property>
+              <Property name="ID">3247</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry42" partOfSpeech="pos10784">
+          <LexicalEntry id="entry42" partOfSpeech="pos10676">
             <Allomorphs>
               <Allomorph id="allo43">
                 <PhoneticShape>celles</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9175</Property>
+                  <Property name="ID">9073</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEMPRO.FEM.PL</Gloss>
             <Properties>
-              <Property name="ID">6067</Property>
+              <Property name="ID">5999</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry43" partOfSpeech="pos7720">
+          <LexicalEntry id="entry43" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo44">
                 <PhoneticShape>œuf</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6447</Property>
+                  <Property name="ID">6374</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>egg</Gloss>
             <Properties>
-              <Property name="ID">10743</Property>
+              <Property name="ID">10635</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry44" partOfSpeech="pos6674">
+          <LexicalEntry id="entry44" partOfSpeech="pos6598">
             <Allomorphs>
               <Allomorph id="allo45">
                 <PhoneticShape>la</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8381</Property>
+                  <Property name="ID">8286</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEF.F.SG</Gloss>
             <Properties>
-              <Property name="ID">7812</Property>
+              <Property name="ID">7724</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry45" partOfSpeech="pos7720">
+          <LexicalEntry id="entry45" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo46">
                 <PhoneticShape>Père</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4205</Property>
+                  <Property name="ID">4151</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>Father</Gloss>
             <Properties>
-              <Property name="ID">9005</Property>
+              <Property name="ID">8904</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry46" partOfSpeech="pos6660">
+          <LexicalEntry id="entry46" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo47">
                 <PhoneticShape>avec</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11022</Property>
+                  <Property name="ID">10913</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>with</Gloss>
             <Properties>
-              <Property name="ID">8642</Property>
+              <Property name="ID">8544</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry47" partOfSpeech="pos7720">
+          <LexicalEntry id="entry47" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo48">
                 <PhoneticShape>fille</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1800</Property>
+                  <Property name="ID">1781</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>girl</Gloss>
             <Properties>
-              <Property name="ID">10122</Property>
+              <Property name="ID">10016</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry48" partOfSpeech="pos7720">
+          <LexicalEntry id="entry48" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo49">
                 <PhoneticShape>ras</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6854</Property>
+                  <Property name="ID">6776</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>level</Gloss>
             <Properties>
-              <Property name="ID">7082</Property>
+              <Property name="ID">7004</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry49" partOfSpeech="pos7720">
+          <LexicalEntry id="entry49" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo50">
                 <PhoneticShape>chose</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3173</Property>
+                  <Property name="ID">3132</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>thing</Gloss>
             <Properties>
-              <Property name="ID">7471</Property>
+              <Property name="ID">7387</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry50" partOfSpeech="pos7720">
+          <LexicalEntry id="entry50" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo51">
                 <PhoneticShape>maison</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2279</Property>
+                  <Property name="ID">2253</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>house</Gloss>
             <Properties>
-              <Property name="ID">7615</Property>
+              <Property name="ID">7529</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry51" partOfSpeech="pos5004">
+          <LexicalEntry id="entry51" partOfSpeech="pos4943">
             <Allomorphs>
               <Allomorph id="allo52">
                 <PhoneticShape>pas</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9116</Property>
+                  <Property name="ID">9014</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>NEG2</Gloss>
             <Properties>
-              <Property name="ID">4627</Property>
+              <Property name="ID">4570</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry52" partOfSpeech="pos6193" ruleFeatures="mpr2">
+          <LexicalEntry id="entry52" partOfSpeech="pos6123" ruleFeatures="mpr2">
             <Allomorphs>
               <Allomorph id="allo53">
                 <PhoneticShape>parl</PhoneticShape>
                 <Properties>
-                  <Property name="ID">397</Property>
+                  <Property name="ID">396</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>speak</Gloss>
             <Properties>
-              <Property name="ID">5805</Property>
+              <Property name="ID">5738</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry53" partOfSpeech="pos7720">
+          <LexicalEntry id="entry53" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo54">
                 <PhoneticShape>vélo</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1811</Property>
+                  <Property name="ID">1792</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>bicycle</Gloss>
             <Properties>
-              <Property name="ID">11176</Property>
+              <Property name="ID">11064</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry54" partOfSpeech="pos7720">
+          <LexicalEntry id="entry54" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo55">
                 <PhoneticShape>lumière</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5620</Property>
+                  <Property name="ID">5553</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>light</Gloss>
             <Properties>
-              <Property name="ID">9785</Property>
+              <Property name="ID">9681</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry55" partOfSpeech="pos5384">
+          <LexicalEntry id="entry55" partOfSpeech="pos5319">
             <Allomorphs>
               <Allomorph id="allo56">
                 <PhoneticShape>ainsi.que</PhoneticShape>
@@ -3089,234 +3089,234 @@
             </Allomorphs>
             <Gloss>as well as</Gloss>
             <Properties>
-              <Property name="ID">4250</Property>
+              <Property name="ID">4196</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry56" partOfSpeech="pos7445">
+          <LexicalEntry id="entry56" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo57">
                 <PhoneticShape>le</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3322</Property>
+                  <Property name="ID">3281</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat2407" symbolValues="sym6029" />
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat2376" symbolValues="sym5961" />
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>3SG.MASC.ACC</Gloss>
             <Properties>
-              <Property name="ID">4402</Property>
+              <Property name="ID">4346</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry57" partOfSpeech="pos6674">
+          <LexicalEntry id="entry57" partOfSpeech="pos6598">
             <Allomorphs>
               <Allomorph id="allo58">
                 <PhoneticShape>le</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3322</Property>
+                  <Property name="ID">3281</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEF.M.SG</Gloss>
             <Properties>
-              <Property name="ID">8923</Property>
+              <Property name="ID">8822</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry58" partOfSpeech="pos2179">
+          <LexicalEntry id="entry58" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo59">
                 <PhoneticShape>céleste</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10512</Property>
+                  <Property name="ID">10405</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>heavenly</Gloss>
             <Properties>
-              <Property name="ID">4074</Property>
+              <Property name="ID">4023</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry59" partOfSpeech="pos415">
+          <LexicalEntry id="entry59" partOfSpeech="pos414">
             <Allomorphs>
               <Allomorph id="allo60">
                 <PhoneticShape>pour.que</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8876</Property>
+                  <Property name="ID">8775</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>so that</Gloss>
             <Properties>
-              <Property name="ID">4314</Property>
+              <Property name="ID">4258</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry60" partOfSpeech="pos2179">
+          <LexicalEntry id="entry60" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo61">
                 <PhoneticShape>bon</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4369</Property>
+                  <Property name="ID">4313</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>good</Gloss>
             <Properties>
-              <Property name="ID">5919</Property>
+              <Property name="ID">5851</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry61" partOfSpeech="pos6193" ruleFeatures="mpr4">
+          <LexicalEntry id="entry61" partOfSpeech="pos6123" ruleFeatures="mpr4">
             <Allomorphs>
               <Allomorph id="allo62" stemName="stemName3">
                 <PhoneticShape>vi</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10930</Property>
+                  <Property name="ID">10821</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo63">
                 <PhoneticShape>viv</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11147</Property>
+                  <Property name="ID">11035</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>live</Gloss>
             <Properties>
-              <Property name="ID">9397</Property>
+              <Property name="ID">9295</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry62" partOfSpeech="pos7445">
+          <LexicalEntry id="entry62" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo64">
                 <PhoneticShape>la</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5119</Property>
+                  <Property name="ID">5057</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat2407" symbolValues="sym6029" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat2376" symbolValues="sym5961" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>3SG.FEM.ACC</Gloss>
             <Properties>
-              <Property name="ID">10828</Property>
+              <Property name="ID">10719</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry63" partOfSpeech="pos6193" ruleFeatures="mpr3">
+          <LexicalEntry id="entry63" partOfSpeech="pos6123" ruleFeatures="mpr3">
             <Allomorphs>
               <Allomorph id="allo65">
                 <PhoneticShape>bat</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9425</Property>
+                  <Property name="ID">9322</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo66">
                 <PhoneticShape>batt</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8861</Property>
+                  <Property name="ID">8760</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>beat</Gloss>
             <Properties>
-              <Property name="ID">2978</Property>
+              <Property name="ID">2939</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry64" partOfSpeech="pos4571">
+          <LexicalEntry id="entry64" partOfSpeech="pos4514">
             <Allomorphs>
               <Allomorph id="allo67">
                 <PhoneticShape>sa</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1427</Property>
+                  <Property name="ID">1409</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>3SG.POSS</Gloss>
             <Properties>
-              <Property name="ID">6823</Property>
+              <Property name="ID">6745</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry65" partOfSpeech="pos6674">
+          <LexicalEntry id="entry65" partOfSpeech="pos6598">
             <Allomorphs>
               <Allomorph id="allo68">
                 <PhoneticShape>les</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11080</Property>
+                  <Property name="ID">10969</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEF.F.PL</Gloss>
             <Properties>
-              <Property name="ID">4419</Property>
+              <Property name="ID">4363</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry66" partOfSpeech="pos6674">
+          <LexicalEntry id="entry66" partOfSpeech="pos6598">
             <Allomorphs>
               <Allomorph id="allo69">
                 <PhoneticShape>les</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11080</Property>
+                  <Property name="ID">10969</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEF.M.PL</Gloss>
             <Properties>
-              <Property name="ID">10417</Property>
+              <Property name="ID">10310</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry67" partOfSpeech="pos9492">
+          <LexicalEntry id="entry67" partOfSpeech="pos9389">
             <Allomorphs>
               <Allomorph id="allo70">
                 <PhoneticShape>un</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4045</Property>
+                  <Property name="ID">3995</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>INDEF</Gloss>
             <Properties>
-              <Property name="ID">6529</Property>
+              <Property name="ID">6456</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry68" partOfSpeech="pos2179">
+          <LexicalEntry id="entry68" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo71">
                 <PhoneticShape>longu</PhoneticShape>
@@ -3334,548 +3334,548 @@
                   </Environment>
                 </RequiredEnvironments>
                 <Properties>
-                  <Property name="ID">4394</Property>
+                  <Property name="ID">4338</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo72">
                 <PhoneticShape>long</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4989</Property>
+                  <Property name="ID">4928</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>long</Gloss>
             <Properties>
-              <Property name="ID">2247</Property>
+              <Property name="ID">2221</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry69" partOfSpeech="pos7445">
+          <LexicalEntry id="entry69" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo73">
                 <PhoneticShape>il</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9282</Property>
+                  <Property name="ID">9180</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>3SG</Gloss>
             <Properties>
-              <Property name="ID">4386</Property>
+              <Property name="ID">4330</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry70" partOfSpeech="pos5384">
+          <LexicalEntry id="entry70" partOfSpeech="pos5319">
             <Allomorphs>
               <Allomorph id="allo74">
                 <PhoneticShape>ainsi</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5890</Property>
+                  <Property name="ID">5822</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>thus</Gloss>
             <Properties>
-              <Property name="ID">9908</Property>
+              <Property name="ID">9804</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry71" partOfSpeech="pos7720">
+          <LexicalEntry id="entry71" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo75">
                 <PhoneticShape>pied</PhoneticShape>
                 <Properties>
-                  <Property name="ID">811</Property>
+                  <Property name="ID">804</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>stand</Gloss>
             <Properties>
-              <Property name="ID">6427</Property>
+              <Property name="ID">6354</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry72" partOfSpeech="pos4354">
+          <LexicalEntry id="entry72" partOfSpeech="pos4298">
             <Allomorphs>
               <Allomorph id="allo76">
                 <PhoneticShape>se</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3021</Property>
+                  <Property name="ID">2982</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>REFL</Gloss>
             <Properties>
-              <Property name="ID">8095</Property>
+              <Property name="ID">8002</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry73" partOfSpeech="pos3889">
+          <LexicalEntry id="entry73" partOfSpeech="pos3838">
             <Allomorphs>
               <Allomorph id="allo77">
                 <PhoneticShape>ét</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6847</Property>
+                  <Property name="ID">6769</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo78">
                 <PhoneticShape>êt</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7322</Property>
+                  <Property name="ID">7240</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>be</Gloss>
             <Properties>
-              <Property name="ID">3750</Property>
+              <Property name="ID">3700</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry74" partOfSpeech="pos6660">
+          <LexicalEntry id="entry74" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo79">
                 <PhoneticShape>par</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3358</Property>
+                  <Property name="ID">3316</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>by</Gloss>
             <Properties>
-              <Property name="ID">579</Property>
+              <Property name="ID">574</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry75" partOfSpeech="pos10784">
+          <LexicalEntry id="entry75" partOfSpeech="pos10676">
             <Allomorphs>
               <Allomorph id="allo80">
                 <PhoneticShape>ceux</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7535</Property>
+                  <Property name="ID">7450</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEMPRO.MASC.PL</Gloss>
             <Properties>
-              <Property name="ID">10362</Property>
+              <Property name="ID">10256</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry76" partOfSpeech="pos6193" ruleFeatures="mpr4">
+          <LexicalEntry id="entry76" partOfSpeech="pos6123" ruleFeatures="mpr4">
             <Allomorphs>
               <Allomorph id="allo81" stemName="stemName3">
                 <PhoneticShape>meu</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4464</Property>
+                  <Property name="ID">4408</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo82">
                 <PhoneticShape>mouv</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8236</Property>
+                  <Property name="ID">8143</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>move</Gloss>
             <Properties>
-              <Property name="ID">3407</Property>
+              <Property name="ID">3365</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry77" partOfSpeech="pos7445">
+          <LexicalEntry id="entry77" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo83">
                 <PhoneticShape>je</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2395</Property>
+                  <Property name="ID">2365</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat3869" symbolValues="sym6199" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat3818" symbolValues="sym6129" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>1SG</Gloss>
             <Properties>
-              <Property name="ID">6331</Property>
+              <Property name="ID">6260</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry78" partOfSpeech="pos7720">
+          <LexicalEntry id="entry78" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo84">
                 <PhoneticShape>femelle</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7269</Property>
+                  <Property name="ID">7189</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>female</Gloss>
             <Properties>
-              <Property name="ID">8366</Property>
+              <Property name="ID">8271</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry79" partOfSpeech="pos4605">
+          <LexicalEntry id="entry79" partOfSpeech="pos4548">
             <Allomorphs>
               <Allomorph id="allo85">
                 <PhoneticShape>du</PhoneticShape>
                 <Properties>
-                  <Property name="ID">5782</Property>
+                  <Property name="ID">5715</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>of.the</Gloss>
             <Properties>
-              <Property name="ID">8926</Property>
+              <Property name="ID">8825</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry80" partOfSpeech="pos7720">
+          <LexicalEntry id="entry80" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo86">
                 <PhoneticShape>lampe</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1139</Property>
+                  <Property name="ID">1125</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>lamp</Gloss>
             <Properties>
-              <Property name="ID">11595</Property>
+              <Property name="ID">11481</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry81" partOfSpeech="pos10784">
+          <LexicalEntry id="entry81" partOfSpeech="pos10676">
             <Allomorphs>
               <Allomorph id="allo87">
                 <PhoneticShape>celle</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11174</Property>
+                  <Property name="ID">11062</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>DEMPRO.FEM</Gloss>
             <Properties>
-              <Property name="ID">9413</Property>
+              <Property name="ID">9311</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry82" partOfSpeech="pos3889">
+          <LexicalEntry id="entry82" partOfSpeech="pos3838">
             <Allomorphs>
               <Allomorph id="allo88">
                 <PhoneticShape>est</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3719</Property>
+                  <Property name="ID">3669</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
             </AssignedHeadFeatures>
             <Gloss>be.PRS.3SG</Gloss>
             <Properties>
-              <Property name="ID">785</Property>
+              <Property name="ID">778</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry83" partOfSpeech="pos7445">
+          <LexicalEntry id="entry83" partOfSpeech="pos7361">
             <Allomorphs>
               <Allomorph id="allo89">
                 <PhoneticShape>on</PhoneticShape>
                 <Properties>
-                  <Property name="ID">7762</Property>
+                  <Property name="ID">7674</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>IMPERS.3SG</Gloss>
             <Properties>
-              <Property name="ID">1345</Property>
+              <Property name="ID">1327</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry84" partOfSpeech="pos7720">
+          <LexicalEntry id="entry84" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo90">
                 <PhoneticShape>bonbon</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10508</Property>
+                  <Property name="ID">10401</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>candy</Gloss>
             <Properties>
-              <Property name="ID">391</Property>
+              <Property name="ID">390</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry85" partOfSpeech="pos417">
+          <LexicalEntry id="entry85" partOfSpeech="pos416">
             <Allomorphs>
               <Allomorph id="allo91">
                 <PhoneticShape>cette</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8257</Property>
+                  <Property name="ID">8164</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4001">
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat3952">
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEM.FEM.SG</Gloss>
             <Properties>
-              <Property name="ID">8000</Property>
+              <Property name="ID">7908</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry86" partOfSpeech="pos3235">
+          <LexicalEntry id="entry86" partOfSpeech="pos3193">
             <Allomorphs>
               <Allomorph id="allo92">
                 <PhoneticShape>ici</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4192</Property>
+                  <Property name="ID">4139</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>here</Gloss>
             <Properties>
-              <Property name="ID">4009</Property>
+              <Property name="ID">3960</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry87" partOfSpeech="pos4605">
+          <LexicalEntry id="entry87" partOfSpeech="pos4548">
             <Allomorphs>
               <Allomorph id="allo93">
                 <PhoneticShape>des</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6270</Property>
+                  <Property name="ID">6200</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat7646">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
+              <FeatureValue feature="feat7559">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>of.the.PL</Gloss>
             <Properties>
-              <Property name="ID">9751</Property>
+              <Property name="ID">9647</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry88" partOfSpeech="pos7720">
+          <LexicalEntry id="entry88" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo94">
                 <PhoneticShape>terre</PhoneticShape>
                 <Properties>
-                  <Property name="ID">8109</Property>
+                  <Property name="ID">8016</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>earth</Gloss>
             <Properties>
-              <Property name="ID">7141</Property>
+              <Property name="ID">7061</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry89" partOfSpeech="pos7720">
+          <LexicalEntry id="entry89" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo95">
                 <PhoneticShape>couple</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2924</Property>
+                  <Property name="ID">2888</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>pair</Gloss>
             <Properties>
-              <Property name="ID">9415</Property>
+              <Property name="ID">9312</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry90" partOfSpeech="pos7720">
+          <LexicalEntry id="entry90" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo96">
                 <PhoneticShape>ville</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3568</Property>
+                  <Property name="ID">3523</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>city</Gloss>
             <Properties>
-              <Property name="ID">1266</Property>
+              <Property name="ID">1250</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry91" partOfSpeech="pos6660">
+          <LexicalEntry id="entry91" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo97">
                 <PhoneticShape>sur</PhoneticShape>
                 <Properties>
-                  <Property name="ID">860</Property>
+                  <Property name="ID">851</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>on</Gloss>
             <Properties>
-              <Property name="ID">7524</Property>
+              <Property name="ID">7439</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry92" partOfSpeech="pos3889">
+          <LexicalEntry id="entry92" partOfSpeech="pos3838">
             <Allomorphs>
               <Allomorph id="allo98">
                 <PhoneticShape>sont</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9689</Property>
+                  <Property name="ID">9586</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat3376">
-                <FeatureValue feature="feat8657" symbolValues="sym9886" />
-                <FeatureValue feature="feat3869" symbolValues="sym7965" />
+              <FeatureValue feature="feat3334">
+                <FeatureValue feature="feat8559" symbolValues="sym9782" />
+                <FeatureValue feature="feat3818" symbolValues="sym7875" />
               </FeatureValue>
-              <FeatureValue feature="feat6012" symbolValues="sym342" />
+              <FeatureValue feature="feat5944" symbolValues="sym343" />
             </AssignedHeadFeatures>
             <Gloss>be.PRS.3PL</Gloss>
             <Properties>
-              <Property name="ID">3052</Property>
+              <Property name="ID">3014</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry93" partOfSpeech="pos415">
+          <LexicalEntry id="entry93" partOfSpeech="pos414">
             <Allomorphs>
               <Allomorph id="allo99">
                 <PhoneticShape>si</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6065</Property>
+                  <Property name="ID">5997</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>if</Gloss>
             <Properties>
-              <Property name="ID">10525</Property>
+              <Property name="ID">10418</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry94" partOfSpeech="pos7720" ruleFeatures="mpr1">
+          <LexicalEntry id="entry94" partOfSpeech="pos7632" ruleFeatures="mpr1">
             <Allomorphs>
               <Allomorph id="allo100" stemName="stemName2">
                 <PhoneticShape>animau</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6792</Property>
+                  <Property name="ID">6714</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo101">
                 <PhoneticShape>animal</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4512</Property>
+                  <Property name="ID">4456</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>animal</Gloss>
             <Properties>
-              <Property name="ID">9858</Property>
+              <Property name="ID">9754</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry95" partOfSpeech="pos7505">
+          <LexicalEntry id="entry95" partOfSpeech="pos7420">
             <Allomorphs>
               <Allomorph id="allo102" stemName="stemName1">
                 <PhoneticShape>tou</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2595</Property>
+                  <Property name="ID">2559</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo103">
                 <PhoneticShape>tout</PhoneticShape>
                 <Properties>
-                  <Property name="ID">6518</Property>
+                  <Property name="ID">6445</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>all</Gloss>
             <Properties>
-              <Property name="ID">6251</Property>
+              <Property name="ID">6181</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry96" partOfSpeech="pos2179">
+          <LexicalEntry id="entry96" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo104">
                 <PhoneticShape>rouge</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1586</Property>
+                  <Property name="ID">1568</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>red</Gloss>
             <Properties>
-              <Property name="ID">8358</Property>
+              <Property name="ID">8263</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry97" partOfSpeech="pos6660">
+          <LexicalEntry id="entry97" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo105">
                 <PhoneticShape>de</PhoneticShape>
                 <Properties>
-                  <Property name="ID">11654</Property>
+                  <Property name="ID">11540</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>of</Gloss>
             <Properties>
-              <Property name="ID">5699</Property>
+              <Property name="ID">5632</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry98" partOfSpeech="pos7720">
+          <LexicalEntry id="entry98" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo106">
                 <PhoneticShape>route</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10981</Property>
+                  <Property name="ID">10872</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat10171">
-                <FeatureValue feature="feat7558" symbolValues="sym2874" />
+              <FeatureValue feature="feat10065">
+                <FeatureValue feature="feat7473" symbolValues="sym2838" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>road</Gloss>
@@ -3883,83 +3883,83 @@
               <Property name="ID">145</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry99" partOfSpeech="pos5384">
+          <LexicalEntry id="entry99" partOfSpeech="pos5319">
             <Allomorphs>
               <Allomorph id="allo107">
                 <PhoneticShape>et</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4720</Property>
+                  <Property name="ID">4663</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>and</Gloss>
             <Properties>
-              <Property name="ID">6707</Property>
+              <Property name="ID">6631</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry100" partOfSpeech="pos10784">
+          <LexicalEntry id="entry100" partOfSpeech="pos10676">
             <Allomorphs>
               <Allomorph id="allo108">
                 <PhoneticShape>celui</PhoneticShape>
                 <Properties>
-                  <Property name="ID">2154</Property>
+                  <Property name="ID">2129</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <AssignedHeadFeatures>
-              <FeatureValue feature="feat4843">
-                <FeatureValue feature="feat7558" symbolValues="sym4439" />
-                <FeatureValue feature="feat8657" symbolValues="sym4766" />
+              <FeatureValue feature="feat4785">
+                <FeatureValue feature="feat7473" symbolValues="sym4383" />
+                <FeatureValue feature="feat8559" symbolValues="sym4708" />
               </FeatureValue>
             </AssignedHeadFeatures>
             <Gloss>DEMPRO.MASC</Gloss>
             <Properties>
-              <Property name="ID">5562</Property>
+              <Property name="ID">5496</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry101" partOfSpeech="pos6193">
+          <LexicalEntry id="entry101" partOfSpeech="pos6123">
             <Allomorphs>
               <Allomorph id="allo109">
                 <PhoneticShape>av</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4908</Property>
+                  <Property name="ID">4848</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>have</Gloss>
             <Properties>
-              <Property name="ID">2240</Property>
+              <Property name="ID">2214</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry102" partOfSpeech="pos6338" ruleFeatures="mpr4">
+          <LexicalEntry id="entry102" partOfSpeech="pos6267" ruleFeatures="mpr4">
             <Allomorphs>
               <Allomorph id="allo110">
                 <PhoneticShape>av</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4908</Property>
+                  <Property name="ID">4848</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>AUX.have</Gloss>
             <Properties>
-              <Property name="ID">5990</Property>
+              <Property name="ID">5922</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry103" partOfSpeech="pos7717">
+          <LexicalEntry id="entry103" partOfSpeech="pos7629">
             <Allomorphs>
               <Allomorph id="allo111">
                 <PhoneticShape>Noé</PhoneticShape>
                 <Properties>
-                  <Property name="ID">1844</Property>
+                  <Property name="ID">1825</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>Noah</Gloss>
             <Properties>
-              <Property name="ID">7015</Property>
+              <Property name="ID">6937</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry104" partOfSpeech="pos2179">
+          <LexicalEntry id="entry104" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo112">
                 <PhoneticShape>gross</PhoneticShape>
@@ -3977,89 +3977,89 @@
                   </Environment>
                 </RequiredEnvironments>
                 <Properties>
-                  <Property name="ID">1887</Property>
+                  <Property name="ID">1867</Property>
                 </Properties>
               </Allomorph>
               <Allomorph id="allo113">
                 <PhoneticShape>gros</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4787</Property>
+                  <Property name="ID">4730</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>big</Gloss>
             <Properties>
-              <Property name="ID">1607</Property>
+              <Property name="ID">1589</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry105" partOfSpeech="pos7720">
+          <LexicalEntry id="entry105" partOfSpeech="pos7632">
             <Allomorphs>
               <Allomorph id="allo114">
                 <PhoneticShape>mâle</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9448</Property>
+                  <Property name="ID">9345</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>male</Gloss>
             <Properties>
-              <Property name="ID">3048</Property>
+              <Property name="ID">3009</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry106" partOfSpeech="pos6660">
+          <LexicalEntry id="entry106" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo115">
                 <PhoneticShape>pour</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3629</Property>
+                  <Property name="ID">3581</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>for</Gloss>
             <Properties>
-              <Property name="ID">7052</Property>
+              <Property name="ID">6974</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry107" partOfSpeech="pos5384">
+          <LexicalEntry id="entry107" partOfSpeech="pos5319">
             <Allomorphs>
               <Allomorph id="allo116">
                 <PhoneticShape>pour</PhoneticShape>
                 <Properties>
-                  <Property name="ID">3629</Property>
+                  <Property name="ID">3581</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>in order to</Gloss>
             <Properties>
-              <Property name="ID">8430</Property>
+              <Property name="ID">8335</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry108" partOfSpeech="pos2179">
+          <LexicalEntry id="entry108" partOfSpeech="pos2154">
             <Allomorphs>
               <Allomorph id="allo117">
                 <PhoneticShape>petit</PhoneticShape>
                 <Properties>
-                  <Property name="ID">9410</Property>
+                  <Property name="ID">9308</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>little</Gloss>
             <Properties>
-              <Property name="ID">3811</Property>
+              <Property name="ID">3761</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry109" partOfSpeech="pos5004">
+          <LexicalEntry id="entry109" partOfSpeech="pos4943">
             <Allomorphs>
               <Allomorph id="allo118">
                 <PhoneticShape>ne</PhoneticShape>
                 <Properties>
-                  <Property name="ID">10091</Property>
+                  <Property name="ID">9984</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>NEG1</Gloss>
             <Properties>
-              <Property name="ID">8885</Property>
+              <Property name="ID">8784</Property>
             </Properties>
           </LexicalEntry>
         </LexicalEntries>
@@ -4093,13 +4093,13 @@
                   <CopyFromInput index="msubrule47_stem" />
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">915</Property>
+                  <Property name="ID">906</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>what</Gloss>
             <Properties>
-              <Property name="ID">4930</Property>
+              <Property name="ID">4870</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule28">
@@ -4133,14 +4133,14 @@
                   <CopyFromInput index="msubrule48_stem" />
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">9614</Property>
+                  <Property name="ID">9511</Property>
                   <Property name="Env">/_ [V]</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>as well as</Gloss>
             <Properties>
-              <Property name="ID">4250</Property>
+              <Property name="ID">4196</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule29">
@@ -4169,13 +4169,13 @@
                   <CopyFromInput index="msubrule49_stem" />
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">4095</Property>
+                  <Property name="ID">4044</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>so that</Gloss>
             <Properties>
-              <Property name="ID">4314</Property>
+              <Property name="ID">4258</Property>
             </Properties>
           </MorphologicalRule>
           <MorphologicalRule id="mrule30">
@@ -4204,32 +4204,32 @@
                   <CopyFromInput index="msubrule50_stem" />
                 </MorphologicalOutput>
                 <Properties>
-                  <Property name="ID">942</Property>
+                  <Property name="ID">933</Property>
                 </Properties>
               </MorphologicalSubrule>
             </MorphologicalSubrules>
             <Gloss>of</Gloss>
             <Properties>
-              <Property name="ID">5699</Property>
+              <Property name="ID">5632</Property>
             </Properties>
           </MorphologicalRule>
         </MorphologicalRuleDefinitions>
         <LexicalEntries>
-          <LexicalEntry id="entry110" partOfSpeech="pos7528">
+          <LexicalEntry id="entry110" partOfSpeech="pos7443">
             <Allomorphs>
               <Allomorph id="allo119">
                 <PhoneticShape>qu’</PhoneticShape>
                 <Properties>
-                  <Property name="ID">915</Property>
+                  <Property name="ID">906</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>what</Gloss>
             <Properties>
-              <Property name="ID">4930</Property>
+              <Property name="ID">4870</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry111" partOfSpeech="pos5384">
+          <LexicalEntry id="entry111" partOfSpeech="pos5319">
             <Allomorphs>
               <Allomorph id="allo120">
                 <PhoneticShape>ainsi.qu’</PhoneticShape>
@@ -4245,41 +4245,41 @@
                   </Environment>
                 </RequiredEnvironments>
                 <Properties>
-                  <Property name="ID">9614</Property>
+                  <Property name="ID">9511</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>as well as</Gloss>
             <Properties>
-              <Property name="ID">4250</Property>
+              <Property name="ID">4196</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry112" partOfSpeech="pos415">
+          <LexicalEntry id="entry112" partOfSpeech="pos414">
             <Allomorphs>
               <Allomorph id="allo121">
                 <PhoneticShape>pour.qu’</PhoneticShape>
                 <Properties>
-                  <Property name="ID">4095</Property>
+                  <Property name="ID">4044</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>so that</Gloss>
             <Properties>
-              <Property name="ID">4314</Property>
+              <Property name="ID">4258</Property>
             </Properties>
           </LexicalEntry>
-          <LexicalEntry id="entry113" partOfSpeech="pos6660">
+          <LexicalEntry id="entry113" partOfSpeech="pos6584">
             <Allomorphs>
               <Allomorph id="allo122">
                 <PhoneticShape>d’</PhoneticShape>
                 <Properties>
-                  <Property name="ID">942</Property>
+                  <Property name="ID">933</Property>
                 </Properties>
               </Allomorph>
             </Allomorphs>
             <Gloss>of</Gloss>
             <Properties>
-              <Property name="ID">5699</Property>
+              <Property name="ID">5632</Property>
             </Properties>
           </LexicalEntry>
         </LexicalEntries>

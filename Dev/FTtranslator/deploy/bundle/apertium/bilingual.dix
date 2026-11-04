@@ -15,8 +15,8 @@
     <e w="1"><i>bateau1.1<s n="n" /><s n="m" /></i></e>
     <e w="1"><i>au1.1<s n="prepart" /><s n="sg" /></i></e>
     <e w="1"><i>que1.1<s n="subordconj" /></i></e>
-    <e w="1"><i>oiseau1.1<s n="n" /><s n="X_PL" /></i></e>
-    <e w="1"><i>train1.1<s n="n" /><s n="m" /></i></e>
+    <e w="1"><p><l>oiseau1.1<s n="n" /><s n="X_PL" /></l><r>pájaro1.1<s n="n" /><s n="m" /></r></p></e>
+    <e w="1"><p><l>train1.1<s n="n" /><s n="m" /></l><r>tren1.1<s n="n" /><s n="m" /></r></p></e>
     <e w="1"><i>colline1.1<s n="n" /><s n="f" /></i></e>
     <e w="1"><i>nous1.1<s n="pro" /><s n="pl" /><s n="1" /></i></e>
     <e w="1"><i>[SEG]*1.1<s n="n" /><s n="X_PL" /></i></e>
@@ -25,7 +25,7 @@
     <e w="1"><i>n’1.1<s n="prt" /></i></e>
     <e w="1"><i>deux1.1<s n="num" /></i></e>
     <e w="1"><p><l>à1.1<s n="prep" /></l><r>a1.1<s n="prep" /></r></p></e>
-    <e w="1"><i>pur1.1<s n="adj" /></i></e>
+    <e w="1"><p><l>pur1.1<s n="adj" /></l><r>pur1.1<s n="adj" /></r></p></e>
     <e w="1"><i>perdre1.1<s n="v" /><s n="RE" /></i></e>
     <e w="1"><p><l>garçon1.1<s n="n" /><s n="m" /></l><r>niño1.1<s n="n" /><s n="m" /></r></p></e>
     <e w="1"><i>elle1.1<s n="pro" /><s n="f" /><s n="sg" /></i></e>
@@ -56,7 +56,7 @@
     <e w="1"><i>vélo1.1<s n="n" /><s n="m" /></i></e>
     <e w="1"><i>meus1.1<s n="v" /></i></e>
     <e w="1"><i>lumière1.1<s n="n" /><s n="f" /></i></e>
-    <e w="1"><i>ainsi<b />que1.1<s n="coordconj" /></i></e>
+    <e w="1"><p><l>ainsi<b />que1.1<s n="coordconj" /></l><r>tanto<b />como1.1<s n="coordconj" /></r></p></e>
     <e w="1"><p><l>le1.1<s n="def" /><s n="m" /><s n="sg" /></l><r>el1.1<s n="def" /></r></p></e>
     <e w="1"><p><l>le1.2<s n="pro" /><s n="acc" /><s n="m" /><s n="sg" /><s n="3" /></l><r>lo1.1<s n="pro" /><s n="acc" /><s n="m" /><s n="sg" /></r></p></e>
     <e w="1"><i>vis1.1<s n="v" /></i></e>

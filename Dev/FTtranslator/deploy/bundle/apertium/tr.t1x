@@ -120,7 +120,14 @@
 		</def-attr>
 		<def-attr n="a_aMFNum_slot">
 			<attr-item tags="PL" />
+			<attr-item tags="PL2" />
+			<attr-item tags="PL3" />
+			<attr-item tags="PL4" />
 			<attr-item tags="SG" />
+			<attr-item tags="SG1" />
+			<attr-item tags="SG2" />
+			<attr-item tags="SG3" />
+			<attr-item tags="SG4" />
 		</def-attr>
 		<def-attr n="a_aNum_slot">
 			<attr-item tags="PL" />
@@ -235,6 +242,7 @@
 		<def-var n="v_adj_gender" />
 		<def-var n="v_det_gender" />
 		<def-var n="v_det_number" />
+		<def-var n="v_adj_number" />
 	</section-def-vars>
 	<section-def-macros>
 		<def-macro n="m_delete_det_features" npar="1">
@@ -276,7 +284,7 @@
 					</test>
 					<let>
 						<var n="v_det_number" />
-						<lit-tag v="SG" />
+						<lit-tag v="SG2" />
 					</let>
 				</when>
 				<when>
@@ -288,7 +296,7 @@
 					</test>
 					<let>
 						<var n="v_det_number" />
-						<lit-tag v="PL" />
+						<lit-tag v="PL3" />
 					</let>
 				</when>
 				<otherwise>
@@ -371,6 +379,44 @@
 					<let>
 						<var n="v_adj_gender" />
 						<lit-tag v="gender-UNK" />
+					</let>
+				</otherwise>
+			</choose>
+		</def-macro>
+		<def-macro n="m_n_number-to-adj_number" npar="1">
+			<let>
+				<var n="v_adj_number" />
+				<lit v="" />
+			</let>
+			<choose>
+				<when>
+					<test>
+						<equal>
+							<clip part="a_aMFNum_slot" pos="1" side="tl" />
+							<lit-tag v="SG" />
+						</equal>
+					</test>
+					<let>
+						<var n="v_adj_number" />
+						<lit-tag v="SG3" />
+					</let>
+				</when>
+				<when>
+					<test>
+						<equal>
+							<clip part="a_aMFNum_slot" pos="1" side="tl" />
+							<lit-tag v="PL" />
+						</equal>
+					</test>
+					<let>
+						<var n="v_adj_number" />
+						<lit-tag v="PL2" />
+					</let>
+				</when>
+				<otherwise>
+					<let>
+						<var n="v_adj_number" />
+						<lit-tag v="number-UNK" />
 					</let>
 				</otherwise>
 			</choose>
@@ -468,13 +514,16 @@
 				<call-macro n="m_n_gender-to-adj_gender">
 					<with-param pos="3" />
 				</call-macro>
+				<call-macro n="m_n_number-to-adj_number">
+					<with-param pos="3" />
+				</call-macro>
 				<out>
 					<b />
 					<lu>
 						<clip part="lem" pos="2" side="tl" />
 						<clip part="a_gram_cat" pos="2" side="tl" />
 						<var n="v_adj_gender" />
-						<clip part="a_aMFNum_slot" pos="3" side="tl" />
+						<var n="v_adj_number" />
 					</lu>
 				</out>
 			</action>
@@ -497,6 +546,9 @@
 				<call-macro n="m_n_gender-to-adj_gender">
 					<with-param pos="2" />
 				</call-macro>
+				<call-macro n="m_n_number-to-adj_number">
+					<with-param pos="2" />
+				</call-macro>
 				<out>
 					<b />
 					<lu>
@@ -505,7 +557,7 @@
 						</get-case-from>
 						<clip part="a_gram_cat" pos="1" side="tl" />
 						<var n="v_adj_gender" />
-						<clip part="a_aMFNum_slot" pos="2" side="tl" />
+						<var n="v_adj_number" />
 					</lu>
 				</out>
 			</action>

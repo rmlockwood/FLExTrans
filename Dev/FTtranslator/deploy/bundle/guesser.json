@@ -1257,7 +1257,7 @@
        "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
        "inflType": null,
        "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
-       "sense": null,
+       "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
        "text": "un"
       },
       {
@@ -1265,7 +1265,7 @@
        "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
        "inflType": null,
        "msa": "02f558f9-0384-4104-9528-022079040f53",
-       "sense": null,
+       "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
        "text": "^0"
       },
       {
@@ -1273,19 +1273,25 @@
        "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
        "inflType": null,
        "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
-       "sense": null,
+       "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
        "text": "^0"
       }
      ],
      "computer": null,
      "guid": "63a5455c-7b47-4a0e-8199-8e4191c2c576",
-     "human": null,
+     "human": "approves",
      "parser": "approves",
-     "used": false,
-     "user": null
+     "used": true,
+     "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "63a5455c-7b47-4a0e-8199-8e4191c2c576",
+     "<edge>",
+     "w:couple"
+    ]
+   ],
    "guid": "a0ed1912-f5d9-4fee-955d-39fd2db93ed4"
   },
   "a": {
@@ -1313,13 +1319,19 @@
      ],
      "computer": "approves",
      "guid": "6e7f2c2c-05fa-4568-8a4b-da7900543854",
-     "human": null,
+     "human": "approves",
      "parser": "approves",
-     "used": false,
-     "user": null
+     "used": true,
+     "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "6e7f2c2c-05fa-4568-8a4b-da7900543854",
+     "p:–",
+     "w:des"
+    ]
+   ],
    "guid": "8e1a5e94-9b1d-46fa-9740-1323ab47533f"
   },
   "animaux": {
@@ -1347,11 +1359,17 @@
      "guid": "0f581721-5f48-4daa-91dc-3efc30232e4a",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "0f581721-5f48-4daa-91dc-3efc30232e4a",
+     "w:d’",
+     "p:–"
+    ]
+   ],
    "guid": "dd5b8653-fe8f-40b7-9038-5a480322a55b"
   },
   "aujourd'hui": {
@@ -1376,11 +1394,27 @@
      "guid": "823611b4-13ce-4971-b49c-8cb1583f8dd8",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "823611b4-13ce-4971-b49c-8cb1583f8dd8",
+     "w:joue",
+     "w:un"
+    ],
+    [
+     "823611b4-13ce-4971-b49c-8cb1583f8dd8",
+     "w:jouent",
+     "w:des"
+    ],
+    [
+     "823611b4-13ce-4971-b49c-8cb1583f8dd8",
+     "w:joue",
+     "w:une"
+    ]
+   ],
    "guid": "e5e33e96-5566-4111-a030-50902216864d"
   },
   "à": {
@@ -1530,11 +1564,17 @@
      "guid": "67ca0ce6-254b-4160-9bcc-59f4eec963e6",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "67ca0ce6-254b-4160-9bcc-59f4eec963e6",
+     "w:petits",
+     "p:."
+    ]
+   ],
    "guid": "0cce9200-aeef-43de-8786-bb5f6a5939a4"
   },
   "bons": {
@@ -1608,32 +1648,146 @@
    "guid": "64d13718-0d15-4c99-8ef3-5c67424ba876"
   },
   "celle": {
-   "analyses": [],
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "ac5a496b-040f-4220-a581-839e9249181b",
+       "form": "f61b272a-3bc0-47e7-b84a-8befb33876b9",
+       "inflType": null,
+       "msa": "ce9f741e-c5f5-4754-9d9a-1adf12ce6ec1",
+       "sense": "668917ea-d06e-4ab3-bec2-c590ccca36f4",
+       "text": "celle"
+      }
+     ],
+     "computer": "approves",
+     "guid": "586a155b-9151-4a7c-a285-1f29a5bf2377",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
    "contexts": [],
    "guid": "25482c8c-8ad6-4b53-9b32-37e723d97118"
   },
   "celles": {
-   "analyses": [],
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "5d8ab709-62f7-4fb8-af31-220d5a996998",
+       "form": "c98c45ed-f30b-4a54-ae58-5237033528d5",
+       "inflType": null,
+       "msa": "84976aa7-2a57-4106-8250-85795d22c9b1",
+       "sense": "01e4150c-d49a-4c9a-8fc9-f6938ea57010",
+       "text": "celles"
+      }
+     ],
+     "computer": "approves",
+     "guid": "efb3113c-d925-4996-941b-de551364b4b6",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
    "contexts": [],
    "guid": "a1db4039-f19c-498f-bea0-b88402c462da"
   },
   "celui": {
-   "analyses": [],
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "eed1ccdf-0752-4a63-9357-5e6cc7150982",
+       "form": "306fb186-b286-497e-ba2a-8aab9d1b165c",
+       "inflType": null,
+       "msa": "79b86445-386b-4ade-bdef-3990553c1ce0",
+       "sense": "f8fd3fb9-9a23-44e2-b9ea-470ddc4c3c38",
+       "text": "celui"
+      }
+     ],
+     "computer": "approves",
+     "guid": "d3633d8c-e1e0-4f60-b7f5-bb0bdf87e654",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
    "contexts": [],
    "guid": "03af0f0f-34c9-4c51-839d-4eeb93275374"
   },
   "ces": {
-   "analyses": [],
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "061ca041-a4e7-4457-9be1-ef96851b7d2c",
+       "form": "a14fa10a-85ff-404f-a742-686d8ec41649",
+       "inflType": null,
+       "msa": "e8230951-ebdc-4fb0-bd15-e56594abdcb2",
+       "sense": "0935c776-0de1-4054-8a90-3f9bce905371",
+       "text": "ces"
+      }
+     ],
+     "computer": "approves",
+     "guid": "058b47c6-6ddc-4341-aa10-b6ffb32364f4",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
    "contexts": [],
    "guid": "101fa206-2d04-4a61-bd28-abefec62c51c"
   },
   "cet": {
-   "analyses": [],
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "4372098f-41ee-46cf-80c0-1b7b454b1449",
+       "form": "009eaad3-0332-4a08-8b75-8187f8257165",
+       "inflType": null,
+       "msa": "7a7742be-0904-4630-97d8-e1ca7a993c71",
+       "sense": "e8962aae-e560-449e-a617-411f2a1e38b3",
+       "text": "cet"
+      }
+     ],
+     "computer": "approves",
+     "guid": "21068bd3-4f6f-4784-83f6-628a3c0ae0c7",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
    "contexts": [],
    "guid": "d07fafd3-f2a5-42c6-9dc8-26f37fcfc9f0"
   },
   "cette": {
-   "analyses": [],
+   "analyses": [
+    {
+     "bundles": [
+      {
+       "entry": "be897932-cc33-4cd9-afa1-7d46c092a6d7",
+       "form": "b4acd1d6-ec57-43f0-9dbd-81940ad4b977",
+       "inflType": null,
+       "msa": "aeed7b3b-07e3-4fff-a6e9-64d773bfd7c9",
+       "sense": "3d1bf06f-57a8-4e9c-8af8-549a48cd8269",
+       "text": "cette"
+      }
+     ],
+     "computer": "approves",
+     "guid": "3edae22c-5c7c-4a40-bd8d-6488e6f90fec",
+     "human": null,
+     "parser": null,
+     "used": false,
+     "user": null
+    }
+   ],
    "contexts": [],
    "guid": "5f82da2c-cfc5-49ff-986c-84fc1ff36e78"
   },
@@ -1741,7 +1895,7 @@
    "contexts": [
     [
      "ac75b21b-e1aa-4638-814b-a9ed73187ad4",
-     "w:un",
+     "w:Un",
      "w:d’"
     ]
    ],
@@ -1838,7 +1992,7 @@
      "guid": "1dc13832-b332-4a52-b662-829eaf72cd26",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     },
     {
@@ -1861,6 +2015,16 @@
     }
    ],
    "contexts": [
+    [
+     "1dc13832-b332-4a52-b662-829eaf72cd26",
+     "w:mangent",
+     "w:petits"
+    ],
+    [
+     "1dc13832-b332-4a52-b662-829eaf72cd26",
+     "w:avec",
+     "w:petites"
+    ],
     [
      "902fdb4a-f37e-449a-b496-322f8c955071",
      "w:ainsi que",
@@ -2178,6 +2342,11 @@
    "contexts": [
     [
      "e4d78844-dd19-4ccb-bc99-0921ed1f60fe",
+     "w:les",
+     "w:mangent"
+    ],
+    [
+     "e4d78844-dd19-4ccb-bc99-0921ed1f60fe",
      "w:petites",
      "w:mangent"
     ]
@@ -2216,40 +2385,12 @@
      "parser": "approves",
      "used": true,
      "user": "approves"
-    },
-    {
-     "bundles": [
-      {
-       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
-       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
-       "inflType": null,
-       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
-       "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
-       "text": "garçon"
-      }
-     ],
-     "computer": "approves",
-     "guid": "f408406b-25d6-4062-86fc-9b0a6bf52e8e",
-     "human": "approves",
-     "parser": "disapproves",
-     "used": false,
-     "user": "approves"
     }
    ],
    "contexts": [
     [
      "65620dd2-cbeb-4844-9095-e8b9543bbe44",
      "w:le",
-     "w:joue"
-    ],
-    [
-     "65620dd2-cbeb-4844-9095-e8b9543bbe44",
-     "<edge>",
-     "w:joue"
-    ],
-    [
-     "65620dd2-cbeb-4844-9095-e8b9543bbe44",
-     "<edge>",
      "w:joue"
     ],
     [
@@ -2294,6 +2435,11 @@
      "96a2e974-e225-40a4-b2b8-51a095458c06",
      "w:les",
      "w:mangent"
+    ],
+    [
+     "96a2e974-e225-40a4-b2b8-51a095458c06",
+     "w:les",
+     "w:jouent"
     ]
    ],
    "guid": "44e6e988-c8a9-41b1-99df-fb7d0ce51091"
@@ -2376,27 +2522,11 @@
      "guid": "ea088a98-e547-425b-88c0-99ea83d261b1",
      "human": "approves",
      "parser": "approves",
-     "used": true,
+     "used": false,
      "user": "approves"
     }
    ],
-   "contexts": [
-    [
-     "ea088a98-e547-425b-88c0-99ea83d261b1",
-     "<edge>",
-     "w:joue"
-    ],
-    [
-     "ea088a98-e547-425b-88c0-99ea83d261b1",
-     "<edge>",
-     "w:joue"
-    ],
-    [
-     "ea088a98-e547-425b-88c0-99ea83d261b1",
-     "<edge>",
-     "w:joue"
-    ]
-   ],
+   "contexts": [],
    "guid": "e60cfc73-92dd-4fc9-88b3-96344715013a"
   },
   "joue": {
@@ -2424,7 +2554,7 @@
      "guid": "362e47a4-aad8-4d5e-ba98-a924157b5187",
      "human": "approves",
      "parser": "approves",
-     "used": true,
+     "used": false,
      "user": "approves"
     },
     {
@@ -2456,34 +2586,9 @@
    ],
    "contexts": [
     [
-     "362e47a4-aad8-4d5e-ba98-a924157b5187",
-     "w:je",
-     "p:."
-    ],
-    [
      "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
      "w:garçon",
      "w:avec"
-    ],
-    [
-     "362e47a4-aad8-4d5e-ba98-a924157b5187",
-     "w:je",
-     "w:avec"
-    ],
-    [
-     "362e47a4-aad8-4d5e-ba98-a924157b5187",
-     "w:je",
-     "p:."
-    ],
-    [
-     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
-     "w:garçon",
-     "p:."
-    ],
-    [
-     "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
-     "w:garçon",
-     "p:."
     ],
     [
      "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f",
@@ -2518,11 +2623,17 @@
      "guid": "df08e0ea-fb5f-44d1-a8ef-4cc6c96b2cb3",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "df08e0ea-fb5f-44d1-a8ef-4cc6c96b2cb3",
+     "w:garçons",
+     "w:avec"
+    ]
+   ],
    "guid": "ac4ce3ef-ad2c-4aff-83b5-4bd520e7bc34"
   },
   "jouer": {
@@ -2714,12 +2825,22 @@
     [
      "97f9d044-a2e1-4ebc-9446-fd2d5a4be62c",
      "<edge>",
-     "w:petites"
+     "w:filles"
     ],
     [
      "230619bb-97f8-43e6-8691-7e7424ce0c5b",
      "<edge>",
      "w:garçons"
+    ],
+    [
+     "230619bb-97f8-43e6-8691-7e7424ce0c5b",
+     "<edge>",
+     "w:garçons"
+    ],
+    [
+     "97f9d044-a2e1-4ebc-9446-fd2d5a4be62c",
+     "<edge>",
+     "w:petites"
     ]
    ],
    "guid": "cc6da6b8-6c95-4af4-bb84-710e336b3f75"
@@ -2733,7 +2854,7 @@
        "form": "6e1e19b4-287b-485a-b15d-27eddd3e8d7e",
        "inflType": null,
        "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
-       "sense": null,
+       "sense": "b63a020d-af9e-4292-a105-31e216fe8b76",
        "text": "long"
       },
       {
@@ -2741,7 +2862,7 @@
        "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
        "inflType": null,
        "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
-       "sense": null,
+       "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
        "text": "^0"
       },
       {
@@ -2749,19 +2870,25 @@
        "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
        "inflType": null,
        "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
-       "sense": null,
+       "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
        "text": "^0"
       }
      ],
      "computer": null,
      "guid": "4422a2c7-7db3-443f-a635-e08673fc8f09",
-     "human": null,
+     "human": "approves",
      "parser": "approves",
-     "used": false,
-     "user": null
+     "used": true,
+     "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "4422a2c7-7db3-443f-a635-e08673fc8f09",
+     "w:un",
+     "w:train"
+    ]
+   ],
    "guid": "853b9f63-36e4-414b-9553-20a424dfa1d9"
   },
   "longs": {
@@ -2802,11 +2929,17 @@
      "guid": "f4b35402-8cc6-429d-84cf-0bffeab9d3cf",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "f4b35402-8cc6-429d-84cf-0bffeab9d3cf",
+     "w:une",
+     "w:voiture"
+    ]
+   ],
    "guid": "0e71aa20-6870-4295-83e6-f7f07692e194"
   },
   "longues": {
@@ -2910,12 +3043,12 @@
     [
      "1c5b6dfe-5d14-4462-b47b-c4a280d7943c",
      "w:fille",
-     "w:une"
+     "w:un"
     ],
     [
      "1c5b6dfe-5d14-4462-b47b-c4a280d7943c",
      "w:fille",
-     "w:un"
+     "w:une"
     ]
    ],
    "guid": "e5fe36cb-23ee-4031-84c7-832fe4f9d624"
@@ -2953,11 +3086,16 @@
     [
      "01f73b7e-4d4c-44dd-88b9-feec47cccc45",
      "w:filles",
-     "w:un"
+     "w:des"
     ],
     [
      "01f73b7e-4d4c-44dd-88b9-feec47cccc45",
      "w:garçons",
+     "w:un"
+    ],
+    [
+     "01f73b7e-4d4c-44dd-88b9-feec47cccc45",
+     "w:filles",
      "w:un"
     ]
    ],
@@ -3142,7 +3280,7 @@
        "form": "7bf7419a-6bca-4b4c-9260-ce7c39736f78",
        "inflType": null,
        "msa": "dfff7abe-1b60-4865-a23a-7d034d7c6579",
-       "sense": null,
+       "sense": "2ea603aa-0010-4740-b544-9fddd5351aa5",
        "text": "oiseau"
       },
       {
@@ -3150,19 +3288,25 @@
        "form": "d263de38-feeb-48f0-ae3a-6aeae95d7eab",
        "inflType": null,
        "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
-       "sense": null,
+       "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
        "text": "x"
       }
      ],
      "computer": null,
      "guid": "d16c02bf-4358-45b7-b043-c24f7a0711ec",
-     "human": null,
+     "human": "approves",
      "parser": "approves",
-     "used": false,
-     "user": null
+     "used": true,
+     "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "d16c02bf-4358-45b7-b043-c24f7a0711ec",
+     "w:des",
+     "w:et"
+    ]
+   ],
    "guid": "8cd6172b-7133-4835-8208-500daf55c5ee"
   },
   "orange": {
@@ -3420,6 +3564,11 @@
    "contexts": [
     [
      "b2a02298-9889-47a1-9cd2-dd010b4ac5e4",
+     "w:des",
+     "w:voitures"
+    ],
+    [
+     "b2a02298-9889-47a1-9cd2-dd010b4ac5e4",
      "w:les",
      "w:filles"
     ]
@@ -3459,11 +3608,17 @@
      "guid": "2a84e9d7-858d-4d5e-a645-8b6e55e30f3e",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "2a84e9d7-858d-4d5e-a645-8b6e55e30f3e",
+     "w:des",
+     "w:bonbons"
+    ]
+   ],
    "guid": "1a83f3d6-1f0f-44ad-979a-189db349f4c8"
   },
   "point": {
@@ -3890,47 +4045,29 @@
        "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
        "sense": "64ee1c0e-ef16-42b4-ade3-530c143b56d6",
        "text": "train"
-      }
-     ],
-     "computer": "approves",
-     "guid": "32dadbcf-681c-49dc-a68a-a383f0cbaa0e",
-     "human": "approves",
-     "parser": "disapproves",
-     "used": true,
-     "user": "approves"
-    },
-    {
-     "bundles": [
-      {
-       "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
-       "form": "ac8c4883-c52d-4307-b13b-77e18761e1d0",
-       "inflType": null,
-       "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
-       "sense": null,
-       "text": "train"
       },
       {
        "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
        "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
        "inflType": null,
        "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
-       "sense": null,
+       "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
        "text": "^0"
       }
      ],
      "computer": null,
      "guid": "dae085c8-896a-4a0e-99bc-da9a1b202ef1",
-     "human": null,
+     "human": "approves",
      "parser": "approves",
-     "used": false,
-     "user": null
+     "used": true,
+     "user": "approves"
     }
    ],
    "contexts": [
     [
-     "32dadbcf-681c-49dc-a68a-a383f0cbaa0e",
-     "w:le",
-     "w:le"
+     "dae085c8-896a-4a0e-99bc-da9a1b202ef1",
+     "w:long",
+     "p:."
     ]
    ],
    "guid": "ff6294ae-a141-44e1-903e-f21b198571d3"
@@ -4033,23 +4170,23 @@
    "contexts": [
     [
      "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "w:avec",
+     "w:long"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
      "w:mangent",
      "w:poisson"
     ],
     [
      "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
-     "w:mange",
-     "w:petit"
-    ],
-    [
-     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
-     "p:8",
-     "w:couple"
-    ],
-    [
-     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
      "p:–",
      "w:mâle"
+    ],
+    [
+     "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
+     "w:mange",
+     "w:petit"
     ],
     [
      "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d",
@@ -4099,13 +4236,18 @@
    "contexts": [
     [
      "f4f07338-1756-426d-94d5-a1af0df357bd",
-     "w:mange",
-     "w:petite"
+     "w:avec",
+     "w:longue"
     ],
     [
      "f4f07338-1756-426d-94d5-a1af0df357bd",
      "w:et",
      "w:femelle"
+    ],
+    [
+     "f4f07338-1756-426d-94d5-a1af0df357bd",
+     "w:mange",
+     "w:petite"
     ]
    ],
    "guid": "fbd34dae-c8d7-46e9-9916-b649bc41880a"
@@ -4216,11 +4358,17 @@
      "guid": "74056e96-dfe7-4777-8227-ba4c7376ed38",
      "human": "approves",
      "parser": "approves",
-     "used": false,
+     "used": true,
      "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "74056e96-dfe7-4777-8227-ba4c7376ed38",
+     "w:longue",
+     "p:."
+    ]
+   ],
    "guid": "f3a1dcea-508a-494c-87ca-5ffd42526b69"
   },
   "voitures": {
@@ -4232,7 +4380,7 @@
        "form": "2df63d5e-3d80-4c47-8c7c-fde6b7f6d9ab",
        "inflType": null,
        "msa": "2882c429-1257-448d-95b5-a682faff0d67",
-       "sense": null,
+       "sense": "a94a25d7-7a07-4a68-83f9-243678946aff",
        "text": "voiture"
       },
       {
@@ -4240,19 +4388,25 @@
        "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
        "inflType": null,
        "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
-       "sense": null,
+       "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
        "text": "s"
       }
      ],
      "computer": null,
      "guid": "85ec11a4-2ba4-4800-8f49-c90f62f868ff",
-     "human": null,
+     "human": "approves",
      "parser": "approves",
-     "used": false,
-     "user": null
+     "used": true,
+     "user": "approves"
     }
    ],
-   "contexts": [],
+   "contexts": [
+    [
+     "85ec11a4-2ba4-4800-8f49-c90f62f868ff",
+     "w:petites",
+     "p:."
+    ]
+   ],
    "guid": "30d26c6b-5fde-4988-9008-0f3fc39052df"
   },
   "zorglubs": {

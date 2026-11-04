@@ -1,9 +1,14 @@
 FEM|suffix
 FEM_a|suffix
+FEM_dp|suffix
 INF|suffix
 MASC|suffix
 MASC_a|suffix
+MASC_dp|suffix
 PL|suffix
+PL2|suffix
+PL3|suffix
+PL4|suffix
 PROG|suffix
 PRS_1PL|suffix
 PRS_1SG|suffix
@@ -11,6 +16,6 @@ PRS_3PL|suffix
 PRS_3SG|suffix
 PRS_3SG_COP|suffix
 SG|suffix
-SG1|suffix
 SG2|suffix
 SG3|suffix
+SG4|suffix
