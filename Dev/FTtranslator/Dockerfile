@@ -3,7 +3,8 @@
 # Build from Dev\FTtranslator (the build context must hold fttranslator/, hcparse/, hcsynth/, web/ and deploy/bundle/):
 #   docker build -t fttranslator .
 # Railway finds this file by its name when the service's Root Directory is /Dev/FTtranslator, and builds it the same way from git. deploy/bundle is a copy of a work project's
-# Output\ftt_bundle, made on the desktop with export-bundle. It is committed for the FTT-Scratch test pair only: it holds the project's lexicon, so a real project's bundle needs another way in.
+# Output\ftt_bundle, made on the desktop with export-bundle. It is committed for the FTT-Scratch test pair only: it holds the project's lexicon, so real projects' bundles are sent to the
+# running server with upload-bundle instead, and kept on a volume (see the end of this file).
 #
 # Three stages: the .NET 8 HermitCrab parser and synthesizer are built with the .NET SDK, the React page with Node, and the final image has only the .NET runtime, Python, the Apertium tools
 # and the built pieces. The server listens on $PORT (Railway sets it). It asks for the password in the FTT_PASSWORD environment variable, set in the Railway service's Variables, and
@@ -48,6 +49,8 @@ COPY deploy/bundle/ /app/bundle/
 ENV DOTNET_ROOT=/usr/share/dotnet
 RUN python3 -c "import sys, pythonnet; pythonnet.load('coreclr', runtime_config='/opt/hcsynth/HCSynthByGloss.runtimeconfig.json'); sys.path.append('/opt/hcsynth'); import clr; clr.AddReference('/opt/hcsynth/HCSynthByGloss.dll'); from SIL.HCSynthByGloss import HCSynthByGlossDll; print('pythonnet OK')"
 
-ENV PORT=8080 PYTHONUNBUFFERED=1
+# The bundles live on a Railway volume mounted at /data, so uploaded ones (upload-bundle) survive redeploys; without a volume /data/bundles is in the container and is lost on each deploy.
+# deploy/bundle (FTT-Scratch) is seeded into it at start-up unless a bundle of that name is already there. See SEVERAL BUNDLES in fttranslator/offlineserver.py.
+ENV PORT=8080 PYTHONUNBUFFERED=1 FTT_BUNDLES=/data/bundles
 EXPOSE 8080
-CMD python3 -m fttranslator serve-offline --bundle /app/bundle --hcparse "dotnet /opt/hcparse/HCParse.dll" --hcsynth-dll /opt/hcsynth/HCSynthByGloss.dll --host 0.0.0.0 --port "$PORT"
+CMD python3 -m fttranslator serve-offline --bundles "$FTT_BUNDLES" --seed /app/bundle --hcparse "dotnet /opt/hcparse/HCParse.dll" --hcsynth-dll /opt/hcsynth/HCSynthByGloss.dll --host 0.0.0.0 --port "$PORT"

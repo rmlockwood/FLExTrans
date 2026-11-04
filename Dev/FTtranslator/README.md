@@ -45,7 +45,8 @@ python -m fttranslator export-bundle WORKDIR [--out DIR] [-v]
 python -m fttranslator golden    WORKDIR [--text T]... [--out DIR] [-v]
 python -m fttranslator check-golden WORKDIR [--bundle DIR] [--golden DIR] [--show N]
 python -m fttranslator offline-stream WORKDIR [TEXT] [--file F] [--bundle DIR] --hcparse CMD [--transfer] [--tools DIR] [--synthesize (--hcsynth CMD | --hcsynth-dll DLL)] [--synth-dir DIR]
-python -m fttranslator serve-offline --bundle DIR --hcparse CMD (--hcsynth CMD | --hcsynth-dll DLL) [--tools DIR] [--host H] [--port N] [-v]
+python -m fttranslator serve-offline [--bundles DIR] [--seed DIR]... --hcparse CMD (--hcsynth CMD | --hcsynth-dll DLL) [--tools DIR] [--host H] [--port N] [-v]
+python -m fttranslator upload-bundle WORKDIR|BUNDLEDIR --url URL [--name N]
 ```
 
 - If neither TEXT nor `--file` is given, the text is read from stdin. Each line becomes a paragraph.
@@ -63,7 +64,13 @@ python -m fttranslator serve-offline --bundle DIR --hcparse CMD (--hcsynth CMD |
   faster alternative to `--hcsynth`: it loads the DLL into the Python process with pythonnet (`pip install pythonnet`), as FLExTrans' Live Rule Tester does, so the HermitCrab config is read
   once rather than for every text (synthesis went from about 0.5 s to 0.06 s a text on FTT-Scratch). `--tools` is the folder with the Apertium tools (`FlexTools\Tools` on Windows; on Linux
   they are found on PATH).
-- `serve-offline` is `serve` from a bundle alone: the same page, translating with the `offline-stream --synthesize` chain. It writes to no project. See [Deploying to Railway](#deploying-to-railway).
+- `serve-offline` is `serve` from bundles alone: the same page, translating with the `offline-stream --synthesize` chain. It writes to no project. It serves every bundle in one folder, one
+  sub-folder per bundle, named after its work project: `--bundles DIR`, else the `FTT_BUNDLES` environment variable, else a temporary folder for this run. The page then has a drop-down to
+  choose the bundle (when there is more than one), and remembers the choice in that browser. `--seed DIR` copies a bundle folder in unless one of that name is already there; `--bundle DIR` is
+  the older spelling of `--seed`, so `serve-offline --bundle DIR` still serves that one bundle. See [Deploying to Railway](#deploying-to-railway).
+- `upload-bundle` sends a bundle to a running `serve-offline` at `--url`, which installs it, replacing any bundle of the same name (`--name`, default the work project's name), and loads it
+  at once. If the new bundle won't load, the old one is kept and the error is shown. Give it a work project folder (its `Output\ftt_bundle\` is sent) or a bundle folder. It needs no FieldWorks.
+  The password is taken from `FTT_UPLOAD_PASSWORD`, else `FTT_PASSWORD`.
 - `golden` captures test data for a translator that reads the bundle. For each text (or each `--text` title) it saves the text's analyses as `NNN.text.json` and what Extract Source Text
   really produced from them as `NNN.expected.txt`, with an `index.json` listing the titles and messages. It writes to `<work project>\Output\ftt_golden\` or to `--out`, and also only reads the
   source project. TreeTran projects are refused by both commands.
@@ -94,14 +101,25 @@ The server's API (`fttranslator/server.py`):
 | `POST /api/translate` | Body `{text, insert, keepApprovals}`. Translates the text and returns `{result, record}`: the run record and where it was saved |
 | `GET /api/runs?limit=N` | The saved run records, newest first |
 
-The server listens on 127.0.0.1 only. It answers one request at a time, on the thread that opened the projects. A POST must send `Content-Type: application/json`, and the `Host` header
+The offline server (`fttranslator/offlineserver.py`) answers the same three, each taking the bundle as `?bundle=ID` (or `"bundle"` in the translate body; without one, the first bundle by
+name), plus:
+
+| Request | What it does |
+|---|---|
+| `GET /api/bundles` | `{bundles: [{id, workProject, sourceProject, targetProject, created}], default}` |
+| `POST /api/bundles/ID` | Body: the bundle folder's contents as a zip (`Content-Type: application/zip`). Installs it as ID and loads it |
+| `DELETE /api/bundles/ID` | Removes the bundle |
+| `GET /api/health` | `{ok: true}`, without the password, for Railway's health check |
+
+The desktop server listens on 127.0.0.1 only. It answers one request at a time, on the thread that opened the projects. A POST must send `Content-Type: application/json`, and the `Host` header
 must be `localhost` or `127.0.0.1`. These checks stop other web pages open in the browser from starting a translation, which writes to the FLEx projects.
 
 ## Deploying to Railway
 
 `Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3,
-pythonnet (so the server synthesizes with `--hcsynth-dll`) and Debian's `apertium` and `lttoolbox` packages. The bundle it serves is `deploy\bundle\`, a copy of a work project's `Output\ftt_bundle\`. It is committed for the FTT-Scratch test pair only,
-since a bundle holds the project's lexicon and the repository is public.
+pythonnet (so the server synthesizes with `--hcsynth-dll`) and Debian's `apertium` and `lttoolbox` packages. It serves the bundles in `/data/bundles` (`FTT_BUNDLES`), which should be on a
+Railway volume. `deploy\bundle\`, a copy of FTT-Scratch's `Output\ftt_bundle\`, is seeded into it at start-up if no FTT-Scratch bundle is there yet. It is committed for that test pair only,
+since a bundle holds the project's lexicon and the repository is public; real projects' bundles are sent with `upload-bundle`.
 
 In Railway, create a service from this repository and branch, then in its settings:
 - **Root Directory:** `/Dev/FTtranslator`. Railway then finds `Dockerfile` there by its name; without this setting it falls back to its Railpack builder, which fails ("could not determine
@@ -109,11 +127,21 @@ In Railway, create a service from this repository and branch, then in its settin
 - **Config file path (optional):** `/Dev/FTtranslator/railway.toml` (Railway doesn't look under the root directory for it). It rebuilds only when `Dev/FTtranslator` changes, and uses
   `/api/health` as the health check.
 - **Variables:** add `FTT_PASSWORD`, the password for the page. The browser asks for it (any user name will do) and remembers it until it closes. The server refuses to start
-  without it when listening on `0.0.0.0`, so a missing variable fails the deploy rather than making the lexicon public. Locally on 127.0.0.1 no password is needed.
+  without it when listening on `0.0.0.0`, so a missing variable fails the deploy rather than making the lexicon public. Locally on 127.0.0.1 no password is needed. Optionally add
+  `FTT_UPLOAD_PASSWORD`: then uploading and deleting bundles take that password instead, so people who only translate can't replace bundles.
+- **Volume:** add a volume to the service with mount path `/data`. Without one, uploaded bundles are lost on every deploy and restart (the image's own files are reset). A service with a
+  volume stops the old deployment before starting the new one, so a deploy has a few seconds' downtime.
 - **Networking:** generate a public domain. The server listens on Railway's `$PORT`.
 
-To update the translations after changing the projects, run `export-bundle` again, copy `Output\ftt_bundle\` over `deploy\bundle\`, and push. The password keeps the page private, but the
-bundle committed to the repository is public, so commit only a bundle that may be public.
+To add a project, or update one after changing it, export and upload; no commit or redeploy is needed:
+
+```
+python -m fttranslator export-bundle WORKDIR
+set FTT_PASSWORD=...
+python -m fttranslator upload-bundle WORKDIR --url https://<your service>.up.railway.app
+```
+
+Everyone with the page's password can use every bundle on the server. Pages already open list a new bundle after a reload.
 
 ## Customizing
 

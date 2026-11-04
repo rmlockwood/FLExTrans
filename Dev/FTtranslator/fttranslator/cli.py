@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.9 - 11/4/26 - Ron Lockwood
+#    serve-offline serves a folder of bundles (--bundles, or FTT_BUNDLES) with --seed; added upload-bundle to send a bundle to a running server.
+#
 #   Version 3.17.8 - 11/4/26 - Ron Lockwood
 #    serve-offline asks for the password in the FTT_PASSWORD environment variable.
 #
@@ -70,10 +73,19 @@
 #
 #   SERVE-OFFLINE
 #
-#   serve-offline is serve without FieldWorks, FLExTrans or a work project: it runs the same chain as offline-stream --synthesize behind the React front end (offlineserver.py), from a bundle
-#   folder alone, synthesizing with --hcsynth or --hcsynth-dll as offline-stream does. It is what the Docker image in Dockerfile runs on Railway (with --hcsynth-dll), listening on 0.0.0.0 and Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving.
+#   serve-offline is serve without FieldWorks, FLExTrans or a work project: it runs the same chain as offline-stream --synthesize behind the React front end (offlineserver.py), from bundle
+#   folders alone, synthesizing with --hcsynth or --hcsynth-dll as offline-stream does. It is what the Docker image in Dockerfile runs on Railway (with --hcsynth-dll), listening on 0.0.0.0 and
+#   Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving. It serves every bundle in one folder (--bundles, else the FTT_BUNDLES environment variable, else a new
+#   temporary folder), and --seed copies a bundle into that folder when its id isn't there yet (see SEVERAL BUNDLES in offlineserver.py). --bundle is the older spelling of --seed, so
+#   serve-offline --bundle DIR still serves that one bundle, from a temporary copy.
 #   The page's password comes from the FTT_PASSWORD environment variable, not an option, so it stays out of the Dockerfile and the process list; without it the server only starts on 127.0.0.1
-#   (see SAFETY in offlineserver.py).
+#   (see SAFETY in offlineserver.py). FTT_UPLOAD_PASSWORD, if set, is the password for uploading and deleting bundles instead.
+#
+#   UPLOAD-BUNDLE
+#
+#   upload-bundle zips a bundle folder (a work project's Output\ftt_bundle, or any folder holding manifest.json) and posts it to a running serve-offline at --url, which installs it under --name
+#   (default: the bundle's work project name), replacing any bundle of that name. It needs no FieldWorks. The password comes from FTT_UPLOAD_PASSWORD, else FTT_PASSWORD, for the same reason
+#   as above. So updating Railway after changing a project is export-bundle then upload-bundle, with no commit or redeploy.
 #
 #   ENCODINGS
 #
@@ -83,16 +95,23 @@
 #   CODE STRUCTURE
 #
 #   _translator() builds the Translator for a command. Then cmdTranslate(), cmdInteractive() and cmdServe() with their helpers CtrlCStopper, stdoutToStderr(), silenceTools() (all three also used by
-#   server.py), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck(), cmdRuns(), cmdExportBundle(), cmdGolden() and cmdCheckGolden(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
+#   server.py), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck(), cmdRuns(), cmdExportBundle(), cmdGolden(), cmdCheckGolden(), cmdOfflineStream(), cmdServeOffline() and cmdUploadBundle(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
 #
 
 import argparse
 import contextlib
+import io
 import json
 import os
 import shutil
 import signal
 import sys
+import tempfile
+import urllib.error
+import urllib.parse
+import urllib.request
+import zipfile
+from base64 import b64encode
 from pathlib import Path
 
 # Shown by --help
@@ -109,7 +128,8 @@ Command line for FTtranslator: end-to-end translation with FLEx and FLExTrans.
   golden    WORKDIR [--text T] [--out DIR]  capture test data: texts' analyses + Extract Source Text's output
   check-golden WORKDIR                  run the bundle's Extract Source Text on the test data (no FieldWorks)
   offline-stream WORKDIR [TEXT] --hcparse C  translate from the bundle alone (no FieldWorks); see --help
-  serve-offline --bundle DIR --hcparse C --hcsynth-dll D  the browser front end, translating from a bundle alone (Linux, Railway)
+  serve-offline [--bundles DIR] [--seed DIR] --hcparse C --hcsynth-dll D  the browser front end, translating from bundles alone (Linux, Railway)
+  upload-bundle WORKDIR|BUNDLEDIR --url URL [--name N]  send a bundle to a running serve-offline (no FieldWorks)
 
 WORKDIR is a FLExTrans work project folder (…\\WorkProjects\\<name>).
 The FLEx projects must be closed in FieldWorks (or shared).
@@ -645,15 +665,142 @@ def cmdOfflineStream(args):
     return 0
 
 def cmdServeOffline(args):
-    '''Serve the React front end, translating from a bundle with no FieldWorks or FLExTrans. See SERVE-OFFLINE above and offlineserver.py.'''
+    '''Serve the React front end, translating from bundles with no FieldWorks or FLExTrans. See SERVE-OFFLINE above and offlineserver.py.'''
 
     from . import offlineserver
 
-    # See SERVE-OFFLINE above for why the password is an environment variable
+    # See SERVE-OFFLINE above for why the passwords are environment variables
     password = os.environ.get("FTT_PASSWORD") or None
-    offlineserver.serve(Path(args.bundle).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll, password=password)
+    uploadPassword = os.environ.get("FTT_UPLOAD_PASSWORD") or None
+    seeds = [Path(seed).resolve() for seed in args.seed or []]
+
+    # With no bundles folder given, use a temporary one for this run, removed when the server stops
+    bundlesRoot = args.bundles or os.environ.get("FTT_BUNDLES")
+    temporaryRoot = None
+
+    if not bundlesRoot:
+
+        temporaryRoot = tempfile.mkdtemp(prefix="ftt_bundles_")
+        bundlesRoot = temporaryRoot
+
+    try:
+        offlineserver.serve(Path(bundlesRoot).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll, password=password, seeds=seeds, uploadPassword=uploadPassword)
+    finally:
+
+        if temporaryRoot:
+
+            shutil.rmtree(temporaryRoot, ignore_errors=True)
 
     return 0
+
+def cmdUploadBundle(args):
+    '''Zip a bundle folder and send it to a running serve-offline, which installs it. See UPLOAD-BUNDLE above.'''
+
+    # A work project folder means its Output\ftt_bundle; any folder holding manifest.json is a bundle itself
+    source = Path(args.source).resolve()
+    bundleDir = source if (source / "manifest.json").is_file() else source / "Output" / "ftt_bundle"
+    manifestFile = bundleDir / "manifest.json"
+
+    if not manifestFile.is_file():
+
+        print(f"No bundle in {source}: there is no manifest.json there or in Output\\ftt_bundle. Run export-bundle first.", file=sys.stderr)
+        return 1
+
+    manifest = json.loads(manifestFile.read_text(encoding="utf-8"))
+    name = args.name or manifest.get("workProject") or bundleDir.name
+
+    # The folder's contents, not the folder itself, so manifest.json is at the zip's top level
+    buffer = io.BytesIO()
+
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+
+        for path in sorted(bundleDir.rglob("*")):
+
+            if path.is_file():
+
+                archive.write(path, path.relative_to(bundleDir).as_posix())
+
+    zipBytes = buffer.getvalue()
+    baseUrl = args.url.rstrip("/")
+    request = urllib.request.Request(baseUrl + "/api/bundles/" + urllib.parse.quote(name, safe=""), data=zipBytes, headers={"Content-Type": "application/zip"}, method="POST")
+
+    # See UPLOAD-BUNDLE above for why the password is an environment variable. Any user name is accepted.
+    password = os.environ.get("FTT_UPLOAD_PASSWORD") or os.environ.get("FTT_PASSWORD")
+    authorization = "Basic " + b64encode(f"upload:{password}".encode("utf-8")).decode("ascii") if password else None
+
+    if authorization:
+
+        request.add_header("Authorization", authorization)
+
+    # Ask first, with a small request, whether the server takes uploads and the password is right, so those problems get a clear answer before megabytes are sent
+    problem = _checkUploadServer(baseUrl, authorization)
+
+    if problem:
+
+        print(problem, file=sys.stderr)
+        return 1
+
+    print(f"Sending {bundleDir} ({len(zipBytes) // 1024} KB zipped) as {name} to {args.url} ...", file=sys.stderr, flush=True)
+
+    try:
+        with urllib.request.urlopen(request, timeout=600) as response:
+
+            answer = json.loads(response.read().decode("utf-8"))
+
+    except urllib.error.HTTPError as err:
+
+        # The server answers errors as {error: message}
+        try:
+            message = json.loads(err.read().decode("utf-8")).get("error") or err.reason
+
+        except ValueError:
+
+            message = err.reason
+
+        hint = " Set FTT_UPLOAD_PASSWORD or FTT_PASSWORD to the server's password." if err.code == 401 else ""
+        print(f"The server refused the bundle ({err.code}): {message}{hint}", file=sys.stderr)
+        return 1
+
+    except urllib.error.URLError as err:
+
+        print(f"Can't reach {args.url}: {err.reason}", file=sys.stderr)
+        return 1
+
+    print(f"Installed {answer.get('installed')} (exported {answer.get('created') or 'at an unknown time'}).", file=sys.stderr)
+
+    return 0
+
+def _checkUploadServer(baseUrl, authorization):
+    '''GET /api/bundles before an upload. Returns None if the server lists bundles (so it takes uploads and the password is right), else what is wrong. A wrong upload password can still be
+       refused later, when FTT_UPLOAD_PASSWORD differs from the page's password on the server.'''
+
+    request = urllib.request.Request(baseUrl + "/api/bundles")
+
+    if authorization:
+
+        request.add_header("Authorization", authorization)
+
+    try:
+        with urllib.request.urlopen(request, timeout=60):
+
+            return None
+
+    except urllib.error.HTTPError as err:
+
+        if err.code == 401:
+
+            return "The server wants a password. Set FTT_PASSWORD (or FTT_UPLOAD_PASSWORD) to the server's password; in PowerShell: $env:FTT_PASSWORD = '...'"
+
+        # Only servers from before bundle uploads answer this
+        if err.code == 404:
+
+            return "The server doesn't take bundle uploads: it runs an older FTtranslator. Deploy this version first (on Railway: commit and push, and add a volume at /data)."
+
+        return f"The server answered {err.code} {err.reason} when asked for its bundles."
+
+    except urllib.error.URLError as err:
+
+        return f"Can't reach {baseUrl}: {err.reason}"
 
 def main(argv=None):
 
@@ -747,8 +894,9 @@ def main(argv=None):
     subparser.add_argument("--synth-dir", dest="synthDir", help="the folder for the synthesis files (master, parses, surface forms); default: a new temporary folder")
     subparser.set_defaults(func=cmdOfflineStream)
 
-    subparser = subparsers.add_parser("serve-offline", help="without FieldWorks: the browser front end, translating from a bundle alone (for Linux hosts such as Railway)")
-    subparser.add_argument("--bundle", required=True, help="the bundle folder (a copy of <work project>\\Output\\ftt_bundle)")
+    subparser = subparsers.add_parser("serve-offline", help="without FieldWorks: the browser front end, translating from bundles alone (for Linux hosts such as Railway)")
+    subparser.add_argument("--bundles", help="the folder holding the bundles, one sub-folder each (default: the FTT_BUNDLES environment variable, else a temporary folder for this run)")
+    subparser.add_argument("--seed", "--bundle", dest="seed", action="append", help="a bundle folder (a copy of <work project>\\Output\\ftt_bundle) to copy into the bundles folder if its work project isn't there yet; can be given more than once")
     subparser.add_argument("--hcparse", required=True, help='the command that runs hcparse, without its file arguments, e.g. "dotnet /opt/hcparse/HCParse.dll"')
     hcsynthGroup = subparser.add_mutually_exclusive_group(required=True)
     hcsynthGroup.add_argument("--hcsynth", help='the command that runs HCSynthByGloss for each text, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
@@ -758,6 +906,12 @@ def main(argv=None):
     subparser.add_argument("--port", type=int, default=8765, help="the port to listen on (default 8765)")
     subparser.add_argument("-v", "--verbose", action="store_true", help="show each request in the console")
     subparser.set_defaults(func=cmdServeOffline)
+
+    subparser = subparsers.add_parser("upload-bundle", help="send a bundle to a running serve-offline, replacing any of the same name (no FieldWorks needed)")
+    subparser.add_argument("source", help="a FLExTrans work project folder (its Output\\ftt_bundle is sent) or a bundle folder")
+    subparser.add_argument("--url", required=True, help="the server's address, e.g. https://fttranslator.up.railway.app or http://127.0.0.1:8765")
+    subparser.add_argument("--name", help="the name to install it under (default: the bundle's work project name)")
+    subparser.set_defaults(func=cmdUploadBundle)
 
     args = argParser.parse_args(argv)
 

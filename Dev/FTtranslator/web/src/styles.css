@@ -88,6 +88,17 @@ h1 {
   margin-top: 2px;
 }
 
+/* The offline server's bundle choice, in place of the work project's name */
+.bundle-select {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+  max-width: 100%;
+}
+
 .pill {
   flex-shrink: 0;
   padding: 4px 12px;

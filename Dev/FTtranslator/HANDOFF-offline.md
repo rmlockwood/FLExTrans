@@ -88,7 +88,9 @@ Written to `<work project>\Output\ftt_bundle` (about 580 KB for FTT-Scratch):
 - `apertium/`: `bilingual.dix` and `tr.t1x` (and `t2x`/`t3x` for advanced transfer), as Run Apertium hands them to the tools.
 - `synthesis/`: target affix gloss list, the conversion cache, the target `HermitCrab.config`.
 
-**To update Railway after changing the projects:** run `export-bundle`, copy `Output\ftt_bundle` over `deploy\bundle`, commit, push.
+**To update Railway after changing the projects (11/4, later):** run `export-bundle`, then `upload-bundle WORKDIR --url https://….up.railway.app` with `FTT_PASSWORD` set. The server
+holds several bundles in `/data/bundles/<work project>/` on a Railway volume (mount path `/data`), and the page has a drop-down to choose one. `deploy\bundle` (FTT-Scratch) is only the seed
+copied in at start-up when the volume has no FTT-Scratch. See README's *Deploying to Railway* and SEVERAL BUNDLES in `offlineserver.py`.
 
 ## Railway
 
@@ -107,7 +109,8 @@ Problems hit on the way, in order:
 4. *Nouns came out as `%0%^caramelo1.1<n><SG>$%`*: not a port bug. The desktop failed identically (see its `target_words-surface.txt`), but the Test Projects copy of FTT-Scratch has
    cleanup on, which hid it. Ron then fixed the Spanish project ("project tweaks for SG") and re-exported, and nouns now synthesize. The server now always cleans up.
 
-**Anyone with the URL can translate**, and translations reveal the lexicon. There is no authentication.
+**The page password (`FTT_PASSWORD`) is the only access control**, and translations reveal the lexicon. Anyone with it can use every bundle on the server, and upload or delete bundles
+unless `FTT_UPLOAD_PASSWORD` is also set.
 
 ## Traps worth knowing
 
@@ -141,7 +144,8 @@ Problems hit on the way, in order:
 - **Not exercised by any project:** discontiguous complex forms; TreeTran projects are refused.
 - **The desktop `serve` still listens on localhost only.** Reaching it from other machines (a tunnel plus authentication) was discussed at the start but not done; the offline
   server took its place for Railway.
-- **Real projects' bundles** need a non-git route to Railway (a volume, or a download at start-up), plus access control.
+- **Real projects' bundles:** done (11/4) with a volume and `upload-bundle`. Still open: everyone with the page password sees every bundle (no per-bundle access), and the volume itself has
+  to be added to the Railway service by hand.
 - **Toward the phone:** port the Python runtime to C# against the same golden pairs (inside .NET MAUI hosting the React page), or package the Python + .NET pieces; the Apertium tools
   would need building for Android/iOS. HANDOVER.md's Phase 5 has the plan.
 

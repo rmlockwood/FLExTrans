@@ -3,13 +3,35 @@
 // The server keeps the FLEx projects open between translations, so only the first one is slow (it opens the projects). Translations from this session are listed newest first under the box;
 // the Saved runs tab lists the run records saved in the work project, including those from the command line. The server answers one translation at a time, so the Translate button is
 // disabled while one is running, but the box stays editable. The text stays in the box after translating, so a sentence can be tweaked and translated again.
+//
+// The offline server (offlineserver.py) can hold several bundles. Then the header has a drop-down to choose one, the choice is remembered in this browser, and every request names it; the
+// Saved runs tab shows the chosen bundle's runs. The desktop server has no /api/bundles, so the drop-down never shows there.
 
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 
-import { getRuns, getStatus, translate } from "./api";
-import type { RunRecord, Status, TranslateOptions } from "./api";
+import { getBundles, getRuns, getStatus, translate } from "./api";
+import type { BundleInfo, RunRecord, Status, TranslateOptions } from "./api";
 import ResultCard from "./ResultCard";
+
+// Where this browser remembers the chosen bundle. Storage can be missing or blocked (private windows), so every use is guarded and the page works without it.
+const BUNDLE_KEY = "fttranslator.bundle";
+
+function storedBundle(): string | null {
+  try {
+    return window.localStorage.getItem(BUNDLE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function storeBundle(bundle: string) {
+  try {
+    window.localStorage.setItem(BUNDLE_KEY, bundle);
+  } catch {
+    // Not remembered; the server's default is used next time
+  }
+}
 
 // A translation of this session: the record, or the error that stopped it
 interface SessionEntry {
@@ -32,11 +54,13 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("session");
   const [savedRuns, setSavedRuns] = useState<RunRecord[] | null>(null);
   const [savedError, setSavedError] = useState<string | null>(null);
+  const [bundles, setBundles] = useState<BundleInfo[]>([]);
+  const [bundle, setBundle] = useState<string | null>(null);
   const textBox = useRef<HTMLTextAreaElement>(null);
   const nextId = useRef(1);
 
-  function refreshStatus() {
-    getStatus()
+  function refreshStatus(forBundle: string | null = bundle) {
+    getStatus(forBundle)
       .then((newStatus) => {
         setStatus(newStatus);
         setStatusError(null);
@@ -44,7 +68,25 @@ export default function App() {
       .catch((error: Error) => setStatusError(error.message));
   }
 
-  useEffect(refreshStatus, []);
+  // Find out whether the server has bundles, and pick the remembered one if it is still there, else the server's default. A server without /api/bundles is the desktop one.
+  useEffect(() => {
+    getBundles()
+      .then((answer) => {
+        const remembered = storedBundle();
+        const chosen = answer.bundles.some((info) => info.id === remembered) ? remembered : answer.default;
+        setBundles(answer.bundles);
+        setBundle(chosen);
+        refreshStatus(chosen);
+      })
+      .catch(() => refreshStatus(null));
+  }, []);
+
+  function chooseBundle(newBundle: string) {
+    setBundle(newBundle);
+    storeBundle(newBundle);
+    setStatus(null);
+    refreshStatus(newBundle);
+  }
 
   // Count the seconds while a translation runs, so a slow first one visibly isn't stuck
   useEffect(() => {
@@ -66,10 +108,11 @@ export default function App() {
     }
 
     setSavedError(null);
-    getRuns()
+    setSavedRuns(null);
+    getRuns(50, bundle)
       .then(setSavedRuns)
       .catch((error: Error) => setSavedError(error.message));
-  }, [tab]);
+  }, [tab, bundle]);
 
   async function submit() {
     const source = text.trim();
@@ -84,7 +127,7 @@ export default function App() {
 
     // The text stays in the box, so it can be adjusted and translated again
     try {
-      const record = await translate(source, options);
+      const record = await translate(source, options, bundle);
       setEntries((current) => [{ id, source, record }, ...current]);
     } catch (error) {
       setEntries((current) => [{ id, source, error: (error as Error).message }, ...current]);
@@ -110,7 +153,17 @@ export default function App() {
           <h1>FTtranslator</h1>
           {status && (
             <div className="projects">
-              <span title="Work project">{status.workProject}</span>
+              {bundles.length > 1 && bundle ? (
+                <select className="bundle-select" value={bundle} onChange={(event) => chooseBundle(event.target.value)} disabled={busy} title="The bundle to translate with">
+                  {bundles.map((info) => (
+                    <option key={info.id} value={info.id}>
+                      {info.id}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span title="Work project">{status.workProject}</span>
+              )}
               <span className="muted">
                 {" "}
                 · {status.sourceProject} → {status.targetProject || "(no target project)"}
@@ -164,7 +217,12 @@ export default function App() {
       {tab === "session" && (
         <section className="results">
           {entries.length === 0 && !busy && <p className="muted empty">Translations will appear here, newest first.</p>}
-          {busy && <div className="card pending">Translating{status && !status.projectsOpen ? " — opening the projects for the first translation, which takes a few seconds" : ""}…</div>}
+          {busy && (
+            <div className="card pending">
+              Translating
+              {status && !status.projectsOpen ? (status.offline ? " — loading the bundle for its first translation, which takes a few seconds" : " — opening the projects for the first translation, which takes a few seconds") : ""}…
+            </div>
+          )}
           {entries.map((entry) =>
             entry.record ? (
               <ResultCard key={entry.id} record={entry.record} />
@@ -209,9 +267,17 @@ function StatusPill({ status, error, busy }: { status: Status | null; error: str
     return <span className="pill pill-busy">Translating</span>;
   }
 
-  return status.projectsOpen ? (
-    <span className="pill pill-ok" title="The projects are open, so each translation takes about half a second">
-      Ready · {status.translationCount} translated
+  if (status.projectsOpen) {
+    return (
+      <span className="pill pill-ok" title={status.offline ? "The bundle is loaded" : "The projects are open, so each translation takes about half a second"}>
+        Ready · {status.translationCount} translated
+      </span>
+    );
+  }
+
+  return status.offline ? (
+    <span className="pill" title="The first translation with this bundle loads it, which takes a few seconds">
+      Ready · bundle loads on first translation
     </span>
   ) : (
     <span className="pill" title="The first translation opens the FLEx projects, which takes a few seconds">

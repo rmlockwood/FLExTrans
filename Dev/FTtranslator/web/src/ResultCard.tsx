@@ -51,6 +51,11 @@ export default function ResultCard({ record, showTitle = false }: Props) {
           {record.source.trim()}
         </div>
         <div className="card-meta">
+          {record.bundle && (
+            <span className="muted" title="Bundle">
+              {record.bundle}
+            </span>
+          )}
           {record.totalSeconds !== null && <span className="muted">{formatSeconds(record.totalSeconds)}</span>}
           <span className={`badge ${record.ok ? "badge-ok" : "badge-failed"}`}>{record.ok ? "OK" : `Failed after ${record.steps[record.steps.length - 1] ?? "start"}`}</span>
         </div>
