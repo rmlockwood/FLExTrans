@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.3 - 11/4/26 - Ron Lockwood
+#    Reports offline in /api/status so the page hides the insert and keep-approvals options.
+#
 #   Version 3.17.2 - 11/4/26 - Ron Lockwood
 #    Can synthesize through HCSynthByGlossDll loaded once in the server (--hcsynth-dll), instead of starting HCSynthByGloss for every text.
 #
@@ -32,7 +35,7 @@
 #
 #   Each request gets a fresh Guesser made from the bundle's guesser data, so one text's parses and guesses never affect the next text. That matches the desktop's default (approvals are released
 #   after each run, see ingest.py); what the desktop does keep - parser analyses filed in earlier runs - the parser re-files here anyway. The insert and keepApprovals options have no meaning
-#   without the projects, so they are ignored with a warning in the run record. So the translation of a text only changes when a new bundle is exported and deployed.
+#   without the projects: /api/status answers offline: true so the page hides them, and a caller that sends them anyway gets a warning in the run record and has them ignored. So the translation of a text only changes when a new bundle is exported and deployed.
 #
 #   THE RUN RECORD
 #
@@ -284,7 +287,9 @@ class OfflineRequestHandler(RequestHandler):
     def _apiStatus(self):
 
         manifest = self.offlineServer.translator.manifest
-        self._sendJson({"workProject": manifest.get("workProject") or "", "sourceProject": manifest.get("sourceProject") or "", "targetProject": manifest.get("targetProject") or "",
+
+        # offline tells the page there are no projects to insert into or keep approvals in, so it hides those options
+        self._sendJson({"offline": True,"workProject": manifest.get("workProject") or "", "sourceProject": manifest.get("sourceProject") or "", "targetProject": manifest.get("targetProject") or "",
                         "projectsOpen": True, "translationCount": self.offlineServer.translationCount})
 
     def _apiRuns(self, query):

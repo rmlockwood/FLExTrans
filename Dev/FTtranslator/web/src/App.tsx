@@ -133,12 +133,17 @@ export default function App() {
           autoFocus
         />
         <div className="composer-bar">
-          <label title="Also put the translation into the target project (Insert Target Text)">
-            <input type="checkbox" checked={options.insert} onChange={(event) => setOptions({ ...options, insert: event.target.checked })} /> Insert into target project
-          </label>
-          <label title="Leave the guessed analyses approved in the source text, so they count for future guesses. Normally they are released for review in FLEx.">
-            <input type="checkbox" checked={options.keepApprovals} onChange={(event) => setOptions({ ...options, keepApprovals: event.target.checked })} /> Keep approvals
-          </label>
+          {/* The offline server has no FLEx projects to insert into or keep approvals in, so these options only show for the desktop server. They wait for the status so they don't flash up first. */}
+          {status && !status.offline && (
+            <>
+              <label title="Also put the translation into the target project (Insert Target Text)">
+                <input type="checkbox" checked={options.insert} onChange={(event) => setOptions({ ...options, insert: event.target.checked })} /> Insert into target project
+              </label>
+              <label title="Leave the guessed analyses approved in the source text, so they count for future guesses. Normally they are released for review in FLEx.">
+                <input type="checkbox" checked={options.keepApprovals} onChange={(event) => setOptions({ ...options, keepApprovals: event.target.checked })} /> Keep approvals
+              </label>
+            </>
+          )}
           <span className="spacer" />
           <span className="muted small">Shift+Enter for a new line</span>
           <button className="primary" onClick={submit} disabled={busy || !text.trim()}>

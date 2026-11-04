@@ -42,6 +42,8 @@ export interface Status {
   targetProject: string;
   projectsOpen: boolean;
   translationCount: number;
+  // Sent only by the offline server (offlineserver.py), which translates from a bundle with no FLEx projects
+  offline?: boolean;
 }
 
 export interface TranslateOptions {
