@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.1 - 11/4/26 - Ron Lockwood
+#    Always clean up unknown target words (CleanUpUnknownTargetWords=y), and read the unsynthesized words from the surface forms file.
+#
 #   Version 3.17 - 11/3/26 - Ron Lockwood
 #    Initial version. A web server for the React front end that translates from a bundle alone, with no FieldWorks, FLExTrans or Windows: for Linux hosts such as Railway.
 #
@@ -31,6 +34,13 @@
 #   The answer is the desktop's run record (pipeline.RunResult), filled in from what the offline steps know: the approved words with the analysis as morph:gloss pairs and the category, the
 #   words with no parse or no analysis, the untranslated and unsynthesized words found as steps\finish.py finds them, the messages, and each step's time. The approval basis is simpler than the
 #   desktop's (which explains the guesser's ranking): only analysis or best guess. The run records are kept in memory only (the last RUNS_KEPT), so they are lost when the server restarts.
+#
+#   CLEANUP
+#
+#   The server always cleans up the synthesized text as CleanUpUnknownTargetWords=y does (synthesis.py's fixUpText()), whatever the bundle's setting: a word that failed shows as its bare
+#   lemma (caramelo) instead of %0%^caramelo1.1<n><SG>$%, and sense numbers, @ signs and tags are removed, since the page's readers want text, not diagnostics. The failures aren't lost: the
+#   unsynthesized words in the run record are read from the surface forms file, which cleanup doesn't touch. Text HCSynthByGloss appends to a word ("Duplicate gloss(es) found ...") stays, as on
+#   the desktop.
 #
 #   NOT DONE HERE
 #
@@ -94,6 +104,9 @@ class OfflineTranslator:
         self.parser = analysisguess.HCParseProcess(self.hcparseCommand, self.bundleDir)
         self.transfer = Transfer(self.bundleDir, self.manifest["files"]["apertium"]["rules"], toolsDir=toolsDir)
         self.synthesizer = Synthesizer(self.bundleDir, hcsynthCommand)
+
+        # Always clean up, whatever the bundle's CleanUpUnknownTargetWords says. See CLEANUP above.
+        self.synthesizer.clean = "y"
         self.runs = []
 
     def close(self):
@@ -146,8 +159,10 @@ class OfflineTranslator:
 
         if translation is not None:
 
+            # Cleanup has taken the failure markers out of the translation, so the failed words come from the surface forms file, which still has them
+            surfaceForms = self.synthesizer.surfaceFormsFile.read_text(encoding="utf-8-sig")
             result.translation = translation.strip()
-            result.unsynthesized = _unique(STAMP_FAILURE.findall(translation))
+            result.unsynthesized = _unique(STAMP_FAILURE.findall(surfaceForms))
             result.ok = True
 
         result.messages = [{"level": level, "message": message, "ref": None} for level, message in messages]
