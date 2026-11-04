@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.8 - 11/4/26 - Ron Lockwood
+#    serve-offline asks for the password in the FTT_PASSWORD environment variable.
+#
 #   Version 3.17.7 - 11/4/26 - Ron Lockwood
 #    Added --hcsynth-dll to offline-stream and serve-offline: HermitCrab synthesis through the DLL in this process, so the HermitCrab config is loaded once.
 #
@@ -69,6 +72,8 @@
 #
 #   serve-offline is serve without FieldWorks, FLExTrans or a work project: it runs the same chain as offline-stream --synthesize behind the React front end (offlineserver.py), from a bundle
 #   folder alone, synthesizing with --hcsynth or --hcsynth-dll as offline-stream does. It is what the Docker image in Dockerfile runs on Railway (with --hcsynth-dll), listening on 0.0.0.0 and Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving.
+#   The page's password comes from the FTT_PASSWORD environment variable, not an option, so it stays out of the Dockerfile and the process list; without it the server only starts on 127.0.0.1
+#   (see SAFETY in offlineserver.py).
 #
 #   ENCODINGS
 #
@@ -644,7 +649,9 @@ def cmdServeOffline(args):
 
     from . import offlineserver
 
-    offlineserver.serve(Path(args.bundle).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll)
+    # See SERVE-OFFLINE above for why the password is an environment variable
+    password = os.environ.get("FTT_PASSWORD") or None
+    offlineserver.serve(Path(args.bundle).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll, password=password)
 
     return 0
 

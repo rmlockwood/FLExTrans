@@ -9,5 +9,6 @@ dockerfilePath = "Dockerfile"
 watchPatterns = ["/Dev/FTtranslator/**"]
 
 [deploy]
-healthcheckPath = "/api/status"
+# /api/health is the one path that answers without the password (FTT_PASSWORD, set in the service's Variables; the server won't start without it)
+healthcheckPath = "/api/health"
 restartPolicyType = "ON_FAILURE"

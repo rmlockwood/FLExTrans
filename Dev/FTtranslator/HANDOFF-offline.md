@@ -93,7 +93,8 @@ Written to `<work project>\Output\ftt_bundle` (about 580 KB for FTT-Scratch):
 ## Railway
 
 Service settings: **Root Directory** `/Dev/FTtranslator` (exactly; a trailing period broke one build). Optionally, **Config file path** `/Dev/FTtranslator/railway.toml` for the
-`/api/status` health check and the watch path. Generate a public domain; the server listens on `$PORT`.
+`/api/health` health check and the watch path. Generate a public domain; the server listens on `$PORT`. **Variables:** set `FTT_PASSWORD`; every path but `/api/health` needs it
+(HTTP Basic Auth, any user name), and the server won't start on `0.0.0.0` without it.
 
 The image: .NET 8 SDK builds hcparse and hcsynth; Node 20 builds the page; the final stage is the .NET 8 runtime (Debian 12) with `python3`, pythonnet (pip), `apertium`, `lttoolbox` and
 `lttoolbox-dev`. A build step checks that pythonnet can load HCSynthByGloss.dll, and the server runs with `--hcsynth-dll`.

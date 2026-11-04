@@ -107,11 +107,13 @@ In Railway, create a service from this repository and branch, then in its settin
 - **Root Directory:** `/Dev/FTtranslator`. Railway then finds `Dockerfile` there by its name; without this setting it falls back to its Railpack builder, which fails ("could not determine
   how to build the app").
 - **Config file path (optional):** `/Dev/FTtranslator/railway.toml` (Railway doesn't look under the root directory for it). It rebuilds only when `Dev/FTtranslator` changes, and uses
-  `/api/status` as the health check.
+  `/api/health` as the health check.
+- **Variables:** add `FTT_PASSWORD`, the password for the page. The browser asks for it (any user name will do) and remembers it until it closes. The server refuses to start
+  without it when listening on `0.0.0.0`, so a missing variable fails the deploy rather than making the lexicon public. Locally on 127.0.0.1 no password is needed.
 - **Networking:** generate a public domain. The server listens on Railway's `$PORT`.
 
-To update the translations after changing the projects, run `export-bundle` again, copy `Output\ftt_bundle\` over `deploy\bundle\`, and push. Anyone with the address can translate, so
-deploy only a bundle that may be public.
+To update the translations after changing the projects, run `export-bundle` again, copy `Output\ftt_bundle\` over `deploy\bundle\`, and push. The password keeps the page private, but the
+bundle committed to the repository is public, so commit only a bundle that may be public.
 
 ## Customizing
 

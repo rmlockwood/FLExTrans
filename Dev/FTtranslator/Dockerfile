@@ -6,7 +6,8 @@
 # Output\ftt_bundle, made on the desktop with export-bundle. It is committed for the FTT-Scratch test pair only: it holds the project's lexicon, so a real project's bundle needs another way in.
 #
 # Three stages: the .NET 8 HermitCrab parser and synthesizer are built with the .NET SDK, the React page with Node, and the final image has only the .NET runtime, Python, the Apertium tools
-# and the built pieces. The server listens on $PORT (Railway sets it).
+# and the built pieces. The server listens on $PORT (Railway sets it). It asks for the password in the FTT_PASSWORD environment variable, set in the Railway service's Variables, and
+# refuses to start without one since it listens on 0.0.0.0 (see SAFETY in fttranslator/offlineserver.py).
 
 # 1. The HermitCrab parser (hcparse) and synthesizer (hcsynth), both pinned to SIL.Machine 3.9.5 in their project files
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dotnet

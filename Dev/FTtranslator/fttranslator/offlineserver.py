@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.4 - 11/4/26 - Ron Lockwood
+#    Requires a password (HTTP Basic Auth, from FTT_PASSWORD) for the page and API, and won't listen beyond this machine without one. Added /api/health.
+#
 #   Version 3.17.3 - 11/4/26 - Ron Lockwood
 #    Reports offline in /api/status so the page hides the insert and keep-approvals options.
 #
@@ -56,16 +59,27 @@
 #
 #   SAFETY
 #
-#   There is no Host check and no localhost-only binding, unlike server.py, since nothing here can change a project. POST still has to send JSON. Anyone who can reach the address can translate,
-#   and the bundle's lexicon can be worked out from the translations, so only deploy a bundle that may be public, or put the server behind access control.
+#   There is no Host check and no localhost-only binding, unlike server.py, since nothing here can change a project. POST still has to send JSON. But the bundle's lexicon can be worked out from
+#   the translations, so the page and the API need a password when one is set: HTTP Basic Auth, with the password from the FTT_PASSWORD environment variable (read by cli.cmdServeOffline()).
+#   The browser shows its own login box and then sends the password with every request from the page, so the React front end needs no change. Any user name is accepted; only the password counts,
+#   and it is compared with hmac.compare_digest so the time taken doesn't hint at how much of it was right. Basic Auth sends the password readably, which is fine behind Railway's HTTPS but not on
+#   plain HTTP across a network.
+#
+#   Two rules keep this from being forgotten or getting in the way. serve() refuses to start when it would listen beyond this machine (any host but 127.0.0.1, localhost or ::1) with no password,
+#   so a Railway service missing FTT_PASSWORD fails its deploy instead of putting the lexicon on the internet. And GET /api/health answers {ok: true} without a password, because Railway's health
+#   check (railway.toml) sends none; it says nothing about the projects, unlike /api/status.
 #
 #   CODE STRUCTURE
 #
 #   OfflineTranslator holds the bundle and the running tools; translate() runs the chain and builds the RunResult with _approvedWords(), _describe() and _untranslated(). OfflineServer is the
-#   HTTPServer carrying it, and OfflineRequestHandler reuses server.RequestHandler's static files and JSON answers, replacing the request dispatch and the three _api*() methods. serve() runs
-#   the loop for cli.cmdServeOffline(). _firstWords() is a copy of steps\ingest.py's firstWords(), which can't be imported here because ingest.py needs FieldWorks.
+#   HTTPServer carrying it, and OfflineRequestHandler reuses server.RequestHandler's static files and JSON answers, replacing the request dispatch and the three _api*() methods; its do_GET() and
+#   do_POST() first check the password with _authorized(), which uses _passwordMatches(), and answer 401 through _sendAuthRequired(). serve() runs the loop for cli.cmdServeOffline(), after
+#   _needsPassword() has decided whether it may start without one. _firstWords() is a copy of steps\ingest.py's firstWords(), which can't be imported here because ingest.py needs FieldWorks.
 #
 
+import base64
+import binascii
+import hmac
 import json
 import shlex
 import sys
@@ -86,6 +100,9 @@ from .synthesis import Synthesizer
 from .tokenizer import Tokenizer
 from .transfer import Transfer
 from .transferexport import APERTIUM_DIR, BILINGUAL_FILE
+
+# The hosts that only this machine can reach; listening on any other needs a password. See SAFETY above.
+LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
 
 # The run records kept for /api/runs
 RUNS_KEPT = 200
@@ -235,12 +252,15 @@ class OfflineTranslator:
 class OfflineServer(HTTPServer):
     '''The HTTPServer, with the OfflineTranslator and the session's state for the request handler to use.'''
 
-    def __init__(self, address, translator, verbose):
+    def __init__(self, address, translator, verbose, password=None):
 
         super().__init__(address, OfflineRequestHandler)
         self.translator = translator
         self.verbose = verbose
         self.translationCount = 0
+
+        # None or empty means no password is asked for. See SAFETY above.
+        self.password = password or None
 
 class OfflineRequestHandler(RequestHandler):
     '''server.py's handler with the offline translator behind the API. The static files and the JSON answers are server.py's.'''
@@ -254,6 +274,17 @@ class OfflineRequestHandler(RequestHandler):
     def do_GET(self):
 
         url = urlparse(self.path)
+
+        # The health check is the one path open without the password. See SAFETY above.
+        if url.path == "/api/health":
+
+            self._sendJson({"ok": True})
+            return
+
+        if not self._authorized():
+
+            self._sendAuthRequired()
+            return
 
         if url.path == "/api/status":
 
@@ -271,6 +302,11 @@ class OfflineRequestHandler(RequestHandler):
 
     def do_POST(self):
 
+        if not self._authorized():
+
+            self._sendAuthRequired()
+            return
+
         # A page on another site can't send JSON without a CORS preflight, which this server never approves
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
 
@@ -283,6 +319,29 @@ class OfflineRequestHandler(RequestHandler):
             return
 
         self._apiTranslate()
+
+    def _authorized(self):
+        '''True if no password is set, or the request's Authorization header carries it. See SAFETY above.'''
+
+        password = self.offlineServer.password
+
+        if password is None:
+
+            return True
+
+        return _passwordMatches(self.headers.get("Authorization", ""), password)
+
+    def _sendAuthRequired(self):
+        '''Answer 401 with the WWW-Authenticate header that makes the browser show its login box. Written out like _sendJson(), which has no way to add a header.'''
+
+        content = json.dumps({"error": "This page needs the password"}).encode("utf-8")
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="FTtranslator", charset="UTF-8"')
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(content)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(content)
 
     def _apiStatus(self):
 
@@ -337,6 +396,36 @@ class OfflineRequestHandler(RequestHandler):
         print(f"{'OK    ' if result.ok else 'FAILED'} {result.title}", file=sys.stderr, flush=True)
         self._sendJson({"result": result.toDict(), "record": None})
 
+def _passwordMatches(authorization, password):
+    '''True if an Authorization header ("Basic " then base64 of user:password) carries this password. Any user name is accepted. A header that isn't Basic or doesn't decode is a mismatch.'''
+
+    scheme, _, encoded = authorization.partition(" ")
+
+    if scheme.lower() != "basic":
+
+        return False
+
+    try:
+        decoded = base64.b64decode(encoded.strip(), validate=True).decode("utf-8")
+
+    except (binascii.Error, UnicodeDecodeError):
+
+        return False
+
+    # The password is everything after the first colon, so it may itself contain colons
+    _, colon, given = decoded.partition(":")
+
+    if not colon:
+
+        return False
+
+    return hmac.compare_digest(given.encode("utf-8"), password.encode("utf-8"))
+
+def _needsPassword(host):
+    '''True if listening on this host would let other machines reach the server, so it must not start without a password. See SAFETY above.'''
+
+    return host.strip("[]").lower() not in LOOPBACK_HOSTS
+
 def _firstWords(paragraphs, count):
     '''The first count words of the text, without the punctuation that ends the last one. A copy of steps\\ingest.py's firstWords(); see CODE STRUCTURE above.'''
 
@@ -349,14 +438,21 @@ def _firstWords(paragraphs, count):
 
     return snippet
 
-def serve(bundleDir, hcparse, hcsynth, host, port, toolsDir=None, verbose=False, hcsynthDll=None):
-    '''Load the bundle and answer requests until the process is stopped (Ctrl+C, or the host's stop signal). hcsynth is the HCSynthByGloss command, or hcsynthDll the dll to load instead.'''
+def serve(bundleDir, hcparse, hcsynth, host, port, toolsDir=None, verbose=False, hcsynthDll=None, password=None):
+    '''Load the bundle and answer requests until the process is stopped (Ctrl+C, or the host's stop signal). hcsynth is the HCSynthByGloss command, or hcsynthDll the dll to load instead.
+       password, if given, is asked of every request but the health check; without one the server only starts on this machine's own address. See SAFETY above.'''
+
+    # Checked before the bundle loads, so a missing password fails at once
+    if not password and _needsPassword(host):
+
+        raise SystemExit(f"Set the FTT_PASSWORD environment variable before listening on {host}: without it anyone who can reach the server could use it. (On 127.0.0.1 no password is needed.)")
 
     print(f"Loading the bundle in {bundleDir} ...", file=sys.stderr, flush=True)
     hcsynthCommand = shlex.split(hcsynth, posix=False) if hcsynth else None
     translator = OfflineTranslator(bundleDir, shlex.split(hcparse, posix=False), hcsynthCommand, toolsDir=toolsDir, hcsynthDll=hcsynthDll)
-    server = OfflineServer((host, port), translator, verbose)
-    print(f"FTtranslator (offline) for {translator.manifest.get('workProject') or bundleDir} is at http://{host}:{server.server_address[1]}/  (Ctrl+C to stop)", file=sys.stderr, flush=True)
+    server = OfflineServer((host, port), translator, verbose, password=password)
+    passwordNote = "password required" if password else "no password"
+    print(f"FTtranslator (offline) for {translator.manifest.get('workProject') or bundleDir} is at http://{host}:{server.server_address[1]}/  ({passwordNote}; Ctrl+C to stop)", file=sys.stderr, flush=True)
 
     try:
         server.serve_forever()
