@@ -144,6 +144,24 @@ python -m fttranslator upload-bundle WORKDIR --url https://<your service>.up.rai
 
 Everyone with the page's password can use every bundle on the server. Pages already open list a new bundle after a reload.
 
+### Testing the image locally
+
+Docker Engine is installed in the Ubuntu-22.04 WSL distro, so the image can be built and run before pushing. From WSL (`wsl` in a terminal):
+
+```
+cd /mnt/c/Users/rlboo/GitHub/FLExTrans/Dev/FTtranslator
+docker build -t fttranslator .
+docker run -d --name ftt -p 8080:8080 -e PORT=8080 -e FTT_PASSWORD=test fttranslator
+docker logs ftt
+```
+
+Then open `http://127.0.0.1:8080/` in Windows (any user name, password `test`). `docker rm -f ftt` removes the container; add `-v ftt-data:/data` to the run line to keep uploaded bundles between
+runs, as Railway's volume does. Things to know:
+- **Keep a WSL window open** while the container runs. WSL shuts the distro down a little while after its last session ends, and Docker and the container go with it.
+- **WSL uses mirrored networking** (`%USERPROFILE%\.wslconfig`). In NAT mode WSL had picked 192.168.0.0/20, which overlaps the home Wi-Fi network (192.168.2.0/24), so it couldn't reach
+  the internet and Docker couldn't pull images.
+- If `npm ci` fails with `ETXTBSY` from esbuild, build again: it's a race in esbuild's install script on Docker's overlay filesystem, and it passed on the second try.
+
 ## Customizing
 
 Optional `Config\fttranslator.ini`:

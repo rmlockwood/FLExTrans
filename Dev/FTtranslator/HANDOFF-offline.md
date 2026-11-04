@@ -101,7 +101,11 @@ Service settings: **Root Directory** `/Dev/FTtranslator` (exactly; a trailing pe
 (HTTP Basic Auth, any user name), and the server won't start on `0.0.0.0` without it.
 
 The image: .NET 8 SDK builds hcparse and hcsynth; Node 20 builds the page; the final stage is the .NET 8 runtime (Debian 12) with `python3`, pythonnet (pip), `apertium`, `lttoolbox` and
-`lttoolbox-dev`. A build step checks that pythonnet can load HCSynthByGloss.dll, and the server runs with `--hcsynth-dll`.
+`lttoolbox-dev`. A build step checks that pythonnet can load HCSynthByGloss.dll, and the server runs with `--hcsynth-dll`. `CMD` starts with `exec`, so Python is PID 1 and gets the
+stop signal (`docker stop` went from the 10 s timeout to about 2 s).
+
+**Local test (11/4):** the image builds and runs in Docker Engine inside WSL (README.md, *Testing the image locally*). Checked there: it refuses to start without `FTT_PASSWORD`;
+`/api/health` is open, and the page and `/api/translate` answer 401 without the password; FTT-Scratch translates correctly, with synthesis at 0.07–0.16 s a text after the first.
 
 Problems hit on the way, in order:
 1. *Railpack could not determine how to build the app*: the Dockerfile was in `deploy/`, and Railway only reads `railway.toml` at the repo root unless its path is set. Fixed by moving
@@ -157,4 +161,7 @@ unless `FTT_UPLOAD_PASSWORD` is also set.
 - A scratch work project for Toma-Zialo (a copy of its Config folder pointed at tod-flex1) in the session scratchpad; the real Toma-Zialo work project wasn't touched.
 - French-PP-FTT has accumulated filed parses and `FTT …` texts from desktop comparison runs.
 - Golden pairs and bundles live in each work project's `Output\ftt_golden` and `Output\ftt_bundle` (never committed, except `deploy/bundle`).
+- `%USERPROFILE%\.wslconfig` created with `networkingMode=mirrored` (WSL's NAT subnet 192.168.0.0/20 overlapped the home LAN 192.168.2.0/24, so WSL had no internet). This also fixes
+  the "WSL couldn't reach the internet" problem in the timeline above.
+- Docker Engine (docker-ce 29.9.3, from Docker's apt repository) installed in Ubuntu-22.04, with `ronl` in the `docker` group; the `fttranslator` image is built there.
 - Scratch scripts used for the comparisons are in this session's temp scratchpad and are not needed to reproduce anything; the commands above are.

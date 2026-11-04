@@ -54,4 +54,5 @@ RUN python3 -c "import sys, pythonnet; pythonnet.load('coreclr', runtime_config=
 # deploy/bundle (FTT-Scratch) is seeded into it at start-up unless a bundle of that name is already there. See SEVERAL BUNDLES in fttranslator/offlineserver.py.
 ENV PORT=8080 PYTHONUNBUFFERED=1 FTT_BUNDLES=/data/bundles
 EXPOSE 8080
-CMD python3 -m fttranslator serve-offline --bundles "$FTT_BUNDLES" --seed /app/bundle --hcparse "dotnet /opt/hcparse/HCParse.dll" --hcsynth-dll /opt/hcsynth/HCSynthByGloss.dll --host 0.0.0.0 --port "$PORT"
+# exec makes Python PID 1, so the stop signal (docker stop, a Railway redeploy) reaches the server instead of the shell; the shell form is kept so $PORT is expanded
+CMD exec python3 -m fttranslator serve-offline --bundles "$FTT_BUNDLES" --seed /app/bundle --hcparse "dotnet /opt/hcparse/HCParse.dll" --hcsynth-dll /opt/hcsynth/HCSynthByGloss.dll --host 0.0.0.0 --port "$PORT"
