@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.1 - 11/4/26 - Ron Lockwood
+#    Synthesize through HCSynthByGlossDll in this process (pythonnet, .NET 8), as FLExTrans' Live Rule Tester does, so the HermitCrab config is loaded once instead of for every text.
+#
 #   Version 3.17 - 11/3/26 - Ron Lockwood
 #    Initial version. FLExTrans' Convert Text to Synthesizer Format and HermitCrab synthesis steps without FieldWorks: the target Apertium stream in, the synthesized text out.
 #
@@ -20,14 +23,27 @@
 #   Line for line, as in bundleextract.py: names follow the originals so the two can be read side by side, and the odd parts are kept because changing them would change the output. Ported are
 #   the parts of ANAInfo the HermitCrab path uses, ConversionData's loadFromCacheNew() and getAbbrList(), changeToVariant(), writeNonComplex() and writeComponents() with doHermitCrabSynthesis=True,
 #   processComplexForm(), convertIt() with calculatePrePostPunctuation(), processLU(), processLUparseError() and getContextWords(), the HermitCrab half of convert_to_STAMP() (convertToHermitCrab()
-#   here), and from DoHermitCrabSynthesis createHermitCrabParsesFile(), capitalize(), extractRootAndFirstTag(), getCapitalLemmas(), produceSynthesisFile(), fixUpText() and the exe branch of
-#   synthesizeWithHermitCrab(). The few Utils functions involved are copied below with their regexes. The error lists keep FLExTrans' (message, 0/1/2) convention inside, with the same English text,
+#   here), and from DoHermitCrabSynthesis createHermitCrabParsesFile(), capitalize(), extractRootAndFirstTag(), getCapitalLemmas(), produceSynthesisFile(), fixUpText() and both branches of
+#   synthesizeWithHermitCrab(), the exe and the DLL (see EXE OR DLL below). The few Utils functions involved are copied below with their regexes. The error lists keep FLExTrans' (message, 0/1/2) convention inside, with the same English text,
 #   and are turned into (level, text) pairs, as bundleextract.py gives them, only at the end.
 #
 #   WHAT IS NOT PORTED
 #
-#   STAMP synthesis (the ANA file, ANAInfo.write() and escapePunc()), One project mode, the HC DLL object and tracing, and everything that reads the target project: ConversionData's
-#   readDatabaseValues(), convertValuesToAnas() and the cache-or-rebuild decision, and extractHermitCrabConfig() with gatherWarnings(). Those run on the desktop when the bundle is exported.
+#   STAMP synthesis (the ANA file, ANAInfo.write() and escapePunc()), One project mode, tracing, and everything that reads the target project: ConversionData's readDatabaseValues(),
+#   convertValuesToAnas() and the cache-or-rebuild decision, and extractHermitCrabConfig() with gatherWarnings(). Those run on the desktop when the bundle is exported.
+#
+#   EXE OR DLL
+#
+#   Synthesis is the slowest step when HCSynthByGloss runs as a program: each text starts .NET and loads the whole target HermitCrab.config again (about half a second for FTT-Scratch, more for
+#   a big lexicon). FLExTrans' Live Rule Tester avoids that by keeping one HCSynthByGlossDll object (the class the program itself wraps) for the session: SetHcXmlFile() loads the config once, and
+#   each synthesis is just SetGlossFile() and Process(). loadHCSynthDll() does the same here with pythonnet, from the .NET 8 HCSynthByGloss.dll that hcsynth/ builds (the class is compiled into
+#   it), so after start-up a text takes a few hundredths of a second. The Synthesizer uses the DLL when it is given one (--hcsynth-dll) and the program otherwise (--hcsynth); both give the same
+#   surface forms file. The DLL's traps:
+#    - pythonnet must be started on CoreCLR (.NET 8), not its Windows default of .NET Framework, and only one runtime can be loaded in a process. So the DLL can't share a process with
+#      FieldWorks (the desktop commands); the offline commands never load FieldWorks.
+#    - The dll's folder goes on sys.path, because that is where pythonnet looks for the assemblies it depends on (SIL.Machine and the rest).
+#    - The program sets the UI culture from its language code argument, but the DLL ignores its LocaleCode property, so the DLL branch sets the culture itself before each Process().
+#    - One HCSynthByGlossDll object writes one output file and must not be used by two threads at once; the offline server handles one request at a time.
 #
 #   FILES INSTEAD OF STRINGS
 #
@@ -52,13 +68,15 @@
 #   The copied Utils pieces come first (capitalizeString(), unescapeReservedApertChars()), then ANAInfo and ConversionData (cache loading only). The Convert Text to Synthesizer Format functions
 #   follow in the original's order: changeToVariant(), writeNonComplex(), writeComponents(), processComplexForm(), getContextWords(), convertIt(), calculatePrePostPunctuation(),
 #   processLUparseError(), processLU() and convertToHermitCrab(). Then the DoHermitCrabSynthesis functions: produceSynthesisFile(), createHermitCrabParsesFile(), capitalize(),
-#   extractRootAndFirstTag(), fixUpText(), getCapitalLemmas() and synthesizeWithHermitCrab(). Synthesizer, last, holds a bundle's synthesis data and the HCSynthByGloss command; its synthesize()
-#   calls convertToHermitCrab() and then synthesizeWithHermitCrab(). The offline-stream command in cli.py uses it for --synthesize.
+#   extractRootAndFirstTag(), fixUpText(), getCapitalLemmas() and synthesizeWithHermitCrab(). loadHCSynthDll() loads the DLL object. Synthesizer, last, holds a bundle's
+#   synthesis data and either the HCSynthByGloss command or the DLL object; its synthesize() calls convertToHermitCrab() and then synthesizeWithHermitCrab(). The offline-stream command in cli.py
+#   uses it for --synthesize, and offlineserver.py for every request.
 #
 
 import json
 import re
 import subprocess
+import sys
 import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -1127,9 +1145,9 @@ def getCapitalLemmas(HCconfigPath):
 
     return HCcapitalLemmasMap
 
-def synthesizeWithHermitCrab(hcsynthCommand, languageCode, HCconfigPath, HCcapitalLemmasMap, parsesFile, masterFile, surfaceFormsFile, resultsFileStr, clean):
-    '''synthesizeWithHermitCrab()'s exe branch: write the parses file, run HCSynthByGloss and put its surface forms into the transfer results. Returns (errorList, the synthesized text or None).
-       The capital lemmas map is made once by the Synthesizer (see TRAPS above), and clean is the CleanUpUnknownTargetWords value.'''
+def synthesizeWithHermitCrab(hcsynthCommand, languageCode, HCconfigPath, HCcapitalLemmasMap, parsesFile, masterFile, surfaceFormsFile, resultsFileStr, clean, DLLobj=None):
+    '''synthesizeWithHermitCrab(): write the parses file, run HCSynthByGloss (the DLL object if there is one, otherwise the program) and put its surface forms into the transfer results. Returns
+       (errorList, the synthesized text or None). The capital lemmas map is made once by the Synthesizer (see TRAPS above), and clean is the CleanUpUnknownTargetWords value.'''
 
     luInfoList = []
 
@@ -1145,23 +1163,59 @@ def synthesizeWithHermitCrab(hcsynthCommand, languageCode, HCconfigPath, HCcapit
 
             return errorList, None
 
-    # Call HCSynthesis to produce surface forms. hcsynthCommand stands in for FTPaths.HC_SYNTHESIZE; the arguments are the same.
-    params = list(hcsynthCommand) + [languageCode, '-h', str(HCconfigPath), '-g', str(parsesFile), '-o', str(surfaceFormsFile)]
+    # Call HCSynthesis to produce surface forms. Do the operation with a dll differently than with the program; the dll already holds the HermitCrab config and writes surfaceFormsFile.
+    if DLLobj:
 
-    try:
-        result = subprocess.run(params, capture_output=True, check=True)
+        # The program sets the UI culture from its language code, which chooses the language of HC's messages; the DLL doesn't, so it is done here (see EXE OR DLL above)
+        from System.Globalization import CultureInfo  # type: ignore  # a .NET namespace that pythonnet provides at run time
+        from System.Threading import Thread  # type: ignore
 
-        if result.returncode != 0:
+        culture = CultureInfo.GetCultureInfo(languageCode)
+        CultureInfo.DefaultThreadCurrentUICulture = culture
+        Thread.CurrentThread.CurrentUICulture = culture
+        DLLobj.LocaleCode = languageCode
+        DLLobj.DoTracing = False
+        DLLobj.ShowTracing = False
 
-            errorList.append(('An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
-            errorList.append((result.stderr.decode(), 2))
+        try:
+            if DLLobj.SetGlossFile(str(parsesFile)) != DLLobj.kSuccess:
+
+                errorList.append(('An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                return errorList, None
+
+        except Exception as e:
+
+            errorList.append((f'An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}', 2))
             return errorList, None
 
-    except subprocess.CalledProcessError as e:
+        try:
+            if DLLobj.Process() != DLLobj.kSuccess:
 
-        errorList.append(('An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
-        errorList.append((e.stderr.decode(), 2))
-        return errorList, None
+                errorList.append(('An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                return errorList, None
+
+        except Exception as e:
+
+            errorList.append((f'An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}', 2))
+            return errorList, None
+    else:
+        # hcsynthCommand stands in for FTPaths.HC_SYNTHESIZE; the arguments are the same
+        params = list(hcsynthCommand) + [languageCode, '-h', str(HCconfigPath), '-g', str(parsesFile), '-o', str(surfaceFormsFile)]
+
+        try:
+            result = subprocess.run(params, capture_output=True, check=True)
+
+            if result.returncode != 0:
+
+                errorList.append(('An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+                errorList.append((result.stderr.decode(), 2))
+                return errorList, None
+
+        except subprocess.CalledProcessError as e:
+
+            errorList.append(('An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+            errorList.append((e.stderr.decode(), 2))
+            return errorList, None
 
     # Count the # of lexical units
     with open(parsesFile, encoding='utf-8') as f:
@@ -1198,10 +1252,75 @@ def synthesizeWithHermitCrab(hcsynthCommand, languageCode, HCconfigPath, HCcapit
 
     return errorList, synFileContents
 
-class Synthesizer:
-    '''A bundle's synthesis data, loaded once, and the command that runs HCSynthByGloss. synthesize() turns one target Apertium stream into the synthesized text. See the overview above.'''
+def loadHCSynthDll(dllPath, HCconfigPath, surfaceFormsFile):
+    '''Load the .NET 8 HCSynthByGloss.dll in this process and return an HCSynthByGlossDll object that writes surfaceFormsFile, with the HermitCrab config already loaded, as Live Rule Tester's
+       setUpHermitCrab() and extractHermitCrabConfig() do. Raises RuntimeError saying what went wrong. See EXE OR DLL above.'''
 
-    def __init__(self, bundleDir, hcsynthCommand, workDir=None):
+    dllPath = Path(dllPath).resolve()
+
+    if not dllPath.is_file():
+
+        raise RuntimeError(f"Could not find the HermitCrab synthesis DLL: {dllPath}")
+
+    try:
+        import pythonnet
+
+    except ImportError:
+
+        raise RuntimeError("Loading the HermitCrab synthesis DLL needs pythonnet (pip install pythonnet).")
+
+    # Start .NET 8 with the dll's own runtime config, unless this process already has a runtime; only one can be loaded, and it has to be CoreCLR
+    runtimeInfo = pythonnet.get_runtime_info()
+
+    if runtimeInfo is None:
+
+        try:
+            pythonnet.load("coreclr", runtime_config=str(dllPath.with_suffix(".runtimeconfig.json")))
+
+        except Exception as e:
+
+            raise RuntimeError(f"Could not start .NET 8 for the HermitCrab synthesis DLL. Error: {e}")
+
+    elif runtimeInfo.kind != "CoreCLR":
+
+        raise RuntimeError(f"The HermitCrab synthesis DLL needs .NET 8, but this process already runs {runtimeInfo.kind}.")
+
+    # pythonnet looks for the assemblies the dll depends on in sys.path's folders
+    if str(dllPath.parent) not in sys.path:
+
+        sys.path.append(str(dllPath.parent))
+
+    try:
+        import clr
+
+        clr.AddReference(str(dllPath))  # type: ignore  # pythonnet adds AddReference to clr at run time, so the checker can't see it
+        from SIL.HCSynthByGloss import HCSynthByGlossDll  # type: ignore  # a .NET namespace that pythonnet provides at run time
+
+        DLLobj = HCSynthByGlossDll(str(surfaceFormsFile))
+
+    except Exception as e:
+
+        raise RuntimeError(f"An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}")
+
+    # Load the HermitCrab config, once for the life of the object
+    try:
+        ret = DLLobj.SetHcXmlFile(str(HCconfigPath))
+
+    except Exception as e:
+
+        raise RuntimeError(f"An exception happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL) Error: {e}")
+
+    if ret != DLLobj.kSuccess:
+
+        raise RuntimeError(f"An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL) {ret}")
+
+    return DLLobj
+
+class Synthesizer:
+    '''A bundle's synthesis data, loaded once, and how to run HCSynthByGloss: the DLL object when hcsynthDll (the path of the .NET 8 HCSynthByGloss.dll) is given, otherwise the hcsynthCommand
+       program. synthesize() turns one target Apertium stream into the synthesized text. See the overview above.'''
+
+    def __init__(self, bundleDir, hcsynthCommand=None, workDir=None, hcsynthDll=None):
 
         bundleDir = Path(bundleDir)
         manifest = json.loads((bundleDir / "manifest.json").read_text(encoding="utf-8"))
@@ -1224,12 +1343,19 @@ class Synthesizer:
         self.clean = config.get(CLEANUP_UNKNOWN_WORDS)
         self.languageCode = manifest.get("interfaceLanguage") or "en"
 
-        self.hcsynthCommand = list(hcsynthCommand)
+        self.hcsynthCommand = list(hcsynthCommand or [])
         self.workDir = Path(workDir) if workDir else Path(tempfile.mkdtemp(prefix="ftt_synthesis_"))
         self.workDir.mkdir(parents=True, exist_ok=True)
         self.masterFile = self.workDir / MASTER_FILE
         self.parsesFile = self.workDir / PARSES_FILE
         self.surfaceFormsFile = self.workDir / SURFACE_FORMS_FILE
+
+        # The DLL object, which loads the HermitCrab config now, once; see EXE OR DLL above
+        self.DLLobj = loadHCSynthDll(hcsynthDll, self.HCconfigPath, self.surfaceFormsFile) if hcsynthDll else None
+
+        if not self.DLLobj and not self.hcsynthCommand:
+
+            raise RuntimeError("HermitCrab synthesis needs either the HCSynthByGloss command or the path of HCSynthByGloss.dll.")
 
     def synthesize(self, stream):
         '''Convert Text to Synthesizer Format and Synthesize Text on a target stream (Run Apertium's output). Returns (the synthesized text, or None after an error, and the messages as
@@ -1240,7 +1366,7 @@ class Synthesizer:
 
         if not any(triplet[1] == 2 for triplet in errorList):
 
-            errList, text = synthesizeWithHermitCrab(self.hcsynthCommand, self.languageCode, self.HCconfigPath, self.HCcapitalLemmasMap, self.parsesFile, self.masterFile, self.surfaceFormsFile, stream, self.clean)
+            errList, text = synthesizeWithHermitCrab(self.hcsynthCommand, self.languageCode, self.HCconfigPath, self.HCcapitalLemmasMap, self.parsesFile, self.masterFile, self.surfaceFormsFile, stream, self.clean, DLLobj=self.DLLobj)
             errorList.extend(errList)
 
         return text, [(LEVEL_NAMES.get(code, "error"), message) for message, code in errorList]

@@ -25,9 +25,12 @@ COPY web/ ./
 RUN npm run build
 
 # 3. The server: .NET 8 runtime (Debian 12), plus Python and Debian's Apertium tools. Debian's lttoolbox has only lt-proc; lt-comp, which compiles the bilingual lexicon, is in lttoolbox-dev.
+# pythonnet lets the server load HCSynthByGloss.dll once (--hcsynth-dll) instead of starting it for every text. Debian marks its Python as externally managed, hence --break-system-packages;
+# nothing else in the image uses pip.
 FROM mcr.microsoft.com/dotnet/runtime:8.0
 RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 apertium lttoolbox lttoolbox-dev \
+ && apt-get install -y --no-install-recommends python3 python3-pip apertium lttoolbox lttoolbox-dev \
+ && pip3 install --no-cache-dir --break-system-packages pythonnet==3.0.5 \
  && rm -rf /var/lib/apt/lists/*
 
 # Fail the build, not the first translation, if a tool transfer.py runs is missing
@@ -40,6 +43,10 @@ COPY --from=web /web/dist web/dist
 COPY fttranslator/ fttranslator/
 COPY deploy/bundle/ /app/bundle/
 
+# Fail the build, not the server's start, if pythonnet can't load the synthesis DLL on .NET 8
+ENV DOTNET_ROOT=/usr/share/dotnet
+RUN python3 -c "import sys, pythonnet; pythonnet.load('coreclr', runtime_config='/opt/hcsynth/HCSynthByGloss.runtimeconfig.json'); sys.path.append('/opt/hcsynth'); import clr; clr.AddReference('/opt/hcsynth/HCSynthByGloss.dll'); from SIL.HCSynthByGloss import HCSynthByGlossDll; print('pythonnet OK')"
+
 ENV PORT=8080 PYTHONUNBUFFERED=1
 EXPOSE 8080
-CMD python3 -m fttranslator serve-offline --bundle /app/bundle --hcparse "dotnet /opt/hcparse/HCParse.dll" --hcsynth "dotnet /opt/hcsynth/HCSynthByGloss.dll" --host 0.0.0.0 --port "$PORT"
+CMD python3 -m fttranslator serve-offline --bundle /app/bundle --hcparse "dotnet /opt/hcparse/HCParse.dll" --hcsynth-dll /opt/hcsynth/HCSynthByGloss.dll --host 0.0.0.0 --port "$PORT"

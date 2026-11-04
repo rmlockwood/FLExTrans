@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.7 - 11/4/26 - Ron Lockwood
+#    Added --hcsynth-dll to offline-stream and serve-offline: HermitCrab synthesis through the DLL in this process, so the HermitCrab config is loaded once.
+#
 #   Version 3.17.6 - 11/3/26 - Ron Lockwood
 #    Added the serve-offline command: the React front end translating from a bundle alone, for Linux hosts such as Railway.
 #
@@ -59,12 +62,13 @@
 #
 #   offline-stream runs the FieldWorks-free chain on a text from the bundle alone and prints the Apertium stream: tokenizer, hcparse, filing and guessing (analysisguess.py) and Extract Source
 #   Text (bundleextract.py). --transfer goes on through the Apertium tools (transfer.py), and --synthesize (which implies --transfer) on through Convert Text to Synthesizer Format and HermitCrab
-#   synthesis (synthesis.py), running HCSynthByGloss with the --hcsynth command and printing the synthesized text. --synth-dir keeps the master, parses and surface forms files for comparison.
+#   synthesis (synthesis.py), printing the synthesized text. HCSynthByGloss runs either as the --hcsynth program or, with --hcsynth-dll, as the DLL loaded into this process with pythonnet, which
+#   loads the HermitCrab config only once (see EXE OR DLL in synthesis.py). --synth-dir keeps the master, parses and surface forms files for comparison.
 #
 #   SERVE-OFFLINE
 #
 #   serve-offline is serve without FieldWorks, FLExTrans or a work project: it runs the same chain as offline-stream --synthesize behind the React front end (offlineserver.py), from a bundle
-#   folder alone. It is what the Docker image in Dockerfile runs on Railway, listening on 0.0.0.0 and Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving.
+#   folder alone, synthesizing with --hcsynth or --hcsynth-dll as offline-stream does. It is what the Docker image in Dockerfile runs on Railway (with --hcsynth-dll), listening on 0.0.0.0 and Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving.
 #
 #   ENCODINGS
 #
@@ -100,7 +104,7 @@ Command line for FTtranslator: end-to-end translation with FLEx and FLExTrans.
   golden    WORKDIR [--text T] [--out DIR]  capture test data: texts' analyses + Extract Source Text's output
   check-golden WORKDIR                  run the bundle's Extract Source Text on the test data (no FieldWorks)
   offline-stream WORKDIR [TEXT] --hcparse C  translate from the bundle alone (no FieldWorks); see --help
-  serve-offline --bundle DIR --hcparse C --hcsynth C  the browser front end, translating from a bundle alone (Linux, Railway)
+  serve-offline --bundle DIR --hcparse C --hcsynth-dll D  the browser front end, translating from a bundle alone (Linux, Railway)
 
 WORKDIR is a FLExTrans work project folder (…\\WorkProjects\\<name>).
 The FLEx projects must be closed in FieldWorks (or shared).
@@ -604,11 +608,12 @@ def cmdOfflineStream(args):
 
         from .synthesis import Synthesizer
 
-        if not args.hcsynth:
+        if not args.hcsynth and not args.hcsynthDll:
 
-            raise SystemExit("--synthesize needs --hcsynth, the command that runs HCSynthByGloss")
+            raise SystemExit("--synthesize needs --hcsynth, the command that runs HCSynthByGloss, or --hcsynth-dll, the path of HCSynthByGloss.dll")
 
-        synthesizer = Synthesizer(bundleDir, shlex.split(args.hcsynth, posix=False), workDir=Path(args.synthDir).resolve() if args.synthDir else None)
+        hcsynthCommand = shlex.split(args.hcsynth, posix=False) if args.hcsynth else None
+        synthesizer = Synthesizer(bundleDir, hcsynthCommand, workDir=Path(args.synthDir).resolve() if args.synthDir else None, hcsynthDll=args.hcsynthDll)
         text, synthMessages = synthesizer.synthesize(stream)
         messages = list(messages) + synthMessages
 
@@ -639,7 +644,7 @@ def cmdServeOffline(args):
 
     from . import offlineserver
 
-    offlineserver.serve(Path(args.bundle).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose)
+    offlineserver.serve(Path(args.bundle).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll)
 
     return 0
 
@@ -729,14 +734,18 @@ def main(argv=None):
     subparser.add_argument("--transfer", action="store_true", help="also run the Apertium transfer and print the target stream")
     subparser.add_argument("--tools", help="the folder with the Apertium tools (FlexTools\\Tools on Windows; default: on PATH)")
     subparser.add_argument("--synthesize", action="store_true", help="also synthesize the target text with HermitCrab and print it (implies --transfer)")
-    subparser.add_argument("--hcsynth", help='the command that runs HCSynthByGloss, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
+    hcsynthGroup = subparser.add_mutually_exclusive_group()
+    hcsynthGroup.add_argument("--hcsynth", help='the command that runs HCSynthByGloss, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
+    hcsynthGroup.add_argument("--hcsynth-dll", dest="hcsynthDll", help="instead, load the .NET 8 HCSynthByGloss.dll into this process (needs pythonnet), so the HermitCrab config is loaded once")
     subparser.add_argument("--synth-dir", dest="synthDir", help="the folder for the synthesis files (master, parses, surface forms); default: a new temporary folder")
     subparser.set_defaults(func=cmdOfflineStream)
 
     subparser = subparsers.add_parser("serve-offline", help="without FieldWorks: the browser front end, translating from a bundle alone (for Linux hosts such as Railway)")
     subparser.add_argument("--bundle", required=True, help="the bundle folder (a copy of <work project>\\Output\\ftt_bundle)")
     subparser.add_argument("--hcparse", required=True, help='the command that runs hcparse, without its file arguments, e.g. "dotnet /opt/hcparse/HCParse.dll"')
-    subparser.add_argument("--hcsynth", required=True, help='the command that runs HCSynthByGloss, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
+    hcsynthGroup = subparser.add_mutually_exclusive_group(required=True)
+    hcsynthGroup.add_argument("--hcsynth", help='the command that runs HCSynthByGloss for each text, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
+    hcsynthGroup.add_argument("--hcsynth-dll", dest="hcsynthDll", help="instead (faster), the .NET 8 HCSynthByGloss.dll to load into the server once (needs pythonnet), e.g. /opt/hcsynth/HCSynthByGloss.dll")
     subparser.add_argument("--tools", help="the folder with the Apertium tools (FlexTools\\Tools on Windows; default: on PATH)")
     subparser.add_argument("--host", default="127.0.0.1", help="the address to listen on (default 127.0.0.1; 0.0.0.0 for every interface, as on a server)")
     subparser.add_argument("--port", type=int, default=8765, help="the port to listen on (default 8765)")

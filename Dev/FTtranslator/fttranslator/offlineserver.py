@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.2 - 11/4/26 - Ron Lockwood
+#    Can synthesize through HCSynthByGlossDll loaded once in the server (--hcsynth-dll), instead of starting HCSynthByGloss for every text.
+#
 #   Version 3.17.1 - 11/4/26 - Ron Lockwood
 #    Always clean up unknown target words (CleanUpUnknownTargetWords=y), and read the unsynthesized words from the surface forms file.
 #
@@ -21,7 +24,9 @@
 #
 #   OfflineTranslator loads the bundle when the server starts: the lexicon, the tokenizer data, the guesser data, the bilingual lexicon's unlinked senses, the compiled Apertium files and the
 #   synthesis data. hcparse is started once and kept running, since starting .NET and loading the parser takes a few seconds and each word after that takes milliseconds; if it dies, the request
-#   fails and the next one starts a new one. HCSynthByGloss is started once per text, as FLExTrans does.
+#   fails and the next one starts a new one. HermitCrab synthesis is set up once too when --hcsynth-dll is given: HCSynthByGlossDll is loaded into the server with the target
+#   HermitCrab config, as FLExTrans' Live Rule Tester keeps it, so a text no longer pays for starting .NET and reading the config (see EXE OR DLL in synthesis.py). With --hcsynth instead,
+#   HCSynthByGloss is started once per text, as FLExTrans' Synthesize Text module does.
 #
 #   EACH TRANSLATION STARTS FROM THE BUNDLE
 #
@@ -88,7 +93,7 @@ TITLE_PREFIX = "FTT"
 class OfflineTranslator:
     '''A bundle loaded for translating, with hcparse running and the Apertium files compiled. See WHAT IS SET UP ONCE above.'''
 
-    def __init__(self, bundleDir, hcparseCommand, hcsynthCommand, toolsDir=None):
+    def __init__(self, bundleDir, hcparseCommand, hcsynthCommand, toolsDir=None, hcsynthDll=None):
 
         self.bundleDir = Path(bundleDir)
         self.manifest = json.loads((self.bundleDir / "manifest.json").read_text(encoding="utf-8"))
@@ -103,7 +108,7 @@ class OfflineTranslator:
         self.hcparseCommand = list(hcparseCommand)
         self.parser = analysisguess.HCParseProcess(self.hcparseCommand, self.bundleDir)
         self.transfer = Transfer(self.bundleDir, self.manifest["files"]["apertium"]["rules"], toolsDir=toolsDir)
-        self.synthesizer = Synthesizer(self.bundleDir, hcsynthCommand)
+        self.synthesizer = Synthesizer(self.bundleDir, hcsynthCommand, hcsynthDll=hcsynthDll)
 
         # Always clean up, whatever the bundle's CleanUpUnknownTargetWords says. See CLEANUP above.
         self.synthesizer.clean = "y"
@@ -339,11 +344,12 @@ def _firstWords(paragraphs, count):
 
     return snippet
 
-def serve(bundleDir, hcparse, hcsynth, host, port, toolsDir=None, verbose=False):
-    '''Load the bundle and answer requests until the process is stopped (Ctrl+C, or the host's stop signal).'''
+def serve(bundleDir, hcparse, hcsynth, host, port, toolsDir=None, verbose=False, hcsynthDll=None):
+    '''Load the bundle and answer requests until the process is stopped (Ctrl+C, or the host's stop signal). hcsynth is the HCSynthByGloss command, or hcsynthDll the dll to load instead.'''
 
     print(f"Loading the bundle in {bundleDir} ...", file=sys.stderr, flush=True)
-    translator = OfflineTranslator(bundleDir, shlex.split(hcparse, posix=False), shlex.split(hcsynth, posix=False), toolsDir=toolsDir)
+    hcsynthCommand = shlex.split(hcsynth, posix=False) if hcsynth else None
+    translator = OfflineTranslator(bundleDir, shlex.split(hcparse, posix=False), hcsynthCommand, toolsDir=toolsDir, hcsynthDll=hcsynthDll)
     server = OfflineServer((host, port), translator, verbose)
     print(f"FTtranslator (offline) for {translator.manifest.get('workProject') or bundleDir} is at http://{host}:{server.server_address[1]}/  (Ctrl+C to stop)", file=sys.stderr, flush=True)
 

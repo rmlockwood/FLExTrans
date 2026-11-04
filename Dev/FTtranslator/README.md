@@ -44,8 +44,8 @@ python -m fttranslator runs      WORKDIR     # earlier runs and their failed wor
 python -m fttranslator export-bundle WORKDIR [--out DIR] [-v]
 python -m fttranslator golden    WORKDIR [--text T]... [--out DIR] [-v]
 python -m fttranslator check-golden WORKDIR [--bundle DIR] [--golden DIR] [--show N]
-python -m fttranslator offline-stream WORKDIR [TEXT] [--file F] [--bundle DIR] --hcparse CMD [--transfer] [--tools DIR] [--synthesize --hcsynth CMD] [--synth-dir DIR]
-python -m fttranslator serve-offline --bundle DIR --hcparse CMD --hcsynth CMD [--tools DIR] [--host H] [--port N] [-v]
+python -m fttranslator offline-stream WORKDIR [TEXT] [--file F] [--bundle DIR] --hcparse CMD [--transfer] [--tools DIR] [--synthesize (--hcsynth CMD | --hcsynth-dll DLL)] [--synth-dir DIR]
+python -m fttranslator serve-offline --bundle DIR --hcparse CMD (--hcsynth CMD | --hcsynth-dll DLL) [--tools DIR] [--host H] [--port N] [-v]
 ```
 
 - If neither TEXT nor `--file` is given, the text is read from stdin. Each line becomes a paragraph.
@@ -59,8 +59,10 @@ python -m fttranslator serve-offline --bundle DIR --hcparse CMD --hcsynth CMD [-
   source lexicon data, the source HermitCrab parser, the tokenizer and guesser data, the bilingual lexicon and transfer rules, and the target synthesis data. It goes to
   `<work project>\Output\ftt_bundle\` or to `--out`. It reads the source and target projects; only HermitCrab synthesis is supported.
 - `offline-stream` translates a text from the bundle alone, with no FieldWorks or FLExTrans, and prints the Apertium stream; `--transfer` prints the target stream and `--synthesize` the
-  synthesized text. `--hcparse` and `--hcsynth` are the commands that run the .NET 8 builds in `hcparse\` and `hcsynth\` (e.g. `"dotnet ...\HCParse.dll"`). `--tools` is the folder with the
-  Apertium tools (`FlexTools\Tools` on Windows; on Linux they are found on PATH).
+  synthesized text. `--hcparse` and `--hcsynth` are the commands that run the .NET 8 builds in `hcparse\` and `hcsynth\` (e.g. `"dotnet ...\HCParse.dll"`). `--hcsynth-dll ...\HCSynthByGloss.dll` is the
+  faster alternative to `--hcsynth`: it loads the DLL into the Python process with pythonnet (`pip install pythonnet`), as FLExTrans' Live Rule Tester does, so the HermitCrab config is read
+  once rather than for every text (synthesis went from about 0.5 s to 0.06 s a text on FTT-Scratch). `--tools` is the folder with the Apertium tools (`FlexTools\Tools` on Windows; on Linux
+  they are found on PATH).
 - `serve-offline` is `serve` from a bundle alone: the same page, translating with the `offline-stream --synthesize` chain. It writes to no project. See [Deploying to Railway](#deploying-to-railway).
 - `golden` captures test data for a translator that reads the bundle. For each text (or each `--text` title) it saves the text's analyses as `NNN.text.json` and what Extract Source Text
   really produced from them as `NNN.expected.txt`, with an `index.json` listing the titles and messages. It writes to `<work project>\Output\ftt_golden\` or to `--out`, and also only reads the
@@ -97,8 +99,8 @@ must be `localhost` or `127.0.0.1`. These checks stop other web pages open in th
 
 ## Deploying to Railway
 
-`Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3
-and Debian's `apertium` and `lttoolbox` packages. The bundle it serves is `deploy\bundle\`, a copy of a work project's `Output\ftt_bundle\`. It is committed for the FTT-Scratch test pair only,
+`Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3,
+pythonnet (so the server synthesizes with `--hcsynth-dll`) and Debian's `apertium` and `lttoolbox` packages. The bundle it serves is `deploy\bundle\`, a copy of a work project's `Output\ftt_bundle\`. It is committed for the FTT-Scratch test pair only,
 since a bundle holds the project's lexicon and the repository is public.
 
 In Railway, create a service from this repository and branch, then in its settings:

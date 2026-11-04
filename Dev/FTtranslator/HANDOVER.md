@@ -24,7 +24,8 @@ The phone app is the long-term goal. A CLI comes first, and a web app may come l
 - **Custom code:** a FlexTools module in the collection (`[Modules\FixNina.py]`, in the work project's Config folder) changed the transfer output mid-pipeline. A Python hook from `fttranslator.ini` also ran.
 - The `steps`, `check` and `runs` commands work. Each run writes a JSON record to `<work project>\Output\ftt_runs\`.
 - Unit tests (9, no FieldWorks needed) pass: `python -m unittest discover -s tests`.
-- **Offline bundle, first pieces (2026-11-03, uncommitted until reviewed):**
+- **Offline bundle (2026-11-03/04):** the whole chain now runs without Windows or FieldWorks and is deployed on Railway. [HANDOFF-offline.md](HANDOFF-offline.md) is the full handoff for
+  that work; the notes below are the history.
   - `export-bundle` writes the source lexicon data Extract Source Text needs (`bundle.py`). On Mato-Uma (3,710 entries) its stem tags matched all 1,716 lexical units in FT's real output files.
   - `golden` captures test data (`golden.py`): each text's occurrences and morph bundles as JSON, next to what the real Extract Source Text wrote for it. On Mato-Uma: 130 texts, about 130,000
     occurrences, Extract Source Text succeeded on all, and every GUID in the dumps resolves in the bundle's lexicon.
