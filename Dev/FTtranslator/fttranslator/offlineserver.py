@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.7 - 11/6/26 - Ron Lockwood
+#    Transfers through FTApertium, loaded once per bundle (apertiumDll), unless the server was started with the Apertium tools.
+#
 #   Version 3.17.6 - 11/4/26 - Ron Lockwood
 #    Applies the bundle's Text Out rules to the synthesized text, as Collect Output does on the desktop.
 #
@@ -29,7 +32,7 @@
 #   OVERVIEW (AI generated, then edited)
 #
 #   The serve-offline command's web server. It answers the same JSON API as server.py, so the same React front end (web\dist) works unchanged, but each translation runs the FieldWorks-free chain
-#   from an exported bundle (see bundle.py): tokenizer.py, hcparse with the parse filer and guesser (analysisguess.py), Extract Source Text (bundleextract.py), the Apertium tools (transfer.py),
+#   from an exported bundle (see bundle.py): tokenizer.py, hcparse with the parse filer and guesser (analysisguess.py), Extract Source Text (bundleextract.py), the transfer step (transfer.py),
 #   Convert Text to Synthesizer Format with HermitCrab synthesis (synthesis.py), and the Text Out rules (textout.py). Nothing is written to any project, so it can listen on every interface of
 #   a server.
 #
@@ -49,8 +52,8 @@
 #
 #   WHAT IS SET UP ONCE
 #
-#   OfflineTranslator loads a bundle when it is first used: the lexicon, the tokenizer data, the guesser data, the bilingual lexicon's unlinked senses, the compiled Apertium files, the
-#   synthesis data and the Text Out rules. hcparse is started once and kept running, since starting .NET and loading the parser takes a few seconds and each word after that takes milliseconds;
+#   OfflineTranslator loads a bundle when it is first used: the lexicon, the tokenizer data, the guesser data, the bilingual lexicon's unlinked senses, the Apertium files (read into FTApertium,
+#   or compiled for the Apertium tools with --apertium-tools; see THE TWO WAYS in transfer.py), the synthesis data and the Text Out rules. hcparse is started once and kept running, since starting .NET and loading the parser takes a few seconds and each word after that takes milliseconds;
 #   if it dies, the request fails and the next one starts a new one. HermitCrab synthesis is set up once too when --hcsynth-dll is given: HCSynthByGlossDll is loaded into the server with the target
 #   HermitCrab config, as FLExTrans' Live Rule Tester keeps it, so a text no longer pays for starting .NET and reading the config (see EXE OR DLL in synthesis.py). With --hcsynth instead,
 #   HCSynthByGloss is started once per text, as FLExTrans' Synthesize Text module does.
@@ -158,9 +161,9 @@ BUNDLES_PATH = "/api/bundles/"
 TITLE_PREFIX = "FTT"
 
 class OfflineTranslator:
-    '''A bundle loaded for translating, with hcparse running and the Apertium files compiled. See WHAT IS SET UP ONCE above.'''
+    '''A bundle loaded for translating, with hcparse running and the Apertium files loaded or compiled. See WHAT IS SET UP ONCE above.'''
 
-    def __init__(self, bundleDir, hcparseCommand, hcsynthCommand, toolsDir=None, hcsynthDll=None):
+    def __init__(self, bundleDir, hcparseCommand, hcsynthCommand, toolsDir=None, hcsynthDll=None, apertiumDll=None):
 
         self.bundleDir = Path(bundleDir)
         self.manifest = json.loads((self.bundleDir / "manifest.json").read_text(encoding="utf-8"))
@@ -174,7 +177,7 @@ class OfflineTranslator:
 
         self.hcparseCommand = list(hcparseCommand)
         self.parser = analysisguess.HCParseProcess(self.hcparseCommand, self.bundleDir)
-        self.transfer = Transfer(self.bundleDir, self.manifest["files"]["apertium"]["rules"], toolsDir=toolsDir)
+        self.transfer = Transfer(self.bundleDir, self.manifest["files"]["apertium"]["rules"], toolsDir=toolsDir, apertiumDll=apertiumDll)
         self.synthesizer = Synthesizer(self.bundleDir, hcsynthCommand, hcsynthDll=hcsynthDll)
 
         # Always clean up, whatever the bundle's CleanUpUnknownTargetWords says. See CLEANUP above.
@@ -188,10 +191,12 @@ class OfflineTranslator:
 
         self.parser.close()
 
-        # Both are temporary folders made for this translator (no workDir is passed to them above)
+        # Both are temporary folders made for this translator (no workDir is passed to them above); transfer through FTApertium has none
         for workDir in (self.transfer.workDir, self.synthesizer.workDir):
 
-            shutil.rmtree(workDir, ignore_errors=True)
+            if workDir is not None:
+
+                shutil.rmtree(workDir, ignore_errors=True)
 
     def translate(self, text, insert=False, keepApprovals=False):
         '''Translate a text with the whole offline chain and return its RunResult. See EACH TRANSLATION STARTS FROM THE BUNDLE above.'''
@@ -934,10 +939,11 @@ def _firstWords(paragraphs, count):
 
     return snippet
 
-def serve(bundlesRoot, hcparse, hcsynth, host, port, toolsDir=None, verbose=False, hcsynthDll=None, password=None, seeds=(), uploadPassword=None):
+def serve(bundlesRoot, hcparse, hcsynth, host, port, toolsDir=None, verbose=False, hcsynthDll=None, password=None, seeds=(), uploadPassword=None, apertiumDll=None):
     '''Serve the bundles in bundlesRoot until the process is stopped (Ctrl+C, or the host's stop signal), after copying in each seed bundle folder whose id isn't there yet. hcsynth is the
-       HCSynthByGloss command, or hcsynthDll the dll to load instead. password, if given, is asked of every request but the health check (uploadPassword, if given, of uploads instead);
-       without one the server only starts on this machine's own address. See SEVERAL BUNDLES and SAFETY above.'''
+       HCSynthByGloss command, or hcsynthDll the dll to load instead. apertiumDll is FTApertium's DLL to transfer with, or None for the Apertium tools in toolsDir (or on PATH). password,
+       if given, is asked of every request but the health check (uploadPassword, if given, of uploads instead); without one the server only starts on this machine's own address. See
+       SEVERAL BUNDLES and SAFETY above.'''
 
     # Checked before any bundle loads, so a missing password fails at once
     if not password and _needsPassword(host):
@@ -951,7 +957,7 @@ def serve(bundlesRoot, hcparse, hcsynth, host, port, toolsDir=None, verbose=Fals
 
         print(f"Loading the bundle in {bundleDir} ...", file=sys.stderr, flush=True)
 
-        return OfflineTranslator(bundleDir, hcparseCommand, hcsynthCommand, toolsDir=toolsDir, hcsynthDll=hcsynthDll)
+        return OfflineTranslator(bundleDir, hcparseCommand, hcsynthCommand, toolsDir=toolsDir, hcsynthDll=hcsynthDll, apertiumDll=apertiumDll)
 
     bundles = BundleSet(bundlesRoot, makeTranslator)
 

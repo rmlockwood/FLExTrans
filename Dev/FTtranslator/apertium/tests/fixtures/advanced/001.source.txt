@@ -1,0 +1,2 @@
+^The1.1<det>$ ^big1.1<adj>$ ^dog1.1<n><pl>$ ^run1.1<v><pres>$^.<sent>$ ^A1.1<det>$ ^new1.1<adj>$ ^cat1.1<n>$^!<sent>$
+^THE1.1<det>$ ^big1.1<adj>$ ^bike1.1<n><sg>$ ^walk1.1<v><past>$ ^park1.1<n>$^?<sent>$ ^New York1.1<np>$ ^in1.1<prep>$ ^the1.1<det>$ ^park1.1<n><pl>$^.<sent>$

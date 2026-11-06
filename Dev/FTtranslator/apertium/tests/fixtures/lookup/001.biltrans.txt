@@ -1,0 +1,4 @@
+^The1.1<det>/Den1.1<det>$ ^big1.1<adj>/stor1.1<adj>$ ^dog1.1<n><pl>/hund1.1<n><pl>$ ^run1.1<v><pres>/springa1.1<v><pres>$^.<sent>/.<sent>$ ^DOG1.1<n>/HUND1.1<n>$ ^Dog1.1<n><sg>/Hund1.1<n><sg>$ ^BIG1.1<adj>/STOR1.1<adj>$
+^new york1.1<np>/nya york1.1<np>$ ^New York1.1<np>/Nya york1.1<np>$ ^NEW YORK1.1<np>/NYA YORK1.1<np>$ ^Paris1.1<np>/Paris1.1<np>$ ^paris1.1<np>/@paris1.1<np>$ ^bank1.1<n>/bank1.1<n>$ ^Bank1.1<n><pl>/Bank1.1<n><pl>$ ^light1.1<adj>/ljus1.1<adj>$
+^a\/b1.1<n>/x\/y1.1<n>$ ^at\@home1.1<n>/hemma1.1<n>$ ^ok/okej$ ^okay/@okay$ ^ok<n>/okej<n>$ ^OK/OKEJ$ ^123<num>/123<num>$ ^haha!<laugh>/haha!<laugh>$ ^hehe<laugh>/hehe<laugh>$ ^cat1.1<n>/@cat1.1<n>$ ^dog1.1/@dog1.1$ [<p>]^the1.1<det><def>/den1.1<det><def>$ \^ \@ ^?!<sent>/?!<sent>$
+^*unknown/*unknown$ ^#dog1.1<n>/@#dog1.1<n>$ ^$ ^dog1.1<n>/hund1.1<n>$ [[t:b:x]]^dog1.1<n>/hund1.1<n>$ text \[not a blank\] end

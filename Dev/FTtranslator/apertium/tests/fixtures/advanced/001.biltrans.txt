@@ -1,0 +1,2 @@
+^The1.1<det>/Den1.1<det>$ ^big1.1<adj>/stor1.1<adj>$ ^dog1.1<n><pl>/hund1.1<n><pl>$ ^run1.1<v><pres>/spring#a1.1<v><pres>$^.<sent>/.<sent>$ ^A1.1<det>/En1.1<det>$ ^new1.1<adj>/ny1.1<adj>$ ^cat1.1<n>/katt1.1<n>$^!<sent>/!<sent>$
+^THE1.1<det>/DEN1.1<det>$ ^big1.1<adj>/stor1.1<adj>$ ^bike1.1<n><sg>/cykel1.1<n><sg>$ ^walk1.1<v><past>/gå ut1.1<v><past>$ ^park1.1<n>/park1.1<n>$^?<sent>/?<sent>$ ^New York1.1<np>/New york1.1<np>$ ^in1.1<prep>/i1.1<prep>$ ^the1.1<det>/den1.1<det>$ ^park1.1<n><pl>/park1.1<n><pl>$^.<sent>/.<sent>$

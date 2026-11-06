@@ -1,0 +1,6 @@
+
+apertium-postchunk: Rule 1 line 22 Np<SN><pl><def>{^Den1.1<det><2>$ ^stor1.1<adj><3>$ ^hund1.1<n><2><3sg_x>$}
+
+apertium-postchunk: Rule 1 line 22 Np<SN><pl><def>{^En1.1<det><2>$ ^ny1.1<adj><3>$ ^katt1.1<n><2><3sg_x>$}
+
+apertium-postchunk: Rule 1 line 22 Np<SN><sg><def>{^DEN1.1<det><2>$ ^stor1.1<adj><3>$ ^cykel1.1<n><2><3sg_x>$}

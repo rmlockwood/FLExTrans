@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FTApertium test fixture: interchunk, between chunks (agreement, <b pos>, the lem, tags, whole, chcontent and content parts, modify-case and let on chunks, a macro). The expected output
+     comes from the Windows apertium-interchunk; see ../../make_fixtures.py. -->
+<interchunk>
+  <section-def-cats>
+    <def-cat n="c_np"><cat-item lemma="np" tags="SN.*"/><cat-item lemma="n_chunk" tags="SN.*"/></def-cat>
+    <def-cat n="c_vp"><cat-item lemma="vp" tags="SV.*"/></def-cat>
+    <def-cat n="c_any"><cat-item tags="*"/></def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="a_num"><attr-item tags="sg"/><attr-item tags="pl"/></def-attr>
+    <def-attr n="a_tense"><attr-item tags="pres"/><attr-item tags="past"/></def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <def-var n="v_num"/>
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_agree" npar="2">
+      <let><var n="v_num"/><clip pos="1" part="a_num"/></let>
+      <let><clip pos="2" part="a_tense"/><concat><clip pos="2" part="a_tense"/><var n="v_num"/></concat></let>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="NP VP: the verb chunk agrees with the noun chunk">
+      <pattern><pattern-item n="c_np"/><pattern-item n="c_vp"/></pattern>
+      <action>
+        <call-macro n="m_agree"><with-param pos="1"/><with-param pos="2"/></call-macro>
+        <modify-case><clip pos="2" part="lem"/><lit v="Aa"/></modify-case>
+        <out>
+          <chunk><clip pos="2" part="lem"/><clip pos="2" part="tags"/><clip pos="2" part="chcontent"/></chunk>
+          <b pos="1"/>
+          <chunk><clip pos="1" part="whole"/></chunk>
+          <chunk><lit v="info"/><lit-tag v="x"/><lit v="{^"/><clip pos="1" part="content"/><lit v="$}"/></chunk>
+        </out>
+      </action>
+    </rule>
+    <rule comment="any chunk followed by punctuation: the punctuation chunk is unchanged">
+      <pattern><pattern-item n="c_np"/><pattern-item n="c_any"/></pattern>
+      <action>
+        <let><clip pos="1" part="a_num"/><lit-tag v="pl"/></let>
+        <out><chunk><clip pos="1" part="whole"/></chunk><b pos="1"/><chunk><clip pos="2" part="whole"/></chunk></out>
+      </action>
+    </rule>
+  </section-rules>
+</interchunk>

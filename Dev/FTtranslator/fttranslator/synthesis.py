@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.2 - 11/6/26 - Ron Lockwood
+#    Start .NET through dotnet.py, so the transfer step's DLL can share the runtime.
+#
 #   Version 3.17.1 - 11/4/26 - Ron Lockwood
 #    Synthesize through HCSynthByGlossDll in this process (pythonnet, .NET 8), as FLExTrans' Live Rule Tester does, so the HermitCrab config is loaded once instead of for every text.
 #
@@ -40,8 +43,8 @@
 #   it), so after start-up a text takes a few hundredths of a second. The Synthesizer uses the DLL when it is given one (--hcsynth-dll) and the program otherwise (--hcsynth); both give the same
 #   surface forms file. The DLL's traps:
 #    - pythonnet must be started on CoreCLR (.NET 8), not its Windows default of .NET Framework, and only one runtime can be loaded in a process. So the DLL can't share a process with
-#      FieldWorks (the desktop commands); the offline commands never load FieldWorks.
-#    - The dll's folder goes on sys.path, because that is where pythonnet looks for the assemblies it depends on (SIL.Machine and the rest).
+#      FieldWorks (the desktop commands); the offline commands never load FieldWorks. dotnet.py starts the runtime, for this DLL or the transfer step's, whichever comes first.
+#    - The dll's folder goes on sys.path (dotnet.py does it), because that is where pythonnet looks for the assemblies it depends on (SIL.Machine and the rest).
 #    - The program sets the UI culture from its language code argument, but the DLL ignores its LocaleCode property, so the DLL branch sets the culture itself before each Process().
 #    - One HCSynthByGlossDll object writes one output file and must not be used by two threads at once; the offline server handles one request at a time.
 #
@@ -76,11 +79,11 @@
 import json
 import re
 import subprocess
-import sys
 import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from .dotnet import startDotNet
 from .synthexport import AFFIX_GLOSS_FILE, CONVERSION_CACHE_FILE, HERMIT_CRAB_CONFIG_FILE, SYNTHESIS_DIR
 
 # Copied from FLExTrans Utils, so this file needs neither FieldWorks nor FLExTrans
@@ -1256,39 +1259,8 @@ def loadHCSynthDll(dllPath, HCconfigPath, surfaceFormsFile):
     '''Load the .NET 8 HCSynthByGloss.dll in this process and return an HCSynthByGlossDll object that writes surfaceFormsFile, with the HermitCrab config already loaded, as Live Rule Tester's
        setUpHermitCrab() and extractHermitCrabConfig() do. Raises RuntimeError saying what went wrong. See EXE OR DLL above.'''
 
-    dllPath = Path(dllPath).resolve()
-
-    if not dllPath.is_file():
-
-        raise RuntimeError(f"Could not find the HermitCrab synthesis DLL: {dllPath}")
-
-    try:
-        import pythonnet
-
-    except ImportError:
-
-        raise RuntimeError("Loading the HermitCrab synthesis DLL needs pythonnet (pip install pythonnet).")
-
-    # Start .NET 8 with the dll's own runtime config, unless this process already has a runtime; only one can be loaded, and it has to be CoreCLR
-    runtimeInfo = pythonnet.get_runtime_info()
-
-    if runtimeInfo is None:
-
-        try:
-            pythonnet.load("coreclr", runtime_config=str(dllPath.with_suffix(".runtimeconfig.json")))
-
-        except Exception as e:
-
-            raise RuntimeError(f"Could not start .NET 8 for the HermitCrab synthesis DLL. Error: {e}")
-
-    elif runtimeInfo.kind != "CoreCLR":
-
-        raise RuntimeError(f"The HermitCrab synthesis DLL needs .NET 8, but this process already runs {runtimeInfo.kind}.")
-
-    # pythonnet looks for the assemblies the dll depends on in sys.path's folders
-    if str(dllPath.parent) not in sys.path:
-
-        sys.path.append(str(dllPath.parent))
+    # .NET 8 in this process, shared with the transfer step's DLL (see dotnet.py)
+    dllPath = startDotNet(dllPath, "the HermitCrab synthesis DLL")
 
     try:
         import clr

@@ -5,6 +5,9 @@
 #   SIL International
 #   10/26/26
 #
+#   Version 3.17.11 - 11/6/26 - Ron Lockwood
+#    offline-stream and serve-offline transfer through FTApertium by default (--apertium-dll), or the Apertium tools with --apertium-tools.
+#
 #   Version 3.17.10 - 11/4/26 - Ron Lockwood
 #    offline-stream --synthesize applies the bundle's Text Out rules.
 #
@@ -70,14 +73,15 @@
 #   OFFLINE-STREAM
 #
 #   offline-stream runs the FieldWorks-free chain on a text from the bundle alone and prints the Apertium stream: tokenizer, hcparse, filing and guessing (analysisguess.py) and Extract Source
-#   Text (bundleextract.py). --transfer goes on through the Apertium tools (transfer.py), and --synthesize (which implies --transfer) on through Convert Text to Synthesizer Format and HermitCrab
+#   Text (bundleextract.py). --transfer goes on through the transfer step (transfer.py): FTApertium, the C# port of the Apertium tools, from --apertium-dll or the repo's Release build, or with
+#   --apertium-tools the Apertium programs themselves (from --tools or PATH); see THE TWO WAYS in transfer.py. --synthesize (which implies --transfer) goes on through Convert Text to Synthesizer Format and HermitCrab
 #   synthesis (synthesis.py), printing the synthesized text after the bundle's Text Out rules (textout.py), as Collect Output applies them. HCSynthByGloss runs either as the --hcsynth program or, with --hcsynth-dll, as the DLL loaded into this process with pythonnet, which
 #   loads the HermitCrab config only once (see EXE OR DLL in synthesis.py). --synth-dir keeps the master, parses and surface forms files for comparison.
 #
 #   SERVE-OFFLINE
 #
 #   serve-offline is serve without FieldWorks, FLExTrans or a work project: it runs the same chain as offline-stream --synthesize behind the React front end (offlineserver.py), from bundle
-#   folders alone, synthesizing with --hcsynth or --hcsynth-dll as offline-stream does. It is what the Docker image in Dockerfile runs on Railway (with --hcsynth-dll), listening on 0.0.0.0 and
+#   folders alone, transferring and synthesizing as offline-stream does (--apertium-dll or --apertium-tools; --hcsynth or --hcsynth-dll). It is what the Docker image in Dockerfile runs on Railway (with --apertium-dll and --hcsynth-dll), listening on 0.0.0.0 and
 #   Railway's $PORT. It stops on Ctrl+C or the host's stop signal; nothing needs saving. It serves every bundle in one folder (--bundles, else the FTT_BUNDLES environment variable, else a new
 #   temporary folder), and --seed copies a bundle into that folder when its id isn't there yet (see SEVERAL BUNDLES in offlineserver.py). --bundle is the older spelling of --seed, so
 #   serve-offline --bundle DIR still serves that one bundle, from a temporary copy.
@@ -98,7 +102,7 @@
 #   CODE STRUCTURE
 #
 #   _translator() builds the Translator for a command. Then cmdTranslate(), cmdInteractive() and cmdServe() with their helpers CtrlCStopper, stdoutToStderr(), silenceTools() (all three also used by
-#   server.py), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck(), cmdRuns(), cmdExportBundle(), cmdGolden(), cmdCheckGolden(), cmdOfflineStream(), cmdServeOffline() and cmdUploadBundle(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
+#   server.py), printTimings() (for --timing or -v), summarize() and _unique(), followed by cmdSteps(), cmdCheck(), cmdRuns(), cmdExportBundle(), cmdGolden(), cmdCheckGolden(), _apertiumDll() (which way the transfer step runs) with cmdOfflineStream() and cmdServeOffline(), and cmdUploadBundle(). main() sets up argparse, runs the chosen command and shuts FieldWorks down with env.cleanup() however the command ends.
 #
 
 import argparse
@@ -607,6 +611,18 @@ def cmdCheckGolden(args):
 
     return 0 if differing == 0 else 1
 
+def _apertiumDll(args):
+    '''The FTApertium DLL that --apertium-dll and --apertium-tools choose for offline-stream and serve-offline, or None for the Apertium tools. See THE TWO WAYS in transfer.py.'''
+
+    from .transfer import chooseApertiumDll
+
+    try:
+        return chooseApertiumDll(args.apertiumDll, args.apertiumTools)
+
+    except RuntimeError as e:
+
+        raise SystemExit(str(e))
+
 def cmdOfflineStream(args):
     '''Run the FieldWorks-free chain (tokenize, parse, file, guess, Extract Source Text) on a text and print the Apertium stream. Needs no FieldWorks. See analysisguess.py.'''
 
@@ -626,12 +642,13 @@ def cmdOfflineStream(args):
     # The transfer rules and the Text Out rules are named in the manifest
     manifest = json.loads((bundleDir / "manifest.json").read_text(encoding="utf-8"))
 
-    # --transfer: on through the Apertium tools, as Run Apertium does (see transfer.py). --synthesize needs the target stream, so it implies --transfer.
+    # --transfer: on through the transfer step, as Run Apertium does (see transfer.py). --synthesize needs the target stream, so it implies --transfer.
     if args.transfer or args.synthesize:
 
         from .transfer import Transfer
 
-        stream = Transfer(bundleDir, manifest["files"]["apertium"]["rules"], toolsDir=args.tools).transfer(stream)
+        apertiumDll = _apertiumDll(args)
+        stream = Transfer(bundleDir, manifest["files"]["apertium"]["rules"], toolsDir=args.tools, apertiumDll=apertiumDll).transfer(stream)
 
     # --synthesize: on through Convert Text to Synthesizer Format and HermitCrab synthesis (see synthesis.py); its messages go with the others
     if args.synthesize:
@@ -707,7 +724,7 @@ def cmdServeOffline(args):
         bundlesRoot = temporaryRoot
 
     try:
-        offlineserver.serve(Path(bundlesRoot).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll, password=password, seeds=seeds, uploadPassword=uploadPassword)
+        offlineserver.serve(Path(bundlesRoot).resolve(), args.hcparse, args.hcsynth, args.host, args.port, toolsDir=args.tools, verbose=args.verbose, hcsynthDll=args.hcsynthDll, password=password, seeds=seeds, uploadPassword=uploadPassword, apertiumDll=_apertiumDll(args))
     finally:
 
         if temporaryRoot:
@@ -909,7 +926,10 @@ def main(argv=None):
     subparser.add_argument("--bundle", help="the bundle folder (default: <work project>\\Output\\ftt_bundle)")
     subparser.add_argument("--hcparse", required=True, help='the command that runs hcparse, without its file arguments, e.g. "dotnet /opt/hcparse/HCParse.dll"')
     subparser.add_argument("--transfer", action="store_true", help="also run the Apertium transfer and print the target stream")
-    subparser.add_argument("--tools", help="the folder with the Apertium tools (FlexTools\\Tools on Windows; default: on PATH)")
+    apertiumGroup = subparser.add_mutually_exclusive_group()
+    apertiumGroup.add_argument("--apertium-dll", dest="apertiumDll", help="the FTApertium DLL (FTtranslator.Apertium.dll) to transfer with (default: the Release build in Dev\\FTtranslator\\apertium)")
+    apertiumGroup.add_argument("--apertium-tools", dest="apertiumTools", action="store_true", help="transfer with the Apertium programs instead of FTApertium (see --tools)")
+    subparser.add_argument("--tools", help="with --apertium-tools, the folder with the Apertium tools (FlexTools\\Tools on Windows; default: on PATH)")
     subparser.add_argument("--synthesize", action="store_true", help="also synthesize the target text with HermitCrab and print it (implies --transfer)")
     hcsynthGroup = subparser.add_mutually_exclusive_group()
     hcsynthGroup.add_argument("--hcsynth", help='the command that runs HCSynthByGloss, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
@@ -924,7 +944,10 @@ def main(argv=None):
     hcsynthGroup = subparser.add_mutually_exclusive_group(required=True)
     hcsynthGroup.add_argument("--hcsynth", help='the command that runs HCSynthByGloss for each text, without its arguments, e.g. "dotnet /opt/hcsynth/HCSynthByGloss.dll"')
     hcsynthGroup.add_argument("--hcsynth-dll", dest="hcsynthDll", help="instead (faster), the .NET 8 HCSynthByGloss.dll to load into the server once (needs pythonnet), e.g. /opt/hcsynth/HCSynthByGloss.dll")
-    subparser.add_argument("--tools", help="the folder with the Apertium tools (FlexTools\\Tools on Windows; default: on PATH)")
+    apertiumGroup = subparser.add_mutually_exclusive_group()
+    apertiumGroup.add_argument("--apertium-dll", dest="apertiumDll", help="the FTApertium DLL (FTtranslator.Apertium.dll) to load into the server for transfer (default: the Release build in Dev\\FTtranslator\\apertium), e.g. /opt/apertium/FTtranslator.Apertium.dll")
+    apertiumGroup.add_argument("--apertium-tools", dest="apertiumTools", action="store_true", help="transfer with the Apertium programs instead of FTApertium (see --tools)")
+    subparser.add_argument("--tools", help="with --apertium-tools, the folder with the Apertium tools (FlexTools\\Tools on Windows; default: on PATH)")
     subparser.add_argument("--host", default="127.0.0.1", help="the address to listen on (default 127.0.0.1; 0.0.0.0 for every interface, as on a server)")
     subparser.add_argument("--port", type=int, default=8765, help="the port to listen on (default 8765)")
     subparser.add_argument("-v", "--verbose", action="store_true", help="show each request in the console")

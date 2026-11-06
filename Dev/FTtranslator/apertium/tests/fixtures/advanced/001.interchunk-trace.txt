@@ -1,0 +1,8 @@
+
+apertium-interchunk: Rule 1 line 24 Np<SN><pl><def>{^Den1.1<det><2>$ ^stor1.1<adj><3>$ ^hund1.1<n><2><3sg_x>$} vp<SV><pres>{^spring#a1.1<v><pres><3sg_cond>$}
+
+apertium-interchunk: Rule 2 line 37 Np<SN><sg><def>{^En1.1<det><2>$ ^ny1.1<adj><3>$ ^katt1.1<n><2><3sg_x>$} sent<sent>{^!<sent>$}
+
+apertium-interchunk: Rule 1 line 24 Np<SN><sg><def>{^DEN1.1<det><2>$ ^stor1.1<adj><3>$ ^cykel1.1<n><2><3sg_x>$} vp<SV><past>{^gå ut1.1<v><past><3sg_cond>$}
+
+apertium-interchunk: Rule 2 line 37 n_chunk<SN><pl>{^park1.1<n><pl>$} sent<sent>{^.<sent>$}

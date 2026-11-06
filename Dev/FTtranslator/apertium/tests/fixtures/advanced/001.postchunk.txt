@@ -1,0 +1,2 @@
+^Spring#a1.1<v><pres><pl>$ ^count3<pl>$ ^hund1.1<n><pl><def>$ ^Stor1.1<adj>$ ^DEN1.1<det><pl>$^^Den1.1<det>$ ^stor1.1<adj>$ ^hund1.1<n>$^.<sent>$ ^count3<pl>$ ^katt1.1<n><pl><def>$ ^Ny1.1<adj>$ ^EN1.1<det><pl>$^!<sent>$
+^Gå ut1.1<v><past><sg>$ ^count3<sg>$ ^cykel1.1<n><sg><def>$ ^Stor1.1<adj>$ ^DEN1.1<det><sg>$^^DEN1.1<det>$ ^stor1.1<adj>$ ^cykel1.1<n>$ ^park1.1<n>$^?<sent>$ ^New york1.1<np>$ ^i1.1<prep>$ ^den1.1<det>$ ^park1.1<n><pl>$^.<sent>$

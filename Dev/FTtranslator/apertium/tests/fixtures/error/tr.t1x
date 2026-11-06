@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FTApertium test fixture: a rules file apertium-preprocess-transfer accepts but apertium-transfer stops on when a branch runs. The macro reads its parameter back with <with-param> as a
+     value (as Mato-Uma's m_map_noun_lemma_by_genitive does), which isn't an expression, so 001 fails with "Error: unexpected expression: 'with-param'"; 002 never reaches it and succeeds. -->
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_n"><cat-item tags="n"/><cat-item tags="n.*"/></def-cat>
+    <def-cat n="c_any"><cat-item tags="*"/></def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="a_cat"><attr-item tags="n"/><attr-item tags="adj"/></def-attr>
+  </section-def-attrs>
+  <section-def-macros>
+    <def-macro n="m_bad" npar="1">
+      <let><clip pos="1" side="tl" part="lem"/><get-case-from pos="1"><with-param pos="1"/></get-case-from></let>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="a noun: calls the bad macro">
+      <pattern><pattern-item n="c_n"/></pattern>
+      <action>
+        <call-macro n="m_bad"><with-param pos="1"><lit v="hound1.1"/></with-param></call-macro>
+        <out><lu><clip pos="1" side="tl" part="whole"/></lu></out>
+      </action>
+    </rule>
+    <rule comment="anything else, as it is">
+      <pattern><pattern-item n="c_any"/></pattern>
+      <action>
+        <out><lu><clip pos="1" side="tl" part="whole"/></lu></out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

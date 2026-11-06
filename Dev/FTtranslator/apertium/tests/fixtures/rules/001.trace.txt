@@ -1,0 +1,85 @@
+
+apertium-transfer: Matched rule 3 line 96 The1.1<det>/Den1.1<det>
+
+apertium-transfer: Matched rule 1 line 62 The1.1<det>/Den1.1<det> big1.1<adj>/stor1.1<adj> dog1.1<n><pl>/hund1.1<n><pl>
+
+apertium-transfer: Applied rule 1 line 62 The1.1<det>/Den1.1<det> big1.1<adj>/stor1.1<adj> dog1.1<n><pl>/hund1.1<n><pl>
+apertium-transfer warning: <let> on line 73 sometimes discards its value.
+
+apertium-transfer: Matched rule 5 line 116 run1.1<v><pres>/spring#a1.1<v><pres>
+
+apertium-transfer: Applied rule 5 line 116 run1.1<v><pres>/spring#a1.1<v><pres>
+
+apertium-transfer: Matched rule 7 line 154 .<sent>/.<sent>
+
+apertium-transfer: Applied rule 7 line 154 .<sent>/.<sent>
+
+apertium-transfer: Matched rule 3 line 96 THE1.1<det>/DEN1.1<det>
+
+apertium-transfer: Matched rule 1 line 62 THE1.1<det>/DEN1.1<det> new1.1<adj>/ny1.1<adj> Cat1.1<n>/Katt1.1<n>
+
+apertium-transfer: Applied rule 1 line 62 THE1.1<det>/DEN1.1<det> new1.1<adj>/ny1.1<adj> Cat1.1<n>/Katt1.1<n>
+apertium-transfer warning: <let> on line 73 sometimes discards its value.
+
+apertium-transfer: Matched rule 7 line 154 !<sent>/!<sent>
+
+apertium-transfer: Applied rule 7 line 154 !<sent>/!<sent>
+
+apertium-transfer: Matched rule 3 line 96 the1.1<det>/den1.1<det>
+
+apertium-transfer: Matched rule 2 line 85 the1.1<det>/den1.1<det> bike1.1<n><sg>/cykel1.1<n><sg>
+
+apertium-transfer: Applied rule 2 line 85 the1.1<det>/den1.1<det> bike1.1<n><sg>/cykel1.1<n><sg>
+
+apertium-transfer: Matched rule 2 line 85 a1.1<det>/en1.1<det> park1.1<n>/park1.1<n>
+
+apertium-transfer: Applied rule 2 line 85 a1.1<det>/en1.1<det> park1.1<n>/park1.1<n>
+
+apertium-transfer: Matched rule 3 line 96 The1.1<det>/Den1.1<det>
+
+apertium-transfer: Applied rule 3 line 96 The1.1<det>/Den1.1<det> walk1.1<v><past>/gå ut1.1<v><past>
+
+apertium-transfer: Matched rule 5 line 116 walk1.1<v><past>/gå ut1.1<v><past>
+
+apertium-transfer: Applied rule 5 line 116 walk1.1<v><past>/gå ut1.1<v><past>
+
+apertium-transfer: Matched rule 6 line 142 in1.1<prep>/i1.1<prep> park1.1<n><pl>/park1.1<n><pl>
+
+apertium-transfer: Applied rule 6 line 142 in1.1<prep>/i1.1<prep> park1.1<n><pl>/park1.1<n><pl>
+
+apertium-transfer: Matched rule 7 line 154 ?<sent>/?<sent>
+
+apertium-transfer: Applied rule 7 line 154 ?<sent>/?<sent>
+
+apertium-transfer: Matched rule 4 line 104 New York1.1<np>/New york1.1<np>
+
+apertium-transfer: Applied rule 4 line 104 New York1.1<np>/New york1.1<np>
+
+apertium-transfer: Matched rule 4 line 104 SAN JOSÉ1.1<np>/SAN JOSÉ1.1<np>
+
+apertium-transfer: Applied rule 4 line 104 SAN JOSÉ1.1<np>/SAN JOSÉ1.1<np>
+
+apertium-transfer: Matched rule 4 line 104 new york1.1<np>/new york1.1<np>
+
+apertium-transfer: Applied rule 4 line 104 new york1.1<np>/new york1.1<np>
+
+apertium-transfer: Matched rule 3 line 96 the1.1<det>/den1.1<det>
+
+apertium-transfer: Applied rule 3 line 96 the1.1<det>/den1.1<det> the1.1<det>/den1.1<det>
+
+apertium-transfer: Matched rule 3 line 96 the1.1<det>/den1.1<det>
+
+apertium-transfer: Applied rule 3 line 96 the1.1<det>/den1.1<det> .<sent>/.<sent>
+
+apertium-transfer: Matched rule 7 line 154 .<sent>/.<sent>
+
+apertium-transfer: Applied rule 7 line 154 .<sent>/.<sent>
+
+apertium-transfer: Matched rule 1 line 62 A1.1<det>/En1.1<det> big1.1<adj>/stor1.1<adj> BIKE1.1<n><pl>/CYKEL1.1<n><pl>
+
+apertium-transfer: Applied rule 1 line 62 A1.1<det>/En1.1<det> big1.1<adj>/stor1.1<adj> BIKE1.1<n><pl>/CYKEL1.1<n><pl>
+apertium-transfer warning: <let> on line 73 sometimes discards its value.
+
+apertium-transfer: Matched rule 7 line 154 .<sent>/.<sent>
+
+apertium-transfer: Applied rule 7 line 154 .<sent>/.<sent>

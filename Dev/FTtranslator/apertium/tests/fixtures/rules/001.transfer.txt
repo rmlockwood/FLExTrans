@@ -1,0 +1,3 @@
+^Den1.1<det><pl>$ ^hund1.1-djur<n><pl>$ ^stor1.1<adj><x><y>$^case-Aa<info>$ ^spring<v><past>$^acc-<info>$^.<sent>$  ^Den1.1<det><sg>$ ^Katt1.1-djur<n>$ ^ny1.1<adj><x><y>$^case-Aa<info>$^!<sent>$ 
+^CYKEL1.1<num_linked>$ ^den1.1<det>$ ^PARK1.1$ ^en1.1<det>$ ^DEN1.1<det>$ ^gå ut1.1<v><pres>$^acc-<info>$ ^park1.1<n><pl>$ ^i1.1<prep>$ ^?<sent>$ 
+^New York1.1<np>tail$ ^Över Hela Världen<phrase>$ ^San José1.1<np>tail$ ^Över Hela Världen<phrase>$ ^new york1.1<np>tail$ ^över hela världen<phrase>$ ^Spring#a1.1<v>$ ^stor1.1<adj>$ ^@unknown1.1<n>$ ^DEN1.1<det>$ ^DEN1.1<det>$^.<sent>$  [<p>]^En1.1<det><pl>$ ^CYKEL1.1<n><pl>$ ^stor1.1<adj><x><y>$^case-Aa<info>$^.<sent>$ 

@@ -1,0 +1,2 @@
+# FTApertium test fixtures are compared byte for byte (line ends included), so git must never convert them
+* -text

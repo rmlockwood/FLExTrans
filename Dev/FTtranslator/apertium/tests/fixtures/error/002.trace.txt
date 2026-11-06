@@ -1,0 +1,12 @@
+
+apertium-transfer: Matched rule 2 line 25 The1.1<det>/Den1.1<det>
+
+apertium-transfer: Applied rule 2 line 25 The1.1<det>/Den1.1<det>
+
+apertium-transfer: Matched rule 2 line 25 big1.1<adj>/stor1.1<adj>
+
+apertium-transfer: Applied rule 2 line 25 big1.1<adj>/stor1.1<adj>
+
+apertium-transfer: Matched rule 2 line 25 .<sent>/.<sent>
+
+apertium-transfer: Applied rule 2 line 25 .<sent>/.<sent>

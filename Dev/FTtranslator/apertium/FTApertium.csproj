@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    FTApertium: FLExTrans' Apertium transfer step (lt-proc -b, apertium-transfer -b, apertium-interchunk, apertium-postchunk) in C#, checked byte for byte against the Windows tools
+    FLExTrans ships. FTtranslator loads FTtranslator.Apertium.dll into Python with pythonnet (fttranslator/transfer.py); the runtime config is generated so pythonnet can start .NET with it, as it does
+    for HCSynthByGloss.dll. .NET 8 to match hcparse, hcsynth and the Docker image. The command line is in cli/, the tests in tests/. Build: dotnet build -c Release (see README.md).
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>FTtranslator.Apertium</AssemblyName>
+    <RootNamespace>FTtranslator.Apertium</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <!-- cli/ and tests/ are projects of their own -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="*.cs" />
+  </ItemGroup>
+
+</Project>

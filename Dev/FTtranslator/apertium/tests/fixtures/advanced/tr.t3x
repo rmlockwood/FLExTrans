@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FTApertium test fixture: postchunk, unpacking chunks (lu-count, the chunk header as position 0, get-case-from, modify-case, a macro, <N> tag references, chunk names that are capitalized
+     or all caps, chunks no rule matches). The expected output comes from the Windows apertium-postchunk; see ../../make_fixtures.py. -->
+<postchunk>
+  <section-def-cats>
+    <def-cat n="c_np"><cat-item name="np"/></def-cat>
+    <def-cat n="c_vp"><cat-item name="vp"/></def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="a_num"><attr-item tags="sg"/><attr-item tags="pl"/></def-attr>
+    <def-attr n="a_cat"><attr-item tags="n"/><attr-item tags="adj"/><attr-item tags="det"/><attr-item tags="v"/></def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <def-var n="v_count"/>
+  </section-def-vars>
+  <section-def-macros>
+    <def-macro n="m_upper" npar="1">
+      <modify-case><clip pos="1" part="lem"/><lit v="AA"/></modify-case>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="NP: count its words, recase, write them in reverse order">
+      <pattern><pattern-item n="c_np"/></pattern>
+      <action>
+        <let><var n="v_count"/><lu-count/></let>
+        <call-macro n="m_upper"><with-param pos="1"/></call-macro>
+        <out>
+          <lu><lit v="count"/><var n="v_count"/><clip pos="0" part="a_num"/></lu>
+          <b/>
+          <lu><clip pos="3" part="whole"/></lu>
+          <b pos="2"/>
+          <lu><get-case-from pos="1"><clip pos="2" part="lem"/></get-case-from><clip pos="2" part="a_cat"/></lu>
+          <b pos="1"/>
+          <lu><clip pos="1" part="whole"/></lu>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</postchunk>

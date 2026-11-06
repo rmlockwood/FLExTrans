@@ -1,0 +1,1 @@
+^Den1.1<det>$ ^stor1.1<adj>$^.<sent>$

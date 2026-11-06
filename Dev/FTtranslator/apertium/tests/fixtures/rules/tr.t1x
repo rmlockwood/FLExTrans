@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FTApertium test fixture: apertium-transfer -b behaviors no FLExTrans project exercised (modify-case, the -list tests, case-of, link-to, title-casing through get-case-from, the lemh,
+     lemq and tags parts, queue="no", npar="0" macros, discarded lets) alongside the common ones (longest match, rule order, wildcard lemmas, words no rule matches). The expected output
+     comes from the Windows apertium-transfer; see ../../make_fixtures.py. -->
+<transfer>
+  <section-def-cats>
+    <def-cat n="c_det"><cat-item tags="det"/><cat-item tags="det.*"/></def-cat>
+    <def-cat n="c_the"><cat-item lemma="the1.1" tags="det"/></def-cat>
+    <def-cat n="c_adj"><cat-item tags="adj"/><cat-item tags="adj.*"/></def-cat>
+    <def-cat n="c_n"><cat-item tags="n"/><cat-item tags="n.*"/></def-cat>
+    <def-cat n="c_np"><cat-item tags="np"/><cat-item tags="np.*"/></def-cat>
+    <def-cat n="c_v"><cat-item tags="v.*"/></def-cat>
+    <def-cat n="c_prep"><cat-item lemma="i*" tags="prep"/></def-cat>
+    <def-cat n="c_sent"><cat-item tags="sent"/></def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="a_num"><attr-item tags="sg"/><attr-item tags="pl"/></def-attr>
+    <def-attr n="a_cat"><attr-item tags="n"/><attr-item tags="adj"/><attr-item tags="det"/><attr-item tags="det.def"/><attr-item tags="np"/><attr-item tags="v"/><attr-item tags="prep"/></def-attr>
+    <def-attr n="a_tense"><attr-item tags="pres"/><attr-item tags="past"/></def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <def-var n="v_num" v="&lt;sg&gt;"/>
+    <def-var n="v_acc"/>
+    <def-var n="v_case" v="Aa"/>
+    <def-var n="v_name" v="np_chunk"/>
+  </section-def-vars>
+  <section-def-lists>
+    <def-list n="l_animals"><list-item v="dog1.1"/><list-item v="Cat1.1"/></def-list>
+    <def-list n="l_pre"><list-item v="bi"/><list-item v="PA"/></def-list>
+    <def-list n="l_suf"><list-item v="E1.1"/><list-item v="ke1.1"/></def-list>
+  </section-def-lists>
+  <section-def-macros>
+    <def-macro n="m_mark" npar="1">
+      <choose>
+        <when>
+          <test><in caseless="yes"><clip pos="1" side="sl" part="lem"/><list n="l_animals"/></in></test>
+          <let><clip pos="1" side="tl" part="lem"/><concat><clip pos="1" side="tl" part="lem"/><lit v="-djur"/></concat></let>
+        </when>
+        <when>
+          <test><begins-with-list caseless="yes"><clip pos="1" side="sl" part="lem"/><list n="l_pre"/></begins-with-list></test>
+          <modify-case><clip pos="1" side="tl" part="lem"/><lit v="AA"/></modify-case>
+        </when>
+        <when>
+          <test><ends-with-list><clip pos="1" side="sl" part="lem"/><list n="l_suf"/></ends-with-list></test>
+          <append n="v_acc"><clip pos="1" side="tl" part="lemh"/><lit v="|"/></append>
+        </when>
+        <when>
+          <test><ends-with-list caseless="yes"><clip pos="1" side="sl" part="lem"/><list n="l_suf"/></ends-with-list></test>
+          <modify-case><clip pos="1" side="tl" part="lem"/><lit v="Aa"/></modify-case>
+        </when>
+        <otherwise>
+          <modify-case><clip pos="1" side="tl" part="lem"/><case-of pos="1" side="sl" part="lem"/></modify-case>
+        </otherwise>
+      </choose>
+    </def-macro>
+    <def-macro n="m_reset" npar="0">
+      <let><var n="v_case"/><lit v="aa"/></let>
+      <modify-case><var n="v_acc"/><lit v="AA"/></modify-case>
+    </def-macro>
+  </section-def-macros>
+  <section-rules>
+    <rule comment="det adj n">
+      <pattern><pattern-item n="c_det"/><pattern-item n="c_adj"/><pattern-item n="c_n"/></pattern>
+      <action>
+        <call-macro n="m_mark"><with-param pos="3"/></call-macro>
+        <let><var n="v_num"/><clip pos="3" side="tl" part="a_num"/></let>
+        <choose>
+          <when>
+            <test><equal><var n="v_num"/><lit v=""/></equal></test>
+            <let><var n="v_num"/><lit-tag v="sg"/></let>
+          </when>
+        </choose>
+        <let><clip pos="2" side="tl" part="a_num"/><var n="v_num"/></let>
+        <let><var n="v_case"/><case-of pos="1" side="sl" part="lem"/></let>
+        <out>
+          <lu><get-case-from pos="1"><clip pos="1" side="tl" part="lem"/></get-case-from><clip pos="1" side="tl" part="a_cat"/><var n="v_num"/></lu>
+          <b/>
+          <lu><clip pos="3" side="tl" part="lem"/><clip pos="3" side="tl" part="tags"/></lu>
+          <b/>
+          <lu><clip pos="2" side="tl" part="whole"/><lit-tag v="x.y"/></lu>
+          <lu><lit v="case-"/><var n="v_case"/><lit-tag v="info"/></lu>
+        </out>
+      </action>
+    </rule>
+    <rule comment="det n">
+      <pattern><pattern-item n="c_det"/><pattern-item n="c_n"/></pattern>
+      <action>
+        <call-macro n="m_mark"><with-param pos="2"/></call-macro>
+        <out>
+          <lu><clip pos="2" side="tl" part="lem"/><clip pos="2" side="tl" part="a_num" link-to="num_linked"/><clip pos="2" side="sl" part="a_tense" link-to="never"/></lu>
+          <b/>
+          <lu><clip pos="1" side="tl" part="whole"/></lu>
+        </out>
+      </action>
+    </rule>
+    <rule comment="the: an earlier rule than det n, but shorter, so det n wins where it matches">
+      <pattern><pattern-item n="c_the"/></pattern>
+      <action>
+        <let><var n="v_case"/><lit v="AA"/></let>
+        <modify-case><clip pos="1" side="tl" part="lem"/><var n="v_case"/></modify-case>
+        <out><lu><clip pos="1" side="tl" part="whole"/></lu></out>
+      </action>
+    </rule>
+    <rule comment="proper nouns: title case through get-case-from, all caps, the -list tests on multiword lemmas">
+      <pattern><pattern-item n="c_np"/></pattern>
+      <action>
+        <call-macro n="m_mark"><with-param pos="1"/></call-macro>
+        <out>
+          <lu><get-case-from pos="1"><concat><clip pos="1" side="tl" part="lem"/><lit-tag v="np"/><lit v="tail"/></concat></get-case-from></lu>
+          <b/>
+          <lu><get-case-from pos="1"><lit v="över hela världen"/></get-case-from><lit-tag v="phrase"/></lu>
+        </out>
+        <call-macro n="m_reset"/>
+      </action>
+    </rule>
+    <rule comment="verbs: the lemh and lemq parts, queue=no, contains-substring, caseless equal, not/or/and">
+      <pattern><pattern-item n="c_v"/></pattern>
+      <action>
+        <choose>
+          <when>
+            <test>
+              <and>
+                <or>
+                  <contains-substring caseless="yes"><clip pos="1" side="sl" part="lem"/><lit v="RU"/></contains-substring>
+                  <equal caseless="yes"><clip pos="1" side="sl" part="lem"/><lit v="WALK1.1"/></equal>
+                </or>
+                <not><equal><clip pos="1" side="tl" part="a_tense"/><lit-tag v="past"/></equal></not>
+              </and>
+            </test>
+            <let><clip pos="1" side="tl" part="a_tense" queue="no"/><lit-tag v="past"/></let>
+          </when>
+          <otherwise>
+            <let><clip pos="1" side="tl" part="a_tense"/><lit-tag v="pres"/></let>
+          </otherwise>
+        </choose>
+        <out>
+          <lu><clip pos="1" side="tl" part="lemh"/><clip pos="1" side="tl" part="tags"/><clip pos="1" side="tl" part="lemq"/></lu>
+          <lu><lit v="acc-"/><var n="v_acc"/><lit-tag v="info"/></lu>
+        </out>
+      </action>
+    </rule>
+    <rule comment="a preposition by wildcard lemma, then a noun">
+      <pattern><pattern-item n="c_prep"/><pattern-item n="c_n"/></pattern>
+      <action>
+        <out>
+          <lu><clip pos="2" side="tl" part="whole"/></lu>
+          <b/>
+          <lu><clip pos="1" side="tl" part="whole"/></lu>
+          <b/>
+          <lu><lit v=""/></lu>
+        </out>
+      </action>
+    </rule>
+    <rule comment="sentence punctuation">
+      <pattern><pattern-item n="c_sent"/></pattern>
+      <action>
+        <out><lu><clip pos="1" side="tl" part="whole"/></lu><b/></out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

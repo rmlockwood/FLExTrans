@@ -1,0 +1,4 @@
+^The1.1<det>$ ^big1.1<adj>$ ^dog1.1<n><pl>$ ^run1.1<v><pres>$^.<sent>$ ^DOG1.1<n>$ ^Dog1.1<n><sg>$ ^BIG1.1<adj>$
+^new york1.1<np>$ ^New York1.1<np>$ ^NEW YORK1.1<np>$ ^Paris1.1<np>$ ^paris1.1<np>$ ^bank1.1<n>$ ^Bank1.1<n><pl>$ ^light1.1<adj>$
+^a\/b1.1<n>$ ^at\@home1.1<n>$ ^ok$ ^okay$ ^ok<n>$ ^OK$ ^123<num>$ ^haha!<laugh>$ ^hehe<laugh>$ ^cat1.1<n>$ ^dog1.1$ [<p>]^the1.1<det><def>$ \^ \@ ^?!<sent>$
+^*unknown$ ^#dog1.1<n>$ ^$ ^dog1.1<n>/hund1.1<n>$ [[t:b:x]]^dog1.1<n>$ text \[not a blank\] end

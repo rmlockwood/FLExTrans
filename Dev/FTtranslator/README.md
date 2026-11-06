@@ -44,8 +44,8 @@ python -m fttranslator runs      WORKDIR     # earlier runs and their failed wor
 python -m fttranslator export-bundle WORKDIR [--out DIR] [-v]
 python -m fttranslator golden    WORKDIR [--text T]... [--out DIR] [-v]
 python -m fttranslator check-golden WORKDIR [--bundle DIR] [--golden DIR] [--show N]
-python -m fttranslator offline-stream WORKDIR [TEXT] [--file F] [--bundle DIR] --hcparse CMD [--transfer] [--tools DIR] [--synthesize (--hcsynth CMD | --hcsynth-dll DLL)] [--synth-dir DIR]
-python -m fttranslator serve-offline [--bundles DIR] [--seed DIR]... --hcparse CMD (--hcsynth CMD | --hcsynth-dll DLL) [--tools DIR] [--host H] [--port N] [-v]
+python -m fttranslator offline-stream WORKDIR [TEXT] [--file F] [--bundle DIR] --hcparse CMD [--transfer] [--apertium-dll DLL | --apertium-tools [--tools DIR]] [--synthesize (--hcsynth CMD | --hcsynth-dll DLL)] [--synth-dir DIR]
+python -m fttranslator serve-offline [--bundles DIR] [--seed DIR]... --hcparse CMD (--hcsynth CMD | --hcsynth-dll DLL) [--apertium-dll DLL | --apertium-tools [--tools DIR]] [--host H] [--port N] [-v]
 python -m fttranslator upload-bundle WORKDIR|BUNDLEDIR --url URL [--name N]
 ```
 
@@ -63,8 +63,9 @@ python -m fttranslator upload-bundle WORKDIR|BUNDLEDIR --url URL [--name N]
 - `offline-stream` translates a text from the bundle alone, with no FieldWorks or FLExTrans, and prints the Apertium stream; `--transfer` prints the target stream and `--synthesize` the
   synthesized text, with the Text Out rules applied. `--hcparse` and `--hcsynth` are the commands that run the .NET 8 builds in `hcparse\` and `hcsynth\` (e.g. `"dotnet ...\HCParse.dll"`). `--hcsynth-dll ...\HCSynthByGloss.dll` is the
   faster alternative to `--hcsynth`: it loads the DLL into the Python process with pythonnet (`pip install pythonnet`), as FLExTrans' Live Rule Tester does, so the HermitCrab config is read
-  once rather than for every text (synthesis went from about 0.5 s to 0.06 s a text on FTT-Scratch). `--tools` is the folder with the Apertium tools (`FlexTools\Tools` on Windows; on Linux
-  they are found on PATH).
+  once rather than for every text (synthesis went from about 0.5 s to 0.06 s a text on FTT-Scratch). Transfer runs through FTApertium, the C# port of the Apertium tools in `apertium\` (see
+  [its README](apertium/README.md)), loaded the same way: `--apertium-dll` names its `FTtranslator.Apertium.dll`, and without it the Release build in `apertium\bin\Release\net8.0\` is used
+  (`dotnet build -c Release` in `apertium\`). `--apertium-tools` uses the Apertium programs instead, from `--tools` (`FlexTools\Tools` on Windows) or PATH.
 - `serve-offline` is `serve` from bundles alone: the same page, translating with the `offline-stream --synthesize` chain. It writes to no project. It serves every bundle in one folder, one
   sub-folder per bundle, named after its work project: `--bundles DIR`, else the `FTT_BUNDLES` environment variable, else a temporary folder for this run. The page then has a drop-down to
   choose the bundle (when there is more than one), and remembers the choice in that browser. `--seed DIR` copies a bundle folder in unless one of that name is already there; `--bundle DIR` is
@@ -117,8 +118,8 @@ must be `localhost` or `127.0.0.1`. These checks stop other web pages open in th
 
 ## Deploying to Railway
 
-`Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse and hcsynth, Node builds the page, and the final image is the .NET 8 runtime with Python 3,
-pythonnet (so the server synthesizes with `--hcsynth-dll`) and Debian's `apertium` and `lttoolbox` packages. It serves the bundles in `/data/bundles` (`FTT_BUNDLES`), which should be on a
+`Dockerfile` builds a Linux image that runs `serve-offline`: the .NET 8 SDK builds hcparse, hcsynth and FTApertium, Node builds the page, and the final image is the .NET 8 runtime with
+Python 3 and pythonnet (so the server transfers with `--apertium-dll` and synthesizes with `--hcsynth-dll`); it needs no Apertium packages. It serves the bundles in `/data/bundles` (`FTT_BUNDLES`), which should be on a
 Railway volume. `deploy\bundle\`, a copy of FTT-Scratch's `Output\ftt_bundle\`, is seeded into it at start-up if no FTT-Scratch bundle is there yet. It is committed for that test pair only,
 since a bundle holds the project's lexicon and the repository is public; real projects' bundles are sent with `upload-bundle`.
 

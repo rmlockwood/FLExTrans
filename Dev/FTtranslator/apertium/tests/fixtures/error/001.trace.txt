@@ -1,0 +1,9 @@
+
+apertium-transfer: Matched rule 2 line 25 The1.1<det>/Den1.1<det>
+
+apertium-transfer: Applied rule 2 line 25 The1.1<det>/Den1.1<det>
+
+apertium-transfer: Matched rule 1 line 18 dog1.1<n>/hund1.1<n>
+
+apertium-transfer: Applied rule 1 line 18 dog1.1<n>/hund1.1<n>
+Error: unexpected expression: 'with-param'

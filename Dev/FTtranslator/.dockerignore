@@ -5,5 +5,8 @@
 web/node_modules/
 web/dist/
 tests/
+apertium/tests/
+apertium/cli/
+maui-spike/
 parse_priority/
 *.log

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FTApertium test fixture: the first stage of advanced transfer, making chunks (default="chunk", chunk names from variables and their case, <N> tag references, a word tag starting with
+     a digit). Feeds tr.t2x and tr.t3x. The expected output comes from the Windows tools; see ../../make_fixtures.py. -->
+<transfer default="chunk">
+  <section-def-cats>
+    <def-cat n="c_det"><cat-item tags="det"/><cat-item tags="det.*"/></def-cat>
+    <def-cat n="c_adj"><cat-item tags="adj"/><cat-item tags="adj.*"/></def-cat>
+    <def-cat n="c_n"><cat-item tags="n"/><cat-item tags="n.*"/></def-cat>
+    <def-cat n="c_v"><cat-item tags="v.*"/></def-cat>
+    <def-cat n="c_sent"><cat-item tags="sent"/></def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="a_num"><attr-item tags="sg"/><attr-item tags="pl"/></def-attr>
+    <def-attr n="a_cat"><attr-item tags="n"/><attr-item tags="adj"/><attr-item tags="det"/><attr-item tags="v"/></def-attr>
+    <def-attr n="a_tense"><attr-item tags="pres"/><attr-item tags="past"/></def-attr>
+  </section-def-attrs>
+  <section-def-vars>
+    <def-var n="v_case"/>
+    <def-var n="v_name" v="n_chunk"/>
+    <def-var n="v_num"/>
+  </section-def-vars>
+  <section-rules>
+    <rule comment="det adj n: an NP chunk named in the case of the first word">
+      <pattern><pattern-item n="c_det"/><pattern-item n="c_adj"/><pattern-item n="c_n"/></pattern>
+      <action>
+        <let><var n="v_case"/><case-of pos="1" side="sl" part="lem"/></let>
+        <let><var n="v_num"/><clip pos="3" side="tl" part="a_num"/></let>
+        <choose><when><test><equal><var n="v_num"/><lit v=""/></equal></test><let><var n="v_num"/><lit-tag v="sg"/></let></when></choose>
+        <out>
+          <chunk name="np" case="v_case">
+            <tags><tag><lit-tag v="SN"/></tag><tag><var n="v_num"/></tag><tag><lit-tag v="def"/></tag></tags>
+            <lu><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="a_cat"/><lit-tag v="2"/></lu>
+            <b pos="1"/>
+            <lu><clip pos="2" side="tl" part="lem"/><clip pos="2" side="tl" part="a_cat"/><lit-tag v="3"/></lu>
+            <b pos="2"/>
+            <lu><clip pos="3" side="tl" part="lem"/><clip pos="3" side="tl" part="a_cat"/><lit-tag v="2"/><lit-tag v="3sg_x"/></lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+    <rule comment="a noun alone: a chunk named from a variable">
+      <pattern><pattern-item n="c_n"/></pattern>
+      <action>
+        <out>
+          <chunk namefrom="v_name">
+            <tags><tag><lit-tag v="SN"/></tag><tag><clip pos="1" side="tl" part="a_num"/></tag></tags>
+            <lu><clip pos="1" side="tl" part="whole"/></lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+    <rule comment="a verb: a VP chunk with a digit-started tag on the word">
+      <pattern><pattern-item n="c_v"/></pattern>
+      <action>
+        <out>
+          <chunk name="vp">
+            <tags><tag><lit-tag v="SV"/></tag><tag><clip pos="1" side="tl" part="a_tense"/></tag></tags>
+            <lu><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="a_cat"/><clip pos="1" side="tl" part="a_tense"/><lit-tag v="3sg_cond"/></lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+    <rule comment="punctuation">
+      <pattern><pattern-item n="c_sent"/></pattern>
+      <action>
+        <out><chunk name="sent"><tags><tag><lit-tag v="sent"/></tag></tags><lu><clip pos="1" side="tl" part="whole"/></lu></chunk></out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>

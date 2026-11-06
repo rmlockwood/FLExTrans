@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FTApertium test fixture: lt-proc -b behaviors no FLExTrans project exercised (a key with two translations, weights, regular expressions beyond a character class, escaped characters,
+     a word without tags) alongside the common ones. The expected output comes from the Windows lt-proc; see ../../make_fixtures.py. -->
+<dictionary>
+  <alphabet/>
+  <sdefs>
+    <sdef n="n"/><sdef n="v"/><sdef n="adj"/><sdef n="det"/><sdef n="def"/><sdef n="np"/><sdef n="sent"/><sdef n="pl"/><sdef n="sg"/><sdef n="pres"/><sdef n="num"/><sdef n="laugh"/>
+  </sdefs>
+  <section id="main" type="standard">
+    <e w="1"><p><l>dog1.1<s n="n"/></l><r>hund1.1<s n="n"/></r></p></e>
+    <e w="1"><p><l>run1.1<s n="v"/></l><r>springa1.1<s n="v"/></r></p></e>
+    <e w="1"><p><l>big1.1<s n="adj"/></l><r>stor1.1<s n="adj"/></r></p></e>
+    <e w="1"><p><l>the1.1<s n="det"/></l><r>den1.1<s n="det"/></r></p></e>
+    <e w="1"><p><l>new<b/>york1.1<s n="np"/></l><r>nya<b/>york1.1<s n="np"/></r></p></e>
+    <e w="1"><i>Paris1.1<s n="np"/></i></e>
+    <!-- One key, two translations of equal weight: lt-proc -N1 keeps one -->
+    <e w="1"><p><l>bank1.1<s n="n"/></l><r>bank1.1<s n="n"/></r></p></e>
+    <e w="1"><p><l>bank1.1<s n="n"/></l><r>strand1.1<s n="n"/></r></p></e>
+    <!-- One key, two translations of different weights: the lighter wins -->
+    <e w="2"><p><l>light1.1<s n="adj"/></l><r>lätt1.1<s n="adj"/></r></p></e>
+    <e><p><l>light1.1<s n="adj"/></l><r>ljus1.1<s n="adj"/></r></p></e>
+    <!-- Characters lt-proc escapes -->
+    <e w="1"><p><l>a/b1.1<s n="n"/></l><r>x/y1.1<s n="n"/></r></p></e>
+    <e w="1"><p><l>at@home1.1<s n="n"/></l><r>hemma1.1<s n="n"/></r></p></e>
+    <!-- No tags at all -->
+    <e w="1"><p><l>ok</l><r>okej</r></p></e>
+    <!-- Regular expressions -->
+    <e w="1"><re>[0-9]+</re><i><s n="num"/></i></e>
+    <e w="1"><re>(ha|he)+!?</re><i><s n="laugh"/></i></e>
+    <e w="1"><re>[.\?;:!"',]+</re><i><s n="sent"/></i></e>
+  </section>
+</dictionary>

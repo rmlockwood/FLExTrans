@@ -1,0 +1,44 @@
+
+apertium-transfer: Matched rule 1 line 23 The1.1<det>/Den1.1<det> big1.1<adj>/stor1.1<adj> dog1.1<n><pl>/hund1.1<n><pl>
+
+apertium-transfer: Applied rule 1 line 23 The1.1<det>/Den1.1<det> big1.1<adj>/stor1.1<adj> dog1.1<n><pl>/hund1.1<n><pl>
+
+apertium-transfer: Matched rule 3 line 52 run1.1<v><pres>/spring#a1.1<v><pres>
+
+apertium-transfer: Applied rule 3 line 52 run1.1<v><pres>/spring#a1.1<v><pres>
+
+apertium-transfer: Matched rule 4 line 63 .<sent>/.<sent>
+
+apertium-transfer: Applied rule 4 line 63 .<sent>/.<sent>
+
+apertium-transfer: Matched rule 1 line 23 A1.1<det>/En1.1<det> new1.1<adj>/ny1.1<adj> cat1.1<n>/katt1.1<n>
+
+apertium-transfer: Applied rule 1 line 23 A1.1<det>/En1.1<det> new1.1<adj>/ny1.1<adj> cat1.1<n>/katt1.1<n>
+
+apertium-transfer: Matched rule 4 line 63 !<sent>/!<sent>
+
+apertium-transfer: Applied rule 4 line 63 !<sent>/!<sent>
+
+apertium-transfer: Matched rule 1 line 23 THE1.1<det>/DEN1.1<det> big1.1<adj>/stor1.1<adj> bike1.1<n><sg>/cykel1.1<n><sg>
+
+apertium-transfer: Applied rule 1 line 23 THE1.1<det>/DEN1.1<det> big1.1<adj>/stor1.1<adj> bike1.1<n><sg>/cykel1.1<n><sg>
+
+apertium-transfer: Matched rule 3 line 52 walk1.1<v><past>/gå ut1.1<v><past>
+
+apertium-transfer: Applied rule 3 line 52 walk1.1<v><past>/gå ut1.1<v><past>
+
+apertium-transfer: Matched rule 2 line 41 park1.1<n>/park1.1<n>
+
+apertium-transfer: Applied rule 2 line 41 park1.1<n>/park1.1<n>
+
+apertium-transfer: Matched rule 4 line 63 ?<sent>/?<sent>
+
+apertium-transfer: Applied rule 4 line 63 ?<sent>/?<sent>
+
+apertium-transfer: Matched rule 2 line 41 park1.1<n><pl>/park1.1<n><pl>
+
+apertium-transfer: Applied rule 2 line 41 park1.1<n><pl>/park1.1<n><pl>
+
+apertium-transfer: Matched rule 4 line 63 .<sent>/.<sent>
+
+apertium-transfer: Applied rule 4 line 63 .<sent>/.<sent>

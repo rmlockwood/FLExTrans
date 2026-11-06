@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ftapertium: the command line for FTApertium (transfer a stream, or check against reference output). See Program.cs and ../README.md. -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>ftapertium</AssemblyName>
+    <RootNamespace>FTtranslator.Apertium.Cli</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FTApertium.csproj" />
+  </ItemGroup>
+
+</Project>
