@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HcSpike.MainPage">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="16" RowSpacing="12">
+        <Button x:Name="RunButton" Grid.Row="0" Text="Parse FTT-Scratch words" Clicked="OnRunClicked" />
+        <Label x:Name="SummaryLabel" Grid.Row="1" Text="Not run yet." />
+        <ScrollView Grid.Row="2">
+            <Label x:Name="OutputLabel" FontFamily="monospace" FontSize="11" />
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

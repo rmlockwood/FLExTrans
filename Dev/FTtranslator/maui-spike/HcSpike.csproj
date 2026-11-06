@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+		SPIKE (throwaway): does SIL.Machine's HermitCrab parser load and parse on a phone? Android only for now (iOS needs a Mac). The parsing code is hcparse's own Program.cs, compiled in
+		unchanged, run on FTT-Scratch's parser.xml/parser.json from deploy/bundle over the 102 wordforms the desktop golden run parsed. See README.md.
+	-->
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0-android</TargetFrameworks>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>HcSpike</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+
+		<ApplicationTitle>HC Spike</ApplicationTitle>
+		<ApplicationId>org.sil.fttranslator.hcspike</ApplicationId>
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+
+		<!-- hcparse's Program.cs serializes anonymous types with System.Text.Json; trimmed builds turn reflection-based JSON off unless told otherwise. A real app would use source-generated JSON. -->
+		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+
+		<!-- Report trimming/AOT problems per assembly, so we can see whether SIL.Machine is the one warning -->
+		<TrimmerSingleWarn>false</TrimmerSingleWarn>
+
+		<!-- Upstream warnings in the shared hcparse/hcsynth sources, plus nullable warnings from compiling them with Nullable on -->
+		<NoWarn>$(NoWarn);CS0168;CS0169;CS0219;CS0414;CS0649;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8632;CS7022</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiFont Include="Resources\Fonts\*" />
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<!-- The bundle's parser files, straight from deploy/bundle -->
+		<MauiAsset Include="..\deploy\bundle\parser.xml" LogicalName="parser.xml" />
+		<MauiAsset Include="..\deploy\bundle\parser.json" LogicalName="parser.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- hcparse's parser, unchanged; its Main() is never called (the app reaches ParseWord through reflection, see HcRunner.cs) -->
+		<Compile Include="..\hcparse\Program.cs" Link="Shared\Program.cs" />
+		<Compile Include="..\hcsynth\upstream\HCSynthByGlossLib\HcXmlTraceManager.cs" Link="Shared\HcXmlTraceManager.cs" />
+		<Compile Include="..\hcsynth\upstream\HCSynthByGlossLib\ISynTraceManager.cs" Link="Shared\ISynTraceManager.cs" />
+		<Compile Include="..\hcsynth\FieldWorksShims.cs" Link="Shared\FieldWorksShims.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+
+		<!-- 3.9.6 is what FieldWorks 9.3.13 installs -->
+		<PackageReference Include="SIL.Machine" Version="3.9.6" />
+		<PackageReference Include="SIL.Machine.Morphology.HermitCrab" Version="3.9.6" />
+	</ItemGroup>
+
+</Project>
