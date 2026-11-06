@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/26
 #
+#   Version 3.17.8 - 11/6/26 - Ron Lockwood
+#    Anthropic now gets its JSON through structured outputs (output_config format) at high effort instead of a forced tool call, which claude-opus-5-5 and claude-sonnet-5-5 reject with
+#    a 400. Refreshed the model lists: claude-opus-5-5 default (with sonnet-5-5, haiku-5-5, opus-5), Gemini's retiring 2.5 pair dropped, gpt-6-sol default (with gpt-6-luna and the 5.6 trio).
+#
 #   Version 3.17.7 - 10/20/26 - Ron Lockwood
 #    Fixes #1639. Run the Apertium rule compiler with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw.
 #
@@ -334,24 +338,9 @@ RULE_SCHEMA = {
     'propertyOrdering': ['rule_xml', 'new_defs', 'explanation', 'language'],
 }
 
-# Anthropic tool the model is forced to call (its input is the same JSON object).
-SUBMIT_RULE_TOOL = {
-    'name': 'submit_rule',
-    'description': 'Return the generated Apertium transfer rule and any new supporting definitions it needs.',
-    'input_schema': {
-        'type': 'object',
-        'properties': {
-            'rule_xml': {'type': 'string', 'description': _RULE_XML_DESC},
-            'new_defs': {'type': 'array', 'items': {'type': 'string'}, 'description': _NEW_DEFS_DESC},
-            'explanation': {'type': 'string', 'description': _EXPLANATION_DESC},
-            'language': {'type': 'string', 'description': _LANGUAGE_DESC},
-        },
-        'required': ['rule_xml', 'new_defs', 'explanation', 'language'],
-    },
-}
-
-# OpenAI structured-output schema (response_format json_schema in strict mode, which requires additionalProperties: false and rejects Gemini's propertyOrdering keyword).
-OPENAI_RULE_SCHEMA = {
+# Strict structured-output schema shared by Anthropic (output_config format json_schema) and OpenAI (response_format json_schema in strict mode). Both require additionalProperties: false
+# and reject Gemini's propertyOrdering keyword, which is why Gemini keeps its own copy above.
+STRICT_RULE_SCHEMA = {
     'type': 'object',
     'properties': {
         'rule_xml': {'type': 'string', 'description': _RULE_XML_DESC},
@@ -363,7 +352,7 @@ OPENAI_RULE_SCHEMA = {
     'additionalProperties': False,
 }
 
-# The explain task: instead of producing a rule, the model returns a thorough plain-language explanation of an existing rule or macro. Same three per-provider shapes as the rule task.
+# The explain task: instead of producing a rule, the model returns a thorough plain-language explanation of an existing rule or macro. Same two schema shapes as the rule task.
 _LONG_EXPLANATION_DESC = ('A thorough explanation of the whole rule (or macro) for a linguist unaccustomed to reading Apertium rules, written in Markdown and in plain non-technical language: what '
                           'words the pattern matches, what each part of the action does and why, what the output looks like, and how any macros/variables/lists it references contribute. Never wrap '
                           'a tag or category name in angle brackets (write 3s_POSS, not <3s_POSS>). The user content gives the full structure and style requirements.')
@@ -406,17 +395,7 @@ EXPLAIN_SCHEMA = {
     'propertyOrdering': ['explanation', 'language'],
 }
 
-SUBMIT_EXPLANATION_TOOL = {
-    'name': 'submit_explanation',
-    'description': 'Return a thorough plain-language explanation of the given Apertium transfer rule.',
-    'input_schema': {
-        'type': 'object',
-        'properties': _EXPLAIN_PROPERTIES,
-        'required': ['explanation', 'language'],
-    },
-}
-
-OPENAI_EXPLAIN_SCHEMA = {
+STRICT_EXPLAIN_SCHEMA = {
     'type': 'object',
     'properties': _EXPLAIN_PROPERTIES,
     'required': ['explanation', 'language'],
@@ -445,13 +424,14 @@ class RuleResult:
 # ---------------------------------------------------------------------------
 
 class AnthropicProvider:
-    '''Anthropic Claude. There is no free tier - every model needs a paid key with credit on it. claude-opus-5 is the default (best rule quality); claude-sonnet-5 costs less per token and
-    claude-haiku-4-5 less again, at some cost in rule quality. Model IDs carry no date suffix; adaptive thinking (used in generate below) requires opus-4-6 or newer.'''
+    '''Anthropic Claude. There is no free tier - every model needs a paid key with credit on it. claude-opus-5-5 is the default (best rule quality, and cheaper than claude-opus-5);
+    claude-sonnet-5-5 costs half as much per token and claude-haiku-5-5 far less again, at some cost in rule quality. Model IDs carry no date suffix. generate() below uses adaptive thinking,
+    effort and structured outputs, which need a 4.6-or-newer model - claude-haiku-4-5 and the 4.5 models reject the effort setting, so they are not offered.'''
 
     name = 'anthropic'
     displayName = 'Anthropic Claude'
-    defaultModel = 'claude-opus-5'
-    models = ['claude-opus-5', 'claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5']
+    defaultModel = 'claude-opus-5-5'
+    models = ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-opus-5']
     envVars = ('ANTHROPIC_API_KEY',)
     keyUrl = 'https://console.anthropic.com/settings/keys'
 
@@ -463,14 +443,19 @@ class AnthropicProvider:
 
     def generate(self, client, model: str, systemInstruction: str, userContent: str, task: str = TASK_RULE) -> dict:
 
+        import json
+
         import anthropic
 
-        tool = SUBMIT_RULE_TOOL if task == TASK_RULE else SUBMIT_EXPLANATION_TOOL
+        # The JSON comes back through structured outputs (output_config format), not a forced tool call: claude-opus-5-5 and claude-sonnet-5-5 answer 400 to tool_choice 'tool' or 'any'.
+        # Effort is set explicitly because claude-opus-5-5 and claude-haiku-5-5 default to 'medium', a step below what rule writing deserves; 'high' is the default on the other models anyway.
+        schema = STRICT_RULE_SCHEMA if task == TASK_RULE else STRICT_EXPLAIN_SCHEMA
+        outputConfig = {'effort': 'high', 'format': {'type': 'json_schema', 'schema': schema}}
 
         try:
             response = client.messages.create(
-                model=model, max_tokens=MAX_TOKENS, thinking={'type': 'adaptive'}, system=[{'type': 'text', 'text': systemInstruction, 'cache_control': {'type': 'ephemeral'}}], tools=[tool],
-                tool_choice={'type': 'tool', 'name': tool['name']}, messages=[{'role': 'user', 'content': userContent}], )
+                model=model, max_tokens=MAX_TOKENS, thinking={'type': 'adaptive'}, output_config=outputConfig, system=[{'type': 'text', 'text': systemInstruction, 'cache_control': {'type': 'ephemeral'}}],
+                messages=[{'role': 'user', 'content': userContent}], )
 
         except anthropic.RateLimitError as err:
 
@@ -494,21 +479,30 @@ class AnthropicProvider:
         if response.stop_reason == 'refusal':
             raise RuntimeError('The model declined this request (stop_reason=refusal).')
 
-        for block in response.content:
+        # The reply is thinking blocks (empty text by default) followed by the JSON in text blocks; join the text blocks in case the answer was split across more than one.
+        payload = ''.join(block.text for block in response.content if block.type == 'text')
 
-            if block.type == 'tool_use' and block.name == tool['name']:
-                return cast(dict, block.input)
+        if not payload:
 
-        raise RuntimeError('The model did not return a {name} tool call.'.format(name=tool['name']))
+            raise RuntimeError('The model returned nothing (stop_reason={reason}).'.format(reason=response.stop_reason))
+
+        # Same rewrap as the other providers: name the provider/model and suggest the retry that usually fixes a malformed (e.g. max_tokens-truncated) reply, instead of a bare parse error.
+        try:
+            return json.loads(payload)
+
+        except json.JSONDecodeError as err:
+
+            raise RuntimeError('{provider} ({model}) returned a reply that is not valid JSON, so the result could not be read ({err}). This is usually a one-off glitch in the model output - try the same request again.'.format(provider=self.displayName, model=model, err=err))
 
 class GeminiProvider:
-    '''Google Gemini (the default provider). Default is gemini-3.8-flash, which is available on the free tier (with daily limits), as are the flash-lite models and the older 2.5 pair.
-    The Pro models are the exception: gemini-3.1-pro-preview needs a billing-enabled (paid) key and returns a 429 with "limit: 0" on a free key. Override with the AIRulesModel setting.'''
+    '''Google Gemini (the default provider). Default is gemini-3.8-flash, which is available on the free tier (with daily limits), as are the flash-lite models. The Pro models are the
+    exception: gemini-3.1-pro-preview needs a billing-enabled (paid) key and returns a 429 with "limit: 0" on a free key. Override with the AIRulesModel setting. The 2.5 pair is no longer
+    offered - Google shuts it down on 12/1/26 and reroutes its calls to the 3.x models.'''
 
     name = 'gemini'
     displayName = 'Google Gemini'
     defaultModel = 'gemini-3.8-flash'
-    models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-pro-preview', 'gemini-2.5-flash', 'gemini-2.5-pro']
+    models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-pro-preview']
     envVars = ('GEMINI_API_KEY', 'GOOGLE_API_KEY')
     keyUrl = 'https://aistudio.google.com/apikey'
 
@@ -560,12 +554,12 @@ class GeminiProvider:
 
 class OpenAIProvider:
     '''OpenAI (ChatGPT). Uses the chat completions API with a strict JSON-schema response format so the reply parses the same way as the other providers. There is no free tier, so a paid key
-    is required. gpt-5.6-sol is the default (best rule quality), with gpt-5.6-terra and gpt-5.6-luna as progressively cheaper alternatives.'''
+    is required. gpt-6-sol is the default (best rule quality) and gpt-6-luna the much cheaper alternative; the gpt-5.6 sol/terra/luna trio is still offered for now.'''
 
     name = 'openai'
     displayName = 'OpenAI ChatGPT'
-    defaultModel = 'gpt-5.6-sol'
-    models = ['gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna']
+    defaultModel = 'gpt-6-sol'
+    models = ['gpt-6-sol', 'gpt-6-luna', 'gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna']
     envVars = ('OPENAI_API_KEY',)
     keyUrl = 'https://platform.openai.com/api-keys'
 
@@ -582,9 +576,9 @@ class OpenAIProvider:
         import openai
 
         if task == TASK_RULE:
-            responseFormat = {'type': 'json_schema', 'json_schema': {'name': 'submit_rule', 'strict': True, 'schema': OPENAI_RULE_SCHEMA}}
+            responseFormat = {'type': 'json_schema', 'json_schema': {'name': 'submit_rule', 'strict': True, 'schema': STRICT_RULE_SCHEMA}}
         else:
-            responseFormat = {'type': 'json_schema', 'json_schema': {'name': 'submit_explanation', 'strict': True, 'schema': OPENAI_EXPLAIN_SCHEMA}}
+            responseFormat = {'type': 'json_schema', 'json_schema': {'name': 'submit_explanation', 'strict': True, 'schema': STRICT_EXPLAIN_SCHEMA}}
 
         try:
             response = client.chat.completions.create(
