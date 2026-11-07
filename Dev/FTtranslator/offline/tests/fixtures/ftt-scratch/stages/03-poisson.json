@@ -1,0 +1,1491 @@
+{
+ "input": "Les garçons mangent un poisson.\nLes petites filles mangent un poisson.\nLa fille mange une petite pomme.\nLa fille mange un petit bonbon.\n",
+ "parses": [
+  [
+   "Les",
+   {
+    "word": "Les",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "msa": "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "garçons",
+   {
+    "word": "garçons",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "mangent",
+   {
+    "word": "mangent",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "42c524af-149d-4347-8253-2eb09417eaf4",
+       "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+       "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "105ee80f-1882-40be-8bff-891158dd86ec",
+       "entry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+       "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "un",
+   {
+    "word": "un",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "msa": "02f558f9-0384-4104-9528-022079040f53",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "poisson",
+   {
+    "word": "poisson",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "c55fac0e-a41a-48e6-8454-b21fcbc6b53f",
+       "entry": "58af57d8-c437-4315-83ad-ccc2797b07cb",
+       "msa": "481ca3a3-cc77-4627-8414-5cacba41fe7e",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "petites",
+   {
+    "word": "petites",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "49f5fcd4-f101-4860-af2a-e48453c77083",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "filles",
+   {
+    "word": "filles",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "28bc6f94-5814-4877-9a39-a6fe413bedf1",
+       "entry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+       "msa": "de5ab3dc-28f7-402c-938d-4614f996da60",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "La",
+   {
+    "word": "La",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "707075af-77b1-4ab1-81f6-8f1d3fed98bf",
+       "entry": "9969c969-d8f8-4e63-bb97-07744bfb57fd",
+       "msa": "ee2d8ed3-7af3-4b0c-925b-a64fbdddbd3a",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "b6dfdd91-679c-40a8-85cd-b68bf153ef81",
+       "entry": "632726c7-23da-4dbe-adf8-b2e192650c4f",
+       "msa": "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "fille",
+   {
+    "word": "fille",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "28bc6f94-5814-4877-9a39-a6fe413bedf1",
+       "entry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+       "msa": "de5ab3dc-28f7-402c-938d-4614f996da60",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "mange",
+   {
+    "word": "mange",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "42c524af-149d-4347-8253-2eb09417eaf4",
+       "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+       "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "42c524af-149d-4347-8253-2eb09417eaf4",
+       "entry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+       "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "une",
+   {
+    "word": "une",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "4b113fd4-1aae-402e-b619-81b20caebc92",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "petite",
+   {
+    "word": "petite",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "pomme",
+   {
+    "word": "pomme",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "b2dcf09b-0d18-43a1-b077-7611b247ae7d",
+       "entry": "4d38de8a-78f7-4b4e-9fe7-228575d9be28",
+       "msa": "dae758cd-7359-472c-ad66-7525de8ad6e7",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "petit",
+   {
+    "word": "petit",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "bonbon",
+   {
+    "word": "bonbon",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "e72cac67-75cb-42ac-a33b-defea63a1b24",
+       "entry": "b0b77914-3d4c-410c-ac19-ef352481e72a",
+       "msa": "08827ad1-f98a-40d8-9634-eac267edb4dc",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ]
+ ],
+ "tokens": {
+  "title": "FTT 2026-11-06 231906 Les garçons mangent",
+  "paragraphs": [
+   "Les garçons mangent un poisson.",
+   "Les petites filles mangent un poisson.",
+   "La fille mange une petite pomme.",
+   "La fille mange un petit bonbon."
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 3,
+    "surface": "Les",
+    "baseline": "Les",
+    "kind": "WfiWordform",
+    "wordform": "Les"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 4,
+    "end": 12,
+    "surface": "garçons",
+    "baseline": "garçons",
+    "kind": "WfiWordform",
+    "wordform": "garçons"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 13,
+    "end": 20,
+    "surface": "mangent",
+    "baseline": "mangent",
+    "kind": "WfiWordform",
+    "wordform": "mangent"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 21,
+    "end": 23,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiWordform",
+    "wordform": "un"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 24,
+    "end": 31,
+    "surface": "poisson",
+    "baseline": "poisson",
+    "kind": "WfiWordform",
+    "wordform": "poisson"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 31,
+    "end": 32,
+    "punct": "."
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 0,
+    "end": 3,
+    "surface": "Les",
+    "baseline": "Les",
+    "kind": "WfiWordform",
+    "wordform": "Les"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 4,
+    "end": 11,
+    "surface": "petites",
+    "baseline": "petites",
+    "kind": "WfiWordform",
+    "wordform": "petites"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 12,
+    "end": 18,
+    "surface": "filles",
+    "baseline": "filles",
+    "kind": "WfiWordform",
+    "wordform": "filles"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 19,
+    "end": 26,
+    "surface": "mangent",
+    "baseline": "mangent",
+    "kind": "WfiWordform",
+    "wordform": "mangent"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 27,
+    "end": 29,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiWordform",
+    "wordform": "un"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 30,
+    "end": 37,
+    "surface": "poisson",
+    "baseline": "poisson",
+    "kind": "WfiWordform",
+    "wordform": "poisson"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 37,
+    "end": 38,
+    "punct": "."
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 0,
+    "end": 2,
+    "surface": "La",
+    "baseline": "La",
+    "kind": "WfiWordform",
+    "wordform": "La"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 3,
+    "end": 8,
+    "surface": "fille",
+    "baseline": "fille",
+    "kind": "WfiWordform",
+    "wordform": "fille"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 9,
+    "end": 14,
+    "surface": "mange",
+    "baseline": "mange",
+    "kind": "WfiWordform",
+    "wordform": "mange"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 15,
+    "end": 18,
+    "surface": "une",
+    "baseline": "une",
+    "kind": "WfiWordform",
+    "wordform": "une"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 19,
+    "end": 25,
+    "surface": "petite",
+    "baseline": "petite",
+    "kind": "WfiWordform",
+    "wordform": "petite"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 26,
+    "end": 31,
+    "surface": "pomme",
+    "baseline": "pomme",
+    "kind": "WfiWordform",
+    "wordform": "pomme"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 31,
+    "end": 32,
+    "punct": "."
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 0,
+    "end": 2,
+    "surface": "La",
+    "baseline": "La",
+    "kind": "WfiWordform",
+    "wordform": "La"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 3,
+    "end": 8,
+    "surface": "fille",
+    "baseline": "fille",
+    "kind": "WfiWordform",
+    "wordform": "fille"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 9,
+    "end": 14,
+    "surface": "mange",
+    "baseline": "mange",
+    "kind": "WfiWordform",
+    "wordform": "mange"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 15,
+    "end": 17,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiWordform",
+    "wordform": "un"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 18,
+    "end": 23,
+    "surface": "petit",
+    "baseline": "petit",
+    "kind": "WfiWordform",
+    "wordform": "petit"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 24,
+    "end": 30,
+    "surface": "bonbon",
+    "baseline": "bonbon",
+    "kind": "WfiWordform",
+    "wordform": "bonbon"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 30,
+    "end": 31,
+    "punct": "."
+   }
+  ]
+ },
+ "guessed": {
+  "title": "FTT 2026-11-06 231906 Les garçons mangent",
+  "paragraphs": [
+   "Les garçons mangent un poisson.",
+   "Les petites filles mangent un poisson.",
+   "La fille mange une petite pomme.",
+   "La fille mange un petit bonbon."
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 3,
+    "surface": "Les",
+    "baseline": "Les",
+    "kind": "WfiAnalysis",
+    "wordform": "les",
+    "bundles": [
+     {
+      "morphEntry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+      "sense": "8b0cea7f-ead0-482b-a654-3a1e2eba947d",
+      "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69"
+     }
+    ],
+    "analysis": "230619bb-97f8-43e6-8691-7e7424ce0c5b"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 4,
+    "end": 12,
+    "surface": "garçons",
+    "baseline": "garçons",
+    "kind": "WfiAnalysis",
+    "wordform": "garçons",
+    "bundles": [
+     {
+      "morphEntry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+      "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+      "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+      "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5"
+     }
+    ],
+    "analysis": "96a2e974-e225-40a4-b2b8-51a095458c06"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 13,
+    "end": 20,
+    "surface": "mangent",
+    "baseline": "mangent",
+    "kind": "WfiAnalysis",
+    "wordform": "mangent",
+    "bundles": [
+     {
+      "morphEntry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+      "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+      "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef"
+     },
+     {
+      "morphEntry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+      "sense": "5a67da2e-3cb7-4df8-bc83-d46e3350098b",
+      "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6"
+     }
+    ],
+    "analysis": "01f73b7e-4d4c-44dd-88b9-feec47cccc45"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 21,
+    "end": 23,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiAnalysis",
+    "wordform": "un",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+      "msa": "02f558f9-0384-4104-9528-022079040f53"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 24,
+    "end": 31,
+    "surface": "poisson",
+    "baseline": "poisson",
+    "kind": "WfiAnalysis",
+    "wordform": "poisson",
+    "bundles": [
+     {
+      "morphEntry": "58af57d8-c437-4315-83ad-ccc2797b07cb",
+      "sense": "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32",
+      "msa": "481ca3a3-cc77-4627-8414-5cacba41fe7e"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "230aa4fa-5b49-4d9c-9ea4-fd1945e97b39"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 31,
+    "end": 32,
+    "punct": "."
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 0,
+    "end": 3,
+    "surface": "Les",
+    "baseline": "Les",
+    "kind": "WfiAnalysis",
+    "wordform": "les",
+    "bundles": [
+     {
+      "morphEntry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+      "sense": "b49184e1-1d5e-4476-abb2-cb11aabd87dc",
+      "msa": "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f"
+     }
+    ],
+    "analysis": "97f9d044-a2e1-4ebc-9446-fd2d5a4be62c"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 4,
+    "end": 11,
+    "surface": "petites",
+    "baseline": "petites",
+    "kind": "WfiAnalysis",
+    "wordform": "petites",
+    "bundles": [
+     {
+      "morphEntry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+      "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+      "msa": "542e584c-e966-4d14-877a-77e462642868"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+      "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "b8445393-02d6-4661-8a07-5f32e9cccfa7",
+      "msa": "49f5fcd4-f101-4860-af2a-e48453c77083"
+     }
+    ],
+    "analysis": "b2a02298-9889-47a1-9cd2-dd010b4ac5e4"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 12,
+    "end": 18,
+    "surface": "filles",
+    "baseline": "filles",
+    "kind": "WfiAnalysis",
+    "wordform": "filles",
+    "bundles": [
+     {
+      "morphEntry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+      "sense": "98cd363c-79be-421b-81ae-89f5284876ea",
+      "msa": "de5ab3dc-28f7-402c-938d-4614f996da60"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+      "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5"
+     }
+    ],
+    "analysis": "e4d78844-dd19-4ccb-bc99-0921ed1f60fe"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 19,
+    "end": 26,
+    "surface": "mangent",
+    "baseline": "mangent",
+    "kind": "WfiAnalysis",
+    "wordform": "mangent",
+    "bundles": [
+     {
+      "morphEntry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+      "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+      "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef"
+     },
+     {
+      "morphEntry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+      "sense": "5a67da2e-3cb7-4df8-bc83-d46e3350098b",
+      "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6"
+     }
+    ],
+    "analysis": "01f73b7e-4d4c-44dd-88b9-feec47cccc45"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 27,
+    "end": 29,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiAnalysis",
+    "wordform": "un",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+      "msa": "02f558f9-0384-4104-9528-022079040f53"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 30,
+    "end": 37,
+    "surface": "poisson",
+    "baseline": "poisson",
+    "kind": "WfiAnalysis",
+    "wordform": "poisson",
+    "bundles": [
+     {
+      "morphEntry": "58af57d8-c437-4315-83ad-ccc2797b07cb",
+      "sense": "77ff5dd0-3c3f-4e74-91d6-70a6e8616d32",
+      "msa": "481ca3a3-cc77-4627-8414-5cacba41fe7e"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "230aa4fa-5b49-4d9c-9ea4-fd1945e97b39"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 37,
+    "end": 38,
+    "punct": "."
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 0,
+    "end": 2,
+    "surface": "La",
+    "baseline": "La",
+    "kind": "WfiAnalysis",
+    "wordform": "la",
+    "bundles": [
+     {
+      "morphEntry": "632726c7-23da-4dbe-adf8-b2e192650c4f",
+      "sense": "53072aab-0ed6-4437-8a6a-7d37f3048152",
+      "msa": "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0"
+     }
+    ],
+    "analysis": "a0c28e81-9bde-458e-b2a2-113653086557"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 3,
+    "end": 8,
+    "surface": "fille",
+    "baseline": "fille",
+    "kind": "WfiAnalysis",
+    "wordform": "fille",
+    "bundles": [
+     {
+      "morphEntry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+      "sense": "98cd363c-79be-421b-81ae-89f5284876ea",
+      "msa": "de5ab3dc-28f7-402c-938d-4614f996da60"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "6aa8922a-0733-4235-96d2-a1669196172b"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 9,
+    "end": 14,
+    "surface": "mange",
+    "baseline": "mange",
+    "kind": "WfiAnalysis",
+    "wordform": "mange",
+    "bundles": [
+     {
+      "morphEntry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+      "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+      "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef"
+     },
+     {
+      "morphEntry": "4446fad3-4e88-4550-9589-c4b535beb299",
+      "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+      "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+     }
+    ],
+    "analysis": "1c5b6dfe-5d14-4462-b47b-c4a280d7943c"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 15,
+    "end": 18,
+    "surface": "une",
+    "baseline": "une",
+    "kind": "WfiAnalysis",
+    "wordform": "une",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "71bfb6ce-6e66-4ea7-b603-120dc6164668",
+      "msa": "4b113fd4-1aae-402e-b619-81b20caebc92"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "f4f07338-1756-426d-94d5-a1af0df357bd"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 19,
+    "end": 25,
+    "surface": "petite",
+    "baseline": "petite",
+    "kind": "WfiAnalysis",
+    "wordform": "petite",
+    "bundles": [
+     {
+      "morphEntry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+      "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+      "msa": "542e584c-e966-4d14-877a-77e462642868"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+      "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+      "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2"
+     }
+    ],
+    "analysis": "ebae526e-8d45-4504-84f6-dfb6d96469a3"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 26,
+    "end": 31,
+    "surface": "pomme",
+    "baseline": "pomme",
+    "kind": "WfiAnalysis",
+    "wordform": "pomme",
+    "bundles": [
+     {
+      "morphEntry": "4d38de8a-78f7-4b4e-9fe7-228575d9be28",
+      "sense": "e81317b3-d7a8-4e8b-9273-6bfe440807ae",
+      "msa": "dae758cd-7359-472c-ad66-7525de8ad6e7"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "9b9d8df7-ae39-4f86-b34f-eb3de86a6296"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 31,
+    "end": 32,
+    "punct": "."
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 0,
+    "end": 2,
+    "surface": "La",
+    "baseline": "La",
+    "kind": "WfiAnalysis",
+    "wordform": "la",
+    "bundles": [
+     {
+      "morphEntry": "632726c7-23da-4dbe-adf8-b2e192650c4f",
+      "sense": "53072aab-0ed6-4437-8a6a-7d37f3048152",
+      "msa": "ab2314d3-07b5-4a1d-9a3e-f0f2c46ac2a0"
+     }
+    ],
+    "analysis": "a0c28e81-9bde-458e-b2a2-113653086557"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 3,
+    "end": 8,
+    "surface": "fille",
+    "baseline": "fille",
+    "kind": "WfiAnalysis",
+    "wordform": "fille",
+    "bundles": [
+     {
+      "morphEntry": "6823fa27-2b41-414a-bea5-247aeda2688c",
+      "sense": "98cd363c-79be-421b-81ae-89f5284876ea",
+      "msa": "de5ab3dc-28f7-402c-938d-4614f996da60"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "6aa8922a-0733-4235-96d2-a1669196172b"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 9,
+    "end": 14,
+    "surface": "mange",
+    "baseline": "mange",
+    "kind": "WfiAnalysis",
+    "wordform": "mange",
+    "bundles": [
+     {
+      "morphEntry": "0b169286-0e0d-40b2-9fc7-751808c27361",
+      "sense": "dd83f274-0e15-433b-9c16-79e91d0ef15f",
+      "msa": "377c12e5-268e-4c65-8a51-c8d2444ec3ef"
+     },
+     {
+      "morphEntry": "4446fad3-4e88-4550-9589-c4b535beb299",
+      "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+      "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+     }
+    ],
+    "analysis": "1c5b6dfe-5d14-4462-b47b-c4a280d7943c"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 15,
+    "end": 17,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiAnalysis",
+    "wordform": "un",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+      "msa": "02f558f9-0384-4104-9528-022079040f53"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 18,
+    "end": 23,
+    "surface": "petit",
+    "baseline": "petit",
+    "kind": "WfiAnalysis",
+    "wordform": "petit",
+    "bundles": [
+     {
+      "morphEntry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+      "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+      "msa": "542e584c-e966-4d14-877a-77e462642868"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+      "msa": "feee4d15-adc1-41c5-82a7-77538d641912"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+      "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2"
+     }
+    ],
+    "analysis": "bbb171cb-f44f-436e-bb22-c4d356278c9a"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 24,
+    "end": 30,
+    "surface": "bonbon",
+    "baseline": "bonbon",
+    "kind": "WfiAnalysis",
+    "wordform": "bonbon",
+    "bundles": [
+     {
+      "morphEntry": "b0b77914-3d4c-410c-ac19-ef352481e72a",
+      "sense": "9975733d-2119-499b-bfe8-783db0b52cf9",
+      "msa": "08827ad1-f98a-40d8-9634-eac267edb4dc"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "62b3de82-ca2d-41b9-9c5a-595b32e71299"
+   },
+   {
+    "para": 3,
+    "seg": 3,
+    "beg": 30,
+    "end": 31,
+    "punct": "."
+   }
+  ]
+ },
+ "source": "^Les1.1<def><m><pl>$ ^garçon1.1<n><m><PL>$ ^manger1.1<v><ER><PRS_3PL>$ ^un1.1<indf><sg><MASC><SG2>$ ^poisson1.1<n><SG>$^.<sent>$\n^Les1.2<def><f><pl>$ ^petit1.1<adj><FEM_a><PL2>$ ^fille1.1<n><f><PL>$ ^manger1.1<v><ER><PRS_3PL>$ ^un1.1<indf><sg><MASC><SG2>$ ^poisson1.1<n><SG>$^.<sent>$\n^La1.1<def><f><sg>$ ^fille1.1<n><f><SG>$ ^manger1.1<v><ER><PRS_3SG>$ ^un1.1<indf><sg><FEM><SG2>$ ^petit1.1<adj><FEM_a><SG3>$ ^pomme1.1<n><f><SG>$^.<sent>$\n^La1.1<def><f><sg>$ ^fille1.1<n><f><SG>$ ^manger1.1<v><ER><PRS_3SG>$ ^un1.1<indf><sg><MASC><SG2>$ ^petit1.1<adj><MASC_a><SG3>$ ^bonbon1.1<n><m><SG>$^.<sent>$\n",
+ "extractMessages": [],
+ "target": "^Los1.1<def>$ ^niño1.1<n><PL>$ ^comer1.1<v><PRS_3PL>$ ^un1.1<indf><MASC><SG2>$ ^pescado1.1<n><SG>$^.<sent>$\n^Las1.1<def>$ ^niña1.1<n><PL>$ ^pequeño1.1<adj><FEM_a><PL2>$ ^comer1.1<v><PRS_3PL>$ ^un1.1<indf><MASC><SG2>$ ^pescado1.1<n><SG>$^.<sent>$\n^La1.1<def>$ ^niña1.1<n><SG>$ ^comer1.1<v><PRS_3SG>$ ^un1.1<indf><FEM><SG2>$ ^manzana1.1<n><SG>$ ^pequeño1.1<adj><FEM_a><SG3>$^.<sent>$\n^La1.1<def>$ ^niña1.1<n><SG>$ ^comer1.1<v><PRS_3SG>$ ^un1.1<indf><MASC><SG2>$ ^caramelo1.1<n><SG>$ ^pequeño1.1<adj><MASC_a><SG3>$^.<sent>$\n",
+ "master": "^Los1.1<def>$,los1.1<def>;1\n^niño1.1<n><PL>$,niño1.1<n><PL>;\n^comer1.1<v><PRS_3PL>$,comer1.1<v><PRS.3PL>;\n^un1.1<indf><MASC><SG2>$,un1.1<indf><MASC><SG2>;\n^pescado1.1<n><SG>$,pescado1.1<n><SG>;\n^Las1.1<def>$,las1.1<def>;1\n^niña1.1<n><PL>$,niña1.1<n><PL>;\n^pequeño1.1<adj><FEM_a><PL2>$,pequeño1.1<adj><FEM.a><PL2>;\n^La1.1<def>$,la1.1<def>;1\n^niña1.1<n><SG>$,niña1.1<n><SG>;\n^comer1.1<v><PRS_3SG>$,comer1.1<v><PRS.3SG>;\n^un1.1<indf><FEM><SG2>$,un1.1<indf><FEM><SG2>;\n^manzana1.1<n><SG>$,manzana1.1<n><SG>;\n^pequeño1.1<adj><FEM_a><SG3>$,pequeño1.1<adj><FEM.a><SG3>;\n^caramelo1.1<n><SG>$,caramelo1.1<n><SG>;\n^pequeño1.1<adj><MASC_a><SG3>$,pequeño1.1<adj><MASC.a><SG3>;\n",
+ "parsesFile": "^los1.1<def>$\n^niño1.1<n><PL>$\n^comer1.1<v><PRS.3PL>$\n^un1.1<indf><MASC><SG2>$\n^pescado1.1<n><SG>$\n^las1.1<def>$\n^niña1.1<n><PL>$\n^pequeño1.1<adj><FEM.a><PL2>$\n^la1.1<def>$\n^niña1.1<n><SG>$\n^comer1.1<v><PRS.3SG>$\n^un1.1<indf><FEM><SG2>$\n^manzana1.1<n><SG>$\n^pequeño1.1<adj><FEM.a><SG3>$\n^caramelo1.1<n><SG>$\n^pequeño1.1<adj><MASC.a><SG3>$\n",
+ "surface": "los\nniños\ncomen\nun\npescado\nlas\nniñas\npequeñas\nla\nniña\ncome\nuna\nmanzana\npequeña\ncaramelo\npequeño\n",
+ "synthesized": "Los niños comen un pescado.\nLas niñas pequeñas comen un pescado.\nLa niña come una manzana pequeña.\nLa niña come un caramelo pequeño.\n",
+ "synthMessages": [
+  [
+   "info",
+   "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt"
+  ],
+  [
+   "info",
+   "23 records exported in HermitCrab format."
+  ],
+  [
+   "info",
+   "Processing 16 unique lexical units."
+  ],
+  [
+   "info",
+   "Synthesis complete."
+  ]
+ ],
+ "result": {
+  "source": "Les garçons mangent un poisson.\nLes petites filles mangent un poisson.\nLa fille mange une petite pomme.\nLa fille mange un petit bonbon.\n",
+  "translation": "Los niños comen un pescado.\nLas niñas pequeñas comen un pescado.\nLa niña come una manzana pequeña.\nLa niña come un caramelo pequeño.",
+  "ok": true,
+  "steps": [
+   "Import Text",
+   "Parse Words",
+   "Approve Guesses",
+   "Extract Source Text",
+   "Run Apertium",
+   "Synthesize Text"
+  ],
+  "approved": [
+   {
+    "word": "Les",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶1 s1 w1",
+    "analysis": "les:DEF.M.PL [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "garçons",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶1 s1 w2",
+    "analysis": "garçon:boy + s:PL [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "mangent",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶1 s1 w3",
+    "analysis": "mang:eat + ent:PRS.3PL [v]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "un",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶1 s1 w4",
+    "analysis": "un:INDEF + 0:MASC + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "poisson",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶1 s1 w5",
+    "analysis": "poisson:fish + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "Les",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶2 s1 w1",
+    "analysis": "les:DEF.F.PL [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "petites",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶2 s1 w2",
+    "analysis": "petit:little + e:FEM.a + s:PL2 [adj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "filles",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶2 s1 w3",
+    "analysis": "fille:girl + s:PL [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "mangent",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶2 s1 w4",
+    "analysis": "mang:eat + ent:PRS.3PL [v]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "un",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶2 s1 w5",
+    "analysis": "un:INDEF + 0:MASC + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "poisson",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶2 s1 w6",
+    "analysis": "poisson:fish + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "La",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶3 s1 w1",
+    "analysis": "la:DEF.F.SG [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "fille",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶3 s1 w2",
+    "analysis": "fille:girl + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "mange",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶3 s1 w3",
+    "analysis": "mang:eat + e:PRS.3SG [v]",
+    "basis": "best guess"
+   },
+   {
+    "word": "une",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶3 s1 w4",
+    "analysis": "un:INDEF + e:FEM + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "petite",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶3 s1 w5",
+    "analysis": "petit:little + e:FEM.a + 0:SG3 [adj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "pomme",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶3 s1 w6",
+    "analysis": "pomme:apple + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "La",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶4 s1 w1",
+    "analysis": "la:DEF.F.SG [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "fille",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶4 s1 w2",
+    "analysis": "fille:girl + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "mange",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶4 s1 w3",
+    "analysis": "mang:eat + e:PRS.3SG [v]",
+    "basis": "best guess"
+   },
+   {
+    "word": "un",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶4 s1 w4",
+    "analysis": "un:INDEF + 0:MASC + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "petit",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶4 s1 w5",
+    "analysis": "petit:little + 0:MASC.a + 0:SG3 [adj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "bonbon",
+    "location": "FTT 2026-11-06 231906 Les garçons mangent ¶4 s1 w6",
+    "analysis": "bonbon:candy + 0:SG [n]",
+    "basis": "only analysis"
+   }
+  ],
+  "unparsed": [],
+  "unanalysed": [],
+  "untranslated": [],
+  "unsynthesized": [],
+  "messages": [
+   {
+    "level": "info",
+    "message": "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "23 records exported in HermitCrab format.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Processing 16 unique lexical units.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Synthesis complete.",
+    "ref": null
+   }
+  ]
+ }
+}

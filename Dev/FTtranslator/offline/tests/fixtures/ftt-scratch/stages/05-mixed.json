@@ -1,0 +1,1205 @@
+{
+ "input": "Un couple d’ animaux – un mâle et une femelle.\nparle parles parlons\n« Xyzzy » 3.5 ¿qué?\n",
+ "parses": [
+  [
+   "Un",
+   {
+    "word": "Un",
+    "error": "There is at least one undefined phoneme in the word 'Un'. The following phonemes were parsed: ''.  The problem begins with character/diacritic number 1 – that is, in the part of the word 'Un'.  Please make sure all phonemes in the word have been defined.",
+    "analyses": []
+   }
+  ],
+  [
+   "un",
+   {
+    "word": "un",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "msa": "02f558f9-0384-4104-9528-022079040f53",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "couple",
+   {
+    "word": "couple",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "402bb0f6-08be-4b2b-966c-5a1a1a76a638",
+       "entry": "ca6b111e-0fec-430a-a295-a373d578b47d",
+       "msa": "ceb033d2-5697-4b7f-8342-0d836ff50e17",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "d’",
+   {
+    "word": "d’",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "1466010b-fa57-4e91-a156-cc66b2774c12",
+       "entry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+       "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "animaux",
+   {
+    "word": "animaux",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "95314f8a-53bf-4df3-a421-8c407f7e4682",
+       "entry": "d2d9c4b8-967c-4405-bae5-dfe21c306197",
+       "msa": "d89fd094-3762-4f2f-a58a-ded6a241fb8b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d263de38-feeb-48f0-ae3a-6aeae95d7eab",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "mâle",
+   {
+    "word": "mâle",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "cf6c70de-e74b-43e7-b7c7-a73aa4405efa",
+       "entry": "f9dfa498-3c37-418d-ae05-d76946e03d54",
+       "msa": "42f43c08-0155-45c3-9272-9176f7aa3675",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "et",
+   {
+    "word": "et",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "6800afc0-7c49-459f-a426-f8bc30976793",
+       "entry": "ed9cad13-bf4e-42d2-b27c-5b1d74caacc6",
+       "msa": "934d5f5a-6b30-4c5f-a118-b3a303cc5c66",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "une",
+   {
+    "word": "une",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "4b113fd4-1aae-402e-b619-81b20caebc92",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "femelle",
+   {
+    "word": "femelle",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "9f977ad7-9dbb-4713-a114-6abdf4e2c5f6",
+       "entry": "a806a20e-5205-40d7-8594-60dd54af40b0",
+       "msa": "b67d2c95-4895-4d3f-8aff-dd151f670135",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "parle",
+   {
+    "word": "parle",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+       "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+       "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+       "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+       "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "parles",
+   {
+    "word": "parles",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+       "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+       "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "21f21647-3748-4335-b4df-4b662371fdad",
+       "entry": "c3ee95e0-2233-41e1-b561-c7afc7158781",
+       "msa": "8b5cbc9c-be44-47b0-b5f9-48f23d13a135",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "parlons",
+   {
+    "word": "parlons",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "08aaa9e5-f820-4254-b2ce-1aeb3e83ebd2",
+       "entry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+       "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "0d7e6941-1c3a-4a7e-a2aa-e7afab4da570",
+       "entry": "3c1b632e-6ca3-4420-b604-9387c9e88888",
+       "msa": "13e36e54-f7c4-44f8-9587-b2545706f92a",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "Xyzzy",
+   {
+    "word": "Xyzzy",
+    "error": "There is at least one undefined phoneme in the word 'Xyzzy'. The following phonemes were parsed: ''.  The problem begins with character/diacritic number 1 – that is, in the part of the word 'Xyzzy'.  Please make sure all phonemes in the word have been defined.",
+    "analyses": []
+   }
+  ],
+  [
+   "xyzzy",
+   {
+    "word": "xyzzy",
+    "error": null,
+    "analyses": []
+   }
+  ],
+  [
+   "3",
+   {
+    "word": "3",
+    "error": "There is at least one undefined phoneme in the word '3'. The following phonemes were parsed: ''.  The problem begins with character/diacritic number 1 – that is, in the part of the word '3'.  Please make sure all phonemes in the word have been defined.",
+    "analyses": []
+   }
+  ],
+  [
+   "5",
+   {
+    "word": "5",
+    "error": "There is at least one undefined phoneme in the word '5'. The following phonemes were parsed: ''.  The problem begins with character/diacritic number 1 – that is, in the part of the word '5'.  Please make sure all phonemes in the word have been defined.",
+    "analyses": []
+   }
+  ],
+  [
+   "qué",
+   {
+    "word": "qué",
+    "error": null,
+    "analyses": []
+   }
+  ]
+ ],
+ "tokens": {
+  "title": "FTT 2026-11-06 231906 Un couple d",
+  "paragraphs": [
+   "Un couple d’ animaux – un mâle et une femelle.",
+   "parle parles parlons",
+   "« Xyzzy » 3.5 ¿qué?"
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 2,
+    "surface": "Un",
+    "baseline": "Un",
+    "kind": "WfiWordform",
+    "wordform": "Un"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 3,
+    "end": 9,
+    "surface": "couple",
+    "baseline": "couple",
+    "kind": "WfiWordform",
+    "wordform": "couple"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 10,
+    "end": 12,
+    "surface": "d’",
+    "baseline": "d’",
+    "kind": "WfiWordform",
+    "wordform": "d’"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 13,
+    "end": 20,
+    "surface": "animaux",
+    "baseline": "animaux",
+    "kind": "WfiWordform",
+    "wordform": "animaux"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 21,
+    "end": 22,
+    "punct": "–"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 23,
+    "end": 25,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiWordform",
+    "wordform": "un"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 26,
+    "end": 31,
+    "surface": "mâle",
+    "baseline": "mâle",
+    "kind": "WfiWordform",
+    "wordform": "mâle"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 32,
+    "end": 34,
+    "surface": "et",
+    "baseline": "et",
+    "kind": "WfiWordform",
+    "wordform": "et"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 35,
+    "end": 38,
+    "surface": "une",
+    "baseline": "une",
+    "kind": "WfiWordform",
+    "wordform": "une"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 39,
+    "end": 46,
+    "surface": "femelle",
+    "baseline": "femelle",
+    "kind": "WfiWordform",
+    "wordform": "femelle"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 46,
+    "end": 47,
+    "punct": "."
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 0,
+    "end": 5,
+    "surface": "parle",
+    "baseline": "parle",
+    "kind": "WfiWordform",
+    "wordform": "parle"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 6,
+    "end": 12,
+    "surface": "parles",
+    "baseline": "parles",
+    "kind": "WfiWordform",
+    "wordform": "parles"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 13,
+    "end": 20,
+    "surface": "parlons",
+    "baseline": "parlons",
+    "kind": "WfiWordform",
+    "wordform": "parlons"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 0,
+    "end": 1,
+    "punct": "«"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 2,
+    "end": 7,
+    "surface": "Xyzzy",
+    "baseline": "Xyzzy",
+    "kind": "WfiWordform",
+    "wordform": "Xyzzy"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 8,
+    "end": 9,
+    "punct": "»"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 10,
+    "end": 11,
+    "surface": "3",
+    "baseline": "3",
+    "kind": "WfiWordform",
+    "wordform": "3"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 11,
+    "end": 12,
+    "punct": "."
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 12,
+    "end": 13,
+    "surface": "5",
+    "baseline": "5",
+    "kind": "WfiWordform",
+    "wordform": "5"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 14,
+    "end": 15,
+    "punct": "¿"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 15,
+    "end": 19,
+    "surface": "qué",
+    "baseline": "qué",
+    "kind": "WfiWordform",
+    "wordform": "qué"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 19,
+    "end": 20,
+    "punct": "?"
+   }
+  ]
+ },
+ "guessed": {
+  "title": "FTT 2026-11-06 231906 Un couple d",
+  "paragraphs": [
+   "Un couple d’ animaux – un mâle et une femelle.",
+   "parle parles parlons",
+   "« Xyzzy » 3.5 ¿qué?"
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 2,
+    "surface": "Un",
+    "baseline": "Un",
+    "kind": "WfiAnalysis",
+    "wordform": "Un",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+      "msa": "02f558f9-0384-4104-9528-022079040f53"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "63a5455c-7b47-4a0e-8199-8e4191c2c576"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 3,
+    "end": 9,
+    "surface": "couple",
+    "baseline": "couple",
+    "kind": "WfiAnalysis",
+    "wordform": "couple",
+    "bundles": [
+     {
+      "morphEntry": "ca6b111e-0fec-430a-a295-a373d578b47d",
+      "sense": "498b7853-fd5e-46a7-81cb-077d59516c5a",
+      "msa": "ceb033d2-5697-4b7f-8342-0d836ff50e17"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "ac75b21b-e1aa-4638-814b-a9ed73187ad4"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 10,
+    "end": 12,
+    "surface": "d’",
+    "baseline": "d’",
+    "kind": "WfiAnalysis",
+    "wordform": "d’",
+    "bundles": [
+     {
+      "morphEntry": "e6dfd549-7487-4596-a3ae-d922034a20b1",
+      "sense": "da8d8670-759f-4820-af5b-041a5c6cd19b",
+      "msa": "7c8fbb68-1a81-4133-a49f-34f214318b5e"
+     }
+    ],
+    "analysis": "137abd6c-7472-49c9-a9ee-f5b7d98cfbeb"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 13,
+    "end": 20,
+    "surface": "animaux",
+    "baseline": "animaux",
+    "kind": "WfiAnalysis",
+    "wordform": "animaux",
+    "bundles": [
+     {
+      "morphEntry": "d2d9c4b8-967c-4405-bae5-dfe21c306197",
+      "sense": "a76936ff-9cb6-4bb7-ad2c-d12a1883c455",
+      "msa": "d89fd094-3762-4f2f-a58a-ded6a241fb8b"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+      "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5"
+     }
+    ],
+    "analysis": "0f581721-5f48-4daa-91dc-3efc30232e4a"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 21,
+    "end": 22,
+    "punct": "–"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 23,
+    "end": 25,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiAnalysis",
+    "wordform": "un",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+      "msa": "02f558f9-0384-4104-9528-022079040f53"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 26,
+    "end": 31,
+    "surface": "mâle",
+    "baseline": "mâle",
+    "kind": "WfiAnalysis",
+    "wordform": "mâle",
+    "bundles": [
+     {
+      "morphEntry": "f9dfa498-3c37-418d-ae05-d76946e03d54",
+      "sense": "6bdfaa97-a3aa-4b32-9a2e-4c49dc4c1b1b",
+      "msa": "42f43c08-0155-45c3-9272-9176f7aa3675"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "0e6d2781-45fa-4222-aef1-7e21ebd96bf7"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 32,
+    "end": 34,
+    "surface": "et",
+    "baseline": "et",
+    "kind": "WfiAnalysis",
+    "wordform": "et",
+    "bundles": [
+     {
+      "morphEntry": "ed9cad13-bf4e-42d2-b27c-5b1d74caacc6",
+      "sense": "e73aa83f-13fd-4554-a96f-4c87ef7488a8",
+      "msa": "934d5f5a-6b30-4c5f-a118-b3a303cc5c66"
+     }
+    ],
+    "analysis": "66fdf61c-1acd-40e1-811a-310469a607ca"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 35,
+    "end": 38,
+    "surface": "une",
+    "baseline": "une",
+    "kind": "WfiAnalysis",
+    "wordform": "une",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "71bfb6ce-6e66-4ea7-b603-120dc6164668",
+      "msa": "4b113fd4-1aae-402e-b619-81b20caebc92"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "f4f07338-1756-426d-94d5-a1af0df357bd"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 39,
+    "end": 46,
+    "surface": "femelle",
+    "baseline": "femelle",
+    "kind": "WfiAnalysis",
+    "wordform": "femelle",
+    "bundles": [
+     {
+      "morphEntry": "a806a20e-5205-40d7-8594-60dd54af40b0",
+      "sense": "3b4c1fde-c112-42c6-affb-40e90b9eeddb",
+      "msa": "b67d2c95-4895-4d3f-8aff-dd151f670135"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "bb1a2c8a-9abf-4c4c-adbb-a789821c8904"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 46,
+    "end": 47,
+    "punct": "."
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 0,
+    "end": 5,
+    "surface": "parle",
+    "baseline": "parle",
+    "kind": "WfiAnalysis",
+    "wordform": "parle",
+    "bundles": [
+     {
+      "morphEntry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+      "sense": "6b80b835-636e-47ae-8630-e42c39d0bd49",
+      "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b"
+     },
+     {
+      "morphEntry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+      "sense": "39ee3c2a-db58-4328-a519-947aa80f7c99",
+      "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1"
+     }
+    ],
+    "analysis": "865bf640-c281-4369-9651-85443e202fb6"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 6,
+    "end": 12,
+    "surface": "parles",
+    "baseline": "parles",
+    "kind": "WfiAnalysis",
+    "wordform": "parles",
+    "bundles": [
+     {
+      "morphEntry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+      "sense": "6b80b835-636e-47ae-8630-e42c39d0bd49",
+      "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b"
+     },
+     {
+      "morphEntry": "c3ee95e0-2233-41e1-b561-c7afc7158781",
+      "sense": "987bff92-8f8d-4688-9ab8-bca52cbb73f5",
+      "msa": "8b5cbc9c-be44-47b0-b5f9-48f23d13a135"
+     }
+    ],
+    "analysis": "ffffffff-ffff-ffff-ffff-000000000001"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 13,
+    "end": 20,
+    "surface": "parlons",
+    "baseline": "parlons",
+    "kind": "WfiAnalysis",
+    "wordform": "parlons",
+    "bundles": [
+     {
+      "morphEntry": "73c625e9-e2c8-457d-a5a1-20d00a770eee",
+      "sense": "6b80b835-636e-47ae-8630-e42c39d0bd49",
+      "msa": "7f0be338-e07e-4fdf-82a5-4b8dad39680b"
+     },
+     {
+      "morphEntry": "3c1b632e-6ca3-4420-b604-9387c9e88888",
+      "sense": "76ade360-0b8c-47eb-b8f5-4f3de79aeba7",
+      "msa": "13e36e54-f7c4-44f8-9587-b2545706f92a"
+     }
+    ],
+    "analysis": "ffffffff-ffff-ffff-ffff-000000000002"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 0,
+    "end": 1,
+    "punct": "«"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 2,
+    "end": 7,
+    "surface": "Xyzzy",
+    "baseline": "Xyzzy",
+    "kind": "WfiWordform",
+    "wordform": "Xyzzy"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 8,
+    "end": 9,
+    "punct": "»"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 10,
+    "end": 11,
+    "surface": "3",
+    "baseline": "3",
+    "kind": "WfiWordform",
+    "wordform": "3"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 11,
+    "end": 12,
+    "punct": "."
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 12,
+    "end": 13,
+    "surface": "5",
+    "baseline": "5",
+    "kind": "WfiWordform",
+    "wordform": "5"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 14,
+    "end": 15,
+    "punct": "¿"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 15,
+    "end": 19,
+    "surface": "qué",
+    "baseline": "qué",
+    "kind": "WfiWordform",
+    "wordform": "qué"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 19,
+    "end": 20,
+    "punct": "?"
+   }
+  ]
+ },
+ "source": "^Un1.1<indf><sg><MASC><SG2>$ ^couple1.1<n><m><SG>$ ^de1.1<prep>$ ^animal1.1<n><X_PL><m><PL>$ – ^un1.1<indf><sg><MASC><SG2>$ ^mâle1.1<n><SG>$ ^et1.1<coordconj>$ ^un1.1<indf><sg><FEM><SG2>$ ^femelle1.1<n><SG>$^.<sent>$\n^parler1.1<v><ER><PRS_1SG>$ ^parler1.1<v><ER><PRS_2SG>$ ^parler1.1<v><ER><PRS_1PL>$\n« ^Xyzzy<UNK>$ » ^3<UNK>$^.<sent>$^5<UNK>$ ¿^qué<UNK>$^?<sent>$\n",
+ "extractMessages": [
+  [
+   "warning",
+   "No analysis found for the word: Xyzzy Treating this as an unknown word."
+  ],
+  [
+   "warning",
+   "No analysis found for the word: 3 Treating this as an unknown word."
+  ],
+  [
+   "warning",
+   "No analysis found for the word: 5 Treating this as an unknown word."
+  ],
+  [
+   "warning",
+   "No analysis found for the word: qué Treating this as an unknown word."
+  ]
+ ],
+ "target": "^Un1.1<indf><MASC><SG2>$ ^par1.1<n><SG>$ ^de1.1<prep>$ ^animal1.1<n><PL>$ – ^un1.1<indf><MASC><SG2>$ ^macho1.1<n><SG>$ ^y1.1<coordconj>$ ^un1.1<indf><FEM><SG2>$ ^hembra1.1<n><SG>$^.<sent>$\n^parler1.1<v><PRS_1SG>$ ^parler1.1<v><PRS_2SG>$ ^parler1.1<v><PRS_1PL>$\n« ^@Xyzzy<UNK>$ » ^@3<UNK>$^.<sent>$^@5<UNK>$ ¿^@qué<UNK>$^?<sent>$\n",
+ "master": "^Un1.1<indf><MASC><SG2>$,un1.1<indf><MASC><SG2>;1\n^par1.1<n><SG>$,par1.1<n><SG>;\n^de1.1<prep>$,de1.1<prep>;\n^animal1.1<n><PL>$,animal1.1<n><PL>;\n^un1.1<indf><MASC><SG2>$,un1.1<indf><MASC><SG2>;\n^macho1.1<n><SG>$,macho1.1<n><SG>;\n^y1.1<coordconj>$,y1.1<coordconj>;\n^un1.1<indf><FEM><SG2>$,un1.1<indf><FEM><SG2>;\n^hembra1.1<n><SG>$,hembra1.1<n><SG>;\n^parler1.1<v><PRS_1SG>$,parler1.1<v><PRS.1SG>;\n^parler1.1<v><PRS_2SG>$,parler1.1<v><PRS.2SG>;\n^parler1.1<v><PRS_1PL>$,parler1.1<v><PRS.1PL>;\n^@Xyzzy<UNK>$,@Xyzzy<UNK>;\n^@3<UNK>$,@3<UNK>;\n^@5<UNK>$,@5<UNK>;\n^@qué<UNK>$,@qué<UNK>;\n",
+ "parsesFile": "^un1.1<indf><MASC><SG2>$\n^par1.1<n><SG>$\n^de1.1<prep>$\n^animal1.1<n><PL>$\n^un1.1<indf><MASC><SG2>$\n^macho1.1<n><SG>$\n^y1.1<coordconj>$\n^un1.1<indf><FEM><SG2>$\n^hembra1.1<n><SG>$\n^parler1.1<v><PRS.1SG>$\n^parler1.1<v><PRS.2SG>$\n^parler1.1<v><PRS.1PL>$\n^@Xyzzy<UNK>$\n^@3<UNK>$\n^@5<UNK>$\n^@qué<UNK>$\n",
+ "surface": "un\npar\nde\nanimales\nun\nmacho\ny\nuna\nhembra\n%0%^parler1.1<v><PRS.1SG>$% One or more glosses not found: 'parler1.1'; \n%0%^parler1.1<v><PRS.2SG>$% One or more glosses not found: 'parler1.1'; 'PRS.2SG'; \n%0%^parler1.1<v><PRS.1PL>$% One or more glosses not found: 'parler1.1'; \n%0%^@Xyzzy<UNK>$% One or more glosses not found: '@Xyzzy'; \n%0%^@3<UNK>$% One or more glosses not found: '@3'; \n%0%^@5<UNK>$% One or more glosses not found: '@5'; \n%0%^@qué<UNK>$% One or more glosses not found: '@qué'; \n",
+ "synthesized": "Un par de animales – un macho y una hembra.\nparler parler parler\n« Xyzzy » 3.5 ¿qué?\n",
+ "synthMessages": [
+  [
+   "info",
+   "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt"
+  ],
+  [
+   "info",
+   "16 records exported in HermitCrab format."
+  ],
+  [
+   "info",
+   "Processing 16 unique lexical units."
+  ],
+  [
+   "warning",
+   " One or more glosses not found: 'parler1.1';"
+  ],
+  [
+   "warning",
+   " One or more glosses not found: 'parler1.1'; 'PRS.2SG';"
+  ],
+  [
+   "warning",
+   " One or more glosses not found: 'parler1.1';"
+  ],
+  [
+   "warning",
+   " One or more glosses not found: '@Xyzzy';"
+  ],
+  [
+   "warning",
+   " One or more glosses not found: '@3';"
+  ],
+  [
+   "warning",
+   " One or more glosses not found: '@5';"
+  ],
+  [
+   "warning",
+   " One or more glosses not found: '@qué';"
+  ],
+  [
+   "info",
+   "Synthesis complete."
+  ]
+ ],
+ "result": {
+  "source": "Un couple d’ animaux – un mâle et une femelle.\nparle parles parlons\n« Xyzzy » 3.5 ¿qué?\n",
+  "translation": "Un par de animales – un macho y una hembra.\nparler parler parler\n« Xyzzy » 3.5 ¿qué?",
+  "ok": true,
+  "steps": [
+   "Import Text",
+   "Parse Words",
+   "Approve Guesses",
+   "Extract Source Text",
+   "Run Apertium",
+   "Synthesize Text"
+  ],
+  "approved": [
+   {
+    "word": "Un",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w1",
+    "analysis": "un:INDEF + ^0:MASC + ^0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "couple",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w2",
+    "analysis": "couple:pair + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "d’",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w3",
+    "analysis": "d’:of [prep]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "animaux",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w4",
+    "analysis": "animau:animal + x:PL [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "un",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w6",
+    "analysis": "un:INDEF + 0:MASC + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "mâle",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w7",
+    "analysis": "mâle:male + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "et",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w8",
+    "analysis": "et:and [coordconj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "une",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w9",
+    "analysis": "un:INDEF + e:FEM + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "femelle",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶1 s1 w10",
+    "analysis": "femelle:female + 0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "parle",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶2 s1 w1",
+    "analysis": "parl:speak + e:PRS.1SG [v]",
+    "basis": "best guess"
+   },
+   {
+    "word": "parles",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶2 s1 w2",
+    "analysis": "None:speak + None:PRS.2SG [v]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "parlons",
+    "location": "FTT 2026-11-06 231906 Un couple d ¶2 s1 w3",
+    "analysis": "None:speak + None:PRS.1PL [v]",
+    "basis": "only analysis"
+   }
+  ],
+  "unparsed": [
+   "Xyzzy",
+   "3",
+   "5",
+   "qué"
+  ],
+  "unanalysed": [
+   "Xyzzy",
+   "3",
+   "5",
+   "qué"
+  ],
+  "untranslated": [
+   "Xyzzy",
+   "3",
+   "5",
+   "qué",
+   "parler1.1"
+  ],
+  "unsynthesized": [
+   "^parler1.1<v><PRS.1SG>$",
+   "^parler1.1<v><PRS.2SG>$",
+   "^parler1.1<v><PRS.1PL>$",
+   "^@Xyzzy<UNK>$",
+   "^@3<UNK>$",
+   "^@5<UNK>$",
+   "^@qué<UNK>$"
+  ],
+  "messages": [
+   {
+    "level": "warning",
+    "message": "No analysis found for the word: Xyzzy Treating this as an unknown word.",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": "No analysis found for the word: 3 Treating this as an unknown word.",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": "No analysis found for the word: 5 Treating this as an unknown word.",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": "No analysis found for the word: qué Treating this as an unknown word.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "16 records exported in HermitCrab format.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Processing 16 unique lexical units.",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: 'parler1.1';",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: 'parler1.1'; 'PRS.2SG';",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: 'parler1.1';",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: '@Xyzzy';",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: '@3';",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: '@5';",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: '@qué';",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Synthesis complete.",
+    "ref": null
+   }
+  ]
+ }
+}

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    FieldWorks' HermitCrab word parsing for .NET 8, so FTtranslator can parse source words on Linux. Program.cs ports HCParser.ParseWord() and its helpers; the trace manager and the FieldWorks
+    FieldWorks' HermitCrab word parsing for .NET 8, so FTtranslator can parse source words on Linux. HcWordParser.cs ports HCParser.ParseWord() and its helpers (FTOffline compiles it in too), Program.cs is the read-parse-write loop; the trace manager and the FieldWorks
     shims are shared with ../hcsynth, which builds HCSynthByGloss from FieldWorks' source. SIL.Machine is pinned to 3.9.5, the version FieldWorks 9.3.12 installs.
     Build: dotnet publish -c Release -o out
   -->
@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="HcWordParser.cs" />
     <Compile Include="../hcsynth/upstream/HCSynthByGlossLib/HcXmlTraceManager.cs" />
     <Compile Include="../hcsynth/upstream/HCSynthByGlossLib/ISynTraceManager.cs" />
     <Compile Include="../hcsynth/FieldWorksShims.cs" />

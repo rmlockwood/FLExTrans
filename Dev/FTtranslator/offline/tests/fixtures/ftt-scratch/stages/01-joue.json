@@ -1,0 +1,363 @@
+{
+ "input": "je joue. garçon joue.\n",
+ "parses": [
+  [
+   "je",
+   {
+    "word": "je",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "3523b891-22d5-4813-9dbe-87ccaf894e35",
+       "entry": "a7db7db2-83d3-4226-b403-5425d8ffb722",
+       "msa": "8a5959c1-ae9c-4bc7-b7ea-9beb8d727cb7",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "joue",
+   {
+    "word": "joue",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "garçon",
+   {
+    "word": "garçon",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ]
+ ],
+ "tokens": {
+  "title": "FTT 2026-11-06 231905 je joue. garçon",
+  "paragraphs": [
+   "je joue. garçon joue."
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 2,
+    "surface": "je",
+    "baseline": "je",
+    "kind": "WfiWordform",
+    "wordform": "je"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 3,
+    "end": 7,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiWordform",
+    "wordform": "joue"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 7,
+    "end": 8,
+    "punct": "."
+   },
+   {
+    "para": 0,
+    "seg": 1,
+    "beg": 9,
+    "end": 16,
+    "surface": "garçon",
+    "baseline": "garçon",
+    "kind": "WfiWordform",
+    "wordform": "garçon"
+   },
+   {
+    "para": 0,
+    "seg": 1,
+    "beg": 17,
+    "end": 21,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiWordform",
+    "wordform": "joue"
+   },
+   {
+    "para": 0,
+    "seg": 1,
+    "beg": 21,
+    "end": 22,
+    "punct": "."
+   }
+  ]
+ },
+ "guessed": {
+  "title": "FTT 2026-11-06 231905 je joue. garçon",
+  "paragraphs": [
+   "je joue. garçon joue."
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 2,
+    "surface": "je",
+    "baseline": "je",
+    "kind": "WfiAnalysis",
+    "wordform": "je",
+    "bundles": [
+     {
+      "morphEntry": "a7db7db2-83d3-4226-b403-5425d8ffb722",
+      "sense": "32440064-a577-49d4-bfdb-52ff2fb27d59",
+      "msa": "8a5959c1-ae9c-4bc7-b7ea-9beb8d727cb7"
+     }
+    ],
+    "analysis": "ea088a98-e547-425b-88c0-99ea83d261b1"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 3,
+    "end": 7,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiAnalysis",
+    "wordform": "joue",
+    "bundles": [
+     {
+      "morphEntry": "27e0f574-311a-479a-b641-078eea54c6df",
+      "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+      "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1"
+     },
+     {
+      "morphEntry": "4446fad3-4e88-4550-9589-c4b535beb299",
+      "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+      "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+     }
+    ],
+    "analysis": "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 7,
+    "end": 8,
+    "punct": "."
+   },
+   {
+    "para": 0,
+    "seg": 1,
+    "beg": 9,
+    "end": 16,
+    "surface": "garçon",
+    "baseline": "garçon",
+    "kind": "WfiAnalysis",
+    "wordform": "garçon",
+    "bundles": [
+     {
+      "morphEntry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+      "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+      "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "65620dd2-cbeb-4844-9095-e8b9543bbe44"
+   },
+   {
+    "para": 0,
+    "seg": 1,
+    "beg": 17,
+    "end": 21,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiAnalysis",
+    "wordform": "joue",
+    "bundles": [
+     {
+      "morphEntry": "27e0f574-311a-479a-b641-078eea54c6df",
+      "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+      "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1"
+     },
+     {
+      "morphEntry": "4446fad3-4e88-4550-9589-c4b535beb299",
+      "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+      "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+     }
+    ],
+    "analysis": "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f"
+   },
+   {
+    "para": 0,
+    "seg": 1,
+    "beg": 21,
+    "end": 22,
+    "punct": "."
+   }
+  ]
+ },
+ "source": "^je1.1<pro><sg><1>$ ^jouer1.1<v><ER><PRS_3SG>$^.<sent>$ ^garçon1.1<n><m><SG>$ ^jouer1.1<v><ER><PRS_3SG>$^.<sent>$\n",
+ "extractMessages": [],
+ "target": "^je1.1<pro><1>$ ^jugar1.1<v><PRS_3SG>$^.<sent>$ ^niño1.1<n><SG>$ ^jugar1.1<v><PRS_3SG>$^.<sent>$\n",
+ "master": "^je1.1<pro><1>$,je1.1<pro><1>;\n^jugar1.1<v><PRS_3SG>$,jugar1.1<v><PRS.3SG>;\n^niño1.1<n><SG>$,niño1.1<n><SG>;\n",
+ "parsesFile": "^je1.1<pro><1>$\n^jugar1.1<v><PRS.3SG>$\n^niño1.1<n><SG>$\n",
+ "surface": "%0%^je1.1<pro><1>$% One or more glosses not found: 'je1.1'; '1'; \njuega\nniño\n",
+ "synthesized": "je juega. niño juega.\n",
+ "synthMessages": [
+  [
+   "info",
+   "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt"
+  ],
+  [
+   "info",
+   "4 records exported in HermitCrab format."
+  ],
+  [
+   "info",
+   "Processing 3 unique lexical units."
+  ],
+  [
+   "warning",
+   " One or more glosses not found: 'je1.1'; '1';"
+  ],
+  [
+   "info",
+   "Synthesis complete."
+  ]
+ ],
+ "result": {
+  "source": "je joue. garçon joue.\n",
+  "translation": "je juega. niño juega.",
+  "ok": true,
+  "steps": [
+   "Import Text",
+   "Parse Words",
+   "Approve Guesses",
+   "Extract Source Text",
+   "Run Apertium",
+   "Synthesize Text"
+  ],
+  "approved": [
+   {
+    "word": "je",
+    "location": "FTT 2026-11-06 231905 je joue. garçon ¶1 s1 w1",
+    "analysis": "je:1SG [pro]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "joue",
+    "location": "FTT 2026-11-06 231905 je joue. garçon ¶1 s1 w2",
+    "analysis": "jou:play + e:PRS.3SG [v]",
+    "basis": "best guess"
+   },
+   {
+    "word": "garçon",
+    "location": "FTT 2026-11-06 231905 je joue. garçon ¶1 s2 w1",
+    "analysis": "garçon:boy + ^0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "joue",
+    "location": "FTT 2026-11-06 231905 je joue. garçon ¶1 s2 w2",
+    "analysis": "jou:play + e:PRS.3SG [v]",
+    "basis": "best guess"
+   }
+  ],
+  "unparsed": [],
+  "unanalysed": [],
+  "untranslated": [
+   "je1.1"
+  ],
+  "unsynthesized": [
+   "^je1.1<pro><1>$"
+  ],
+  "messages": [
+   {
+    "level": "info",
+    "message": "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "4 records exported in HermitCrab format.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Processing 3 unique lexical units.",
+    "ref": null
+   },
+   {
+    "level": "warning",
+    "message": " One or more glosses not found: 'je1.1'; '1';",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Synthesis complete.",
+    "ref": null
+   }
+  ]
+ }
+}

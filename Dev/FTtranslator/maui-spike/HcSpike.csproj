@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<!--
-		SPIKE (throwaway): does SIL.Machine's HermitCrab parser load and parse on a phone? Android only for now (iOS needs a Mac). The parsing code is hcparse's own Program.cs, compiled in
+		SPIKE (throwaway): does SIL.Machine's HermitCrab parser load and parse on a phone? Android only for now (iOS needs a Mac). The parsing code is hcparse's own HcWordParser.cs, compiled in
 		unchanged, run on FTT-Scratch's parser.xml/parser.json from deploy/bundle over the 102 wordforms the desktop golden run parsed. See README.md.
 	-->
 
@@ -21,7 +21,7 @@
 		<ApplicationVersion>1</ApplicationVersion>
 		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
 
-		<!-- hcparse's Program.cs serializes anonymous types with System.Text.Json; trimmed builds turn reflection-based JSON off unless told otherwise. A real app would use source-generated JSON. -->
+		<!-- hcparse's HcWordParser.cs serializes its results with System.Text.Json; trimmed builds turn reflection-based JSON off unless told otherwise. A real app would use source-generated JSON. -->
 		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 
 		<!-- Report trimming/AOT problems per assembly, so we can see whether SIL.Machine is the one warning -->
@@ -43,8 +43,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- hcparse's parser, unchanged; its Main() is never called (the app reaches ParseWord through reflection, see HcRunner.cs) -->
-		<Compile Include="..\hcparse\Program.cs" Link="Shared\Program.cs" />
+		<!-- hcparse's parser, unchanged (see HcRunner.cs) -->
+		<Compile Include="..\hcparse\HcWordParser.cs" Link="Shared\HcWordParser.cs" />
 		<Compile Include="..\hcsynth\upstream\HCSynthByGlossLib\HcXmlTraceManager.cs" Link="Shared\HcXmlTraceManager.cs" />
 		<Compile Include="..\hcsynth\upstream\HCSynthByGlossLib\ISynTraceManager.cs" Link="Shared\ISynTraceManager.cs" />
 		<Compile Include="..\hcsynth\FieldWorksShims.cs" Link="Shared\FieldWorksShims.cs" />

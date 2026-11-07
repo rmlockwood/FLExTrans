@@ -2,7 +2,8 @@
 
 Answers one question before any phone-app work: does SIL.Machine's HermitCrab parser load and parse on a phone? Android only so far; iOS needs a Mac.
 
-The app compiles `../hcparse/Program.cs` unchanged (its private `ParseWord` is reached through reflection in `HcRunner.cs`), loads FTT-Scratch's `parser.xml` and `parser.json` from
+The app compiles hcparse's parser unchanged (`../hcparse/HcWordParser.cs`; the results below were measured when it was still private in `Program.cs` and reached through reflection, before
+the parser was made a public class for FTOffline), loads FTT-Scratch's `parser.xml` and `parser.json` from
 `../deploy/bundle`, and parses the 102 wordforms in `Resources/Raw/words.txt` (the words of the desktop `golden` run). It runs once on start and logs a `HCSPIKE` line to logcat.
 
 ## Results (2026-11-06, Galaxy S9 SM-G960F, Android 10, arm64; SIL.Machine 3.9.6)

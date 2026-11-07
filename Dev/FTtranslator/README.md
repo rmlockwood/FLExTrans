@@ -203,7 +203,12 @@ Steps pass data to each other through FLExTrans' usual files (`Build\source_text
 - `fttranslator/server.py`: the `serve` command's web server and JSON API, around one `Translator`.
 - `fttranslator/bundle.py`: the `export-bundle` command's exporter. It writes the source lexicon data that Extract Source Text needs, worked out with FLExTrans' own `Utils` functions.
 - `fttranslator/golden.py`: the `golden` command's capture of test pairs: each text's analyses next to Extract Source Text's real output.
-- `fttranslator/bundleextract.py`: Extract Source Text without FieldWorks or FLExTrans, from a bundle and a text's analyses. A line-for-line port and the reference for a C# version. `check-golden` runs it.
+- `fttranslator/bundleextract.py`: Extract Source Text without FieldWorks or FLExTrans, from a bundle and a text's analyses. A line-for-line port and the reference for the C# one in `offline/ExtractSourceText.cs`. `check-golden` runs it.
+- `hcparse/`, `hcsynth/`, `apertium/`: the .NET 8 HermitCrab parser and synthesizer and FTApertium (the transfer step), which the offline commands run.
+- `offline/`: FTOffline, the whole offline translator in C# (the Python steps above plus those three, in one process), checked step by step against the Python; the engine for a phone
+  app. See [its README](offline/README.md).
+- `phone/`: FTtranslator for phones (.NET MAUI, Android), which translates on the phone with FTOffline from bundles kept on the phone (built in, or added and updated from a zip), switching
+  between language pairs: the translation and a history normally, a trace of each run in trace mode. See [its README](phone/README.md).
 - `web/`: the React front end (Vite + TypeScript). `src/App.tsx` is the page, `src/ResultCard.tsx` shows one translation, and `src/api.ts` calls the server.
 - `parse_priority/`: the parser and guesser tools that the ingest steps are built on.
 - `tests/`: `python -m unittest discover -s tests`. These tests don't need FieldWorks. `test_bundleextract.py` covers `bundleextract.py` on a small made-up lexicon.

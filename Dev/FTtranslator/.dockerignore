@@ -7,6 +7,8 @@ web/dist/
 tests/
 apertium/tests/
 apertium/cli/
+offline/
 maui-spike/
+phone/
 parse_priority/
 *.log

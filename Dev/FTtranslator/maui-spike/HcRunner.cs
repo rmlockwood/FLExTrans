@@ -1,15 +1,11 @@
 // HcRunner.cs - HC Spike (throwaway)
 //
-// Loads parser.xml/parser.json into a HermitCrab Morpher exactly as hcparse's Main() does, then parses each word with hcparse's own ParseWord(). ParseWord and the s_data field are private
-// in Program.cs, which this spike compiles in unchanged, so they are reached through reflection rather than editing hcparse for a throwaway experiment.
+// Loads parser.xml/parser.json into hcparse's own HcWordParser (compiled in from hcparse/HcWordParser.cs, the class hcparse's Main() uses) and parses each word with it, writing the
+// line hcparse would write.
 
 using System.Diagnostics;
-using System.Reflection;
 using System.Text;
-using System.Text.Json;
 using FTtranslator.HCParse;
-using HCSynthByGloss;
-using SIL.Machine.Morphology.HermitCrab;
 
 namespace HcSpike;
 
@@ -48,24 +44,7 @@ public static class HcRunner
 		var watch = Stopwatch.StartNew();
 
 		// As hcparse's Main()
-		var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-		ParserData data = JsonSerializer.Deserialize<ParserData>(File.ReadAllText(Path.Combine(dir, "parser.json"), Encoding.UTF8), jsonOptions)!;
-		Language language = XmlLanguageLoader.Load(Path.Combine(dir, "parser.xml"));
-		ParserSettings settings = data.Settings;
-
-		var morpher = new Morpher(new HcXmlTraceManager { IsTracing = false }, language)
-		{
-			DeletionReapplications = settings.DeletionReapplications,
-			MaxStemCount = settings.MaxStemCount,
-			MergeEquivalentAnalyses = settings.MergeEquivalentAnalyses,
-			MaxAlternatives = settings.MaxAlternatives,
-			AlwaysEnforceFinalTemplates = settings.AlwaysEnforceFinalTemplates,
-		};
-
-		// Program's private members
-		Type program = typeof(ParserData).Assembly.GetType("FTtranslator.HCParse.Program")!;
-		program.GetField("s_data", BindingFlags.NonPublic | BindingFlags.Static)!.SetValue(null, data);
-		MethodInfo parseWord = program.GetMethod("ParseWord", BindingFlags.NonPublic | BindingFlags.Static)!;
+		var parser = new HcWordParser(Path.Combine(dir, "parser.xml"), Path.Combine(dir, "parser.json"));
 
 		result.LoadSeconds = watch.Elapsed.TotalSeconds;
 		watch.Restart();
@@ -78,7 +57,7 @@ public static class HcRunner
 			if (word.Length == 0)
 				continue;
 
-			string line = (string)parseWord.Invoke(null, new object[] { morpher, word, settings.GuessRoots })!;
+			string line = HcWordParser.ToJson(parser.Parse(word));
 			output.Append(line).Append('\n');
 			result.WordCount++;
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FLExTransSearchReplace ApplyWildebeest="no">
+  <SearchReplaceRules>
+    <SearchReplaceRule RegEx="no" Inactive="no" Comment=""><SearchString>a</SearchString><ReplaceString>b</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="unbalanced"><SearchString>(abc</SearchString><ReplaceString>x</ReplaceString></SearchReplaceRule>
+  </SearchReplaceRules>
+</FLExTransSearchReplace>

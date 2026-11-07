@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.1 - 11/6/26 - Ron Lockwood
+#    File a word's parses in a fixed order, so a text gets the same analyses every time; HermitCrab's order changes from run to run.
+#
 #   Version 3.17 - 11/3/26 - Ron Lockwood
 #    Initial version. FTtranslator's Parse Words and Approve Guesses steps without FieldWorks, and the chain from source text to Extract Source Text's output.
 #
@@ -34,13 +37,15 @@
 #   TRAPS
 #
 #    - A GUID tie can't be broken as on the desktop for a new analysis, which FieldWorks gives a random GUID. New analyses here get GUIDs that sort after every real one, in parse order.
+#      HermitCrab gives a word's parses in a different order from run to run, so file() takes them in a fixed order (parseSortKey()); otherwise two new analyses tied on everything else
+#      would swap GUIDs between runs and the same text could be translated two ways (it happened with Mato-Uma's "Hainga").
 #    - Glosses aren't guessed: Extract Source Text reads a gloss's analysis, so the analysis is all it needs.
 #    - The guesser's capitalization tests (title case, all upper case) use Python's str methods where FLEx uses ICU's CaseFunctions.
 #    - Sentences come from tokenizer.py's rule, not FLEx's, and a segment edge is a neighbour, so a guess near a sentence break can differ from the desktop's where the two rules differ.
 #
 #   CODE STRUCTURE
 #
-#   HCParseProcess runs hcparse. Guesser holds guesser.json: file() and its helpers come first, then the counting (_analysisCounts(), _addCount(), _contextCounts()), the candidates
+#   HCParseProcess runs hcparse; parseSortKey() orders a word's parses for filing and parserForm() prepares a word for the parser. Guesser holds guesser.json: file() and its helpers come first, then the counting (_analysisCounts(), _addCount(), _contextCounts()), the candidates
 #   (_wordformIfNeeded(), _generateEntryGuess()), and bestGuess() with _compare(). parseAndFile(), applyGuesses() and translateToStream() are the steps.
 #
 
@@ -77,6 +82,11 @@ class HCParseProcess:
 
         self.process.stdin.close()  # type: ignore
         self.process.wait()
+
+def parseSortKey(parse):
+    '''The order Guesser.file() files a word's parses in: by each morph's form, entry, msa, inflection type and guessed text, missing ones as "". FTOffline's Guesser.cs uses the same order.'''
+
+    return [(morph["form"] or "", morph["entry"] or "", morph["msa"] or "", morph["inflType"] or "", morph["guessed"] or "") for morph in parse]
 
 def parserForm(word):
     '''parse_priority's parserForm(): what the parser is given for a word.'''
@@ -131,7 +141,8 @@ class Guesser:
             self._setUnsuccessfulParseEvals(wordform, None)
             return
 
-        for parse in parseResult["analyses"]:
+        # In a fixed order, since HermitCrab's changes from run to run and decides the new analyses' GUIDs (see TRAPS above)
+        for parse in sorted(parseResult["analyses"], key=parseSortKey):
 
             matches = [analysis for analysis in wordform["analyses"] if self._matches(parse, analysis)]
 

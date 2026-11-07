@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FLExTransSearchReplace ApplyWildebeest="no">
+  <SearchReplaceRules>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="whole words, ZWNJ inside a word"><SearchString>\b(\w+)ha\b</SearchString><ReplaceString>[\1]</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="upper with full case mapping"><SearchString>gross(\w*)</SearchString><ReplaceString>\U\0\E!</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="lower, Greek final sigma"><SearchString>ΟΔΟΣ</SearchString><ReplaceString>\L\0</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="one-shot case"><SearchString>(mañana) (straße)</SearchString><ReplaceString>\u\1 \U\2\E</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="no" Inactive="no" Comment="plain, two spaces"><SearchString>  </SearchString><ReplaceString> </ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="yes" Comment="inactive"><SearchString>.</SearchString><ReplaceString>X</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="lazy class before a marker"><SearchString>([^.?!,]+?)QMARKQ([.?!,])</SearchString><ReplaceString>&lt;\1&gt;\2</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="look-behind"><SearchString>(?&lt;=\\\+xt [^\\]*)@(?=[^\\]*\\\+xt\*)</SearchString><ReplaceString></ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="yes" Inactive="no" Comment="end of text only"><SearchString>end\Z</SearchString><ReplaceString>END</ReplaceString></SearchReplaceRule>
+    <SearchReplaceRule RegEx="no" Inactive="no" Comment="composed search matches decomposed text"><SearchString>café</SearchString><ReplaceString>coffee</ReplaceString></SearchReplaceRule>
+  </SearchReplaceRules>
+</FLExTransSearchReplace>

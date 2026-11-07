@@ -1,0 +1,1 @@
+Applying Text In/Out rules stopped because of a failure of rule 2: (abc ⭢ x (✓ RegEx) - unbalanced

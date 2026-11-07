@@ -42,7 +42,9 @@
  },
  "formatVersion": 1,
  "interfaceLanguage": "en",
+ "sourceLanguage": "French",
  "sourceProject": "French-PP-FTT",
+ "targetLanguage": "Spanish",
  "targetProject": "Spanish-FTT-Scratch",
  "workProject": "FTT-Scratch"
 }

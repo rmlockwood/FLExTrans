@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+	A translation's trace: the "▸ Trace" toggle and, when open, the details TranslationItem works out. Shown only in trace mode. Used under the current translation and in each card of the history.
+	Its BindingContext is a TranslationItem. See TranslationItem.cs.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FTtranslator.Phone"
+             x:Class="FTtranslator.Phone.TraceView"
+             x:DataType="local:TranslationItem">
+
+    <ContentView.Resources>
+        <Style x:Key="TraceHeading" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+        <Style x:Key="TraceText" TargetType="Label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontFamily" Value="monospace" />
+        </Style>
+    </ContentView.Resources>
+
+    <VerticalStackLayout IsVisible="{Binding TraceMode}" Spacing="2">
+        <Label Text="{Binding TraceToggleText}" FontSize="12" Padding="0,6,0,4" TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnToggleTapped" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <VerticalStackLayout IsVisible="{Binding IsTraceOpen}" Spacing="2">
+            <Label Text="{Binding TraceSummary}" Style="{StaticResource TraceText}" />
+
+            <Label Text="Problem words" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceProblems}" />
+            <Label Text="{Binding TraceProblems}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceProblems}" />
+
+            <Label Text="Step times" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceTimings}" />
+            <Label Text="{Binding TraceTimings}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceTimings}" />
+
+            <Label Text="Analyses chosen" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceAnalyses}" />
+            <Label Text="{Binding TraceAnalyses}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceAnalyses}" />
+
+            <Label Text="Messages" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceMessages}" />
+            <Label Text="{Binding TraceMessages}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceMessages}" />
+
+            <Label Text="Source stream (Extract Source Text)" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasSourceStream}" />
+            <Label Text="{Binding SourceStream}" Style="{StaticResource TraceText}" IsVisible="{Binding HasSourceStream}" />
+
+            <Label Text="Target stream (Run Apertium)" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTargetStream}" />
+            <Label Text="{Binding TargetStream}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTargetStream}" />
+
+            <Label Text="Exception" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasErrorDetail}" />
+            <Label Text="{Binding ErrorDetail}" Style="{StaticResource TraceText}" IsVisible="{Binding HasErrorDetail}" />
+        </VerticalStackLayout>
+    </VerticalStackLayout>
+
+</ContentView>

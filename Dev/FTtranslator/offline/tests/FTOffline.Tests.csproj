@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    FTOffline's unit tests: the FTT-Scratch fixtures (deploy/bundle, translated step by step by the Python translator in make_fixtures.py) checked through StageCheck, the Text Out fixture against
+    textout.py's result, and the Python str and case behaviour PyStr and FullCase reproduce. Run: dotnet test
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>FTtranslator.Offline.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Where the fixtures and the FTT-Scratch bundle are, so the tests read them in place rather than from a copy -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>FixturesDir</_Parameter1>
+      <_Parameter2>$(MSBuildThisFileDirectory)fixtures</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BundleDir</_Parameter1>
+      <_Parameter2>$(MSBuildThisFileDirectory)../../deploy/bundle</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FTOffline.csproj" />
+  </ItemGroup>
+
+</Project>

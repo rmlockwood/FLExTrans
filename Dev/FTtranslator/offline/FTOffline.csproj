@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    FTOffline: FTtranslator's offline translation (fttranslator/offlineserver.py's OfflineTranslator and the steps it runs) in C#, so a phone app can translate from a bundle with no Python.
+    Each file says which Python file it ports. It compiles in hcparse's HcWordParser.cs and HCSynthByGlossDll's sources (with the FieldWorks shims), so parsing and synthesis run in the same
+    process with the code the Python translator runs as programs, and references FTApertium for the transfer step. SIL.Machine is pinned to 3.9.5, as in hcparse and hcsynth.
+    .NET 8 to match them and the Docker image. See README.md.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>FTtranslator.Offline</AssemblyName>
+    <RootNamespace>FTtranslator.Offline</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- cli/ and tests/ are projects of their own -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
+    <!-- Upstream warnings in the shared hcparse/hcsynth sources (see their project files), plus the nullable warnings from compiling them with Nullable on -->
+    <NoWarn>$(NoWarn);CS0168;CS0169;CS0219;CS0414;CS0649;SYSLIB0012;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="*.cs" />
+
+    <!-- hcparse's parser, shared with the hcparse program -->
+    <Compile Include="../hcparse/HcWordParser.cs" Link="Shared/HcWordParser.cs" />
+
+    <!-- HCSynthByGlossDll and the library it wraps, from FieldWorks' source as hcsynth builds them, without the program's Main -->
+    <Compile Include="../hcsynth/upstream/HCSynthByGlossDll/*.cs" Link="Shared/HCSynthByGlossDll/%(Filename)%(Extension)" />
+    <Compile Include="../hcsynth/upstream/HCSynthByGlossLib/*.cs" Link="Shared/HCSynthByGlossLib/%(Filename)%(Extension)" />
+    <Compile Include="../hcsynth/FieldWorksShims.cs" Link="Shared/FieldWorksShims.cs" />
+    <EmbeddedResource Include="../hcsynth/upstream/HCSynthByGlossLib/HCSynthByGlossStrings.resx" LogicalName="HCSynthByGlossLib.HCSynthByGlossStrings.resources" Link="Shared/HCSynthByGlossStrings.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../apertium/FTApertium.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SIL.Machine" Version="3.9.5" />
+    <PackageReference Include="SIL.Machine.Morphology.HermitCrab" Version="3.9.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+</Project>

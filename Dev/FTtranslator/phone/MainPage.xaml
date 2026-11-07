@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+	FTtranslator's one page, all of it scrolling together: the text box, the current translation right under it (tinted, so it's easy to find; tap it to copy), the language pair and Translate,
+	the current translation's trace (trace mode only), then the earlier translations. Tap an earlier one to copy it; swipe it right to put its source back in the box, left to delete it. Tap the
+	language pair to switch bundles. The menu (⋮) switches bundles too, adds or updates one from a zip, turns trace mode on and off and clears the history. See MainPage.xaml.cs.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FTtranslator.Phone"
+             x:Class="FTtranslator.Phone.MainPage"
+             Title="FTtranslator">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Language pair…" Order="Secondary" Clicked="OnLanguagePairClicked" />
+        <ToolbarItem Text="Add or update a bundle…" Order="Secondary" Clicked="OnAddBundleClicked" />
+        <ToolbarItem x:Name="TraceModeItem" Text="Trace mode" Order="Secondary" Clicked="OnTraceModeClicked" />
+        <ToolbarItem Text="Clear history" Order="Secondary" Clicked="OnClearHistoryClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <Style x:Key="Muted" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+        </Style>
+        <Style x:Key="ErrorText" TargetType="Label">
+            <Setter Property="TextColor" Value="{AppThemeBinding Light=#C62828, Dark=#EF9A9A}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- A ScrollView, not a CollectionView with a header: on Android the CollectionView measured its header once and kept that height, so the earlier translations sat off screen -->
+    <ScrollView>
+        <VerticalStackLayout>
+
+            <VerticalStackLayout Padding="16,12,16,4" Spacing="10">
+                <Editor x:Name="SourceEditor" Placeholder="Type a sentence" AutoSize="TextChanges" MaximumHeightRequest="160" FontSize="18" TextChanged="OnSourceTextChanged" />
+
+                <!-- The current translation. Its source shows only when the box no longer holds it (after a restart, or once the box is changed). -->
+                <Border x:Name="AnswerPanel" IsVisible="False" Padding="14,12" StrokeThickness="0" StrokeShape="RoundRectangle 10"
+                        BackgroundColor="{AppThemeBinding Light=#EEEAFB, Dark=#2A2340}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnAnswerTapped" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="4">
+                        <Label x:Name="AnswerSourceLabel" FontSize="13" TextColor="{AppThemeBinding Light=#5E5E5E, Dark={StaticResource Gray200}}" />
+                        <Label x:Name="AnswerLabel" FontSize="22" />
+                        <Label x:Name="AnswerErrorLabel" Style="{StaticResource ErrorText}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- The language pair (or "Copied"), which switches bundles when tapped, and Translate -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Label x:Name="StatusLabel" Grid.Column="0" Style="{StaticResource Muted}" VerticalOptions="Center" LineBreakMode="TailTruncation" MinimumHeightRequest="44" VerticalTextAlignment="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguagePairClicked" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Button x:Name="TranslateButton" Grid.Column="1" Text="Translate" IsEnabled="False" Clicked="OnTranslateClicked" />
+                </Grid>
+
+                <!-- Trace mode: the current translation's trace -->
+                <local:TraceView x:Name="AnswerTrace" IsVisible="False" />
+
+                <Label x:Name="EarlierLabel" Text="Earlier" Style="{StaticResource Muted}" FontAttributes="Bold" Margin="0,8,0,0" IsVisible="False" />
+            </VerticalStackLayout>
+
+            <!-- The earlier translations, newest first -->
+            <VerticalStackLayout x:Name="EarlierList" Padding="0,0,0,12">
+            <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="local:TranslationItem">
+                <SwipeView>
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem Text="Edit again" BackgroundColor="{StaticResource Primary}" Invoked="OnReuseInvoked" />
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <SwipeView.RightItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem Text="Delete" BackgroundColor="#C62828" Invoked="OnDeleteInvoked" />
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+
+                    <Border Margin="12,4" Padding="14,10" StrokeThickness="0" StrokeShape="RoundRectangle 10"
+                            BackgroundColor="{AppThemeBinding Light=#F2F2F2, Dark={StaticResource Gray900}}">
+                        <VerticalStackLayout Spacing="4">
+
+                            <!-- Tap it to copy the translation -->
+                            <VerticalStackLayout Spacing="4">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnTranslationTapped" />
+                                </VerticalStackLayout.GestureRecognizers>
+                                <Label Text="{Binding Source}" Style="{StaticResource Muted}" />
+                                <Label Text="{Binding Translation}" FontSize="17" IsVisible="{Binding HasTranslation}" />
+                                <Label Text="{Binding Error}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+                            </VerticalStackLayout>
+
+                            <!-- Hidden itself, not only its content: see UpdateAnswerTrace() in MainPage.xaml.cs -->
+                            <local:TraceView IsVisible="{Binding TraceMode}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </SwipeView>
+            </DataTemplate>
+            </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+		FTtranslator for phones: type a sentence, get its translation, translated on the phone by FTOffline (../offline) from a bundle on the phone. No network. Android only for now (iOS needs
+		a Mac). A trimmed-down screen (the translation and a history of earlier ones) unless trace mode is on, which adds each translation's run record and Apertium streams. See README.md.
+
+		The bundles: the build zips each bundle folder (export-bundle's Output\ftt_bundle) named in BundleDirs, separated by semicolons, into the app as bundle-<hash>.zip, and lists them in
+		bundles.txt; the app unpacks them on first run, or whenever a zip has changed (Bundles.cs). FTT-Scratch's ../deploy/bundle unless -p:BundleDirs names others. More can be added on the
+		phone from a zip.
+	-->
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0-android</TargetFrameworks>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>FTtranslator.Phone</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+
+		<ApplicationTitle>FTtranslator</ApplicationTitle>
+		<ApplicationId>org.sil.fttranslator</ApplicationId>
+		<ApplicationDisplayVersion>3.17</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+
+		<!-- FTOffline's loaders and hcparse's HcWordParser.cs use reflection-based System.Text.Json, which trimmed builds turn off unless told otherwise. The app's own JSON (the history) is source-generated. -->
+		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+
+		<!-- The bundle folders zipped into the app. See the comment at the top. -->
+		<BundleDirs Condition="'$(BundleDirs)' == ''">$(MSBuildProjectDirectory)\..\deploy\bundle</BundleDirs>
+		<BundlesOut>$(BaseIntermediateOutputPath)bundles\</BundlesOut>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiFont Include="Resources\Fonts\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\offline\FTOffline.csproj" />
+	</ItemGroup>
+
+	<!--
+		Zip each bundle folder's contents (not the folder itself, as upload-bundle zips them) and list the zips in bundles.txt, then add them as app assets. The zips are named by a hash of the
+		folder's path, since every export-bundle folder is called ftt_bundle. Zipped again on every build: a few seconds for a big bundle, and never a stale bundle. The folder isn't emptied first
+		(something else may have one open); a zip left from an earlier build isn't in bundles.txt, so it isn't packed. It runs only in the build that packs the app's assets: not in a Release
+		build's per-processor builds (RuntimeIdentifier set), which run side by side and would all write the same zips at once, nor in the editor's design-time builds; neither needs the zips.
+	-->
+	<Target Name="ZipBundles" BeforeTargets="PrepareForBuild" Condition="'$(RuntimeIdentifier)' == '' And '$(DesignTimeBuild)' != 'true'">
+		<ItemGroup>
+			<PackagedBundle Include="$(BundleDirs)" />
+			<PackagedBundle>
+				<ZipName>bundle-$([MSBuild]::StableStringHash('%(FullPath)'))</ZipName>
+			</PackagedBundle>
+		</ItemGroup>
+
+		<Error Condition="!Exists('%(PackagedBundle.FullPath)\manifest.json')" Text="%(PackagedBundle.FullPath) is not a bundle folder (it has no manifest.json). Pass -p:BundleDirs=&lt;export-bundle's Output\ftt_bundle&gt;;&lt;another&gt;." />
+		<MakeDir Directories="$(BundlesOut)" />
+		<ZipDirectory SourceDirectory="%(PackagedBundle.FullPath)" DestinationFile="$(BundlesOut)%(PackagedBundle.ZipName).zip" Overwrite="true" />
+		<WriteLinesToFile File="$(BundlesOut)bundles.txt" Lines="@(PackagedBundle->'%(ZipName).zip')" Overwrite="true" />
+
+		<ItemGroup>
+			<MauiAsset Include="$(BundlesOut)%(PackagedBundle.ZipName).zip" LogicalName="%(PackagedBundle.ZipName).zip" />
+			<MauiAsset Include="$(BundlesOut)bundles.txt" LogicalName="bundles.txt" />
+		</ItemGroup>
+	</Target>
+
+</Project>

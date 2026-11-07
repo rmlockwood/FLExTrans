@@ -1,0 +1,1392 @@
+{
+ "input": "Le garçon joue avec un long train.\nLe garçon joue avec une longue voiture.\nLes garçons jouent avec des petites voitures.\n",
+ "parses": [
+  [
+   "Le",
+   {
+    "word": "Le",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+       "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+       "msa": "c378a34c-c57f-4945-9842-6720ed702502",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "48e5c93d-3ff1-470e-90eb-769ad8325830",
+       "entry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+       "msa": "615e705c-b753-422b-a167-33ce8e190c57",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "garçon",
+   {
+    "word": "garçon",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "joue",
+   {
+    "word": "joue",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d8ba3be1-8dba-443d-baaf-e9a681b87889",
+       "entry": "3ca5e517-b26f-44ef-b010-e07a7a7bdc5d",
+       "msa": "f997c973-c078-45d3-93b7-09f77cf23eb1",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "0d3264ba-0fd1-4b72-ad96-bf04d6057d33",
+       "entry": "4446fad3-4e88-4550-9589-c4b535beb299",
+       "msa": "da85e897-9a16-46b3-bb44-5315e055139d",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "avec",
+   {
+    "word": "avec",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "f282e038-4687-4733-b9b7-824ce81941a0",
+       "entry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+       "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "un",
+   {
+    "word": "un",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "msa": "02f558f9-0384-4104-9528-022079040f53",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "long",
+   {
+    "word": "long",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "6e1e19b4-287b-485a-b15d-27eddd3e8d7e",
+       "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+       "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "d49eb9a3-c307-4210-ad62-4d2a79b355e5",
+       "entry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+       "msa": "feee4d15-adc1-41c5-82a7-77538d641912",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "train",
+   {
+    "word": "train",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "ac8c4883-c52d-4307-b13b-77e18761e1d0",
+       "entry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+       "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "une",
+   {
+    "word": "une",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "59bf16cc-778d-41d6-ab60-95bdce8dd240",
+       "entry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "4b113fd4-1aae-402e-b619-81b20caebc92",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "longue",
+   {
+    "word": "longue",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "613749a0-46d0-4b77-9d16-1eeb846e6f30",
+       "entry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+       "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "voiture",
+   {
+    "word": "voiture",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "2df63d5e-3d80-4c47-8c7c-fde6b7f6d9ab",
+       "entry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+       "msa": "2882c429-1257-448d-95b5-a682faff0d67",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "64dd9075-2ddb-4223-8e13-87501da75c39",
+       "entry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+       "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "Les",
+   {
+    "word": "Les",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69",
+       "inflType": null,
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "f3c40038-69d6-452f-b88d-adc3310e1d06",
+       "entry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+       "msa": "61d99afd-8a81-48ab-8bd3-8200ab1d2b1f",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "garçons",
+   {
+    "word": "garçons",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "aee804c6-7a32-4e74-8cdf-e5dac759f26d",
+       "entry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+       "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "jouent",
+   {
+    "word": "jouent",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "c54804f6-d70e-4129-b5af-a995a9baa832",
+       "entry": "27e0f574-311a-479a-b641-078eea54c6df",
+       "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "105ee80f-1882-40be-8bff-891158dd86ec",
+       "entry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+       "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "des",
+   {
+    "word": "des",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "2be413ad-cd8f-43f3-a31d-b78dc369810e",
+       "entry": "09bf741d-3c99-4fb5-899a-0ce98d6dee7c",
+       "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540",
+       "inflType": "842e6c50-e0ea-4f61-947c-09dc1f03b5f3",
+       "guessed": null
+      }
+     ],
+     [
+      {
+       "form": "89041aa1-7bee-4c1a-b942-9c8a010408ad",
+       "entry": "c4fcb08d-2986-4ae8-9cae-3b870d92d03d",
+       "msa": "d6030b47-de95-4480-858c-cdbbe6fa1408",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "petites",
+   {
+    "word": "petites",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "ce8e04e6-2756-4be4-b856-437bd19a6297",
+       "entry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+       "msa": "542e584c-e966-4d14-877a-77e462642868",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "45e3b0c9-23e2-47f4-8f20-8834852961ce",
+       "entry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+       "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "49f5fcd4-f101-4860-af2a-e48453c77083",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ],
+  [
+   "voitures",
+   {
+    "word": "voitures",
+    "error": null,
+    "analyses": [
+     [
+      {
+       "form": "2df63d5e-3d80-4c47-8c7c-fde6b7f6d9ab",
+       "entry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+       "msa": "2882c429-1257-448d-95b5-a682faff0d67",
+       "inflType": null,
+       "guessed": null
+      },
+      {
+       "form": "b52af8dc-e746-4c97-93dd-edf139d7041a",
+       "entry": "046445a7-0c25-4313-a127-00e7728895fd",
+       "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5",
+       "inflType": null,
+       "guessed": null
+      }
+     ]
+    ]
+   }
+  ]
+ ],
+ "tokens": {
+  "title": "FTT 2026-11-06 231905 Le garçon joue",
+  "paragraphs": [
+   "Le garçon joue avec un long train.",
+   "Le garçon joue avec une longue voiture.",
+   "Les garçons jouent avec des petites voitures."
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 2,
+    "surface": "Le",
+    "baseline": "Le",
+    "kind": "WfiWordform",
+    "wordform": "Le"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 3,
+    "end": 10,
+    "surface": "garçon",
+    "baseline": "garçon",
+    "kind": "WfiWordform",
+    "wordform": "garçon"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 11,
+    "end": 15,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiWordform",
+    "wordform": "joue"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 16,
+    "end": 20,
+    "surface": "avec",
+    "baseline": "avec",
+    "kind": "WfiWordform",
+    "wordform": "avec"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 21,
+    "end": 23,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiWordform",
+    "wordform": "un"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 24,
+    "end": 28,
+    "surface": "long",
+    "baseline": "long",
+    "kind": "WfiWordform",
+    "wordform": "long"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 29,
+    "end": 34,
+    "surface": "train",
+    "baseline": "train",
+    "kind": "WfiWordform",
+    "wordform": "train"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 34,
+    "end": 35,
+    "punct": "."
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 0,
+    "end": 2,
+    "surface": "Le",
+    "baseline": "Le",
+    "kind": "WfiWordform",
+    "wordform": "Le"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 3,
+    "end": 10,
+    "surface": "garçon",
+    "baseline": "garçon",
+    "kind": "WfiWordform",
+    "wordform": "garçon"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 11,
+    "end": 15,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiWordform",
+    "wordform": "joue"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 16,
+    "end": 20,
+    "surface": "avec",
+    "baseline": "avec",
+    "kind": "WfiWordform",
+    "wordform": "avec"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 21,
+    "end": 24,
+    "surface": "une",
+    "baseline": "une",
+    "kind": "WfiWordform",
+    "wordform": "une"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 25,
+    "end": 31,
+    "surface": "longue",
+    "baseline": "longue",
+    "kind": "WfiWordform",
+    "wordform": "longue"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 32,
+    "end": 39,
+    "surface": "voiture",
+    "baseline": "voiture",
+    "kind": "WfiWordform",
+    "wordform": "voiture"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 39,
+    "end": 40,
+    "punct": "."
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 0,
+    "end": 3,
+    "surface": "Les",
+    "baseline": "Les",
+    "kind": "WfiWordform",
+    "wordform": "Les"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 4,
+    "end": 12,
+    "surface": "garçons",
+    "baseline": "garçons",
+    "kind": "WfiWordform",
+    "wordform": "garçons"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 13,
+    "end": 19,
+    "surface": "jouent",
+    "baseline": "jouent",
+    "kind": "WfiWordform",
+    "wordform": "jouent"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 20,
+    "end": 24,
+    "surface": "avec",
+    "baseline": "avec",
+    "kind": "WfiWordform",
+    "wordform": "avec"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 25,
+    "end": 28,
+    "surface": "des",
+    "baseline": "des",
+    "kind": "WfiWordform",
+    "wordform": "des"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 29,
+    "end": 36,
+    "surface": "petites",
+    "baseline": "petites",
+    "kind": "WfiWordform",
+    "wordform": "petites"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 37,
+    "end": 45,
+    "surface": "voitures",
+    "baseline": "voitures",
+    "kind": "WfiWordform",
+    "wordform": "voitures"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 45,
+    "end": 46,
+    "punct": "."
+   }
+  ]
+ },
+ "guessed": {
+  "title": "FTT 2026-11-06 231905 Le garçon joue",
+  "paragraphs": [
+   "Le garçon joue avec un long train.",
+   "Le garçon joue avec une longue voiture.",
+   "Les garçons jouent avec des petites voitures."
+  ],
+  "occurrences": [
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 0,
+    "end": 2,
+    "surface": "Le",
+    "baseline": "Le",
+    "kind": "WfiAnalysis",
+    "wordform": "le",
+    "bundles": [
+     {
+      "morphEntry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+      "sense": "c22579cf-734f-4387-98a0-b4fe3e03b250",
+      "msa": "c378a34c-c57f-4945-9842-6720ed702502"
+     }
+    ],
+    "analysis": "094725be-8155-4acc-949e-2e45028f6584"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 3,
+    "end": 10,
+    "surface": "garçon",
+    "baseline": "garçon",
+    "kind": "WfiAnalysis",
+    "wordform": "garçon",
+    "bundles": [
+     {
+      "morphEntry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+      "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+      "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "65620dd2-cbeb-4844-9095-e8b9543bbe44"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 11,
+    "end": 15,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiAnalysis",
+    "wordform": "joue",
+    "bundles": [
+     {
+      "morphEntry": "27e0f574-311a-479a-b641-078eea54c6df",
+      "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+      "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1"
+     },
+     {
+      "morphEntry": "4446fad3-4e88-4550-9589-c4b535beb299",
+      "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+      "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+     }
+    ],
+    "analysis": "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 16,
+    "end": 20,
+    "surface": "avec",
+    "baseline": "avec",
+    "kind": "WfiAnalysis",
+    "wordform": "avec",
+    "bundles": [
+     {
+      "morphEntry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+      "sense": "db1ffab1-0311-4862-a4b1-6a15c64965af",
+      "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e"
+     }
+    ],
+    "analysis": "823611b4-13ce-4971-b49c-8cb1583f8dd8"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 21,
+    "end": 23,
+    "surface": "un",
+    "baseline": "un",
+    "kind": "WfiAnalysis",
+    "wordform": "un",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "9aa42443-f5e3-4b92-935e-4e07b67266df",
+      "msa": "02f558f9-0384-4104-9528-022079040f53"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "3380ab29-9d6b-4ff1-a35b-84ae35c7f80d"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 24,
+    "end": 28,
+    "surface": "long",
+    "baseline": "long",
+    "kind": "WfiAnalysis",
+    "wordform": "long",
+    "bundles": [
+     {
+      "morphEntry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+      "sense": "b63a020d-af9e-4292-a105-31e216fe8b76",
+      "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508"
+     },
+     {
+      "morphEntry": "c6f62c2d-4cf6-4f0f-a024-0b51d7df7a7a",
+      "sense": "6e12ee7f-abc2-4938-8a45-aa7eb1651062",
+      "msa": "feee4d15-adc1-41c5-82a7-77538d641912"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+      "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2"
+     }
+    ],
+    "analysis": "4422a2c7-7db3-443f-a635-e08673fc8f09"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 29,
+    "end": 34,
+    "surface": "train",
+    "baseline": "train",
+    "kind": "WfiAnalysis",
+    "wordform": "train",
+    "bundles": [
+     {
+      "morphEntry": "205cd4ed-b5aa-457d-96b7-0c34d733574b",
+      "sense": "64ee1c0e-ef16-42b4-ade3-530c143b56d6",
+      "msa": "e081e3b1-347b-4d24-8f99-1d41d0101208"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "dae085c8-896a-4a0e-99bc-da9a1b202ef1"
+   },
+   {
+    "para": 0,
+    "seg": 0,
+    "beg": 34,
+    "end": 35,
+    "punct": "."
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 0,
+    "end": 2,
+    "surface": "Le",
+    "baseline": "Le",
+    "kind": "WfiAnalysis",
+    "wordform": "le",
+    "bundles": [
+     {
+      "morphEntry": "8b974fa9-81b8-4708-8805-97eec43c0640",
+      "sense": "c22579cf-734f-4387-98a0-b4fe3e03b250",
+      "msa": "c378a34c-c57f-4945-9842-6720ed702502"
+     }
+    ],
+    "analysis": "094725be-8155-4acc-949e-2e45028f6584"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 3,
+    "end": 10,
+    "surface": "garçon",
+    "baseline": "garçon",
+    "kind": "WfiAnalysis",
+    "wordform": "garçon",
+    "bundles": [
+     {
+      "morphEntry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+      "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+      "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "65620dd2-cbeb-4844-9095-e8b9543bbe44"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 11,
+    "end": 15,
+    "surface": "joue",
+    "baseline": "joue",
+    "kind": "WfiAnalysis",
+    "wordform": "joue",
+    "bundles": [
+     {
+      "morphEntry": "27e0f574-311a-479a-b641-078eea54c6df",
+      "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+      "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1"
+     },
+     {
+      "morphEntry": "4446fad3-4e88-4550-9589-c4b535beb299",
+      "sense": "c9291f5b-c77e-4b5c-b17d-9148ca6d575e",
+      "msa": "da85e897-9a16-46b3-bb44-5315e055139d"
+     }
+    ],
+    "analysis": "d4a43a61-ecb9-4fa8-b19e-c080fbfdac8f"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 16,
+    "end": 20,
+    "surface": "avec",
+    "baseline": "avec",
+    "kind": "WfiAnalysis",
+    "wordform": "avec",
+    "bundles": [
+     {
+      "morphEntry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+      "sense": "db1ffab1-0311-4862-a4b1-6a15c64965af",
+      "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e"
+     }
+    ],
+    "analysis": "823611b4-13ce-4971-b49c-8cb1583f8dd8"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 21,
+    "end": 24,
+    "surface": "une",
+    "baseline": "une",
+    "kind": "WfiAnalysis",
+    "wordform": "une",
+    "bundles": [
+     {
+      "morphEntry": "a0ccb3dd-51e9-43e9-a8fe-60d3a2bac0a1",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "71bfb6ce-6e66-4ea7-b603-120dc6164668",
+      "msa": "4b113fd4-1aae-402e-b619-81b20caebc92"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "f3d0ef20-5d5c-49a4-981a-ad316e62457f",
+      "msa": "142ab0d4-8523-49a3-993f-aa5a8ec5bbe5"
+     }
+    ],
+    "analysis": "f4f07338-1756-426d-94d5-a1af0df357bd"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 25,
+    "end": 31,
+    "surface": "longue",
+    "baseline": "longue",
+    "kind": "WfiAnalysis",
+    "wordform": "longue",
+    "bundles": [
+     {
+      "morphEntry": "a206f606-b351-4efe-9ef7-d9c3b724f342",
+      "sense": "b63a020d-af9e-4292-a105-31e216fe8b76",
+      "msa": "321d0aaa-a870-4bc3-8261-5f8077ce4508"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+      "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "beced4c9-d913-4d8f-9226-f5c3aa5fb936",
+      "msa": "3c8c3209-be26-48bd-aeaf-d2ba39a7eee2"
+     }
+    ],
+    "analysis": "f4b35402-8cc6-429d-84cf-0bffeab9d3cf"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 32,
+    "end": 39,
+    "surface": "voiture",
+    "baseline": "voiture",
+    "kind": "WfiAnalysis",
+    "wordform": "voiture",
+    "bundles": [
+     {
+      "morphEntry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+      "sense": "a94a25d7-7a07-4a68-83f9-243678946aff",
+      "msa": "2882c429-1257-448d-95b5-a682faff0d67"
+     },
+     {
+      "morphEntry": "74f6e1c5-4b7b-4e51-bb81-e3c4f465ae51",
+      "sense": "8d0035ae-deee-4c32-a645-f74c39a166d3",
+      "msa": "0dafc049-ca0a-4cc0-84c5-e5cd31ea1f88"
+     }
+    ],
+    "analysis": "74056e96-dfe7-4777-8227-ba4c7376ed38"
+   },
+   {
+    "para": 1,
+    "seg": 1,
+    "beg": 39,
+    "end": 40,
+    "punct": "."
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 0,
+    "end": 3,
+    "surface": "Les",
+    "baseline": "Les",
+    "kind": "WfiAnalysis",
+    "wordform": "les",
+    "bundles": [
+     {
+      "morphEntry": "9d2c21ee-9244-4c7e-b7ac-204ee14437ab",
+      "sense": "8b0cea7f-ead0-482b-a654-3a1e2eba947d",
+      "msa": "e53a8b23-bd24-4be8-8569-d62d7d983d69"
+     }
+    ],
+    "analysis": "230619bb-97f8-43e6-8691-7e7424ce0c5b"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 4,
+    "end": 12,
+    "surface": "garçons",
+    "baseline": "garçons",
+    "kind": "WfiAnalysis",
+    "wordform": "garçons",
+    "bundles": [
+     {
+      "morphEntry": "38d0e133-4461-4497-a7c6-09d23d3cc6a3",
+      "sense": "932efe5e-f3bb-4cf7-9fc5-9081cdca3475",
+      "msa": "208e79f2-899c-4030-98ec-8efe5a52cd6b"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+      "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5"
+     }
+    ],
+    "analysis": "96a2e974-e225-40a4-b2b8-51a095458c06"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 13,
+    "end": 19,
+    "surface": "jouent",
+    "baseline": "jouent",
+    "kind": "WfiAnalysis",
+    "wordform": "jouent",
+    "bundles": [
+     {
+      "morphEntry": "27e0f574-311a-479a-b641-078eea54c6df",
+      "sense": "a8c3ded0-c456-48ca-9e5e-f5667398eb40",
+      "msa": "c801df37-8519-4e4c-a69b-0468405d2ac1"
+     },
+     {
+      "morphEntry": "d4f6ea46-d84c-4eaa-b390-417e20eda808",
+      "sense": "5a67da2e-3cb7-4df8-bc83-d46e3350098b",
+      "msa": "0fe99a7b-e25b-4776-b40e-afa80c7771d6"
+     }
+    ],
+    "analysis": "df08e0ea-fb5f-44d1-a8ef-4cc6c96b2cb3"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 20,
+    "end": 24,
+    "surface": "avec",
+    "baseline": "avec",
+    "kind": "WfiAnalysis",
+    "wordform": "avec",
+    "bundles": [
+     {
+      "morphEntry": "674267e0-e2d6-4833-9dc9-6691f02f0434",
+      "sense": "db1ffab1-0311-4862-a4b1-6a15c64965af",
+      "msa": "bc9f5948-8ed1-446c-9ec7-06a03b8c047e"
+     }
+    ],
+    "analysis": "823611b4-13ce-4971-b49c-8cb1583f8dd8"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 25,
+    "end": 28,
+    "surface": "des",
+    "baseline": "des",
+    "kind": "WfiAnalysis",
+    "wordform": "des",
+    "bundles": [
+     {
+      "morphEntry": "09bf741d-3c99-4fb5-899a-0ce98d6dee7c",
+      "sense": "c8ddbd04-c6d8-4024-a78b-66d800d617bc",
+      "msa": "8eebc64a-8d26-4c85-81f7-2034fa687540"
+     }
+    ],
+    "analysis": "1dc13832-b332-4a52-b662-829eaf72cd26"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 29,
+    "end": 36,
+    "surface": "petites",
+    "baseline": "petites",
+    "kind": "WfiAnalysis",
+    "wordform": "petites",
+    "bundles": [
+     {
+      "morphEntry": "fb76bd29-4bb4-426e-b31c-6aac4e8049e4",
+      "sense": "1e8f7e25-d0f4-49d4-b68a-571837a82c6d",
+      "msa": "542e584c-e966-4d14-877a-77e462642868"
+     },
+     {
+      "morphEntry": "7ff43767-4f91-49cb-b87b-2975eaa946b2",
+      "sense": "b1644499-63af-4c6f-8fd5-a434bb229873",
+      "msa": "1d126e0e-4e32-4517-8506-78f9744e2f6d"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "b8445393-02d6-4661-8a07-5f32e9cccfa7",
+      "msa": "49f5fcd4-f101-4860-af2a-e48453c77083"
+     }
+    ],
+    "analysis": "b2a02298-9889-47a1-9cd2-dd010b4ac5e4"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 37,
+    "end": 45,
+    "surface": "voitures",
+    "baseline": "voitures",
+    "kind": "WfiAnalysis",
+    "wordform": "voitures",
+    "bundles": [
+     {
+      "morphEntry": "11e66834-b5cb-4723-bd5b-2db8454a3ad6",
+      "sense": "a94a25d7-7a07-4a68-83f9-243678946aff",
+      "msa": "2882c429-1257-448d-95b5-a682faff0d67"
+     },
+     {
+      "morphEntry": "046445a7-0c25-4313-a127-00e7728895fd",
+      "sense": "f4df41b5-7736-4bde-addf-e9cb5c33c124",
+      "msa": "c836e54e-ed72-45eb-8d5f-102431daa0b5"
+     }
+    ],
+    "analysis": "85ec11a4-2ba4-4800-8f49-c90f62f868ff"
+   },
+   {
+    "para": 2,
+    "seg": 2,
+    "beg": 45,
+    "end": 46,
+    "punct": "."
+   }
+  ]
+ },
+ "source": "^Le1.1<def><m><sg>$ ^garçon1.1<n><m><SG>$ ^jouer1.1<v><ER><PRS_3SG>$ ^avec1.1<prep>$ ^un1.1<indf><sg><MASC><SG2>$ ^long1.1<adj><MASC_a><SG3>$ ^train1.1<n><m><SG>$^.<sent>$\n^Le1.1<def><m><sg>$ ^garçon1.1<n><m><SG>$ ^jouer1.1<v><ER><PRS_3SG>$ ^avec1.1<prep>$ ^un1.1<indf><sg><FEM><SG2>$ ^long1.1<adj><FEM_a><SG3>$ ^voiture1.1<n><f><SG>$^.<sent>$\n^Les1.1<def><m><pl>$ ^garçon1.1<n><m><PL>$ ^jouer1.1<v><ER><PRS_3PL>$ ^avec1.1<prep>$ ^un1.1<indf><sg><pl>$ ^petit1.1<adj><FEM_a><PL2>$ ^voiture1.1<n><f><PL>$^.<sent>$\n",
+ "extractMessages": [],
+ "target": "^El1.1<def>$ ^niño1.1<n><SG>$ ^jugar1.1<v><PRS_3SG>$ ^con1.1<prep>$ ^un1.1<indf><MASC><SG2>$ ^tren1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG3>$^.<sent>$\n^El1.1<def>$ ^niño1.1<n><SG>$ ^jugar1.1<v><PRS_3SG>$ ^con1.1<prep>$ ^un1.1<indf><MASC><SG2>$ ^coche1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG3>$^.<sent>$\n^Los1.1<def>$ ^niño1.1<n><PL>$ ^jugar1.1<v><PRS_3PL>$ ^con1.1<prep>$ ^un1.1<indf><MASC><PL3>$ ^coche1.1<n><PL>$ ^pequeño1.1<adj><MASC_a><PL2>$^.<sent>$\n",
+ "master": "^El1.1<def>$,el1.1<def>;1\n^niño1.1<n><SG>$,niño1.1<n><SG>;\n^jugar1.1<v><PRS_3SG>$,jugar1.1<v><PRS.3SG>;\n^con1.1<prep>$,con1.1<prep>;\n^un1.1<indf><MASC><SG2>$,un1.1<indf><MASC><SG2>;\n^tren1.1<n><SG>$,tren1.1<n><SG>;\n^largo1.1<adj><MASC_a><SG3>$,largo1.1<adj><MASC.a><SG3>;\n^coche1.1<n><SG>$,coche1.1<n><SG>;\n^Los1.1<def>$,los1.1<def>;1\n^niño1.1<n><PL>$,niño1.1<n><PL>;\n^jugar1.1<v><PRS_3PL>$,jugar1.1<v><PRS.3PL>;\n^un1.1<indf><MASC><PL3>$,un1.1<indf><MASC><PL3>;\n^coche1.1<n><PL>$,coche1.1<n><PL>;\n^pequeño1.1<adj><MASC_a><PL2>$,pequeño1.1<adj><MASC.a><PL2>;\n",
+ "parsesFile": "^el1.1<def>$\n^niño1.1<n><SG>$\n^jugar1.1<v><PRS.3SG>$\n^con1.1<prep>$\n^un1.1<indf><MASC><SG2>$\n^tren1.1<n><SG>$\n^largo1.1<adj><MASC.a><SG3>$\n^coche1.1<n><SG>$\n^los1.1<def>$\n^niño1.1<n><PL>$\n^jugar1.1<v><PRS.3PL>$\n^un1.1<indf><MASC><PL3>$\n^coche1.1<n><PL>$\n^pequeño1.1<adj><MASC.a><PL2>$\n",
+ "surface": "el\nniño\njuega\ncon\nun\ntren\nlargo\ncoche\nlos\nniños\njuegan\nunos\ncoches\npequeños\n",
+ "synthesized": "El niño juega con un tren largo.\nEl niño juega con un coche largo.\nLos niños juegan con unos coches pequeños.\n",
+ "synthMessages": [
+  [
+   "info",
+   "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt"
+  ],
+  [
+   "info",
+   "21 records exported in HermitCrab format."
+  ],
+  [
+   "info",
+   "Processing 14 unique lexical units."
+  ],
+  [
+   "info",
+   "Synthesis complete."
+  ]
+ ],
+ "result": {
+  "source": "Le garçon joue avec un long train.\nLe garçon joue avec une longue voiture.\nLes garçons jouent avec des petites voitures.\n",
+  "translation": "El niño juega con un tren largo.\nEl niño juega con un coche largo.\nLos niños juegan con unos coches pequeños.",
+  "ok": true,
+  "steps": [
+   "Import Text",
+   "Parse Words",
+   "Approve Guesses",
+   "Extract Source Text",
+   "Run Apertium",
+   "Synthesize Text"
+  ],
+  "approved": [
+   {
+    "word": "Le",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w1",
+    "analysis": "le:DEF.M.SG [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "garçon",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w2",
+    "analysis": "garçon:boy + ^0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "joue",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w3",
+    "analysis": "jou:play + e:PRS.3SG [v]",
+    "basis": "best guess"
+   },
+   {
+    "word": "avec",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w4",
+    "analysis": "avec:with [prep]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "un",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w5",
+    "analysis": "un:INDEF + 0:MASC + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "long",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w6",
+    "analysis": "long:long + ^0:MASC.a + ^0:SG3 [adj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "train",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶1 s1 w7",
+    "analysis": "train:train + ^0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "Le",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w1",
+    "analysis": "le:DEF.M.SG [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "garçon",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w2",
+    "analysis": "garçon:boy + ^0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "joue",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w3",
+    "analysis": "jou:play + e:PRS.3SG [v]",
+    "basis": "best guess"
+   },
+   {
+    "word": "avec",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w4",
+    "analysis": "avec:with [prep]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "une",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w5",
+    "analysis": "un:INDEF + e:FEM + 0:SG2 [indf]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "longue",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w6",
+    "analysis": "longu:long + e:FEM.a + ^0:SG3 [adj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "voiture",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶2 s1 w7",
+    "analysis": "voiture:car + ^0:SG [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "Les",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w1",
+    "analysis": "les:DEF.M.PL [def]",
+    "basis": "best guess"
+   },
+   {
+    "word": "garçons",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w2",
+    "analysis": "garçon:boy + s:PL [n]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "jouent",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w3",
+    "analysis": "jou:play + ent:PRS.3PL [v]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "avec",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w4",
+    "analysis": "avec:with [prep]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "des",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w5",
+    "analysis": "des:INDEF [indf]",
+    "basis": "best guess"
+   },
+   {
+    "word": "petites",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w6",
+    "analysis": "petit:little + e:FEM.a + s:PL2 [adj]",
+    "basis": "only analysis"
+   },
+   {
+    "word": "voitures",
+    "location": "FTT 2026-11-06 231905 Le garçon joue ¶3 s1 w7",
+    "analysis": "voiture:car + s:PL [n]",
+    "basis": "only analysis"
+   }
+  ],
+  "unparsed": [],
+  "unanalysed": [],
+  "untranslated": [],
+  "unsynthesized": [],
+  "messages": [
+   {
+    "level": "info",
+    "message": "Converted target words put in the file: C:\\Users\\rlboo\\AppData\\Local\\Temp\\ftt_synthesis_w7hr6gs8\\target_words-HC.txt",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "21 records exported in HermitCrab format.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Processing 14 unique lexical units.",
+    "ref": null
+   },
+   {
+    "level": "info",
+    "message": "Synthesis complete.",
+    "ref": null
+   }
+  ]
+ }
+}
