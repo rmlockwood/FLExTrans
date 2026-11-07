@@ -63,13 +63,14 @@
                 </Border>
             </Grid>
 
-            <!-- The problem words: each list's label, then its words as chips -->
+            <!-- The problem words: each list's label, then its words as chips. A Grid holds the label beside the chips, not an outer FlexLayout: a FlexLayout nested in another one throws
+                 "something is deeply wrong" from FlexLayoutManager.ArrangeChildren on Android (MAUI), which crashed the app as soon as a trace with problem words was laid out. -->
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding ProblemGroups}" IsVisible="{Binding HasProblems}" Spacing="6" Padding="0,6,0,0">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="local:ProblemGroup">
-                        <FlexLayout Wrap="Wrap" AlignItems="Center">
-                            <Label Text="{Binding Label}" FontSize="12" FontAttributes="Bold" Margin="0,0,8,4" />
-                            <FlexLayout BindableLayout.ItemsSource="{Binding Words}" Wrap="Wrap">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Text="{Binding Label}" FontSize="12" FontAttributes="Bold" Margin="0,2,8,4" VerticalOptions="Start" />
+                            <FlexLayout Grid.Column="1" BindableLayout.ItemsSource="{Binding Words}" Wrap="Wrap">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="x:String">
                                         <Border Padding="8,2" Margin="0,0,6,4" StrokeThickness="0" StrokeShape="RoundRectangle 10" BackgroundColor="{AppThemeBinding Light=#FDEBD3, Dark=#4A3A22}">
@@ -78,7 +79,7 @@
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </FlexLayout>
-                        </FlexLayout>
+                        </Grid>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </VerticalStackLayout>
