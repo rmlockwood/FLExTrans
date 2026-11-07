@@ -2,7 +2,7 @@
 <!--
 	FTtranslator's one page, all of it scrolling together: the text box, the current translation right under it (tinted, so it's easy to find; tap it to copy), the language pair and Translate,
 	the current translation's trace (trace mode only), then the earlier translations. Tap an earlier one to copy it; swipe it right to put its source back in the box, left to delete it. Tap the
-	language pair to switch bundles. The menu (⋮) switches bundles too, adds or updates one from a zip, turns trace mode on and off and clears the history. See MainPage.xaml.cs.
+	language pair to switch bundles. The menu (⋮) switches bundles too, adds or updates one from a zip, removes one, turns trace mode on and off and clears the history. See MainPage.xaml.cs.
 -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -13,6 +13,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Language pair…" Order="Secondary" Clicked="OnLanguagePairClicked" />
         <ToolbarItem Text="Add or update a bundle…" Order="Secondary" Clicked="OnAddBundleClicked" />
+        <ToolbarItem Text="Remove a bundle…" Order="Secondary" Clicked="OnRemoveBundleClicked" />
         <ToolbarItem x:Name="TraceModeItem" Text="Trace mode" Order="Secondary" Clicked="OnTraceModeClicked" />
         <ToolbarItem Text="Clear history" Order="Secondary" Clicked="OnClearHistoryClicked" />
     </ContentPage.ToolbarItems>

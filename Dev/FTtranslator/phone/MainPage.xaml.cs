@@ -24,6 +24,11 @@
 // A zip of a work project the phone already has is an update: after an export-bundle of a changed project, the new zip replaces the old bundle and keeps its history. The page asks first,
 // giving both bundles' export times, and warns when the zip is the older one, so an old zip opened by mistake doesn't quietly undo an update. The updated bundle is loaded again at once.
 //
+// REMOVING A BUNDLE
+//
+// "Remove a bundle…" lists the bundles, asks, and deletes the one chosen with its history (a removed pair's translations would otherwise sit unseen in the history's 500). One bundle must stay,
+// since the page has nothing to translate with otherwise. Removing the chosen bundle switches to another first, so the removed one is never the one loaded.
+//
 // THE CURRENT TRANSLATION AND THE EARLIER ONES
 //
 // The history (History.cs) is one list of every bundle's translations, newest first. Of the chosen bundle's, the first is the current translation, shown in the answer panel, and the rest are
@@ -47,7 +52,7 @@
 // CODE STRUCTURE
 //
 // The constructor reads the history and calls StartUp(), which unpacks the built-in bundles and picks the remembered one. SwitchTo() chooses a bundle and ShowHistory() shows its translations;
-// OnLanguagePairClicked() and OnAddBundleClicked() are the ways to switch. OnTranslateClicked() translates, with the button's timer, and makes the result current (AddEntry()). ShowCurrent(),
+// OnLanguagePairClicked() and OnAddBundleClicked() are the ways to switch, and OnRemoveBundleClicked() removes one. OnTranslateClicked() translates, with the button's timer, and makes the result current (AddEntry()). ShowCurrent(),
 // UpdateAnswerTrace() and UpdateAnswerSource() fill the answer panel. Then the taps and swipes (OnAnswerTapped(), OnTranslationTapped(), Copy(), OnReuseInvoked(), OnDeleteInvoked()), the menu's
 // other items (OnTraceModeClicked(), OnClearHistoryClicked()) and the helpers (SetTraceMode(), SaveHistory(), ShowStatus(), UpdateTranslateButton()).
 //
@@ -255,6 +260,60 @@ public partial class MainPage : ContentPage
 			ShowStatus(idleStatus);
 			await DisplayAlertAsync("Add or update a bundle", ex.Message, "OK");
 		}
+	}
+
+	// Remove a bundle and its history, after asking; never the last one. Removing the chosen bundle switches to another first. See REMOVING A BUNDLE above.
+	async void OnRemoveBundleClicked(object? sender, EventArgs e)
+	{
+
+		if (busy)
+		{
+			return;
+		}
+
+		if (bundles.Count < 2)
+		{
+			await DisplayAlertAsync("Remove a bundle", "One bundle must stay on the phone. Add another before removing this one.", "OK");
+
+			return;
+		}
+
+		string[] choices = bundles.Select(info => info.LanguagePair).ToArray();
+		string? choice = await DisplayActionSheetAsync("Remove a bundle", "Cancel", null, choices);
+		int index = choice == null ? -1 : Array.IndexOf(choices, choice);
+
+		if (index < 0)
+		{
+			return;
+		}
+
+		BundleInfo doomed = bundles[index];
+		int translations = history.Count(entry => entry.Bundle == doomed.Id);
+		string historyNote = translations == 0 ? "" : $" Its {translations} translation{(translations == 1 ? "" : "s")} in the history will be deleted too.";
+
+		if (!await DisplayAlertAsync("Remove a bundle", $"Remove {doomed.LanguagePair} (exported {doomed.CreatedText}) from the phone?{historyNote}", "Remove", "Cancel"))
+		{
+			return;
+		}
+
+		// Off the chosen bundle first, so it isn't the one loaded when its folder goes
+		if (doomed.Id == bundle?.Id)
+		{
+			await SwitchTo(bundles.First(info => info.Id != doomed.Id));
+		}
+
+		try
+		{
+			await Task.Run(() => BundleStore.Remove(doomed));
+		}
+		catch (Exception ex)
+		{
+			await DisplayAlertAsync("Remove a bundle", ex.Message, "OK");
+		}
+
+		bundles = BundleStore.List();
+		history.RemoveAll(entry => entry.Bundle == doomed.Id);
+		SaveHistory();
 	}
 
 	async void OnTranslateClicked(object? sender, EventArgs e)

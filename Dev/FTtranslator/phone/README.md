@@ -19,15 +19,16 @@ The language names come from the bundle's manifest (`sourceLanguage` and `target
 exported before export-bundle wrote them shows the project names instead.
 
 **Trace mode** (**⋮ → Trace mode**, remembered) counts the seconds on Translate while a translation runs (once a second: see below), and adds a **Trace** section under the current translation
-(open) and on each earlier one (tap **▸ Trace** to open it). It shows:
+(open) and on each earlier one (tap **▸ Trace** to open it). It's laid out like the result card on the web page:
 
-- the outcome and time;
-- the problem words: no parse, no analysis, not linked, not synthesized;
-- each step's time;
-- the analyses chosen and why;
-- every message;
-- the source and target Apertium streams;
-- the whole exception, if a step threw one.
+- a header line: the bundle and when, the total time, and an **OK** badge (or **Failed after** the step, in red);
+- the problem words as chips: no parse, no analysis, not linked, not synthesized;
+- **Analyses chosen**: a table of each word, its analysis and why it was chosen;
+- **Messages**: every message (no "Show all" checkbox), warnings and errors coloured;
+- **Step times**: each step with a bar, the time outside the steps, and the total;
+- and two the web page doesn't have: **Apertium streams** (the source and target streams; closed at first) and the **Exception** when a step threw one.
+
+Each section folds open and closed with a tap on its ▾ heading.
 
 Every translation records all of this except the streams, so turning trace mode on also shows the trace of translations made with it off. The streams are kept only for translations made in
 trace mode: a chapter's run to tens of KB, and the whole history file is rewritten after each translation.
@@ -46,8 +47,9 @@ the phone already has is an **update** of it.
 - **Add or update** with **⋮ → Add or update a bundle…**, which opens a zip from the phone's files (Downloads, Drive and so on). The zip can hold the bundle's files at its top level (the zip
   `upload-bundle` sends the Railway server) or the `ftt_bundle` folder (Windows' **Send to > Compressed folder** on it). For an update the app asks first, giving both export times, and warns
   when the zip is older than the bundle on the phone. An updated bundle keeps its history and is loaded again at once.
+- **Remove** with **⋮ → Remove a bundle…**, which asks first; the pair's history goes with it. One bundle must stay. Removing the pair you're using switches to another.
 - **Built in:** the build zips the bundle folders you name into the app (FTT-Scratch's `../deploy/bundle` unless you name others), and the app unpacks them the first time it runs, and again
-  when an installed build carries a changed one. A built-in bundle never replaces a newer one you added.
+  when an installed build carries a changed one. A built-in bundle never replaces a newer one you added, and one you removed stays removed until a build carries a changed copy of it.
 
 ## Build and install
 
@@ -84,7 +86,6 @@ Synthesis takes about 2 s even for three words, so it has a fixed cost per trans
 ## Not done yet
 
 - **Downloading a bundle from the Railway server,** instead of copying a zip to the phone.
-- **Removing a bundle** from the phone.
 - **Long texts.** On a PC a Mato-Uma chapter takes about 27 s, nearly all of it parsing (`../offline/README.md`), and a phone is slower. A verse or a paragraph at a time is the use this screen
   is built for.
 - **Untested:** right-to-left targets, though Android lays out each label's text by its first strong character.

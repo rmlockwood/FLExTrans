@@ -16,8 +16,10 @@
 // WHERE BUNDLES COME FROM
 //
 //  - Built into the app: the project file zips each folder named in BundleDirs into the app (bundle-<hash>.zip) and lists them in bundles.txt. InstallPackagedAsync() unpacks each on the first
-//    run, and again whenever the zip differs from the one unpacked last time (its SHA-256 and the id it unpacked to are kept in bundles/.packaged/<zip>.sha256), or the folder has gone. It never
-//    replaces a newer bundle of the same work project: one the user added after installing the app stays.
+//    run, and again only when an installed build carries a changed zip (its SHA-256 and the id it unpacked to are kept in bundles/.packaged/<zip>.sha256). It never replaces a newer bundle of
+//    the same work project: one the user added after installing the app stays.
+//  - Removed: the user can remove any bundle but the last (the page keeps one). A removed built-in bundle stays removed, since its zip's stamp is kept; a build with a changed zip of it brings
+//    it back, as a new version.
 //  - Added or updated on the phone: the page stages the zip the user opens (Stage()), asks before an update replaces a bundle, and then commits it (Commit()) or throws it away (Discard()).
 //    The zip may hold the bundle's files at its top level (as upload-bundle zips them) or inside one folder (as Windows' "Send to > Compressed folder" zips the ftt_bundle folder).
 //
@@ -32,7 +34,7 @@
 // CODE STRUCTURE
 //
 // BundleInfo is a bundle's id, folder, names and export time; StagedBundle is a zip unpacked but not yet in place. BundleStore: InstallPackagedAsync() (built-in bundles), Stage(), Commit() and
-// Discard() (a zip from the phone), Find(), List() and Read() (the bundles there are), and the helpers FindRoot(), SafeId() and RemoveOldBundle().
+// Discard() (a zip from the phone), Remove(), Find(), List() and Read() (the bundles there are), and the helpers FindRoot(), SafeId() and RemoveOldBundle().
 //
 
 using System.Globalization;
@@ -94,10 +96,10 @@ public static class BundleStore
 				hash = Convert.ToHexString(await SHA256.HashDataAsync(stream));
 			}
 
-			// The stamp is the hash, then the id the zip unpacked to
+			// The stamp is the hash, then the id the zip unpacked to. The same zip isn't unpacked again even when its folder has gone: the user removed that bundle. See TRAPS above.
 			string[] stamp = File.Exists(stampFile) ? File.ReadAllLines(stampFile) : Array.Empty<string>();
 
-			if (stamp.Length == 2 && stamp[0] == hash && Directory.Exists(Path.Combine(BundlesDir, stamp[1])))
+			if (stamp.Length == 2 && stamp[0] == hash)
 			{
 				continue;
 			}
@@ -178,6 +180,16 @@ public static class BundleStore
 		if (Directory.Exists(IncomingDir))
 		{
 			Directory.Delete(IncomingDir, true);
+		}
+	}
+
+	// Delete a bundle from the phone. The page keeps one bundle at least and switches away from this one first.
+	public static void Remove(BundleInfo bundle)
+	{
+
+		if (Directory.Exists(bundle.Dir))
+		{
+			Directory.Delete(bundle.Dir, true);
 		}
 	}
 

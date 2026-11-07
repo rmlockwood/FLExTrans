@@ -26,4 +26,14 @@ public partial class TraceView : ContentView
 			item.IsTraceOpen = !item.IsTraceOpen;
 		}
 	}
+
+	// Tapping a section's heading folds it open or closed; the heading's gesture passes its Section
+	void OnSectionTapped(object? sender, TappedEventArgs e)
+	{
+
+		if (e.Parameter is Section section)
+		{
+			section.IsOpen = !section.IsOpen;
+		}
+	}
 }

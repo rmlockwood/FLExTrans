@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-	A translation's trace: the "▸ Trace" toggle and, when open, the details TranslationItem works out. Shown only in trace mode. Used under the current translation and in each card of the history.
-	Its BindingContext is a TranslationItem. See TranslationItem.cs.
+	A translation's trace, laid out like the web page's result card (web/src/ResultCard.tsx): the "▸ Trace" toggle and, when open, a header line with the time and an OK or Failed badge, the
+	problem words as chips, then the folding sections Analyses chosen (a table), Messages (all of them), Step times (with bars), and the phone's own Apertium streams and Exception. Its
+	BindingContext is a TranslationItem; MainPage shows or hides the whole view for trace mode. See TranslationItem.cs.
 -->
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -10,47 +11,185 @@
              x:DataType="local:TranslationItem">
 
     <ContentView.Resources>
-        <Style x:Key="TraceHeading" TargetType="Label">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="Margin" Value="0,6,0,0" />
+        <Color x:Key="MutedLight">#6E6E6E</Color>
+        <Color x:Key="MutedDark">#B0B0B0</Color>
+        <Color x:Key="LineLight">#DDDDDD</Color>
+        <Color x:Key="LineDark">#444444</Color>
+
+        <!-- A section's ▾/▸ heading, which folds it -->
+        <Style x:Key="SectionHeading" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="0,8,0,4" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" />
         </Style>
-        <Style x:Key="TraceText" TargetType="Label">
+        <Style x:Key="Cell" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="0,5" />
+        </Style>
+        <Style x:Key="HeaderCell" TargetType="Label" BasedOn="{StaticResource Cell}">
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+        <Style x:Key="MutedCell" TargetType="Label" BasedOn="{StaticResource Cell}">
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" />
+        </Style>
+        <Style x:Key="Line" TargetType="BoxView">
+            <Setter Property="HeightRequest" Value="1" />
+            <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
+        </Style>
+        <Style x:Key="Mono" TargetType="Label">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontFamily" Value="monospace" />
         </Style>
     </ContentView.Resources>
 
-    <VerticalStackLayout IsVisible="{Binding TraceMode}" Spacing="2">
-        <Label Text="{Binding TraceToggleText}" FontSize="12" Padding="0,6,0,4" TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}">
+    <VerticalStackLayout Spacing="0">
+        <Label Text="{Binding TraceToggleText}" Style="{StaticResource SectionHeading}">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnToggleTapped" />
             </Label.GestureRecognizers>
         </Label>
 
-        <VerticalStackLayout IsVisible="{Binding IsTraceOpen}" Spacing="2">
-            <Label Text="{Binding TraceSummary}" Style="{StaticResource TraceText}" />
+        <VerticalStackLayout IsVisible="{Binding IsTraceOpen}" Spacing="4">
 
-            <Label Text="Problem words" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceProblems}" />
-            <Label Text="{Binding TraceProblems}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceProblems}" />
+            <!-- The header line: the bundle and when, then the total time and the badge -->
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                <Label Text="{Binding HeaderText}" FontSize="12" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" />
+                <Label Grid.Column="1" Text="{Binding TotalText}" FontSize="12" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" />
+                <Border Grid.Column="2" Padding="8,2" StrokeThickness="0" StrokeShape="RoundRectangle 10" IsVisible="{Binding Ok}" BackgroundColor="{AppThemeBinding Light=#E3F4E5, Dark=#1E4D2B}">
+                    <Label Text="{Binding BadgeText}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1E6B2E, Dark=#A5D6A7}" />
+                </Border>
+                <Border Grid.Column="2" Padding="8,2" StrokeThickness="0" StrokeShape="RoundRectangle 10" IsVisible="{Binding Failed}" BackgroundColor="{AppThemeBinding Light=#FBE4E4, Dark=#5C2020}">
+                    <Label Text="{Binding BadgeText}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#B3261E, Dark=#EF9A9A}" />
+                </Border>
+            </Grid>
 
-            <Label Text="Step times" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceTimings}" />
-            <Label Text="{Binding TraceTimings}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceTimings}" />
+            <!-- The problem words: each list's label, then its words as chips -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding ProblemGroups}" IsVisible="{Binding HasProblems}" Spacing="6" Padding="0,6,0,0">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="local:ProblemGroup">
+                        <FlexLayout Wrap="Wrap" AlignItems="Center">
+                            <Label Text="{Binding Label}" FontSize="12" FontAttributes="Bold" Margin="0,0,8,4" />
+                            <FlexLayout BindableLayout.ItemsSource="{Binding Words}" Wrap="Wrap">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border Padding="8,2" Margin="0,0,6,4" StrokeThickness="0" StrokeShape="RoundRectangle 10" BackgroundColor="{AppThemeBinding Light=#FDEBD3, Dark=#4A3A22}">
+                                            <Label Text="{Binding .}" FontSize="12" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+                        </FlexLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
 
-            <Label Text="Analyses chosen" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceAnalyses}" />
-            <Label Text="{Binding TraceAnalyses}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceAnalyses}" />
+            <!-- Analyses chosen: Word, Analysis, Why -->
+            <VerticalStackLayout IsVisible="{Binding HasAnalyses}">
+                <Label Text="{Binding AnalysesSection.Header}" Style="{StaticResource SectionHeading}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSectionTapped" CommandParameter="{Binding AnalysesSection}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <VerticalStackLayout IsVisible="{Binding AnalysesSection.IsOpen}">
+                    <Grid ColumnDefinitions="0.24*,0.5*,0.26*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Word" Style="{StaticResource HeaderCell}" />
+                        <Label Grid.Column="1" Text="Analysis" Style="{StaticResource HeaderCell}" />
+                        <Label Grid.Column="2" Text="Why" Style="{StaticResource HeaderCell}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Line}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Analyses}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:AnalysisRow">
+                                <VerticalStackLayout>
+                                    <Grid ColumnDefinitions="0.24*,0.5*,0.26*" ColumnSpacing="8">
+                                        <Label Grid.Column="0" Text="{Binding Word}" Style="{StaticResource Cell}" />
+                                        <Label Grid.Column="1" Text="{Binding Analysis}" Style="{StaticResource Cell}" />
+                                        <Label Grid.Column="2" Text="{Binding Basis}" Style="{StaticResource MutedCell}" />
+                                    </Grid>
+                                    <BoxView Style="{StaticResource Line}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
 
-            <Label Text="Messages" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTraceMessages}" />
-            <Label Text="{Binding TraceMessages}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTraceMessages}" />
+            <!-- Messages: all of them, as bullets -->
+            <VerticalStackLayout IsVisible="{Binding HasMessages}">
+                <Label Text="{Binding MessagesSection.Header}" Style="{StaticResource SectionHeading}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSectionTapped" CommandParameter="{Binding MessagesSection}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <VerticalStackLayout IsVisible="{Binding MessagesSection.IsOpen}" BindableLayout.ItemsSource="{Binding Messages}" Spacing="4">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="local:MessageRow">
+                            <Grid ColumnDefinitions="16,*">
+                                <Label Text="•" FontSize="13" />
+                                <Label Grid.Column="1" Text="{Binding Text}" FontSize="13" TextColor="{Binding TextColor}" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
 
-            <Label Text="Source stream (Extract Source Text)" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasSourceStream}" />
-            <Label Text="{Binding SourceStream}" Style="{StaticResource TraceText}" IsVisible="{Binding HasSourceStream}" />
+            <!-- Step times: each step with its bar (the column's width is TranslationItem.BarWidth), the time outside the steps, then the total -->
+            <VerticalStackLayout IsVisible="{Binding HasSteps}">
+                <Label Text="{Binding StepsSection.Header}" Style="{StaticResource SectionHeading}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSectionTapped" CommandParameter="{Binding StepsSection}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <VerticalStackLayout IsVisible="{Binding StepsSection.IsOpen}">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Steps}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:StepRow">
+                                <Grid ColumnDefinitions="*,90,60" ColumnSpacing="8">
+                                    <Label Text="{Binding Step}" Style="{StaticResource Cell}" />
+                                    <!-- A Border, not a BoxView with CornerRadius, which drew dark edges on the rounded ends -->
+                                    <Border Grid.Column="1" WidthRequest="{Binding BarWidthRequest}" IsVisible="{Binding HasBar}" HeightRequest="8" StrokeThickness="0" StrokeShape="RoundRectangle 4" HorizontalOptions="Start" VerticalOptions="Center" BackgroundColor="#A3B0E8" />
+                                    <Label Grid.Column="2" Text="{Binding Seconds}" Style="{StaticResource Cell}" HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,90,60" ColumnSpacing="8">
+                        <Label Text="Outside the steps" Style="{StaticResource Cell}" />
+                        <Label Grid.Column="2" Text="{Binding OutsideText}" Style="{StaticResource Cell}" HorizontalTextAlignment="End" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Line}" />
+                    <Grid ColumnDefinitions="*,90,60" ColumnSpacing="8">
+                        <Label Text="Total" Style="{StaticResource HeaderCell}" />
+                        <Label Grid.Column="2" Text="{Binding TotalText}" Style="{StaticResource HeaderCell}" HorizontalTextAlignment="End" />
+                    </Grid>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
 
-            <Label Text="Target stream (Run Apertium)" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasTargetStream}" />
-            <Label Text="{Binding TargetStream}" Style="{StaticResource TraceText}" IsVisible="{Binding HasTargetStream}" />
+            <!-- The Apertium streams (translations made in trace mode only) -->
+            <VerticalStackLayout IsVisible="{Binding HasStreams}">
+                <Label Text="{Binding StreamsSection.Header}" Style="{StaticResource SectionHeading}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSectionTapped" CommandParameter="{Binding StreamsSection}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <VerticalStackLayout IsVisible="{Binding StreamsSection.IsOpen}" Spacing="4">
+                    <Label Text="Source (Extract Source Text)" FontSize="12" FontAttributes="Bold" />
+                    <Label Text="{Binding SourceStream}" Style="{StaticResource Mono}" />
+                    <Label Text="Target (Run Apertium)" FontSize="12" FontAttributes="Bold" Margin="0,6,0,0" />
+                    <Label Text="{Binding TargetStream}" Style="{StaticResource Mono}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
 
-            <Label Text="Exception" Style="{StaticResource TraceHeading}" IsVisible="{Binding HasErrorDetail}" />
-            <Label Text="{Binding ErrorDetail}" Style="{StaticResource TraceText}" IsVisible="{Binding HasErrorDetail}" />
+            <!-- The exception, for a step that threw -->
+            <VerticalStackLayout IsVisible="{Binding HasErrorDetail}">
+                <Label Text="{Binding ExceptionSection.Header}" Style="{StaticResource SectionHeading}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSectionTapped" CommandParameter="{Binding ExceptionSection}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label IsVisible="{Binding ExceptionSection.IsOpen}" Text="{Binding ErrorDetail}" Style="{StaticResource Mono}" />
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </VerticalStackLayout>
 

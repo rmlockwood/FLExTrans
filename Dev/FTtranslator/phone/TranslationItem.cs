@@ -10,43 +10,104 @@
 // OVERVIEW (AI generated, then edited)
 //
 // A translation as the main page shows it, made from a HistoryEntry: the current translation (under the text box) and each card of the history below it are one each. Normally that is just the
-// source, small, and the translation, or the error in red. In trace mode each also has a trace section (TraceView.xaml) with what the web page's result card shows folded away, plus what only a
-// trace needs:
+// source, small, and the translation, or the error in red. In trace mode each also has a trace section (TraceView.xaml) laid out like the web page's result card (web/src/ResultCard.tsx):
 //
-//   the outcome and time      OK or the step it failed after, the total seconds, the bundle and when
-//   problem words             the words with no parse, no analysis, no link to the target, or that didn't synthesize (the run record's four lists, labelled as the web page labels them)
-//   step times                each step's seconds
-//   analyses chosen           each word's guessed analysis and why it was chosen (the only analysis, or the best guess)
-//   messages                  every message, info included, with its level
-//   the Apertium streams      the source stream Extract Source Text wrote and the target stream Run Apertium made from it
-//   the exception             for a step that threw, the whole exception
+//   the header line           the bundle and when, then the total time and an OK badge, or "Failed after <step>" in red
+//   problem words             the run record's four lists (no parse, no analysis, not linked, not synthesized) as chips, each list under the web page's label
+//   Analyses chosen (n)       a table of each word, its guessed analysis, and why (the only analysis, or the best guess)
+//   Messages                  every message, warnings and errors coloured (the web page's "Show all messages" is always on here)
+//   Step times                each step's seconds with a bar scaled to the longest, the time outside the steps, and the total
+//   Apertium streams          the source stream Extract Source Text wrote and the target stream Run Apertium made from it (kept only for translations made in trace mode); not on the web page
+//   Exception                 for a step that threw, the whole exception
 //
-// The current translation's trace starts open, the history's closed (a whole chapter's trace is long); tapping "Trace" opens or closes one.
+// Each of the last five is a Section that folds open and closed, as the web page's <details> do. The trace itself opens and closes too: the current translation's starts open, the history's
+// closed (a whole chapter's trace is long).
 //
 // TRAPS
 //
-//  - The trace texts are worked out once, when the item is made; only trace mode and the open/closed state change afterwards, and they raise PropertyChanged.
+//  - The rows are worked out once, when the item is made; only trace mode and the open/closed states change afterwards, and they raise PropertyChanged.
 //  - The translation is tidied as the web page tidies it: each paragraph on its own line, with the synthesizer's runs of spaces made single. Copying takes the tidied text.
+//  - A step-time bar's width is a fraction of BarWidth, the bar column's width in TraceView.xaml; change both together.
 //
 // CODE STRUCTURE
 //
-// TranslationItem: the plain view's properties, then the trace state (TraceMode, IsTraceOpen and the toggle's text), then the trace texts, made by the constructor with the
-// helpers Summary(), Problems(), Timings(), Analyses() and Messages().
+// Section, ProblemGroup, AnalysisRow, MessageRow and StepRow are what TraceView.xaml binds to. TranslationItem: the plain view's properties, then the trace state (TraceMode, IsTraceOpen), then the
+// trace's parts, made by the constructor with the helpers Problems(), Steps() and Seconds().
 //
 
 using System.ComponentModel;
 using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 using FTtranslator.Offline;
 
 namespace FTtranslator.Phone;
 
+// A part of the trace that folds open and closed, as a <details> on the web page
+public sealed class Section : INotifyPropertyChanged
+{
+	readonly string title;
+	bool isOpen;
+
+	public event PropertyChangedEventHandler? PropertyChanged;
+
+	public Section(string title, bool isOpen)
+	{
+		this.title = title;
+		this.isOpen = isOpen;
+	}
+
+	public bool IsOpen
+	{
+		get => isOpen;
+		set
+		{
+
+			if (isOpen == value)
+			{
+				return;
+			}
+
+			isOpen = value;
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsOpen)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Header)));
+		}
+	}
+
+	public string Header => (isOpen ? "▾ " : "▸ ") + title;
+}
+
+// One of the run record's lists of failed words, with the web page's label
+public sealed record ProblemGroup(string Label, List<string> Words);
+
+public sealed record AnalysisRow(string Word, string Analysis, string Basis);
+
+// A message, coloured by its level: the normal text colour for info (a null colour left Android's grey), amber for a warning, red for an error; lighter shades on a dark background
+public sealed record MessageRow(string Text, string Level)
+{
+	public Color TextColor => (Level, Application.Current?.RequestedTheme == AppTheme.Dark) switch
+	{
+		("error", false) => Color.FromArgb("#C62828"),
+		("error", true) => Color.FromArgb("#EF9A9A"),
+		("warning", false) => Color.FromArgb("#8A5300"),
+		("warning", true) => Color.FromArgb("#FFCC80"),
+		(_, false) => Color.FromArgb("#212121"),
+		(_, true) => Colors.White,
+	};
+}
+
+// A step's time, with its bar's width (a fraction of TranslationItem.BarWidth). A bar under a pixel isn't drawn, as on the web page, rather than showing as a sliver.
+public sealed record StepRow(string Step, string Seconds, double BarWidthRequest)
+{
+	public bool HasBar => BarWidthRequest >= 1;
+}
+
 public sealed class TranslationItem : INotifyPropertyChanged
 {
+	// The width of the step-time bars' column in TraceView.xaml. See TRAPS above.
+	public const double BarWidth = 90;
+
 	// The run record's lists of failed words, with the web page's labels
-	static readonly (string Label, Func<RunResult, List<string>> Words)[] ProblemGroups =
+	static readonly (string Label, Func<RunResult, List<string>> Words)[] ProblemLists =
 	{
 		("No parse", record => record.Unparsed),
 		("No analysis", record => record.Unanalysed),
@@ -67,15 +128,27 @@ public sealed class TranslationItem : INotifyPropertyChanged
 		this.traceMode = traceMode;
 		this.isTraceOpen = isTraceOpen;
 		Translation = Tidy(entry.Translation);
-		TraceSummary = Summary(entry);
+		RunResult? record = entry.Record;
 
-		if (entry.Record != null)
+		// The header line: the bundle and when on the left, the time and the outcome on the right
+		HeaderText = entry.Bundle.Length > 0 ? $"{entry.Bundle} · {entry.When.ToString("g", CultureInfo.CurrentCulture)}" : entry.When.ToString("g", CultureInfo.CurrentCulture);
+		TotalText = record?.TotalSeconds is double total ? Seconds(total) : "";
+		Ok = record?.Ok ?? false;
+		BadgeText = Ok ? "OK" : record == null ? "Failed" : $"Failed after {record.Steps.LastOrDefault() ?? "the start"}";
+
+		if (record != null)
 		{
-			TraceProblems = Problems(entry.Record);
-			TraceTimings = Timings(entry.Record);
-			TraceAnalyses = Analyses(entry.Record);
-			TraceMessages = Messages(entry.Record);
+			ProblemGroups = Problems(record);
+			Analyses = record.Approved.Select(approved => new AnalysisRow(approved.Word, approved.Analysis, approved.Basis)).ToList();
+			Messages = record.Messages.Select(message => new MessageRow(message.Message.Trim(), message.Level)).ToList();
+			(Steps, OutsideText) = StepRows(record);
 		}
+
+		AnalysesSection = new Section($"Analyses chosen ({Analyses.Count})", true);
+		MessagesSection = new Section("Messages", true);
+		StepsSection = new Section("Step times", true);
+		StreamsSection = new Section("Apertium streams", false);
+		ExceptionSection = new Section("Exception", true);
 	}
 
 	// The plain view
@@ -102,22 +175,31 @@ public sealed class TranslationItem : INotifyPropertyChanged
 
 	public string TraceToggleText => isTraceOpen ? "▾ Trace" : "▸ Trace";
 
-	// Trace texts, each empty when there's nothing to show
+	// The trace's parts. See the OVERVIEW above.
 
-	public string TraceSummary { get; }
-	public string TraceProblems { get; } = "";
-	public string TraceTimings { get; } = "";
-	public string TraceAnalyses { get; } = "";
-	public string TraceMessages { get; } = "";
+	public string HeaderText { get; }
+	public string TotalText { get; }
+	public bool Ok { get; }
+	public bool Failed => !Ok;
+	public string BadgeText { get; }
+	public List<ProblemGroup> ProblemGroups { get; } = new List<ProblemGroup>();
+	public List<AnalysisRow> Analyses { get; } = new List<AnalysisRow>();
+	public List<MessageRow> Messages { get; } = new List<MessageRow>();
+	public List<StepRow> Steps { get; } = new List<StepRow>();
+	public string OutsideText { get; } = "";
 	public string SourceStream => Entry.SourceStream ?? "";
 	public string TargetStream => Entry.TargetStream ?? "";
 	public string ErrorDetail => Entry.ErrorDetail ?? "";
-	public bool HasTraceProblems => TraceProblems.Length > 0;
-	public bool HasTraceTimings => TraceTimings.Length > 0;
-	public bool HasTraceAnalyses => TraceAnalyses.Length > 0;
-	public bool HasTraceMessages => TraceMessages.Length > 0;
-	public bool HasSourceStream => SourceStream.Length > 0;
-	public bool HasTargetStream => TargetStream.Length > 0;
+	public Section AnalysesSection { get; }
+	public Section MessagesSection { get; }
+	public Section StepsSection { get; }
+	public Section StreamsSection { get; }
+	public Section ExceptionSection { get; }
+	public bool HasProblems => ProblemGroups.Count > 0;
+	public bool HasAnalyses => Analyses.Count > 0;
+	public bool HasMessages => Messages.Count > 0;
+	public bool HasSteps => Steps.Count > 0;
+	public bool HasStreams => SourceStream.Length > 0 || TargetStream.Length > 0;
 	public bool HasErrorDetail => ErrorDetail.Length > 0;
 
 	void Set(ref bool field, bool value, params string[] names)
@@ -144,95 +226,43 @@ public sealed class TranslationItem : INotifyPropertyChanged
 		return string.Join("\n", lines);
 	}
 
-	// 'OK · 0.84 s · FTT-Scratch · 11/7/26 14:02', or the step it failed after
-	static string Summary(HistoryEntry entry)
-	{
-		var parts = new List<string>();
-		RunResult? record = entry.Record;
-
-		if (record == null)
-		{
-			parts.Add("Failed");
-		}
-		else
-		{
-			parts.Add(record.Ok ? "OK" : $"Failed after {record.Steps.LastOrDefault() ?? "the start"}");
-
-			if (record.TotalSeconds != null)
-			{
-				parts.Add(Seconds(record.TotalSeconds.Value));
-			}
-		}
-
-		if (entry.Bundle.Length > 0)
-		{
-			parts.Add(entry.Bundle);
-		}
-
-		parts.Add(entry.When.ToString("g", CultureInfo.CurrentCulture));
-
-		return string.Join(" · ", parts);
-	}
-
+	// The web page's formatting: two decimals under ten seconds, one above
 	static string Seconds(double seconds)
 	{
 		return seconds < 10 ? $"{seconds:F2} s" : $"{seconds:F1} s";
 	}
 
-	// 'No parse: a, b' and so on, a line for each list that has words, each word once
-	static string Problems(RunResult record)
+	// The lists that have words, each word once
+	static List<ProblemGroup> Problems(RunResult record)
 	{
-		var lines = new List<string>();
+		var groups = new List<ProblemGroup>();
 
-		foreach ((string label, Func<RunResult, List<string>> words) in ProblemGroups)
+		foreach ((string label, Func<RunResult, List<string>> words) in ProblemLists)
 		{
 			List<string> unique = words(record).Distinct(StringComparer.Ordinal).ToList();
 
 			if (unique.Count > 0)
 			{
-				lines.Add($"{label}: {string.Join(", ", unique)}");
+				groups.Add(new ProblemGroup(label, unique));
 			}
 		}
 
-		return string.Join("\n", lines);
+		return groups;
 	}
 
-	// Each step's time in a column, then the time outside the steps and the total
-	static string Timings(RunResult record)
+	// Each step with its bar, scaled to the longest step as the web page scales them, and the time outside the steps
+	static (List<StepRow>, string) StepRows(RunResult record)
 	{
 
 		if (record.Timings.Count == 0)
 		{
-			return "";
+			return (new List<StepRow>(), "");
 		}
 
-		int width = record.Timings.Max(timing => timing.Step.Length) + 2;
-		var text = new StringBuilder();
+		double longest = Math.Max(record.Timings.Max(timing => timing.Seconds), 0.001);
+		List<StepRow> rows = record.Timings.Select(timing => new StepRow(timing.Step, Seconds(timing.Seconds), Math.Max(BarWidth * timing.Seconds / longest, 0))).ToList();
+		string outside = record.TotalSeconds is double total ? Seconds(Math.Max(total - record.Timings.Sum(timing => timing.Seconds), 0)) : "";
 
-		foreach (StepTiming timing in record.Timings)
-		{
-			text.Append(timing.Step.PadRight(width)).Append(Seconds(timing.Seconds).PadLeft(8)).Append('\n');
-		}
-
-		if (record.TotalSeconds != null)
-		{
-			double outside = Math.Max(record.TotalSeconds.Value - record.Timings.Sum(timing => timing.Seconds), 0);
-			text.Append("Other".PadRight(width)).Append(Seconds(outside).PadLeft(8)).Append('\n');
-			text.Append("Total".PadRight(width)).Append(Seconds(record.TotalSeconds.Value).PadLeft(8));
-		}
-
-		return text.ToString().TrimEnd('\n');
-	}
-
-	// 'word → analysis (only analysis)', one a line
-	static string Analyses(RunResult record)
-	{
-		return string.Join("\n", record.Approved.Select(approved => $"{approved.Word} → {approved.Analysis} ({approved.Basis})"));
-	}
-
-	// '[warning] message', one a line, info messages included
-	static string Messages(RunResult record)
-	{
-		return string.Join("\n", record.Messages.Select(message => $"[{message.Level}] {message.Message}"));
+		return (rows, outside);
 	}
 }
