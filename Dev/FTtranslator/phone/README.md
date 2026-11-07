@@ -42,7 +42,8 @@ on average instead of 4.2 s. It now updates once a second, which costs nothing m
 A bundle is one language pair's translation data: export-bundle's `Output\ftt_bundle` folder. The phone keeps each in its own folder, named after its work project. A bundle of a work project
 the phone already has is an **update** of it.
 
-- **Switch** with a tap on the language pair, or **⋮ → Language pair…**. The app remembers the choice. Only one bundle is loaded at a time (a big one takes a lot of memory), so switching takes
+- **Switch** with a tap on the language pair, or **⋮ → Language pair…**. The app remembers the choice. Switching clears the text box and the current translation, since they were the other
+  pair's; the new pair's translations are all listed as earlier ones until the next translation. Only one bundle is loaded at a time (a big one takes a lot of memory), so switching takes
   the few seconds a load takes.
 - **Add or update** with **⋮ → Add or update a bundle…**, which opens a zip from the phone's files (Downloads, Drive and so on). The zip can hold the bundle's files at its top level (the zip
   `upload-bundle` sends the Railway server) or the `ftt_bundle` folder (Windows' **Send to > Compressed folder** on it). For an update the app asks first, giving both export times, and warns

@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.2 - 11/7/26 - Ron Lockwood
+//  Switching to another bundle clears the text box and the current translation.
+//
 // Version 3.17.1 - 11/7/26 - Ron Lockwood
 //  The text box and the answer flow right to left, aligned right, when the bundle's source or target language is right to left.
 //
@@ -20,7 +23,9 @@
 //
 // The phone can hold several bundles, one per language pair (Bundles.cs). The chosen one is remembered; tapping the language pair, or the menu's "Language pair…", lists them to switch, and
 // "Add or update a bundle…" opens a bundle zip from the phone's files. Each pair has its own history: the page shows only the chosen bundle's translations, so switching shows that pair's.
-// Switching loads the bundle (TranslatorService keeps one loaded at a time), and the status line says so meanwhile. Switching and adding wait while a translation runs.
+// Switching loads the bundle (TranslatorService keeps one loaded at a time), and the status line says so meanwhile. Switching and adding wait while a translation runs. Switching to another pair
+// clears the text box and the answer panel, since the text is in the other pair's source language, and the new pair's translations are all shown as earlier ones until the next translation.
+// Choosing the remembered bundle at start-up isn't a switch: its newest translation is current again, as it was when the app closed.
 //
 // UPDATING A BUNDLE
 //
@@ -130,13 +135,22 @@ public partial class MainPage : ContentPage
 		await SwitchTo(bundles.FirstOrDefault(info => info.Id == remembered) ?? bundles[0]);
 	}
 
-	// Choose a bundle: show its history and load it. reload loads it again after its files were replaced. See BUNDLES above.
+	// Choose a bundle: show its history and load it. reload loads it again after its files were replaced. Switching from another bundle clears the text box and the answer panel; choosing
+	// one at start-up keeps the last translation as the current one. See BUNDLES above.
 	async Task SwitchTo(BundleInfo chosen, bool reload = false)
 	{
+		bool switching = bundle != null && bundle.Id != chosen.Id;
 		bundle = chosen;
 		Preferences.Default.Set(BundleKey, chosen.Id);
 		SetDirections(chosen);
-		ShowHistory();
+
+		// The text and the answer were the other pair's, so they go; the new pair's translations are all earlier ones
+		if (switching)
+		{
+			SourceEditor.Text = "";
+		}
+
+		ShowHistory(withCurrent: !switching);
 		UpdateTranslateButton();
 		idleStatus = $"{chosen.LanguagePair} ▾";
 		ShowStatus($"Loading {chosen.LanguagePair}…");
@@ -168,14 +182,14 @@ public partial class MainPage : ContentPage
 		AnswerLabel.FlowDirection = targetDirection;
 	}
 
-	// The chosen bundle's translations: the newest is current, with its trace open, the rest are the earlier ones
-	void ShowHistory()
+	// The chosen bundle's translations: with withCurrent the newest is current, with its trace open, and the rest are the earlier ones; without it, there's no current one and all are earlier
+	void ShowHistory(bool withCurrent = true)
 	{
 		List<HistoryEntry> mine = history.Where(entry => entry.Bundle == bundle?.Id).ToList();
-		current = mine.Count > 0 ? new TranslationItem(mine[0], traceMode, true) : null;
+		current = withCurrent && mine.Count > 0 ? new TranslationItem(mine[0], traceMode, true) : null;
 		earlier.Clear();
 
-		foreach (HistoryEntry entry in mine.Skip(1))
+		foreach (HistoryEntry entry in mine.Skip(current == null ? 0 : 1))
 		{
 			earlier.Add(new TranslationItem(entry, traceMode, false));
 		}
