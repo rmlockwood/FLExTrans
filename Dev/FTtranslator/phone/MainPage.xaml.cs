@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.1 - 11/7/26 - Ron Lockwood
+//  The text box and the answer flow right to left, aligned right, when the bundle's source or target language is right to left.
+//
 // Version 3.17 - 11/7/26 - Ron Lockwood
 //  Initial version. The app's one page: translate, the current translation, the earlier ones, switching bundles, trace mode.
 //
@@ -43,6 +46,12 @@
 // translation right puts its source back in the box. Each line of the box is a paragraph of the text. The keyboard is put away when a translation starts, so the answer isn't hidden behind it.
 // The answer panel shows its source only when the box doesn't hold it (after a restart, or once the box is changed), so the answer is never shown without what it translates.
 //
+// RIGHT-TO-LEFT LANGUAGES
+//
+// When the bundle's source language is written right to left (the manifest's sourceRightToLeft), the text box flows right to left and its text is aligned right, and so is the answer panel's
+// copy of the source; when the target is, the answer does the same (targetRightToLeft). SetDirections() sets each control's FlowDirection when a bundle is chosen: with a right-to-left flow,
+// a control's Start alignment is its right edge. Only those controls change; the error line, the status line and the trace stay left to right, since their text is the app's English.
+//
 // THE STATUS LINE AND TRANSLATE
 //
 // Left of Translate: "Loading Mato → Uma…" while a bundle loads, then the language pair with a ▾ to say it can be tapped ("French → Spanish", or the project names for a bundle exported without
@@ -51,7 +60,8 @@
 //
 // CODE STRUCTURE
 //
-// The constructor reads the history and calls StartUp(), which unpacks the built-in bundles and picks the remembered one. SwitchTo() chooses a bundle and ShowHistory() shows its translations;
+// The constructor reads the history and calls StartUp(), which unpacks the built-in bundles and picks the remembered one. SwitchTo() chooses a bundle, SetDirections() sets the text box's and
+// answer's directions for it, and ShowHistory() shows its translations;
 // OnLanguagePairClicked() and OnAddBundleClicked() are the ways to switch, and OnRemoveBundleClicked() removes one. OnTranslateClicked() translates, with the button's timer, and makes the result current (AddEntry()). ShowCurrent(),
 // UpdateAnswerTrace() and UpdateAnswerSource() fill the answer panel. Then the taps and swipes (OnAnswerTapped(), OnTranslationTapped(), Copy(), OnReuseInvoked(), OnDeleteInvoked()), the menu's
 // other items (OnTraceModeClicked(), OnClearHistoryClicked()) and the helpers (SetTraceMode(), SaveHistory(), ShowStatus(), UpdateTranslateButton()).
@@ -125,6 +135,7 @@ public partial class MainPage : ContentPage
 	{
 		bundle = chosen;
 		Preferences.Default.Set(BundleKey, chosen.Id);
+		SetDirections(chosen);
 		ShowHistory();
 		UpdateTranslateButton();
 		idleStatus = $"{chosen.LanguagePair} ▾";
@@ -144,6 +155,17 @@ public partial class MainPage : ContentPage
 		{
 			ShowStatus(idleStatus);
 		}
+	}
+
+	// Lay out the text box and the answer's source in the source language's direction, and the answer in the target's. See RIGHT-TO-LEFT LANGUAGES above.
+	void SetDirections(BundleInfo chosen)
+	{
+		FlowDirection sourceDirection = chosen.SourceRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+		FlowDirection targetDirection = chosen.TargetRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+
+		SourceEditor.FlowDirection = sourceDirection;
+		AnswerSourceLabel.FlowDirection = sourceDirection;
+		AnswerLabel.FlowDirection = targetDirection;
 	}
 
 	// The chosen bundle's translations: the newest is current, with its trace open, the rest are the earlier ones

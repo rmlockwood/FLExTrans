@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.1 - 11/7/26 - Ron Lockwood
+//  Reads whether the source and target languages are right to left (sourceRightToLeft, targetRightToLeft) from the manifest.
+//
 // Version 3.17 - 11/7/26 - Ron Lockwood
 //  Initial version. The bundles on the phone: the ones built into the app and the ones added or updated from a zip.
 //
@@ -44,9 +47,9 @@ using System.Text.Json;
 
 namespace FTtranslator.Phone;
 
-// A bundle: its id (the folder name, from the work project), its folder, its manifest's names, and when export-bundle made it. The language names are empty in a bundle exported before
-// export-bundle wrote them (bundle.py 3.17.2).
-public sealed record BundleInfo(string Id, string Dir, string WorkProject, string SourceProject, string TargetProject, string SourceLanguage, string TargetLanguage, string Created)
+// A bundle: its id (the folder name, from the work project), its folder, its manifest's names, when export-bundle made it, and whether each language is written right to left. The language
+// names are empty in a bundle exported before export-bundle wrote them (bundle.py 3.17.2), and both directions are left to right in one exported before it wrote those (bundle.py 3.17.3).
+public sealed record BundleInfo(string Id, string Dir, string WorkProject, string SourceProject, string TargetProject, string SourceLanguage, string TargetLanguage, string Created, bool SourceRightToLeft, bool TargetRightToLeft)
 {
 	// 'French → Spanish', or the project names when the bundle has no language names
 	public string LanguagePair => SourceLanguage.Length > 0 && TargetLanguage.Length > 0 ? $"{SourceLanguage} → {TargetLanguage}" : $"{SourceProject} → {TargetProject}";
@@ -233,7 +236,13 @@ public static class BundleStore
 				return root.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String ? value.GetString() ?? "" : "";
 			}
 
-			return new BundleInfo(Path.GetFileName(dir), dir, Text("workProject"), Text("sourceProject"), Text("targetProject"), Text("sourceLanguage"), Text("targetLanguage"), Text("created"));
+			// A missing flag (an older bundle) is left to right
+			bool Flag(string name)
+			{
+				return root.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.True;
+			}
+
+			return new BundleInfo(Path.GetFileName(dir), dir, Text("workProject"), Text("sourceProject"), Text("targetProject"), Text("sourceLanguage"), Text("targetLanguage"), Text("created"), Flag("sourceRightToLeft"), Flag("targetRightToLeft"));
 		}
 		catch (JsonException)
 		{

@@ -5,6 +5,9 @@
 #   SIL International
 #   11/3/26
 #
+#   Version 3.17.3 - 11/7/26 - Ron Lockwood
+#    Writes whether the source and target writing systems are right to left in the manifest, for the phone app.
+#
 #   Version 3.17.2 - 11/7/26 - Ron Lockwood
 #    Writes the source and target language names (each project's default vernacular writing system) in the manifest, for the phone app to show.
 #
@@ -30,7 +33,9 @@
 #   and HermitCrab.config that HermitCrab synthesis reads (see synthexport.py); text_out_rules.xml, a copy of the Text Out rules file (TextOutRulesFile) when the project has one, which
 #   textout.py applies to the synthesized text (exportTextOutRules()); and:
 #    - manifest.json: the format version, when and from which work project and source project the bundle was made, the target project's name, the source and target language names (sourceLanguage and targetLanguage: each project's default
-#      vernacular writing system's name, such as French; the phone app shows them, and the target one is read by opening the target project, so it is empty if that can't be opened), the record counts, and the FlexTrans.config values Extract Source Text reads, keyed by their setting names.
+#      vernacular writing system's name, such as French; the phone app shows them, and the target one is read by opening the target project, so it is empty if that can't be opened), whether each
+#      of those writing systems is right to left (sourceRightToLeft and targetRightToLeft, for the phone's text box and translation; false when the target project can't be opened), the record
+#      counts, and the FlexTrans.config values Extract Source Text reads, keyed by their setting names.
 #      The values are read with InterlinData.initInterlinParams(), so they are parsed exactly as Extract Source Text parses them. The config section also holds the values synthesis.py reads, and
 #      interfaceLanguage is the language code FLExTrans hands HCSynthByGloss.
 #    - lexicon.json: three tables keyed by GUID.
@@ -68,8 +73,8 @@
 #   CODE STRUCTURE
 #
 #   supportedParams() checks the configuration and returns Extract Source Text's settings; golden.py uses it too. exportBundle() calls it, then exportLexicon(), parserexport.exportParser(),
-#   exportTokenizerData(), guessexport.exportGuesserData(), transferexport.exportTransfer(), synthexport.exportSynthesis(), exportTextOutRules() and languageName() (the target's through
-#   targetLanguageName()), and writes the files; the export-bundle command in cli.py calls it. exportLexicon() walks every entry and builds the three tables with entryRecord(), senseRecord() and msaRecord().
+#   exportTokenizerData(), guessexport.exportGuesserData(), transferexport.exportTransfer(), synthexport.exportSynthesis(), exportTextOutRules() and languageInfo() (the target's through
+#   targetLanguageInfo()), and writes the files; the export-bundle command in cli.py calls it. exportLexicon() walks every entry and builds the three tables with entryRecord(), senseRecord() and msaRecord().
 #   _complexForms() collects an entry's complex-form refs for entryRecord(). _sortedAbbrevs() is a helper, and guidOf() and writeJson() are shared with golden.py and parserexport.py.
 #
 
@@ -171,14 +176,20 @@ def exportBundle(project, configMap, outDir, report, sourceProjectName, workProj
     textOutFile, textOutRuleCount = textOutExport
     targetProjectName = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False) or ""
 
+    # Each language's name and direction, for the phone app's language pair and its right-to-left text box and translation
+    sourceLanguage, sourceRightToLeft = languageInfo(project)
+    targetLanguage, targetRightToLeft = targetLanguageInfo(targetProjectName, report)
+
     manifest = {
         "formatVersion": BUNDLE_FORMAT_VERSION,
         "created": datetime.now().isoformat(timespec="seconds"),
         "workProject": workProjectName,
         "sourceProject": sourceProjectName,
         "targetProject": targetProjectName,
-        "sourceLanguage": languageName(project),
-        "targetLanguage": targetLanguageName(targetProjectName, report),
+        "sourceLanguage": sourceLanguage,
+        "targetLanguage": targetLanguage,
+        "sourceRightToLeft": sourceRightToLeft,
+        "targetRightToLeft": targetRightToLeft,
         "files": {"lexicon": LEXICON_FILE, "parser": parserexport.PARSER_XML_FILE, "parserData": parserexport.PARSER_DATA_FILE, "tokenizer": tokenizer.TOKENIZER_FILE, "guesser": guessexport.GUESSER_FILE,
                   "apertium": {"dir": transferexport.APERTIUM_DIR, "rules": rulesFiles}, "synthesis": synthesisFiles, "textOutRules": textOutFile},
         "interfaceLanguage": interfaceLanguage,
@@ -201,32 +212,34 @@ def exportBundle(project, configMap, outDir, report, sourceProjectName, workProj
     report.Info(f"Exported {manifest['counts']['entries']} entries, {manifest['counts']['senses']} senses and {manifest['counts']['msas']} msas to {outDir}.")
     return True
 
-def languageName(project):
-    '''The name of the project's default vernacular writing system's language, such as French.'''
+def languageInfo(project):
+    '''The project's default vernacular writing system: its language's name, such as French, and whether its script is right to left (the writing system's RightToLeftScript).'''
 
     cache = project.project
+    writingSystem = cache.ServiceLocator.WritingSystemManager.Get(cache.DefaultVernWs)
 
-    return cache.ServiceLocator.WritingSystemManager.Get(cache.DefaultVernWs).LanguageName or ""
+    return writingSystem.LanguageName or "", bool(writingSystem.RightToLeftScript)
 
-def targetLanguageName(targetProjectName, report):
-    '''languageName() of the target project, opened read-only for it. Empty, with a warning, if there's no target project or it can't be opened: the name is only for display.'''
+def targetLanguageInfo(targetProjectName, report):
+    '''languageInfo() of the target project, opened read-only for it. An empty name and left to right, with a warning, if there's no target project or it can't be opened: both are only
+       for display.'''
 
     from parse_priority import fw
 
     if not targetProjectName:
 
-        return ""
+        return "", False
 
     try:
         targetProject = fw.openProject(targetProjectName)
 
     except Exception as err:
 
-        report.Warning(f"The target language name isn't in the bundle: the target project {targetProjectName} couldn't be opened ({err}).")
-        return ""
+        report.Warning(f"The target language name and direction aren't in the bundle: the target project {targetProjectName} couldn't be opened ({err}).")
+        return "", False
 
     try:
-        return languageName(targetProject)
+        return languageInfo(targetProject)
 
     finally:
         targetProject.CloseProject()
