@@ -52,6 +52,24 @@ the phone already has is an **update** of it.
 - **Built in:** the build zips the bundle folders you name into the app (FTT-Scratch's `../deploy/bundle` unless you name others), and the app unpacks them the first time it runs, and again
   when an installed build carries a changed one. A built-in bundle never replaces a newer one you added, and one you removed stays removed until a build carries a changed copy of it.
 
+## Languages
+
+The menus and messages are in English, Spanish, French or German; the trace stays in English. The app uses the phone's language unless **⋮ → 🌐 Language…** chooses another (or "Same as
+the phone" again). The choice is remembered, and the page is rebuilt in the new language at once, keeping the text box. That menu item is for phones before Android 13, which can't give one app
+its own language; Android 13 and later also offer it in **Settings → Apps → FTtranslator → Language**, and iOS in **Settings → FTtranslator**. The globe is there so the item can be found in a
+language you can't read, and the list names each language in itself. Dates and numbers keep the phone's regional format whatever the language.
+
+- The strings are in `Resources/Strings`: `AppResources.resx` (English, with a comment on each string for translators) and `AppResources.es.resx`, `.fr.resx`, `.de.resx`. The build turns them
+  into satellite assemblies, the same on Android and iOS, and writes the `AppResources` class: XAML uses `{x:Static res:AppResources.Translate}`, C# `AppResources.Translate`.
+- A string is a whole sentence with `{0}` placeholders, never pieces joined in code. A count gets two strings, one and many (e.g. `ClearHistoryOne` / `ClearHistoryMany`).
+- Nothing in the trace (`TraceView.xaml`, the trace parts of `TranslationItem.cs`) or from FTOffline is translated. With trace mode off a failed translation says, translated, that it failed;
+  the English reason shows in trace mode.
+- The language list comes from `Dev/Lib/UILanguages.py`. `Dev/updateLanguageFiles.py` writes `UILanguages.cs` (the Language list), `Platforms/Android/Resources/xml/locales_config.xml`
+  (Android 13's per-app setting) and the `.resx` entry in `crowdin.yml`. Don't edit those by hand.
+- To add a UI language: add it to `UILanguages.py`, run `updateLanguageFiles.py`, and add `AppResources.<code>.resx`.
+- **iOS:** when the app gets an iOS target, its `Platforms/iOS/Info.plist` needs `CFBundleLocalizations` listing the same codes. Without it iOS treats the app as English only and ignores
+  the other `.resx` files when following the phone's language.
+
 ## Build and install
 
 ```
@@ -73,6 +91,9 @@ Use Release on a phone; the HC spike's Release build parsed more than twice as f
 | `History.cs` | The history and its file |
 | `Bundles.cs` | The bundles on the phone: built in, added and updated |
 | `TranslatorService.cs` | Loads the chosen bundle and translates in the background |
+| `App.xaml.cs` | The window, and the UI language |
+| `UILanguages.cs` | The UI languages (generated) |
+| `Resources/Strings/AppResources*.resx` | The UI strings, one file per language |
 
 Each file's header explains it.
 

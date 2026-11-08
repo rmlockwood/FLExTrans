@@ -7,15 +7,20 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:FTtranslator.Phone"
+             xmlns:res="clr-namespace:FTtranslator.Phone.Resources.Strings"
              x:Class="FTtranslator.Phone.MainPage"
              Title="FTtranslator">
 
+    <!-- The text comes from Resources/Strings/AppResources*.resx, in the phone's language. FTtranslator is the app's name and isn't translated. -->
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Language pair…" Order="Secondary" Clicked="OnLanguagePairClicked" />
-        <ToolbarItem Text="Add or update a bundle…" Order="Secondary" Clicked="OnAddBundleClicked" />
-        <ToolbarItem Text="Remove a bundle…" Order="Secondary" Clicked="OnRemoveBundleClicked" />
-        <ToolbarItem x:Name="TraceModeItem" Text="Trace mode" Order="Secondary" Clicked="OnTraceModeClicked" />
-        <ToolbarItem Text="Clear history" Order="Secondary" Clicked="OnClearHistoryClicked" />
+        <ToolbarItem Text="{x:Static res:AppResources.MenuLanguagePair}" Order="Secondary" Clicked="OnLanguagePairClicked" />
+        <ToolbarItem Text="{x:Static res:AppResources.MenuAddBundle}" Order="Secondary" Clicked="OnAddBundleClicked" />
+        <ToolbarItem Text="{x:Static res:AppResources.MenuRemoveBundle}" Order="Secondary" Clicked="OnRemoveBundleClicked" />
+        <ToolbarItem x:Name="TraceModeItem" Text="{x:Static res:AppResources.MenuTraceMode}" Order="Secondary" Clicked="OnTraceModeClicked" />
+        <ToolbarItem Text="{x:Static res:AppResources.ClearHistory}" Order="Secondary" Clicked="OnClearHistoryClicked" />
+
+        <!-- Its text is set in MainPage.xaml.cs, with a globe before it: see THE UI LANGUAGE there -->
+        <ToolbarItem x:Name="LanguageItem" Order="Secondary" Clicked="OnLanguageClicked" />
     </ContentPage.ToolbarItems>
 
     <ContentPage.Resources>
@@ -33,7 +38,7 @@
         <VerticalStackLayout>
 
             <VerticalStackLayout Padding="16,12,16,4" Spacing="10">
-                <Editor x:Name="SourceEditor" Placeholder="Type a sentence" AutoSize="TextChanges" MaximumHeightRequest="160" FontSize="18" TextChanged="OnSourceTextChanged" />
+                <Editor x:Name="SourceEditor" Placeholder="{x:Static res:AppResources.SourcePlaceholder}" AutoSize="TextChanges" MaximumHeightRequest="160" FontSize="18" TextChanged="OnSourceTextChanged" />
 
                 <!-- The current translation. Its source shows only when the box no longer holds it (after a restart, or once the box is changed). -->
                 <Border x:Name="AnswerPanel" IsVisible="False" Padding="14,12" StrokeThickness="0" StrokeShape="RoundRectangle 10"
@@ -55,13 +60,13 @@
                             <TapGestureRecognizer Tapped="OnLanguagePairClicked" />
                         </Label.GestureRecognizers>
                     </Label>
-                    <Button x:Name="TranslateButton" Grid.Column="1" Text="Translate" IsEnabled="False" Clicked="OnTranslateClicked" />
+                    <Button x:Name="TranslateButton" Grid.Column="1" Text="{x:Static res:AppResources.Translate}" IsEnabled="False" Clicked="OnTranslateClicked" />
                 </Grid>
 
                 <!-- Trace mode: the current translation's trace -->
                 <local:TraceView x:Name="AnswerTrace" IsVisible="False" />
 
-                <Label x:Name="EarlierLabel" Text="Earlier" Style="{StaticResource Muted}" FontAttributes="Bold" Margin="0,8,0,0" IsVisible="False" />
+                <Label x:Name="EarlierLabel" Text="{x:Static res:AppResources.Earlier}" Style="{StaticResource Muted}" FontAttributes="Bold" Margin="0,8,0,0" IsVisible="False" />
             </VerticalStackLayout>
 
             <!-- The earlier translations, newest first -->
@@ -71,12 +76,12 @@
                 <SwipeView>
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
-                            <SwipeItem Text="Edit again" BackgroundColor="{StaticResource Primary}" Invoked="OnReuseInvoked" />
+                            <SwipeItem Text="{x:Static res:AppResources.EditAgain}" BackgroundColor="{StaticResource Primary}" Invoked="OnReuseInvoked" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
-                            <SwipeItem Text="Delete" BackgroundColor="#C62828" Invoked="OnDeleteInvoked" />
+                            <SwipeItem Text="{x:Static res:AppResources.Delete}" BackgroundColor="#C62828" Invoked="OnDeleteInvoked" />
                         </SwipeItems>
                     </SwipeView.RightItems>
 

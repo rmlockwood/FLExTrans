@@ -39,6 +39,15 @@
 		<MauiFont Include="Resources\Fonts\*" />
 	</ItemGroup>
 
+	<!--
+		The UI strings: AppResources.resx (English) and one AppResources.<code>.resx per other UI language, which the build makes into satellite assemblies on Android and iOS alike. MSBuild
+		writes the AppResources class from the English file (no Visual Studio generator, so `dotnet build` does it too): XAML reaches a string as {x:Static res:AppResources.Translate}, C# as
+		AppResources.Translate. The trace isn't translated. See README.md's Languages section.
+	-->
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\Strings\AppResources.resx" StronglyTypedFileName="$(IntermediateOutputPath)AppResources.Designer.cs" StronglyTypedLanguage="CSharp" StronglyTypedNamespace="FTtranslator.Phone.Resources.Strings" StronglyTypedClassName="AppResources" PublicClass="true" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 	</ItemGroup>

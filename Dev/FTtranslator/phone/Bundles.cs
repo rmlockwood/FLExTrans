@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.2 - 11/7/26 - Ron Lockwood
+//  The export time (ExportedText) and the bad-zip errors are in the UI language (AppResources).
+//
 // Version 3.17.1 - 11/7/26 - Ron Lockwood
 //  Reads whether the source and target languages are right to left (sourceRightToLeft, targetRightToLeft) from the manifest.
 //
@@ -45,6 +48,8 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text.Json;
 
+using FTtranslator.Phone.Resources.Strings;
+
 namespace FTtranslator.Phone;
 
 // A bundle: its id (the folder name, from the work project), its folder, its manifest's names, when export-bundle made it, and whether each language is written right to left. The language
@@ -54,8 +59,9 @@ public sealed record BundleInfo(string Id, string Dir, string WorkProject, strin
 	// 'French → Spanish', or the project names when the bundle has no language names
 	public string LanguagePair => SourceLanguage.Length > 0 && TargetLanguage.Length > 0 ? $"{SourceLanguage} → {TargetLanguage}" : $"{SourceProject} → {TargetProject}";
 
-	// When it was exported, in the phone's date format, or "an unknown date"
-	public string CreatedText => DateTime.TryParse(Created, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime created) ? created.ToString("g", CultureInfo.CurrentCulture) : "an unknown date";
+	// When it was exported, in the phone's date format and UI language ("exported 11/7/26 3:05 PM"), or "export date unknown": a whole phrase, so a sentence can put it in parentheses or after
+	// a colon in any language, which "exported {date}" with an "an unknown date" fill-in couldn't do
+	public string ExportedText => DateTime.TryParse(Created, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime created) ? string.Format(AppResources.Exported, created.ToString("g", CultureInfo.CurrentCulture)) : AppResources.ExportedUnknown;
 
 	// Whether this bundle was exported after another. See TRAPS above.
 	public bool IsNewerThan(BundleInfo other)
@@ -142,7 +148,7 @@ public static class BundleStore
 		{
 			Discard();
 
-			throw new InvalidOperationException("This file isn't a zip file. Choose the zip of a bundle (export-bundle's Output\\ftt_bundle folder).");
+			throw new InvalidOperationException(AppResources.NotAZip);
 		}
 
 		string? root = FindRoot(IncomingDir);
@@ -152,7 +158,7 @@ public static class BundleStore
 		{
 			Discard();
 
-			throw new InvalidOperationException("This zip isn't a bundle: it has no readable manifest.json naming a work project, at its top level or in one folder. Zip export-bundle's Output\\ftt_bundle folder.");
+			throw new InvalidOperationException(AppResources.NotABundle);
 		}
 
 		return new StagedBundle(root, info with { Id = SafeId(info.WorkProject) });

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	FTtranslator for phones: the Spanish UI strings.
+	The trace stays in English and has no strings here. Keys, comments and the English text live in AppResources.resx; see README.md's Languages section.
+-->
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MenuLanguagePair" xml:space="preserve">
+    <value>Par de idiomas…</value>
+  </data>
+  <data name="MenuAddBundle" xml:space="preserve">
+    <value>Agregar o actualizar un paquete…</value>
+  </data>
+  <data name="MenuRemoveBundle" xml:space="preserve">
+    <value>Eliminar un paquete…</value>
+  </data>
+  <data name="MenuTraceMode" xml:space="preserve">
+    <value>Modo de rastreo</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Borrar historial</value>
+  </data>
+  <data name="MenuLanguage" xml:space="preserve">
+    <value>Idioma…</value>
+  </data>
+  <data name="LanguageTitle" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="SameAsPhone" xml:space="preserve">
+    <value>Igual que el teléfono</value>
+  </data>
+  <data name="SourcePlaceholder" xml:space="preserve">
+    <value>Escribe una oración</value>
+  </data>
+  <data name="Translate" xml:space="preserve">
+    <value>Traducir</value>
+  </data>
+  <data name="Translating" xml:space="preserve">
+    <value>Traduciendo…</value>
+  </data>
+  <data name="TranslatingSeconds" xml:space="preserve">
+    <value>Traduciendo… {0} s</value>
+  </data>
+  <data name="Earlier" xml:space="preserve">
+    <value>Anteriores</value>
+  </data>
+  <data name="EditAgain" xml:space="preserve">
+    <value>Editar de nuevo</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Reemplazar</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Cargando…</value>
+  </data>
+  <data name="LoadingPair" xml:space="preserve">
+    <value>Cargando {0}…</value>
+  </data>
+  <data name="PairDidNotLoad" xml:space="preserve">
+    <value>No se pudo cargar {0}: {1}</value>
+  </data>
+  <data name="NoBundle" xml:space="preserve">
+    <value>No hay ningún paquete: toca para agregar uno</value>
+  </data>
+  <data name="ReadingBundle" xml:space="preserve">
+    <value>Leyendo el paquete…</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copiado</value>
+  </data>
+  <data name="ChooseBundleZip" xml:space="preserve">
+    <value>Elige el zip de un paquete</value>
+  </data>
+  <data name="BundlesTitle" xml:space="preserve">
+    <value>Paquetes</value>
+  </data>
+  <data name="PackagedUnpackFailed" xml:space="preserve">
+    <value>No se pudieron desempaquetar los paquetes de la app: {0}</value>
+  </data>
+  <data name="LanguagePairTitle" xml:space="preserve">
+    <value>Par de idiomas</value>
+  </data>
+  <data name="AddBundleTitle" xml:space="preserve">
+    <value>Agregar o actualizar un paquete</value>
+  </data>
+  <data name="UpdateBundleTitle" xml:space="preserve">
+    <value>Actualizar un paquete</value>
+  </data>
+  <data name="UpdateOlderQuestion" xml:space="preserve">
+    <value>Este paquete de {0} ({1}) es más antiguo que el del teléfono ({2}). ¿Reemplazarlo de todos modos?</value>
+  </data>
+  <data name="UpdateNewerQuestion" xml:space="preserve">
+    <value>¿Actualizar {0}? El paquete del teléfono: {1}. Este: {2}.</value>
+  </data>
+  <data name="Exported" xml:space="preserve">
+    <value>exportado el {0}</value>
+  </data>
+  <data name="ExportedUnknown" xml:space="preserve">
+    <value>fecha de exportación desconocida</value>
+  </data>
+  <data name="RemoveBundleTitle" xml:space="preserve">
+    <value>Eliminar un paquete</value>
+  </data>
+  <data name="OneBundleMustStay" xml:space="preserve">
+    <value>Debe quedar al menos un paquete en el teléfono. Agrega otro antes de eliminar este.</value>
+  </data>
+  <data name="RemoveQuestion" xml:space="preserve">
+    <value>¿Eliminar {0} ({1}) del teléfono?</value>
+  </data>
+  <data name="RemoveQuestionOne" xml:space="preserve">
+    <value>¿Eliminar {0} ({1}) del teléfono? También se eliminará su traducción del historial.</value>
+  </data>
+  <data name="RemoveQuestionMany" xml:space="preserve">
+    <value>¿Eliminar {0} ({1}) del teléfono? También se eliminarán sus {2} traducciones del historial.</value>
+  </data>
+  <data name="ClearHistoryOne" xml:space="preserve">
+    <value>¿Eliminar la traducción de {0}?</value>
+  </data>
+  <data name="ClearHistoryMany" xml:space="preserve">
+    <value>¿Eliminar las {0} traducciones de {1}?</value>
+  </data>
+  <data name="TranslationFailed" xml:space="preserve">
+    <value>La traducción falló. Activa el modo de rastreo para ver por qué.</value>
+  </data>
+  <data name="NotAZip" xml:space="preserve">
+    <value>Este archivo no es un archivo zip. Elige el zip de un paquete (la carpeta Output\ftt_bundle de export-bundle).</value>
+  </data>
+  <data name="NotABundle" xml:space="preserve">
+    <value>Este zip no es un paquete: no tiene un manifest.json legible que indique un proyecto de trabajo, ni en el nivel superior ni en una carpeta. Comprime la carpeta Output\ftt_bundle de export-bundle.</value>
+  </data>
+</root>

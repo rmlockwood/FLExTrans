@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	FTtranslator for phones: the English UI strings, the fallback for any language without its own file.
+	The trace stays in English and has no strings here. Keys, comments and the English text live in AppResources.resx; see README.md's Languages section.
+-->
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MenuLanguagePair" xml:space="preserve">
+    <value>Language pair…</value>
+    <comment>Menu item. Lists the language pairs (bundles) on the phone, to switch to another.</comment>
+  </data>
+  <data name="MenuAddBundle" xml:space="preserve">
+    <value>Add or update a bundle…</value>
+    <comment>Menu item, and the last choice in the language-pair list. A bundle is one language pair's translation data.</comment>
+  </data>
+  <data name="MenuRemoveBundle" xml:space="preserve">
+    <value>Remove a bundle…</value>
+    <comment>Menu item.</comment>
+  </data>
+  <data name="MenuTraceMode" xml:space="preserve">
+    <value>Trace mode</value>
+    <comment>Menu item that turns trace mode on and off. The app adds a check mark after it when it is on. The trace itself is shown in English.</comment>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Clear history</value>
+    <comment>Menu item, and the title of the question it asks. Deletes the current language pair's earlier translations.</comment>
+  </data>
+  <data name="MenuLanguage" xml:space="preserve">
+    <value>Language…</value>
+    <comment>Menu item. Chooses the language of the app's menus and messages (not of the translations). The app puts a globe before it, so it can be found by someone who can't read the language it's in.</comment>
+  </data>
+  <data name="LanguageTitle" xml:space="preserve">
+    <value>Language</value>
+    <comment>Title of the list of UI languages. The languages are listed by their own names (English, Español, Français, Deutsch).</comment>
+  </data>
+  <data name="SameAsPhone" xml:space="preserve">
+    <value>Same as the phone</value>
+    <comment>First choice in the list of UI languages: use the phone's language.</comment>
+  </data>
+  <data name="SourcePlaceholder" xml:space="preserve">
+    <value>Type a sentence</value>
+    <comment>Grey hint in the empty text box.</comment>
+  </data>
+  <data name="Translate" xml:space="preserve">
+    <value>Translate</value>
+    <comment>Button. Keep it short: it shares a line with the language pair.</comment>
+  </data>
+  <data name="Translating" xml:space="preserve">
+    <value>Translating…</value>
+    <comment>The Translate button's text while a translation runs.</comment>
+  </data>
+  <data name="TranslatingSeconds" xml:space="preserve">
+    <value>Translating… {0} s</value>
+    <comment>The Translate button's text while a translation runs in trace mode. {0} = the seconds so far.</comment>
+  </data>
+  <data name="Earlier" xml:space="preserve">
+    <value>Earlier</value>
+    <comment>Heading over the list of earlier translations.</comment>
+  </data>
+  <data name="EditAgain" xml:space="preserve">
+    <value>Edit again</value>
+    <comment>Swipe action on an earlier translation: puts its source text back in the text box. Keep it short.</comment>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Swipe action on an earlier translation, and a button.</comment>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Button.</comment>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+    <comment>Button.</comment>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Replace</value>
+    <comment>Button: replace the bundle on the phone with the one in the zip.</comment>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Button: remove the bundle from the phone.</comment>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading…</value>
+    <comment>Status line while the app starts.</comment>
+  </data>
+  <data name="LoadingPair" xml:space="preserve">
+    <value>Loading {0}…</value>
+    <comment>Status line while a bundle loads. {0} = the language pair, e.g. "French → Spanish".</comment>
+  </data>
+  <data name="PairDidNotLoad" xml:space="preserve">
+    <value>{0} didn't load: {1}</value>
+    <comment>Status line when a bundle failed to load. {0} = the language pair; {1} = the reason, in English.</comment>
+  </data>
+  <data name="NoBundle" xml:space="preserve">
+    <value>No bundle: tap to add one</value>
+    <comment>Status line when the phone has no bundle. Tapping it offers to add one.</comment>
+  </data>
+  <data name="ReadingBundle" xml:space="preserve">
+    <value>Reading the bundle…</value>
+    <comment>Status line while a bundle zip is unpacked.</comment>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copied</value>
+    <comment>Status line for a moment after a translation is copied.</comment>
+  </data>
+  <data name="ChooseBundleZip" xml:space="preserve">
+    <value>Choose a bundle zip</value>
+    <comment>Title of the file picker.</comment>
+  </data>
+  <data name="BundlesTitle" xml:space="preserve">
+    <value>Bundles</value>
+    <comment>Title of an error message.</comment>
+  </data>
+  <data name="PackagedUnpackFailed" xml:space="preserve">
+    <value>The app's bundles couldn't be unpacked: {0}</value>
+    <comment>Error message. {0} = the reason, in English.</comment>
+  </data>
+  <data name="LanguagePairTitle" xml:space="preserve">
+    <value>Language pair</value>
+    <comment>Title of the list of language pairs.</comment>
+  </data>
+  <data name="AddBundleTitle" xml:space="preserve">
+    <value>Add or update a bundle</value>
+    <comment>Title of an error message.</comment>
+  </data>
+  <data name="UpdateBundleTitle" xml:space="preserve">
+    <value>Update a bundle</value>
+    <comment>Title of a question.</comment>
+  </data>
+  <data name="UpdateOlderQuestion" xml:space="preserve">
+    <value>This {0} bundle ({1}) is older than the one on the phone ({2}). Replace it anyway?</value>
+    <comment>Question. {0} = the language pair; {1} = when the zip's bundle was exported and {2} = when the phone's was, each from Exported or ExportedUnknown.</comment>
+  </data>
+  <data name="UpdateNewerQuestion" xml:space="preserve">
+    <value>Update {0}? The bundle on the phone: {1}. This one: {2}.</value>
+    <comment>Question. {0} = the language pair; {1} = when the phone's bundle was exported and {2} = when the zip's was, each from Exported or ExportedUnknown.</comment>
+  </data>
+  <data name="Exported" xml:space="preserve">
+    <value>exported {0}</value>
+    <comment>When a bundle was exported. {0} = the date and time.</comment>
+  </data>
+  <data name="ExportedUnknown" xml:space="preserve">
+    <value>export date unknown</value>
+    <comment>Used in place of Exported for a bundle whose export date isn't known.</comment>
+  </data>
+  <data name="RemoveBundleTitle" xml:space="preserve">
+    <value>Remove a bundle</value>
+    <comment>Title of the list of bundles to remove, and of its questions.</comment>
+  </data>
+  <data name="OneBundleMustStay" xml:space="preserve">
+    <value>One bundle must stay on the phone. Add another before removing this one.</value>
+    <comment>Message when the phone has only one bundle.</comment>
+  </data>
+  <data name="RemoveQuestion" xml:space="preserve">
+    <value>Remove {0} ({1}) from the phone?</value>
+    <comment>Question, when the bundle has no translations in the history. {0} = the language pair; {1} = Exported or ExportedUnknown.</comment>
+  </data>
+  <data name="RemoveQuestionOne" xml:space="preserve">
+    <value>Remove {0} ({1}) from the phone? Its one translation in the history will be deleted too.</value>
+    <comment>Question, when the bundle has exactly one translation in the history. {0} = the language pair; {1} = Exported or ExportedUnknown.</comment>
+  </data>
+  <data name="RemoveQuestionMany" xml:space="preserve">
+    <value>Remove {0} ({1}) from the phone? Its {2} translations in the history will be deleted too.</value>
+    <comment>Question, when the bundle has two or more translations in the history. {0} = the language pair; {1} = Exported or ExportedUnknown; {2} = how many translations.</comment>
+  </data>
+  <data name="ClearHistoryOne" xml:space="preserve">
+    <value>Delete the {0} translation?</value>
+    <comment>Question, when the language pair has exactly one translation. {0} = the language pair.</comment>
+  </data>
+  <data name="ClearHistoryMany" xml:space="preserve">
+    <value>Delete all {0} {1} translations?</value>
+    <comment>Question, when the language pair has two or more translations. {0} = how many; {1} = the language pair.</comment>
+  </data>
+  <data name="TranslationFailed" xml:space="preserve">
+    <value>The translation failed. Turn on trace mode to see why.</value>
+    <comment>Shown in red in place of a translation that failed, when trace mode is off. In trace mode the reason is shown instead, in English.</comment>
+  </data>
+  <data name="NotAZip" xml:space="preserve">
+    <value>This file isn't a zip file. Choose the zip of a bundle (export-bundle's Output\ftt_bundle folder).</value>
+    <comment>Error message after choosing a file. export-bundle is a command name and Output\ftt_bundle a folder name: leave both as they are.</comment>
+  </data>
+  <data name="NotABundle" xml:space="preserve">
+    <value>This zip isn't a bundle: it has no readable manifest.json naming a work project, at its top level or in one folder. Zip export-bundle's Output\ftt_bundle folder.</value>
+    <comment>Error message after choosing a zip. manifest.json is a file name, export-bundle a command name and Output\ftt_bundle a folder name: leave them as they are.</comment>
+  </data>
+</root>

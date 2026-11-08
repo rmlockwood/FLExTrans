@@ -4,6 +4,12 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.4 - 11/8/26 - Ron Lockwood
+//  A Language menu item chooses the UI language, for phones without a per-app language setting; the page builds itself again in the new language.
+//
+// Version 3.17.3 - 11/7/26 - Ron Lockwood
+//  The UI text comes from AppResources (English, Spanish, French, German), in the phone's language; the trace stays in English.
+//
 // Version 3.17.2 - 11/7/26 - Ron Lockwood
 //  Switching to another bundle clears the text box and the current translation.
 //
@@ -55,7 +61,21 @@
 //
 // When the bundle's source language is written right to left (the manifest's sourceRightToLeft), the text box flows right to left and its text is aligned right, and so is the answer panel's
 // copy of the source; when the target is, the answer does the same (targetRightToLeft). SetDirections() sets each control's FlowDirection when a bundle is chosen: with a right-to-left flow,
-// a control's Start alignment is its right edge. Only those controls change; the error line, the status line and the trace stay left to right, since their text is the app's English.
+// a control's Start alignment is its right edge. Only those controls change; the error line, the status line and the trace stay left to right, since their text is in the app's UI language
+// (English, Spanish, French or German, all left to right) or, for the trace, always English.
+//
+// THE UI LANGUAGE
+//
+// Every word the page shows, except the trace, comes from AppResources (Resources/Strings/AppResources*.resx), in the language chosen with the menu's Language item, or else the phone's (or
+// the app's own on phones that let each app have one); anything else falls back to English. App.xaml.cs sets the language before the page is built.
+//
+// The XAML uses {x:Static}, so the page reads its words once, when it's built. Choosing another language (OnLanguageClicked()) therefore builds a new page and puts it in the window, carrying
+// over the text box. The new page loses nothing else because what lasts is shared, not the page's own: the history list and the translator are static, so the new page shows the same history
+// (not one read back from the file before the last save had landed) and finds the bundle already loaded. The Language item has a globe before it, so someone who chose a language they can't
+// read can still find the way back; the list names each language in itself. The strings are whole sentences with {0}-style
+// placeholders rather than pieces joined in code, since word order differs between languages. Counts get two strings, one and many (RemoveQuestionOne/Many, ClearHistoryOne/Many): that is the
+// whole plural rule in all four languages, since a count of zero never reaches those questions. The trace and FTOffline's messages stay English (see TranslationItem.cs), and so does a
+// failed translation's reason: with trace mode off a failed translation says, translated, that it failed and to turn on trace mode to see why.
 //
 // THE STATUS LINE AND TRANSLATE
 //
@@ -69,10 +89,12 @@
 // answer's directions for it, and ShowHistory() shows its translations;
 // OnLanguagePairClicked() and OnAddBundleClicked() are the ways to switch, and OnRemoveBundleClicked() removes one. OnTranslateClicked() translates, with the button's timer, and makes the result current (AddEntry()). ShowCurrent(),
 // UpdateAnswerTrace() and UpdateAnswerSource() fill the answer panel. Then the taps and swipes (OnAnswerTapped(), OnTranslationTapped(), Copy(), OnReuseInvoked(), OnDeleteInvoked()), the menu's
-// other items (OnTraceModeClicked(), OnClearHistoryClicked()) and the helpers (SetTraceMode(), SaveHistory(), ShowStatus(), UpdateTranslateButton()).
+// other items (OnLanguageClicked(), OnTraceModeClicked(), OnClearHistoryClicked()) and the helpers (SetTraceMode(), SaveHistory(), ShowStatus(), UpdateTranslateButton()).
 //
 
 using System.Collections.ObjectModel;
+
+using FTtranslator.Phone.Resources.Strings;
 
 namespace FTtranslator.Phone;
 
@@ -81,10 +103,12 @@ public partial class MainPage : ContentPage
 	// Where trace mode and the chosen bundle are remembered
 	const string TraceModeKey = "traceMode";
 	const string BundleKey = "bundle";
-	const string AddBundleChoice = "Add or update a bundle…";
 
-	readonly TranslatorService translator = new TranslatorService();
-	readonly HistoryStore historyStore = new HistoryStore();
+	// Shared by every page the app builds, since choosing a language builds a new one. See THE UI LANGUAGE above.
+	static readonly TranslatorService translator = new TranslatorService();
+	static readonly HistoryStore historyStore = new HistoryStore();
+	static List<HistoryEntry>? loadedHistory;
+
 	readonly List<HistoryEntry> history;
 	readonly ObservableCollection<TranslationItem> earlier = new ObservableCollection<TranslationItem>();
 	List<BundleInfo> bundles = new List<BundleInfo>();
@@ -94,13 +118,17 @@ public partial class MainPage : ContentPage
 	bool busy;
 
 	// What the status line shows when nothing else is: the language pair once the bundle has loaded
-	string idleStatus = "Loading…";
+	string idleStatus = AppResources.Loading;
 
 	public MainPage()
 	{
 		InitializeComponent();
+		LanguageItem.Text = $"🌐 {AppResources.MenuLanguage}";
 		traceMode = Preferences.Default.Get(TraceModeKey, false);
-		history = historyStore.Load();
+
+		// Read from the file only by the first page; a page built for a new language takes the same list
+		loadedHistory ??= historyStore.Load();
+		history = loadedHistory;
 		BindableLayout.SetItemsSource(EarlierList, earlier);
 		SetTraceMode(traceMode);
 		ShowCurrent();
@@ -118,14 +146,14 @@ public partial class MainPage : ContentPage
 		}
 		catch (Exception ex)
 		{
-			await DisplayAlertAsync("Bundles", $"The app's bundles couldn't be unpacked: {ex.Message}", "OK");
+			await DisplayAlertAsync(AppResources.BundlesTitle, string.Format(AppResources.PackagedUnpackFailed, ex.Message), AppResources.Ok);
 		}
 
 		bundles = BundleStore.List();
 
 		if (bundles.Count == 0)
 		{
-			idleStatus = "No bundle: tap to add one";
+			idleStatus = AppResources.NoBundle;
 			ShowStatus(idleStatus);
 
 			return;
@@ -153,7 +181,7 @@ public partial class MainPage : ContentPage
 		ShowHistory(withCurrent: !switching);
 		UpdateTranslateButton();
 		idleStatus = $"{chosen.LanguagePair} ▾";
-		ShowStatus($"Loading {chosen.LanguagePair}…");
+		ShowStatus(string.Format(AppResources.LoadingPair, chosen.LanguagePair));
 
 		try
 		{
@@ -161,7 +189,7 @@ public partial class MainPage : ContentPage
 		}
 		catch (Exception ex)
 		{
-			idleStatus = $"{chosen.LanguagePair} didn't load: {ex.Message}";
+			idleStatus = string.Format(AppResources.PairDidNotLoad, chosen.LanguagePair, ex.Message);
 		}
 
 		// Another bundle may have been chosen meanwhile, and a translation may be running
@@ -214,11 +242,13 @@ public partial class MainPage : ContentPage
 			return info == bundle ? $"{label} ✓" : label;
 		}
 
-		string[] choices = bundles.Select(Label).Append(AddBundleChoice).ToArray();
-		string? choice = await DisplayActionSheetAsync("Language pair", "Cancel", null, choices);
+		// The last choice is the menu item's text, read here rather than kept in a static field, which would keep the language the app started in after another was chosen
+		string addBundleChoice = AppResources.MenuAddBundle;
+		string[] choices = bundles.Select(Label).Append(addBundleChoice).ToArray();
+		string? choice = await DisplayActionSheetAsync(AppResources.LanguagePairTitle, AppResources.Cancel, null, choices);
 		int index = choice == null ? -1 : Array.IndexOf(choices, choice);
 
-		if (choice == AddBundleChoice)
+		if (choice == addBundleChoice)
 		{
 			OnAddBundleClicked(sender, e);
 		}
@@ -237,14 +267,14 @@ public partial class MainPage : ContentPage
 			return;
 		}
 
-		FileResult? file = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Choose a bundle zip" });
+		FileResult? file = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = AppResources.ChooseBundleZip });
 
 		if (file == null)
 		{
 			return;
 		}
 
-		ShowStatus("Reading the bundle…");
+		ShowStatus(AppResources.ReadingBundle);
 		StagedBundle staged;
 
 		try
@@ -259,7 +289,7 @@ public partial class MainPage : ContentPage
 		catch (Exception ex)
 		{
 			ShowStatus(idleStatus);
-			await DisplayAlertAsync("Add or update a bundle", ex.Message, "OK");
+			await DisplayAlertAsync(AppResources.AddBundleTitle, ex.Message, AppResources.Ok);
 
 			return;
 		}
@@ -271,10 +301,10 @@ public partial class MainPage : ContentPage
 		{
 			BundleInfo incoming = staged.Info;
 			string question = existing.IsNewerThan(incoming)
-				? $"This {incoming.LanguagePair} bundle (exported {incoming.CreatedText}) is older than the one on the phone (exported {existing.CreatedText}). Replace it anyway?"
-				: $"Update {incoming.LanguagePair}? The bundle on the phone was exported {existing.CreatedText}; this one was exported {incoming.CreatedText}.";
+				? string.Format(AppResources.UpdateOlderQuestion, incoming.LanguagePair, incoming.ExportedText, existing.ExportedText)
+				: string.Format(AppResources.UpdateNewerQuestion, incoming.LanguagePair, existing.ExportedText, incoming.ExportedText);
 
-			if (!await DisplayAlertAsync("Update a bundle", question, "Replace", "Cancel"))
+			if (!await DisplayAlertAsync(AppResources.UpdateBundleTitle, question, AppResources.Replace, AppResources.Cancel))
 			{
 				BundleStore.Discard();
 				ShowStatus(idleStatus);
@@ -294,7 +324,7 @@ public partial class MainPage : ContentPage
 		catch (Exception ex)
 		{
 			ShowStatus(idleStatus);
-			await DisplayAlertAsync("Add or update a bundle", ex.Message, "OK");
+			await DisplayAlertAsync(AppResources.AddBundleTitle, ex.Message, AppResources.Ok);
 		}
 	}
 
@@ -309,13 +339,13 @@ public partial class MainPage : ContentPage
 
 		if (bundles.Count < 2)
 		{
-			await DisplayAlertAsync("Remove a bundle", "One bundle must stay on the phone. Add another before removing this one.", "OK");
+			await DisplayAlertAsync(AppResources.RemoveBundleTitle, AppResources.OneBundleMustStay, AppResources.Ok);
 
 			return;
 		}
 
 		string[] choices = bundles.Select(info => info.LanguagePair).ToArray();
-		string? choice = await DisplayActionSheetAsync("Remove a bundle", "Cancel", null, choices);
+		string? choice = await DisplayActionSheetAsync(AppResources.RemoveBundleTitle, AppResources.Cancel, null, choices);
 		int index = choice == null ? -1 : Array.IndexOf(choices, choice);
 
 		if (index < 0)
@@ -325,9 +355,18 @@ public partial class MainPage : ContentPage
 
 		BundleInfo doomed = bundles[index];
 		int translations = history.Count(entry => entry.Bundle == doomed.Id);
-		string historyNote = translations == 0 ? "" : $" Its {translations} translation{(translations == 1 ? "" : "s")} in the history will be deleted too.";
 
-		if (!await DisplayAlertAsync("Remove a bundle", $"Remove {doomed.LanguagePair} (exported {doomed.CreatedText}) from the phone?{historyNote}", "Remove", "Cancel"))
+		// A whole sentence for each count rather than a note added on, so each language can word it its own way. See THE UI LANGUAGE above.
+		string questionFormat = translations switch
+		{
+			0 => AppResources.RemoveQuestion,
+			1 => AppResources.RemoveQuestionOne,
+			_ => AppResources.RemoveQuestionMany,
+		};
+
+		string question = string.Format(questionFormat, doomed.LanguagePair, doomed.ExportedText, translations);
+
+		if (!await DisplayAlertAsync(AppResources.RemoveBundleTitle, question, AppResources.Remove, AppResources.Cancel))
 		{
 			return;
 		}
@@ -344,7 +383,7 @@ public partial class MainPage : ContentPage
 		}
 		catch (Exception ex)
 		{
-			await DisplayAlertAsync("Remove a bundle", ex.Message, "OK");
+			await DisplayAlertAsync(AppResources.RemoveBundleTitle, ex.Message, AppResources.Ok);
 		}
 
 		bundles = BundleStore.List();
@@ -379,11 +418,11 @@ public partial class MainPage : ContentPage
 
 			if (traceMode)
 			{
-				TranslateButton.Text = $"Translating… {(DateTime.Now - started).TotalSeconds:F0} s";
+				TranslateButton.Text = string.Format(AppResources.TranslatingSeconds, (DateTime.Now - started).TotalSeconds.ToString("F0"));
 			}
 		};
 
-		TranslateButton.Text = "Translating…";
+		TranslateButton.Text = AppResources.Translating;
 		timer.Start();
 
 		try
@@ -395,7 +434,7 @@ public partial class MainPage : ContentPage
 		{
 			timer.Stop();
 			busy = false;
-			TranslateButton.Text = "Translate";
+			TranslateButton.Text = AppResources.Translate;
 			AnswerPanel.Opacity = 1;
 			ShowStatus(idleStatus);
 			UpdateTranslateButton();
@@ -477,7 +516,7 @@ public partial class MainPage : ContentPage
 		}
 
 		await Clipboard.Default.SetTextAsync(item.Translation);
-		ShowStatus("Copied");
+		ShowStatus(AppResources.Copied);
 		await Task.Delay(1500);
 		ShowStatus(idleStatus);
 	}
@@ -505,6 +544,45 @@ public partial class MainPage : ContentPage
 		}
 	}
 
+	// Choose the UI language, or the phone's, and build the page again in it, keeping the text box. See THE UI LANGUAGE above.
+	async void OnLanguageClicked(object? sender, EventArgs e)
+	{
+
+		if (busy)
+		{
+			return;
+		}
+
+		string chosenCode = App.UILanguageCode;
+
+		string Label(string name, bool chosen)
+		{
+			return chosen ? $"{name} ✓" : name;
+		}
+
+		string[] choices = UILanguages.All.Select(language => Label(language.NativeName, language.Code == chosenCode)).Prepend(Label(AppResources.SameAsPhone, chosenCode.Length == 0)).ToArray();
+		string? choice = await DisplayActionSheetAsync(AppResources.LanguageTitle, AppResources.Cancel, null, choices);
+		int index = choice == null ? -1 : Array.IndexOf(choices, choice);
+
+		if (index < 0)
+		{
+			return;
+		}
+
+		// The first choice is the phone's language; the rest are UILanguages.All in order
+		string code = index == 0 ? "" : UILanguages.All[index - 1].Code;
+
+		if (code == chosenCode || Window == null)
+		{
+			return;
+		}
+
+		App.SetUILanguage(code);
+		var page = new MainPage();
+		page.SourceEditor.Text = SourceEditor.Text;
+		Window.Page = new NavigationPage(page);
+	}
+
 	void OnTraceModeClicked(object? sender, EventArgs e)
 	{
 		SetTraceMode(!traceMode);
@@ -521,7 +599,9 @@ public partial class MainPage : ContentPage
 			return;
 		}
 
-		if (!await DisplayAlertAsync("Clear history", $"Delete all {count} {bundle.LanguagePair} translations?", "Delete", "Cancel"))
+		string question = count == 1 ? string.Format(AppResources.ClearHistoryOne, bundle.LanguagePair) : string.Format(AppResources.ClearHistoryMany, count, bundle.LanguagePair);
+
+		if (!await DisplayAlertAsync(AppResources.ClearHistory, question, AppResources.Delete, AppResources.Cancel))
 		{
 			return;
 		}
@@ -533,17 +613,18 @@ public partial class MainPage : ContentPage
 		SaveHistory();
 	}
 
-	// Show or hide every trace, and tick the menu item
+	// Show or hide every trace, tick the menu item, and switch a failed translation's line between the translated "it failed" and the English reason (see THE UI LANGUAGE above)
 	void SetTraceMode(bool on)
 	{
 		traceMode = on;
-		TraceModeItem.Text = on ? "Trace mode ✓" : "Trace mode";
+		TraceModeItem.Text = on ? $"{AppResources.MenuTraceMode} ✓" : AppResources.MenuTraceMode;
 
 		if (current != null)
 		{
 			current.TraceMode = on;
 		}
 
+		AnswerErrorLabel.Text = current?.Error ?? "";
 		UpdateAnswerTrace();
 
 		foreach (TranslationItem item in earlier)

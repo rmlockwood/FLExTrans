@@ -5,7 +5,9 @@
 #
 #     Dev/lang_codes.bat                                                - sets LANG_CODES for the batch scripts (CreateInstaller.bat, the translation-processing .bat files).
 #     Installer/InstallerResources/LangForInstallerScript/languages.nsh - the NSIS registrations, per-language includes, and macros inserted by FLExTrans-installer.nsi.
-#     crowdin.yml                                                       - the Crowdin sync config (source .ts patterns with per-language ignore lists).
+#     crowdin.yml                                                       - the Crowdin sync config (source .ts patterns with per-language ignore lists, and the phone app's .resx).
+#     Dev/FTtranslator/phone/Platforms/Android/Resources/xml/locales_config.xml - the phone app's languages, so Android 13+ offers a per-app language in its Settings.
+#     Dev/FTtranslator/phone/UILanguages.cs                             - the phone app's languages with their own names, for its Language menu item.
 #
 #   The generated files are committed to the repo (CI and manual builds read them without running Python), and CreateInstaller.bat runs this script so they can never drift
 #   from UILanguages.py.
@@ -25,6 +27,11 @@ import UILanguages
 
 # The folders whose .ts files Crowdin translates, in the order they appear in crowdin.yml.
 CROWDIN_TRANSLATION_DIRS = ['/Dev/Lib/translations', '/Dev/Lib/Windows/translations', '/Dev/Modules/translations', '/Dev/TopLevel/translations']
+
+# The phone app (FTtranslator for phones) keeps its UI strings in .NET .resx files rather than Qt .ts files: AppResources.resx is English and AppResources.<code>.resx each translation.
+PHONE_RESX_DIR = '/Dev/FTtranslator/phone/Resources/Strings'
+PHONE_LOCALES_CONFIG = os.path.join(REPO, 'Dev', 'FTtranslator', 'phone', 'Platforms', 'Android', 'Resources', 'xml', 'locales_config.xml')
+PHONE_UI_LANGUAGES_CS = os.path.join(REPO, 'Dev', 'FTtranslator', 'phone', 'UILanguages.cs')
 
 
 def generatedHeader(commentPrefix):
@@ -138,6 +145,52 @@ def buildCrowdinYml():
         for code in UILanguages.translationCodes():
             text += '      - {transDir}/*_{code}.ts\n'.format(transDir=transDir, code=code)
 
+    # The phone app's one .resx source. Its translations are named AppResources.<code>.resx, which is what .NET looks for, so they need no ignore list: the source pattern names one file.
+    text += '  - source: {resxDir}/AppResources.resx\n'.format(resxDir=PHONE_RESX_DIR)
+    text += '    translation: {resxDir}/AppResources.%two_letters_code%.resx\n'.format(resxDir=PHONE_RESX_DIR)
+    text += '    type: resx\n'
+
+    return text
+
+
+def buildPhoneLocalesConfig():
+    '''The phone app's Android locale config: every UI language, so Android 13 and later list them under the app's own language setting. AndroidManifest.xml points at it
+    (android:localeConfig="@xml/locales_config"). iOS needs the same list as CFBundleLocalizations in Info.plist once the app has an iOS target; see the phone README.'''
+
+    text = '<?xml version="1.0" encoding="utf-8"?>\n'
+    text += '<!--\n'
+    text += generatedHeader('   ')
+    text += '-->\n'
+    text += '<locale-config xmlns:android="http://schemas.android.com/apk/res/android">\n'
+
+    for code in UILanguages.allCodes():
+        text += '    <locale android:name="{code}" />\n'.format(code=code)
+
+    text += '</locale-config>\n'
+
+    return text
+
+
+def buildPhoneUILanguagesCs():
+    '''The phone app's list of UI languages, each with its name in itself, which its Language menu item lists (MainPage.OnLanguageClicked) and App checks a saved choice against.'''
+
+    text = generatedHeader('//')
+    text += '\n'
+    text += 'namespace FTtranslator.Phone;\n'
+    text += '\n'
+    text += '// Every UI language: English, whose strings are AppResources.resx, then one per AppResources.<code>.resx, each with its name in itself, so it can be found in a list shown in a\n'
+    text += '// language the user can\'t read.\n'
+    text += 'public static class UILanguages\n'
+    text += '{\n'
+    text += '\tpublic static readonly (string Code, string NativeName)[] All =\n'
+    text += '\t{\n'
+
+    for lang in UILanguages.LANGUAGES:
+        text += '\t\t("{code}", "{name}"),\n'.format(code=lang.code, name=lang.nativeName)
+
+    text += '\t};\n'
+    text += '}\n'
+
     return text
 
 
@@ -168,6 +221,9 @@ def main():
     writeIfChanged(os.path.join(REPO, 'Dev', 'lang_codes.bat'), buildLangCodesBat())
     writeIfChanged(os.path.join(REPO, 'Installer', 'InstallerResources', 'LangForInstallerScript', 'languages.nsh'), buildLanguagesNsh())
     writeIfChanged(os.path.join(REPO, 'crowdin.yml'), buildCrowdinYml())
+    os.makedirs(os.path.dirname(PHONE_LOCALES_CONFIG), exist_ok=True)
+    writeIfChanged(PHONE_LOCALES_CONFIG, buildPhoneLocalesConfig())
+    writeIfChanged(PHONE_UI_LANGUAGES_CS, buildPhoneUILanguagesCs())
 
 
 if __name__ == '__main__':

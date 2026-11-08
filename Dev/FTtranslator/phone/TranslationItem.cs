@@ -4,13 +4,16 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.1 - 11/7/26 - Ron Lockwood
+//  With trace mode off, a failed translation says, in the UI language, that it failed; the English reason shows in trace mode.
+//
 // Version 3.17 - 11/7/26 - Ron Lockwood
 //  Initial version. One translation in the list, as the screen shows it, plain or traced.
 //
 // OVERVIEW (AI generated, then edited)
 //
 // A translation as the main page shows it, made from a HistoryEntry: the current translation (under the text box) and each card of the history below it are one each. Normally that is just the
-// source, small, and the translation, or the error in red. In trace mode each also has a trace section (TraceView.xaml) laid out like the web page's result card (web/src/ResultCard.tsx):
+// source, small, and the translation, or in red that it failed. In trace mode each also has a trace section (TraceView.xaml) laid out like the web page's result card (web/src/ResultCard.tsx):
 //
 //   the header line           the bundle and when, then the total time and an OK badge, or "Failed after <step>" in red
 //   problem words             the run record's four lists (no parse, no analysis, not linked, not synthesized) as chips, each list under the web page's label
@@ -22,6 +25,12 @@
 //
 // Each of the last five is a Section that folds open and closed, as the web page's <details> do. The trace itself opens and closes too: the current translation's starts open, the history's
 // closed (a whole chapter's trace is long).
+//
+// THE UI LANGUAGE
+//
+// The trace is always English: its headings, labels and badge here and in TraceView.xaml, and the messages, step names and errors FTOffline writes, so those are plain strings, not AppResources.
+// Only the plain view is translated, and its one string is a failed translation's red line: with trace mode off, Error is AppResources.TranslationFailed ("The translation failed. Turn on trace
+// mode to see why."); in trace mode it's the reason itself, in English, as the history stores it. So Error changes with TraceMode and is raised with it.
 //
 // TRAPS
 //
@@ -39,6 +48,7 @@ using System.ComponentModel;
 using System.Globalization;
 
 using FTtranslator.Offline;
+using FTtranslator.Phone.Resources.Strings;
 
 namespace FTtranslator.Phone;
 
@@ -156,15 +166,17 @@ public sealed class TranslationItem : INotifyPropertyChanged
 	public string Source => Entry.Source.Trim();
 	public string Translation { get; }
 	public bool HasTranslation => Translation.Length > 0;
-	public string Error => Entry.Error ?? "";
-	public bool HasError => Error.Length > 0;
+	public bool HasError => !string.IsNullOrEmpty(Entry.Error);
+
+	// The red line of a failed translation: translated with trace mode off, the English reason with it on. See THE UI LANGUAGE above.
+	public string Error => !HasError ? "" : traceMode ? Entry.Error! : AppResources.TranslationFailed;
 
 	// Trace state
 
 	public bool TraceMode
 	{
 		get => traceMode;
-		set => Set(ref traceMode, value, nameof(TraceMode));
+		set => Set(ref traceMode, value, nameof(TraceMode), nameof(Error));
 	}
 
 	public bool IsTraceOpen

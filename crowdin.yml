@@ -33,3 +33,6 @@ files:
       - /Dev/TopLevel/translations/*_es.ts
       - /Dev/TopLevel/translations/*_fr.ts
       - /Dev/TopLevel/translations/*_de.ts
+  - source: /Dev/FTtranslator/phone/Resources/Strings/AppResources.resx
+    translation: /Dev/FTtranslator/phone/Resources/Strings/AppResources.%two_letters_code%.resx
+    type: resx
