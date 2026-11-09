@@ -1,7 +1,7 @@
 # FTtranslator for phones
 
 Type a sentence, tap Translate, get the translation. It's translated on the phone by FTOffline (`../offline`), from a bundle on the phone, so no network is needed (the app asks for no
-permissions). The phone can hold several bundles, one per language pair, and switch between them. Android only so far; iOS needs a Mac.
+permissions). The phone can hold several bundles, one per language pair, and switch between them. Android and iOS (iOS is built on a Mac, and hasn't been run yet: see **iOS** below).
 
 ## The screen
 
@@ -70,10 +70,9 @@ language you can't read, and the list names each language in itself. Dates and n
 - Nothing in the trace (`TraceView.xaml`, the trace parts of `TranslationItem.cs`) or from FTOffline is translated. With trace mode off a failed translation says, translated, that it failed;
   the English reason shows in trace mode.
 - The language list comes from `Dev/Lib/UILanguages.py`. `Dev/updateLanguageFiles.py` writes `UILanguages.cs` (the Language list), `Platforms/Android/Resources/xml/locales_config.xml`
-  (Android 13's per-app setting) and the `.resx` entry in `crowdin.yml`. Don't edit those by hand.
+  (Android 13's per-app setting), `Platforms/iOS/Localizations.plist` (iOS's `CFBundleLocalizations`, which the build merges into `Info.plist`) and the `.resx` entry in `crowdin.yml`. Don't
+  edit those by hand. Without `CFBundleLocalizations` iOS would treat the app as English only and ignore the other `.resx` files.
 - To add a UI language: add it to `UILanguages.py`, run `updateLanguageFiles.py`, and add `AppResources.<code>.resx`.
-- **iOS:** when the app gets an iOS target, its `Platforms/iOS/Info.plist` needs `CFBundleLocalizations` listing the same codes. Without it iOS treats the app as English only and ignores
-  the other `.resx` files when following the phone's language.
 
 ## Build and install
 
@@ -88,6 +87,28 @@ Quote a `BundleDirs` list as shown: MSBuild otherwise reads the `;` as the start
 Use Release on a phone; the HC spike's Release build parsed more than twice as fast as Debug (`../maui-spike/README.md`). A Debug APK installed with `adb install` needs
 `-p:EmbedAssembliesIntoApk=true`.
 
+### iOS
+
+An iOS build needs a Mac with Xcode, and the project builds for iOS only there (`-p:IncludeIos=true` adds it elsewhere, which still needs a Mac to finish the build). On the Mac, once:
+install Xcode from the App Store, open it once to accept its licence, then install the .NET 10 SDK and the workloads with `dotnet workload install maui` (`ios` and `maui-android`).
+
+```
+dotnet build -t:Run -f net10.0-ios                                                            # Debug, in the simulator
+dotnet build -t:Run -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64                 # Release, on a connected iPhone
+dotnet build -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 "-p:BundleDirs=\"<ftt_bundle folder>;<another>\""
+```
+
+A phone needs signing. For testing on your own iPhone a free Apple ID will do: add it in Xcode (**Settings → Accounts**), let Xcode make a development certificate and profile for
+`org.sil.fttranslator`, turn on **Developer Mode** on the phone, and trust the certificate under **Settings → General → VPN & Device Management**. A free profile expires after 7 days.
+TestFlight and the App Store need the paid Apple Developer Program, and `Platforms/iOS/Resources/PrivacyInfo.xcprivacy` (Apple's privacy manifest) is there for them.
+
+What differs from Android:
+
+- **No JIT.** iOS compiles everything ahead of time. The project keeps the interpreter for anything that can't be (`MtouchInterpreter=-all`), so code Android ran with its JIT doesn't stop
+  the app; the first runs should still be watched for "Attempting to JIT compile" errors and for speed against the Galaxy S9 figures.
+- **PCRE.NET** (from SIL.Machine) ships no iOS library, as it ships none for Android. Android never called it; if iOS does, it shows as a `DllNotFoundException`.
+- **Files.** **⋮ → Add or update a bundle…** opens the Files app (iCloud Drive, On My iPhone, AirDrop'd files and so on). The app's own files are in its Library folder.
+
 | Code | What it does |
 |---|---|
 | `MainPage.xaml`, `MainPage.xaml.cs` | The one page |
@@ -97,6 +118,7 @@ Use Release on a phone; the HC spike's Release build parsed more than twice as f
 | `Bundles.cs` | The bundles on the phone: built in, added and updated |
 | `TranslatorService.cs` | Loads the chosen bundle and translates in the background |
 | `App.xaml.cs` | The window, and the UI language |
+| `Platforms/Android`, `Platforms/iOS` | Each platform's start-up and settings |
 | `UILanguages.cs` | The UI languages (generated) |
 | `Resources/Strings/AppResources*.resx` | The UI strings, one file per language |
 
@@ -111,6 +133,8 @@ FTT-Scratch (French → Spanish): about 0.5 s a sentence. Mato-Uma: about 4–5 
 Synthesis takes about 2 s even for three words, so it has a fixed cost per translation worth finding.
 
 ## Not done yet
+
+- **iOS on a device.** The iOS target is set up but has never been built or run (it needs a Mac).
 
 - **Downloading a bundle from the Railway server,** instead of copying a zip to the phone.
 - **Long texts.** On a PC a Mato-Uma chapter takes about 27 s, nearly all of it parsing (`../offline/README.md`), and a phone is slower. A verse or a paragraph at a time is the use this screen

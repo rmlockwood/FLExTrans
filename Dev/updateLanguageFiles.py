@@ -7,6 +7,7 @@
 #     Installer/InstallerResources/LangForInstallerScript/languages.nsh - the NSIS registrations, per-language includes, and macros inserted by FLExTrans-installer.nsi.
 #     crowdin.yml                                                       - the Crowdin sync config (source .ts patterns with per-language ignore lists, and the phone app's .resx).
 #     Dev/FTtranslator/phone/Platforms/Android/Resources/xml/locales_config.xml - the phone app's languages, so Android 13+ offers a per-app language in its Settings.
+#     Dev/FTtranslator/phone/Platforms/iOS/Localizations.plist          - the phone app's languages as iOS's CFBundleLocalizations, so iOS follows the phone's language and offers a per-app one.
 #     Dev/FTtranslator/phone/UILanguages.cs                             - the phone app's languages with their own names, for its Language menu item.
 #
 #   The generated files are committed to the repo (CI and manual builds read them without running Python), and CreateInstaller.bat runs this script so they can never drift
@@ -31,6 +32,7 @@ CROWDIN_TRANSLATION_DIRS = ['/Dev/Lib/translations', '/Dev/Lib/Windows/translati
 # The phone app (FTtranslator for phones) keeps its UI strings in .NET .resx files rather than Qt .ts files: AppResources.resx is English and AppResources.<code>.resx each translation.
 PHONE_RESX_DIR = '/Dev/FTtranslator/phone/Resources/Strings'
 PHONE_LOCALES_CONFIG = os.path.join(REPO, 'Dev', 'FTtranslator', 'phone', 'Platforms', 'Android', 'Resources', 'xml', 'locales_config.xml')
+PHONE_IOS_LOCALIZATIONS = os.path.join(REPO, 'Dev', 'FTtranslator', 'phone', 'Platforms', 'iOS', 'Localizations.plist')
 PHONE_UI_LANGUAGES_CS = os.path.join(REPO, 'Dev', 'FTtranslator', 'phone', 'UILanguages.cs')
 
 
@@ -155,7 +157,7 @@ def buildCrowdinYml():
 
 def buildPhoneLocalesConfig():
     '''The phone app's Android locale config: every UI language, so Android 13 and later list them under the app's own language setting. AndroidManifest.xml points at it
-    (android:localeConfig="@xml/locales_config"). iOS needs the same list as CFBundleLocalizations in Info.plist once the app has an iOS target; see the phone README.'''
+    (android:localeConfig="@xml/locales_config"). iOS gets the same list from buildPhoneIosLocalizations().'''
 
     text = '<?xml version="1.0" encoding="utf-8"?>\n'
     text += '<!--\n'
@@ -167,6 +169,30 @@ def buildPhoneLocalesConfig():
         text += '    <locale android:name="{code}" />\n'.format(code=code)
 
     text += '</locale-config>\n'
+
+    return text
+
+
+def buildPhoneIosLocalizations():
+    '''The phone app's UI languages as iOS's CFBundleLocalizations, in a partial Info.plist that the build merges into Platforms/iOS/Info.plist (a PartialAppManifest in
+    FTtranslatorPhone.csproj). Without the list iOS treats the app as English only: it ignores the other .resx files when following the phone's language, and Settings offers no per-app one.'''
+
+    text = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    text += '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n'
+    text += '<!--\n'
+    text += generatedHeader('   ')
+    text += '-->\n'
+    text += '<plist version="1.0">\n'
+    text += '<dict>\n'
+    text += '    <key>CFBundleLocalizations</key>\n'
+    text += '    <array>\n'
+
+    for code in UILanguages.allCodes():
+        text += '        <string>{code}</string>\n'.format(code=code)
+
+    text += '    </array>\n'
+    text += '</dict>\n'
+    text += '</plist>\n'
 
     return text
 
@@ -223,6 +249,7 @@ def main():
     writeIfChanged(os.path.join(REPO, 'crowdin.yml'), buildCrowdinYml())
     os.makedirs(os.path.dirname(PHONE_LOCALES_CONFIG), exist_ok=True)
     writeIfChanged(PHONE_LOCALES_CONFIG, buildPhoneLocalesConfig())
+    writeIfChanged(PHONE_IOS_LOCALIZATIONS, buildPhoneIosLocalizations())
     writeIfChanged(PHONE_UI_LANGUAGES_CS, buildPhoneUILanguagesCs())
 
 
