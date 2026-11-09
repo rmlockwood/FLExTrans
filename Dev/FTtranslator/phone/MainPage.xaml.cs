@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.5 - 11/8/26 - Ron Lockwood
+//  The earlier translations' cards lay out a right-to-left source or translation right to left, as the text box and answer do.
+//
 // Version 3.17.4 - 11/8/26 - Ron Lockwood
 //  A Language menu item chooses the UI language, for phones without a per-app language setting; the page builds itself again in the new language.
 //
@@ -61,7 +64,8 @@
 //
 // When the bundle's source language is written right to left (the manifest's sourceRightToLeft), the text box flows right to left and its text is aligned right, and so is the answer panel's
 // copy of the source; when the target is, the answer does the same (targetRightToLeft). SetDirections() sets each control's FlowDirection when a bundle is chosen: with a right-to-left flow,
-// a control's Start alignment is its right edge. Only those controls change; the error line, the status line and the trace stay left to right, since their text is in the app's UI language
+// a control's Start alignment is its right edge. The earlier translations' cards follow the same rule line by line: MakeItem() gives each TranslationItem the bundle's two directions, and
+// the card's source and translation labels bind to them. Only those controls change; the error line, the status line and the trace stay left to right, since their text is in the app's UI language
 // (English, Spanish, French or German, all left to right) or, for the trace, always English.
 //
 // THE UI LANGUAGE
@@ -210,16 +214,26 @@ public partial class MainPage : ContentPage
 		AnswerLabel.FlowDirection = targetDirection;
 	}
 
+	// A history entry as the page shows it, with its source and translation in the chosen bundle's directions (an entry shown is always the chosen bundle's). See RIGHT-TO-LEFT LANGUAGES above.
+	TranslationItem MakeItem(HistoryEntry entry, bool isTraceOpen)
+	{
+		return new TranslationItem(entry, traceMode, isTraceOpen)
+		{
+			SourceDirection = bundle?.SourceRightToLeft == true ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
+			TranslationDirection = bundle?.TargetRightToLeft == true ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
+		};
+	}
+
 	// The chosen bundle's translations: with withCurrent the newest is current, with its trace open, and the rest are the earlier ones; without it, there's no current one and all are earlier
 	void ShowHistory(bool withCurrent = true)
 	{
 		List<HistoryEntry> mine = history.Where(entry => entry.Bundle == bundle?.Id).ToList();
-		current = withCurrent && mine.Count > 0 ? new TranslationItem(mine[0], traceMode, true) : null;
+		current = withCurrent && mine.Count > 0 ? MakeItem(mine[0], true) : null;
 		earlier.Clear();
 
 		foreach (HistoryEntry entry in mine.Skip(current == null ? 0 : 1))
 		{
-			earlier.Add(new TranslationItem(entry, traceMode, false));
+			earlier.Add(MakeItem(entry, false));
 		}
 
 		ShowCurrent();
@@ -457,7 +471,7 @@ public partial class MainPage : ContentPage
 			earlier.Insert(0, current);
 		}
 
-		current = new TranslationItem(entry, traceMode, true);
+		current = MakeItem(entry, true);
 
 		// Translations dropped from the history go from the page too
 		while (earlier.Count > 0 && !history.Contains(earlier[^1].Entry))

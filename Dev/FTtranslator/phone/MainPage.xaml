@@ -89,13 +89,13 @@
                             BackgroundColor="{AppThemeBinding Light=#F2F2F2, Dark={StaticResource Gray900}}">
                         <VerticalStackLayout Spacing="4">
 
-                            <!-- Tap it to copy the translation -->
+                            <!-- Tap it to copy the translation. Each line flows in its language's direction (right to left, aligned right, for a right-to-left language). -->
                             <VerticalStackLayout Spacing="4">
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnTranslationTapped" />
                                 </VerticalStackLayout.GestureRecognizers>
-                                <Label Text="{Binding Source}" Style="{StaticResource Muted}" />
-                                <Label Text="{Binding Translation}" FontSize="17" IsVisible="{Binding HasTranslation}" />
+                                <Label Text="{Binding Source}" Style="{StaticResource Muted}" FlowDirection="{Binding SourceDirection}" />
+                                <Label Text="{Binding Translation}" FontSize="17" IsVisible="{Binding HasTranslation}" FlowDirection="{Binding TranslationDirection}" />
                                 <Label Text="{Binding Error}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
                             </VerticalStackLayout>
 

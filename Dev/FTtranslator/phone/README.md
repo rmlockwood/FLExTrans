@@ -18,6 +18,11 @@ The normal screen is only the translation and the history:
 The language names come from the bundle's manifest (`sourceLanguage` and `targetLanguage`, written by export-bundle from each project's default vernacular writing system). A bundle
 exported before export-bundle wrote them shows the project names instead.
 
+**Right-to-left languages.** When the source language is written right to left, the text box and every copy of the source (the answer panel's and each card's) flow right to left and are
+aligned right; when the target is, the translation does the same, in the answer panel and on each card. The directions come from the manifest too (`sourceRightToLeft` and
+`targetRightToLeft`, from each writing system's right-to-left setting in FLEx); a bundle exported before export-bundle wrote them is left to right. The error line, the status line and the
+trace stay left to right.
+
 **Trace mode** (**⋮ → Trace mode**, remembered) counts the seconds on Translate while a translation runs (once a second: see below), and adds a **Trace** section under the current translation
 (open) and on each earlier one (tap **▸ Trace** to open it). It's laid out like the result card on the web page:
 
@@ -110,4 +115,3 @@ Synthesis takes about 2 s even for three words, so it has a fixed cost per trans
 - **Downloading a bundle from the Railway server,** instead of copying a zip to the phone.
 - **Long texts.** On a PC a Mato-Uma chapter takes about 27 s, nearly all of it parsing (`../offline/README.md`), and a phone is slower. A verse or a paragraph at a time is the use this screen
   is built for.
-- **Untested:** right-to-left targets, though Android lays out each label's text by its first strong character.

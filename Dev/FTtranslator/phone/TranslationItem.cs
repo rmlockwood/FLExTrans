@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.2 - 11/8/26 - Ron Lockwood
+//  SourceDirection and TranslationDirection, so a card lays out a right-to-left source or translation right to left.
+//
 // Version 3.17.1 - 11/7/26 - Ron Lockwood
 //  With trace mode off, a failed translation says, in the UI language, that it failed; the English reason shows in trace mode.
 //
@@ -31,6 +34,11 @@
 // The trace is always English: its headings, labels and badge here and in TraceView.xaml, and the messages, step names and errors FTOffline writes, so those are plain strings, not AppResources.
 // Only the plain view is translated, and its one string is a failed translation's red line: with trace mode off, Error is AppResources.TranslationFailed ("The translation failed. Turn on trace
 // mode to see why."); in trace mode it's the reason itself, in English, as the history stores it. So Error changes with TraceMode and is raised with it.
+//
+// RIGHT-TO-LEFT LANGUAGES
+//
+// SourceDirection and TranslationDirection are the source's and the translation's flow directions, from the chosen bundle's manifest (sourceRightToLeft, targetRightToLeft), so a history card
+// lays out each line as the text box and the answer panel do. The red error line keeps the default direction, since it's in the UI language.
 //
 // TRAPS
 //
@@ -165,6 +173,10 @@ public sealed class TranslationItem : INotifyPropertyChanged
 
 	public string Source => Entry.Source.Trim();
 	public string Translation { get; }
+
+	// Each line's direction: right to left for a right-to-left language, from the bundle's manifest. Set by MainPage when it makes the item; the item's bundle is always the chosen one.
+	public FlowDirection SourceDirection { get; init; } = FlowDirection.LeftToRight;
+	public FlowDirection TranslationDirection { get; init; } = FlowDirection.LeftToRight;
 	public bool HasTranslation => Translation.Length > 0;
 	public bool HasError => !string.IsNullOrEmpty(Entry.Error);
 
