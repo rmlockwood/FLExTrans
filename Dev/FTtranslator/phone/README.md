@@ -51,7 +51,7 @@ the phone already has is an **update** of it.
   pair's; the new pair's translations are all listed as earlier ones until the next translation. Only one bundle is loaded at a time (a big one takes a lot of memory), so switching takes
   the few seconds a load takes.
 - **Add or update** with **⋮ → Add or update a bundle…**, which opens a zip from the phone's files (Downloads, Drive and so on). The zip can hold the bundle's files at its top level (the zip
-  `upload-bundle` sends the Railway server) or the `ftt_bundle` folder (Windows' **Send to > Compressed folder** on it). For an update the app asks first, giving both export times, and warns
+  `upload-bundle` sends the Railway server) or the `ftt_bundle` folder (Windows' **Send to > Compressed folder** on it, or a Mac's **Compress**). For an update the app asks first, giving both export times, and warns
   when the zip is older than the bundle on the phone. An updated bundle keeps its history and is loaded again at once.
 - **Remove** with **⋮ → Remove a bundle…**, which asks first; the pair's history goes with it. One bundle must stay. Removing the pair you're using switches to another.
 - **Built in:** the build zips the bundle folders you name into the app (FTT-Scratch's `../deploy/bundle` unless you name others), and the app unpacks them the first time it runs, and again

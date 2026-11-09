@@ -4,6 +4,9 @@
 // SIL International
 // 11/7/26
 //
+// Version 3.17.3 - 11/9/26 - Ron Lockwood
+//  A zip of the ftt_bundle folder made by a Mac's Compress counts as a bundle: its __MACOSX folder is ignored.
+//
 // Version 3.17.2 - 11/7/26 - Ron Lockwood
 //  The export time (ExportedText) and the bad-zip errors are in the UI language (AppResources).
 //
@@ -27,7 +30,8 @@
 //  - Removed: the user can remove any bundle but the last (the page keeps one). A removed built-in bundle stays removed, since its zip's stamp is kept; a build with a changed zip of it brings
 //    it back, as a new version.
 //  - Added or updated on the phone: the page stages the zip the user opens (Stage()), asks before an update replaces a bundle, and then commits it (Commit()) or throws it away (Discard()).
-//    The zip may hold the bundle's files at its top level (as upload-bundle zips them) or inside one folder (as Windows' "Send to > Compressed folder" zips the ftt_bundle folder).
+//    The zip may hold the bundle's files at its top level (as upload-bundle zips them) or inside one folder (as Windows' "Send to > Compressed folder" or a Mac's Compress zips the
+//    ftt_bundle folder). A Mac's zip also holds a __MACOSX folder, which FindRoot() ignores.
 //
 // TRAPS
 //
@@ -265,7 +269,8 @@ public static class BundleStore
 			return unpacked;
 		}
 
-		string[] folders = Directory.GetDirectories(unpacked);
+		// A Mac's Finder (Compress) adds a __MACOSX folder of file metadata beside the one it was asked to zip; it isn't a second folder of the bundle's
+		string[] folders = Directory.GetDirectories(unpacked).Where(dir => Path.GetFileName(dir) != "__MACOSX").ToArray();
 
 		return folders.Length == 1 && File.Exists(Path.Combine(folders[0], "manifest.json")) ? folders[0] : null;
 	}
