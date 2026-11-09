@@ -6,6 +6,9 @@
 
 	No usage descriptions (camera, location and so on): the app translates on the phone and asks for no permissions. Picking a bundle zip goes through the system's document picker, which
 	needs none. ITSAppUsesNonExemptEncryption is false because the app uses no encryption, so App Store Connect and TestFlight don't ask about export compliance on every upload.
+
+	UIApplicationSceneManifest puts the app on UIKit's scene life cycle, which the iOS 27 SDK requires: without it iOS won't launch the app. MAUI asks for the configuration named
+	__MAUI_DEFAULT_SCENE_CONFIGURATION__, and SceneDelegate (Platforms/iOS/SceneDelegate.cs) handles it. One scene only, since the app has one window.
 -->
 <plist version="1.0">
 <dict>
@@ -37,5 +40,22 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>__MAUI_DEFAULT_SCENE_CONFIGURATION__</string>
+					<key>UISceneDelegateClassName</key>
+					<string>SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 </dict>
 </plist>

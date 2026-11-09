@@ -93,10 +93,17 @@ An iOS build needs a Mac with Xcode, and the project builds for iOS only there (
 install Xcode from the App Store, open it once to accept its licence, then install the .NET 10 SDK and the workloads with `dotnet workload install maui` (`ios` and `maui-android`).
 
 ```
-dotnet build -t:Run -f net10.0-ios                                                            # Debug, in the simulator
-dotnet build -t:Run -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64                 # Release, on a connected iPhone
+dotnet run -f net10.0-ios                                                                     # Debug, in the simulator
+dotnet run -f net10.0-ios -c Release --property:RuntimeIdentifier=ios-arm64                   # Release, on a connected iPhone
 dotnet build -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 "-p:BundleDirs=\"<ftt_bundle folder>;<another>\""
 ```
+
+Use `dotnet run`, or `dotnet build -t:Build -t:Run`: in .NET 10 `dotnet build -t:Run` alone no longer builds first, and fails with "The app must be built before the arguments to launch the
+app using mlaunch can be computed".
+
+Each .NET for iOS release names the Xcode it was made for, and the build stops on any other ("requires Xcode 27.1. The current version of Xcode is 27.2"). Run `sudo dotnet workload update`
+first, since a newer release may match. A newer minor version of Xcode usually works anyway: add `--property:ValidateXcodeVersion=false` (`dotnet run`) or `-p:ValidateXcodeVersion=false`
+(`dotnet build`) to skip the check.
 
 A phone needs signing. For testing on your own iPhone a free Apple ID will do: add it in Xcode (**Settings → Accounts**), let Xcode make a development certificate and profile for
 `org.sil.fttranslator`, turn on **Developer Mode** on the phone, and trust the certificate under **Settings → General → VPN & Device Management**. A free profile expires after 7 days.
@@ -104,6 +111,9 @@ TestFlight and the App Store need the paid Apple Developer Program, and `Platfor
 
 What differs from Android:
 
+- **Scenes.** Apps built with the iOS 27 SDK must use UIKit's scene life cycle, or iOS stops them at start-up ("UIScene life cycle is required for apps built with this SDK").
+  `Info.plist`'s `UIApplicationSceneManifest` and `Platforms/iOS/SceneDelegate.cs` opt in. A Debug run from Terminal also logs "Socket error while connecting to IDE"; that's the app looking
+  for a debugger, and harmless.
 - **No JIT.** iOS compiles everything ahead of time. The project keeps the interpreter for anything that can't be (`MtouchInterpreter=-all`), so code Android ran with its JIT doesn't stop
   the app; the first runs should still be watched for "Attempting to JIT compile" errors and for speed against the Galaxy S9 figures.
 - **PCRE.NET** (from SIL.Machine) ships no iOS library, as it ships none for Android. Android never called it; if iOS does, it shows as a `DllNotFoundException`.
