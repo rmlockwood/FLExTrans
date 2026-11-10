@@ -40,12 +40,12 @@
     </message>
     <message>
       <location filename="../CleanFiles.py" line="227"/>
-      <source>FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and some of them are old.
+      <source>FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and more than {threshold} of them are over {months} months old.
 
 Do you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.</source>
-      <translation>FLExTrans speichert jedes Mal, wenn es die Transferregeldatei oder die Testbed-Datei ändert, eine Sicherungskopie davon. Im Ordner Output befinden sich {total} dieser Kopien, und einige davon sind alt.
+      <translation type="unfinished">FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and more than {threshold} of them are over {months} months old.
 
-Möchten Sie die alten Kopien löschen? Die neuesten {keep} Kopien jeder Datei werden immer behalten, egal wie alt sie sind.</translation>
+Do you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.</translation>
     </message>
     <message>
       <location filename="../CleanFiles.py" line="229"/>
@@ -69,12 +69,12 @@ Möchten Sie die alten Kopien löschen? Die neuesten {keep} Kopien jeder Datei w
     </message>
     <message>
       <location filename="../CleanFiles.py" line="282"/>
-      <source>The testbed log holds the results of {total} testbed runs, and some of them are old.
+      <source>The testbed log holds the results of {total} testbed runs, and more than {threshold} of them are over {months} months old.
 
 Do you want to delete the old results? The newest {keep} results are always kept, however old they are.</source>
-      <translation>Das Testbed-Protokoll enthält die Ergebnisse von {total} Testbed-Läufen, und einige davon sind alt.
+      <translation type="unfinished">The testbed log holds the results of {total} testbed runs, and more than {threshold} of them are over {months} months old.
 
-Möchten Sie die alten Ergebnisse löschen? Die neuesten {keep} Ergebnisse werden immer behalten, egal wie alt sie sind.</translation>
+Do you want to delete the old results? The newest {keep} results are always kept, however old they are.</translation>
     </message>
     <message>
       <location filename="../CleanFiles.py" line="284"/>
