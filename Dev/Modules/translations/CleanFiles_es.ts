@@ -40,10 +40,10 @@
     </message>
     <message>
       <location filename="../CleanFiles.py" line="227"/>
-      <source>FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and some of them are old.
+      <source>FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and {oldCount} of them are more than {months} months old.
 
 Do you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.</source>
-      <translation>FLExTrans guarda una copia de respaldo del archivo de reglas de transferencia o del archivo del banco de pruebas cada vez que cambia uno de ellos. Hay {total} de estas copias en la carpeta Output, y algunas son antiguas.
+      <translation>FLExTrans guarda una copia de respaldo del archivo de reglas de transferencia o del archivo del banco de pruebas cada vez que cambia uno de ellos. Hay {total} de estas copias en la carpeta Output, y más de {threshold} tienen más de {months} meses de antigüedad.
 
 ¿Quieres eliminar las copias antiguas? Las {keep} copias más recientes de cada archivo siempre se conservan, sin importar su antigüedad.</translation>
     </message>
@@ -69,10 +69,10 @@ Do you want to delete the old copies? The newest {keep} copies of each file are 
     </message>
     <message>
       <location filename="../CleanFiles.py" line="282"/>
-      <source>The testbed log holds the results of {total} testbed runs, and some of them are old.
+      <source>The testbed log holds the results of {total} testbed runs, and {oldCount} of them are more than {months} months old.
 
 Do you want to delete the old results? The newest {keep} results are always kept, however old they are.</source>
-      <translation>El registro del banco de pruebas contiene los resultados de {total} ejecuciones del banco de pruebas, y algunos son antiguos.
+      <translation>El registro del banco de pruebas contiene los resultados de {total} ejecuciones del banco de pruebas, y más de {threshold} tienen más de {months} meses de antigüedad.
 
 ¿Quieres eliminar los resultados antiguos? Los {keep} resultados más recientes siempre se conservan, sin importar su antigüedad.</translation>
     </message>

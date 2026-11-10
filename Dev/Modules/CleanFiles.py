@@ -5,6 +5,9 @@
 #   SIL International
 #   11/25/2021
 #
+#   Version 3.17.3 - 11/10/26 - Ron Lockwood
+#    Fixes #1645. The delete-old-files dialogs now say that more than 100 items are over 12 months old instead of "some of them are old".
+#
 #   Version 3.17.2 - 10/13/26 - Ron Lockwood
 #    Offer to delete old backup copies and old testbed results (6, 12 or 24 months, newest 50 kept) when 100 are over a year old, at most every 3 months.
 #
@@ -161,7 +164,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Testbed', 'DeleteOld
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help       : "",  
@@ -231,7 +234,7 @@ def offerToDeleteOldBackupCopies(report):
 
     ageCounts = DeleteOldFilesDlg.countOldItems(datedGroups)
     totalCount = sum(len(group) for group in datedGroups)
-    message = _translate("CleanFiles", "FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and some of them are old.\n\nDo you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.").format(total=totalCount, keep=DeleteOldFilesDlg.KEEP_NEWEST)
+    message = _translate("CleanFiles", "FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and more than {threshold} of them are over {months} months old.\n\nDo you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.").format(total=totalCount, threshold=DeleteOldFilesDlg.TRIGGER_MIN_COUNT, months=DeleteOldFilesDlg.TRIGGER_MONTHS, keep=DeleteOldFilesDlg.KEEP_NEWEST)
 
     dlg = DeleteOldFilesDlg.DeleteOldFilesDlg(_translate("CleanFiles", "Delete Old Backup Copies"), message, ageCounts, copyCountText)
     dlg.exec()
@@ -290,7 +293,7 @@ def offerToDeleteOldTestbedResults(configMap, report):
     DeleteOldFilesDlg.saveLastAsked(DeleteOldFilesDlg.LAST_ASKED_TESTBED_RESULTS)
 
     ageCounts = DeleteOldFilesDlg.countOldItems([datedResults])
-    message = _translate("CleanFiles", "The testbed log holds the results of {total} testbed runs, and some of them are old.\n\nDo you want to delete the old results? The newest {keep} results are always kept, however old they are.").format(total=len(datedResults), keep=DeleteOldFilesDlg.KEEP_NEWEST)
+    message = _translate("CleanFiles", "The testbed log holds the results of {total} testbed runs, and more than {threshold} of them are over {months} months old.\n\nDo you want to delete the old results? The newest {keep} results are always kept, however old they are.").format(total=len(datedResults), threshold=DeleteOldFilesDlg.TRIGGER_MIN_COUNT, months=DeleteOldFilesDlg.TRIGGER_MONTHS, keep=DeleteOldFilesDlg.KEEP_NEWEST)
 
     dlg = DeleteOldFilesDlg.DeleteOldFilesDlg(_translate("CleanFiles", "Delete Old Testbed Results"), message, ageCounts, runCountText)
     dlg.exec()

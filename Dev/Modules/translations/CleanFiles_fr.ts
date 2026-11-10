@@ -40,10 +40,10 @@
     </message>
     <message>
       <location filename="../CleanFiles.py" line="227"/>
-      <source>FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and some of them are old.
+      <source>FLExTrans saves a backup copy of the transfer rules file or the testbed file each time it changes one of them. There are {total} of these copies in the Output folder, and {oldCount} of them are more than {months} months old.
 
 Do you want to delete the old copies? The newest {keep} copies of each file are always kept, however old they are.</source>
-      <translation>FLExTrans enregistre une copie de sauvegarde du fichier de règles de transfert ou du fichier test chaque fois qu'il modifie l'un d'eux. Le dossier Output contient {total} de ces copies, et certaines sont anciennes.
+      <translation>FLExTrans enregistre une copie de sauvegarde du fichier de règles de transfert ou du fichier test chaque fois qu'il modifie l'un d'eux. Le dossier Output contient {total} de ces copies, et plus de {threshold} datent de plus de {months} mois.
 
 Voulez-vous supprimer les anciennes copies ? Les {keep} copies les plus récentes de chaque fichier sont toujours conservées, quelle que soit leur ancienneté.</translation>
     </message>
@@ -69,10 +69,10 @@ Voulez-vous supprimer les anciennes copies ? Les {keep} copies les plus récente
     </message>
     <message>
       <location filename="../CleanFiles.py" line="282"/>
-      <source>The testbed log holds the results of {total} testbed runs, and some of them are old.
+      <source>The testbed log holds the results of {total} testbed runs, and {oldCount} of them are more than {months} months old.
 
 Do you want to delete the old results? The newest {keep} results are always kept, however old they are.</source>
-      <translation>Le journal du fichier test contient les résultats de {total} exécutions du fichier test, et certains sont anciens.
+      <translation>Le journal du fichier test contient les résultats de {total} exécutions du fichier test, et plus de {threshold} datent de plus de {months} mois.
 
 Voulez-vous supprimer les anciens résultats ? Les {keep} résultats les plus récents sont toujours conservés, quelle que soit leur ancienneté.</translation>
     </message>
