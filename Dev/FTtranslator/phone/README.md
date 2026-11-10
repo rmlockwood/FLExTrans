@@ -106,7 +106,7 @@ first, since a newer release may match. A newer minor version of Xcode usually w
 (`dotnet build`) to skip the check.
 
 A phone needs signing. For testing on your own iPhone a free Apple ID will do: add it in Xcode (**Settings → Accounts**), let Xcode make a development certificate and profile for
-`org.sil.fttranslator`, turn on **Developer Mode** on the phone, and trust the certificate under **Settings → General → VPN & Device Management**. A free profile expires after 7 days.
+`org.sil.ios.fttranslator` (the iOS bundle id; Android's is `org.sil.fttranslator`), turn on **Developer Mode** on the phone, and trust the certificate under **Settings → General → VPN & Device Management**. A free profile expires after 7 days.
 TestFlight and the App Store need the paid Apple Developer Program, and `Platforms/iOS/Resources/PrivacyInfo.xcprivacy` (Apple's privacy manifest) is there for them.
 
 What differs from Android:
