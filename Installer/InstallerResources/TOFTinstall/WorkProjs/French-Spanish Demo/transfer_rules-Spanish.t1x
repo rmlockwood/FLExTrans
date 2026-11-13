@@ -196,6 +196,12 @@ tags="pro.*"
 ></cat-item
 ></def-cat
 ><def-cat
+n="c_relpro"
+><cat-item
+tags="relpro"
+></cat-item
+></def-cat
+><def-cat
 n="c_prt"
 ><cat-item
 tags="prt"
