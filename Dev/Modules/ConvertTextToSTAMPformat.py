@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. The target can be a .fwdata path (opened with Utils.openTargetProject); the cache file is still named after the bare project name. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -105,29 +108,73 @@
 #
 #   earlier version history removed on 3/10/25
 #
-#   Create an ANA file from the output file after the Apertium transfer
-#   has been done. Process the ANA file to deal with complex forms.
+#   OVERVIEW (AI generated, then edited)
 #
-#   Conversion details: Each lemma+tags is converted to an ANA record which
-#   consists of 3 possible lines staring with an sfm marker.
-#   \a PREFIX_ENTRY... < POS ROOT_ENTRY > SUFFIX_ENTRY...    
-#  (the entries are found in the root, suffix or prefix dictionaries)
-#   \f leading punctuation
-#   \n trailing punctuation
-#   A prefix list which was created by another module is read in. This gives 
-#   us a list of what all the prefixes are in the database. When we read a tag 
-#   we check to see if it is a prefix, if not, it's a suffix. Note that we 
-#   assume no features come out of the transfer process.
+#   This module sits between transfer and synthesis. It takes the Target Transfer Results File written by Run Apertium - a stream of lexical units like ^lemma1.1<pos><tag1><tag2>$ with the
+#   punctuation and white space in between - and converts it into the input the synthesizer needs: an ANA file for STAMP (the Target Output ANA File setting), or, when the HermitCrab synthesis
+#   setting is on, the HermitCrab master file. Along the way it breaks target complex forms down into their components and swaps in irregularly inflected variants, because neither synthesizer
+#   knows about those FLEx structures.
 #
-#   ANA re-processing details: each ANA root could potentially be a complex
-#   form. We check each root against a list of all complex forms and if it is
-#   complex, we process recursively all the components. The end result is possibly
-#   multiple ANA records. I say possibly because some complex forms may map to
-#   clitics plus their roots without being multiple words.
+#   Each tag on a lexical unit is looked up in the target affix list written by Catalog Target Affixes (the Target Affix Gloss List File setting, one gloss|morphtype per line) to decide whether it
+#   is a prefix, infix, circumfix or suffix. A tag that isn't in that list is taken to be an inflection feature and is treated as a suffix, which is what lets the variant substitution below find it.
+#   It is run by the Convert Text to Synthesizer Format module and by Translate Text, and the Live Rule Tester calls convert_to_STAMP() directly.
 #
-#   For the design on how this module works in the HermitCrab synthesis situation,
-#   see Basic Design in the DoHermitCrabSynthesis.py file.
-#   
+#   THE ANA FORMAT
+#
+#   Each lexical unit becomes one ANA record of up to four lines, each starting with an sfm marker:
+#    - \a PREFIX_GLOSS... < POS ROOT > SUFFIX_GLOSS...  (the entries are found in the root, prefix and suffix dictionaries that DoStampSynthesis writes; infixes are put with the prefixes)
+#    - \f the punctuation before the word, and \n the punctuation after it
+#    - \c the capitalization code: 1 for first letter upper case, 2 for all upper case. Internally there is also 3 for title case (used by HermitCrab), which is folded to 1 for STAMP.
+#   Roots are stored lower case (except UNK words) with spaces turned to underscores, and a circumfix becomes a prefix gloss plus a suffix gloss tagged with Utils.CIRCUMFIX_TAG_A and _B. The text
+#   between two lexical units is split at its first space: the part before goes after the previous word, the rest before the next word. Backslashes in punctuation are doubled (STAMP removes single
+#   ones) and newlines become \n, which STAMP turns back into a newline.
+#
+#   THE HERMITCRAB FORMAT
+#
+#   In HermitCrab mode the same ANAInfo objects are written differently: one line per distinct lexical unit, ^original LU$,parse;capitalization, with the parses of a complex form's components
+#   separated by |. HCparseStrMap makes sure each distinct lexical unit is written only once. For the design of how this fits into HermitCrab synthesis, see Basic Design in DoHermitCrabSynthesis.py.
+#
+#   COMPLEX FORMS AND VARIANTS
+#
+#   Each ANA root could be a complex form. The complex form types to break down come from two settings: TargetComplexFormsWithInflectionOn1stElement and ...On2ndElement, which say whether the
+#   word's affixes go on the first or the last root component. Components that are themselves complex forms are processed recursively, and proclitic and enclitic components become prefix and suffix
+#   glosses on the inflected component. The end result is possibly several ANA records - possibly, because some complex forms map to clitics plus their root without being multiple words.
+#
+#   Irregularly inflected variants work the other way. If a main entry has a variant whose variant type (LexEntryInflType) carries inflection features (in FLEx these are called irregularly inflected forms)
+#   and the tags on the word contain those
+#   features (in any order, as a contiguous run), the root is replaced by the variant under the special _variant_ category and the matched tags are removed. E.g. if 'be1.1' has an irregularly
+#   inflected form 'am1.1' whose variant type has the features [per: 1ST, num: SG], then '< cop be1.1 > 1ST SG' becomes '< _variant_ am1.1 >'.
+#
+#   THE TARGET PROJECT AND THE CACHE
+#
+#   Finding the complex forms and variants means walking the whole target lexicon, which is slow, so ConversionData caches the result. The TargetProject setting may be a bare project name or, since
+#   issue #1334, the full path of a .fwdata file outside the standard FLEx Projects folder. Utils.openTargetProject opens the setting as-is, but self.targetProj holds the bare project name (from
+#   Utils.targetProjectDisplayName) because it becomes part of the cache file name, <proj>_conversion_to_STAMP_cache2.txt in the Target Lexicon Files Folder: an absolute path passed to
+#   os.path.join would throw that folder away. In One project mode there is no separate target project, so the source project's name is used and the already open source DB is reused, not closed.
+#   Traps:
+#    - The cache counts as out of date only when the target affix list file is newer than it - not when the target project changes. It relies on Catalog Target Affixes rewriting that file on
+#      each run, so edits to complex forms or variants are only picked up after that module runs again.
+#    - Headwords are read with entry.HeadWord, i.e. in the default vernacular writing system, even in One project mode, unlike DoStampSynthesis which reads the chosen Target Writing System there.
+#    - Two error paths in ConversionData.__init__ do 'return errorList'; returning a value from __init__ raises a TypeError rather than reporting the error.
+#   The cache file is plain text: a COMPLEX FORMS line, then for each complex form its headword, the inflection-on-first flag, the number of components and one ANA analysis line per component; then
+#   an IRREGULARLY INFLECTED VARIANT FORMS line, then for each main entry its headword and number of variants, and per variant its ANA line, the number of features and a name line and value line
+#   per feature.
+#
+#   CODE STRUCTURE
+#
+#   The docs dictionary FlexTools displays comes first, then two classes. ANAInfo models one ANA record: it keeps the analysis as a string and pulls the prefixes, root, POS and suffixes back out of
+#   it with regular expressions; setAnalysisByPart() builds it (and computes the capitalization), write() writes the ANA record and getHCparseStr() builds the HermitCrab parse. ConversionData
+#   does all its work in __init__: it loads the cache via loadFromCacheNew() if cacheExists() and not isCacheOutOfDate(), otherwise it opens the target project, runs readDatabaseValues() to find
+#   the complex forms and variants, convertValuesToAnas() (with gatherComponents() and gatherVariants()) to turn them into ANAInfo lists, and saveToCache(). getData() hands back the two maps.
+#
+#   The module level functions follow. changeToVariant() does the variant substitution, writeNonComplex() writes one record (substituting a variant first when needed) and writeComponents() writes
+#   the records of a broken down complex form, carrying the punctuation over to the first and last component; processComplexForm() puts the word's affixes and capitalization on the right
+#   component. convertIt() reads the transfer results, splits them into punctuation and lexical unit pairs, and calls calculatePrePostPunctuation() and processLU() (which classifies the tags and
+#   builds the ANAInfo); processLUparseError() and getContextWords() report a lexical unit with no lemma or category. haveWordPackage() is currently unused. convert_to_STAMP() ties it together:
+#   it builds the complex form type map, calls convertIt(), builds ConversionData, and writes each record through writeComponents() or writeNonComplex(). convertToSynthesizerFormat() reads the
+#   settings, checks the affix file exists and calls convert_to_STAMP(); FlexTools calls MainFunction(), which reads the settings and calls convertToSynthesizerFormat().
+#
+
 import re 
 import os
 from datetime import datetime
@@ -145,7 +192,6 @@ from SIL.LCModel import ( # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString          # type: ignore
 
 from flextoolslib import *  # type: ignore                                             
-from flexlibs import FLExProject
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QCoreApplication, QTranslator
@@ -176,7 +222,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -423,7 +469,8 @@ class ConversionData():
         if not targetProj:
             return
 
-        self.targetProj = targetProj
+        # Keep the bare project name for naming the cache file. The setting may be the full path of a .fwdata file, which can't go into a file name.
+        self.targetProj = Utils.targetProjectDisplayName(targetProj)
         
         # Get lexicon files folder setting, we use this for the place to put the cache file.
         lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
@@ -468,13 +515,13 @@ class ConversionData():
             # The target data is in the source project - reuse the already-open source DB.
             TargetDB = DB
         else:
-            TargetDB = FLExProject()
+            # openTargetProject adds the problem to errorList if it can't open the project.
+            TargetDB = Utils.openTargetProject(configMap, report, errorList)
 
-            try:
-                TargetDB.OpenProject(targetProj, True)
-            except: #FDA_DatabaseError, e:
-                report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
-                raise
+            if TargetDB is None:
+
+                self.haveError = True
+                return
 
         self.project = TargetDB
 

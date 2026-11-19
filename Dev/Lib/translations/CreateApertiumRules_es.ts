@@ -6,7 +6,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="446"/>
       <source>Could not find any tags for feature {label} of part-of-speech {category}.</source>
-      <translation>No se pudieron encontrar etiquetas para la característica {label} de la categoría gramatical {category}.</translation>
+      <translation>No se pudieron encontrar etiquetas para el rasgo {label} de la categoría gramatical {category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="582"/>
@@ -31,7 +31,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="651"/>
       <source>No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.</source>
-      <translation>No se encontraron afijos de destino para la característica '{trgSpec.label}' de la categoría gramatical {trgSpec.category}.</translation>
+      <translation>No se encontraron afijos de destino para el rasgo '{trgSpec.label}' de la categoría gramatical {trgSpec.category}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="652"/>
@@ -170,7 +170,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1240"/>
       <source>Missing source for feature {label} on inserted word {wid} in rule {ruleName}.</source>
-      <translation>No existe la fuente para la característica {label} en la palabra insertada {wid} en la regla {ruleName}.</translation>
+      <translation>No existe la fuente para el rasgo {label} en la palabra insertada {wid} en la regla {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1252"/>
@@ -185,7 +185,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1376"/>
       <source>Unable to find source for feature {label} on word {wid} in rule {ruleName}.</source>
-      <translation>No se pudo encontrar la fuente para la característica {label} en la palabra {wid} dentro de la regla {ruleName}.</translation>
+      <translation>No se pudo encontrar la fuente para el rasgo {label} en la palabra {wid} dentro de la regla {ruleName}.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1343"/>
@@ -195,7 +195,7 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1367"/>
       <source>No tag found for value {value} of feature {label} in rule &quot;{ruleName}&quot;.</source>
-      <translation>No se encontró etiqueta para el valor {value} de la característica {label} en la regla &quot;{ruleName}&quot;.</translation>
+      <translation>No se encontró etiqueta para el valor {value} del rasgo {label} en la regla &quot;{ruleName}&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1393"/>
@@ -205,17 +205,17 @@
     <message>
       <location filename="../CreateApertiumRules.py" line="1444"/>
       <source>Expected a co-feature with the exact name &quot;number&quot;. Please correct this.</source>
-      <translation>Se esperaba una co-característica con el nombre exacto &quot;number&quot;. Por favor, corrígelo.</translation>
+      <translation>Se esperaba un rasgo asociado con el nombre exacto &quot;number&quot;. Por favor, corrígelo.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1506"/>
       <source>Unexpected co-feature value &quot;{val}&quot; found in a split feature set. Expected only &quot;sg&quot;, &quot;pl&quot; or &quot;many&quot;. This value will be ignored.</source>
-      <translation>Valor de co-característica inesperado &quot;{val}&quot; encontrado en un conjunto de características dividido. Solo se espera &quot;sg&quot;, &quot;pl&quot; o &quot;many&quot;. Este valor será ignorado.</translation>
+      <translation>Valor de rasgo asociado inesperado &quot;{val}&quot; encontrado en un conjunto de rasgos divididos. Solo se espera &quot;sg&quot;, &quot;pl&quot; o &quot;many&quot;. Este valor será ignorado.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1515"/>
       <source>Please ensure that the co-feature &quot;number&quot; has both &quot;sg&quot; and &quot;pl&quot; values.</source>
-      <translation>Por favor, asegúrate de que la co-característica &quot;número&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
+      <translation>Por favor, asegúrate de que el rasgo asociado &quot;número&quot; tenga ambos valores &quot;sg&quot; y &quot;pl&quot;.</translation>
     </message>
     <message>
       <location filename="../CreateApertiumRules.py" line="1557"/>

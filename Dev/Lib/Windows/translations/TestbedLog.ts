@@ -23,5 +23,10 @@
         <source>Font Size:</source>
         <translation>Taille de police :</translation>
     </message>
+    <message>
+        <location filename="../TestbedLog.py" line="88"/>
+        <source>Edit Transfer Rules</source>
+        <translation>Modifier les règles de transfert</translation>
+    </message>
 </context>
 </TS>

@@ -34,7 +34,7 @@ Unicode True
 !define GIT_RESOURCES "${GIT_FOLDER}\${INSTALLER_RESOURCES}"
 !define MAKEFILESDIR "${GIT_RESOURCES}\Makefiles"
 !define TRANSFER_RULESDIR "${GIT_RESOURCES}\TransferRules"
-!define VBSDIR "${GIT_RESOURCES}\VBS"
+!define LAUNCHERDIR "${GIT_RESOURCES}\Launcher"
 !define INIDIR "${GIT_RESOURCES}\INI"
 !define REPLACEMENT_FILE "${GIT_RESOURCES}\replace.dix"
 
@@ -284,14 +284,19 @@ Section "MainSection" SEC01
       StrCpy $9 "Tools"
     ${EndIf}
 
-    # Overwrite FLExTrans.vbs
+    # Overwrite FLExTrans.bat
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
        ; Delete a old FlexTools.vbs file if it exists
        ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
           Delete "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
       ${EndIf}
+
+       ; Delete the old FLExTrans.vbs launcher. VBScript is being phased out of Windows and is disabled on some machines, so FLExTrans.bat replaces it (issue #1639).
+       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FLExTrans.vbs"
+          Delete "${WORKPROJECTSDIR}\$1\FLExTrans.vbs"
+      ${EndIf}
       SetOutPath "${WORKPROJECTSDIR}\$1"
-      File "${VBSDIR}\FLExTrans.vbs"
+      File "${LAUNCHERDIR}\FLExTrans.bat"
     ${EndIf}
     
     # Overwrite flextools.ini
@@ -355,7 +360,7 @@ Section "MainSection" SEC01
         ${EndIf}
 
         # Bring the Tools collection up to date on the rule modules: the old "Rule Assistant" module was renamed (RuleAssistant.py -> RuleAssistantPy.py) and its file is no longer installed, and the new
-        # "AI Rule Studio" module (file WorkOnRulesWithAI.py) was added. Detect the Tools collection by the presence of the Live Rule Tester module rather than the collection's file name, which is localized
+        # "AI Rule Studio" (WorkOnRulesWithAI.py) and "Compare Rule Files" (CompareRuleFiles.py) modules were added. Detect the Tools collection by the presence of the Live Rule Tester module rather than the collection's file name, which is localized
         # (e.g. Werkzeuge.ini in German). The Live Rule Tester is the right marker because it appears only in the Tools collection, so we won't touch the other collections. (/c: makes findstr treat the
         # bracketed string as a literal, not a regex.)
         nsExec::Exec 'findstr /c:"[FLExTrans\LiveRuleTesterTool.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
@@ -388,6 +393,18 @@ Section "MainSection" SEC01
             FileOpen $R4 "${WORKPROJECTSDIR}\$1\Config\Collections\$3" a
             FileSeek $R4 0 END
             FileWrite $R4 "$\r$\n[FLExTrans\WorkOnRulesWithAI.py]$\r$\n"
+            FileClose $R4
+          ${EndIf}
+
+          # Also add the new "Compare Rule Files" module (file CompareRuleFiles.py), again only if it isn't already present. Same append approach as above.
+          nsExec::Exec 'findstr /c:"[FLExTrans\CompareRuleFiles.py]" "${WORKPROJECTSDIR}\$1\Config\Collections\$3"'
+          Pop $R3   # 0 = already present, non-zero = absent
+
+          ${If} $R3 != 0
+
+            FileOpen $R4 "${WORKPROJECTSDIR}\$1\Config\Collections\$3" a
+            FileSeek $R4 0 END
+            FileWrite $R4 "$\r$\n[FLExTrans\CompareRuleFiles.py]$\r$\n"
             FileClose $R4
           ${EndIf}
         ${EndIf}

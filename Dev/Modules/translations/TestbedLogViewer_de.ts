@@ -89,9 +89,14 @@
       <translation>Regel {number}</translation>
     </message>
     <message>
-      <location filename="../TestbedLogViewer.py" line="647"/>
-      <source>Testbed file: {testbedPath} does not exist. Please add tests to the testbed.</source>
-      <translation>Testbett-Datei: {testbedPath} existiert nicht. Bitte fügen Sie Tests zum Testbett hinzu.</translation>
+      <location filename="../TestbedLogViewer.py" line="872"/>
+      <source>Not Found Error</source>
+      <translation>Nicht gefunden Fehler</translation>
+    </message>
+    <message>
+      <location filename="../TestbedLogViewer.py" line="872"/>
+      <source>Transfer rule file: {transferRulesFile} does not exist.</source>
+      <translation>Übertragungsregeldatei: {transferRulesFile} existiert nicht.</translation>
     </message>
   </context>
 </TS>

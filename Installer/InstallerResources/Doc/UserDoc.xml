@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->10 September 2026</date
+>20 October 2026</date
 ><version
 >3.17</version
 ><contents
@@ -364,8 +364,14 @@ type="tFilename"
 ><li
 >Double-click on the file <object
 type="tBold"
->FLExTrans.vbs</object
-> (a Visual Basic script file).</li
+>FLExTrans.bat</object
+> (a Windows batch file). If Windows hides file extensions, it is the <object
+type="tBold"
+>FLExTrans</object
+> file whose type is <object
+type="tBold"
+>Windows Batch File</object
+>.</li
 ><li
 >It should look like <exampleRef
 letter="xFirstStart"
@@ -474,10 +480,36 @@ type="tItalic"
 > project (from the list of <object
 type="tFlexx"
 ></object
-> projects).</object
+> projects). If your target project is not in the standard <object
+type="tFlexx"
+></object
+> projects folder, choose </object
+><object
+type="tButton"
+>Browse...</object
+><object
+type="tItalic"
+> at the bottom of the list and select the project's .fwdata file.</object
 ></td
 ></tr
 ></table
+><p
+>Note: if the custom field created in <object
+type="tFlexx"
+></object
+> has a name other than <object
+type="tSettingsValue"
+>Target Equivalent</object
+>, this must be set in the setting <object
+type="tSettingsProperty"
+>Source Custom Field for Sense Link</object
+>. This setting is visible in the <object
+type="tSettingsValue"
+>Basic</object
+> or <object
+type="tSettingsValue"
+>Full</object
+> View Modes.</p
 ></li
 ><li
 >Click the <object
@@ -2009,12 +2041,12 @@ type="tItalic"
 > on in <object
 type="tTool"
 >Paratext</object
->.</p
-><p
->Also, you cannot import from <object
+>. Also, you cannot import from <object
 type="tTool"
 >Paratext</object
-> resources. Put the <object
+> resources.</p
+><p
+>Put the <object
 type="tTool"
 >Paratext</object
 > book abbreviation in the second box. Select from and to chapters.</p
@@ -2073,6 +2105,14 @@ type="tBoldItalic"
 type="tBoldItalic"
 >Include introduction (for chapter 1)</object
 > - bring in introductory information that is above chapter 1. This only applies to chapter 1.</li
+><li
+><object
+type="tBoldItalic"
+>Import numbers in the analysis writing system</object
+> - numbers such as 7 or 144,000 are put in the analysis writing system, just like verse numbers and references, so they don't have to be interlinearized. In the <object
+type="tItalic"
+>Number separator(s)</object
+> box, give the character(s) that separate groups of digits in a number, e.g. the comma in 144,000 (the default), a period, or a space. You can give more than one character. Leave the box blank if numbers have no separator. Digits that are part of a word, e.g. 7th, are left in the vernacular writing system.</li
 ></ul
 ><example
 num="xParatextImport"
@@ -2089,6 +2129,76 @@ letter="xClusterImportParatext"
 num="xClusterImportParatext"
 ></exampleRef
 >.</p
+><p
+>By default, the <object
+type="tTool"
+>Import Text From Paratext</object
+> module looks for the book files in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder on your computer. If the files you want to import are somewhere else, for example a copy of a project's files that someone sent you, or a <object
+type="tTool"
+>Paratext</object
+> project folder that is not in the standard location, you can tell <object
+type="tFlextrans"
+></object
+> where to find them:</p
+><ol
+><li
+>Open the <object
+type="tSettingsTool"
+></object
+> and click on <object
+type="tSettingsValue"
+>Full</object
+> under <object
+type="tSettingsProperty"
+>View Mode</object
+>.</li
+><li
+>In the <object
+type="tSettingsProperty"
+>Paratext Settings</object
+> section, for the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Import Files</object
+> setting, click the <object
+type="tButton"
+>Browse folder...</object
+> button and choose the <object
+type="tTool"
+>Paratext</object
+> project folder, i.e. the folder containing the .sfm files.</li
+><li
+>Click the <object
+type="tButton"
+>Apply and Close</object
+> button.</li
+><li
+>Run the <object
+type="tTool"
+>Import Text From Paratext</object
+> module as usual. In the first box, type the project abbreviation that is part of the book file names.</li
+></ol
+><p
+>To go back to importing from the standard <object
+type="tTool"
+>Paratext</object
+> folder, clear the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Import Files</object
+> setting.</p
+><p
+>If you use cluster projects, the alternate folder can hold the book files of several <object
+type="tTool"
+>Paratext</object
+> projects. They can sit side by side in the folder (the project abbreviation in each file name tells them apart), or each project can have its own subfolder named with its abbreviation, as in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder. The <object
+type="tTool"
+>Paratext</object
+> project lists for the cluster projects then show the projects found in the alternate folder.</p
 ></section3
 ><section3
 id="sPtxExport"
@@ -2150,6 +2260,81 @@ type="tTool"
 ></ol
 ></li
 ></ol
+><p
+>By default, both export modules look for the book files in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder on your computer. If the book files you want to export into are somewhere else, you can tell <object
+type="tFlextrans"
+></object
+> where to find them:</p
+><ol
+><li
+>Open the <object
+type="tSettingsTool"
+></object
+> and click on <object
+type="tSettingsValue"
+>Full</object
+> under <object
+type="tSettingsProperty"
+>View Mode</object
+>.</li
+><li
+>In the <object
+type="tSettingsProperty"
+>Paratext Settings</object
+> section, for the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Export Files</object
+> setting, click the <object
+type="tButton"
+>Browse folder...</object
+> button and choose the folder containing the .sfm files.</li
+><li
+>Click the <object
+type="tButton"
+>Apply and Close</object
+> button.</li
+><li
+>Run the export module as usual. For the <object
+type="tTool"
+>Paratext</object
+> project abbreviation, type the abbreviation that is part of the book file names.</li
+></ol
+><p
+>To go back to exporting to the standard <object
+type="tTool"
+>Paratext</object
+> folder, clear the <object
+type="tSettingsProperty"
+>Alternate Location for Paratext Export Files</object
+> setting.</p
+><p
+>Cluster projects work with the alternate export folder the same way as with the alternate import folder: the book files can sit side by side in it or in a subfolder per project, and the <object
+type="tTool"
+>Paratext</object
+> project lists show the projects found there.</p
+><p
+>If the <object
+type="tTool"
+>Paratext</object
+> project doesn't have the book yet, both export modules ask whether you want to create it. This works in the standard <object
+type="tTool"
+>Paratext</object
+> projects folder as well as in an alternate export folder. If you click <object
+type="tButton"
+>Yes</object
+>, a new book file is created with an \id line and an empty chapter marker (\c 1, \c 2, and so on) for every chapter of the book, following the project's versification. The chapters you are exporting then fill in their markers and the other chapters stay empty, ready to be filled in later. The file is named the way <object
+type="tTool"
+>Paratext</object
+> names the project's other books, for example 41MATABC.SFM for Matthew in the ABC project. If the project is open in <object
+type="tTool"
+>Paratext</object
+>, close it and open it again to see the new book. If you click <object
+type="tButton"
+>No</object
+>, nothing is exported. The project itself must already exist, since only book files are created.</p
 ><section4
 id="sPtxExportFromSynth"
 ><secTitle
@@ -3571,6 +3756,73 @@ type="tFlexx"
 ></section3
 ></section2
 ><section2
+id="sCompareRuleFiles"
+><secTitle
+>The <object
+type="tTool"
+>Compare Rule Files</object
+> Tool</secTitle
+><p
+>The <object
+type="tTool"
+>Compare Rule Files</object
+> tool shows two versions of your transfer rules side by side and highlights what is different between them, so you can see exactly what has changed — for instance, what the <object
+type="tAIRuleStudio"
+></object
+> or the <object
+type="tTool"
+>Rule Assistant</object
+> did to your rules, or what you have changed yourself since you last ran the <object
+type="tTestbed"
+></object
+>. The window is shown in <exampleRef
+letter="xCompareRuleFiles"
+num="xCompareRuleFiles"
+></exampleRef
+>.</p
+><example
+num="xCompareRuleFiles"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/CompareRuleFiles.png"
+></img
+></chart
+></example
+><p
+>The versions you can compare come from the <object
+type="tFoldername"
+>Output\rule-file-history</object
+> folder. <object
+type="tFlextrans"
+></object
+> saves a copy of your transfer rule file there whenever a tool is about to change it or wants a record of it: when a test is added to the testbed, when a testbed run starts, and before the <object
+type="tTool"
+>Rule Assistant</object
+>, the <object
+type="tAIRuleStudio"
+></object
+> tool or the <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes</object
+> tool writes to it. Use the two lists at the top of the window to choose the versions. Each list holds the current rules file first, followed by every saved copy, newest first. A saved copy is listed by when it was saved and what saved it, for example “Saturday, October 10, 2026 10:17 AM - before AI Rule Studio changes”. A copy holds the rules as they were at that moment, so “before AI Rule Studio changes” is your rule file just before the <object
+type="tAIRuleStudio"
+></object
+> tool changed it. Hover the mouse over an entry to see the full path of its file. The left-hand list also has a Browse... entry, which lets you compare against any transfer rules file on your computer, such as one from a backup or another project.</p
+><p
+>When the tool opens, the left side shows the newest saved copy and the right side shows the current rules file, so you see straight away what has changed since the last copy was saved. In general, put the older version on the left and the newer one on the right.</p
+><p
+>The comparison uses the same layout and colors as the before-and-after view in the <object
+type="tAIRuleStudio"
+></object
+> tool. Parts that were removed are shown in red, parts that were added in green, and parts that were changed in orange, with the exact words or values that changed picked out in a darker orange. The colors always describe the change from the older version to the newer one, even if you put the newer version on the left. So a rule you added since a copy was saved is always green. The two sides scroll together, and matching parts are lined up across from each other so that you can read them row by row.</p
+><p
+>The line at the top of the window says how many changes there are, or that the two versions are the same. Use the up and down arrow buttons to step to the previous or next change; the line then shows which change you are on (for example “Change 2 of 6.”). The down arrow is selected when the window opens, so you can press Enter to step forward through the changes. Click the box beside a section, rule or other block to fold it up or open it again. Collapse All folds every block, leaving just the main sections of the rules file, and Expand All opens everything up again. All the changes inside a folded block count as a single change, and when the arrow buttons reach one, the block is opened for you. Use the Zoom + and − buttons to make the text bigger or smaller.</p
+><p
+>The Open button beside each list opens the version that list shows in the XML editor, so you can fix something you noticed while comparing. Hover the mouse over the button to see which file it will open. To edit your current rules file, choose it in one of the lists and click the Open button beside that list. A saved copy from the history folder opens read-only, so that the history stays as it was. If you want to keep changes you make to a saved copy, save it under a different name in the XML editor. The comparison does not update by itself after you save changes in the editor; click Refresh Files at the bottom left to read both files again and see the changes.</p
+></section2
+><section2
 id="sDeleteTexts"
 ><secTitle
 >The <object
@@ -3597,7 +3849,13 @@ type="tFlexx"
 ></object
 > project, including your source project.</p
 ><p
->The tool shows a list of all the texts in the chosen project. Hold down Ctrl or Shift to select more than one, then click <object
+>The tool shows a list of all the texts in the chosen project. Each text is listed by its analysis title, which is where <object
+type="tFlextrans"
+></object
+> writes names like Matthew 01. If the text also has a vernacular title, the title <object
+type="tFlexx"
+></object
+> shows by default, it follows in parentheses. A text that only has a vernacular title is listed by that title. Hold down Ctrl or Shift to select more than one, then click <object
 type="tBold"
 >OK</object
 >. Before anything is deleted, you are shown the names of the texts you selected, in alphabetical order, and asked to confirm. The confirmation lists every text you selected, so scroll through it to check the list before answering Yes.</p
@@ -3662,10 +3920,13 @@ type="tFlexx"
 ></object
 > parse them afresh and every word would come back unanalyzed, which is exactly what this tool avoids.</p
 ><p
->At the top of the window, choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. If your texts are named in some other way, choose <object
+>The window opens with <object
 type="tBold"
->(choose the texts myself)</object
-> instead and build the list by hand. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. <exampleRef
+>(choose texts)</object
+> showing at the top and nothing chosen yet. You can build the list by hand from the texts on the left, or open that list at the top and choose the book you want to put back together. The tool looks at the names of your texts and offers each set that looks like chapters of one book, so a project holding all of Matthew offers Matthew with its 28 chapters already in the right order. Either way you can add and remove texts, and move them up and down, until the list on the right is exactly what you want. Double-clicking a text moves just that one across, either way. Their order in that list is the order their paragraphs end up in. As in the <object
+type="tTool"
+>Delete Texts</object
+> tool, a text that also has a vernacular title shows it in parentheses after its name. <exampleRef
 letter="xMergeTexts"
 num="xMergeTexts"
 ></exampleRef
@@ -6600,12 +6861,13 @@ type="tTool"
 ></ol
 ></li
 ><li
->Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <object
-type="tFilename"
->testbed.xml</object
-> which is in the project folder in the <object
-type="tXMLmindXMLEditor"
-></object
+>Make any adjustments as needed. Repeat. If you need to change or delete a test, or fix one the testbed found invalid, use the <object
+type="tTool"
+>Testbed Editor</object
+>. See <sectionRef
+sec="sTestbedEditorTool"
+showTitle="full"
+></sectionRef
 >.</li
 ></ol
 ></section2
@@ -6629,19 +6891,54 @@ type="tTool"
 >Testbed Log Viewer</object
 ></secTitle
 ><p
->This module you will find in both the <object
+>This module is found in both the <object
 type="tCollection"
 >Tools</object
 > and <object
 type="tCollection"
 >Run Testbed</object
-> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see some pop-up text of which <object
+> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see a pop-up with text detailing which <object
 type="tFlexx"
 ></object
-> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <object
-type="tFlextrans"
+> source text the words came from. If the test is invalid, the pop-up text also tells you why (see below). Expand a test to see more about it: the comment you gave the test, if any, and a 'Rules applied' node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the name of the rule, followed by the lexical units the rule matched. The rule number and rule name are as per the rules file in use when the test was added to the testbed.</p
+><p
+>Each test starts with an icon: a green checkmark if the test passed, a red X if it failed (the <object
+type="tBold"
+>Actual Result</object
+> is then shown in red), or a yellow triangle if the test is invalid. Each time the testbed is run, every test is checked against the source <object
+type="tFlexx"
 ></object
-> found the test invalid. Expand a test to see more about it: the comment you gave the test, if any, and a Rules applied: node. Open that node and you get a row for each transfer rule that fired while the test was being translated, giving the rule's number in the transfer rules file and the comment that names the rule, followed by the lexical units the rule matched. That comment is the one the rule carried when the testbed was run, so an old result still tells you which rule fired even after rules have been added to or removed from the rules file.</p
+> project. A test is marked invalid if any of its lexical units uses something that is no longer in the project: a lemma and sense number (e.g. <object
+type="tItalic"
+>house1.1</object
+>) that doesn’t match a sense with a grammatical category, or a grammatical category abbreviation that doesn’t exist, or a feature, class or affix that doesn’t match any inflection feature, inflection class or affix gloss. This usually happens after a sense is deleted or reordered, or after a category abbreviation or affix gloss is changed. An invalid test is not translated, so its lexical units are shown in orange, the <object
+type="tBold"
+>Actual Result</object
+> shows <object
+type="tItalic"
+>n/a</object
+>, and it is counted under Invalid in the summary for that run.</p
+><p
+>To find out why a test is invalid, hover over its Source Lexical Units. After the source text, the pop-up text gives the reason, for example <object
+type="tItalic"
+>Word Sense: house1.3 not found.</object
+>, or <object
+type="tItalic"
+>Grammatical Category: vt not found.</object
+> or <object
+type="tItalic"
+>Tag: 3sg not found.</object
+> Only the first problem in the test is reported. To fix the test, correct the lexical unit in the <object
+type="tTool"
+>Testbed Editor</object
+> (see <sectionRef
+sec="sTestbedEditorTool"
+showTitle="full"
+></sectionRef
+>), or recreate or rename the item in <object
+type="tFlexx"
+></object
+>. Then run the testbed again. Once every lexical unit in the test is valid, the yellow triangle will no longer be seen on the next run .</p
 ><example
 num="xViewerImage"
 ><chart
@@ -6720,6 +7017,137 @@ showTitle="full"
 > for more details.</p
 ></section3
 ><section3
+id="sTestbedEditorTool"
+><secTitle
+><object
+type="tTool"
+>Testbed Editor</object
+></secTitle
+><p
+>This module you will find in the <object
+type="tCollection"
+>Tools</object
+> collection. It shows every test in your testbed and lets you change them, delete them or add new ones, without having to edit the testbed file by hand.</p
+><example
+num="xTestbedEditorImage"
+><chart
+><img
+XeLaTeXSpecial="scaled='700'"
+cssSpecial=" height:70%"
+src="Images/TestbedEditor.png"
+></img
+></chart
+></example
+><p
+>Each test is a shaded row showing where the test came from in the <object
+type="tBold"
+>Source/Lemma</object
+> column (usually the name of the source text), the <object
+type="tBold"
+>Expected Result</object
+> and the <object
+type="tBold"
+>Comment</object
+>. Under it there is a row for each lexical unit of the test, in the order the words come in the source, with the <object
+type="tBold"
+>Source/Lemma</object
+>, <object
+type="tBold"
+>Gram. Cat.</object
+>, <object
+type="tBold"
+>Features/Classes</object
+> and <object
+type="tBold"
+>Affixes</object
+> filled in. The lemma is the headword with its homograph and sense numbers, e.g. <object
+type="tItalic"
+>house1.1</object
+>. The lexical units are colored the same way as in the <object
+type="tTool"
+>Testbed Log Viewer</object
+>: black lemmas, blue grammatical categories and green features, classes and affixes. Click the arrow at the start of a test row to collapse or expand it.</p
+><p
+>To change something, double-click the cell and type. On a test row you can change the source, the expected result and the comment; on a lexical unit row you can change the lemma, grammatical category, features or classes, and affixes. As you type in a lexical unit cell, suggestions from the source <object
+type="tFlexx"
+></object
+> project are offered. After you choose a lemma, its grammatical category and features or classes are filled in automatically once you leave the cell, by pressing Tab or Enter or clicking another cell. If a lexical unit has more than one feature, class or affix, separate them with a period, e.g. <object
+type="tItalic"
+>sg.pst</object
+>.</p
+><p
+>Right-click a row to add or delete a lexical unit. <object
+type="tMenu"
+>Add Lexical Unit</object
+> on a lexical unit row puts the new one just before that row; on a test row it adds it at the end of the test. <object
+type="tMenu"
+>Delete this Lexical Unit</object
+> removes the lexical unit you right-clicked. A new lexical unit starts out as <object
+type="tItalic"
+>word1.1</object
+> with the category <object
+type="tItalic"
+>n</object
+>, ready for you to replace.</p
+><p
+>The buttons along the bottom do the following:</p
+><ul
+><li
+><object
+type="tButton"
+>Add Test</object
+> asks for the source text, the expected result and a comment, then adds the test at the end of the list with one placeholder lexical unit. Change it to the first word of the test and add more lexical units as needed.</li
+><li
+><object
+type="tButton"
+>Delete Test</object
+> deletes the selected test, after showing you the test and asking you to confirm. You can select either the test row or one of its lexical units.</li
+><li
+><object
+type="tButton"
+>Save</object
+> writes your changes to the testbed file. A lemma or grammatical category can’t be left blank, so if one is, the editor selects that row and tells you which test it is in, and nothing is saved until you fill it in.</li
+><li
+><object
+type="tButton"
+>Close</object
+> closes the editor. If there are unsaved changes, you are asked whether to save them, discard them, or cancel and stay in the editor.</li
+><li
+><object
+type="tButton"
+>Edit Transfer Rules</object
+> opens your transfer rules file in the <object
+type="tXMLmindXMLEditor"
+></object
+>, the same as the button of that name in the <object
+type="tLiveRuleTester"
+></object
+>.</li
+><li
+>The <object
+type="tBold"
+>Font Size</object
+> box makes the text in the list bigger or smaller.</li
+></ul
+><p
+>When the testbed is run, a test whose lemma, category or tag no longer exists in the source <object
+type="tFlexx"
+></object
+> project is marked invalid. In the <object
+type="tTool"
+>Testbed Editor</object
+> such a test and its lexical units are shown in orange, with the reason it is invalid written in red across the <object
+type="tBold"
+>Gram. Cat.</object
+>, <object
+type="tBold"
+>Features/Classes</object
+> and <object
+type="tBold"
+>Affixes</object
+> columns of the test row. Fixing the test here doesn’t clear the reason straight away; it goes away the next time you run the testbed.</p
+></section3
+><section3
 id="sTestbedEditor"
 ><secTitle
 >Testbed Editing</secTitle
@@ -6727,13 +7155,40 @@ id="sTestbedEditor"
 >It’s easiest to add new tests to the testbed while in the <object
 type="tLiveRuleTester"
 ></object
->. If you need to edit or delete a test, edit the file <object
+>. To change or delete a test, or to add one by hand, use the <object
+type="tTool"
+>Testbed Editor</object
+>. See <sectionRef
+sec="sTestbedEditorTool"
+showTitle="full"
+></sectionRef
+>. It is best not to edit the file <object
 type="tFilename"
 >testbed.xml</object
-> in the project folder with the <object
-type="tXMLmindXMLEditor"
+> directly.</p
+><p
+>Whenever <object
+type="tFlextrans"
 ></object
->.</p
+> is about to change your testbed file — when you save in the <object
+type="tTool"
+>Testbed Editor</object
+>, add a test in the <object
+type="tLiveRuleTester"
+></object
+>, or run the testbed — it first saves a copy of the file as it was. Look for it in the <object
+type="tFoldername"
+>Output\testbed-file-history</object
+> folder, under a name like <object
+type="tFilename"
+>testbed_2026-10-07_14-40-23_before_editor_save.xml</object
+> - your testbed file’s name with the date, the time and a tag saying what was about to change it. These copies are kept so that you can go back to an earlier version of your testbed. The <object
+type="tTool"
+>Clean Files</object
+> module offers to delete copies older than 6, 12 or 24 months, but only if you say yes, and it always keeps the newest 50. It only asks once 100 or more copies are over a year old, and then no more than once every three months. It offers the same for the copies of your transfer rule file and for old results in the testbed log. To restore one, copy it into the project folder and rename it to <object
+type="tFilename"
+>testbed.xml</object
+>, replacing the file that is there. You can delete old copies from the folder whenever you like.</p
 ></section3
 ></section2
 ></section1
@@ -6917,6 +7372,111 @@ type="tRuleElemInXXE"
 type="tRuleElemInXXE"
 >literal tag</object
 > element and write the gloss there. Remember the period-underscore substitution above.</p
+></section3
+><section3
+id="sDerivAffixClitic"
+><secTitle
+>How do I deal with derivational affixes and clitics in transfer rules?</secTitle
+><p
+>In transfer rules, derivational affixes and clitics are treated just like all other affixes. When <object
+type="tFlextrans"
+></object
+> extracts the source text, the gloss of every affix and clitic in a word becomes a tag after the grammatical category, in the order the morphemes occur in the word. That includes inflectional and derivational affixes, prefixes and suffixes, and proclitics and enclitics. For example, if <langData
+lang="lVernacular"
+>teach</langData
+> takes a derivational suffix glossed <object
+type="tluAffix"
+>nmlz</object
+>, an inflectional suffix glossed <object
+type="tluAffix"
+>pl</object
+> and an enclitic glossed <object
+type="tluAffix"
+>foc</object
+>, the lexical unit would be <langData
+lang="lVernacular"
+>teach</langData
+><object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>nmlz pl foc</object
+>. You refer to these tags the same way you refer to any other affix (see <sectionRef
+sec="sAffixRef"
+showTitle="full"
+></sectionRef
+>), and you can delete or insert them the same way too (see <sectionRef
+sec="sDeleteAffix"
+showTitle="full"
+></sectionRef
+> and <sectionRef
+sec="sInsertWord"
+showTitle="full"
+></sectionRef
+>).</p
+><p
+>Note that the grammatical category tag is always the category of the root, even when a derivational affix changes the category of the word. In the example above the word is a noun, but its category tag is still <object
+type="tluGrammCat"
+>v</object
+>. If a rule needs to treat derived words differently, match or test the derivational affix tag as well as the category. For example, a category containing <object
+type="tCourier"
+>v.nmlz</object
+> and <object
+type="tCourier"
+>v.nmlz.*</object
+> would match nominalized verbs (see <sectionRef
+sec="sCategory"
+showTitle="full"
+></sectionRef
+>).</p
+><p
+>The main difference is in the attributes. To get or set the value of an affix in a rule, you use an attribute that lists the glosses it can have (see <sectionRef
+sec="sAttribute"
+showTitle="full"
+></sectionRef
+>). The <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> creates attributes for inflection features, inflection classes and template slots (see <sectionRef
+sec="sSetupGramCat"
+showTitle="full"
+></sectionRef
+>). Derivational affixes and clitics do not belong to template slots, so the tool does not create attributes for them. If your rules need to work with them, define custom attributes yourself under the <object
+type="tRuleElemInXXE"
+>Attributes</object
+> element, the same way as in <sectionRef
+sec="step2"
+showTitle="full"
+textBefore="useDefault"
+></sectionRef
+> of the tutorial. Put the glosses of the affixes or clitics that belong together in the same attribute. For example, you might define an attribute <object
+type="tCourier"
+>a_nominalizer</object
+> with the gloss <object
+type="tluAffix"
+>nmlz</object
+>, or an attribute <object
+type="tCourier"
+>a_focus_clitic</object
+> with the glosses of your focus clitics. Remember to replace any period in a gloss with an underscore.</p
+><p
+>Give your custom attributes names that are different from the ones the <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> creates (which end in <object
+type="tCourier"
+>_feature</object
+>, <object
+type="tCourier"
+>_class</object
+> or <object
+type="tCourier"
+>_slot</object
+>). That way the tool will leave them alone when you run it again.</p
 ></section3
 ><section3
 id="sCategory"
@@ -9038,8 +9598,14 @@ type="tFilename"
 ><li
 >Double-click on the file <object
 type="tBold"
->FLExTrans.vbs</object
-> (a Visual Basic script file).</li
+>FLExTrans.bat</object
+> (a Windows batch file). If Windows hides file extensions, it is the <object
+type="tBold"
+>FLExTrans</object
+> file whose type is <object
+type="tBold"
+>Windows Batch File</object
+>.</li
 ><li
 >The <object
 type="tFlexxTools"

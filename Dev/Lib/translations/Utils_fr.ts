@@ -81,7 +81,7 @@
     <message>
       <location filename="../Utils.py" line="921"/>
       <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
-      <translation>Lien URL invalide ou URL introuvable dans le projet cible lors du traitement de l'entrée principale source : {headWord}.</translation>
+      <translation>Lien URL invalide ou URL introuvable dans le projet cible lors du traitement de l'entrée de dictionnaire source : {headWord}.</translation>
     </message>
     <message>
       <location filename="../Utils.py" line="1035"/>
@@ -92,6 +92,16 @@
       <location filename="../Utils.py" line="667"/>
       <source>The FIELDWORKSDIR environment variable is not set, so FLEx (flex.exe) could not be found.</source>
       <translation>La variable d'environnement FIELDWORKSDIR n'est pas définie, donc FLEx (flex.exe) n'a pas pu être trouvé.</translation>
+    </message>
+    <message>
+      <location filename="../Utils.py" line="1"/>
+      <source>No target project has been set. Please go to Settings and choose one.</source>
+      <translation>Aucun projet cible n'a été défini. Veuillez aller dans les Paramètres et en choisir un.</translation>
+    </message>
+    <message>
+      <location filename="../Utils.py" line="1"/>
+      <source>The testbed file does not exist yet. You need to first add tests to the testbed and the best place to do this is in the Live Rule Tester tool.</source>
+      <translation>Le fichier test n'existe pas encore. Vous devez d'abord ajouter des tests au fichier test, et le meilleur endroit pour le faire est l'outil de test de règles en direct.</translation>
     </message>
   </context>
 </TS>

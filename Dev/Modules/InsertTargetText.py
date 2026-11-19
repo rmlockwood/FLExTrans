@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.17.1 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Open the target with Utils.openTargetProject; close it if text out rules fail; set text metadata from the target project. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -75,9 +78,39 @@
 #
 #   earlier version history removed on 3/5/25
 #
-#   Take the text in the synthesis file and put it into a new text
-#   in the target database. If the name of the text already exists
-#   give it a new unique name.
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is the last step of the FLExTrans pipeline when output goes to FLEx rather than to Paratext. It takes the synthesized target text (the file named by the Target Output Synthesis
+#   File setting, written by the Synthesize Text module) and creates a new interlinear text from it in the target project, named after the Source Text Name setting. It can be run on its own
+#   or as the final step of Translate Text, which calls insertTargetText() directly and treats a falsy return value as failure.
+#
+#   HOW THE TARGET PROJECT IS OBTAINED
+#
+#   In One project mode (the Project Mode setting; TwoProjectMode = n in the config file) there is no separate target project, so the source DB is reused as TargetDB and the text goes into the
+#   source project in the chosen Target Writing System. In Two project mode the target project is opened with Utils.openTargetProject, the single shared routine that accepts either a bare
+#   project name or the full path of a .fwdata file (issue #1334); it gives the error itself (to the report, since no error list is passed) and returns None, and this module then just returns.
+#   The target project is opened write-enabled because a text is being created. Every exit path closes TargetDB only when it is not the same object as DB - in One project mode that would close
+#   the project FlexTools itself has open, which is why every CloseProject() call is guarded by "TargetDB is not DB".
+#
+#   ONE PROJECT MODE DIFFERENCES
+#
+#   Because the translation lands in the same project as the source text, two things change. The text name gets the target writing system's abbreviation appended (e.g. Genesis-deva) so it can
+#   be told apart from the source text, and the vernacular content is written in the target writing system handle rather than the project's default vernacular writing system. If the Target
+#   Writing System setting is empty, neither happens and the default vernacular writing system is used.
+#
+#   HOW THE TEXT IS BUILT
+#
+#   Before inserting, the user's Text Out Rules (search/replace rules from the Text Out Rules File setting, issue #1073) are applied to the synthesized text. The name is then made unique with
+#   Utils.createUniqueTitle, so an existing text is never overwritten: War & Peace becomes War & Peace - Copy, then War & Peace - Copy (2) and so on. A Text, its StText and paragraphs are created
+#   through the LCM factories, and ChapterSelection.insertParagraphs splits the content into paragraphs at line breaks, putting SFM markers and verse references in the analysis writing system and
+#   the rest in the vernacular one (the same logic as the Import Text From Paratext module, issue #823). The title is set in the default analysis writing system, and the Source (FLExTrans) and
+#   IsTranslated metadata fields are filled in (issue #742). The final report message carries a link that the user can double-click to jump to the new text (issue #324).
+#
+#   CODE STRUCTURE
+#
+#   The docs dictionary FlexTools displays comes first. getWritingSystemAbbreviation() looks up the abbreviation used to suffix the text name in One project mode. insertTargetText() does all the
+#   work - obtain TargetDB, read the synthesis file, apply the text out rules, pick the name, build the text, report and close - and returns 1 on success or None on failure. MainFunction() refuses
+#   to run unless FlexTools is in modify mode, loads translations, reads the settings and calls insertTargetText(). The FlexToolsModule declaration FlexTools looks for is at the bottom.
 #
 
 import os
@@ -94,7 +127,6 @@ from SIL.LCModel import ( # type: ignore
 from SIL.LCModel.Core.Text import TsStringUtils  # type: ignore
 
 from flextoolslib import * # type: ignore
-from flexlibs import FLExProject
 
 import ChapterSelection
 import Mixpanel
@@ -123,7 +155,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection', '
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
@@ -175,17 +207,14 @@ def insertTargetText(DB, configMap, report):
             targetVernWs = DB.WSHandle(targetWSTag)
             targetVernWsAbbrev = getWritingSystemAbbreviation(DB, targetWSTag)
     else:
-        TargetDB = FLExProject()
+        # Open the target database. openTargetProject reports the problem if it can't.
+        TargetDB = Utils.openTargetProject(configMap, report)
 
-        try:
-            # Open the target database
-            targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-            if not targetProj:
-                return None
-            TargetDB.OpenProject(targetProj, True)
-        except:
-            report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
-            raise
+        if TargetDB is None:
+
+            return None
+
+        targetProj = TargetDB.ProjectName()
 
     report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target project.').format(targetProj=targetProj))
 
@@ -219,7 +248,13 @@ def insertTargetText(DB, configMap, report):
     # Apply user-defined search/replace rules from config if present
     fullText = TextInOutUtils.applyTextOutRulesFromConfig(fullText, configMap, report, TextOutRules.docs[FTM_Name])
 
+    # The rules couldn't be applied (the error has been reported). Close the target project we opened so it isn't left locked.
     if fullText is None:
+
+        if TargetDB is not DB:
+
+            TargetDB.CloseProject()
+
         return
 
     # In One project mode the target text is inserted into the same project as the source text, so distinguish it by appending
@@ -252,8 +287,8 @@ def insertTargetText(DB, configMap, report):
     tss = TsStringUtils.MakeString(sourceTextName, TargetDB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
 
-    # Set metadata for the text
-    ChapterSelection.setTextMetaData(DB, text)
+    # Set metadata for the text. Use the target project, where the text lives - the Source field is written in that project's default analysis writing system.
+    ChapterSelection.setTextMetaData(TargetDB, text)
 
     report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName}" created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj),
                 TargetDB.BuildGotoURL(text))

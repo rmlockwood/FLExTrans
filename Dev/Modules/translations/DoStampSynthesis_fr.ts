@@ -52,7 +52,7 @@ REMARQUE : Les messages indiqueront que le projet source est utilisé. En réali
     <message>
       <location filename="../DoStampSynthesis.py" line="1066"/>
       <source>Skipping sense because the POS is unknown: while processing target headword: {headword}.</source>
-      <translation>Saut de la sens car le POS est inconnu : lors du traitement du mot principal cible : {headword}.</translation>
+      <translation>Sens ignoré car la catégorie grammaticale est inconnue : lors du traitement de l'entrée de dictionnaire cible : {headword}.</translation>
     </message>
     <message>
       <location filename="../DoStampSynthesis.py" line="1069"/>

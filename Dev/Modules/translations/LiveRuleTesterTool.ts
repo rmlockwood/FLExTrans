@@ -4,6 +4,11 @@
 <context>
     <name>LiveRuleTesterTool</name>
     <message>
+        <location filename="../LiveRuleTesterTool.py" line="3858"/>
+        <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
+        <translation>Une erreur s'est produite lors de l'ouverture du projet : {DBname}. Peut-être que le projet est ouvert et que l'option de partage dans les Propriétés du projet FieldWorks n'a pas été activée.</translation>
+    </message>
+    <message>
         <location filename="../LiveRuleTesterTool.py" line="281"/>
         <source>Live Rule Tester Tool</source>
         <translation>Outil de testeur de règles en direct</translation>
@@ -371,6 +376,16 @@ Exécutez le module {moduleName} séparément pour plus de détails.</translatio
         <location filename="../LiveRuleTesterTool.py" line="3356"/>
         <source>(no contents could be read from {file})</source>
         <translation type="unfinished">(no contents could be read from {file})</translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="2003"/>
+        <source>Add to Testbed</source>
+        <translation type="unfinished">Add to Testbed</translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="2003"/>
+        <source>It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</source>
+        <translation type="unfinished">It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?</translation>
     </message>
 </context>
 <context>

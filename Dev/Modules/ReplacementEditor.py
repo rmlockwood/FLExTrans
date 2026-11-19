@@ -5,6 +5,18 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.17.4 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Stop if the target project can't be opened. Added the code description block.
+#
+#   Version 3.17.3 - 9/25/26 - Ron Lockwood
+#    Add inflection classes to the completion data, not just features.
+#
+#   Version 3.17.2 - 9/23/26 - Ron Lockwood
+#    Use the shared styled completion delegate.
+#
+#   Version 3.17.1 - 9/23/26 - Ron Lockwood
+#    Use shared completion delegates and data gathering.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -52,19 +64,63 @@
 #
 #   Version 3.11 - 8/7/24 - Daniel Swanson
 #    First version
+#
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module is an editor for the bilingual dictionary replacement file. The Sense Linker links a source sense to a target sense once, and that link holds for every inflected form of the word.
+#   Sometimes a word needs a different translation only in the presence of particular affixes - a noun that is translated one way in general but another way in the vocative singular, say. The
+#   replacement file is where those overrides live, and this window lets the user edit it as a table instead of as raw Apertium .dix XML.
+#
+#   Each table row is one override: source lemma, category, inflection features and affixes, an arrow, the same four target columns, and a comment. Typing in a cell offers completions gathered from
+#   the FLEx projects - lemmas (headword.sense number), categories, features and inflection classes, and affix and clitic glosses - and picking a known lemma autofills its category and inflection class.
+#
+#   THE REPLACEMENT FILE
+#
+#   The file is named by the Bilingual Dictionary Replacement File setting. It is an Apertium .dix dictionary with one <section id="append">, one <e> per row, and the comment stored in the c
+#   attribute. ExtractBilingualLexicon appends its sections after the generated entries when it builds the bilingual dictionary, so they land later and win, and saving here makes the bilingual
+#   dictionary out of date so the next build picks the change up. A multi-word lemma is written with <b/> elements between the words. Reading also accepts the older layout that wrapped word text
+#   in <leftdata>/<rightdata>.
+#
+#   Traps worth knowing about. Loading is forgiving: a file that won't parse loads as an empty table without an error, and an <e> that fails to load is dropped. Saving writes the whole table back
+#   as one fresh section, so anything in the file that isn't a row - XML comments, other sections, entries that failed to load - is lost the first time the user saves. Before saving, checkTable()
+#   warns about rows that are identical on the source side (only the first has any effect) and rows with no affixes on either side (redundant with the Sense Linker's links), but saves anyway.
+#
+#   FEATURESCLASSES VERSUS AFFIXES
+#
+#   In the .dix the tags after the category are one flat list, but the table shows inflection features/classes and affixes in separate columns. splitTagList() guesses the split on load: if every tag is
+#   a known affix they are all affixes, otherwise everything up to and including the rightmost tag that is a known feature or class but not a known affix counts as feature/classes and the rest as affixes. On save
+#   the columns are simply joined back together, so the split only matters for display.
+#
+#   TARGET PROJECT AND ONE PROJECT MODE
+#
+#   In two project mode the target project is opened with Utils.openTargetProject(), the single shared routine that accepts either a bare project name or the full path of a .fwdata file (issue
+#   #1334). It reports its own error and returns None when the project can't be opened, in which case the module stops. In One project mode (Two Project Mode setting 'n') there is no separate
+#   target project: the source DB is reused as the target and the target completion lemmas are read in the Target Writing System instead. The target project is closed at the end only when it is
+#   a separate project, never when it is the source DB.
+#
+#   CODE STRUCTURE
+#
+#   At load time the module creates the QApplication if needed and loads translations just so the docs dictionary can be translated. Then come the two classes and MainFunction().
+#
+#   TableRow is one row of the table. Its constructor inserts the row and its ten cells; loadData() fills them from an <e> element (recursing with its inner read() function and using splitTagList()),
+#   toXML() builds the <e> back from the cells with the help of getSource(), getTarget() and tagList(), and checkCellUpdate() autofills the category and inflection class when a lemma cell changes.
+#
+#   Main is the QMainWindow, built from Ui_ReplacementEditorWindow (Lib/Windows). Its constructor gathers the completion data for both sides through CompletionData (gatherCompletionData(),
+#   gatherPOSTags(), gatherTags()), gives each column a CompleterDelegate and calls loadEntries() to fill the table. addRow() and deleteSelectedRows() back the Add and Delete buttons, cellChanged()
+#   marks the table unsaved and calls checkCellUpdate(), save() runs checkTable() and writes the file, and closeEvent() offers to save unsaved changes. resizeEvent() stretches the table and sizes
+#   the columns from their header text.
+#
+#   Control flow: FlexTools calls MainFunction(), which loads translations, reads the settings, gets the replacement file name, picks the target DB (opened, or the source DB in One project mode),
+#   shows Main and runs the event loop until the window closes, then closes a separately opened target project.
+#
 
 import xml.etree.ElementTree as ET
 import os
-from unicodedata import normalize
 from collections import defaultdict
 
-from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter, QApplication, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QApplication, QMessageBox
 from PyQt6.QtGui import QFontMetrics, QIcon
 from PyQt6.QtCore import QCoreApplication, Qt
-
-from SIL.LCModel import IMoStemMsa                      # type: ignore
-from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
-from SIL.LCModel import IFsClosedFeatureRepository # type: ignore
 
 from flextoolslib import (
     FlexToolsModuleClass,
@@ -76,6 +132,8 @@ import ReadConfig
 import FTPaths
 import Mixpanel
 import Utils
+from CompletionData import (CompleterDelegate, gatherCompletionData,
+                            gatherPOSTags, gatherTags)
 from LinkSenseTool import docs as LinkSenseToolDocs
 
 from ReplacementEditorWindow import Ui_ReplacementEditorWindow
@@ -97,7 +155,7 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
-        FTM_Version:     "3.17",
+        FTM_Version:     "3.17.4",
         FTM_ModifiesDB:  False,
         FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
         FTM_Help:        "",
@@ -321,87 +379,6 @@ class TableRow:
             if infl is not None:
                 self.targetInfl.setText(infl)
 
-class SegmentedCompleter(QCompleter):
-    '''Override the Qt autocomplete class to each tag in a period-separated
-    list rather than the field value as a whole'''
-
-    def splitPath(self, path: str) -> list[str]:
-        '''Pretend the field value is solely the tag which currently
-        contains the cursor'''
-
-        pos = self.parent().cursorPosition()
-        left = path[:pos].split('.')[-1]
-        right = path[pos:].split('.')[0]
-        return [left+right]
-
-    def pathFromIndex(self, index) -> str:
-        '''A selection has been chosen, so generate the actual field value
-        from it'''
-
-        pos = self.parent().cursorPosition()
-        text = self.parent().text()
-        oldMiddle = ''
-
-        # get the tags to the left of the cursor
-        left = text[:pos]
-        if '.' in left:
-            splitPos = left.rfind('.') + 1
-            oldMiddle += left[splitPos:]
-            left = left[:splitPos]
-        else:
-            oldMiddle += left
-            left = ''
-
-        # get the tags to the right of the cursor
-        right = text[pos:]
-        if '.' in right:
-            splitPos = right.find('.')
-            oldMiddle += right[:splitPos]
-            right = right[splitPos:]
-        else:
-            oldMiddle += right
-            right = ''
-
-        # get the autocompleted tag
-        middle = super().pathFromIndex(index)
-
-        # If we we're completing a tag in the middle and we select an option,
-        # then we sometimes apply the completion twice and also replace the
-        # last tag in the input, hence this check.
-        if not middle.lower().startswith(oldMiddle.lower()):
-            return text
-
-        # I'm not quite sure where in the process to use this value,
-        # but ideally after completing we'd be able to set the user's cursor
-        # to be at the end of the tag they just completed.
-        # Unfortunately, for now I think we're stuck with the cursor jumping
-        # to the end of the input. -DGS 2024-08-09
-        self.posShouldBe = len(left + middle)
-
-        # return the final value
-        return left + middle + right
-
-class CompleterDelegate(QItemDelegate):
-    '''Intermediary between the table and the fields to ensure that when the
-    fields turn into input boxes they have autocompleters attached'''
-
-    def __init__(self, values, use_segmented):
-        super().__init__()
-        self.values = values
-        self.use_segmented = use_segmented
-
-    def createEditor(self, *args, **kwargs):
-        '''Turn a label into an input box and attach an autocompleter'''
-
-        ret = super().createEditor(*args, **kwargs)
-        if self.use_segmented:
-            comp = SegmentedCompleter(self.values, ret)
-        else:
-            comp = QCompleter(self.values)
-        comp.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        ret.setCompleter(comp)
-        return ret
-
 class Main(QMainWindow):
     def __init__(self, replaceFile, sourceDB, targetDB, report, composed, targetWSHandle=None):
         super().__init__()
@@ -419,12 +396,12 @@ class Main(QMainWindow):
         self.setWindowIcon()
         self.rows = []
 
-        self.sourceLemmas, self.sourceAffixes = self.gatherCompletionData(sourceDB, composed)
-        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB, composed, self.targetWSHandle)
-        self.sourcePOS = self.gatherPOSTags(sourceDB)
-        self.targetPOS = self.gatherPOSTags(targetDB)
-        self.sourceTags = self.gatherTags(sourceDB)
-        self.targetTags = self.gatherTags(targetDB)
+        self.sourceLemmas, self.sourceAffixes = gatherCompletionData(sourceDB, report, composed)
+        self.targetLemmas, self.targetAffixes = gatherCompletionData(targetDB, report, composed, self.targetWSHandle)
+        self.sourcePOS = gatherPOSTags(sourceDB, report)
+        self.targetPOS = gatherPOSTags(targetDB, report)
+        self.sourceTags = gatherTags(sourceDB, report, self.sourcePOS)
+        self.targetTags = gatherTags(targetDB, report, self.targetPOS)
 
         delegate_data = [
             (sorted(self.sourceLemmas.keys()), False),
@@ -500,55 +477,6 @@ class Main(QMainWindow):
                 pass
         if lastRow != -1:
             self.deleteRow(lastRow)
-
-    def gatherCompletionData(self, DB, composed, wsHandle=None):
-        if composed:
-            def norm(s): return normalize('NFC', s)
-        else:
-            def norm(s): return s
-        lemmas = {}
-        affixes = set()
-        affixClasses = ['MoInflAffMsa', 'MoDerivAffMsa', 'MoUnclassifiedAffixMsa']
-        self.report.ProgressStart(DB.LexiconNumberOfEntries())
-        for index, entry in enumerate(DB.LexiconAllEntries()):
-            self.report.ProgressUpdate(index)
-            # In one project mode wsHandle selects the target writing system so these lemmas match the target side of the bilingual lexicon; otherwise use the default-vernacular headword.
-            if wsHandle is not None:
-                headWord = Utils.getHeadwordStr(entry, wsHandle)
-            else:
-                headWord = ITsString(entry.HeadWord).Text
-            headWord = Utils.add_one(headWord)
-            #headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
-            headWord = norm(headWord)
-            clitic = Utils.isClitic(entry)
-            for i, sense in enumerate(entry.SensesOS, 1):
-                if clitic:
-                    affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
-                if not sense.MorphoSyntaxAnalysisRA:
-                    continue
-                if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                    msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
-                    if not msa.PartOfSpeechRA:
-                        continue
-                    pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                    pos = Utils.convertProblemChars(pos, Utils.catProbData)
-                    tags = Utils.getInflectionTags(msa)
-                    lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
-                elif sense.MorphoSyntaxAnalysisRA.ClassName in affixClasses:
-                    affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
-        return lemmas, affixes
-
-    def gatherPOSTags(self, DB):
-        posMap = {}
-        Utils.get_categories(DB, self.report, posMap, TargetDB=None,
-                       numCatErrorsToShow=1, addInflectionClasses=False)
-        return sorted(posMap.keys())
-
-    def gatherTags(self, DB):
-        tags = set()
-        for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
-            tags.update(Utils.as_tag(val) for val in feature.ValuesOC)
-        return tags
 
     def addRow(self):
         row = TableRow(self, self.ui.tableWidget)
@@ -657,7 +585,12 @@ def MainFunction(DB, report, modifyAllowed):
 
             targetWSHandle = DB.WSHandle(targetWSTag)
     else:
+        # openTargetProject reports the problem if it can't open the target project.
         targetDB = Utils.openTargetProject(configMap, report)
+
+        if targetDB is None:
+
+            return
 
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS,
                                        report)

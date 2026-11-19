@@ -141,6 +141,11 @@ verhindert dies die Bereinigung, sodass Sie Fehler leichter erkennen können.</t
       <translation>Unbekannte Wörter nicht bereinigen</translation>
     </message>
     <message>
+      <location filename="../LiveRuleTester.py" line="640"/>
+      <source>Test Comment:</source>
+      <translation>Testkommentar:</translation>
+    </message>
+    <message>
       <location filename="../LiveRuleTester.py" line="634"/>
       <source>&amp;Add to Testbed</source>
       <translation>Zum Testbed hinzufügen</translation>

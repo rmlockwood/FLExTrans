@@ -1,5 +1,9 @@
-echo off
-setlocal enabledelayedexpansion
+@echo off
+setlocal
+
+REM Compiles every translation .ts file in the Dev source folders into a .qm file in Dev\CompiledTranslations. Works from any current directory in any developer's clone.
+REM It is driven by the .ts files rather than the .py files, so there is no list of .py files to exclude, and a .ts whose name doesn't match a .py (e.g. RuleAssistant_*.ts,
+REM used by RuleAssistantPy.py) still gets compiled. The base <name>.ts (no language suffix) is the untranslated source copy and is skipped because it doesn't match *_<lang>.ts.
 
 REM Load the translation language codes (LANG_CODES) from the generated file - the authoritative list is Dev\Lib\UILanguages.py
 call "%~dp0lang_codes.bat"
@@ -7,45 +11,34 @@ call "%~dp0lang_codes.bat"
 REM Define directories to process
 set directories=TopLevel Modules Lib Lib\Windows
 
-REM Define excluded files
-set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py RuleFileHistory.py OldRuleHistoryConversion.py
+REM Define target folder - the CompiledTranslations folder beside this script (%~dp0 is this script's folder, with a trailing backslash)
+set destination=%~dp0CompiledTranslations
 
-REM Define target folder
-set destination="C:\Users\rlboo\GitHub\FLExTrans\Dev\CompiledTranslations"
+REM Make sure the compiler is available - it comes from PySide6-Essentials in Dev\requirements-dev.txt
+where pyside6-lrelease >nul 2>&1
+
+if errorlevel 1 (
+
+    echo pyside6-lrelease was not found. Install it with: python -m pip install -r "%~dp0requirements-dev.txt"
+    pause
+    exit /b 1
+)
 
 REM Loop through each directory
 for %%D in (%directories%) do (
 
-    REM Change to the directory
-    pushd %%D
     echo Processing directory %%D...
 
-    REM Find all .py files and process them
-    for %%F in (*.py) do (
-	
-        set "filename=%%~nF"
-		
-        REM Check if the file is in the exclusion list
-        set "skip=0"
-        for %%X in (%exclude_files%) do (
-            if /I "%%F"=="%%X" set "skip=1"
-        )
+    REM Compile each <name>_<lang>.ts in the directory's translations folder to <name>_<lang>.qm
+    for %%L in (%LANG_CODES%) do (
 
-        if !skip!==0 (
-		
-			for %%L in (%lang_codes%) do (
-			
-				lrelease translations\!filename!_%%L.ts -qm %destination%\!filename!_%%L.qm
-			)
-        )
+        for %%T in ("%~dp0%%D\translations\*_%%L.ts") do (
 
+            pyside6-lrelease "%%T" -qm "%destination%\%%~nT.qm"
+        )
     )
-
-    REM Return to previous directory
-    popd
 )
 
 echo Done!
 endlocal
 pause
-

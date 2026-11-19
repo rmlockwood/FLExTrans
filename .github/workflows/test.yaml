@@ -27,10 +27,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: py -3.13 -m pip install regex markdown
-      - name: test
+      # Two steps, not one multi-line run: PowerShell only fails a step on its last command's exit code, so a failure in the first command was being hidden.
+      - name: test rule assistant
         working-directory: Dev/TestRuleAssistant
         env:
           PYTHONPATH: ${{ github.workspace }}\ci_stubs;${{ env.PYTHONPATH }}
-        run: |
-          py -3.13 -m unittest test_rule_assistant.py -v
-          py -3.13 -m unittest discover -s ${{ github.workspace }}\Dev\unit_tests -v
+        run: py -3.13 -m unittest test_rule_assistant.py -v
+      - name: unit tests
+        working-directory: Dev/TestRuleAssistant
+        env:
+          PYTHONPATH: ${{ github.workspace }}\ci_stubs;${{ env.PYTHONPATH }}
+        run: py -3.13 -m unittest discover -s ${{ github.workspace }}\Dev\unit_tests -v

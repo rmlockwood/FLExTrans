@@ -5,6 +5,18 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.17.6 - 10/6/26 - Ron Lockwood
+#    Added an Edit Transfer Rules button that opens the transfer rules file in XMLmind, the same as the Live Rule Tester's button.
+#
+#   Version 3.17.5 - 10/6/26 - Ron Lockwood
+#    Use the shared Utils.reportTestbedFileMissing message when the testbed file does not exist.
+#
+#   Version 3.17.4 - 10/5/26 - Ron Lockwood
+#    Made the selected-row highlight light gray, the same as in the Testbed Editor, instead of dark blue.
+#
+#   Version 3.17.3 - 9/28/26 - Ron Lockwood
+#    The Edit Testbed button now opens the Testbed Editor instead of XMLmind, and the log viewer comes back up once the editor closes.
+#
 #   Version 3.17.2 - 9/1/26 - Ron Lockwood
 #    Added a code description block at the top with an overview, key features and code structure.
 #
@@ -79,7 +91,8 @@
 #   This module shows the results of testbed runs. Each run is one line of a tree - when it started and how it came out - and opening it up shows the individual tests, each with the source lexical
 #   units that went in, the target text that was expected and the target text that actually came out. Opening a test up further shows the comment the user wrote for it and the transfer rules that
 #   fired while it was being translated. Nothing here is edited: the module only reads the testbed results file (Testbed Results File setting) that Start Testbed and End Testbed write between them.
-#   The Edit Testbed button is for editing, and it just opens the testbed file itself in XMLmind XML Editor. See the design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
+#   The Edit Testbed button is for editing: it closes the viewer, runs the Testbed Editor module on the testbed file, and brings the viewer back up once the editor is closed. The Edit Transfer Rules
+#   button opens the transfer rules file in XMLmind XML Editor, the same as the Live Rule Tester's button does. See the design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
 #
 #   Only the most recent MAX_RESULTS_TO_DISPLAY runs are shown - results are kept newest first in the file, so that is simply the top of the list - and a run with no end date-time is skipped
 #   altogether, since that is an unfinished run whose tests have no actual results yet.
@@ -125,18 +138,19 @@
 #   SetupModelData() is where the tree gets built, walking the results, the testbeds inside each result and the tests inside each testbed. RunTestbedLogViewer() is the entry point, and the Live Rule
 #   Tester calls it directly as well - its View Testbed Log button closes the tester, runs this, and then reopens the tester.
 #
+#   RunTestbedLogViewer() loops for the sake of the Edit Testbed button. The Testbed Editor has a window of its own and can't be opened on top of this one, so the button just sets
+#   startTestbedEditor and closes the viewer. When app.exec() returns, the loop sees the flag, runs the editor's MainFunction(), and then goes round to build the viewer again. That is also why
+#   RunTestbedLogViewer() takes DB and modify even though the viewer itself never touches the project - they are handed on to the editor.
+#
 
 import os
 import re
-import sys
-import unicodedata
 import xml.etree.ElementTree as ET
-from datetime import datetime
 from subprocess import call
 
 from PyQt6 import QtGui, QtCore
 from PyQt6 import QtWidgets
-from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
+from PyQt6.QtWidgets import QMainWindow, QDialogButtonBox, QApplication, QMessageBox
 from PyQt6.QtCore import QCoreApplication, QDateTime
 
 from SIL.LCModel import *   # type: ignore
@@ -168,20 +182,20 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
-        FTM_Version    : "3.17.2",
+        FTM_Version    : "3.17.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help       : "", 
         FTM_Description: _translate("TestbedLogViewer", 
-"""View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.""")}
+"""View testbed run results. The maximum number of results to display is set by default to 50.""")}
                  
-#app.quit()
-#del app
-
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
-MAX_RESULTS_TO_DISPLAY = 25
+MAX_RESULTS_TO_DISPLAY = 50
+
+# The selected-row highlight. Matches TEST_HIGHLIGHT_COLOR in TestBedEditor.py so both windows look alike; the default dark blue makes the colored html in the cells hard to read.
+TEST_HIGHLIGHT_COLOR = QtGui.QColor('#D3D3D3')
 
 color_re = re.compile('color:#......')
 colorNumPunc = 'color:#'+PUNC_COLOR
@@ -783,7 +797,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                 
 class LogViewerMain(QMainWindow):
 
-    def __init__(self, resultsXMLObj, testbedPath):
+    def __init__(self, resultsXMLObj, testbedPath, transferRulesFile):
         QMainWindow.__init__(self)
         self.ui = Ui_TestbedLogWindow()
         self.ui.setupUi(self)
@@ -791,9 +805,20 @@ class LogViewerMain(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         self.testbedPath = testbedPath
+        self.transferRulesFile = transferRulesFile
+
+        # Set by the Edit Testbed button. RunTestbedLogViewer() reads it after the window closes to decide whether to run the Testbed Editor.
+        self.startTestbedEditor = False
+
         self.__model = TestbedLogModel(resultsXMLObj)
         self.ui.logTreeView.setModel(self.__model)
         self.__model.setView(self.ui.logTreeView)
+
+        # Use a light gray selection highlight instead of the default dark blue, the same as the Testbed Editor.
+        treePalette = self.ui.logTreeView.palette()
+        treePalette.setColor(QtGui.QPalette.ColorRole.Highlight, TEST_HIGHLIGHT_COLOR)
+        treePalette.setColor(QtGui.QPalette.ColorRole.HighlightedText, treePalette.color(QtGui.QPalette.ColorRole.Text))
+        self.ui.logTreeView.setPalette(treePalette)
 
         # check the text direction of the test language
         if self.__model.getRTL():
@@ -801,6 +826,7 @@ class LogViewerMain(QMainWindow):
         
         self.ui.OKButton.clicked.connect(self.okClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
+        self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesClicked)
         self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
         # Start the font size at 12. Call the handler outright rather than leaving it to the signal, which doesn't fire if the spin control already stands at 12.
@@ -833,11 +859,22 @@ class LogViewerMain(QMainWindow):
         self.close()
 
     def EditTestbedClicked(self):
-        progFilesFolder = os.environ['ProgramFiles(x86)']
-        
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
-        
-        call([xxe, self.testbedPath])
+
+        # Close the viewer and RunTestbedLogViewer() will run the Testbed Editor and then reopen the viewer.
+        self.startTestbedEditor = True
+        self.close()
+
+    def EditTransferRulesClicked(self):
+
+        # Warn and bail if the transfer rules file isn't there.
+        if not self.transferRulesFile or not os.path.exists(self.transferRulesFile):
+
+            QMessageBox.warning(self, _translate("TestbedLogViewer", 'Not Found Error'), _translate("TestbedLogViewer", 'Transfer rule file: {transferRulesFile} does not exist.').format(transferRulesFile=Utils.shortenPathForDisplay(self.transferRulesFile or '')))
+            return
+
+        # Launch the XMLmind XML Editor (xxe) on the file, the same way the Live Rule Tester's Edit Transfer Rules button does.
+        xxe = os.path.join(os.environ['ProgramFiles(x86)'], 'XMLmind_XML_Editor', 'bin', 'xxe.exe')
+        call([xxe, self.transferRulesFile])
 
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
@@ -853,8 +890,8 @@ class LogViewerMain(QMainWindow):
         self.ui.logTreeView.setColumnWidth(1, myWidth*3//10-colWidthReduction) 
         self.ui.logTreeView.setColumnWidth(2, myWidth*2//10-colWidthReduction)
     
-def RunTestbedLogViewer(report):
-        
+def RunTestbedLogViewer(DB, report, modify):
+
     translators = []
     app = QApplication.instance()
 
@@ -879,32 +916,51 @@ def RunTestbedLogViewer(report):
     
     # We can't do anything if there is no testbed
     if os.path.exists(testbedPath) == False:
-        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=Utils.shortenPathForDisplay(testbedPath)))
+        Utils.reportTestbedFileMissing(report)
         return None
-    
-    ## Load the testbed results
-    
-    # Create an object for the testbed results file
-    resultsFileObj = FlexTransTestbedResultsFile(report)
-    
-    # Get previous results
-    resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
-    window = LogViewerMain(resultsXMLObj, testbedPath)
-    
-    window.show()
-    window.myResize()
-    if len(window.getModel().rootItem.children) > 0:
-        
-        firstIndex = window.getModel().rootItem.children[0].index
-        window.ui.logTreeView.expand(firstIndex)
-        
-    app.exec()
+    # Get the path to the transfer rules file for the Edit Transfer Rules button. Don't give an error here; the button reports a missing file when it's clicked.
+    transferRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    # Keep showing the viewer until the user closes it some way other than the Edit Testbed button. That button closes the viewer so the Testbed Editor can run, and then we come back round.
+    startTestbedEditor = True
+
+    while startTestbedEditor:
+
+        ## Load the testbed results
+
+        # Create an object for the testbed results file
+        resultsFileObj = FlexTransTestbedResultsFile(report)
+
+        # Get previous results
+        resultsXMLObj = resultsFileObj.getResultsXMLObj()
+
+        window = LogViewerMain(resultsXMLObj, testbedPath, transferRulesFile)
+
+        window.show()
+        window.myResize()
+
+        if len(window.getModel().rootItem.children) > 0:
+
+            firstIndex = window.getModel().rootItem.children[0].index
+            window.ui.logTreeView.expand(firstIndex)
+
+        app.exec()
+
+        # Save the flag, then explicitly destroy the window before the editor builds its own, the same way the Live Rule Tester does it.
+        startTestbedEditor = window.startTestbedEditor
+        window.deleteLater()
+        del window
+
+        if startTestbedEditor:
+
+            from TestBedEditor import MainFunction as TE
+            TE(DB, report, modify)
 
 def MainFunction(DB, report, modify):
     
-    RunTestbedLogViewer(report)
-    
+    RunTestbedLogViewer(DB, report, modify)
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

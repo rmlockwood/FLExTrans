@@ -143,8 +143,8 @@ dans le projet FLEx source à traduire.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1619"/>
-        <source>The name of the target FLEx project.</source>
-        <translation>Le nom du projet FLEx cible.</translation>
+        <source>The target FLEx project. Choose Browse... to pick a project file (.fwdata) outside the standard FLEx Projects folder.</source>
+        <translation>Le projet FLEx cible. Choisissez Parcourir... pour sélectionner un fichier de projet (.fwdata) en dehors du dossier standard des projets FLEx.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1621"/>
@@ -738,21 +738,33 @@ so testbed tests match the final output produced by Insert Target Text and Expor
 afin que les tests du banc d'essai correspondent au résultat final produit par Insérer le texte cible et Exporter vers Paratext.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1795"/>
-        <source>Import Settings</source>
-        <translation>Paramètres d'importation</translation>
+        <location filename="../SettingsGUI.py" line="2403"/>
+        <source>Paratext Settings</source>
+        <translation>Paramètres Paratext</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1798"/>
-        <source>Alternate Location for Paratext Files</source>
-        <translation>Emplacement alternatif pour les fichiers Paratext</translation>
+        <location filename="../SettingsGUI.py" line="2406"/>
+        <source>Alternate Location for Paratext Import Files</source>
+        <translation>Emplacement alternatif des fichiers Paratext pour l'importation</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1799"/>
-        <source>The path to the folder where Paratext files are located.
-The .sfm or .usfm files should be found here.</source>
-        <translation>Le chemin vers le dossier où se trouvent les fichiers Paratext.
-Les fichiers .sfm ou .usfm doivent se trouver ici.</translation>
+        <location filename="../SettingsGUI.py" line="2407"/>
+        <source>The path to the folder where the Paratext files to import are located.
+The .sfm or .usfm files should be found here. Leave blank to use the standard Paratext projects folder.</source>
+        <translation>Le chemin vers le dossier où se trouvent les fichiers Paratext à importer.
+Les fichiers .sfm ou .usfm doivent se trouver ici. Laisser vide pour utiliser le dossier standard des projets Paratext.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2409"/>
+        <source>Alternate Location for Paratext Export Files</source>
+        <translation>Emplacement alternatif des fichiers Paratext pour l'exportation</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="2410"/>
+        <source>The path to the folder where the Paratext files to export into are located.
+The .sfm or .usfm files should be found here. Leave blank to use the standard Paratext projects folder.</source>
+        <translation>Le chemin vers le dossier où se trouvent les fichiers Paratext dans lesquels exporter.
+Les fichiers .sfm ou .usfm doivent se trouver ici. Laisser vide pour utiliser le dossier standard des projets Paratext.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1803"/>
@@ -1081,6 +1093,26 @@ Choisissez Deux projets (le mode normal) pour traduire d'un projet FLEx source v
         <location filename="../SettingsGUI.py" line="1635"/>
         <source>In One project mode you must choose a Target Writing System.</source>
         <translation>En mode Un projet, vous devez choisir un système d'écriture cible.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1"/>
+        <source>Browse...</source>
+        <translation>Parcourir...</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1"/>
+        <source>Choose a FLEx project file (.fwdata) in a location other than the standard FLEx Projects folder.</source>
+        <translation>Choisissez un fichier de projet FLEx (.fwdata) situé ailleurs que dans le dossier standard des projets FLEx.</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1"/>
+        <source>Choose the Target Project</source>
+        <translation>Choisir le projet cible</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1"/>
+        <source>FLEx projects (*.fwdata)</source>
+        <translation>Projets FLEx (*.fwdata)</translation>
     </message>
 </context>
 </TS>

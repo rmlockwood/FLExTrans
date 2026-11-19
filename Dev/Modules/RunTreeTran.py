@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.17.1 - 10/20/26 - Ron Lockwood
+#    Fixes #1639. Run TreeTran with CREATE_NO_WINDOW so no console window flashes when FLExTrans runs under pyw. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -55,20 +58,39 @@
 #
 #   earlier version history removed on 3/10/25
 #
-# This module runs the TreeTran program which modifies a syntax tree. 
-# See if we have a file for TreeTran output set in the configuration file. If not, 
-# don't do anything. Then open Invoker.xml in the temp folder. It's possible that
-# not all of the sentences were able to be parsed. So we need to filter out the
-# sentences to just those that have a parse. Store the filtered file also in the
-# temp folder.  Then run the treetran.exe program which lives in the FlexTools 
-# folder giving it the rules file, the file with the sentences with valid parses
-# and the output filename (from the config file) as parameters.
-
+#   OVERVIEW (AI generated, then edited)
+#
+#   This module runs the external TreeTran program, which rewrites syntax trees according to a rules file so that ExtractSourceText can reorder the words of each sentence to match the
+#   target language. It is the bridge between PC-PATR with FLEx (which produces the parses) and the rest of the FLExTrans pipeline (which consumes TreeTran's reordered result).
+#
+#   THE FILES
+#
+#   Input: Invoker.xml in the system temp folder (%TEMP%). PC-PATR with FLEx writes it when the user clicks its tree toolbar button; this module does not create it, so it must exist
+#   before the module runs. Rules: the TreeTran rules file named by the TreeTranRulesFile setting, looked up relative to the work project folder (FTPaths.WORK_DIR).
+#   Output: the file named by the AnalyzedTextTreeTranOutputFile setting, which ExtractSourceText reads next. If that setting is empty the module reports an error and stops.
+#
+#   FILTERING
+#
+#   Not every sentence in Invoker.xml necessarily got a syntax parse, and TreeTran can only work on parsed sentences. filterAndLogInvokerParses() therefore removes every sentence
+#   whose closing anaRec has an Analysis with count="0" and writes the rest to valid_parses_for_tree_tran.xml in the temp folder. A sentence is the run of anaRecs up to and including
+#   the one carrying an Analysis element, so all of its records are dropped together. As it goes, it logs one "word count,parsed flag" line per sentence to Utils.GOOD_PARSES_LOG
+#   in the temp folder.
+#
+#   RUNNING TREETRAN
+#
+#   TreeTran is a console program. FLExTrans normally runs under pyw, which has no console, so the call passes CREATE_NO_WINDOW; without it Windows would open a console window
+#   for TreeTran that can flash on screen (issue #1639). The module doesn't check TreeTran's exit code; it reports the number of parsed sentences it handed over.
+#
+#   CODE STRUCTURE
+#
+#   docs (the FlexTools module description) and the module-level translation loading come first, then filterAndLogInvokerParses() (the filtering above), then MainFunction(), which
+#   reads the settings, calls filterAndLogInvokerParses(), checks the rules file exists, runs TreeTran and reports the sentence count. FlexToolsModule wires MainFunction into FlexTools.
+#
 
 import os
 import xml.etree.ElementTree as ET
 import tempfile
-from subprocess import call
+from subprocess import call, CREATE_NO_WINDOW
 
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
@@ -100,7 +122,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("RunTreeTran", "Run TreeTran"),
-        FTM_Version    : "3.17",
+        FTM_Version    : "3.17.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunTreeTran", "Run the TreeTran Tool."),
         FTM_Help       : "",
@@ -233,8 +255,8 @@ def MainFunction(DB, report, modify=True):
         report.Error(_translate("RunTreeTran", 'Can\'t find the TreeTran rules file: {rulesFilePath}.').format(rulesFilePath=Utils.shortenPathForDisplay(rulesFilePath)))
         return
     
-    # run TreeTran
-    call([FTPaths.TREETRAN_EXE, rulesFilePath, filteredFile, treeTranResultFile])
+    # Run TreeTran. CREATE_NO_WINDOW because FLExTrans runs under pyw, which has no console, so Windows would otherwise open a console window for TreeTran that can flash on screen.
+    call([FTPaths.TREETRAN_EXE, rulesFilePath, filteredFile, treeTranResultFile], creationflags=CREATE_NO_WINDOW)
     
     report.Info(_translate("RunTreeTran", '{num} sentence(s) processed.').format(num=str(sentCount)))
     

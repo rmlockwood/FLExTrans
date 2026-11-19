@@ -6,12 +6,12 @@
     <message>
       <location filename="../EndTestbed.py" line="76"/>
       <source>End Testbed</source>
-      <translation>Fin du banc d'essai</translation>
+      <translation>Terminer le fichier test</translation>
     </message>
     <message>
       <location filename="../EndTestbed.py" line="81"/>
       <source>Conclude a testbed log result.</source>
-      <translation>Conclure un résultat de journal du banc d'essai.</translation>
+      <translation>Conclure un résultat de journal du fichier test.</translation>
     </message>
     <message>
       <location filename="../EndTestbed.py" line="117"/>

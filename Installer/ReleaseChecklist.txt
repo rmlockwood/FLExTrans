@@ -72,7 +72,7 @@ Switching to a newer version of Python
 -Edit the BuildScripts\copyPythonBinary.ps1 and change the URL and PTH variables as appropriate
 -Enable the BuildStep "Copy Python Binary" for the Build FLExTrans Installer build at least one time then you can disable it again.
 -Edit the .nsi installer script with the new version (maybe in a couple places).
--Change the .vbs files in the InstallerResources\VBS folder to the updated version. E.g. PYTHON = "py -3.13"
+-Change the .bat files in the InstallerResources\Launcher folder to the updated version. E.g. pyw -3.13 and py -3.13
 -Change the command.bat (in InstallerResources) to the updated version. E.g. py -3.13
 -Change the GitHub CI script to use py -3.xx instead of the existing version.
 

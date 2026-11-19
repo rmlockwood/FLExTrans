@@ -39,9 +39,9 @@
       <translation>No se pudo encontrar ese proyecto en: {projPath}.</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="502"/>
-      <source>Could not find that book file: {bookPath}.</source>
-      <translation>No se ha encontrado ese archivo de libro: {bookPath}.</translation>
+      <location filename="../ChapterSelection.py" line="914"/>
+      <source>Could not find the {bookName} book file for the {projAbbrev} project. It should be named like {fileName} and be in this folder: {folder}</source>
+      <translation>No se pudo encontrar el archivo del libro {bookName} para el proyecto {projAbbrev}. Su nombre debería ser como {fileName} y debería estar en esta carpeta: {folder}</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="596"/>
@@ -69,9 +69,28 @@
       <translation>Exportación cancelada.</translation>
     </message>
     <message>
-      <location filename="../ChapterSelection.py" line="640"/>
-      <source>Could not find the book file: {bookPath}</source>
-      <translation>No se pudo encontrar el libro: {bookPath}</translation>
+      <location filename="../ChapterSelection.py" line="976"/>
+      <source>The {projAbbrev} project does not have a {bookName} book file yet. Do you want to create one?
+
+It will be created as: {bookPath}</source>
+      <translation>El proyecto {projAbbrev} todavía no tiene un archivo para el libro {bookName}. ¿Quieres crearlo?
+
+Se creará como: {bookPath}</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="977"/>
+      <source>Create book file</source>
+      <translation>Crear archivo del libro</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="989"/>
+      <source>Could not create the book file: {bookPath}. {error}</source>
+      <translation>No se pudo crear el archivo del libro: {bookPath}. {error}</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="992"/>
+      <source>Created a new {bookName} book file in the {projAbbrev} project: {bookPath}. If the project is open in Paratext, close it and open it again to see the new book.</source>
+      <translation>Se creó un nuevo archivo del libro {bookName} en el proyecto {projAbbrev}: {bookPath}. Si el proyecto está abierto en Paratext, ciérralo y vuelve a abrirlo para ver el nuevo libro.</translation>
     </message>
     <message>
       <location filename="../ChapterSelection.py" line="722"/>
@@ -617,6 +636,81 @@
       <location filename="../ChapterSelection.py" line="841"/>
       <source>Glossary</source>
       <translation>Glosario</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1435"/>
+      <source>Joshua (Greek, Codex Alexandrinus)</source>
+      <translation>Josué (Griego, Codex Alexandrinus)</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1436"/>
+      <source>Judges (Greek, Codex Vaticanus)</source>
+      <translation>Jueces (Griego, Codex Vaticanus)</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1437"/>
+      <source>Tobit (Greek, Codex Sinaiticus)</source>
+      <translation>Tobías (Griego, Codex Sinaiticus)</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1438"/>
+      <source>Susanna (Greek, Theodotion)</source>
+      <translation>Susana (Griego, Teodoción)</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1439"/>
+      <source>Daniel (Greek, Theodotion)</source>
+      <translation>Daniel (Griego, Teodoción)</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1440"/>
+      <source>Bel and the Dragon (Greek, Theodotion)</source>
+      <translation>Bel y el Dragón (Griego, Teodoción)</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1448"/>
+      <source>Front matter</source>
+      <translation>Preliminares</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1449"/>
+      <source>Back matter</source>
+      <translation>Material final</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1450"/>
+      <source>Other matter</source>
+      <translation>Otro material</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1451"/>
+      <source>3 Esdras</source>
+      <translation>3 Esdras</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1456"/>
+      <source>Concordance</source>
+      <translation>Concordancia</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1458"/>
+      <source>Topical index</source>
+      <translation>Índice temático</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1459"/>
+      <source>Names index</source>
+      <translation>Índice de nombres</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1467"/>
+      <source>2 Meqabyan</source>
+      <translation>2 Meqabyan</translation>
+    </message>
+    <message>
+      <location filename="../ChapterSelection.py" line="1468"/>
+      <source>3 Meqabyan</source>
+      <translation>3 Meqabyan</translation>
     </message>
   </context>
 </TS>

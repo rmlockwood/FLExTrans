@@ -5,6 +5,25 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.17.14 - 10/12/26 - Ron Lockwood
+#    Fixes #1626. Ask the user to confirm adding a test when a transfer has been done since the last synthesis, since the expected result would then be stale. Also clear the results and disable
+#    Add to Testbed whenever the selected sentence, words or manual entry change.
+#
+#   Version 3.17.13 - 10/7/26 - Ron Lockwood
+#    Tag the testbed file's backup copy as made before a test was added.
+#
+#   Version 3.17.12 - 9/30/26 - Ron Lockwood
+#    Rebuild Bilingual Lexicon and changing the source text reopen the project in place (same FLExProject object) instead of creating a new one, so no one is left holding a closed project.
+#
+#   Version 3.17.11 - 9/29/26 - Ron Lockwood
+#    Fixes #1334. Reopen the source project by its path so a project outside the standard FLEx Projects folder can be reopened.
+#
+#   Version 3.17.10 - 9/28/26 - Ron Lockwood
+#    Come back to the tester after the Testbed Log Viewer or the Replacement Dictionary Editor closes, as the other launched tools already do.
+#
+#   Version 3.17.9 - 9/28/26 - Ron Lockwood
+#    The Edit Testbed button now opens the Testbed Editor.
+#
 #   Version 3.17.8 - 9/8/26 - Ron Lockwood
 #    Test the section-def-cats element for None rather than for truth.
 #
@@ -389,16 +408,21 @@
 #
 #   Several buttons can't do their work while this window is up, so they set a member, close the window, and let MainFunction() act on the return code RunModule() hands back:
 #    - Changing the source text combo box, or the Refresh Source Project button, returns RESTART_MODULE. MainFunction() then closes and reopens the FLEx project - which is the point, since that
-#      is what clears the cache so edits made in FLEx get picked up - and loops round to build the window again on the new text.
-#    - View Testbed Log returns START_LOG_VIEWER, Rule Assistant returns START_RULE_ASSISTANT (which runs it and then restarts the tester), and Edit Replacement File returns
-#      START_REPLACEMENT_EDITOR.
+#      is what clears the cache so edits made in FLEx get picked up - and loops round to build the window again on the new text. It reopens the same FLExProject object in place, since FlexTools
+#      holds a reference to it and closes it when the module finishes.
+#    - View Testbed Log returns START_LOG_VIEWER, Rule Assistant returns START_RULE_ASSISTANT, Edit Testbed returns START_TESTBED_EDITOR and Edit Replacement File returns
+#      START_REPLACEMENT_EDITOR. For each of these MainFunction() runs the other tool and, once its window closes, restarts the tester.
 #
 #   OTHER KEY FEATURES
 #
-#   Rebuild Bilingual Lexicon re-extracts the bilingual lexicon, which means closing and reopening the project, so it also saves and restores the sentence and word selection around it. The up
+#   Rebuild Bilingual Lexicon re-extracts the bilingual lexicon, which means closing and reopening the project, so it also saves and restores the sentence and word selection around it. It
+#   reopens the same FLExProject object in place, because MainFunction() and FlexTools hold references to it - swapping in a new object would leave them with a closed project. The up
 #   and down arrows reorder the rule in the highlighted row; that reorder only affects the copy written to the tester folder, so it is a way to try a different rule order without touching the
 #   real rule file. The select-all check box above the rule list is tri-state and reflects the rules below it. Add to Testbed pairs the source lexical units with the synthesis result and writes
-#   them into the testbed file, prompting before overwriting a test that has the same lexical units, and cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
+#   them into the testbed file, prompting before overwriting a test that has the same lexical units. It also asks for confirmation when a target_text*.txt file is newer than myText.txt, i.e.
+#   the user transferred (perhaps for a different sentence) without synthesizing again, because the Synthesized Text box would then hold a stale result that would become the test's expected
+#   result. The comparison is done in nanoseconds because users often click Transfer and Synthesize within the same second. Changing the selected sentence, words or manual entry clears
+#   the result boxes and disables the button for the same reason (__ClearStuff), so a result can't be paired with a selection it didn't come from. It cleans the result up first: the RTL mark comes off, runs of spaces collapse, and
 #   punctuation that isn't sentence punctuation is dropped (running the Text Out rules over the sentence punctuation first, if that box is checked, so the comparison is fair). Once a test really
 #   has been added it also saves a copy of every phase's transfer rules in Output\rule-file-history, tagged test_added, so there is a record of the rules that produced the result the new test
 #   now expects; see Lib/RuleFileHistory.py for the naming. Cancelling the overwrite prompt adds no test and so saves no copy. The zoom buttons
@@ -452,7 +476,6 @@ from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
 from flextoolslib import * # type: ignore
-from flexlibs import FLExProject
 
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtGui import QStandardItem, QStandardItemModel, QPainter, QPen, QBrush, QColor
@@ -498,7 +521,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.17.8",
+        FTM_Version    : "3.17.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -931,6 +954,7 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = False
         self.startRuleAssistant = False
         self.startReplacementEditor = False
+        self.startTestbedEditor = False
         self.HCdllObj = None
         self.lastSelectAllState = QtCore.Qt.CheckState.Unchecked
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
@@ -1004,6 +1028,7 @@ class Main(QMainWindow):
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
+        self.ui.ManualEdit.textChanged.connect(self.ManualEditChanged)
         self.ui.ZoomIncreaseSource.clicked.connect(self.ZoomIncreaseSourceClicked)
         self.ui.ZoomDecreaseSource.clicked.connect(self.ZoomDecreaseSourceClicked)
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
@@ -1846,18 +1871,16 @@ class Main(QMainWindow):
 
             self.lastSentNum = self.ui.listSentences.currentIndex().row()
 
-        # Open the project fresh
-        projname = self.__DB.ProjectName()
+        # Open the project fresh. Use the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
+        projname = Utils.projectOpenName(self.__DB)
 
-        try:
-            # Delete the old project (i.e. close it)
-            self.__DB.CloseProject()
+        # Keep the same write mode the project was opened with, since the tools launched from here after this (e.g. the Testbed Editor) use this same project.
+        writeEnabled = getattr(self.__DB, 'writeEnabled', False)
 
-            # Open the database
-            self.__DB = FLExProject()
-            self.__DB.OpenProject(projname, writeEnabled=False)
-        except:
-            raise
+        # Close and reopen the same FLExProject object rather than making a new one. MainFunction (and FlexTools) hold a reference to this object, so a new object would leave
+        # them holding a closed project, and launching the Testbed Editor or Rule Assistant afterwards would crash with "'FLExProject' object has no attribute 'project'".
+        self.__DB.CloseProject()
+        self.__DB.OpenProject(projname, writeEnabled=writeEnabled)
 
         # Try and build the bilingual lexicon
         if self.ExtractBilingLex() == False:
@@ -1901,7 +1924,9 @@ class Main(QMainWindow):
 
     def EditTestbedButtonClicked(self):
 
-        self.launchInXXE(self.__testbedPath, _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath or ''))
+        # Close the tool and MainFunction() will run the Testbed Editor and then restart the tester
+        self.startTestbedEditor = True
+        self.close()
 
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
@@ -1971,8 +1996,28 @@ class Main(QMainWindow):
             # If no non-sentence-ending punctuation was found, return the original string
             return inputStr, errMsg
 
+    def transferIsNewerThanSynthesis(self):
+
+        # Return True if any transfer output file in the tester folder was written after the synthesis output file. In advanced mode a transfer from the first or second rules tab writes
+        # target_text1.txt or target_text2.txt rather than target_text.txt, so all three are checked. Use nanosecond times, because Transfer and Synthesize are often clicked within the same second.
+        if not os.path.exists(self.synthesisFilePath):
+
+            return False
+
+        synthesisTime = os.stat(self.synthesisFilePath).st_mtime_ns
+
+        for targetName in [TARGET_FILE, TARGET_FILE1, TARGET_FILE2]:
+
+            targetPath = os.path.join(self.testerFolder, targetName)
+
+            if os.path.exists(targetPath) and os.stat(targetPath).st_mtime_ns > synthesisTime:
+
+                return True
+
+        return False
+
     def AddTestbedButtonClicked(self):
-        
+
         self.ui.TestsAddedLabel.setText('')
         activeLexicalUnitsStr = self.getActiveLexicalUnits()
 
@@ -1981,6 +2026,16 @@ class Main(QMainWindow):
 
             self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
             return
+
+        # If the user transferred again after the last synthesis, the Synthesized Text box holds the result for the earlier transfer, which may not even be the same sentence.
+        # Make sure they really want that result to become the test's expected result.
+        if self.transferIsNewerThanSynthesis():
+
+            retVal = QMessageBox.question(self, _translate('LiveRuleTesterTool', 'Add to Testbed'), _translate('LiveRuleTesterTool', "It looks like you didn't synthesize after your last transfer. This could make the test you are adding have wrong expected data. Are you sure you want to add the test?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+
+            if retVal != QMessageBox.StandardButton.Yes:
+
+                return
 
         # Set the direction attribute
         if self.__sentModel.getRTL():
@@ -2068,7 +2123,7 @@ class Main(QMainWindow):
         # Write the XML file
         if cnt > 0:
 
-            fileObj.write()
+            fileObj.write(TAG_BEFORE_TEST_ADDED)
 
             # Save a copy of every transfer rules file this project has, so there is a record of the rules that produced the result this test now expects. An advanced project's interchunk and
             # postchunk files go too, since the test went through all of those phases. The result is ignored on purpose: failing to save a copy must not undo a test the user has just added, and a
@@ -2579,7 +2634,9 @@ class Main(QMainWindow):
         self.__lexicalUnits += ' '
 
     def SourceCheckBoxClicked(self):
-        self.ui.TestsAddedLabel.setText('')
+
+        # The selected words changed, so any transfer and synthesis results showing are for the old selection.
+        self.__ClearStuff()
 
         mySent = self.__sentModel.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
@@ -2607,6 +2664,9 @@ class Main(QMainWindow):
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
 
     def listSentClicked(self):
+
+        # The selected sentence changed, so any results showing are for the old sentence. Left there, Add to Testbed could pair this sentence with the old sentence's synthesis result.
+        self.__ClearStuff()
 
         self.lastSentNum = self.ui.listSentences.currentIndex().row()
         mySent = self.__sentModel.getSent(self.lastSentNum)
@@ -2661,6 +2721,7 @@ class Main(QMainWindow):
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
 
+    # Clear the result areas. Called whenever the results showing no longer belong to what is selected - a different sentence or words, reloaded rules, a different rules tab, etc.
     def __ClearStuff(self):
 
         self.ui.TestsAddedLabel.setText('')
@@ -2668,6 +2729,17 @@ class Main(QMainWindow):
         self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
         self.ui.warningTextEdit.setPlainText('')
+
+        # There's no synthesis result now, so there is nothing to add to the testbed until the user synthesizes again. Otherwise a stale result could be paired with the new selection.
+        self.ui.addToTestbedButton.setEnabled(False)
+
+    # The user typed in the manual entry box, so the lexical units changed and the results showing are for the old ones. The other selection functions also set this box's text, but they
+    # clear the results themselves, so only react when the manual entry tab is the one showing.
+    def ManualEditChanged(self):
+
+        if self.ui.tabSource.currentIndex() == 2: # manual entry
+
+            self.__ClearStuff()
 
     # Move keyboard focus to the active source-selection widget. Called when the tool opens (including when it restarts after the user picks a different source text) so the arrow keys work right away.
     # Without this the source text combo box keeps the focus, so an arrow key press changes the source text again instead of navigating the selection. See issue #1134.
@@ -2776,7 +2848,8 @@ class Main(QMainWindow):
         self.lastSentNum = self.ui.SentCombo.currentIndex()
         mySent = self.__sentModel.getSent(self.lastSentNum)
 
-        # Clear stuff
+        # Clear stuff, including the results, which are for the old sentence.
+        self.__ClearStuff()
         self.ui.SelectedWordsEdit.setPlainText('')
         self.__ClearAllChecks()
         self.__lexicalUnits = ''
@@ -3560,6 +3633,7 @@ NO_ERRORS = 2
 START_LOG_VIEWER = 3
 START_RULE_ASSISTANT = 4
 START_REPLACEMENT_EDITOR = 5
+START_TESTBED_EDITOR = 6
 
 def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
@@ -3764,6 +3838,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         restartTester         = window.restartTester
         startTestbedLogViewer = window.startTestbedLogViewer
         startRuleAssistant    = window.startRuleAssistant
+        startTestbedEditor    = window.startTestbedEditor
         startReplacementEditor= window.startReplacementEditor
         window.deleteLater()
         del window
@@ -3784,6 +3859,10 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         elif startReplacementEditor:
 
             return START_REPLACEMENT_EDITOR
+
+        elif startTestbedEditor:
+
+            return START_TESTBED_EDITOR
     else:
         report.Error(_translate('LiveRuleTesterTool', 'This text has no data.'))
         return ERROR_HAPPENED
@@ -3822,16 +3901,22 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
         retVal = RunModule(DB, report, configMap, ruleCount, app)
 
-        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected. Reassign DB here (not in RunModule) so the next loop iteration uses the freshly reopened project.
+        # The user changed the source text combo, so close and reopen the project to clear the cache so that source text changes will be detected.
         if retVal == RESTART_MODULE:
 
-            savedDBName = DB.ProjectName()
+            # Reopen by the project's path, since the bare name can't be opened when the project is outside the standard FLEx Projects folder.
+            savedDBName = Utils.projectOpenName(DB)
+
+            # Close and reopen the same FLExProject object rather than making a new one. FlexTools holds a reference to this object and closes it when the module finishes, so a new object
+            # would never get closed (leaving its lock and any pending saves) while FlexTools closed one that was already closed. Closing disposes of the LCM cache and reopening builds a new one.
             DB.CloseProject()
-            DB = Utils.openProject(report, savedDBName)
 
-            # If the reopen failed, bail out rather than looping with a closed project.
-            if not DB:
+            try:
+                DB.OpenProject(savedDBName, writeEnabled=True)
+            except:
+                report.Error(_translate('LiveRuleTesterTool', 'There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.').format(DBname=savedDBName))
 
+                # Bail out rather than looping with a closed project.
                 retVal = ERROR_HAPPENED
                 break
 
@@ -3847,19 +3932,45 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
             # Show we are re-running the LRT
             report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
             retVal = RESTART_MODULE
-        else:
+
+        elif retVal == START_TESTBED_EDITOR:
+
+            from TestBedEditor import MainFunction as TE
+            from TestBedEditor import docs as TE_docs
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=TE_docs[FTM_Name], version=TE_docs[FTM_Version]))
+            TE(DB, report, modify)
+
+            # Show we are re-running the LRT
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
+            retVal = RESTART_MODULE
             ruleCount = None
 
-    # Start the log viewer
-    if retVal == START_LOG_VIEWER:
+        # Start the log viewer
+        elif retVal == START_LOG_VIEWER:
 
-        TestbedLogViewer.RunTestbedLogViewer(report)
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=TestbedLogViewer.docs[FTM_Name], version=TestbedLogViewer.docs[FTM_Version]))
+            TestbedLogViewer.RunTestbedLogViewer(DB, report, modify)
 
-    # Start the replacement dictionary editor
-    elif retVal == START_REPLACEMENT_EDITOR:
+            # Show we are re-running the LRT
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
+            retVal = RESTART_MODULE
+            ruleCount = None
 
-        from ReplacementEditor import MainFunction as RE
-        RE(DB, report, modify)
+        # Start the replacement dictionary editor
+        elif retVal == START_REPLACEMENT_EDITOR:
+
+            from ReplacementEditor import MainFunction as RE
+            from ReplacementEditor import docs as RE_docs
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RE_docs[FTM_Name], version=RE_docs[FTM_Version]))
+            RE(DB, report, modify)
+
+            # Show we are re-running the LRT
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
+            retVal = RESTART_MODULE
+            ruleCount = None
+
+        else:
+            ruleCount = None
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

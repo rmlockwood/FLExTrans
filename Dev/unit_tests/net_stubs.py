@@ -51,9 +51,16 @@ _qtwidgets.QApplication = _qt_class(
     setAttribute=classmethod(lambda cls, *a: None),
 )
 
+_qtcore = MagicMock()
+
+# Translation returns the English source string, as it does when no .qm file is
+# loaded. Modules build lookup tables from _translate() at import time (e.g.
+# ChapterSelection.bookMap), so these must be real strings, not MagicMocks.
+_qtcore.QCoreApplication.translate = lambda context, text, *args: text
+
 sys.modules.update({
     'PyQt6':           MagicMock(),
-    'PyQt6.QtCore':    MagicMock(),
+    'PyQt6.QtCore':    _qtcore,
     'PyQt6.QtGui':     MagicMock(),
     'PyQt6.QtWidgets': _qtwidgets,
 })
@@ -61,11 +68,15 @@ sys.modules.update({
 # ── .NET / SIL ────────────────────────────────────────────────────────────────
 for _mod in (
     'clr',
-    'System', 'System.IO', 'System.Collections',
+    'System', 'System.IO', 'System.Collections', 'System.Reflection',
     'SIL', 'SIL.LCModel',
-    'SIL.LCModel.Core', 'SIL.LCModel.Core.Text',
+    'SIL.LCModel.Core', 'SIL.LCModel.Core.Text', 'SIL.LCModel.Core.Cellar',
     'SIL.LCModel.Core.KernelInterfaces',
     'SIL.LCModel.DomainServices', 'SIL.LCModel.Infrastructure',
+    'SIL.LCModel.Utils', 'SIL.WritingSystems',
+    'SIL.FieldWorks', 'SIL.FieldWorks.Common',
+    'SIL.FieldWorks.Common.FwUtils', 'SIL.FieldWorks.Common.Controls',
+    'SIL.FieldWorks.FdoUi', 'SIL.FieldWorks.FwCoreDlgs',
 ):
     sys.modules.setdefault(_mod, _empty_mock())
 

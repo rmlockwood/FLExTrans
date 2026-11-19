@@ -4,7 +4,7 @@
 #   Unit tests for the three provider adapters in AIRules (AnthropicProvider, GeminiProvider,
 #   OpenAIProvider). Each provider's generate() imports its SDK lazily and calls the SDK
 #   client, so these tests inject a fake SDK module into sys.modules and pass a hand-built fake
-#   client - exercising the request-shaping, the JSON/tool-call extraction, the refusal and
+#   client - exercising the request-shaping, the JSON extraction, the refusal and
 #   empty-response handling, and the 429 -> RateLimitError translation, without any real SDK,
 #   network call, or API key.
 #
@@ -59,25 +59,49 @@ class TestAnthropicProvider(unittest.TestCase):
 
         self.provider = AIRules.AnthropicProvider()
 
-    def test_returns_tool_input(self):
+    def test_parses_json_text_after_thinking(self):
 
-        block = SimpleNamespace(type='tool_use', name='submit_rule', input={'rule_xml': 'RX', 'new_defs': []})
-        response = SimpleNamespace(stop_reason='tool_use', content=[block])
+        # A real reply starts with a thinking block (empty text by default) before the JSON text block; only the text blocks are the answer.
+        thinking = SimpleNamespace(type='thinking', thinking='')
+        text = SimpleNamespace(type='text', text='{"rule_xml": "RX", "new_defs": []}')
+        response = SimpleNamespace(stop_reason='end_turn', content=[thinking, text])
         client = anthropicClient(response=response)
 
         result = self.provider.generate(client, 'claude-x', 'SYS', 'USER', AIRules.TASK_RULE)
 
         self.assertEqual(result, {'rule_xml': 'RX', 'new_defs': []})
 
-    def test_explain_task_uses_explanation_tool(self):
+    def test_request_uses_structured_output_not_forced_tool(self):
 
-        block = SimpleNamespace(type='tool_use', name='submit_explanation', input={'explanation': 'E', 'language': 'en'})
-        response = SimpleNamespace(stop_reason='tool_use', content=[block])
-        client = anthropicClient(response=response)
+        # claude-opus-5-5 and claude-sonnet-5-5 answer 400 to a forced tool_choice, so the request must carry the schema in output_config and send no tools at all.
+        captured = {}
+
+        def create(**kwargs):
+
+            captured.update(kwargs)
+            return SimpleNamespace(stop_reason='end_turn', content=[SimpleNamespace(type='text', text='{"explanation": "E", "language": "en"}')])
+
+        client = SimpleNamespace(messages=SimpleNamespace(create=create))
 
         result = self.provider.generate(client, 'claude-x', 'SYS', 'USER', AIRules.TASK_EXPLAIN)
 
         self.assertEqual(result['explanation'], 'E')
+        self.assertNotIn('tool_choice', captured)
+        self.assertNotIn('tools', captured)
+        self.assertEqual(captured['output_config']['format']['schema'], AIRules.STRICT_EXPLAIN_SCHEMA)
+        self.assertEqual(captured['output_config']['effort'], 'high')
+
+    def test_malformed_json_reply_names_provider_and_suggests_retry(self):
+
+        response = SimpleNamespace(stop_reason='max_tokens', content=[SimpleNamespace(type='text', text='{"rule_xml": "unterminated')])
+        client = anthropicClient(response=response)
+
+        with self.assertRaises(RuntimeError) as ctx:
+            self.provider.generate(client, 'claude-x', 'SYS', 'USER')
+
+        message = str(ctx.exception)
+        self.assertIn('Anthropic Claude', message)
+        self.assertIn('try the same request again', message)
 
     def test_refusal_raises(self):
 
@@ -87,9 +111,9 @@ class TestAnthropicProvider(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.provider.generate(client, 'claude-x', 'SYS', 'USER')
 
-    def test_missing_tool_call_raises(self):
+    def test_no_text_raises(self):
 
-        block = SimpleNamespace(type='text', name=None, input=None)
+        block = SimpleNamespace(type='thinking', thinking='')
         response = SimpleNamespace(stop_reason='end_turn', content=[block])
         client = anthropicClient(response=response)
 

@@ -5,6 +5,27 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.12 - 10/20/26 - Ron Lockwood
+#    Added refreshLexicalUnitList so the Testbed Editor can revalidate a test after rewriting its lexical units.
+#
+#   Version 3.17.11 - 10/13/26 - Ron Lockwood
+#    Added loadDatedTestbedResults and removeTestbedResults so that Clean Files can delete old results from the testbed results file.
+#
+#   Version 3.17.10 - 10/7/26 - Ron Lockwood
+#    Save a backup copy of the testbed file to Output\testbed-file-history before the first write, and stop rewriting the file just to read it.
+#
+#   Version 3.17.9 - 10/5/26 - Ron Lockwood
+#    Write an ATTENTION comment before the tests element of the testbed file pointing the user to the Testbed Editor instead of hand editing the XML in XMLmind.
+#
+#   Version 3.17.8 - 10/5/26 - Ron Lockwood
+#    Fixes #1604. Don't crash formatting a lexical unit whose headword has no homograph number; split off only the trailing digits as the homograph number.
+#
+#   Version 3.17.7 - 9/30/26 - Ron Lockwood
+#    Read empty lexical unit elements from the testbed XML as '' instead of None so the Live Rule Tester's add-test check no longer asserts on a unit with no category.
+#
+#   Version 3.17.6 - 9/23/26 - Ron Lockwood
+#    Added removal of a test from the testbed XML object and object list.
+#
 #   Version 3.17.5 - 9/1/26 - Ron Lockwood
 #    Noted in the APERTIUM_LOG_FILE comment that the Live Rule Tester shares this constant.
 #
@@ -79,8 +100,8 @@
 #
 #   A test is a handful of source lexical units - normally one word or a short phrase - paired with the target text they are expected to produce. It is created in the Live Rule Tester, where the
 #   user transfers and synthesizes those words, likes the result, and presses Add to Testbed. Running the testbed then feeds every test through the ordinary FLExTrans machinery and records what
-#   each one actually produced this time, so that a rule change which quietly breaks something that was already working shows up as a failed test. Later we will have a Testbed Editor tool, but
-#   for now the user can edit the testbed file by hand in XMLmind XML Editor if they want to change a test or add one that was missed.
+#   each one actually produced this time, so that a rule change which quietly breaks something that was already working shows up as a failed test. Tests are changed or removed with the Testbed
+#   Editor tool. The file can still be edited by hand in XMLmind XML Editor, but that is no longer the preferred way, so the file carries an ATTENTION comment saying so.
 #
 #   Besides its lexical units and its expected result, a test carries a uuid, the name of the source text the words came from, an is_valid flag with the reason when it is not valid, optionally a
 #   comment the user wrote about it, and - filled in after a run - the actual result and the transfer rules that fired for it.
@@ -93,13 +114,14 @@
 #      the level is there so that a user could one day keep several testbeds. The FLExTransTestbed element also carries source_direction, which is where right-to-left-ness comes from.
 #    - The testbed results file (Testbed Results File setting) is the log of runs. Its shape is FLExTransTestbedResults / testbedResult, one testbedResult per run, stamped with a start and an end
 #      date-time and holding a whole copy of the testbed as it stood when that run began. Newest goes first. Keeping a copy rather than a reference is what lets the log viewer show an old run
-#      faithfully after the testbed itself has moved on.
+#      faithfully after the testbed itself has moved on. It is also why the file grows so large; Clean Files offers to delete the old runs through loadDatedTestbedResults() and
+#      removeTestbedResults(), which work on the bare ElementTree rather than the object layers below, since building objects for every test of every run just to count dates would be slow.
 #
 #   THE OBJECT LAYERS
 #
 #   The classes mirror those two shapes, one class per level of nesting, each holding the ElementTree element for its level and a list of the objects for the level below:
 #    - FlexTransTestbedFile - the testbed file. Reads it, or creates an empty structure when there isn't one yet (isNew/exists say which), and writes it back.
-#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), overwriteInTestbed() and validate() live.
+#    - FLExTransTestbedXMLObject - one testbed. Holds the test objects, and is where addToTestbed(), removeFromTestbed(), overwriteInTestbed() and validate() live.
 #    - TestbedTestXMLObject - one test. Everything about a single test, described below.
 #    - LexicalUnit - one lexical unit of a test.
 #   and on the results side:
@@ -123,7 +145,9 @@
 #   appended so that a transfer rule matching at the end of one test can't run on into the next, and extractResults() reads one line back, strips that EOL off again (it comes back looking different
 #   depending on whether STAMP or HermitCrab did the synthesis), collapses runs of spaces, and stores the line as the actual result normalized to decomposed unicode so that the comparison against
 #   the expected result is fair. There is validate(), which asks a TestbedValidator whether every lexical unit still exists in the source FLEx project and marks the test invalid with a reason when
-#   one doesn't - and sets a changed flag, so that the file only gets rewritten when a mark actually changed. And there are setAppliedRules() and getAppliedRules(), which store the rules that fired
+#   one doesn't - and sets a changed flag, so that the file only gets rewritten when a mark actually changed. validate() checks the lexical unit list built when the object was made, so a caller that
+#   rewrites the test's lexicalUnit elements (the Testbed Editor's Save) must call refreshLexicalUnitList() first or it validates the old ones. And there are setAppliedRules() and getAppliedRules(), 
+#   which store the rules that fired
 #   for the test under an appliedRules element, each rule as its number, the comment that named it in the rules file, and the lexical units it matched written as an Apertium stream so that a lemma
 #   containing a space survives the round trip. The comment is stored next to the number because the rules file goes on being edited: by the time someone reads the log, rule 18 may well be a
 #   different rule than the one that fired here.
@@ -171,12 +195,20 @@
 #   Both files are indented one element per line before being written, with a tab per level, which is what XMLmind XML Editor produces when the user edits the testbed there - writing it the same way
 #   keeps the file from being reformatted end to end each time it passes between the two. The testbed file additionally gets the XMLmind DOCTYPE line put back after the XML declaration, and gets
 #   normalized on the way through: decomposed when it is read, since that is the form all the FLEx values are in, and composed or decomposed on the way out according to the Composed Characters
-#   setting.
+#   setting. It also gets an ATTENTION XML comment just before the tests element (where XMLmind displays it) pointing the user to the Testbed Editor. The comment is only in the tree while write()
+#   runs, because the root element is what gets copied into the results file for each run, and ET.parse() drops comments on reading, so it never accumulates in the file.
+#
+#   BACKUP COPIES
+#
+#   The first time a FlexTransTestbedFile object writes the file, it saves a copy of the file as it was to Output\testbed-file-history first. The copy is named <stem>_<YYYY-MM-DD_HH-MM-SS>_<tag>.xml,
+#   just like the copies RuleFileHistory keeps of the transfer rules, and the tag says what was about to overwrite it (editor save, test added, testbed run). Only Clean Files deletes these copies,
+#   and only the old ones once the user agrees. Reading the
+#   file normalizes it to NFD in memory, not on disk, so only write() ever changes the file and every change is preceded by a copy. It used to rewrite the file on every read.
 #
 #   CODE STRUCTURE
 #
 #   Top to bottom the file goes: the XML element and attribute name constants, then the viewer color constants, then LexicalUnit and LexicalUnitParser, then the four testbed classes working upward
-#   from a test to the file, then the same three levels for the results side, then the Apertium log functions, and finally the color coding functions.
+#   from a test to the file, then the same three levels for the results side and the two functions for deleting old results, then the Apertium log functions, and finally the color coding functions.
 #
 #   Two caches are worth knowing about. __luCache is shared down through a testbed so that the same lexical unit occurring in many tests becomes one shared LexicalUnit object, which is what keeps
 #   opening a large log quick. __testCache alongside it was meant to do the same for whole tests but is currently disabled - the hash is hard coded to 0 and the line that would store an object is
@@ -186,13 +218,17 @@
 
 import re
 import os
+import shutil
 import xml.etree.ElementTree as ET
 import uuid
 import unicodedata
+from datetime import datetime
 
 import TestbedValidator
-import ReadConfig 
+import ReadConfig
 import Utils
+import FTPaths
+import RuleFileHistory
 
 from PyQt6.QtCore import QCoreApplication, QDateTime
 
@@ -228,6 +264,18 @@ APPLIED_RULES = 'appliedRules'
 APPLIED_RULE = 'appliedRule'
 RULE_NUMBER = 'num'
 RULE_COMMENT = 'comment'
+
+# The text of the XML comment written just before the tests element of the testbed file, where XMLmind displays it
+ATTENTION_TEXT = 'ATTENTION: The best way to edit this testbed is with the FLExTrans Testbed Editor tool, not by editing this file directly. '
+
+# The folder under Output that a copy of the testbed file is saved in before FLExTrans overwrites it, and the tags saying what was about to overwrite it. Keep the tags short, lower case and free
+# of spaces - they end up in a file name.
+TESTBED_HISTORY_DIR_NAME = 'testbed-file-history'
+TAG_BEFORE_WRITE        = 'before_write'
+TAG_BEFORE_EDITOR_SAVE  = 'before_editor_save'
+TAG_BEFORE_TEST_ADDED   = 'before_test_added'
+TAG_BEFORE_TESTBED_RUN  = 'before_testbed_run'
+
 SOURCE_DIRECTION = 'source_direction' 
 TARGET_DIRECTION = 'target_direction' 
 N_ATTRIB = 'n' 
@@ -370,18 +418,24 @@ class LexicalUnit():
             # Create an element
             p = ET.Element('span')
 
-            # Split off the homograph_num (if present; sent punctuation won't have it)
-            lemma_parts = re.split(r'(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
+            # Split off the homograph number - the run of digits at the end of the headword. It may be missing: sent punctuation has none, and neither does a headword in an invalid test
+            # (e.g. one typed or edited by hand as "Computer"). Only trailing digits count, so a headword with digits inside it, like "B2B1", splits into "B2B" and "1". re.RegexFlag.A = ASCII-only digits.
+            lemmaMatch = re.fullmatch(r'(.*?)(\d*)', self.__headWord, flags=re.RegexFlag.A)
+
+            # fullmatch can't fail here since both groups may be empty
+            assert lemmaMatch is not None
+
+            lexeme, homographNum = lemmaMatch.groups()
 
             # Output the lexeme
-            span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
+            span = outputLUSpan(p, LEMMA_COLOR, lexeme, rtl)
 
             # Output the subscript homograph # and sense # (if they exist)
             if self.__gramCat != SENT:
 
                 assert self.__senseNum is not None
 
-                addSubscript(span, lemma_parts[1]+'.'+self.__senseNum)
+                addSubscript(span, homographNum+'.'+self.__senseNum)
             
             # Check for RTL
             if rtl == True:
@@ -443,12 +497,32 @@ class LexicalUnit():
             self.__parsePlainText()
             
     def __unpackXML(self):
-        self.__headWord = self.__luNode.find(HEAD_WORD).text
-        self.__senseNum = self.__luNode.find(SENSE_NUM).text
-        self.__gramCat = self.__luNode.find(GRAM_CAT).text
-        for tagNode in list(self.__luNode.find(OTHER_TAGS)):
-            self.__otherTags.append(tagNode.text)
-        
+
+        # ElementTree reads an empty element such as <grammaticalCategoryTag /> as text None, not ''. That happens when a lexical unit with an empty value (e.g. a word with no
+        # category) is saved to the testbed and read back, so turn None into '' here; otherwise toString() and friends fail on the round-tripped lexical unit.
+        self.__headWord = self.__getChildText(HEAD_WORD)
+        self.__senseNum = self.__getChildText(SENSE_NUM)
+        self.__gramCat = self.__getChildText(GRAM_CAT)
+
+        otherTagsNode = self.__luNode.find(OTHER_TAGS)
+
+        if otherTagsNode is not None:
+
+            for tagNode in list(otherTagsNode):
+
+                self.__otherTags.append(tagNode.text or '')
+
+    # Return the text of the named child of the lexical unit node, or '' if the child is missing or empty
+    def __getChildText(self, childName):
+
+        childNode = self.__luNode.find(childName)
+
+        if childNode is None:
+
+            return ''
+
+        return childNode.text or ''
+
     def __parseApertiumStyle(self):
         
         # Split off the symbols from the lemma in the lexical unit
@@ -646,7 +720,15 @@ class TestbedTestXMLObject():
     
     def getLexicalUnitList(self):
         return self.__luList
-    
+
+    def refreshLexicalUnitList(self):
+
+        # Rebuild the lexical unit list from the test's lexicalUnit elements as they stand now, for a caller that has rewritten them (the Testbed Editor's Save) and is about to validate().
+        # The shared cache can't be used: it is keyed on headword, sense and tags but not the category, so a test whose category alone was edited would get the old LexicalUnit back.
+        # Give this test a fresh cache of its own instead; the other tests keep the shared one, and their LexicalUnit objects still match their unchanged XML.
+        self.__luCache = {}
+        self.__createLUListFromXMLStructure()
+
     def __createLUListFromXMLStructure(self):
         self.__luList = []
 
@@ -1032,6 +1114,11 @@ class FLExTransTestbedXMLObject():
     def addToTestbed(self, newTestObj):
         newNode = newTestObj.getTestNode()
         self.__testsNode.append(newNode)
+
+    def removeFromTestbed(self, testObj):
+        testNode = testObj.getTestNode()
+        self.__testsNode.remove(testNode)
+        self.__TestXMLObjectList.remove(testObj)
     
     def overwriteInTestbed(self, oldTestObj, newTestObj):
         # get the id for the old test
@@ -1125,13 +1212,44 @@ class FLExTransTestbedXMLObject():
             return True
         return False
 
+def getTestbedHistoryDir():
+    '''Return the folder that saved copies of the testbed file go in. A function rather than a constant so that FTPaths.OUTPUT_DIR is read when a copy is saved, not when this module is imported.'''
+
+    return os.path.join(FTPaths.OUTPUT_DIR, TESTBED_HISTORY_DIR_NAME)
+
+def saveTestbedHistoryCopy(testbedPath, tag):
+    '''Save a copy of the testbed file in the testbed file history folder, named <stem>_<date>_<time>_<tag><extension> just like the copies RuleFileHistory makes of the transfer rules file. Returns
+       (path of the copy, error message). The path is None and the message empty when there is no file to copy yet. This never raises, so the caller can treat the copy as best effort.'''
+
+    if not testbedPath or not os.path.isfile(testbedPath):
+
+        return None, ''
+
+    stem, extension = os.path.splitext(os.path.basename(testbedPath))
+    destPath = os.path.join(getTestbedHistoryDir(), f'{stem}_{datetime.now().strftime(RuleFileHistory.STAMP_FORMAT)}_{tag}{extension}')
+
+    # A full disk or a locked folder gives the caller a message to report instead of stopping the write the user actually asked for
+    try:
+        os.makedirs(getTestbedHistoryDir(), exist_ok=True)
+        shutil.copy2(testbedPath, destPath)
+
+    except OSError as err:
+
+        return None, str(err)
+
+    return destPath, ''
+
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
     def __init__(self, direction, report):
-        
+
         self.__isNew = False
-        
+        self.__report = report
+
+        # Set once a copy of the testbed file has been saved, so that an object written several times (e.g. Save clicked repeatedly in the Testbed Editor) only saves a copy before the first write
+        self.__historyCopySaved = False
+
         configMap = ReadConfig.readConfig(report)
         if not configMap:
             raise ValueError()
@@ -1161,30 +1279,25 @@ class FlexTransTestbedFile():
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
-                # Open the testbed file
-                f = open(self.__testbedPath, encoding='utf-8')
-                lines = f.readlines()
+                # Open the testbed file. utf-8-sig drops a byte order mark if there is one, which ET.fromstring() would otherwise reject as text before the XML declaration.
+                f = open(self.__testbedPath, encoding='utf-8-sig')
+                fileText = f.read()
                 f.close()
-                
-                # Convert the file to decomposed form. All the FLEx values are decomposed so standardize on NFD when we read it in.
-                for i in range(0, len(lines)):
-                    
-                    lines[i] = unicodedata.normalize('NFD', lines[i])
-                        
-                f = open(self.__testbedPath, 'w', encoding='utf-8')
-                f.writelines(lines)
-                f.close()
-                
+
             except:
                 raise ValueError(_translate("Testbed", "The testbed file: {filePath} could not be read or written.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
-            
+
+            # Convert the text to decomposed form. All the FLEx values are decomposed so standardize on NFD when we read it in. This is done in memory rather than by rewriting the file, so just
+            # opening the testbed never changes it on disk - only write() does, and that saves a copy of the file first.
+            fileText = unicodedata.normalize('NFD', fileText)
+
             try:
-                self.__testbedTree = ET.parse(self.__testbedPath)
+                self.__testbedTree = ET.ElementTree(ET.fromstring(fileText))
             except:
                 raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=Utils.shortenPathForDisplay(self.__testbedPath)))
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
-    
+
     def getFLExTransTestbedXMLObject(self):
         return self.__XMLObject
     
@@ -1200,20 +1313,45 @@ class FlexTransTestbedFile():
         
         # Only rewrite the testbed XML file if there was a change
         if self.__XMLObject.didTestbedChange() == True:
-            
-            self.write()
 
-    def write(self):
+            self.write(TAG_BEFORE_TESTBED_RUN)
+
+    def write(self, historyTag=TAG_BEFORE_WRITE):
 
         # __init__ raises a ValueError if the testbed path setting is missing, so by the time write() can be called the path is always set
         assert self.__testbedPath is not None
+
+        # Before the first write, save a copy of the file as it stands in Output\testbed-file-history. historyTag says what is about to overwrite it. Clean Files offers to delete old copies;
+        # the user can also prune the folder by hand. A copy that can't be saved is only a warning - it mustn't throw away the changes the user is saving.
+        if not self.__historyCopySaved:
+
+            self.__historyCopySaved = True
+            copyPath, errorMsg = saveTestbedHistoryCopy(self.__testbedPath, historyTag)
+
+            if not copyPath and errorMsg and self.__report:
+
+                self.__report.Warning(_translate("Testbed", "A backup copy of the testbed file could not be saved. The error was: {errorText}").format(errorText=errorMsg))
+
+        # Put an XML comment just before the tests element steering anyone who opens the file in XMLmind toward the Testbed Editor. That's the spot where XMLmind displays it. ET.parse() drops
+        # comments when the file is read back in, so it never accumulates. It's only in the tree for the duration of the write, since the root is also what gets copied into the results file.
+        testbedNode = self.__testbedTree.find(TESTBEDS + '/' + TESTBED)
+        attentionNode = ET.Comment(ATTENTION_TEXT)
+
+        if testbedNode is not None:
+
+            testbedNode.insert(0, attentionNode)
 
         # Indent the tree before writing so the testbed comes out one element per line instead of as a single enormous line. A tab per level is what XMLmind uses when the user edits the testbed
         # there, so writing it the same way here keeps the file from being reformatted end to end every time it passes between the two.
         ET.indent(self.__testbedTree, space='\t')
 
         self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
-        
+
+        # Take the ATTENTION comment back out now that it's written
+        if testbedNode is not None:
+
+            testbedNode.remove(attentionNode)
+
         # Re-open the testbed file
         f = open(self.__testbedPath, encoding='utf-8')
         lines = f.readlines()
@@ -1447,6 +1585,53 @@ class FlexTransTestbedResultsFile():
         ET.indent(self.__testbedResultsTree, space='\t')
 
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
+
+def loadDatedTestbedResults(resultsPath):
+    '''Read the testbed results file and return (tree, list of (start datetime, testbedResult element)), one pair per run, for Clean Files to pick the old runs from. A run whose start date-time
+       can't be read is left out of the list, so it can never be picked for deletion. Returns (None, []) when there is no results file yet. Raises ValueError if the file can't be parsed.'''
+
+    if not resultsPath or not os.path.isfile(resultsPath):
+
+        return None, []
+
+    try:
+        resultsTree = ET.parse(resultsPath)
+
+    except ET.ParseError:
+
+        raise ValueError(_translate("Testbed", "The testbed results file: {resultsPath} is invalid.").format(resultsPath=Utils.shortenPathForDisplay(resultsPath)))
+
+    datedResults = []
+
+    for resultNode in resultsTree.getroot().findall(TESTBED_RESULT):
+
+        try:
+            startedAt = datetime.strptime(resultNode.attrib.get(START_DATE_TIME, ''), XML_DATETIME_FORMAT)
+
+        except ValueError:
+
+            continue
+
+        datedResults.append((startedAt, resultNode))
+
+    return resultsTree, datedResults
+
+def removeTestbedResults(resultsTree, resultNodes, resultsPath):
+    '''Remove the given testbedResult elements from the results tree that loadDatedTestbedResults() returned and write the file back, indented the same way FlexTransTestbedResultsFile.write()
+       does it. Raises OSError if the file can't be written.'''
+
+    resultsRoot = resultsTree.getroot()
+
+    for resultNode in resultNodes:
+
+        resultsRoot.remove(resultNode)
+
+    ET.indent(resultsTree, space='\t')
+
+    # Write a temporary file next to the real one and then swap it in, so that a write that fails part way through (a full disk, say) leaves the user's results file as it was instead of truncated.
+    tempPath = resultsPath + '.tmp'
+    resultsTree.write(tempPath, encoding='utf-8', xml_declaration=True)
+    os.replace(tempPath, resultsPath)
 
 # The name of the log file the Apertium tools write their rule trace to. The makefile in the Build folder sends apertium-transfer's standard error there (and, when advanced transfer is turned on,
 # appends the interchunk and postchunk traces to the same file). The Live Rule Tester's makefile uses the same name for its transfer stage, so that module takes the name from here rather than

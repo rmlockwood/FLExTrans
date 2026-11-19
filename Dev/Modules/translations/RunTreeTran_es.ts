@@ -11,7 +11,7 @@
     <message>
       <location filename="../RunTreeTran.py" line="96"/>
       <source>Run the TreeTran Tool.</source>
-      <translation>Ejecutar la Herramienta TreeTran.</translation>
+      <translation>Ejecutar la herramienta TreeTran.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="98"/>
@@ -28,12 +28,12 @@ Este archivo lo crea el programa PC-PATR con FLEx al usar el botón de la barra 
     <message>
       <location filename="../RunTreeTran.py" line="124"/>
       <source>The Tree Tran Result File has invalid XML content.</source>
-      <translation>El Archivo de Resultado TreeTran tiene contenido XML inválido.</translation>
+      <translation>El archivo de resultado TreeTran tiene contenido XML inválido.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="215"/>
       <source>You have not specified a value in the configuration file for {file}.</source>
-      <translation>No ha especificado un valor en el archivo de configuración para {file}.</translation>
+      <translation>No has especificado un valor en el archivo de configuración para {file}.</translation>
     </message>
     <message>
       <location filename="../RunTreeTran.py" line="209"/>

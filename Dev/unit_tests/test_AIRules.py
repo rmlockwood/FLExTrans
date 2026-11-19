@@ -187,8 +187,8 @@ class TestProviderRegistry(unittest.TestCase):
         self.assertIs(AIRules.getProvider('openai'), AIRules.PROVIDERS['openai'])
 
     def test_find_model_owner(self):
-        self.assertIs(AIRules.findModelOwner('claude-opus-5'), AIRules.PROVIDERS['anthropic'])
-        self.assertIs(AIRules.findModelOwner('gpt-5.6-sol'), AIRules.PROVIDERS['openai'])
+        self.assertIs(AIRules.findModelOwner('claude-opus-5-5'), AIRules.PROVIDERS['anthropic'])
+        self.assertIs(AIRules.findModelOwner('gpt-6-sol'), AIRules.PROVIDERS['openai'])
 
     def test_default_model_is_in_each_providers_list(self):
 

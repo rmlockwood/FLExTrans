@@ -11,12 +11,12 @@
     <message>
       <location filename="../OpenFLExProjects.py" line="70"/>
       <source>Select one or more FLEx project and automatically open them one by one.</source>
-      <translation>Seleccione uno o más proyectos FLEx y ábralos automáticamente uno por uno.</translation>
+      <translation>Selecciona uno o más proyectos FLEx y ábrelos automáticamente uno por uno.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="72"/>
       <source>Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.</source>
-      <translation>Seleccione uno o más proyectos FLEx y ábralos automáticamente uno por uno. La herramienta espera hasta que un proyecto esté abierto antes de abrir el siguiente.</translation>
+      <translation>Selecciona uno o más proyectos FLEx y ábrelos automáticamente uno por uno. La herramienta espera hasta que un proyecto esté abierto antes de abrir el siguiente.</translation>
     </message>
     <message>
       <location filename="../OpenFLExProjects.py" line="97"/>

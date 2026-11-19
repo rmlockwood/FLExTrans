@@ -5,6 +5,15 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.17.4 - 10/12/26 - Ron Lockwood
+#    Fixes #1623. The Paratext book file no longer has to exist; the export offers to create it.
+#
+#   Version 3.17.3 - 10/12/26 - Ron Lockwood
+#    Fixes #1622. Say chapter number(s) are missing when the text name is just a valid book name.
+#
+#   Version 3.17.2 - 10/7/26 - Ron Lockwood
+#    Support the Alternate Location for Paratext Export Files setting.
+#
 #   Version 3.17.1 - 9/2/26 - Ron Lockwood
 #    Added a code description block at the top with an overview, key features and code structure.
 #
@@ -95,14 +104,17 @@
 #
 #   The draft itself is read from the file named by the Target Output Synthesis File setting, typically target_text-syn.txt in the Build folder. Before anything is written out, the Text Out rules are
 #   run over it (the same search and replace rules the Text Out Rules module edits), which is where the last cleanups of the synthesized text happen. The result is handed to
-#   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it.
+#   ChapterSelection.doExport(), which backs up the Paratext book file and splices the chapters into it. The book file is looked for in the Paratext project's folder, unless the Alternate Location
+#   for Paratext Export Files setting names a folder, in which case it is looked for there instead (the project abbreviation is still needed because it is part of the book file name). If the project
+#   doesn't have that book yet, doExport() asks whether to create a new book file for it, named the way Paratext names the project's books (see ChapterSelection.askToCreateBookFile()).
 #
 #   HOW THE TEXT NAME IS PARSED
 #
 #   parseSourceTextName() does that work. A trailing " - Copy" or " - Copy (2)" is dropped first, so a text the user duplicated in FLEx is still usable. What's left is split on spaces: the last piece
 #   is the chapter or the chapter range and everything before it is the book, which lets book names with spaces like 1 Samuel through. The book can be either a Paratext abbreviation or a book name in
 #   the UI language; names are compared after normalizing to decomposed Unicode (NFD), because FLEx text names are NFD. A range has to be two numbers separated by a hyphen, both digits, neither zero,
-#   and the second not smaller than the first. Anything else is an error telling the user what a name should look like.
+#   and the second not smaller than the first. Anything else is an error telling the user what a name should look like. One case gets its own message: if the last piece has no digits but the whole
+#   name is a valid book (Matthew, 1 Samuel), the user forgot the chapters, so we say chapter number(s) are missing rather than report an invalid book built from all but the last word.
 #
 #   WHAT THE WINDOW SHOWS
 #
@@ -112,7 +124,7 @@
 #
 #   CODE STRUCTURE
 #
-#   Top to bottom: the docs dictionary FlexTools displays, the Main window class, parseSourceTextName(), doExportToParatext(), MainFunction() and the FlexToolsModule declaration at the bottom that
+#   Top to bottom: the docs dictionary FlexTools displays, the Main window class, findBookAbbrev() (abbreviation or book name to abbreviation), parseSourceTextName(), doExportToParatext(), MainFunction() and the FlexToolsModule declaration at the bottom that
 #   FlexTools looks for. Main is thin on purpose - InitControls() sets the window up and OKClicked() hands the validation to ChapterSelection.doOKbuttonValidation() - so the flow to read is
 #   doExportToParatext(): parse the text name, show the window, and if the user clicked OK read the synthesis file, apply the Text Out rules and call doExport(). Cancelling reports a warning and
 #   writes nothing.
@@ -163,7 +175,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ExportToParatext", "Export FLExTrans Draft to Paratext"),
-        FTM_Version    : "3.17.1",
+        FTM_Version    : "3.17.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
@@ -181,11 +193,12 @@ takes the draft in this file and copies the chapters into Paratext to the projec
 
 class Main(QMainWindow):
 
-    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
+    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects, altParatextFolder):
         QMainWindow.__init__(self)
 
         self.ui = Ui_ParatextChapSelectionWindow()
         self.clusterProjects = clusterProjects
+        self.altParatextFolder = altParatextFolder
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -215,44 +228,63 @@ class Main(QMainWindow):
         
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self, export=True)
+        ChapterSelection.doOKbuttonValidation(self, export=True, altParatextFolder=self.altParatextFolder)
 
-def parseSourceTextName(report, sourceText, infoMap): 
-    
+def findBookAbbrev(book):
+
+    # An abbreviation that is in the book map is used as is
+    if book.upper() in ChapterSelection.bookMap:
+        return book
+
+    # If it is not an abbreviation, then we need to find the abbreviation from the book name
+    for key, val in ChapterSelection.bookMap.items():
+
+        translatedStr = _translate("ChapterSelection", val)
+
+        # Normalize to NFD to match FLEx text names which are always NFD
+        translatedStr = unicodedata.normalize("NFD", translatedStr)
+
+        if book == translatedStr:
+            return key
+
+    return None
+
+def parseSourceTextName(report, sourceText, infoMap):
+
     # Remove the - Copy ... so that a title like Ruth 01 - Copy (2) is still allowed
     sourceText = re.sub(r' - Copy.*', '', sourceText)
-    
+
     stdError = _translate("ExportToParatext", 'The text name "{sourceText}" is invalid it should be of the form GEN 01 or Genesis 23-38').format(sourceText=sourceText)
-    
+
     # should have two main elements, book name (which can have spaces) and chapter number
     myList = sourceText.split()
-    
+
     # the book portion will be all except the last one
-    bookAbbrev = book = ' '.join(myList[0:-1])
-    
+    book = ' '.join(myList[0:-1])
+
     chapters = myList[-1]
-    
-    # Check first if this is an abbreviation that is in the book map
-    if book.upper() not in ChapterSelection.bookMap:
-        
-        # If it is not an abbreviation, then we need to find the abbreviation
-        for key, val in ChapterSelection.bookMap.items():
-            
-            translatedStr = _translate("ChapterSelection", val)
 
-            # Normalize to NFD to match FLEx text names which are always NFD
-            translatedStr = unicodedata.normalize("NFD", translatedStr)
+    # If the last piece has no digits, it can't be a chapter or chapter range. When the whole name is a valid book (e.g. Matthew or 1 Samuel), the chapter number(s) are what is missing,
+    # so say that rather than reporting an invalid book name built from all but the last word.
+    if not re.search(r'\d', chapters):
 
-            if book == translatedStr:
-                bookAbbrev = key
-                break
-        
-        # If we didn't find it (bookAbbrev didn't change), then the book is not valid
-        if bookAbbrev == book:
-            nameStr = _translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book)
-            report.Error(nameStr)
-            return False
-        
+        if findBookAbbrev(sourceText.strip()) is not None:
+
+            report.Error(_translate("ExportToParatext", 'The text name "{sourceText}" is missing chapter number(s) after the book name. It should be of the form GEN 01 or Genesis 23-38').format(sourceText=sourceText))
+        else:
+            report.Error(stdError)
+
+        return False
+
+    bookAbbrev = findBookAbbrev(book)
+
+    # If we didn't find it, then the book is not valid
+    if bookAbbrev is None:
+
+        nameStr = _translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book)
+        report.Error(nameStr)
+        return False
+
     if re.search('-', chapters):
         
         bList = chapters.split('-')
@@ -312,8 +344,11 @@ def doExportToParatext(DB, configMap, report):
     clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
     if not clusterProjects:
         clusterProjects = []
-               
-    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
+
+    # Get the path to the alternate Paratext export folder (blank means use the standard Paratext projects folder)
+    altParatextFolder = ReadConfig.getConfigVal(configMap, ReadConfig.ALT_PARATEXT_EXPORT_FOLDER, report, giveError=False)
+
+    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects, altParatextFolder)
     
     window.show()
     app.exec()

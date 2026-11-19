@@ -104,5 +104,29 @@
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
       <translation>Écraser un texte portant le même nom. Par exemple, si JHN 01 existe déjà, il sera supprimé et recréé.</translation>
     </message>
+    <message>
+      <location filename="../ParatextChapSelectionDlg.py" line="156"/>
+      <source>Put numbers like 7 or 144,000 in the analysis writing system, 
+so they don't have to be interlinearized.</source>
+      <translation>Mettre les nombres comme 7 ou 144 000 dans le système d'écriture d'analyse, 
+pour qu'ils n'aient pas à être interlinéarisés.</translation>
+    </message>
+    <message>
+      <location filename="../ParatextChapSelectionDlg.py" line="158"/>
+      <source>Import numbers in the analysis writing system</source>
+      <translation>Importer les nombres dans le système d'écriture d'analyse</translation>
+    </message>
+    <message>
+      <location filename="../ParatextChapSelectionDlg.py" line="159"/>
+      <source>Number separator(s)</source>
+      <translation>Séparateur(s) de nombres</translation>
+    </message>
+    <message>
+      <location filename="../ParatextChapSelectionDlg.py" line="160"/>
+      <source>The character(s) that separate groups of digits in a number, e.g. the comma in 144,000. 
+Enter more than one character if more than one is used. Leave it blank if numbers have no separator.</source>
+      <translation>Le ou les caractères qui séparent les groupes de chiffres dans un nombre, p. ex. la virgule dans 144,000. 
+Saisissez plusieurs caractères si plusieurs sont utilisés. Laissez vide si les nombres n'ont pas de séparateur.</translation>
+    </message>
   </context>
 </TS>

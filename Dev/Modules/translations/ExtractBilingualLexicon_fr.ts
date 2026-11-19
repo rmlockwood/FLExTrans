@@ -79,32 +79,32 @@ d'aide pour plus de détails.</translation>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="388"/>
       <source>Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon.</source>
-      <translation>Un mot-vedette avec des espaces au début ou à la fin a été trouvé lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}. Les espaces ont été supprimés, mais veuillez corriger cela dans le lexique.</translation>
+      <translation>Une entrée de dictionnaire avec des espaces au début ou à la fin a été trouvée lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}. Les espaces ont été supprimés, mais veuillez corriger cela dans le lexique.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="391"/>
       <source>Found a headword with one of the following invalid characters: {chars} in {rawHeadWord}. Please correct this in the lexicon before continuing.</source>
-      <translation>Un mot-vedette avec l'un des caractères invalides suivants a été trouvé : {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
+      <translation>Une entrée de dictionnaire avec l'un des caractères invalides suivants a été trouvée : {chars} dans {rawHeadWord}. Veuillez corriger cela dans le lexique avant de continuer.</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="418"/>
       <source>Encountered a sense that has unknown POS while processing source headword: {rawHeadWord}</source>
-      <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement du mot vedette source : {rawHeadWord}</translation>
+      <translation>Un sens avec une catégorie grammaticale inconnue a été rencontré lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="425"/>
       <source>Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense. Source headword: {rawHeadWord}</source>
-      <translation>Un mot-vedette qui ne diffère que par la casse d'un autre mot-vedette avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. L'entrée de dictionnaire source : {rawHeadWord}</translation>
+      <translation>Une entrée de dictionnaire qui ne diffère que par la casse d'une autre entrée de dictionnaire avec la même catégorie grammaticale ({sourcePOSabbrev}) a été rencontré. Ce sens est ignoré. L'entrée de dictionnaire source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="476"/>
       <source>Skipping sense because the target POS is undefined for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-      <translation>Une acception a été ignorée car la catégorie grammaticale cible n'est pas définie pour le mot-vedette cible : {targetHeadWord} lors du traitement du mot-vedette source : {rawHeadWord}</translation>
+      <translation>Une acception a été ignorée car la catégorie grammaticale cible n'est pas définie pour l'entrée de dictionnaire cible : {targetHeadWord} lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="478"/>
       <source>Skipping sense because it is of this class: {className} for target headword: {targetHeadWord} while processing source headword: {rawHeadWord}</source>
-      <translation>Sens ignoré car il est de cette classe : {className} pour le mot-vedette cible : {targetHeadWord} lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}</translation>
+      <translation>Sens ignoré car il est de cette classe : {className} pour l'entrée de dictionnaire cible : {targetHeadWord} lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}</translation>
     </message>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="486"/>
@@ -149,7 +149,7 @@ d'aide pour plus de détails.</translation>
     <message>
       <location filename="../ExtractBilingualLexicon.py" line="247"/>
       <source>Encountered a sense that has an invalid feature while processing source headword: {rawHeadWord}</source>
-      <translation>Une acception avec un trait non valide a été détectée lors du traitement du mot-vedette source : {rawHeadWord}</translation>
+      <translation>Une acception avec un trait non valide a été détectée lors du traitement de l'entrée de dictionnaire source : {rawHeadWord}</translation>
     </message>
   </context>
 </TS>

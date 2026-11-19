@@ -104,5 +104,27 @@
 if JHN 01 already exists, it will delete it and create JHN 01 again.</source>
         <translation type="unfinished"></translation>
     </message>
+        <message>
+            <location filename="../ParatextChapSelectionDlg.py" line="156"/>
+            <source>Put numbers like 7 or 144,000 in the analysis writing system, 
+so they don't have to be interlinearized.</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../ParatextChapSelectionDlg.py" line="158"/>
+            <source>Import numbers in the analysis writing system</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../ParatextChapSelectionDlg.py" line="159"/>
+            <source>Number separator(s)</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../ParatextChapSelectionDlg.py" line="160"/>
+            <source>The character(s) that separate groups of digits in a number, e.g. the comma in 144,000. 
+Enter more than one character if more than one is used. Leave it blank if numbers have no separator.</source>
+            <translation type="unfinished"></translation>
+        </message>
 </context>
 </TS>

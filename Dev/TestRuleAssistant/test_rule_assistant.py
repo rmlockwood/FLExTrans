@@ -3,6 +3,8 @@
 import unittest
 import os
 import shutil
+import sys
+import tempfile
 import importlib
 import subprocess
 
@@ -20,16 +22,27 @@ with open(os.path.join(LibFolder, script)) as fin:
     with open(os.path.join(TestFolder, script), 'w') as fout:
         fout.write(fin.read().replace('import Utils', 'from . import Utils'))
 
+# CreateApertiumRules also imports RuleFileHistory (and it imports FTPaths), which aren't stubbed, so let those come from Dev/Lib. Appended, not inserted, so the stub Utils is still the one used.
+sys.path.append(os.path.abspath(LibFolder))
+
+import FTPaths
+
+# RuleFileHistory saves a copy of an existing rules file in FTPaths.OUTPUT_DIR before overwriting it. Point that at a temporary folder so test runs don't litter the working tree with copies.
+FTPaths.OUTPUT_DIR = tempfile.mkdtemp(prefix='RuleAssistantTests_')
+
 from RuleAssistantTests import CreateApertiumRules
 
 class Reporter:
     def __init__(self):
         self.infos = []
         self.errors = []
+        self.warnings = []
     def Info(self, *args):
         self.infos.append(args)
     def Error(self, *args):
         self.errors.append(args)
+    def Warning(self, *args):
+        self.warnings.append(args)
 
 class BaseTest(unittest.TestCase):
     Data = {

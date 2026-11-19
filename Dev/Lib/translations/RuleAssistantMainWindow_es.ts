@@ -79,7 +79,7 @@
     </message>
     <message>
       <source>FLEx Feature Value Chooser</source>
-      <translation>Selector de valores de características FLEx</translation>
+      <translation>Selector de valores de rasgos FLEx</translation>
     </message>
     <message>
       <source>FLExTrans Rule Assistant</source>
@@ -99,7 +99,7 @@
     </message>
     <message>
       <source>Insert feature</source>
-      <translation>Insertar característica</translation>
+      <translation>Insertar rasgo</translation>
     </message>
     <message>
       <source>Insert new after</source>
@@ -167,7 +167,7 @@
     </message>
     <message>
       <source>No features available</source>
-      <translation>No hay características disponibles</translation>
+      <translation>No hay rasgos disponibles</translation>
     </message>
     <message>
       <source>Omitting head-only rule</source>
@@ -179,7 +179,7 @@
     </message>
     <message>
       <source>Ranking for Feature</source>
-      <translation>Clasificación para la característica</translation>
+      <translation>Clasificación para el rasgo</translation>
     </message>
     <message>
       <source>Remove head marking</source>
