@@ -54,7 +54,7 @@ _translate("BantuHealthCheck", """
 Bantu Health Check runs the following checks:
 1. Noun roots have exactly one singular and one plural gender value defined, with an optional 'many' value. (Skips nouns with 0 features.)
 2. Each affix in the noun-class slot has exactly one gender feature.
-3. Affix glosses match the expected 'd.xyz' format and align with their features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class number (e.g. '5') unless the sub-option to enforce the full format is on.
+3. Noun-class slot affixes (the noun slot and the other configured NC slots) have glosses that match the expected 'd.xyz' format and align with their features/POS (e.g. 19.num). Noun-class slot affixes may use a bare class number (e.g. '5') unless the sub-option to enforce the full format is on.
 4. No two different affixes share the same gloss.
 5. Affix glosses contain no spaces.
 6. Every gender value in use has an affix in each part of speech's noun-class slot.
@@ -80,7 +80,7 @@ BANTU_SETTINGS_FILE = "BantuSettings.toml"
 CHECKS = [
     ("roots",       "Check 1: Noun roots",              "Each noun root has exactly one singular and one plural gender value (optional 'many')."),
     ("prefixes",    "Check 2: Noun-class slot affixes", "Each affix in the noun-class slot has exactly one gender feature."),
-    ("affix_gloss", "Check 3: Affix gloss consistency", "Affix glosses match the expected 'd.xyz' format and align with their features/POS. E.g. 19.num"),
+    ("affix_gloss", "Check 3: Affix gloss consistency", "Glosses of affixes in noun-class slots match the expected 'd.xyz' format and align with their features/POS. E.g. 19.num"),
     ("duplicates",  "Check 4: Duplicate glosses",       "No two different affixes share the same gloss."),
     ("spaces",      "Check 5: Spaces in glosses",       "Affix glosses contain no spaces."),
     ("missing_nc",  "Check 6: Missing NC affixes",      "Every gender value in use has an affix in each part of speech's noun-class slot."),
@@ -979,8 +979,12 @@ def Main(project, report, modifyAllowed):
 
             total_affixes_val_checked += 1
 
+            # Check 3 only concerns noun-class affixes: those in the Noun's NC slot or in one of the other user-configured NC slots.
+            # Affixes in any other slot (e.g. a verb template slot like CESS) are skipped.
+            check3_applies = enabled["affix_gloss"] and (in_noun_nc_slot or in_any_nc_slot)
+
             # Feature Count Problem (Max 1, skip if Noun-attaching) [Check 3]
-            if enabled["affix_gloss"] and not is_noun_attaching and len(entry_feat_abbrs) > 1:
+            if check3_applies and not is_noun_attaching and len(entry_feat_abbrs) > 1:
 
                 sourceURL = project.BuildGotoURL(entry)
                 msg = "affix problem: lex: '{}' has {} inflection features assigned (expected max 1)".format(lexeme_form, len(entry_feat_abbrs))
@@ -1003,7 +1007,7 @@ def Main(project, report, modifyAllowed):
                     issues["spaces"].append((msg, sourceURL, []))
 
                 # CHECK 3: Gloss Format and Alignment
-                if not enabled["affix_gloss"]:
+                if not check3_applies:
 
                     continue
 
