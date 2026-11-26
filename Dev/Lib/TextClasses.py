@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.17.1 - 11/25/26 - Ron Lockwood
+#    Fix crash with discontiguous complex forms whose types have inflection on the 2nd element. Added the code description block.
+#
 #   Version 3.17 - 8/26/26 - Ron Lockwood
 #    Bumped version.
 #
@@ -78,7 +81,33 @@
 #
 #   2023 version history removed on 2/6/26
 #
-#   Classes that model text objects from whole text down to word.
+#   OVERVIEW (AI generated, then edited)
+#
+#   Classes that model an interlinear FLEx text in memory, from the whole text down to the individual word. InterlinData.getInterlinData() walks the FLEx text and builds these objects;
+#   callers then use them to write the Apertium data stream (ExtractSourceText), show sentences in the Live Rule Tester, link senses in the Sense Linker, etc.
+#
+#   OBJECTS
+#
+#   TextEntirety  - the whole text: a list of TextParagraphs plus the complex-form maps and the unknown-word map shared across the text.
+#   TextParagraph - a list of TextSentences. Mostly passes calls down to its sentences.
+#   TextSentence  - a list of TextWords plus the segment's free translation. This is where complex-form matching and substitution actually happen.
+#   TextWord      - one analyzed word: its entries/senses, affixes, punctuation, features and guid. Knows how to output itself as an Apertium lexical unit.
+#
+#   COMPLEX FORMS
+#
+#   Complex forms (e.g. phrasal verbs) whose components appear in the text get replaced by a single TextWord for the complex entry. Each complex type is configured with inflection on either the
+#   1st element (SourceComplexFormsWithInflectionOn1stElement) or the 2nd/last element (SourceComplexTypes — the old name kept for historical reasons). findComplexForms() builds one shared map
+#   from an entry handle to (complexEntry, componentList, inflectionOnFirstElement) tuples for both lists, so each tuple carries its own inflection flag.
+#   Contiguous forms are substituted first. Discontiguous forms (two components with up to MAX_SKIPPED_WORDS words of the configured POSs in between) come next. When the discontiguous types are
+#   exactly the 1st- and 2nd-element types combined they reuse the same map; otherwise a separate map is built with findComplexForms() for just the discontiguous types. A discontiguous type
+#   that isn't on the 1st-element list is treated as having inflection on the 2nd element.
+#
+#   CODE STRUCTURE
+#
+#   do_capitalization() is a helper. Then the classes appear top-down: TextEntirety, TextParagraph, TextSentence, TextWord. TextEntirety.processComplexForms() and
+#   processDiscontiguousComplexForms() drive the find/substitute methods on TextParagraph, which call the same-named methods on each TextSentence, which in turn build new TextWords via
+#   TextWord.initWithComplex().
+#
 
 import re
 
@@ -166,14 +195,23 @@ class TextEntirety():
             par.findComplexForms(self.__cmplxFormMap, typesInfl2ndList)
         for par in self.__parList:
             par.substituteComplexForms(self.__cmplxFormMap)
-    def processDiscontiguousComplexForms(self, typesInfl1stList, typesInfl2ndList, discontigTypesList, discontigPOSList): 
-        if typesInfl1stList == discontigTypesList:
+    def processDiscontiguousComplexForms(self, typesInfl1stList, typesInfl2ndList, discontigTypesList, discontigPOSList):
+
+        # The complex form map built by processComplexForms() holds entries for the types in both the inflection-on-1st and inflection-on-2nd lists, and each map item carries its own
+        # inflection flag. If the discontiguous types are exactly those types, reuse that map. (Before #1074 there was only one list and this compared against it; #1074 wrongly switched
+        # the comparison to the 1st-element list only, which crashed projects whose discontiguous types were on the 2nd-element list.)
+        if set(discontigTypesList) == set(typesInfl1stList) | set(typesInfl2ndList):
+
             self.__discontigCmplxFormMap = self.__cmplxFormMap
         else:
-            # findDiscontig... method not coded yet !!!!
+            # Otherwise build a separate map holding only the discontiguous types, so other complex types (e.g. idioms) don't get matched discontiguously. The inflection flag for each
+            # item still comes from the sentence's first-element types list, which processComplexForms() has already set.
             for par in self.__parList:
-                par.findDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigTypesList)
+
+                par.findComplexForms(self.__discontigCmplxFormMap, discontigTypesList)
+
         for par in self.__parList:
+
             par.substituteDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigPOSList)
     def warnForUnknownWords(self, noWarningProperNoun):
         multipleUnknownWords = False
